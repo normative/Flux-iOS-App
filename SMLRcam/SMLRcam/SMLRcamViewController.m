@@ -18,16 +18,24 @@
 #pragma mark-
 
 static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
+static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;};
 
 // used for KVO observation of the @"capturingStillImage" property to perform flash bulb animation
 static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCaptureStillImageIsCapturingStillImageContext";
 
 
 @interface SMLRcamViewController ()
+{
+    AVCaptureDevice *device;
+    NSTimer         *updateTimer;
 
+}
 - (void)setupAVCapture;
 - (void)teardownAVCapture;
-- (void)drawFaceBoxesForFeatures:(NSArray *)features forVideoBox:(CGRect)clap orientation:(UIDeviceOrientation)orientation;
+//- (void)drawFaceBoxesForFeatures:(NSArray *)features forVideoBox:(CGRect)clap orientation:(UIDeviceOrientation)orientation;
+- (void)setFocusMode:(AVCaptureFocusMode)mode;
+- (void)updateCurrentTime;
+- (void)setupTimer;
 
 @end
 
@@ -35,19 +43,30 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 @implementation SMLRcamViewController
 
 
+ - (void)setFocusMode:(AVCaptureFocusMode)mode
+ {
+     BOOL locked = [device lockForConfiguration:nil];
+     if (locked)
+     {
+         device.focusMode = mode;
+         [device unlockForConfiguration];
+     }
+ }
+
+
 - (void)setupAVCapture
 {
 	NSError *error = nil;
 	
 	AVCaptureSession *session = [AVCaptureSession new];
-	if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-	    [session setSessionPreset:AVCaptureSessionPreset640x480];	
-	else
-	    [session setSessionPreset:AVCaptureSessionPresetPhoto];
+    [session setSessionPreset:AVCaptureSessionPresetPhoto]; // full resolution photo...
 	
     // Select a video device, make an input
-	AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-	AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+
+    [self setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+ 	
+    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
 
     if (error == nil)
     {
@@ -166,103 +185,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 		result = AVCaptureVideoOrientationLandscapeLeft;
 	return result;
 }
-/*
-// utility routine to create a new image with the red square overlay with appropriate orientation
-// and return the new composited image which can be saved to the camera roll
-- (CGImageRef)newSquareOverlayedImageForFeatures:(NSArray *)features
-                                       inCGImage:(CGImageRef)backgroundImage
-                                 withOrientation:(UIDeviceOrientation)orientation
-                                     frontFacing:(BOOL)isFrontFacing
-{
-	CGImageRef returnImage = NULL;
-	CGRect backgroundImageRect = CGRectMake(0., 0., CGImageGetWidth(backgroundImage), CGImageGetHeight(backgroundImage));
-	CGContextRef bitmapContext = CreateCGBitmapContextForSize(backgroundImageRect.size);
-	CGContextClearRect(bitmapContext, backgroundImageRect);
-	CGContextDrawImage(bitmapContext, backgroundImageRect, backgroundImage);
-	CGFloat rotationDegrees = 0.;
-	
-	switch (orientation) {
-		case UIDeviceOrientationPortrait:
-			rotationDegrees = -90.;
-			break;
-		case UIDeviceOrientationPortraitUpsideDown:
-			rotationDegrees = 90.;
-			break;
-		case UIDeviceOrientationLandscapeLeft:
-			if (isFrontFacing) rotationDegrees = 180.;
-			else rotationDegrees = 0.;
-			break;
-		case UIDeviceOrientationLandscapeRight:
-			if (isFrontFacing) rotationDegrees = 0.;
-			else rotationDegrees = 180.;
-			break;
-		case UIDeviceOrientationFaceUp:
-		case UIDeviceOrientationFaceDown:
-		default:
-			break; // leave the layer in its last known orientation
-	}
-	UIImage *rotatedSquareImage = [square imageRotatedByDegrees:rotationDegrees];
-	
-    // features found by the face detector
-	for ( CIFaceFeature *ff in features ) {
-		CGRect faceRect = [ff bounds];
-		CGContextDrawImage(bitmapContext, faceRect, [rotatedSquareImage CGImage]);
-	}
-	returnImage = CGBitmapContextCreateImage(bitmapContext);
-	CGContextRelease (bitmapContext);
-	
-	return returnImage;
-}
 
-
-// utility routine used after taking a still image to write the resulting image to the camera roll
-- (BOOL)writeCGImageToCameraRoll:(CGImageRef)cgImage withMetadata:(NSDictionary *)metadata
-{
-	CFMutableDataRef destinationData = CFDataCreateMutable(kCFAllocatorDefault, 0);
-	CGImageDestinationRef destination = CGImageDestinationCreateWithData(destinationData,
-																		 CFSTR("public.jpeg"),
-																		 1,
-																		 NULL);
-	BOOL success = (destination != NULL);
-	require(success, bail);
-    
-	const float JPEGCompQuality = 0.85f; // JPEGHigherQuality
-	CFMutableDictionaryRef optionsDict = NULL;
-	CFNumberRef qualityNum = NULL;
-	
-	qualityNum = CFNumberCreate(0, kCFNumberFloatType, &JPEGCompQuality);
-	if ( qualityNum ) {
-		optionsDict = CFDictionaryCreateMutable(0, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-		if ( optionsDict )
-			CFDictionarySetValue(optionsDict, kCGImageDestinationLossyCompressionQuality, qualityNum);
-		CFRelease( qualityNum );
-	}
-	
-	CGImageDestinationAddImage( destination, cgImage, optionsDict );
-	success = CGImageDestinationFinalize( destination );
-    
-	if ( optionsDict )
-		CFRelease(optionsDict);
-	
-	require(success, bail);
-	
-	CFRetain(destinationData);
-	ALAssetsLibrary *library = [ALAssetsLibrary new];
-	[library writeImageDataToSavedPhotosAlbum:(__bridge id)destinationData metadata:metadata completionBlock:^(NSURL *assetURL, NSError *error) {
-		if (destinationData)
-			CFRelease(destinationData);
-	}];
-	//[library release];
-    
-    
-bail:
-	if (destinationData)
-		CFRelease(destinationData);
-	if (destination)
-		CFRelease(destination);
-	return success;
-}
-*/
 
 // utility routine to display error aleart if takePicture fails
 - (void)displayErrorOnMainQueue:(NSError *)error withMessage:(NSString *)message
@@ -278,6 +201,7 @@ bail:
 	});
 }
 
+
 // main action method to take a still image -- if face detection has been turned on and a face has been detected
 // the square overlay will be composited on top of the captured image and saved to the camera roll
 - (IBAction)takePicture:(id)sender
@@ -288,17 +212,6 @@ bail:
 	AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
 	[stillImageConnection setVideoOrientation:avcaptureOrientation];
 	[stillImageConnection setVideoScaleAndCropFactor:effectiveScale];
-	
-    //BOOL doingFaceDetection = detectFaces && (effectiveScale == 1.0);
-	
-    // set the appropriate pixel format / image type output setting depending on if we'll need an uncompressed image for
-    // the possiblity of drawing the red square over top or if we're just writing a jpeg to the camera roll which is the trival case
-    //if (doingFaceDetection)
-	//	[stillImageOutput setOutputSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCMPixelFormat_32BGRA]
-	//																	forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
-	//else
-		[stillImageOutput setOutputSettings:[NSDictionary dictionaryWithObject:AVVideoCodecJPEG
-																		forKey:AVVideoCodecKey]];
 	
 	[stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
                                                   completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
@@ -328,7 +241,7 @@ bail:
              {
                  CLLocation *loc = [locationMeasurements objectAtIndex:([locationMeasurements count] - 1)];
                  
-                 fprintf(stderr, "\ntimestamp: %s", [[formatter stringFromDate:loc.timestamp] UTF8String]);
+                 //fprintf(stderr, "\ntimestamp: %s", [[formatter stringFromDate:loc.timestamp] UTF8String]);
                  
                  // Create GPS Dictionary
                  GPSDictionary = [[NSMutableDictionary alloc] init];
@@ -340,7 +253,8 @@ bail:
                  [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(loc.altitude)] forKey:(NSString *)kCGImagePropertyGPSAltitude];
                  
                  [formatter setDateFormat:@"YYYYMMddHHmmssSS"];
-                 timestampstr = [formatter stringFromDate:loc.timestamp];
+                 //timestampstr = [formatter stringFromDate:loc.timestamp];
+                 timestampstr = [formatter stringFromDate:[[NSDate alloc] init]];
                  
                  // The gps info goes into the gps metadata part
              }
@@ -355,23 +269,52 @@ bail:
              
              // Here just as an example im adding the attitude matrix in the exif comment metadata
              
+             NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
+             //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
+                          
              // grab motion
-             CMDeviceMotion *d1 = motionManager.deviceMotion;
+             CMAttitude *att = motionManager.deviceMotion.attitude;
              
-             CMRotationMatrix m = d1.attitude.rotationMatrix;
+             CMRotationMatrix m = att.rotationMatrix;
              GLKMatrix4 attMat = GLKMatrix4Make(m.m11, m.m12, m.m13, 0, m.m21, m.m22, m.m23, 0, m.m31, m.m32, m.m33, 0, 0, 0, 0, 1);
              
-             NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
+             // dump the rotation matrix as a string and a 2-d array
              NSMutableDictionary *OrientDictionary = [[NSMutableDictionary alloc] init];
-             
              [OrientDictionary setValue:NSStringFromGLKMatrix4(attMat) forKey:(NSString *)@"AttitudeRotation"];
+
+             NSArray *rmr1 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m11], [NSNumber numberWithDouble:m.m12],
+                              [NSNumber numberWithDouble:m.m13], [NSNumber numberWithDouble:0.0], nil];
+             NSArray *rmr2 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m21], [NSNumber numberWithDouble:m.m22],
+                              [NSNumber numberWithDouble:m.m23], [NSNumber numberWithDouble:0.0], nil];
+             NSArray *rmr3 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m31], [NSNumber numberWithDouble:m.m32],
+                              [NSNumber numberWithDouble:m.m33], [NSNumber numberWithDouble:0.0], nil];
+             NSArray *rmr4 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0.0], [NSNumber numberWithDouble:0.0],
+                              [NSNumber numberWithDouble:0.0], [NSNumber numberWithDouble:1.0], nil];
+             NSArray *rm = [NSArray arrayWithObjects:rmr1, rmr2, rmr3, rmr4, nil];
+             [OrientDictionary setValue:rm forKey:(NSString *)@"AttitudeRotationMatrix"];
              
+             // dump the euler angles as a string and as an array
+             GLKVector3 euler = GLKVector3Make(att.yaw, att.pitch, att.roll);
+             [OrientDictionary setValue:NSStringFromGLKVector3(euler) forKey:(NSString *)@"EulerAngles"];
+             
+             NSArray *ev = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.yaw], [NSNumber numberWithDouble:att.pitch],
+                                                     [NSNumber numberWithDouble:att.roll], nil];
+             [OrientDictionary setValue:ev forKey:(NSString *)@"EulerVector"];
+             
+             // dump the quaternion portion both as a text string and as an array
+             GLKVector4 quaternion = GLKVector4Make(att.quaternion.w, att.quaternion.x, att.quaternion.y, att.quaternion.z);
+             [OrientDictionary setValue:NSStringFromGLKVector4(quaternion) forKey:(NSString *)@"Quaternion"];
+    
+             NSArray *qv = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.quaternion.w],
+                             [NSNumber numberWithDouble:att.quaternion.x], [NSNumber numberWithDouble:att.quaternion.y],
+                             [NSNumber numberWithDouble:att.quaternion.z], nil];
+             
+             [OrientDictionary setValue:qv forKey:(NSString *)@"QuaternionVector"];
+
              CFDictionarySetValue(mutable, kCGImagePropertyExifDictionary, (void *)EXIFDictionary);
              [xml setValue:OrientDictionary forKey:(NSString *)@"Orientation"];
              
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer] ;
-             
-             //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
              
              // write the file with exif data
              CGImageSourceRef  source ;
@@ -434,7 +377,22 @@ bail:
 }
 
 // turn on/off face detection
-- (IBAction)toggleFaceDetection:(id)sender
+- (IBAction)toggleAutoFocus:(id)sender
+{
+    switch([sender isOn])
+    {
+        case YES:
+            [self setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+            break;
+        case NO:
+            [self setFocusMode:AVCaptureFocusModeLocked];
+            break;
+    }
+}
+
+/*
+// turn on/off face detection
+- (IBAction)toggleFaceDetect:(id)sender
 {
 	detectFaces = [(UISwitch *)sender isOn];
 	[[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:detectFaces];
@@ -445,8 +403,10 @@ bail:
 		});
 	}
 }
+*/
 
-
+/*
+//ncb-preview
 // find where the video box is positioned within the preview layer based on the video size and gravity
 + (CGRect)videoPreviewBoxForGravity:(NSString *)gravity frameSize:(CGSize)frameSize apertureSize:(CGSize)apertureSize
 {
@@ -490,7 +450,7 @@ bail:
 	return videoBox;
 }
 
-
+//ncb-preview
 // called asynchronously as the capture output is capturing sample buffers, this method asks the face detector (if on)
 // to detect features and for each draw the red square in a layer and set appropriate orientation
 - (void)drawFaceBoxesForFeatures:(NSArray *)features forVideoBox:(CGRect)clap orientation:(UIDeviceOrientation)orientation
@@ -515,7 +475,7 @@ bail:
     
 	CGSize parentFrameSize = [previewView frame].size;
 	NSString *gravity = [previewLayer videoGravity];
-	BOOL isMirrored = [previewLayer isMirrored];
+	BOOL isMirrored = previewLayer.connection.videoMirrored;
 	CGRect previewBox = [SMLRcamViewController videoPreviewBoxForGravity:gravity
                                                                  frameSize:parentFrameSize
                                                               apertureSize:clap.size];
@@ -604,13 +564,13 @@ bail:
 	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
 	int exifOrientation;
 	
-    /* kCGImagePropertyOrientation values
+    / * kCGImagePropertyOrientation values
      The intended display orientation of the image. If present, this key is a CFNumber value with the same value as defined
      by the TIFF and EXIF specifications -- see enumeration of integer constants.
      The value specified where the origin (0,0) of the image is located. If not present, a value of 1 is assumed.
      
      used when calling featuresInImage: options: The value for this key is an integer NSNumber from 1..8 as found in kCGImagePropertyOrientation.
-     If present, the detection will be done based on that orientation but the coordinates in the returned features will still be based on those of the image. */
+     If present, the detection will be done based on that orientation but the coordinates in the returned features will still be based on those of the image. * /
     
 	enum {
 		PHOTOS_EXIF_0ROW_TOP_0COL_LEFT			= 1, //   1  =  0th row is at the top, and 0th column is on the left (THE DEFAULT).
@@ -623,8 +583,9 @@ bail:
 		PHOTOS_EXIF_0ROW_LEFT_0COL_BOTTOM       = 8  //   8  =  0th row is on the left, and 0th column is the bottom.
 	};
 	
-	switch (curDeviceOrientation) {
-		case UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
+	switch (curDeviceOrientation)
+    {
+        case UIDeviceOrientationPortraitUpsideDown:  // Device oriented vertically, home button on the top
 			exifOrientation = PHOTOS_EXIF_0ROW_LEFT_0COL_BOTTOM;
 			break;
 		case UIDeviceOrientationLandscapeLeft:       // Device oriented horizontally, home button on the right
@@ -653,14 +614,14 @@ bail:
     // the clean aperture is a rectangle that defines the portion of the encoded pixel dimensions
     // that represents image data valid for display.
     CMFormatDescriptionRef fdesc = CMSampleBufferGetFormatDescription(sampleBuffer);
-	CGRect clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, false /*originIsTopLeft == false*/);
+	CGRect clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, false / *originIsTopLeft == false* /);
 	
 	dispatch_async(dispatch_get_main_queue(), ^(void) {
 		[self drawFaceBoxesForFeatures:features forVideoBox:clap orientation:curDeviceOrientation];
 	});
      
 }
-
+*/
 /*
 - (void)dealloc
 {
@@ -710,12 +671,12 @@ bail:
     // Do any additional setup after loading the view, typically from a nib.
     
 	[self setupAVCapture];
-	//square = [[UIImage imageNamed:@"squarePNG"] retain];
-	square = [UIImage imageNamed:@"squarePNG"];
-	NSDictionary *detectorOptions = [[NSDictionary alloc] initWithObjectsAndKeys:CIDetectorAccuracyLow, CIDetectorAccuracy, nil];
-	//faceDetector = [[CIDetector detectorOfType:CIDetectorTypeFace context:nil options:detectorOptions] retain];
-	faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:detectorOptions];
-    //	[detectorOptions release];
+//	//square = [[UIImage imageNamed:@"squarePNG"] retain];
+//	square = [UIImage imageNamed:@"squarePNG"];
+//	NSDictionary *detectorOptions = [[NSDictionary alloc] initWithObjectsAndKeys:CIDetectorAccuracyLow, CIDetectorAccuracy, nil];
+//	//faceDetector = [[CIDetector detectorOfType:CIDetectorTypeFace context:nil options:detectorOptions] retain];
+//	faceDetector = [CIDetector detectorOfType:CIDetectorTypeFace context:nil options:detectorOptions];
+//    //	[detectorOptions release];
     
     [self setupLocationManager];
     [self startUpdatingLocation];
@@ -896,6 +857,7 @@ bail:
 	
 	// New in iOS 5.0: Attitude that is referenced to true north
 	[motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
+    //[self setupTimer];    // call this to enable logging of current orientation at 4Hz. 
 }
 
 - (void)stopDeviceMotion
@@ -905,4 +867,24 @@ bail:
 }
 
 
+- (void)updateCurrentTime
+{
+    // fetch current orientation and dump it out...
+    // grab motion
+    CMAttitude *att = motionManager.deviceMotion.attitude;
+    fprintf(stderr, "\nOrientation (Y,P,R):(%f, %f, %f)", RadiansToDegrees(att.yaw), RadiansToDegrees(att.pitch), RadiansToDegrees(att.roll));
+}
+
+- (void)setupTimer
+{
+    
+    if (updateTimer)
+        [updateTimer invalidate];
+    
+    updateTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(updateCurrentTime) userInfo:nil repeats:YES];
+}
+
 @end
+
+
+

@@ -18,13 +18,13 @@
     
 	AVCaptureVideoPreviewLayer *previewLayer;
 	AVCaptureVideoDataOutput *videoDataOutput;
-	BOOL detectFaces;
+//	BOOL detectFaces;
 	dispatch_queue_t videoDataOutputQueue;
 	AVCaptureStillImageOutput *stillImageOutput;
 	UIView *flashView;
-	UIImage *square;
+//	UIImage *square;
 	BOOL isUsingFrontFacingCamera;
-	CIDetector *faceDetector;
+//	CIDetector *faceDetector;
 	CGFloat beginGestureScale;
 	CGFloat effectiveScale;
     
@@ -36,7 +36,7 @@
 
 - (IBAction)takePicture:(id)sender;
 - (IBAction)switchCameras:(id)sender;
-- (IBAction)toggleFaceDetection:(id)sender;
+- (IBAction)toggleAutoFocus:(id)sender;
 - (IBAction)handlePinchGesture:(UIGestureRecognizer *)sender;
 
 - (void) stopUpdatingLocation;
