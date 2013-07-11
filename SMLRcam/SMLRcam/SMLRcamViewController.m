@@ -313,7 +313,18 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
              CFDictionarySetValue(mutable, kCGImagePropertyExifDictionary, (void *)EXIFDictionary);
              [xml setValue:OrientDictionary forKey:(NSString *)@"Orientation"];
+ 
+             NSMutableDictionary *DeviceDictionary = [[NSMutableDictionary alloc] init];
              
+             NSUUID *duid = [[UIDevice currentDevice] identifierForVendor];
+             NSString *model = [[UIDevice currentDevice] model];
+             [DeviceDictionary setValue:[duid UUIDString] forKey:(NSString *)@"DeviceID"];
+             [DeviceDictionary setValue:model forKey:(NSString *)@"Model"];
+             [DeviceDictionary setValue:[[NSDate alloc] init] forKey:(NSString *)@"TimeStamp"];
+             
+             [xml setValue:DeviceDictionary forKey:(NSString *)@"Device"];
+             
+
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer] ;
              
              // write the file with exif data
