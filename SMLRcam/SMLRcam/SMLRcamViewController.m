@@ -321,13 +321,12 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              [DeviceDictionary setValue:[duid UUIDString] forKey:(NSString *)@"DeviceID"];
              [DeviceDictionary setValue:model forKey:(NSString *)@"Model"];
              [DeviceDictionary setValue:[[NSDate alloc] init] forKey:(NSString *)@"TimeStamp"];
-             
+             [DeviceDictionary setValue:(isUsingFrontFacingCamera?@"Front":@"Back") forKey:(NSString *)@"Camera"];
              [xml setValue:DeviceDictionary forKey:(NSString *)@"Device"];
              
 
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer] ;
-             
-             // write the file with exif data
+                          // write the file with exif data
              CGImageSourceRef  source ;
              source = CGImageSourceCreateWithData((__bridge CFDataRef)jpeg, NULL);
              
