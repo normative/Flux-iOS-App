@@ -265,9 +265,9 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              }
              
              CFDictionarySetValue(mutable, kCGImagePropertyGPSDictionary, (void *)GPSDictionary);
-             [xml setValue:GPSDictionary forKey:(NSString *)@"Position"];
              
-             // Here just as an example im adding the attitude matrix in the exif comment metadata
+             // Add GPSDictionary to Position Section of XML
+             [xml setValue:GPSDictionary forKey:(NSString *)@"Position"];
              
              NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
              //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
@@ -276,12 +276,11 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              CMAttitude *att = motionManager.deviceMotion.attitude;
              
              CMRotationMatrix m = att.rotationMatrix;
-             GLKMatrix4 attMat = GLKMatrix4Make(m.m11, m.m12, m.m13, 0, m.m21, m.m22, m.m23, 0, m.m31, m.m32, m.m33, 0, 0, 0, 0, 1);
+             //GLKMatrix4 attMat = GLKMatrix4Make(m.m11, m.m12, m.m13, 0, m.m21, m.m22, m.m23, 0, m.m31, m.m32, m.m33, 0, 0, 0, 0, 1);
              
-             // dump the rotation matrix as a string and a 2-d array
+             // Orientation Section
+             // dump the rotation matrix as a 2-d array
              NSMutableDictionary *OrientDictionary = [[NSMutableDictionary alloc] init];
-             [OrientDictionary setValue:NSStringFromGLKMatrix4(attMat) forKey:(NSString *)@"AttitudeRotation"];
-
              NSArray *rmr1 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m11], [NSNumber numberWithDouble:m.m12],
                               [NSNumber numberWithDouble:m.m13], [NSNumber numberWithDouble:0.0], nil];
              NSArray *rmr2 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m21], [NSNumber numberWithDouble:m.m22],
@@ -293,40 +292,44 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              NSArray *rm = [NSArray arrayWithObjects:rmr1, rmr2, rmr3, rmr4, nil];
              [OrientDictionary setValue:rm forKey:(NSString *)@"AttitudeRotationMatrix"];
              
-             // dump the euler angles as a string and as an array
-             GLKVector3 euler = GLKVector3Make(att.yaw, att.pitch, att.roll);
-             [OrientDictionary setValue:NSStringFromGLKVector3(euler) forKey:(NSString *)@"EulerAngles"];
-             
+             // dump the euler angles as an array
              NSArray *ev = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.yaw], [NSNumber numberWithDouble:att.pitch],
                                                      [NSNumber numberWithDouble:att.roll], nil];
-             [OrientDictionary setValue:ev forKey:(NSString *)@"EulerVector"];
+             [OrientDictionary setValue:ev forKey:(NSString *)@"EulerAngles"];
              
-             // dump the quaternion portion both as a text string and as an array
-             GLKVector4 quaternion = GLKVector4Make(att.quaternion.w, att.quaternion.x, att.quaternion.y, att.quaternion.z);
-             [OrientDictionary setValue:NSStringFromGLKVector4(quaternion) forKey:(NSString *)@"Quaternion"];
-    
+             // dump the quaternion portion as an array
              NSArray *qv = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.quaternion.w],
                              [NSNumber numberWithDouble:att.quaternion.x], [NSNumber numberWithDouble:att.quaternion.y],
                              [NSNumber numberWithDouble:att.quaternion.z], nil];
              
-             [OrientDictionary setValue:qv forKey:(NSString *)@"QuaternionVector"];
+             [OrientDictionary setValue:qv forKey:(NSString *)@"Quaternion"];
 
              CFDictionarySetValue(mutable, kCGImagePropertyExifDictionary, (void *)EXIFDictionary);
              [xml setValue:OrientDictionary forKey:(NSString *)@"Orientation"];
  
+             // Device Section
              NSMutableDictionary *DeviceDictionary = [[NSMutableDictionary alloc] init];
              
              NSUUID *duid = [[UIDevice currentDevice] identifierForVendor];
              NSString *model = [[UIDevice currentDevice] model];
              [DeviceDictionary setValue:[duid UUIDString] forKey:(NSString *)@"DeviceID"];
              [DeviceDictionary setValue:model forKey:(NSString *)@"Model"];
-             [DeviceDictionary setValue:[[NSDate alloc] init] forKey:(NSString *)@"TimeStamp"];
              [DeviceDictionary setValue:(isUsingFrontFacingCamera?@"Front":@"Back") forKey:(NSString *)@"Camera"];
              [xml setValue:DeviceDictionary forKey:(NSString *)@"Device"];
              
+             // Image Section
+             NSMutableDictionary *ImageDictionary = [[NSMutableDictionary alloc] init];
+             
+             [ImageDictionary setValue:[[NSDate alloc] init] forKey:(NSString *)@"TimeStamp"];
+             [ImageDictionary setValue:@"SelectedCategory" forKey:(NSString *)@"Category"];
+             [ImageDictionary setValue:@"Arbitrary Description, optionally containing #tags or @userlinks" forKey:(NSString *)@"Description"];
+             
+             [xml setValue:ImageDictionary forKey:(NSString *)@"Image"];
+             
 
-             NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer] ;
-                          // write the file with exif data
+             NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
+             
+             // write the file with exif data
              CGImageSourceRef  source ;
              source = CGImageSourceCreateWithData((__bridge CFDataRef)jpeg, NULL);
              
