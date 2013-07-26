@@ -13,12 +13,22 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <CoreMotion/CMAttitude.h>
 #import <GLKit/GLKMath.h>
+#import <QuartzCore/CoreAnimation.h>
 
 
 #pragma mark-
 
 static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;};
+static inline NSString *NSStringFromUIInterfaceOrientation(UIInterfaceOrientation orientation) {
+	switch (orientation) {
+		case UIInterfaceOrientationPortrait:           return @"UIInterfaceOrientationPortrait";
+		case UIInterfaceOrientationPortraitUpsideDown: return @"UIInterfaceOrientationPortraitUpsideDown";
+		case UIInterfaceOrientationLandscapeLeft:      return @"UIInterfaceOrientationLandscapeLeft";
+		case UIInterfaceOrientationLandscapeRight:     return @"UIInterfaceOrientationLandscapeRight";
+	}
+	return @"Unexpected";
+}
 
 // used for KVO observation of the @"capturingStillImage" property to perform flash bulb animation
 static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCaptureStillImageIsCapturingStillImageContext";
@@ -30,10 +40,9 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
     NSTimer         *updateTimer;
 
 }
-- (void)setupAVCapture;
+
 - (void)teardownAVCapture;
 //- (void)drawFaceBoxesForFeatures:(NSArray *)features forVideoBox:(CGRect)clap orientation:(UIDeviceOrientation)orientation;
-- (void)setFocusMode:(AVCaptureFocusMode)mode;
 - (void)updateCurrentTime;
 - (void)setupTimer;
 
@@ -42,6 +51,11 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 
 @implementation SMLRcamViewController
 
+
+
+#pragma mark - Camera View
+
+#pragma mark Init
 
  - (void)setFocusMode:(AVCaptureFocusMode)mode
  {
@@ -52,6 +66,21 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
          [device unlockForConfiguration];
      }
  }
+
+// turn on/off face detection
+// removed. App will force autofocus at least in the interim.
+- (IBAction)toggleAutoFocus:(id)sender
+{
+    switch([sender isOn])
+    {
+        case YES:
+            [self setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+            break;
+        case NO:
+            [self setFocusMode:AVCaptureFocusModeLocked];
+            break;
+    }
+}
 
 
 - (void)setupAVCapture
@@ -95,19 +124,53 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
         videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
         [videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
         
-        if ( [session canAddOutput:videoDataOutput] )
+        if ([session canAddOutput:videoDataOutput]){
             [session addOutput:videoDataOutput];
+        }
         [[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
-        
         effectiveScale = 1.0;
         previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
         [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
         [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspect];
-        CALayer *rootLayer = [previewView layer];
+        CALayer *rootLayer = [cameraView layer];
         [rootLayer setMasksToBounds:YES];
         [previewLayer setFrame:[rootLayer bounds]];
         [rootLayer addSublayer:previewLayer];
+        [self setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
         [session startRunning];
+        
+//        //add gridlines.. needs to be in a drawrect method. Might switch to png method.
+//        CGContextRef context = UIGraphicsGetCurrentContext();
+//        CGContextSetLineWidth(context, 1.0);
+//        CGFloat components[] = {70/255.0, 70/255.0, 70/255.0, 1.0};
+//        CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+//        CGColorRef color = CGColorCreate(colorspace, components);
+//        CGContextSetStrokeColorWithColor(context, color);
+//        
+//        CGContextMoveToPoint(context, self.view.center.y, 0);
+//        CGContextAddLineToPoint(context, self.view.center.x/2, self.view.frame.size.height);
+//        CGContextStrokePath(context);
+//
+//        CGContextMoveToPoint(context, self.view.center.x+(self.view.center.x/2), 0);
+//        CGContextAddLineToPoint(context, self.view.center.x+(self.view.center.x/2), self.view.frame.size.height);
+//        CGContextStrokePath(context);
+//        
+//        CGContextMoveToPoint(context, 0, self.view.center.y);
+//        CGContextAddLineToPoint(context, self.view.frame.size.width, self.view.frame.size.height/2);
+//        CGContextStrokePath(context);
+//        
+//        CGContextMoveToPoint(context, 0, self.view.frame.size.height/4);
+//        CGContextAddLineToPoint(context, self.view.frame.size.width, self.view.frame.size.height/4);
+//        CGContextStrokePath(context);
+//        
+//        CGContextMoveToPoint(context, 0, self.view.frame.size.height/4*3);
+//        CGContextAddLineToPoint(context, self.view.frame.size.width, self.view.frame.size.height/4*3);
+//        CGContextStrokePath(context);
+//        
+//        CGColorSpaceRelease(colorspace);
+//        CGColorRelease(color);
+        
+        
     }
     
 	//[session release];
@@ -132,13 +195,39 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
     //videoDataOutputQueue = nil;
 	//[videoDataOutput release];
     //[videoDataOutputQueue release];
-
+    AVCaptureSession * currentSession  = previewLayer.session;
+    if (currentSession !=nil) {
+        [currentSession stopRunning];
+    }
+    
 	[stillImageOutput removeObserver:self forKeyPath:@"isCapturingStillImage"];
 	//[stillImageOutput release];
 	//stillImageOutput = nil;
 	[previewLayer removeFromSuperlayer];
 	//[previewLayer release];
 }
+
+// utility routine to display error aleart if takePicture fails
+- (void)displayErrorOnMainQueue:(NSError *)error withMessage:(NSString *)message
+{
+	dispatch_async(dispatch_get_main_queue(), ^(void) {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%d)", message, (int)[error code]]
+															message:[error localizedDescription]
+														   delegate:nil
+												  cancelButtonTitle:@"Dismiss"
+												  otherButtonTitles:nil];
+		[alertView show];
+        //[alertView release];
+	});
+}
+
+//when the close button is tapped, close the view and inform the passthrough view
+- (IBAction)closeCameraAction:(id)sender {
+    [cameraView setHidden:YES];
+    [passthroughView camButtonAction];
+}
+
+#pragma mark Image Capture
 
 // perform a flash bulb animation using KVO to monitor the value of the capturingStillImage property of the AVCaptureStillImageOutput class
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -148,7 +237,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 		
 		if ( isCapturingStillImage ) {
 			// do flash bulb like animation
-			flashView = [[UIView alloc] initWithFrame:[previewView frame]];
+			flashView = [[UIView alloc] initWithFrame:[cameraView frame]];
 			[flashView setBackgroundColor:[UIColor whiteColor]];
 			[flashView setAlpha:0.f];
 			[[[self view] window] addSubview:flashView];
@@ -186,35 +275,50 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 	return result;
 }
 
-
-// utility routine to display error aleart if takePicture fails
-- (void)displayErrorOnMainQueue:(NSError *)error withMessage:(NSString *)message
+// scale image depending on users pinch gesture
+- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)recognizer
 {
-	dispatch_async(dispatch_get_main_queue(), ^(void) {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"%@ (%d)", message, (int)[error code]]
-															message:[error localizedDescription]
-														   delegate:nil
-												  cancelButtonTitle:@"Dismiss"
-												  otherButtonTitles:nil];
-		[alertView show];
-        //[alertView release];
-	});
+	BOOL allTouchesAreOnThePreviewLayer = YES;
+	NSUInteger numTouches = [recognizer numberOfTouches], i;
+	for ( i = 0; i < numTouches; ++i ) {
+		CGPoint tlocation = [recognizer locationOfTouch:i inView:cameraView];
+		CGPoint convertedLocation = [previewLayer convertPoint:tlocation fromLayer:previewLayer.superlayer];
+		if ( ! [previewLayer containsPoint:convertedLocation] ) {
+			allTouchesAreOnThePreviewLayer = NO;
+			break;
+		}
+	}
+	
+	if ( allTouchesAreOnThePreviewLayer ) {
+		effectiveScale = beginGestureScale * recognizer.scale;
+		if (effectiveScale < 1.0)
+			effectiveScale = 1.0;
+		CGFloat maxScaleAndCropFactor = [[stillImageOutput connectionWithMediaType:AVMediaTypeVideo] videoMaxScaleAndCropFactor];
+		if (effectiveScale > maxScaleAndCropFactor)
+			effectiveScale = maxScaleAndCropFactor;
+		[CATransaction begin];
+		[CATransaction setAnimationDuration:.025];
+		[previewLayer setAffineTransform:CGAffineTransformMakeScale(effectiveScale, effectiveScale)];
+		[CATransaction commit];
+	}
 }
 
 
 // main action method to take a still image -- if face detection has been turned on and a face has been detected
 // the square overlay will be composited on top of the captured image and saved to the camera roll
-- (IBAction)takePicture:(id)sender
-{
-	// Find out the current orientation and tell the still image output.
+- (void)captureImage{
+    // Find out the current orientation and tell the still image output.
 	AVCaptureConnection *stillImageConnection = [stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
 	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
 	AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
 	[stillImageConnection setVideoOrientation:avcaptureOrientation];
-	[stillImageConnection setVideoScaleAndCropFactor:effectiveScale];
-	
+	[stillImageConnection setVideoScaleAndCropFactor:effectiveScale];	
 	[stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
                                                   completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
+     //save picture to photo album
+     //UIImageWriteToSavedPhotosAlbum(stillImageOutput , nil, nil, nil);
+     
+     
      {
          if (error)
          {
@@ -255,8 +359,6 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
                  [formatter setDateFormat:@"YYYYMMddHHmmssSS"];
                  //timestampstr = [formatter stringFromDate:loc.timestamp];
                  timestampstr = [formatter stringFromDate:[[NSDate alloc] init]];
-                 
-                 // The gps info goes into the gps metadata part
              }
              else
              {
@@ -271,7 +373,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              
              NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
              //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
-                          
+             
              // grab motion
              CMAttitude *att = motionManager.deviceMotion.attitude;
              
@@ -294,19 +396,19 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              
              // dump the euler angles as an array
              NSArray *ev = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.yaw], [NSNumber numberWithDouble:att.pitch],
-                                                     [NSNumber numberWithDouble:att.roll], nil];
+                            [NSNumber numberWithDouble:att.roll], nil];
              [OrientDictionary setValue:ev forKey:(NSString *)@"EulerAngles"];
              
              // dump the quaternion portion as an array
              NSArray *qv = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.quaternion.w],
-                             [NSNumber numberWithDouble:att.quaternion.x], [NSNumber numberWithDouble:att.quaternion.y],
-                             [NSNumber numberWithDouble:att.quaternion.z], nil];
+                            [NSNumber numberWithDouble:att.quaternion.x], [NSNumber numberWithDouble:att.quaternion.y],
+                            [NSNumber numberWithDouble:att.quaternion.z], nil];
              
              [OrientDictionary setValue:qv forKey:(NSString *)@"Quaternion"];
-
+             
              CFDictionarySetValue(mutable, kCGImagePropertyExifDictionary, (void *)EXIFDictionary);
              [xml setValue:OrientDictionary forKey:(NSString *)@"Orientation"];
- 
+             
              // Device Section
              NSMutableDictionary *DeviceDictionary = [[NSMutableDictionary alloc] init];
              
@@ -315,6 +417,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              [DeviceDictionary setValue:[duid UUIDString] forKey:(NSString *)@"DeviceID"];
              [DeviceDictionary setValue:model forKey:(NSString *)@"Model"];
              [DeviceDictionary setValue:(isUsingFrontFacingCamera?@"Front":@"Back") forKey:(NSString *)@"Camera"];
+             [DeviceDictionary setValue:NSStringFromUIInterfaceOrientation([UIApplication sharedApplication].statusBarOrientation) forKey:@"Orientation"];
              [xml setValue:DeviceDictionary forKey:(NSString *)@"Device"];
              
              // Image Section
@@ -326,7 +429,7 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
              
              [xml setValue:ImageDictionary forKey:(NSString *)@"Image"];
              
-
+             
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
              
              // write the file with exif data
@@ -389,20 +492,21 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
      ];
 }
 
-// turn on/off face detection
-- (IBAction)toggleAutoFocus:(id)sender
-{
-    switch([sender isOn])
-    {
-        case YES:
-            [self setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-            break;
-        case NO:
-            [self setFocusMode:AVCaptureFocusModeLocked];
-            break;
+
+- (void)PassthroughView:(PassthroughView *)CamView buttonWasTapped:(UIButton *)theButton{
+    if ([cameraView isHidden]) {
+        [self setupAVCapture];
+        [cameraView setHidden:NO];
+    }
+    else{
+        [self captureImage];
+        [self closeCameraAction:nil];
     }
 }
 
+
+
+//face detection code block
 /*
 // turn on/off face detection
 - (IBAction)toggleFaceDetect:(id)sender
@@ -417,7 +521,6 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 	}
 }
 */
-
 /*
 //ncb-preview
 // find where the video box is positioned within the preview layer based on the video size and gravity
@@ -646,34 +749,31 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
  */
 
 // use front/back camera
-- (IBAction)switchCameras:(id)sender
-{
-	AVCaptureDevicePosition desiredPosition;
-	if (isUsingFrontFacingCamera)
-		desiredPosition = AVCaptureDevicePositionBack;
-	else
-		desiredPosition = AVCaptureDevicePositionFront;
-	
-	for (AVCaptureDevice *d in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {
-		if ([d position] == desiredPosition) {
-			[[previewLayer session] beginConfiguration];
-			AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:d error:nil];
-			for (AVCaptureInput *oldInput in [[previewLayer session] inputs]) {
-				[[previewLayer session] removeInput:oldInput];
-			}
-			[[previewLayer session] addInput:input];
-			[[previewLayer session] commitConfiguration];
-			break;
-		}
-	}
-	isUsingFrontFacingCamera = !isUsingFrontFacingCamera;
-}
+// removed. App will force back camera at least in the interim.
+//- (IBAction)switchCameras:(id)sender
+//{
+//	AVCaptureDevicePosition desiredPosition;
+//	if (isUsingFrontFacingCamera)
+//		desiredPosition = AVCaptureDevicePositionBack;
+//	else
+//		desiredPosition = AVCaptureDevicePositionFront;
+//	
+//	for (AVCaptureDevice *d in [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo]) {
+//		if ([d position] == desiredPosition) {
+//			[[previewLayer session] beginConfiguration];
+//			AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:d error:nil];
+//			for (AVCaptureInput *oldInput in [[previewLayer session] inputs]) {
+//				[[previewLayer session] removeInput:oldInput];
+//			}
+//			[[previewLayer session] addInput:input];
+//			[[previewLayer session] commitConfiguration];
+//			break;
+//		}
+//	}
+//	isUsingFrontFacingCamera = !isUsingFrontFacingCamera;
+//}
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
-}
+
 
 #pragma mark - view lifecycle
 
@@ -682,8 +782,15 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
     [super viewDidLoad];
 	
     // Do any additional setup after loading the view, typically from a nib.
+    //[cameraView setHidden:NO];
     
-	[self setupAVCapture];
+    //[self setupAVCapture];
+    
+    passthroughView = [[PassthroughView alloc]initWithFrame:self.view.frame];
+    [passthroughView setDelegate:self];
+    [self.view addSubview:passthroughView];
+    
+    
 //	//square = [[UIImage imageNamed:@"squarePNG"] retain];
 //	square = [UIImage imageNamed:@"squarePNG"];
 //	NSDictionary *detectorOptions = [[NSDictionary alloc] initWithObjectsAndKeys:CIDetectorAccuracyLow, CIDetectorAccuracy, nil];
@@ -707,26 +814,6 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
     // e.g. self.myOutlet = nil;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-	[super viewWillDisappear:animated];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-	[super viewDidDisappear:animated];
-}
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
@@ -741,33 +828,15 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
 	return YES;
 }
 
-// scale image depending on users pinch gesture
-- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)recognizer
+- (void)didReceiveMemoryWarning
 {
-	BOOL allTouchesAreOnThePreviewLayer = YES;
-	NSUInteger numTouches = [recognizer numberOfTouches], i;
-	for ( i = 0; i < numTouches; ++i ) {
-		CGPoint tlocation = [recognizer locationOfTouch:i inView:previewView];
-		CGPoint convertedLocation = [previewLayer convertPoint:tlocation fromLayer:previewLayer.superlayer];
-		if ( ! [previewLayer containsPoint:convertedLocation] ) {
-			allTouchesAreOnThePreviewLayer = NO;
-			break;
-		}
-	}
-	
-	if ( allTouchesAreOnThePreviewLayer ) {
-		effectiveScale = beginGestureScale * recognizer.scale;
-		if (effectiveScale < 1.0)
-			effectiveScale = 1.0;
-		CGFloat maxScaleAndCropFactor = [[stillImageOutput connectionWithMediaType:AVMediaTypeVideo] videoMaxScaleAndCropFactor];
-		if (effectiveScale > maxScaleAndCropFactor)
-			effectiveScale = maxScaleAndCropFactor;
-		[CATransaction begin];
-		[CATransaction setAnimationDuration:.025];
-		[previewLayer setAffineTransform:CGAffineTransformMakeScale(effectiveScale, effectiveScale)];
-		[CATransaction commit];
-	}
+    [super didReceiveMemoryWarning];
+    // Release any cached data, images, etc that aren't in use.
 }
+
+
+
+
 
 
 #pragma mark Location Manager Interactions
@@ -828,7 +897,10 @@ static const NSString *AVCaptureStillImageIsCapturingStillImageContext = @"AVCap
         return;
     }
     
-    fprintf(stderr, "\nAdding new location (%f, %f, %f, %f)", [newLocation.timestamp  timeIntervalSinceReferenceDate], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    NSLog(@"\n\nAdding new location  with date: %@ \nAnd Location: %f, %f, %f", [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
     
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];

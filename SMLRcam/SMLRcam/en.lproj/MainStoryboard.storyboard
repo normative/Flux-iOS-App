@@ -12,53 +12,37 @@
                         <rect key="frame" x="0.0" y="20" width="320" height="460"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="Yzd-pW-ccq">
-                                <rect key="frame" x="0.0" y="416" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <items>
-                                    <barButtonItem style="plain" id="qCK-VS-YXp">
-                                        <segmentedControl key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="utc-CB-WeU">
-                                            <rect key="frame" x="6" y="8" width="73" height="30"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <segments>
-                                                <segment title="Front"/>
-                                                <segment title="Back"/>
-                                            </segments>
-                                            <connections>
-                                                <action selector="switchCameras:" destination="2" eventType="valueChanged" id="eAB-R3-Efy"/>
-                                            </connections>
-                                        </segmentedControl>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="sbP-xT-WHo"/>
-                                    <barButtonItem title="Focus" style="plain" id="LaZ-B9-5Cq"/>
-                                    <barButtonItem style="plain" id="0yx-7b-tRp">
-                                        <switch key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="pi4-C9-chA">
-                                            <rect key="frame" x="165" y="9" width="79" height="27"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <connections>
-                                                <action selector="toggleAutoFocus:" destination="2" eventType="valueChanged" id="DT0-Sv-jck"/>
-                                            </connections>
-                                        </switch>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="ykN-fA-A5o"/>
-                                    <barButtonItem title="Snap!" id="nN0-Es-WCO">
+                            <view contentMode="scaleToFill" id="3UQ-h3-q7y" userLabel="VisualizationView">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </view>
+                            <view hidden="YES" contentMode="scaleToFill" id="Fp4-bp-7zt" userLabel="CameraView">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="460"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="djk-wQ-G8n" userLabel="Close Button">
+                                        <rect key="frame" x="10" y="10" width="20" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                        <state key="normal" title="Button" image="closeButton.png">
+                                            <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <state key="highlighted">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
                                         <connections>
-                                            <action selector="takePicture:" destination="2" id="yaS-ip-FEA"/>
+                                            <action selector="closeCameraAction:" destination="2" eventType="touchUpInside" id="9dZ-Rd-rcs"/>
                                         </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
-                            <view contentMode="scaleToFill" id="Fp4-bp-7zt">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="416"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
-                        <outlet property="camerasControl" destination="utc-CB-WeU" id="eRh-57-H4S"/>
-                        <outlet property="previewView" destination="Fp4-bp-7zt" id="BvD-Z1-ooM"/>
+                        <outlet property="cameraView" destination="Fp4-bp-7zt" id="YXX-7e-vXS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -69,18 +53,21 @@
                     </connections>
                 </pinchGestureRecognizer>
             </objects>
+            <point key="canvasLocation" x="-124" y="56"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="closeButton.png" width="252" height="252"/>
+    </resources>
     <classes>
         <class className="SMLRcamViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/SMLRcamViewController.h"/>
             <relationships>
+                <relationship kind="action" name="closeCameraAction:"/>
                 <relationship kind="action" name="handlePinchGesture:" candidateClass="UIGestureRecognizer"/>
-                <relationship kind="action" name="switchCameras:"/>
-                <relationship kind="action" name="takePicture:"/>
-                <relationship kind="action" name="toggleFaceDetection:"/>
+                <relationship kind="outlet" name="CameraButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="cameraView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="camerasControl" candidateClass="UISegmentedControl"/>
-                <relationship kind="outlet" name="previewView" candidateClass="UIView"/>
             </relationships>
         </class>
     </classes>

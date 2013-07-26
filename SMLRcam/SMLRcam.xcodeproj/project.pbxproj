@@ -28,6 +28,10 @@
 		17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B961785F4B5005CF054 /* AssetsLibrary.framework */; };
 		17604B9E1785F522005CF054 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9D1785F522005CF054 /* CoreMedia.framework */; };
 		17604B9F1785FF78005CF054 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9A1785F4DA005CF054 /* QuartzCore.framework */; };
+		AAED6C9417A2C446004888FE /* camButton.png in Resources */ = {isa = PBXBuildFile; fileRef = AAED6C9217A2C446004888FE /* camButton.png */; };
+		AAED6C9517A2C446004888FE /* closeButton.png in Resources */ = {isa = PBXBuildFile; fileRef = AAED6C9317A2C446004888FE /* closeButton.png */; };
+		AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAED6C9717A2CD92004888FE /* PassthroughView.m */; };
+		AAED6C9A17A2E748004888FE /* camButton_axtive.png in Resources */ = {isa = PBXBuildFile; fileRef = AAED6C9917A2E748004888FE /* camButton_axtive.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +61,11 @@
 		17604B981785F4CA005CF054 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		17604B9A1785F4DA005CF054 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		17604B9D1785F522005CF054 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		AAED6C9217A2C446004888FE /* camButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camButton.png; sourceTree = "<group>"; };
+		AAED6C9317A2C446004888FE /* closeButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = closeButton.png; sourceTree = "<group>"; };
+		AAED6C9617A2CD92004888FE /* PassthroughView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassthroughView.h; sourceTree = "<group>"; };
+		AAED6C9717A2CD92004888FE /* PassthroughView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PassthroughView.m; sourceTree = "<group>"; };
+		AAED6C9917A2E748004888FE /* camButton_axtive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = camButton_axtive.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,16 +95,6 @@
 		17604B5A1785CA59005CF054 = {
 			isa = PBXGroup;
 			children = (
-				17604B9D1785F522005CF054 /* CoreMedia.framework */,
-				17604B9A1785F4DA005CF054 /* QuartzCore.framework */,
-				17604B981785F4CA005CF054 /* CoreVideo.framework */,
-				17604B961785F4B5005CF054 /* AssetsLibrary.framework */,
-				17604B931785CB35005CF054 /* AVFoundation.framework */,
-				17604B911785CB27005CF054 /* CoreImage.framework */,
-				17604B8F1785CB0C005CF054 /* ImageIO.framework */,
-				17604B8D1785CB02005CF054 /* GLKit.framework */,
-				17604B8B1785CAE8005CF054 /* CoreMotion.framework */,
-				17604B891785CAE1005CF054 /* CoreLocation.framework */,
 				17604B6C1785CA59005CF054 /* SMLRcam */,
 				17604B651785CA59005CF054 /* Frameworks */,
 				17604B641785CA59005CF054 /* Products */,
@@ -113,6 +112,16 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				17604B9D1785F522005CF054 /* CoreMedia.framework */,
+				17604B9A1785F4DA005CF054 /* QuartzCore.framework */,
+				17604B981785F4CA005CF054 /* CoreVideo.framework */,
+				17604B961785F4B5005CF054 /* AssetsLibrary.framework */,
+				17604B931785CB35005CF054 /* AVFoundation.framework */,
+				17604B911785CB27005CF054 /* CoreImage.framework */,
+				17604B8F1785CB0C005CF054 /* ImageIO.framework */,
+				17604B8D1785CB02005CF054 /* GLKit.framework */,
+				17604B8B1785CAE8005CF054 /* CoreMotion.framework */,
+				17604B891785CAE1005CF054 /* CoreLocation.framework */,
 				17604B661785CA59005CF054 /* UIKit.framework */,
 				17604B681785CA59005CF054 /* Foundation.framework */,
 				17604B6A1785CA59005CF054 /* CoreGraphics.framework */,
@@ -128,7 +137,10 @@
 				17604B7E1785CA59005CF054 /* MainStoryboard.storyboard */,
 				17604B811785CA59005CF054 /* SMLRcamViewController.h */,
 				17604B821785CA59005CF054 /* SMLRcamViewController.m */,
+				AAED6C9017A2C433004888FE /* App Resources */,
 				17604B6D1785CA59005CF054 /* Supporting Files */,
+				AAED6C9617A2CD92004888FE /* PassthroughView.h */,
+				AAED6C9717A2CD92004888FE /* PassthroughView.m */,
 			);
 			path = SMLRcam;
 			sourceTree = "<group>";
@@ -145,6 +157,24 @@
 				17604B7C1785CA59005CF054 /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AAED6C9017A2C433004888FE /* App Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AAED6C9117A2C43E004888FE /* Images */,
+			);
+			name = "App Resources";
+			sourceTree = "<group>";
+		};
+		AAED6C9117A2C43E004888FE /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				AAED6C9917A2E748004888FE /* camButton_axtive.png */,
+				AAED6C9217A2C446004888FE /* camButton.png */,
+				AAED6C9317A2C446004888FE /* closeButton.png */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -204,6 +234,9 @@
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
+				AAED6C9417A2C446004888FE /* camButton.png in Resources */,
+				AAED6C9517A2C446004888FE /* closeButton.png in Resources */,
+				AAED6C9A17A2E748004888FE /* camButton_axtive.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,6 +250,7 @@
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				17604B771785CA59005CF054 /* SMLRcamAppDelegate.m in Sources */,
 				17604B831785CA59005CF054 /* SMLRcamViewController.m in Sources */,
+				AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -339,6 +373,7 @@
 				17604B881785CA59005CF054 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

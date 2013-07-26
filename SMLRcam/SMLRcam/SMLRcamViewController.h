@@ -11,10 +11,13 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 
-@interface SMLRcamViewController : UIViewController <UIGestureRecognizerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, CLLocationManagerDelegate>
+#import "PassthroughView.h"
+
+@interface SMLRcamViewController : UIViewController <UIGestureRecognizerDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, CLLocationManagerDelegate, PassthroughViewDelegate>
 {    
     IBOutlet UISegmentedControl *camerasControl;
-    IBOutlet UIView *previewView;
+    IBOutlet UIView *cameraView;
+    PassthroughView * passthroughView;
     
 	AVCaptureVideoPreviewLayer *previewLayer;
 	AVCaptureVideoDataOutput *videoDataOutput;
@@ -32,13 +35,15 @@
     NSMutableArray *locationMeasurements;
     CMMotionManager *motionManager;
 
+    __weak IBOutlet UIButton *CameraButton;
 }
 
-- (IBAction)takePicture:(id)sender;
-- (IBAction)switchCameras:(id)sender;
-- (IBAction)toggleAutoFocus:(id)sender;
 - (IBAction)handlePinchGesture:(UIGestureRecognizer *)sender;
+- (IBAction)closeCameraAction:(id)sender;
 
-- (void) stopUpdatingLocation;
+- (void)stopUpdatingLocation;
+- (void)setFocusMode:(AVCaptureFocusMode)mode;
+- (void)setupAVCapture;
+- (void)captureImage;
 
 @end
