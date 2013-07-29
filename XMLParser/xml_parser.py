@@ -37,9 +37,9 @@ class TestCases:
 
 def get_file_list(dirname):
     xml_files = []
-    for file in os.listdir(dirname):
-        if file.endswith(".xml"):
-            xml_files.append(os.path.join(dirname,file))
+    for curfile in os.listdir(dirname):
+        if curfile.endswith(".xml"):
+            xml_files.append(os.path.join(dirname,curfile))
     return xml_files
 
 def parse_xml_file(xmlfilename):
@@ -83,21 +83,21 @@ def string_to_date(str_date, short_format):
 
     return datetime.datetime(year, month, day, hour, minute, second)
 
-def new_test_required(id, cur_idx):
-    if (cur_idx == 0):
+def new_test_required(cur_id, cur_test_idx):
+    if (cur_test_idx == 0):
         new_test_req = True
-        cur_idx = 1
+        cur_test_idx = 1
     else:
-        current_time = string_to_date(id["DateStamp"], False)
-        next_idx = str(cur_idx + 1)
+        current_time = string_to_date(cur_id["DateStamp"], False)
+        next_idx = str(cur_test_idx + 1)
 
         if TestCases.start_times.has_key(next_idx) and (current_time >= TestCases.start_times[next_idx]):
             new_test_req = True
-            cur_idx = int(next_idx)
+            cur_test_idx = int(next_idx)
         else:
             new_test_req = False
     
-    return (new_test_req, cur_idx)
+    return (new_test_req, cur_test_idx)
 
 if __name__=="__main__":
     default_kml_filename = "Experiments_20130705.kml"
@@ -120,9 +120,9 @@ if __name__=="__main__":
 
     xml_file_list = get_file_list(dirname)
 
-    for file in xml_file_list:
-        xml_position = parse_xml_file(file)
-        base_file_name = os.path.splitext(os.path.split(file)[1])[0]
+    for curfile in xml_file_list:
+        xml_position = parse_xml_file(curfile)
+        base_file_name = os.path.splitext(os.path.split(curfile)[1])[0]
         xml_all_results[base_file_name] = xml_position
 
     doc = create_xml_template()
@@ -144,7 +144,7 @@ if __name__=="__main__":
         fld.append(placemark)
         #doc.Document.Folder.append(placemark)
 
-    file = open(kml_file,'w')
-    file.write(etree.tostring(doc, pretty_print=True))
-    file.close()
+    outfile = open(kml_file,'w')
+    outfile.write(etree.tostring(doc, pretty_print=True))
+    outfile.close()
     print "Wrote KML data to file", kml_file
