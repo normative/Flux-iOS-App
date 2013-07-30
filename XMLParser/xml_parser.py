@@ -63,8 +63,18 @@ def get_file_list(dirname):
 
 def parse_xml_file(xmlfilename):
     plist = plistlib.readPlist(xmlfilename)
+    
+    # Note that Longitude has the wrong sign - fix it here
     plist["Position"]["Longitude"] = -plist["Position"]["Longitude"] 
     return plist["Position"]
+
+def parse_directory(dirname, test_results):
+    xml_file_list = get_file_list(dirname)
+
+    for curfile in xml_file_list:
+        xml_position = parse_xml_file(curfile)
+        base_file_name = os.path.splitext(os.path.split(curfile)[1])[0]
+        test_results[base_file_name] = xml_position
 
 def calculate_pm(date, position):
     pm_latlong = "%.15f, %.15f" % (position["Longitude"], position["Latitude"],)
@@ -126,6 +136,42 @@ def new_test_required(cur_id, cur_test_idx):
     
     return (new_test_req, cur_test_idx)
 
+def add_test_placemarks(doc, test_results):
+    cur_test = 0
+    new_test_req = True
+    fld = 0
+
+    # This logic assumes that the list of keys are sorted to find
+    # when we transition to a new test based on time
+    for key, item in sorted(test_results.items()):
+        (new_test_req, cur_test) = new_test_required(item, cur_test);
+
+        if (new_test_req == True):
+            fld = KML.Folder(KML.name("Test #%d" %cur_test))
+            doc.Document.append(fld)
+        
+        placemark = calculate_pm(key, item)
+        fld.append(placemark)
+        #doc.Document.Folder.append(placemark)
+
+def add_test6_reference(doc):
+    fld = KML.Folder(KML.name("Test #6 - Reference"))
+    doc.Document.append(fld)
+    i = 0
+    for pos_item in TestCases.test6_ref_locations:
+        i += 1
+        pm_latlong = "%.15f, %.15f" % (pos_item["Longitude"], pos_item["Latitude"],)
+        fld.append(KML.Placemark(KML.name("Point %d" %i),
+                                 KML.styleUrl("#pushpin-red"),
+                                 KML.Point(KML.coordinates(pm_latlong))
+        ))
+
+def write_kml(doc, filename):
+    outfile = open(filename,'w')
+    outfile.write(etree.tostring(doc, pretty_print=True))
+    outfile.close()
+
+
 if __name__=="__main__":
     default_kml_filename = "Experiments_20130705.kml"
     if len(sys.argv) == 1:
@@ -147,45 +193,18 @@ if __name__=="__main__":
     # Dictionary to store all Position entries for each XML
     xml_all_results = {}
 
-    xml_file_list = get_file_list(dirname)
+    # Parse XML files in entire folder
+    parse_directory(dirname, xml_all_results)
 
-    for curfile in xml_file_list:
-        xml_position = parse_xml_file(curfile)
-        base_file_name = os.path.splitext(os.path.split(curfile)[1])[0]
-        xml_all_results[base_file_name] = xml_position
-
+    # Create the basic template and header
     doc = create_xml_template()
 
-    cur_test = 0
-    new_test_req = True
-    fld = 0
-
-    # This logic assumes that the list of keys are sorted to find
-    # when we transition to a new test based on time
-    for key, item in sorted(xml_all_results.items()):
-        (new_test_req, cur_test) = new_test_required(item, cur_test);
-
-        if (new_test_req == True):
-            fld = KML.Folder(KML.name("Test #%d" %cur_test))
-            doc.Document.append(fld)
-        
-        placemark = calculate_pm(key, item)
-        fld.append(placemark)
-        #doc.Document.Folder.append(placemark)
+    # Output placemarks from all tests
+    add_test_placemarks(doc, xml_all_results)
     
     # Add reference cases for Test 6
-    fld = KML.Folder(KML.name("Test #6 - Reference"))
-    doc.Document.append(fld)
-    i = 0
-    for pos_item in TestCases.test6_ref_locations:
-        i += 1
-        pm_latlong = "%.15f, %.15f" % (pos_item["Longitude"], pos_item["Latitude"],)
-        fld.append(KML.Placemark(KML.name("Point %d" %i),
-                                 KML.styleUrl("#pushpin-red"),
-                                 KML.Point(KML.coordinates(pm_latlong))
-        ))
-
-    outfile = open(kml_file,'w')
-    outfile.write(etree.tostring(doc, pretty_print=True))
-    outfile.close()
+    add_test6_reference(doc)
+    
+    # Write KML file
+    write_kml(doc, kml_file)
     print "Wrote KML data to file", kml_file
