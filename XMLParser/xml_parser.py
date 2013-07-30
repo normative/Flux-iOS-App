@@ -9,7 +9,7 @@ Outputs the latitude and longitude of each location as a placemark in
 a KML file with the date stamp as the name.
 
 path_to_xml_files - path to folder of XML files
-kml_file_to_output - KML filename to output in specified path
+kml_file_to_output - KML filename for output (with path, or current)
 """
 
 import datetime
@@ -22,7 +22,7 @@ from pykml.factory import KML_ElementMaker as KML
 __author__ = "Ryan Martens"
 __copyright__ = "Copyright 2013, SMLR"
 __license__ = "None"
-__version__ = "0.2"
+__version__ = "0.3-dev"
 __maintainer__ = "Ryan Martens"
 __status__ = "Development"
 
@@ -34,6 +34,25 @@ class TestCases:
                    '5': datetime.datetime(2013, 07, 05, 17, 51),
                    '6': datetime.datetime(2013, 07, 05, 17, 57),
                   }
+    
+    test6_ref_locations = [{'Latitude': 43.319865, 'Longitude': -79.799914},
+                           {'Latitude': 43.320223, 'Longitude': -79.799548},
+                           {'Latitude': 43.320444, 'Longitude': -79.799313},
+                           {'Latitude': 43.320660, 'Longitude': -79.799085},
+                           {'Latitude': 43.320876, 'Longitude': -79.798858},
+                           {'Latitude': 43.321096, 'Longitude': -79.798626},
+                           {'Latitude': 43.321310, 'Longitude': -79.798389},
+                           {'Latitude': 43.321535, 'Longitude': -79.798153},
+                           {'Latitude': 43.321755, 'Longitude': -79.797927},
+                           {'Latitude': 43.321977, 'Longitude': -79.797685},
+                           {'Latitude': 43.322213, 'Longitude': -79.797449},
+                           {'Latitude': 43.322437, 'Longitude': -79.797211},
+                           {'Latitude': 43.322843, 'Longitude': -79.796777},
+                           {'Latitude': 43.323073, 'Longitude': -79.796543},
+                           {'Latitude': 43.323300, 'Longitude': -79.796297},
+                           {'Latitude': 43.323516, 'Longitude': -79.796069},
+                           {'Latitude': 43.323733, 'Longitude': -79.795838}
+                           ]
 
 def get_file_list(dirname):
     xml_files = []
@@ -44,14 +63,16 @@ def get_file_list(dirname):
 
 def parse_xml_file(xmlfilename):
     plist = plistlib.readPlist(xmlfilename)
+    plist["Position"]["Longitude"] = -plist["Position"]["Longitude"] 
     return plist["Position"]
 
 def calculate_pm(date, position):
-    pm_latlong = "%.15f, %.15f" % (-position["Longitude"], position["Latitude"],)
+    pm_latlong = "%.15f, %.15f" % (position["Longitude"], position["Latitude"],)
     #pm_name = position["DateStamp"]
     pm_name = string_to_date(date, True).strftime("%Y-%m-%d %H:%M:%S")
     pm = KML.Placemark(
             KML.name(pm_name),
+            KML.styleUrl("#pushpin-ylw"),
             KML.Point(
                     KML.coordinates(pm_latlong)
             ))
@@ -62,6 +83,12 @@ def create_xml_template():
         etree.Comment(' required when using gx-prefixed elements '),
         KML.Document(
             KML.name("Experiments - Collection 1 - iPhone"),
+            KML.Style(KML.IconStyle(KML.scale(1.0),
+                                    KML.Icon(KML.href("http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png"),),
+                                    id="mystyle"),id="pushpin-ylw"),
+            KML.Style(KML.IconStyle(KML.scale(1.0),
+                                    KML.Icon(KML.href("http://maps.google.com/mapfiles/kml/pushpin/red-pushpin.png"),),
+                                    id="mystyle"),id="pushpin-red"),
         ))
     return doc
 
@@ -107,10 +134,12 @@ if __name__=="__main__":
         sys.exit(0)
     elif len(sys.argv) == 2:
         dirname = str(sys.argv[1])
-        kml_file = os.path.join(dirname, default_kml_filename)
+        #kml_file = os.path.join(dirname, default_kml_filename)
+        kml_file = default_kml_filename
     elif len(sys.argv) == 3:
         dirname = str(sys.argv[1])
-        kml_file = os.path.join(dirname, str(sys.argv[2]))
+        #kml_file = os.path.join(dirname, str(sys.argv[2]))
+        kml_file = str(sys.argv[2])
     else:
         print "Invalid number of arguments!"
         sys.exit(1)
@@ -143,6 +172,18 @@ if __name__=="__main__":
         placemark = calculate_pm(key, item)
         fld.append(placemark)
         #doc.Document.Folder.append(placemark)
+    
+    # Add reference cases for Test 6
+    fld = KML.Folder(KML.name("Test #6 - Reference"))
+    doc.Document.append(fld)
+    i = 0
+    for pos_item in TestCases.test6_ref_locations:
+        i += 1
+        pm_latlong = "%.15f, %.15f" % (pos_item["Longitude"], pos_item["Latitude"],)
+        fld.append(KML.Placemark(KML.name("Point %d" %i),
+                                 KML.styleUrl("#pushpin-red"),
+                                 KML.Point(KML.coordinates(pm_latlong))
+        ))
 
     outfile = open(kml_file,'w')
     outfile.write(etree.tostring(doc, pretty_print=True))
