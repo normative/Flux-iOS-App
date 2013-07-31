@@ -96,9 +96,17 @@ def get_file_list(dirname):
 def parse_xml_file(xmlfilename):
     plist = plistlib.readPlist(xmlfilename)
     
-    # Note that Longitude has the wrong sign - fix it here
-    plist["Position"]["Longitude"] = -plist["Position"]["Longitude"] 
-    return plist["Position"]
+    # Correct for negative Lat/Long here
+    if plist["Position"]["LongitudeRef"] == 'W':
+        plist["Position"]["Longitude"] = -plist["Position"]["Longitude"]
+    if plist["Position"]["LatitudeRef"] == 'S':
+        plist["Position"]["Latitude"] = -plist["Position"]["Latitude"]
+        
+    
+    # Create new dictionary of subset of elements to return
+    cur_elem = plist["Position"]
+    cur_elem["EulerAngles"] = plist["Orientation"]["EulerAngles"]
+    return cur_elem
 
 def parse_directory(dirname, test_results):
     xml_file_list = get_file_list(dirname)
