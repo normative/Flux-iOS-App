@@ -2,11 +2,11 @@
 //  SMLRcamViewController.m
 //  SMLRcam
 //
-//  Created by Denis Delorme on 7/4/13.
-//  Copyright (c) 2013 Denis Delorme. All rights reserved.
+//  Created by Kei Turner on 7/4/13.
+//  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "SMLRcamViewController.h"
+#import "FluxScanViewController.h"
 
 #pragma mark- OpenGL Init
 
@@ -18,7 +18,7 @@ static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;};
 
 
-@implementation SMLRcamViewController
+@implementation FluxScanViewController
 
 
 

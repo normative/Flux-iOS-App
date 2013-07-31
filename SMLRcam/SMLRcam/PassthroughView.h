@@ -3,7 +3,7 @@
 //  SMLRcam
 //
 //  Created by Kei Turner on 2013-07-26.
-//  Copyright (c) 2013 Denis Delorme. All rights reserved.
+//  Copyright (c) 2013 Normative. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>

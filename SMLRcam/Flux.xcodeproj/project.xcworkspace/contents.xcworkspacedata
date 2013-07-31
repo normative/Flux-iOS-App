@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:SMLRcam.xcodeproj">
+      location = "self:Flux.xcodeproj">
    </FileRef>
 </Workspace>

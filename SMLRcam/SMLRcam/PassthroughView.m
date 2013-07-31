@@ -3,7 +3,7 @@
 //  SMLRcam
 //
 //  Created by Kei Turner on 2013-07-26.
-//  Copyright (c) 2013 Denis Delorme. All rights reserved.
+//  Copyright (c) 2013 Normative. All rights reserved.
 //
 
 #import "PassthroughView.h"
@@ -51,7 +51,7 @@
         cameraButton.transform = CGAffineTransformScale(newTransform,2,2);
         [UIView commitAnimations];
         
-        UIImage *trans_img = [UIImage imageNamed:@"camButton_axtive.png"];
+        UIImage *trans_img = [UIImage imageNamed:@"camButton_active.png"];
         
         //some ind of anuimation to switch images
         [UIView animateWithDuration:0.5 animations:^{
