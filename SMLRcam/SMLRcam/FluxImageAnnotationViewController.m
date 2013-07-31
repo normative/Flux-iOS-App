@@ -196,15 +196,18 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:&error]; //Create folder
     }
     
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
+    
     //add our image to the path
-    NSString *fullPath = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [timestamp description]]];
+    NSString *fullPath = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [dateFormat stringFromDate:timestamp]]];
     [imgData writeToFile:fullPath atomically:YES];
     
     // build the metadata file...
-    NSString *fullPathMeta = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.xml", [timestamp description]]];
+    NSString *fullPathMeta = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.xml", [dateFormat stringFromDate:timestamp]]];
     [imgMetadata writeToFile:fullPathMeta atomically:YES];
     
     
-    //[self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 @end
