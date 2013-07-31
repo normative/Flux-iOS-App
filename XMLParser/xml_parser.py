@@ -18,6 +18,7 @@ import plistlib
 import sys
 from lxml import etree
 from pykml.factory import KML_ElementMaker as KML
+from math import radians, cos, sin, asin, sqrt
 
 __author__ = "Ryan Martens"
 __copyright__ = "Copyright 2013, SMLR"
@@ -53,6 +54,37 @@ class TestCases:
                            {'Latitude': 43.323516, 'Longitude': -79.796069},
                            {'Latitude': 43.323733, 'Longitude': -79.795838}
                            ]
+
+def haversine(lon1, lat1, lon2, lat2):
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    # haversine formula 
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
+    km = 6367 * c
+    return km
+
+def find_closest_point(point, references):
+    """
+    Returns the index in a list of points (references) of the closest point (point).
+    Each point is a dictionary of 'Latitude' and 'Longitude'
+    """
+    min_distance = float('inf')
+    min_idx = 0
+    
+    for pt_idx, pt_val in enumerate(references):
+        distance = haversine(point['Longitude'], point['Latitude'], pt_val['Longitude'], pt_val['Latitude'])*1000.0
+        if distance < min_distance:
+            min_distance = distance
+            min_idx = pt_idx
+
+    return min_idx
 
 def get_file_list(dirname):
     xml_files = []
@@ -171,6 +203,27 @@ def write_kml(doc, filename):
     outfile.write(etree.tostring(doc, pretty_print=True))
     outfile.close()
 
+def generate_kml(kml_file, xml_all_results):
+    # Create the basic template and header
+    doc = create_xml_template()
+
+    # Output placemarks from all tests
+    add_test_placemarks(doc, xml_all_results)
+    
+    # Add reference cases for Test 6
+    add_test6_reference(doc)
+    
+    # Write KML file
+    write_kml(doc, kml_file)
+    print "Wrote KML data to file", kml_file
+    
+def calc_position_errors(test_results):
+    for idx, val in sorted(test_results.items()):
+        close_pt_idx = find_closest_point(val, TestCases.test6_ref_locations)
+        pt1 = val
+        pt2 = TestCases.test6_ref_locations[close_pt_idx]
+        distance = haversine(pt1['Longitude'], pt1['Latitude'], pt2['Longitude'], pt2['Latitude'])*1000.0
+        print "%s, %f" %(idx, distance,)
 
 if __name__=="__main__":
     default_kml_filename = "Experiments_20130705.kml"
@@ -195,16 +248,11 @@ if __name__=="__main__":
 
     # Parse XML files in entire folder
     parse_directory(dirname, xml_all_results)
-
-    # Create the basic template and header
-    doc = create_xml_template()
-
-    # Output placemarks from all tests
-    add_test_placemarks(doc, xml_all_results)
     
-    # Add reference cases for Test 6
-    add_test6_reference(doc)
+    # Create KML file
+    generate_kml(kml_file, xml_all_results)
     
-    # Write KML file
-    write_kml(doc, kml_file)
-    print "Wrote KML data to file", kml_file
+    # Perform additional analysis
+    
+    # Calculate position errors
+    calc_position_errors(xml_all_results)
