@@ -133,7 +133,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[Contains user-specific information]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE users CLUSTER ON "users_userid_cluster_idx";]]></appended-sql>
-	<position x="484.353" y="42.3529"/>
+	<position x="514.941" y="41.1765"/>
 	<column name="userid" not-null="true" default-value="nextval('userid_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -323,7 +323,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[contains user-user friend relationships (one way)]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE friends CLUSTER ON "friends_userid_cluster_idx";]]></appended-sql>
-	<position x="823.706" y="38.2941"/>
+	<position x="886.059" y="59.4706"/>
 	<column name="userid" not-null="true">
 		<type name="bigint"/>
 		<comment><![CDATA[user with friends]]></comment>
