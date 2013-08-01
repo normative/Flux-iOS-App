@@ -7,11 +7,173 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <schema name="public" protected="true" fill-color="#e1e1e1" sql-disabled="true">
 </schema>
 
-<schema name="flux" fill-color="#e1e1e1">
-</schema>
-
 <database name="flux_proto1">
 </database>
+
+<sequence name="imageid_seq"
+	 start="1" increment="1"
+	 min-value="0" max-value="9223372036854775807"
+	 cache="1" cycle="false">
+	<schema name="public"/>
+	<comment><![CDATA[sequence to generate image IDs]]></comment>
+</sequence>
+
+<sequence name="userid_seq"
+	 start="1" increment="1"
+	 min-value="0" max-value="9223372036854775807"
+	 cache="1" cycle="false">
+	<schema name="public"/>
+	<comment><![CDATA[sequence to generate user IDs]]></comment>
+</sequence>
+
+<sequence name="tagid_seq"
+	 start="1" increment="1"
+	 min-value="0" max-value="9223372036854775807"
+	 cache="1" cycle="false">
+	<schema name="public"/>
+	<comment><![CDATA[sequence to generate tag IDs]]></comment>
+</sequence>
+
+<sequence name="catid_seq"
+	 start="1" increment="1"
+	 min-value="0" max-value="9223372036854775807"
+	 cache="1" cycle="false">
+	<schema name="public"/>
+	<comment><![CDATA[sequence to generate category IDs]]></comment>
+</sequence>
+
+<sequence name="cameraid_seq"
+	 start="1" increment="1"
+	 min-value="0" max-value="9223372036854775807"
+	 cache="1" cycle="false">
+	<schema name="public"/>
+	<comment><![CDATA[sequence to generate camera IDs]]></comment>
+</sequence>
+
+<table name="users" oids="false">
+	<schema name="public"/>
+	<comment><![CDATA[Contains user-specific information]]></comment>
+	<appended-sql><![CDATA[ALTER TABLE users CLUSTER ON "users_userid_cluster_idx";]]></appended-sql>
+	<position x="502.719" y="125.621"/>
+	<column name="userid" not-null="true" default-value="nextval('userid_seq'::regclass)">
+		<type name="bigint"/>
+	</column>
+	<column name="firstname">
+		<type name="varchar" length="32"/>
+	</column>
+	<column name="lastname">
+		<type name="varchar" length="64"/>
+	</column>
+	<column name="privacy" not-null="true" default-value="0">
+		<type name="integer"/>
+	</column>
+	<column name="nickname">
+		<type name="varchar" length="64"/>
+	</column>
+	<constraint name="users_userid_cluster_idx" type="pk-constr" factor="10" table="public.users">
+		<columns names="userid" ref-type="src-columns"/>
+		<comment><![CDATA[primary key for users]]></comment>
+	</constraint>
+	<index name="users_nickname_idx" table="public.users"
+		 concurrent="false" unique="false" fast-update="false"
+		 index-type="btree" factor="0">
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="userid"/>
+		</idxelement>
+	</index>
+</table>
+
+<table name="categories" oids="false">
+	<schema name="public"/>
+	<comment><![CDATA[contains category definitions]]></comment>
+	<appended-sql><![CDATA[ALTER TABLE categories CLUSTER ON "categories_categoryid_cluster_idx";]]></appended-sql>
+	<position x="463.15" y="24.9872"/>
+	<column name="categoryid" not-null="true" default-value="nextval('catid_seq'::regclass)">
+		<type name="bigint"/>
+	</column>
+	<column name="cat_description" not-null="true">
+		<type name="varchar" length="128"/>
+	</column>
+	<column name="cat_text" not-null="true">
+		<type name="varchar" length="32"/>
+	</column>
+	<constraint name="categories_categoryid_cluster_idx" type="pk-constr" factor="10" table="public.categories">
+		<columns names="categoryid" ref-type="src-columns"/>
+		<comment><![CDATA[primary key for categories table]]></comment>
+	</constraint>
+</table>
+
+<table name="tags" oids="false">
+	<schema name="public"/>
+	<comment><![CDATA[table to contain tag definitions]]></comment>
+	<appended-sql><![CDATA[ALTER TABLE tags CLUSTER ON "tags_tagtext_cluster_idx";]]></appended-sql>
+	<position x="67.5032" y="537.713"/>
+	<column name="tagid" not-null="true" default-value="nextval('tagid_seq'::regclass)">
+		<type name="bigint"/>
+	</column>
+	<column name="tagtext" not-null="true">
+		<type name="varchar" length="32"/>
+	</column>
+	<constraint name="tags_tagid_idx" type="pk-constr" factor="10" table="public.tags">
+		<columns names="tagid" ref-type="src-columns"/>
+		<comment><![CDATA[primary key for tags table]]></comment>
+	</constraint>
+	<index name="tags_tagtext_cluster_idx" table="public.tags"
+		 concurrent="false" unique="true" fast-update="false"
+		 index-type="btree" factor="0">
+		<comment><![CDATA[clustering index on tag text]]></comment>
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="tagtext"/>
+		</idxelement>
+	</index>
+</table>
+
+<table name="cameras" oids="false">
+	<schema name="public"/>
+	<comment><![CDATA[contains camera details]]></comment>
+	<appended-sql><![CDATA[ALTER TABLE cameras CLUSTER ON "cameras_deviceid_cluster_idx";]]></appended-sql>
+	<position x="479.902" y="388.536"/>
+	<column name="cameraid" not-null="true" default-value="nextval('cameraid_seq'::regclass)">
+		<type name="bigint"/>
+	</column>
+	<column name="userid" not-null="true">
+		<type name="bigint"/>
+		<comment><![CDATA[user that owns this camera]]></comment>
+	</column>
+	<column name="model">
+		<type name="varchar" length="32"/>
+		<comment><![CDATA[type of camera]]></comment>
+	</column>
+	<column name="deviceid" not-null="true">
+		<type name="varchar" length="32"/>
+		<comment><![CDATA[unique identifier for device (typically GUID)]]></comment>
+	</column>
+	<column name="description">
+		<type name="varchar" length="256"/>
+		<comment><![CDATA[text description of the camera]]></comment>
+	</column>
+	<column name="nickname">
+		<type name="varchar" length="64"/>
+		<comment><![CDATA[short name used for camera]]></comment>
+	</column>
+	<constraint name="cameras_cameraid_idx" type="pk-constr" factor="10" table="public.cameras">
+		<columns names="cameraid" ref-type="src-columns"/>
+		<comment><![CDATA[primary key for camera table]]></comment>
+	</constraint>
+	<constraint name="userid_users" type="fk-constr"	 comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.users" table="public.cameras">
+		<columns names="cameraid" ref-type="src-columns"/>
+		<columns names="userid" ref-type="dst-columns"/>
+	</constraint>
+	<index name="cameras_deviceid_cluster_idx" table="public.cameras"
+		 concurrent="false" unique="true" fast-update="false"
+		 index-type="btree" factor="0">
+		<comment><![CDATA[clustering index on deviceid]]></comment>
+		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
+			<column name="cameraid"/>
+		</idxelement>
+	</index>
+</table>
 
 <table name="images" oids="false">
 	<schema name="public"/>
@@ -73,9 +235,24 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="cameraid" not-null="true" default-value="0">
 		<type name="bigint"/>
 	</column>
-	<constraint name="images_key" type="pk-constr" factor="10" table="public.images">
+	<constraint name="image_imageid_idx" type="pk-constr" factor="10" table="public.images">
 		<columns names="imageid" ref-type="src-columns"/>
 		<comment><![CDATA[primary key for images]]></comment>
+	</constraint>
+	<constraint name="userid_users" type="fk-constr"	 comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.users" table="public.images">
+		<columns names="userid" ref-type="src-columns"/>
+		<columns names="userid" ref-type="dst-columns"/>
+	</constraint>
+	<constraint name="cameraid_cameras" type="fk-constr"	 comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.cameras" table="public.images">
+		<columns names="cameraid" ref-type="src-columns"/>
+		<columns names="cameraid" ref-type="dst-columns"/>
+	</constraint>
+	<constraint name="categoryid_categories" type="fk-constr"	 comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.categories" table="public.images">
+		<columns names="categoryid" ref-type="src-columns"/>
+		<columns names="categoryid" ref-type="dst-columns"/>
 	</constraint>
 	<index name="image_time_stamp_cluster_idx" table="public.images"
 		 concurrent="false" unique="false" fast-update="false"
@@ -83,13 +260,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<comment><![CDATA[cluster the images table based on timestamp]]></comment>
 		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
 			<column name="time_stamp"/>
-		</idxelement>
-	</index>
-	<index name="image_imageid_idx" table="public.images"
-		 concurrent="false" unique="true" fast-update="false"
-		 index-type="btree" factor="0">
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="imageid"/>
 		</idxelement>
 	</index>
 	<index name="image_latitude_idx" table="public.images"
@@ -129,201 +299,30 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</index>
 </table>
 
-<table name="users" oids="false">
-	<schema name="public"/>
-	<comment><![CDATA[Contains user-specific information]]></comment>
-	<appended-sql><![CDATA[ALTER TABLE users CLUSTER ON "users_userid_cluster_idx";]]></appended-sql>
-	<position x="514.941" y="41.1765"/>
-	<column name="userid" not-null="true" default-value="nextval('userid_seq'::regclass)">
-		<type name="bigint"/>
-	</column>
-	<column name="firstname">
-		<type name="varchar" length="32"/>
-	</column>
-	<column name="lastname">
-		<type name="varchar" length="64"/>
-	</column>
-	<column name="privacy" not-null="true" default-value="0">
-		<type name="integer"/>
-	</column>
-	<column name="nickname">
-		<type name="varchar" length="64"/>
-	</column>
-	<constraint name="users_key" type="pk-constr" factor="10" table="public.users">
-		<columns names="userid" ref-type="src-columns"/>
-		<comment><![CDATA[primary key for users]]></comment>
-	</constraint>
-	<index name="users_userid_cluster_idx" table="public.users"
-		 concurrent="false" unique="true" fast-update="false"
-		 index-type="btree" factor="0">
-		<comment><![CDATA[clustering index on userID]]></comment>
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="userid"/>
-		</idxelement>
-	</index>
-	<index name="users_nickname_idx" table="public.users"
-		 concurrent="false" unique="false" fast-update="false"
-		 index-type="btree" factor="0">
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="userid"/>
-		</idxelement>
-	</index>
-</table>
+<relationship name="rel_images_users" type="relfk"
+	 src-table="public.images"
+	 dst-table="public.users"
+	 src-required="false" dst-required="false"/>
 
-<sequence name="imageid_seq"
-	 start="1" increment="1"
-	 min-value="0" max-value="9223372036854775807"
-	 cache="1" cycle="false">
-	<schema name="public"/>
-	<comment><![CDATA[sequence to generate image IDs]]></comment>
-</sequence>
+<relationship name="rel_images_cameras" type="relfk"
+	 src-table="public.images"
+	 dst-table="public.cameras"
+	 src-required="false" dst-required="false"/>
 
-<sequence name="userid_seq"
-	 start="1" increment="1"
-	 min-value="0" max-value="9223372036854775807"
-	 cache="1" cycle="false">
-	<schema name="public"/>
-	<comment><![CDATA[sequence to generate user IDs]]></comment>
-</sequence>
-
-<table name="tags" oids="false">
-	<schema name="public"/>
-	<comment><![CDATA[table to contain tag definitions]]></comment>
-	<appended-sql><![CDATA[ALTER TABLE tags CLUSTER ON "tags_tagtext_cluster_idx";]]></appended-sql>
-	<position x="63.0588" y="588.824"/>
-	<column name="tagid" not-null="true" default-value="nextval('tagid_seq'::regclass)">
-		<type name="bigint"/>
-	</column>
-	<column name="tagtext" not-null="true">
-		<type name="varchar" length="32"/>
-	</column>
-	<constraint name="tag_key" type="pk-constr" factor="10" table="public.tags">
-		<columns names="tagid" ref-type="src-columns"/>
-		<comment><![CDATA[primary key for tags table]]></comment>
-	</constraint>
-	<index name="tags_tagtext_cluster_idx" table="public.tags"
-		 concurrent="false" unique="true" fast-update="false"
-		 index-type="btree" factor="0">
-		<comment><![CDATA[clustering index on tag text]]></comment>
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="tagtext"/>
-		</idxelement>
-	</index>
-	<index name="tags_tagid_idx" table="public.tags"
-		 concurrent="false" unique="true" fast-update="false"
-		 index-type="btree" factor="0">
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="tagid"/>
-		</idxelement>
-	</index>
-</table>
-
-<sequence name="tagid_seq"
-	 start="1" increment="1"
-	 min-value="0" max-value="9223372036854775807"
-	 cache="1" cycle="false">
-	<schema name="public"/>
-	<comment><![CDATA[sequence to generate tag IDs]]></comment>
-</sequence>
-
-<table name="categories" oids="false">
-	<schema name="public"/>
-	<comment><![CDATA[contains category definitions]]></comment>
-	<appended-sql><![CDATA[ALTER TABLE categories CLUSTER ON "categories_categoryid_cluster_idx";]]></appended-sql>
-	<position x="478.706" y="272.765"/>
-	<column name="categoryid" not-null="true" default-value="nextval('catid_seq'::regclass)">
-		<type name="bigint"/>
-	</column>
-	<column name="cat_description" not-null="true">
-		<type name="varchar" length="128"/>
-	</column>
-	<column name="cat_text" not-null="true">
-		<type name="varchar" length="32"/>
-	</column>
-	<constraint name="categories_key" type="pk-constr" factor="10" table="public.categories">
-		<columns names="categoryid" ref-type="src-columns"/>
-		<comment><![CDATA[primary key for categories table]]></comment>
-	</constraint>
-	<index name="categories_categoryid_cluster_idx" table="public.categories"
-		 concurrent="false" unique="true" fast-update="false"
-		 index-type="btree" factor="0">
-		<comment><![CDATA[clustering index on categoryID]]></comment>
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="categoryid"/>
-		</idxelement>
-	</index>
-</table>
-
-<sequence name="catid_seq"
-	 start="1" increment="1"
-	 min-value="0" max-value="9223372036854775807"
-	 cache="1" cycle="false">
-	<schema name="public"/>
-	<comment><![CDATA[sequence to generate category IDs]]></comment>
-</sequence>
-
-<sequence name="cameraid_seq"
-	 start="1" increment="1"
-	 min-value="0" max-value="9223372036854775807"
-	 cache="1" cycle="false">
-	<schema name="public"/>
-	<comment><![CDATA[sequence to generate camera IDs]]></comment>
-</sequence>
-
-<table name="cameras" oids="false">
-	<schema name="public"/>
-	<comment><![CDATA[contains camera details]]></comment>
-	<appended-sql><![CDATA[ALTER TABLE cameras CLUSTER ON "cameras_deviceid_cluster_idx";]]></appended-sql>
-	<position x="492.235" y="480.647"/>
-	<column name="cameraid" not-null="true" default-value="nextval('cameraid_seq'::regclass)">
-		<type name="bigint"/>
-	</column>
-	<column name="userid" not-null="true">
-		<type name="bigint"/>
-		<comment><![CDATA[user that 'owns' this camera]]></comment>
-	</column>
-	<column name="model">
-		<type name="varchar" length="32"/>
-		<comment><![CDATA[type of camera]]></comment>
-	</column>
-	<column name="deviceid" not-null="true">
-		<type name="varchar" length="32"/>
-		<comment><![CDATA[unique identifier for device (typically GUID)]]></comment>
-	</column>
-	<column name="description">
-		<type name="varchar" length="256"/>
-		<comment><![CDATA[text description of the camera]]></comment>
-	</column>
-	<column name="nickname">
-		<type name="varchar" length="64"/>
-		<comment><![CDATA[short name used for camera]]></comment>
-	</column>
-	<constraint name="cameras_key" type="pk-constr" factor="10" table="public.cameras">
-		<columns names="cameraid" ref-type="src-columns"/>
-		<comment><![CDATA[primary key for camera table]]></comment>
-	</constraint>
-	<index name="cameras_cameraid_idx" table="public.cameras"
-		 concurrent="false" unique="true" fast-update="false"
-		 index-type="btree" factor="0">
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="cameraid"/>
-		</idxelement>
-	</index>
-	<index name="cameras_deviceid_cluster_idx" table="public.cameras"
-		 concurrent="false" unique="true" fast-update="false"
-		 index-type="btree" factor="0">
-		<comment><![CDATA[clustering index on deviceid]]></comment>
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="cameraid"/>
-		</idxelement>
-	</index>
-</table>
+<relationship name="rel_images_categories" type="relfk"
+	 src-table="public.images"
+	 dst-table="public.categories"
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="26.9292" y="1.39675"/>
+	</label>
+</relationship>
 
 <table name="friends" oids="false">
 	<schema name="public"/>
 	<comment><![CDATA[contains user-user friend relationships (one way)]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE friends CLUSTER ON "friends_userid_cluster_idx";]]></appended-sql>
-	<position x="886.059" y="59.4706"/>
+	<position x="830.503" y="139.471"/>
 	<column name="userid" not-null="true">
 		<type name="bigint"/>
 		<comment><![CDATA[user with friends]]></comment>
@@ -332,9 +331,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		<type name="bigint"/>
 		<comment><![CDATA[userid of friend]]></comment>
 	</column>
-	<constraint name="pk_friends" type="pk-constr" factor="10" table="public.friends">
+	<constraint name="userid_users" type="fk-constr"	 comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.users" table="public.friends">
 		<columns names="userid" ref-type="src-columns"/>
-		<comment><![CDATA[primary key of friends]]></comment>
+		<columns names="userid" ref-type="dst-columns"/>
+	</constraint>
+	<constraint name="friendid_users" type="fk-constr"	 comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.users" table="public.friends">
+		<columns names="friendid" ref-type="src-columns"/>
+		<columns names="userid" ref-type="dst-columns"/>
 	</constraint>
 	<index name="friends_userid_cluster_idx" table="public.friends"
 		 concurrent="false" unique="false" fast-update="false"
@@ -353,35 +358,22 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</index>
 </table>
 
-<table name="image_tags" oids="false">
-	<schema name="public"/>
-	<comment><![CDATA[relates an image to its tag(s) ]]></comment>
-	<appended-sql><![CDATA[ALTER TABLE image_tags CLUSTER ON "imagetags_tagid_cluster_idx";]]></appended-sql>
-	<position x="79.7647" y="425.706"/>
-	<column name="imageid" not-null="true">
-		<type name="bigint"/>
-	</column>
-	<column name="tagid" not-null="true">
-		<type name="bigint"/>
-	</column>
-	<constraint name="pk_image_tags" type="pk-constr" factor="10" table="public.image_tags">
-		<columns names="imageid,tagid" ref-type="src-columns"/>
-	</constraint>
-	<index name="imagetags_imageid_idx" table="public.image_tags"
-		 concurrent="false" unique="false" fast-update="false"
-		 index-type="btree" factor="0">
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="imageid"/>
-		</idxelement>
-	</index>
-	<index name="imagetags_tagid_cluster_idx" table="public.image_tags"
-		 concurrent="false" unique="false" fast-update="false"
-		 index-type="btree" factor="0">
-		<comment><![CDATA[clustering index on tagID]]></comment>
-		<idxelement use-sorting="true" nulls-first="false" asc-order="true">
-			<column name="tagid"/>
-		</idxelement>
-	</index>
-</table>
+<relationship name="rel_cameras_users" type="relfk"
+	 src-table="public.cameras"
+	 dst-table="public.users"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="many_images_has_many_tags" type="relnn"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 src-table="public.images"
+	 dst-table="public.tags"
+	 src-required="false" dst-required="false"	 table-name="image_tags"/>
+
+<relationship name="rel_friends_users" type="relfk"
+	 src-table="public.friends"
+	 dst-table="public.users"
+	 src-required="false" dst-required="false"/>
 
 </dbmodel>
