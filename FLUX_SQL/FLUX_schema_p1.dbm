@@ -54,7 +54,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[Contains user-specific information]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE users CLUSTER ON "users_userid_cluster_idx";]]></appended-sql>
-	<position x="502.719" y="125.621"/>
+	<position x="475.719" y="124.621"/>
 	<column name="userid" not-null="true" default-value="nextval('userid_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -107,7 +107,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[table to contain tag definitions]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE tags CLUSTER ON "tags_tagtext_cluster_idx";]]></appended-sql>
-	<position x="67.5032" y="537.713"/>
+	<position x="44.5032" y="431.713"/>
 	<column name="tagid" not-null="true" default-value="nextval('tagid_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -132,7 +132,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[contains camera details]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE cameras CLUSTER ON "cameras_deviceid_cluster_idx";]]></appended-sql>
-	<position x="479.902" y="388.536"/>
+	<position x="444.902" y="389.536"/>
 	<column name="cameraid" not-null="true" default-value="nextval('cameraid_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -174,6 +174,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 		</idxelement>
 	</index>
 </table>
+
+<relationship name="rel_cameras_users" type="relfk"
+	 src-table="public.cameras"
+	 dst-table="public.users"
+	 src-required="false" dst-required="false"/>
 
 <table name="images" oids="false">
 	<schema name="public"/>
@@ -322,7 +327,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[contains user-user friend relationships (one way)]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE friends CLUSTER ON "friends_userid_cluster_idx";]]></appended-sql>
-	<position x="830.503" y="139.471"/>
+	<position x="798.503" y="135.471"/>
 	<column name="userid" not-null="true">
 		<type name="bigint"/>
 		<comment><![CDATA[user with friends]]></comment>
@@ -358,8 +363,8 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</index>
 </table>
 
-<relationship name="rel_cameras_users" type="relfk"
-	 src-table="public.cameras"
+<relationship name="rel_friends_users" type="relfk"
+	 src-table="public.friends"
 	 dst-table="public.users"
 	 src-required="false" dst-required="false"/>
 
@@ -370,10 +375,5 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-table="public.images"
 	 dst-table="public.tags"
 	 src-required="false" dst-required="false"	 table-name="image_tags"/>
-
-<relationship name="rel_friends_users" type="relfk"
-	 src-table="public.friends"
-	 dst-table="public.users"
-	 src-required="false" dst-required="false"/>
 
 </dbmodel>
