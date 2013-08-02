@@ -8,16 +8,45 @@
 
 #import "FluxAppDelegate.h"
 
+#import "MMDrawerController.h"
+#import "FluxLeftDrawerViewController.h"
+#import "FluxRightDrawerViewController.h"
+#import "FluxScanViewController.h"
+
 
 @implementation FluxAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     
+    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                             bundle: nil];
+
+    //hide status bar
+    //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     
+    FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
+    FluxRightDrawerViewController * rightSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxRightDrawerViewController"];
+    
+    FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
+    
+    MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];
+    
+    [drawerController setMaximumLeftDrawerWidth:250.0];
+    [drawerController setMaximumRightDrawerWidth:250.0];
+    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeBezelPanningCenterView];
+    [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self.window setRootViewController:drawerController];
     // Override point for customization after application launch.
+    self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
+    
+//    // Override point for customization after application launch.
+//    [self.window makeKeyAndVisible];
+//    return YES;
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application

@@ -206,6 +206,11 @@
     // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
     // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
     locationManager.distanceFilter = 0.1;
+    
+    if ([CLLocationManager headingAvailable]) {
+        locationManager.headingFilter = 5;
+        [locationManager startUpdatingHeading];
+    }
 }
 
 - (void)startUpdatingLocation
@@ -255,6 +260,15 @@
     {
         [locationMeasurements removeObjectAtIndex:0];
     }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+    if (newHeading.headingAccuracy < 0)
+        return;
+    
+    // Use the true heading if it is valid.
+    heading = ((newHeading.trueHeading > 0) ?
+                                       newHeading.trueHeading : newHeading.magneticHeading);
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
@@ -380,6 +394,9 @@
                  
                  // Add GPSDictionary to Position Section of XML
                  [imgMetadata setValue:GPSDictionary forKey:(NSString *)@"Position"];
+                 
+                 //add heading
+                 [imgData setValue:[NSNumber numberWithDouble:heading] forKey:(NSString *)@"Heading"];
                  
                  NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
                  //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
