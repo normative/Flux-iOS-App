@@ -26,7 +26,7 @@ double GlobalLocationFactory::_makeLat()
 
 double GlobalLocationFactory::_makeLon()
 {
-  // use base distribution to generate value between 0-360
-  return (posGen->Generate() * 360.0);
+  // use base distribution to generate value between +-180
+  return ((posGen->Generate() * 360.0) - 180.0);
 }
 

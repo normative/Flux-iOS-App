@@ -25,10 +25,10 @@ using namespace std;
 
 uint64_t const MAX_USERS = 131072;    // 128k users for now...
 
-//#define TORONTO
-//#define ROME
-//#define PARIS
-//#define GLOBAL
+#define TORONTO
+#define ROME
+#define PARIS
+#define GLOBAL
 
 #define GEN_CSV
 
@@ -140,7 +140,7 @@ int main()
 
   // General:
   //    43:38:29.0N, 79:23:21W
-  //    1000000 points, 250m diameter, split normal distribution @ ground
+  //    1000000 points, 250m diameter, uniform distribution @ ground
   lat =  (43.0 + (38.0 / 60.0) + (29.0 / 3600.0));
   lon = -(79.0 + (23.0 / 60.0) + (21.0 / 3600.0));
   lf.SetLocation(lat, lon);
@@ -177,7 +177,7 @@ int main()
   lf.SetLocDistribution( normalGen, 0.0, 100.0);
   lf.SetAltitude(1.0, 10.0);
   irf.GenerateRecords(recList, 10000);
-
+#endif
   // Spadina & Dundas
   //    43:39:10.51, 79:23:52.99W
   //    1000 points, 30m diameter, normal distribution @ ground
@@ -187,7 +187,7 @@ int main()
   lf.SetLocDistribution( normalGen, 0.0, 30.0);
   lf.SetAltitude(1.0, 3.0);
   irf.GenerateRecords(recList, 1000);
-#endif
+
   // Normative Offices
   //    43:39:11.92, 79:24:23.06W
   //    100 points, 20m diameter, normal distribution @ ground
@@ -196,7 +196,7 @@ int main()
   lf.SetLocation(lat, lon);
   lf.SetLocDistribution( normalGen, 0.0, 20.0);
   lf.SetAltitude(1.0, 3.0);
-  irf.GenerateRecords(recList, 10);
+  irf.GenerateRecords(recList, 100);
 
 
 #ifdef ROME
