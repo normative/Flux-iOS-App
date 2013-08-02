@@ -205,7 +205,7 @@
     
     // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
     // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
-    locationManager.distanceFilter = 0.1;
+    locationManager.distanceFilter = kCLDistanceFilterNone;
 }
 
 - (void)startUpdatingLocation
@@ -228,9 +228,23 @@
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
     
     // test that the horizontal accuracy does not indicate an invalid measurement
-    if (newLocation.horizontalAccuracy < 0)
+    if ((newLocation.horizontalAccuracy < 0) || (newLocation.horizontalAccuracy > 66))
     {
-        fprintf(stderr, "\nInvalid measurement (%f)", newLocation.horizontalAccuracy);
+        fprintf(stderr, "\nInvalid measurement (horizontalAccuracy=%f)", newLocation.horizontalAccuracy);
+        return;
+    }
+
+    // test that the vertical accuracy does not indicate an invalid measurement
+    if (newLocation.verticalAccuracy < 0)
+    {
+        fprintf(stderr, "\nInvalid measurement (verticalAccuracy=%f)", newLocation.verticalAccuracy);
+        return;
+    }
+
+    NSTimeInterval secondsSinceLastPoint = [newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp];
+    if (secondsSinceLastPoint < 0)
+    {
+        fprintf(stderr, "\nlocation received out of order (%f)", secondsSinceLastPoint);
         return;
     }
     
