@@ -54,7 +54,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[Contains user-specific information]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE users CLUSTER ON "users_userid_cluster_idx";]]></appended-sql>
-	<position x="475.719" y="124.621"/>
+	<position x="465.719" y="109.621"/>
 	<column name="userid" not-null="true" default-value="nextval('userid_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -107,7 +107,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[table to contain tag definitions]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE tags CLUSTER ON "tags_tagtext_cluster_idx";]]></appended-sql>
-	<position x="44.5032" y="431.713"/>
+	<position x="136.503" y="444.713"/>
 	<column name="tagid" not-null="true" default-value="nextval('tagid_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -132,7 +132,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[contains camera details]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE cameras CLUSTER ON "cameras_deviceid_cluster_idx";]]></appended-sql>
-	<position x="444.902" y="389.536"/>
+	<position x="277.902" y="329.536"/>
 	<column name="cameraid" not-null="true" default-value="nextval('cameraid_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -184,7 +184,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[Contains image-specific data including positional metadata]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE images CLUSTER ON "image_time_stamp_cluster_idx";]]></appended-sql>
-	<position x="40" y="22"/>
+	<position x="23" y="28"/>
 	<column name="imageid" not-null="true" default-value="nextval('imageid_seq'::regclass)">
 		<type name="bigint"/>
 		<comment><![CDATA[unique identifier for image]]></comment>
@@ -239,6 +239,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="cameraid" not-null="true" default-value="0">
 		<type name="bigint"/>
+	</column>
+	<column name="heading" not-null="true" default-value="0">
+		<type name="double precision"/>
+		<comment><![CDATA[compass heading (relative to True North)]]></comment>
 	</column>
 	<constraint name="image_imageid_idx" type="pk-constr" factor="10" table="public.images">
 		<columns names="imageid" ref-type="src-columns"/>
@@ -312,14 +316,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_images_cameras" type="relfk"
 	 src-table="public.images"
 	 dst-table="public.cameras"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="60.5677" y="-25.7166"/>
+	</label>
+</relationship>
 
 <relationship name="rel_images_categories" type="relfk"
 	 src-table="public.images"
 	 dst-table="public.categories"
 	 src-required="false" dst-required="false">
 	<label ref-type="name-label">
-		<position x="26.9292" y="1.39675"/>
+		<position x="-6.24377" y="-49.4921"/>
 	</label>
 </relationship>
 
@@ -327,7 +335,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<comment><![CDATA[contains user-user friend relationships (one way)]]></comment>
 	<appended-sql><![CDATA[ALTER TABLE friends CLUSTER ON "friends_userid_cluster_idx";]]></appended-sql>
-	<position x="798.503" y="135.471"/>
+	<position x="528.503" y="343.471"/>
 	<column name="userid" not-null="true">
 		<type name="bigint"/>
 		<comment><![CDATA[user with friends]]></comment>
@@ -374,6 +382,16 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
 	 src-table="public.images"
 	 dst-table="public.tags"
-	 src-required="false" dst-required="false"	 table-name="image_tags"/>
+	 src-required="false" dst-required="false"	 table-name="image_tags">
+	<line>
+		<position x="241" y="323"/>
+	</line>
+	<label ref-type="src-label">
+		<position x="2.18752" y="-5.34097"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="-88.4634" y="-24.005"/>
+	</label>
+</relationship>
 
 </dbmodel>

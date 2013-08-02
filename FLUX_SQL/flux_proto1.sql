@@ -196,6 +196,7 @@ CREATE TABLE public.images(
 	categoryid bigint NOT NULL DEFAULT 0,
 	userid bigint NOT NULL DEFAULT 0,
 	cameraid bigint NOT NULL DEFAULT 0,
+	heading double precision NOT NULL DEFAULT 0,
 	CONSTRAINT image_imageid_idx PRIMARY KEY (imageid),
 	CONSTRAINT userid_users FOREIGN KEY (userid)
 	REFERENCES public.users (userid) MATCH FULL
@@ -261,6 +262,7 @@ CREATE INDEX image_cameraid_idx ON public.images
 
 COMMENT ON TABLE public.images IS 'Contains image-specific data including positional metadata';
 COMMENT ON COLUMN public.images.imageid IS 'unique identifier for image';
+COMMENT ON COLUMN public.images.heading IS 'compass heading (relative to True North)';
 COMMENT ON CONSTRAINT image_imageid_idx ON public.images IS 'primary key for images';
 -- Appended SQL commands --
 ALTER TABLE images CLUSTER ON "image_time_stamp_cluster_idx";
