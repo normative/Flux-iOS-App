@@ -181,9 +181,16 @@
 - (IBAction)ConfirmImage:(id)sender {
     UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
     
+    //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default.
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL temp = [[defaults objectForKey:@"Save Picture"]boolValue];
+    if (![[defaults objectForKey:@"Save Picture"]boolValue]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+        return;
+    }
+#warning there is a bug here.
+    
     //saves it locally for now.
-    
-    
     
     //destibnation path
     

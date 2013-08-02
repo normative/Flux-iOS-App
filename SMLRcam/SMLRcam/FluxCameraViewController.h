@@ -40,6 +40,7 @@
     NSString *timestampString;
     NSDate*theDate;
     CLLocation *location;
+    CLLocationDirection heading;
     
     UIImageView *gridView;
     

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>DFCE2CE1-4853-4231-9F2D-C2381C250399</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SMLRcam</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>9C72F373-2DB0-4D27-ADA7-451C3ADC2AAC</key>
+		<string>https://bitbucket.org/smlrteam/smlr_repo.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SMLRcam/SMLRcam.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>9C72F373-2DB0-4D27-ADA7-451C3ADC2AAC</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://bitbucket.org/smlrteam/smlr_repo.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>9C72F373-2DB0-4D27-ADA7-451C3ADC2AAC</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>9C72F373-2DB0-4D27-ADA7-451C3ADC2AAC</string>
+			<key>IDESourceControlWCCName</key>
+			<string>smlr_repo</string>
+		</dict>
+	</array>
+</dict>
+</plist>
