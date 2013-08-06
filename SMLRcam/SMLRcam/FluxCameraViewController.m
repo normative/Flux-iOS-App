@@ -191,7 +191,6 @@
 //allocates the location object and sets some parameters
 - (void)setupLocationManager
 {
-    fprintf(stderr, "\nsetupLocationManager");
     
     locationMeasurements = [[NSMutableArray alloc] init];
     
@@ -216,9 +215,6 @@
 
 - (void)startUpdatingLocationAndHeading
 {
-    // Once configured, the location manager must be "started".
-    
-    fprintf(stderr, "\nstartUpdatingLocation");
     [locationManager startUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -233,28 +229,27 @@
  */
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-    fprintf(stderr, "\ndidUpdateToLocation");
     latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
     
     // test that the horizontal accuracy does not indicate an invalid measurement
     if ((newLocation.horizontalAccuracy < 0) || (newLocation.horizontalAccuracy > 66))
     {
-        fprintf(stderr, "\nInvalid measurement (horizontalAccuracy=%f)", newLocation.horizontalAccuracy);
+        NSLog(@"Invalid measurement (horizontalAccuracy=%f)",newLocation.horizontalAccuracy);
         return;
     }
 
     // test that the vertical accuracy does not indicate an invalid measurement
     if (newLocation.verticalAccuracy < 0)
     {
-        fprintf(stderr, "\nInvalid measurement (verticalAccuracy=%f)", newLocation.verticalAccuracy);
+        NSLog(@"Invalid measurement (verticalAccuracy=%f)",newLocation.verticalAccuracy);
         return;
     }
 
     NSTimeInterval secondsSinceLastPoint = [newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp];
     if (secondsSinceLastPoint < 0)
     {
-        fprintf(stderr, "\nlocation received out of order (%f)", secondsSinceLastPoint);
+        NSLog(@"location received out of order (%f)",secondsSinceLastPoint);
         return;
     }
     
@@ -263,7 +258,7 @@
     NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
     if (locationAge > 5.0)
     {
-        fprintf(stderr, "\nlocation age too old (%f)", locationAge);
+        NSLog(@"location age too old (%f)",locationAge);
         return;
     }
     
@@ -300,7 +295,6 @@
 
 - (void)stopUpdatingLocationAndHeading
 {
-    fprintf(stderr, "\nstopUpdatingLocation");
     [locationManager stopUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -390,8 +384,6 @@
                  {
                      location = [locationMeasurements objectAtIndex:([locationMeasurements count] - 1)];
                      
-                     //fprintf(stderr, "\ntimestamp: %s", [[formatter stringFromDate:loc.timestamp] UTF8String]);
-                     
                      // Create GPS Dictionary
                      GPSDictionary = [[NSMutableDictionary alloc] init];
                      [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
@@ -408,7 +400,7 @@
                  }
                  else
                  {
-                     fprintf(stderr, "\nNo location data to store with image");
+                     NSLog(@"No location data to store with image");
                      GPSDictionary = [[NSMutableDictionary alloc] init];
                  }
                  

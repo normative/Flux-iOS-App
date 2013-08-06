@@ -1,0 +1,5 @@
+platform :ios, '5.0'
+
+pod 'RestKit', '~> 0.20.0'
+
+xcodeproj '/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/Flux.xcodeproj'
