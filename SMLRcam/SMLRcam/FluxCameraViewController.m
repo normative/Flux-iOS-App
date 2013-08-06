@@ -201,11 +201,13 @@
     
     // This is the most important property to set for the manager. It ultimately determines how the manager will
     // attempt to acquire location and thus, the amount of power that will be consumed.
-    locationManager.desiredAccuracy = 1.0;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
     
     // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
     // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
-    locationManager.distanceFilter = 0.1;
+    locationManager.distanceFilter = kCLDistanceFilterNone;
+    
+    NSLog(@"\naccuracy: %f\nfilter: %f", locationManager.desiredAccuracy, locationManager.distanceFilter);
     
     if ([CLLocationManager headingAvailable]) {
         locationManager.headingFilter = 5;
@@ -236,9 +238,23 @@
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
     
     // test that the horizontal accuracy does not indicate an invalid measurement
-    if (newLocation.horizontalAccuracy < 0)
+    if ((newLocation.horizontalAccuracy < 0) || (newLocation.horizontalAccuracy > 66))
     {
-        fprintf(stderr, "\nInvalid measurement (%f)", newLocation.horizontalAccuracy);
+        fprintf(stderr, "\nInvalid measurement (horizontalAccuracy=%f)", newLocation.horizontalAccuracy);
+        return;
+    }
+
+    // test that the vertical accuracy does not indicate an invalid measurement
+    if (newLocation.verticalAccuracy < 0)
+    {
+        fprintf(stderr, "\nInvalid measurement (verticalAccuracy=%f)", newLocation.verticalAccuracy);
+        return;
+    }
+
+    NSTimeInterval secondsSinceLastPoint = [newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp];
+    if (secondsSinceLastPoint < 0)
+    {
+        fprintf(stderr, "\nlocation received out of order (%f)", secondsSinceLastPoint);
         return;
     }
     
