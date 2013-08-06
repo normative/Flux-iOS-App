@@ -201,11 +201,18 @@
     
     // This is the most important property to set for the manager. It ultimately determines how the manager will
     // attempt to acquire location and thus, the amount of power that will be consumed.
-    locationManager.desiredAccuracy = 1.0;
+    locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
     
     // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
     // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
     locationManager.distanceFilter = kCLDistanceFilterNone;
+    
+    NSLog(@"\naccuracy: %f\nfilter: %f", locationManager.desiredAccuracy, locationManager.distanceFilter);
+    
+    if ([CLLocationManager headingAvailable]) {
+        locationManager.headingFilter = 5;
+        [locationManager startUpdatingHeading];
+    }
 }
 
 - (void)startUpdatingLocation
