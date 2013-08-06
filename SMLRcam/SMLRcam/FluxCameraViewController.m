@@ -35,7 +35,7 @@
 - (void)viewDidLoad
 {
     [self setupLocationManager];
-    [self startUpdatingLocation];
+    [self startUpdatingLocationAndHeading];
     [self setupMotionManager];
     [self startDeviceMotion];
     [self AddGridlinesToView];
@@ -48,13 +48,13 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     [self startDeviceMotion];
-    [self startUpdatingLocation];
+    [self startUpdatingLocationAndHeading];
     [self restartAVCapture];
     testTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateMotionLabels:) userInfo:nil repeats:YES];
 }
 
 - (void)dealloc{
-    [self stopUpdatingLocation];
+    [self stopUpdatingLocationAndHeading];
     [self stopDeviceMotion];
     motionManager = nil;
     locationManager = nil;
@@ -209,16 +209,19 @@
     
     if ([CLLocationManager headingAvailable]) {
         locationManager.headingFilter = 5;
-        [locationManager startUpdatingHeading];
     }
 }
 
-- (void)startUpdatingLocation
+- (void)startUpdatingLocationAndHeading
 {
     // Once configured, the location manager must be "started".
     
     fprintf(stderr, "\nstartUpdatingLocation");
     [locationManager startUpdatingLocation];
+    
+    if ([CLLocationManager headingAvailable]) {
+        [locationManager startUpdatingHeading];
+    }
 }
 
 /*
@@ -267,23 +270,26 @@
         return;
     
     // Use the true heading if it is valid.
-    heading = ((newHeading.trueHeading > 0) ?
-                                       newHeading.trueHeading : newHeading.magneticHeading);
+    heading = ((newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading);
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     // The location "unknown" error simply means the manager is currently unable to get the location.
     if ([error code] != kCLErrorLocationUnknown)
     {
-        [self stopUpdatingLocation];
+        [self stopUpdatingLocationAndHeading];
         [self stopDeviceMotion];
     }
 }
 
-- (void)stopUpdatingLocation
+- (void)stopUpdatingLocationAndHeading
 {
     fprintf(stderr, "\nstopUpdatingLocation");
     [locationManager stopUpdatingLocation];
+    
+    if ([CLLocationManager headingAvailable]) {
+        [locationManager stopUpdatingHeading];
+    }
 }
 
 //starts the motion manager and sets an update interval
@@ -396,7 +402,7 @@
                  [imgMetadata setValue:GPSDictionary forKey:(NSString *)@"Position"];
                  
                  //add heading
-                 [imgData setValue:[NSNumber numberWithDouble:heading] forKey:(NSString *)@"Heading"];
+                 [imgMetadata setValue:[NSNumber numberWithDouble:heading] forKey:(NSString *)@"Heading"];
                  
                  NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
                  //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
@@ -510,6 +516,9 @@
     [imageToolbar setHidden:YES];
     [cameraButton setHidden:NO];
     [gridView setHidden:NO];
+    
+    //clear all metadata
+    [imgMetadata removeAllObjects];
 }
 
 // perform a flash bulb animation using KVO to monitor the value of the capturingStillImage property of the AVCaptureStillImageOutput class
@@ -556,7 +565,7 @@
         //cleanup this view
         [self pauseAVCapture];
         [self stopDeviceMotion];
-        [self stopUpdatingLocation];
+        [self stopUpdatingLocationAndHeading];
         
         //clean up UI
         [gridView setHidden:NO];

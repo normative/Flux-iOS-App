@@ -37,6 +37,14 @@
     [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeBezelPanningCenterView];
     [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
     
+    //save picture by default
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
+    if (savePic == nil) {
+        [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Save Pictures"];
+        [defaults synchronize];
+    }
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];
     // Override point for customization after application launch.

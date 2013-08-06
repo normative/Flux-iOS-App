@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4471.1" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3697.3"/>
     </dependencies>
@@ -220,9 +220,13 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rpv-Oo-dp7">
-                                <rect key="frame" x="15" y="15" width="25" height="25"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rpv-Oo-dp7">
+                                <rect key="frame" x="10" y="15" width="33" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="33" id="gpL-qa-iC3"/>
+                                    <constraint firstAttribute="height" constant="33" id="s6X-H4-l1t"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" image="closeButton">
                                     <color key="titleColor" red="0.19607843137254902" green="0.30980392156862746" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
@@ -235,9 +239,13 @@
                                     <action selector="PopViewController:" destination="5T1-Nf-tdE" eventType="touchUpInside" id="Dpt-Ud-fjq"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QRl-Rt-OHm">
-                                <rect key="frame" x="280" y="15" width="25" height="25"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QRl-Rt-OHm">
+                                <rect key="frame" x="275" y="15" width="33" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="33" id="3cC-OR-ekZ"/>
+                                    <constraint firstAttribute="height" constant="33" id="bN8-pa-TcP"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <state key="normal" image="approveButton">
                                     <color key="titleColor" red="0.1960784314" green="0.30980392159999998" blue="0.52156862749999999" alpha="1" colorSpace="calibratedRGB"/>
@@ -299,15 +307,19 @@
                             <constraint firstItem="xfF-UK-JPe" firstAttribute="top" secondItem="cD1-Yd-7FG" secondAttribute="bottom" constant="8" symbolic="YES" id="GMq-SL-guz"/>
                             <constraint firstAttribute="bottom" secondItem="jNE-zy-tnN" secondAttribute="bottom" constant="371" id="Inq-gV-Tpg"/>
                             <constraint firstItem="5Te-BV-B4d" firstAttribute="leading" secondItem="dny-qu-Q3V" secondAttribute="leading" id="LIV-fn-YNR"/>
+                            <constraint firstItem="Rpv-Oo-dp7" firstAttribute="top" secondItem="dny-qu-Q3V" secondAttribute="top" constant="15" id="OOd-Lh-pjW"/>
+                            <constraint firstAttribute="trailing" secondItem="QRl-Rt-OHm" secondAttribute="trailing" constant="12" id="S0O-ay-viR"/>
                             <constraint firstAttribute="bottom" secondItem="cD1-Yd-7FG" secondAttribute="bottom" constant="263" id="U1t-Vh-S9q"/>
                             <constraint firstItem="xfF-UK-JPe" firstAttribute="leading" secondItem="f4P-hO-VzB" secondAttribute="trailing" constant="8" symbolic="YES" id="aKi-5Y-VUj"/>
                             <constraint firstItem="f4P-hO-VzB" firstAttribute="leading" secondItem="jNE-zy-tnN" secondAttribute="leading" id="chb-B4-Ho5"/>
                             <constraint firstItem="5Te-BV-B4d" firstAttribute="top" secondItem="dny-qu-Q3V" secondAttribute="top" id="huR-dQ-VEY"/>
                             <constraint firstItem="f4P-hO-VzB" firstAttribute="baseline" secondItem="xfF-UK-JPe" secondAttribute="baseline" id="jDi-CE-69I"/>
                             <constraint firstAttribute="trailing" secondItem="xfF-UK-JPe" secondAttribute="trailing" constant="20" symbolic="YES" id="m7P-S7-2OR"/>
+                            <constraint firstItem="QRl-Rt-OHm" firstAttribute="top" secondItem="dny-qu-Q3V" secondAttribute="top" constant="15" id="oZg-lo-IGG"/>
                             <constraint firstItem="5Te-BV-B4d" firstAttribute="bottom" secondItem="dny-qu-Q3V" secondAttribute="bottom" id="pzj-YK-mbS"/>
                             <constraint firstItem="5Te-BV-B4d" firstAttribute="trailing" secondItem="dny-qu-Q3V" secondAttribute="trailing" id="qpZ-ql-5h7"/>
                             <constraint firstItem="f4P-hO-VzB" firstAttribute="top" secondItem="cD1-Yd-7FG" secondAttribute="bottom" constant="8" symbolic="YES" id="wck-Jp-s8m"/>
+                            <constraint firstItem="Rpv-Oo-dp7" firstAttribute="leading" secondItem="dny-qu-Q3V" secondAttribute="leading" constant="10" id="xdM-fk-WMF"/>
                             <constraint firstItem="cD1-Yd-7FG" firstAttribute="leading" secondItem="dny-qu-Q3V" secondAttribute="leading" constant="14" id="yqc-a7-QPg"/>
                         </constraints>
                     </view>
@@ -357,11 +369,11 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3ze-nY-6n7">
-                                <rect key="frame" x="15" y="15" width="25" height="25"/>
+                                <rect key="frame" x="15" y="15" width="33" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="25" id="bxt-BN-0ng"/>
-                                    <constraint firstAttribute="width" constant="25" id="oaR-b6-eMb"/>
+                                    <constraint firstAttribute="height" constant="33" id="bxt-BN-0ng"/>
+                                    <constraint firstAttribute="width" constant="33" id="oaR-b6-eMb"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
                                 <state key="normal" title="Button" image="closeButton">
@@ -484,6 +496,7 @@
                             <constraint firstItem="3ze-nY-6n7" firstAttribute="leading" secondItem="M2N-pS-ztO" secondAttribute="leading" constant="15" id="nPe-IY-jQy"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="uxq-oL-Pe7"/>
                     <connections>
                         <outlet property="cameraButton" destination="3Av-wb-2Ce" id="FPf-RY-bZO"/>

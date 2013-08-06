@@ -82,6 +82,7 @@
     [self SettingActionForString:[NSString stringWithFormat:@"%@",[leftDrawerTableViewArray objectAtIndex:[self.tableView indexPathForCell:switchCell].row]] andSetting:theSwitch.on];
 }
 
+//temporary, ugly, not really extensible code.
 //sets settings based on string
 - (void)SettingActionForString:(NSString *)string andSetting:(BOOL)setting{
     if ([string isEqualToString:@"Save Pictures"]) {
@@ -91,6 +92,7 @@
     }
 }
 
+//temporary, ugly, not really extensible code.
 //sets the settings based on string
 - (NSNumber*)GetSettingForString:(NSString*)string{
     if ([string isEqualToString:@"Save Pictures"]) {

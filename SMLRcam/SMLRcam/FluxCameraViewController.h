@@ -65,8 +65,8 @@
 - (void)AddGridlinesToView;
 
 - (void)setupLocationManager;
-- (void)startUpdatingLocation;
-- (void)stopUpdatingLocation;
+- (void)startUpdatingLocationAndHeading;
+- (void)stopUpdatingLocationAndHeading;
 
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
