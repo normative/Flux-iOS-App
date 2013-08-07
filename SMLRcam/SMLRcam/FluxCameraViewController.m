@@ -265,14 +265,32 @@
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
-    NSLog(@"\n\nAdding new location  with date: %@ \nAnd Location: %f, %f, %f", [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
+    NSLog(@"\n\nAdding new location  with date: %@ \nAnd Location: %f, %f, %f +/- %f, %f", [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude,
+        newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
     
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];
     
-    while ([locationMeasurements count] > 1)
+    while ([locationMeasurements count] > 10)
     {
         [locationMeasurements removeObjectAtIndex:0];
+    }
+    
+    int count = [locationMeasurements count];
+    int window_size = 3;
+    if (count >= window_size)
+    {
+        double sum_lat = 0;
+        double sum_long = 0;
+        for (int i = count - window_size; i < count; i++) {
+            location = [locationMeasurements objectAtIndex:i];
+            sum_lat += location.coordinate.latitude;
+            sum_long += location.coordinate.longitude;
+        }
+        double avg_lat = sum_lat / window_size;
+        double avg_long = sum_long / window_size;
+        
+        NSLog(@"\nAverage lat/long: %f, %f", avg_lat, avg_long);
     }
 }
 
@@ -392,7 +410,11 @@
                      [GPSDictionary setValue:((location.coordinate.longitude >= 0) ? @"E" : @"W") forKey:(NSString *)kCGImagePropertyGPSLongitudeRef];
                      [GPSDictionary setValue:[formatter stringFromDate:[location timestamp]] forKey:(NSString *)kCGImagePropertyGPSDateStamp];
                      [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.altitude)] forKey:(NSString *)kCGImagePropertyGPSAltitude];
-                     
+                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.horizontalAccuracy)] forKey:(NSString *)(NSString *)@"HorizontalAccuracy"];
+                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.verticalAccuracy)] forKey:(NSString *)(NSString *)@"VerticalAccuracy"];
+                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.speed)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSSpeed];
+                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.course)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSDestBearing];
+
                      [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss:SS"];
                      //timestampstr = [formatter stringFromDate:loc.timestamp];
                      theDate = [[NSDate alloc]init];
