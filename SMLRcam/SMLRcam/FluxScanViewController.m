@@ -158,6 +158,10 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 {
     [super viewDidLoad];
     
+    
+    //leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(showLeftDrawer:)];
+    
+    
     // Do any additional setup after loading the view, typically from a nib.
 }
 

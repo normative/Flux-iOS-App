@@ -193,7 +193,8 @@
 -(id)initWithTarget:(id)target action:(SEL)action{
     MMDrawerMenuButtonView * buttonView = [[MMDrawerMenuButtonView alloc] initWithFrame:CGRectMake(0, 0, 26, 26)];
     [buttonView addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];
-    self = [self initWithCustomView:buttonView];
+    [self addSubview:buttonView];
+    //self = [self initWithCustomView:buttonView];
     if(self){
         [self setButtonView:buttonView];
     }

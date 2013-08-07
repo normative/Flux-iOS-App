@@ -37,7 +37,6 @@
     [self setupLocationManager];
     [self startUpdatingLocationAndHeading];
     [self setupMotionManager];
-    [self startDeviceMotion];
     [self AddGridlinesToView];
     
     [imageToolbar setHidden:YES];

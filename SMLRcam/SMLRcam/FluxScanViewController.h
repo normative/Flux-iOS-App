@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "MMDrawerBarButtonItem.h"
+
 #import <QuartzCore/QuartzCore.h>
 #import <CoreLocation/CoreLocation.h>
 
@@ -26,12 +28,15 @@
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     
-    __weak IBOutlet UIButton *leftDrawerButton;
+    
     
     CLLocationManager *locationManager;
     CLGeocoder *theGeocoder;
     CLLocation *location;
 }
+
+@property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
+@property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 
 - (void)setupLocationManager;
 - (void)startUpdatingLocation;

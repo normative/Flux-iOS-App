@@ -23,7 +23,7 @@
                                                              bundle: nil];
 
     //hide status bar
-    //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     
     FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
     FluxRightDrawerViewController * rightSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxRightDrawerViewController"];
@@ -34,7 +34,22 @@
     
     [drawerController setMaximumLeftDrawerWidth:250.0];
     [drawerController setMaximumRightDrawerWidth:250.0];
-    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeBezelPanningCenterView];
+    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeCustom];
+    
+    //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
+    //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
+    [drawerController setGestureShouldRecognizeTouchBlock:^BOOL(MMDrawerController *drawerController, UIGestureRecognizer *gesture, UITouch *touch) {
+         BOOL shouldRecognizeTouch = NO;
+         if(drawerController.openSide == MMDrawerSideNone &&
+            [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
+             UIView * customView = scanViewController.leftDrawerButton;
+             CGPoint location = [touch locationInView:customView];
+             shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
+         }
+         return shouldRecognizeTouch;
+     }];
+    
+    
     [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
     
     //save picture by default
