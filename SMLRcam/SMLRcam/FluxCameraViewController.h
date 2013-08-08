@@ -58,6 +58,7 @@
 - (IBAction)CloseCamera:(id)sender;
 - (IBAction)TakePicture:(id)sender;
 - (IBAction)RetakePictureAction:(id)sender;
+- (IBAction)ConfirmImage:(id)sender;
 
 - (void)setupAVCapture;
 - (void)pauseAVCapture;

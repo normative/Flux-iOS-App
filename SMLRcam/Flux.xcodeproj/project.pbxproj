@@ -182,9 +182,9 @@
 				17604B7E1785CA59005CF054 /* MainStoryboard.storyboard */,
 				AA85AD7117A999A9003EBC89 /* Scan View */,
 				AA08279D17A6ADD00079672A /* Media.xcassets */,
-				17604B6D1785CA59005CF054 /* Supporting Files */,
 				AA85AD7217A999D4003EBC89 /* Camera Views */,
 				AA4CEF6C17A9586F00202A74 /* Custom UI Elements */,
+				17604B6D1785CA59005CF054 /* Supporting Files */,
 			);
 			name = Flux;
 			path = SMLRcam;
@@ -492,11 +492,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jon Tirmandi (BE55Y3YRR9)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -511,11 +511,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Normative Labs (3R58XXN523)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;

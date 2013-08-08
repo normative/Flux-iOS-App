@@ -88,12 +88,6 @@
     
     [cell setIsActive:[[rightDrawerTableViewArray objectAtIndex:indexPath.row]isChecked]];
     
-    NSLog(@"%i",[[[cell contentView]subviews]count]);
-    for (UIView*subview in [[cell contentView]subviews]){
-        NSLog(@"%@", [[subview class]description]);
-
-    }
-    
     return cell;
     
 

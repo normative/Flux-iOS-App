@@ -121,11 +121,33 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    
+    
     [backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
     [self AddGradientImageToBackgroundWithAlpha:0.7];
     
+    
+    
     [self LoadUI];
 	// Do any additional setup after loading the view.
+}
+- (void)viewDidAppear:(BOOL)animated{
+    UIImageView*tempBackgroundImageView = [[UIImageView alloc]initWithFrame:backgroundImageView.frame];
+    [tempBackgroundImageView setContentMode:backgroundImageView.contentMode];
+    [tempBackgroundImageView setImage:capturedImage];
+    [self.view insertSubview:tempBackgroundImageView belowSubview:backgroundImageView];
+    
+    [backgroundImageView setAlpha:0.0];
+    [backgroundImageView setHidden:NO];
+    
+    [UIView beginAnimations:@"fadein_darkened_image" context:nil];
+    [UIView setAnimationDuration:0.4];
+    
+    [tempBackgroundImageView setAlpha:0.0];
+    [backgroundImageView setAlpha:1.0];
+    
+    [UIView commitAnimations];
 }
 
 - (void)LoadUI{
@@ -175,7 +197,8 @@
 }
 
 - (IBAction)PopViewController:(id)sender {
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
+    //[self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (IBAction)ConfirmImage:(id)sender {

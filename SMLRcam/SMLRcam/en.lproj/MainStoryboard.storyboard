@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3715.3"/>
     </dependencies>
@@ -266,7 +266,7 @@
         <!--Flux Image Annotation View Controller-->
         <scene sceneID="3qH-pR-AJk">
             <objects>
-                <viewController id="5T1-Nf-tdE" customClass="FluxImageAnnotationViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FluxImageAnnotationViewController" id="5T1-Nf-tdE" customClass="FluxImageAnnotationViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="3Jj-lz-RYc"/>
                         <viewControllerLayoutGuide type="bottom" id="eKx-Hq-7jX"/>
@@ -275,7 +275,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Te-BV-B4d">
+                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Te-BV-B4d">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -478,7 +478,7 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="K2a-hM-va0"/>
                                     <barButtonItem title="Accept" id="lRl-3q-280">
                                         <connections>
-                                            <segue destination="5T1-Nf-tdE" kind="push" identifier="cameraPush" id="3Qx-aE-ptF"/>
+                                            <action selector="ConfirmImage:" destination="BuG-5Y-vZZ" id="5YX-uP-uy2"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>

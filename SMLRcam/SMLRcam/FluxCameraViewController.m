@@ -8,14 +8,20 @@
 
 #import "FluxCameraViewController.h"
 
+#import "FluxImageAnnotationViewController.h"
+
 #import <ImageIO/ImageIO.h>
 #import <QuartzCore/CoreAnimation.h>
+
+
 
 @interface FluxCameraViewController ()
 
 @end
 
 @implementation FluxCameraViewController
+
+
 
 
 // used for KVO observation of the @"capturingStillImage" property to perform flash bulb animation
@@ -583,6 +589,37 @@
     
     //clear all metadata
     [imgMetadata removeAllObjects];
+}
+
+- (IBAction)ConfirmImage:(id)sender {
+    
+    [self pauseAVCapture];
+    [self stopDeviceMotion];
+    [self stopUpdatingLocationAndHeading];
+    
+    //clean up UI
+    [gridView setHidden:NO];
+    [imageToolbar setHidden:YES];
+    [cameraButton setHidden:NO];
+    
+    
+    FluxImageAnnotationViewController *annotationsView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxImageAnnotationViewController"];
+    
+    [annotationsView setCapturedImage:capturedImage andImageData:imgData andImageMetadata:imgMetadata andTimestamp:theDate andLocation:location];
+    
+    annotationsView.view.backgroundColor = [UIColor clearColor];
+    
+//    self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+//    annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+//    [self presentViewController:annotationsView animated:YES completion:NULL];
+    
+    
+    annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    //self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
+    //annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    //self.modalPresentationStyle = UIModalPresentationCurrentContext;
+
+    [self presentViewController:annotationsView animated:YES completion:nil];
 }
 
 // perform a flash bulb animation using KVO to monitor the value of the capturingStillImage property of the AVCaptureStillImageOutput class
