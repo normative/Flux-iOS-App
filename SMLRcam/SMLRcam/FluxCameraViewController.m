@@ -237,7 +237,7 @@
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
     
     // test that the horizontal accuracy does not indicate an invalid measurement
-    if ((newLocation.horizontalAccuracy < 0) || (newLocation.horizontalAccuracy > 66))
+    if (newLocation.horizontalAccuracy < 0)
     {
         NSLog(@"Invalid measurement (horizontalAccuracy=%f)",newLocation.horizontalAccuracy);
         return;
@@ -277,6 +277,10 @@
     const double weight_time = 0.5;
     const double weight_accuracy = 0.5;
     
+    double corrected_lat = 0.0;
+    double corrected_long = 0.0;
+    
+    NSMutableArray *weights = [[NSMutableArray alloc] initWithCapacity:[locationMeasurements count]];
     CLLocation *temp_location;
     
     NSDate *min_date = [locationMeasurements valueForKeyPath:@"@min.timestamp"];
@@ -287,7 +291,6 @@
     //NSLog(@"Min/max accuracy: %f - %f", [min_accuracy doubleValue], [max_accuracy doubleValue]);
     
     #warning clean up this logic later (add as Objective C block)
-    NSMutableArray *weights = [[NSMutableArray alloc] initWithCapacity:[locationMeasurements count]];
     for (int i = 0; i < [locationMeasurements count]; i++) {
         temp_location = [locationMeasurements objectAtIndex:i];
         double time_component = ([max_date timeIntervalSinceDate:min_date] > 0) ?
@@ -304,6 +307,9 @@
         //NSLog(@"%f, %f, %f, %f, %f", time_component, accuracy_component, final_weight,
         //      temp_location.coordinate.latitude, temp_location.coordinate.longitude);
         weights[i] = [NSNumber numberWithDouble:final_weight];
+
+        corrected_lat += final_weight * temp_location.coordinate.latitude;
+        corrected_long += final_weight * temp_location.coordinate.longitude;
     }
     
     NSNumber *weight_sum = [weights valueForKeyPath:@"@sum.self"];
@@ -313,22 +319,12 @@
         NSLog(@"Zero or negative value for weight factor (%@)", weight_sum);
         return;
     }
-    
-    #warning clean up this logic later (add as Objective C block)
-    double corrected_lat = 0.0;
-    double corrected_long = 0.0;
-    for (int i = 0; i < [locationMeasurements count]; i++) {
-        temp_location = [locationMeasurements objectAtIndex:i];
-        corrected_lat += [weights[i] doubleValue] * temp_location.coordinate.latitude;
-        corrected_long += [weights[i] doubleValue] * temp_location.coordinate.longitude;
-    }
-    
+ 
     corrected_lat /= [weight_sum doubleValue];
     corrected_long /= [weight_sum doubleValue];
     
-    temp_location = [locationMeasurements lastObject];
-    
     // Update the public location information for consumption
+    temp_location = [locationMeasurements lastObject];
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(corrected_lat, corrected_long);
     location = [[CLLocation alloc] initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
     
