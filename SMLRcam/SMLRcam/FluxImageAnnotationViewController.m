@@ -61,8 +61,6 @@
             NSLog(@"I am currently at SubLocality %@",locatedAt);
             
             NSLog(@"%@", [placemark.addressDictionary description]);
-            
-            
         }
     }];
 }

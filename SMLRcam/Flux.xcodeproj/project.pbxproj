@@ -36,6 +36,7 @@
 		AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFF17AAD09500725AB1 /* MMDrawerVisualState.m */; };
 		AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */; };
 		AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */; };
+		AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */; };
 		AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */; };
 		AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */; };
 		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
@@ -86,6 +87,8 @@
 		AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MMDrawerController.m"; sourceTree = "<group>"; };
 		AA134B0C17AAD17200725AB1 /* FluxLeftDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLeftDrawerViewController.h; sourceTree = "<group>"; };
 		AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerViewController.m; sourceTree = "<group>"; };
+		AA4CE0FE17B43579008D04BE /* FluxLocationServicesSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLocationServicesSingleton.h; sourceTree = "<group>"; };
+		AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLocationServicesSingleton.m; sourceTree = "<group>"; };
 		AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTPlaceholderTextView.h; sourceTree = "<group>"; };
 		AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTPlaceholderTextView.m; sourceTree = "<group>"; };
 		AA70841217B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerCheckboxFilterTableViewCell.h; sourceTree = "<group>"; };
@@ -184,6 +187,7 @@
 				AA08279D17A6ADD00079672A /* Media.xcassets */,
 				AA85AD7217A999D4003EBC89 /* Camera Views */,
 				AA4CEF6C17A9586F00202A74 /* Custom UI Elements */,
+				AA4CE0FD17B43559008D04BE /* Tools */,
 				17604B6D1785CA59005CF054 /* Supporting Files */,
 			);
 			name = Flux;
@@ -234,6 +238,15 @@
 				AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */,
 			);
 			path = MMDrawerController;
+			sourceTree = "<group>";
+		};
+		AA4CE0FD17B43559008D04BE /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				AA4CE0FE17B43579008D04BE /* FluxLocationServicesSingleton.h */,
+				AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */,
+			);
+			name = Tools;
 			sourceTree = "<group>";
 		};
 		AA4CEF6C17A9586F00202A74 /* Custom UI Elements */ = {
@@ -394,6 +407,7 @@
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
 				AA7FBD3E17A6DD7600410E6B /* FluxCameraViewController.m in Sources */,
+				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
 				17604B771785CA59005CF054 /* FluxAppDelegate.m in Sources */,
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
