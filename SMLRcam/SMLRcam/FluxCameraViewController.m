@@ -304,8 +304,8 @@
         
         double final_weight = (weight_time*time_component) + (weight_accuracy*accuracy_component);
         
-        NSLog(@"%f, %f, %f, %f, %f", time_component, accuracy_component, final_weight,
-              temp_location.coordinate.latitude, temp_location.coordinate.longitude);
+        //NSLog(@"%f, %f, %f, %f, %f", time_component, accuracy_component, final_weight,
+        //      temp_location.coordinate.latitude, temp_location.coordinate.longitude);
         weights[i] = [NSNumber numberWithDouble:final_weight];
     }
     
@@ -329,14 +329,13 @@
     corrected_lat /= [weight_sum doubleValue];
     corrected_long /= [weight_sum doubleValue];
     
-    NSLog(@"Lat/Long: %f, %f", corrected_lat, corrected_long);
-    
     temp_location = [locationMeasurements lastObject];
     
+    // Update the public location information for consumption
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(corrected_lat, corrected_long);
-    location = [location initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
+    location = [[CLLocation alloc] initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
     
-    NSLog(@"Corrected lat/long: %f, %f", location.coordinate.latitude, location.coordinate.longitude);
+    NSLog(@"Saved lat/long: %f, %f", location.coordinate.latitude, location.coordinate.longitude);
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
