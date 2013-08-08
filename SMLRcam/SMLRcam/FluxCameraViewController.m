@@ -268,9 +268,6 @@
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];
     
-    // copy to variable which holds current location information
-    //location = newLocation;
-    
     // truncate data to maximum size of window (i.e. 5 locations)
     while ([locationMeasurements count] > 5)
     {
