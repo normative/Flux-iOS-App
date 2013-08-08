@@ -205,8 +205,6 @@
     // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
     locationManager.distanceFilter = kCLDistanceFilterNone;
     
-    NSLog(@"\naccuracy: %f\nfilter: %f", locationManager.desiredAccuracy, locationManager.distanceFilter);
-    
     if ([CLLocationManager headingAvailable]) {
         locationManager.headingFilter = 5;
     }
@@ -226,8 +224,15 @@
  *      going to use horizontal accuracy as the deciding factor. In other cases, you may wish to use vertical
  *      accuracy, or both together.
  */
-- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations
 {
+    // Grab last entry for now, since we should be getting all of them
+    if ([newLocations count] > 1)
+    {
+        NSLog(@"Received more than one location (%d)", [newLocations count]);
+    }
+    CLLocation *newLocation = [newLocations lastObject];
+    
     latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
     
@@ -245,13 +250,6 @@
         return;
     }
 
-    NSTimeInterval secondsSinceLastPoint = [newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp];
-    if (secondsSinceLastPoint < 0)
-    {
-        NSLog(@"location received out of order (%f)",secondsSinceLastPoint);
-        return;
-    }
-    
     // test the age of the location measurement to determine if the measurement is cached
     // in most cases you will not want to rely on cached measurements
     NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
@@ -264,33 +262,81 @@
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
-    NSLog(@"\n\nAdding new location  with date: %@ \nAnd Location: %f, %f, %f +/- %f, %f", [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude,
+    NSLog(@"Adding new location  with date: %@ \nAnd Location: %f, %f, %f +/- %f (h), %f (v)", [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude,
         newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
     
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];
     
-    while ([locationMeasurements count] > 10)
+    // copy to variable which holds current location information
+    //location = newLocation;
+    
+    // truncate data to maximum size of window (i.e. 5 locations)
+    while ([locationMeasurements count] > 5)
     {
         [locationMeasurements removeObjectAtIndex:0];
     }
     
-    int count = [locationMeasurements count];
-    int window_size = 3;
-    if (count >= window_size)
-    {
-        double sum_lat = 0;
-        double sum_long = 0;
-        for (int i = count - window_size; i < count; i++) {
-            location = [locationMeasurements objectAtIndex:i];
-            sum_lat += location.coordinate.latitude;
-            sum_long += location.coordinate.longitude;
-        }
-        double avg_lat = sum_lat / window_size;
-        double avg_long = sum_long / window_size;
+    const double weight_time = 0.5;
+    const double weight_accuracy = 0.5;
+    
+    CLLocation *temp_location;
+    
+    NSDate *min_date = [locationMeasurements valueForKeyPath:@"@min.timestamp"];
+    NSDate *max_date = [locationMeasurements valueForKeyPath:@"@max.timestamp"];
+    NSNumber *min_accuracy = [locationMeasurements valueForKeyPath:@"@min.horizontalAccuracy"];
+    NSNumber *max_accuracy = [locationMeasurements valueForKeyPath:@"@max.horizontalAccuracy"];
+    //NSLog(@"Min/max times: %@ - %@", [dateFormat stringFromDate:min_date], [dateFormat stringFromDate:max_date]);
+    //NSLog(@"Min/max accuracy: %f - %f", [min_accuracy doubleValue], [max_accuracy doubleValue]);
+    
+    #warning clean up this logic later (add as Objective C block)
+    NSMutableArray *weights = [[NSMutableArray alloc] initWithCapacity:[locationMeasurements count]];
+    for (int i = 0; i < [locationMeasurements count]; i++) {
+        temp_location = [locationMeasurements objectAtIndex:i];
+        double time_component = ([max_date timeIntervalSinceDate:min_date] > 0) ?
+                                ([temp_location.timestamp timeIntervalSinceDate:min_date] /
+                                [max_date timeIntervalSinceDate:min_date])
+                                : 1.0;
+        double accuracy_component = (([max_accuracy doubleValue] - [min_accuracy doubleValue]) > 0) ?
+                                    (1.0 - ((temp_location.horizontalAccuracy - [min_accuracy doubleValue]) /
+                                    ([max_accuracy doubleValue] - [min_accuracy doubleValue])))
+                                    : 1.0;
         
-        NSLog(@"\nAverage lat/long: %f, %f", avg_lat, avg_long);
+        double final_weight = (weight_time*time_component) + (weight_accuracy*accuracy_component);
+        
+        NSLog(@"%f, %f, %f, %f, %f", time_component, accuracy_component, final_weight,
+              temp_location.coordinate.latitude, temp_location.coordinate.longitude);
+        weights[i] = [NSNumber numberWithDouble:final_weight];
     }
+    
+    NSNumber *weight_sum = [weights valueForKeyPath:@"@sum.self"];
+    if ([weight_sum doubleValue] <= 0.0)
+    {
+        // we should never get here based on the above logic
+        NSLog(@"Zero or negative value for weight factor (%@)", weight_sum);
+        return;
+    }
+    
+    #warning clean up this logic later (add as Objective C block)
+    double corrected_lat = 0.0;
+    double corrected_long = 0.0;
+    for (int i = 0; i < [locationMeasurements count]; i++) {
+        temp_location = [locationMeasurements objectAtIndex:i];
+        corrected_lat += [weights[i] doubleValue] * temp_location.coordinate.latitude;
+        corrected_long += [weights[i] doubleValue] * temp_location.coordinate.longitude;
+    }
+    
+    corrected_lat /= [weight_sum doubleValue];
+    corrected_long /= [weight_sum doubleValue];
+    
+    NSLog(@"Lat/Long: %f, %f", corrected_lat, corrected_long);
+    
+    temp_location = [locationMeasurements lastObject];
+    
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(corrected_lat, corrected_long);
+    location = [location initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
+    
+    NSLog(@"Corrected lat/long: %f, %f", location.coordinate.latitude, location.coordinate.longitude);
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
@@ -399,8 +445,6 @@
                  
                  if ([locationMeasurements count] > 0)
                  {
-                     location = [locationMeasurements objectAtIndex:([locationMeasurements count] - 1)];
-                     
                      // Create GPS Dictionary
                      GPSDictionary = [[NSMutableDictionary alloc] init];
                      [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
