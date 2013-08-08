@@ -7,6 +7,9 @@
 //
 
 #import "FluxRightDrawerViewController.h"
+#import "UIViewController+MMDrawerController.h"
+
+#import "FluxFilterDrawerObject.h"
 
 @interface FluxRightDrawerViewController ()
 
@@ -26,7 +29,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    FluxFilterDrawerObject *MyNetworkFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Network" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:YES];
+    FluxFilterDrawerObject *PlacesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Places" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:NO];
+    FluxFilterDrawerObject *PeopleFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:NO];
+    FluxFilterDrawerObject *ThingsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Things" andtitleImage:[UIImage imageNamed:@"filter_Things.png"] andActive:NO];
+    FluxFilterDrawerObject *EventsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Events" andtitleImage:[UIImage imageNamed:@"filter_Events.png"] andActive:NO];
 
+    rightDrawerTableViewArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PlacesFilterObject, PeopleFilterObject, ThingsFilterObject, EventsFilterObject, nil];
+    
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -44,26 +55,96 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
-    return 0;
+    return [rightDrawerTableViewArray count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    static NSString *CellIdentifier = @"checkCell";
     
-    // Configure the cell...
+    //FluxDrawerCheckboxFilterTableViewCell * cell = [[FluxDrawerCheckboxFilterTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier andWithState:NO];
+    
+    FluxDrawerCheckboxFilterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
+
+    if (cell == nil) {
+        cell = [[FluxDrawerCheckboxFilterTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    }
+    
+    [cell.checkbox setDelegate:cell];
+    [cell setDelegate:self];
+    
+    
+    
+    //set the cell properties to the array elements declared above
+    cell.descriptorLabel.text = [[rightDrawerTableViewArray objectAtIndex:indexPath.row]title];
+    [cell.descriptorIconImageView setImage:[[rightDrawerTableViewArray objectAtIndex:indexPath.row]titleImage]];
+    
+    [cell setIsActive:[[rightDrawerTableViewArray objectAtIndex:indexPath.row]isChecked]];
+    
+    NSLog(@"%i",[[[cell contentView]subviews]count]);
+    for (UIView*subview in [[cell contentView]subviews]){
+        NSLog(@"%@", [[subview class]description]);
+
+    }
     
     return cell;
+    
+
+}
+
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+}
+
+//if the checkbox is selected, the callback comes here. In the method below we check which cell it is and mark the corresponding object as active.
+- (void)CheckboxCell:(FluxDrawerCheckboxFilterTableViewCell *)checkCell boxWasChecked:(BOOL)checked{
+    for (FluxDrawerCheckboxFilterTableViewCell* cell in [self.tableView visibleCells]) {
+        if (cell == checkCell) {
+            int index = [self.tableView indexPathForCell:cell].row;
+            [[rightDrawerTableViewArray objectAtIndex:index] setIsActive:checked];
+        }
+    }
+}
+
+
+#pragma mark - UISearchDisplayController Delegate Methods
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar{
+    [self.mm_drawerController
+     setMaximumRightDrawerWidth:[UIScreen mainScreen].bounds.size.width
+     animated:YES
+     completion:^(BOOL finished) {
+     }];
+    return YES;
+}
+
+- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar{
+    [self.mm_drawerController
+     setMaximumRightDrawerWidth:250.0
+     animated:YES
+     completion:^(BOOL finished) {
+     }];
+    return YES;
+}
+
+
+-(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString {
+
+    
+    // Return YES to cause the search result table view to be reloaded.
+    return YES;
+}
+
+-(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption {
+
+    // Return YES to cause the search result table view to be reloaded.
+    return YES;
 }
 
 /*

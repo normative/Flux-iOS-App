@@ -7,9 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FluxDrawerCheckboxFilterTableViewCell.h"
 
-@interface FluxRightDrawerViewController : UITableViewController{
+@interface FluxRightDrawerViewController : UITableViewController<DrawerCheckboxTableViewCellDelegate,UISearchBarDelegate, UISearchDisplayDelegate>{
     
+    NSArray *rightDrawerTableViewArray;
 }
+@property (weak, nonatomic) IBOutlet UISearchBar *filterSearchBar;
+
+
 
 @end

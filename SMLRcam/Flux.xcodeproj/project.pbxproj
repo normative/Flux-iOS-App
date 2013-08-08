@@ -37,6 +37,9 @@
 		AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */; };
 		AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */; };
 		AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */; };
+		AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */; };
+		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
+		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
 		AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */; };
 		AA7FBD3E17A6DD7600410E6B /* FluxCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBD3D17A6DD7600410E6B /* FluxCameraViewController.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
@@ -85,6 +88,12 @@
 		AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerViewController.m; sourceTree = "<group>"; };
 		AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTPlaceholderTextView.h; sourceTree = "<group>"; };
 		AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTPlaceholderTextView.m; sourceTree = "<group>"; };
+		AA70841217B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerCheckboxFilterTableViewCell.h; sourceTree = "<group>"; };
+		AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerCheckboxFilterTableViewCell.m; sourceTree = "<group>"; };
+		AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTCheckboxButton.h; sourceTree = "<group>"; };
+		AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTCheckboxButton.m; sourceTree = "<group>"; };
+		AA70841817B2D9FF005D4F9F /* FluxFilterDrawerObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterDrawerObject.h; sourceTree = "<group>"; };
+		AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterDrawerObject.m; sourceTree = "<group>"; };
 		AA7FBCF517A6CB1700410E6B /* FluxImageAnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageAnnotationViewController.h; sourceTree = "<group>"; };
 		AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageAnnotationViewController.m; sourceTree = "<group>"; };
 		AA7FBD3C17A6DD7600410E6B /* FluxCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraViewController.h; sourceTree = "<group>"; };
@@ -204,6 +213,10 @@
 				AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */,
 				AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */,
 				AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */,
+				AA70841217B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.h */,
+				AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */,
+				AA70841817B2D9FF005D4F9F /* FluxFilterDrawerObject.h */,
+				AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */,
 			);
 			name = Drawers;
 			sourceTree = "<group>";
@@ -228,6 +241,8 @@
 			children = (
 				AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */,
 				AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */,
+				AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */,
+				AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */,
 				AAED6C9617A2CD92004888FE /* PassthroughView.h */,
 				AAED6C9717A2CD92004888FE /* PassthroughView.m */,
 				AA85AD7017A995F7003EBC89 /* 3rd Party */,
@@ -373,6 +388,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */,
+				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
+				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
 				AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
@@ -385,6 +402,7 @@
 				AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */,
 				AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */,
 				AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */,
+				AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */,
 				AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
