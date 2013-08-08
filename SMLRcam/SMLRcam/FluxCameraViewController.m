@@ -290,7 +290,6 @@
     //NSLog(@"Min/max times: %@ - %@", [dateFormat stringFromDate:min_date], [dateFormat stringFromDate:max_date]);
     //NSLog(@"Min/max accuracy: %f - %f", [min_accuracy doubleValue], [max_accuracy doubleValue]);
     
-    #warning clean up this logic later (add as Objective C block)
     for (int i = 0; i < [locationMeasurements count]; i++) {
         temp_location = [locationMeasurements objectAtIndex:i];
         double time_component = ([max_date timeIntervalSinceDate:min_date] > 0) ?
