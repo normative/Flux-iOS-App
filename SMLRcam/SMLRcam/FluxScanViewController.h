@@ -11,14 +11,14 @@
 #import "MMDrawerBarButtonItem.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import <CoreLocation/CoreLocation.h>
+#import "FluxLocationServicesSingleton.h"
 
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
 
 
-@interface FluxScanViewController : UIViewController<CLLocationManagerDelegate>{
+@interface FluxScanViewController : UIViewController<LocationServicesSingletonDelegate>{
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
@@ -30,9 +30,8 @@
     
     
     
-    CLLocationManager *locationManager;
+    FluxLocationServicesSingleton *locationManager;
     CLGeocoder *theGeocoder;
-    CLLocation *location;
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
