@@ -58,11 +58,14 @@
     testTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateMotionLabels:) userInfo:nil repeats:YES];
 }
 
+- (void)viewDidDisappear:(BOOL)animated{
+    [testTimer invalidate];
+}
+
 - (void)dealloc{
     [self stopUpdatingLocationAndHeading];
     [self stopDeviceMotion];
     motionManager = nil;
-    locationManager = nil;
 }
 
 - (void)didReceiveMemoryWarning
@@ -196,33 +199,39 @@
 //allocates the location object and sets some parameters
 - (void)setupLocationManager
 {
-    
-    locationMeasurements = [[NSMutableArray alloc] init];
-    
-    // Create the manager object
-    locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = self;
-    
-    // This is the most important property to set for the manager. It ultimately determines how the manager will
-    // attempt to acquire location and thus, the amount of power that will be consumed.
-    locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
-    
-    // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
-    // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
-    locationManager.distanceFilter = kCLDistanceFilterNone;
-    
-    if ([CLLocationManager headingAvailable]) {
-        locationManager.headingFilter = 5;
+    locationManager = [FluxLocationServicesSingleton sharedManager];
+    [locationManager setDelegate:self];
+    if (locationManager.location != nil) {
+        [self LocationManager:locationManager didUpdateLocation:locationManager.location];
     }
+//    
+//    locationMeasurements = [[NSMutableArray alloc] init];
+//    
+//    // Create the manager object
+//    locationManager = [[CLLocationManager alloc] init];
+//    locationManager.delegate = self;
+//    
+//    // This is the most important property to set for the manager. It ultimately determines how the manager will
+//    // attempt to acquire location and thus, the amount of power that will be consumed.
+//    locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+//    
+//    // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
+//    // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
+//    locationManager.distanceFilter = kCLDistanceFilterNone;
+//    
+//    if ([CLLocationManager headingAvailable]) {
+//        locationManager.headingFilter = 5;
+//    }
 }
 
 - (void)startUpdatingLocationAndHeading
 {
-    [locationManager startUpdatingLocation];
-    
-    if ([CLLocationManager headingAvailable]) {
-        [locationManager startUpdatingHeading];
-    }
+    [locationManager startLocating];
+//    [locationManager startUpdatingLocation];
+//    
+//    if ([CLLocationManager headingAvailable]) {
+//        [locationManager startUpdatingHeading];
+//    }
 }
 
 /*
@@ -230,14 +239,8 @@
  *      going to use horizontal accuracy as the deciding factor. In other cases, you may wish to use vertical
  *      accuracy, or both together.
  */
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations
-{
-    // Grab last entry for now, since we should be getting all of them
-    if ([newLocations count] > 1)
-    {
-        NSLog(@"Received more than one location (%d)", [newLocations count]);
-    }
-    CLLocation *newLocation = [newLocations lastObject];
+#pragma mark - Location manager delegate methods
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
     
     latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
@@ -248,14 +251,14 @@
         NSLog(@"Invalid measurement (horizontalAccuracy=%f)",newLocation.horizontalAccuracy);
         return;
     }
-
+    
     // test that the vertical accuracy does not indicate an invalid measurement
     if (newLocation.verticalAccuracy < 0)
     {
         NSLog(@"Invalid measurement (verticalAccuracy=%f)",newLocation.verticalAccuracy);
         return;
     }
-
+    
     // test the age of the location measurement to determine if the measurement is cached
     // in most cases you will not want to rely on cached measurements
     NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
@@ -269,7 +272,7 @@
     [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
     NSLog(@"Adding new location  with date: %@ \nAnd Location: %f, %f, %f +/- %f (h), %f (v)", [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude,
-        newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
+          newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
     
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];
@@ -299,20 +302,20 @@
     for (int i = 0; i < [locationMeasurements count]; i++) {
         temp_location = [locationMeasurements objectAtIndex:i];
         double time_component = ([max_date timeIntervalSinceDate:min_date] > 0) ?
-                                ([temp_location.timestamp timeIntervalSinceDate:min_date] /
-                                [max_date timeIntervalSinceDate:min_date])
-                                : 1.0;
+        ([temp_location.timestamp timeIntervalSinceDate:min_date] /
+         [max_date timeIntervalSinceDate:min_date])
+        : 1.0;
         double accuracy_component = (([max_accuracy doubleValue] - [min_accuracy doubleValue]) > 0) ?
-                                    (1.0 - ((temp_location.horizontalAccuracy - [min_accuracy doubleValue]) /
-                                    ([max_accuracy doubleValue] - [min_accuracy doubleValue])))
-                                    : 1.0;
+        (1.0 - ((temp_location.horizontalAccuracy - [min_accuracy doubleValue]) /
+                ([max_accuracy doubleValue] - [min_accuracy doubleValue])))
+        : 1.0;
         
         double final_weight = (weight_time*time_component) + (weight_accuracy*accuracy_component);
         
         //NSLog(@"%f, %f, %f, %f, %f", time_component, accuracy_component, final_weight,
         //      temp_location.coordinate.latitude, temp_location.coordinate.longitude);
         weights[i] = [NSNumber numberWithDouble:final_weight];
-
+        
         corrected_lat += final_weight * temp_location.coordinate.latitude;
         corrected_long += final_weight * temp_location.coordinate.longitude;
     }
@@ -324,7 +327,7 @@
         NSLog(@"Zero or negative value for weight factor (%@)", weight_sum);
         return;
     }
- 
+    
     corrected_lat /= [weight_sum doubleValue];
     corrected_long /= [weight_sum doubleValue];
     
@@ -336,30 +339,9 @@
     NSLog(@"Saved lat/long: %f, %f", location.coordinate.latitude, location.coordinate.longitude);
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
-    if (newHeading.headingAccuracy < 0)
-        return;
-    
-    // Use the true heading if it is valid.
-    heading = ((newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading);
-}
-
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    // The location "unknown" error simply means the manager is currently unable to get the location.
-    if ([error code] != kCLErrorLocationUnknown)
-    {
-        [self stopUpdatingLocationAndHeading];
-        [self stopDeviceMotion];
-    }
-}
-
 - (void)stopUpdatingLocationAndHeading
 {
-    [locationManager stopUpdatingLocation];
-    
-    if ([CLLocationManager headingAvailable]) {
-        [locationManager stopUpdatingHeading];
-    }
+    [locationManager endLocating];
 }
 
 //starts the motion manager and sets an update interval
@@ -472,7 +454,7 @@
                  [imgMetadata setValue:GPSDictionary forKey:(NSString *)@"Position"];
                  
                  //add heading
-                 [imgMetadata setValue:[NSNumber numberWithDouble:heading] forKey:(NSString *)@"Heading"];
+                 [imgMetadata setValue:[NSNumber numberWithDouble:locationManager.heading] forKey:(NSString *)@"Heading"];
                  
                  NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
                  //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
@@ -574,9 +556,6 @@
                  [imageToolbar setHidden:NO];
                  [cameraButton setHidden:YES];
                  [gridView setHidden:YES];
-                 
-                 [testTimer invalidate];
-                 
              }
          }];
 }

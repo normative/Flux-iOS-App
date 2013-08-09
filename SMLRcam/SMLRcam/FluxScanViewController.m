@@ -27,65 +27,25 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (void)setupLocationManager
 {
     // Create the manager object
-    locationManager = [[CLLocationManager alloc] init];
-    locationManager.delegate = self;
-    
-    // This is the most important property to set for the manager. It ultimately determines how the manager will
-    // attempt to acquire location and thus, the amount of power that will be consumed.
-    locationManager.desiredAccuracy = 1.0;
-    
-    // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
-    // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
-    locationManager.distanceFilter = 0.1;
+    locationManager = [FluxLocationServicesSingleton sharedManager];
+    [locationManager setDelegate:self];
 }
 
 - (void)startUpdatingLocation
 {
-    if (!locationManager) {
-        [self setupLocationManager];
-    }
-    // Once configured, the location manager must be "started".
-    [locationManager startUpdatingLocation];
-}
-
-/*
- * We want to get and store a location measurement that meets the desired accuracy. For this example, we are
- *      going to use horizontal accuracy as the deciding factor. In other cases, you may wish to use vertical
- *      accuracy, or both together.
- */
-- (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
-{
-    // test that the horizontal accuracy does not indicate an invalid measurement
-    if (newLocation.horizontalAccuracy < 0)
-    {
-        fprintf(stderr, "\nInvalid measurement (%f)", newLocation.horizontalAccuracy);
-        return;
-    }
-    
-    // test the age of the location measurement to determine if the measurement is cached
-    // in most cases you will not want to rely on cached measurements
-    NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
-    if (locationAge > 5.0)
-    {
-        fprintf(stderr, "\nlocation age too old (%f)", locationAge);
-        return;
-    }
-    location = newLocation;
-    [self reverseGeocodeLocation:newLocation];
-}
-
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    // The location "unknown" error simply means the manager is currently unable to get the location.
-    if ([error code] != kCLErrorLocationUnknown)
-    {
-        [self stopUpdatingLocation];
-    }
+    [locationManager startLocating];
 }
 
 - (void)stopUpdatingLocation
 {
-    [locationManager stopUpdatingLocation];
+    [locationManager endLocating];
 }
+
+#pragma mark - Location Singleton Delegate Methods
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
+    [self reverseGeocodeLocation:newLocation];
+}
+
 
 #pragma mark - Drawer Methods
 
@@ -158,7 +118,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 {
     [super viewDidLoad];
     
-    
+    [self setupLocationManager];
     //leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(showLeftDrawer:)];
     
     

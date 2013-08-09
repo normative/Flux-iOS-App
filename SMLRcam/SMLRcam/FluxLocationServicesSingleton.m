@@ -62,7 +62,7 @@
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
     //set it to most recent for now
-    self.location = [locations objectAtIndex:0];
+    self.location = [locations lastObject];
     
     if ([delegate respondsToSelector:@selector(LocationManager:didUpdateLocation:)]) {
         [delegate LocationManager:self didUpdateLocation:self.location];

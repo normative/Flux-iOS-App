@@ -12,8 +12,8 @@
 @class FluxLocationServicesSingleton;
 @protocol LocationServicesSingletonDelegate <NSObject>
 @optional
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation*)location;
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateHeading:(CLLocationDirection)heading;
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation*)newLocation;
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateHeading:(CLLocationDirection)newHeading;
 @end
 
 

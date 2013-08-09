@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
+#import "FluxLocationServicesSingleton.h"
 
 #import "FluxImageAnnotationViewController.h"
 
-@interface FluxCameraViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate, CLLocationManagerDelegate>{
+@interface FluxCameraViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate, LocationServicesSingletonDelegate>{
     
     //AV Capture
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -29,7 +29,7 @@
     NSTimer         *updateTimer;
     
     //location + motion
-    CLLocationManager *locationManager;
+    FluxLocationServicesSingleton *locationManager;
     NSMutableArray *locationMeasurements;
     CMMotionManager *motionManager;
     
@@ -40,7 +40,6 @@
     NSString *timestampString;
     NSDate*theDate;
     CLLocation *location;
-    CLLocationDirection heading;
     
     UIImageView *gridView;
     
