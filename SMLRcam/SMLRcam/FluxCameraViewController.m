@@ -404,6 +404,13 @@
 }
 
 - (IBAction)TakePicture:(id)sender {
+    
+    __block NSDate *startTime = [NSDate date];
+    
+    __block NSDate *endTime = [NSDate date];
+    __block NSTimeInterval executionTime = [endTime timeIntervalSinceDate:startTime];
+    NSLog(@"Execution Time (0.5): %f", executionTime);
+    
     //make fake image for now
     // Find out the current orientation and tell the still image output.
 	AVCaptureConnection *stillImageConnection = [stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
@@ -420,6 +427,10 @@
              }
              else
              {
+                 endTime = [NSDate date];
+                 executionTime = [endTime timeIntervalSinceDate:startTime];
+                 NSLog(@"Execution Time (1): %f", executionTime);
+                 
                  // code here
                  CFDictionaryRef metaDict = CMCopyDictionaryOfAttachments(NULL, imageDataSampleBuffer, kCMAttachmentMode_ShouldPropagate);
                  
@@ -442,6 +453,11 @@
                  
                  if ([locationMeasurements count] > 0)
                  {
+                     
+                     endTime = [NSDate date];
+                     executionTime = [endTime timeIntervalSinceDate:startTime];
+                     NSLog(@"Execution Time (2): %f", executionTime);
+
                      // Create GPS Dictionary
                      GPSDictionary = [[NSMutableDictionary alloc] init];
                      [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
@@ -476,6 +492,10 @@
                  
                  NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
                  //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
+                 
+                 endTime = [NSDate date];
+                 executionTime = [endTime timeIntervalSinceDate:startTime];
+                 NSLog(@"Execution Time (3): %f", executionTime);
                  
                  // grab motion
                  CMAttitude *att = motionManager.deviceMotion.attitude;
