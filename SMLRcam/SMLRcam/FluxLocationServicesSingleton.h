@@ -20,11 +20,12 @@
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     CLLocationManager * locationManager;
     
-    id __unsafe_unretained delegate;
+    id __weak delegate;
+    NSMutableArray *locationMeasurements;
 }
 
-@property (unsafe_unretained) id <LocationServicesSingletonDelegate> delegate;
-@property (nonatomic, weak) CLLocation* location;
+@property (weak) id <LocationServicesSingletonDelegate> delegate;
+@property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
 
 + (id)sharedManager;

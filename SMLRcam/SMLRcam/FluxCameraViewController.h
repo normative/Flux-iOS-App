@@ -30,7 +30,6 @@
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
-    NSMutableArray *locationMeasurements;
     CMMotionManager *motionManager;
     
     //captured Data
@@ -39,7 +38,6 @@
     NSMutableData *imgData;
     NSString *timestampString;
     NSDate*theDate;
-    CLLocation *location;
     
     UIImageView *gridView;
     
