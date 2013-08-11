@@ -204,6 +204,8 @@
     if (locationManager.location != nil) {
         [self LocationManager:locationManager didUpdateLocation:locationManager.location];
     }
+    
+    locationMeasurements = [[NSMutableArray alloc] init];
 //    
 //    locationMeasurements = [[NSMutableArray alloc] init];
 //    
