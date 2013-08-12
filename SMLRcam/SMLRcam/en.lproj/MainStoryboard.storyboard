@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="1rr-4J-QvC">
     <dependencies>
         <deployment defaultVersion="1552" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
@@ -466,23 +466,6 @@
                                     <action selector="TakePicture:" destination="BuG-5Y-vZZ" eventType="touchUpInside" id="8r0-5F-gDY"/>
                                 </connections>
                             </button>
-                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" alpha="0.69999999999999973" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WCb-gR-q6c">
-                                <rect key="frame" x="0.0" y="524" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <items>
-                                    <barButtonItem title="Retake" id="5Hj-pW-8yq">
-                                        <connections>
-                                            <action selector="RetakePictureAction:" destination="BuG-5Y-vZZ" id="g6q-3F-va0"/>
-                                        </connections>
-                                    </barButtonItem>
-                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="K2a-hM-va0"/>
-                                    <barButtonItem title="Accept" id="lRl-3q-280">
-                                        <connections>
-                                            <action selector="ConfirmImage:" destination="BuG-5Y-vZZ" id="5YX-uP-uy2"/>
-                                        </connections>
-                                    </barButtonItem>
-                                </items>
-                            </toolbar>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Lat:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v01-TI-UTC">
                                 <rect key="frame" x="214" y="0.0" width="26" height="13"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -543,16 +526,34 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jHc-ID-d6Q">
+                                <rect key="frame" x="13" y="506" width="96" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" image="retakeButton">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="RetakePictureAction:" destination="BuG-5Y-vZZ" eventType="touchUpInside" id="gnq-He-I5g"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6e-HX-z1e">
+                                <rect key="frame" x="227" y="506" width="73" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" image="useButton">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="ConfirmImage:" destination="BuG-5Y-vZZ" eventType="touchUpInside" id="jNb-tN-h5s"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="WCb-gR-q6c" firstAttribute="leading" secondItem="M2N-pS-ztO" secondAttribute="leading" id="0fi-ZX-7Ck"/>
-                            <constraint firstItem="WCb-gR-q6c" firstAttribute="bottom" secondItem="M2N-pS-ztO" secondAttribute="bottom" id="Fr4-96-bZc"/>
                             <constraint firstItem="3ze-nY-6n7" firstAttribute="top" secondItem="M2N-pS-ztO" secondAttribute="top" constant="15" id="SEW-7u-Kf1"/>
-                            <constraint firstItem="WCb-gR-q6c" firstAttribute="centerX" secondItem="3Av-wb-2Ce" secondAttribute="centerX" id="VkC-Lz-xTH"/>
                             <constraint firstAttribute="bottom" secondItem="3Av-wb-2Ce" secondAttribute="bottom" constant="20" id="eX0-j7-N80"/>
                             <constraint firstAttribute="centerX" secondItem="3Av-wb-2Ce" secondAttribute="centerX" id="g8x-5B-eSN"/>
-                            <constraint firstItem="WCb-gR-q6c" firstAttribute="bottom" secondItem="M2N-pS-ztO" secondAttribute="bottom" id="h8s-T7-Iq0"/>
                             <constraint firstItem="3ze-nY-6n7" firstAttribute="leading" secondItem="M2N-pS-ztO" secondAttribute="leading" constant="15" id="nPe-IY-jQy"/>
                         </constraints>
                     </view>
@@ -560,9 +561,10 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="cameraButton" destination="3Av-wb-2Ce" id="FPf-RY-bZO"/>
-                        <outlet property="imageToolbar" destination="WCb-gR-q6c" id="Ssv-Sa-qlb"/>
                         <outlet property="latitudeLabel" destination="tPe-ia-k2e" id="ExQ-hR-Vwu"/>
                         <outlet property="longitudeLabel" destination="cgt-S1-9fw" id="btD-nB-bs2"/>
+                        <outlet property="retakeButton" destination="jHc-ID-d6Q" id="lz0-LL-XuJ"/>
+                        <outlet property="useButton" destination="b6e-HX-z1e" id="Ix9-dx-jm1"/>
                         <outlet property="xLabel" destination="0ZB-61-Q54" id="lEd-kU-sXY"/>
                         <outlet property="yLabel" destination="XKF-gJ-968" id="RxE-F7-kyg"/>
                         <outlet property="zLabel" destination="0cd-js-YVv" id="6fh-fW-sHI"/>
@@ -572,6 +574,23 @@
             </objects>
             <point key="canvasLocation" x="868" y="56"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="K5p-nR-1xe">
+            <objects>
+                <viewController id="1rr-4J-QvC" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ynv-o1-svP"/>
+                        <viewControllerLayoutGuide type="bottom" id="mja-y3-v2s"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="q4j-9s-yFO">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zQ2-FG-8hY" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
     </scenes>
     <resources>
         <image name="approveButton" width="30.239999771118164" height="30.239999771118164"/>
@@ -580,6 +599,8 @@
         <image name="closeButton" width="30.239999771118164" height="30.239999771118164"/>
         <image name="filterButton" width="38.880001068115234" height="14.880000114440918"/>
         <image name="menuButton" width="26.879999160766602" height="15.840000152587891"/>
+        <image name="retakeButton" width="92" height="33"/>
+        <image name="useButton" width="73" height="33"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

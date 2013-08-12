@@ -45,7 +45,8 @@
     [self setupMotionManager];
     [self AddGridlinesToView];
     
-    [imageToolbar setHidden:YES];
+    [retakeButton setHidden:YES];
+    [useButton setHidden:YES];
     [self setupAVCapture];
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
@@ -191,7 +192,8 @@
     gridView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"CameraGridlines.png"]];
     [gridView setFrame:self.view.bounds];
     [gridView setContentMode:UIViewContentModeScaleAspectFill];
-    [self.view insertSubview:gridView belowSubview:imageToolbar];
+    [self.view insertSubview:gridView aboveSubview:retakeButton];
+    [self.view insertSubview:gridView aboveSubview:useButton];
 }
 
 #pragma mark Location/Orientation Init
@@ -453,7 +455,8 @@
                  
                  //UI Updates
                  [self pauseAVCapture];
-                 [imageToolbar setHidden:NO];
+                 [useButton setHidden:NO];
+                 [retakeButton setHidden:NO];
                  [cameraButton setHidden:YES];
                  [gridView setHidden:YES];
              }
@@ -462,7 +465,8 @@
 
 - (IBAction)RetakePictureAction:(id)sender {
     [self restartAVCapture];
-    [imageToolbar setHidden:YES];
+    [useButton setHidden:YES];
+    [retakeButton setHidden:YES];
     [cameraButton setHidden:NO];
     [gridView setHidden:NO];
     
@@ -478,7 +482,8 @@
     
     //clean up UI
     [gridView setHidden:NO];
-    [imageToolbar setHidden:YES];
+    [useButton setHidden:YES];
+    [retakeButton setHidden:YES];
     [cameraButton setHidden:NO];
     
     
@@ -549,7 +554,8 @@
         
         //clean up UI
         [gridView setHidden:NO];
-        [imageToolbar setHidden:YES];
+        [useButton setHidden:YES];
+        [retakeButton setHidden:YES];
         [cameraButton setHidden:NO];
         
         // Get reference to the destination view controller

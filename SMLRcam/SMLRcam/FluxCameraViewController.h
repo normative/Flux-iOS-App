@@ -49,7 +49,9 @@
     __weak IBOutlet UILabel *zLabel;
     NSTimer *testTimer;
     
-    __weak IBOutlet UIToolbar *imageToolbar;
+    __weak IBOutlet UIButton *retakeButton;
+    __weak IBOutlet UIButton *useButton;
+    
     __weak IBOutlet UIButton *cameraButton;
 }
 - (IBAction)CloseCamera:(id)sender;
