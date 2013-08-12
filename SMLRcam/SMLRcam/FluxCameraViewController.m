@@ -321,16 +321,16 @@
                  if (location != nil)
                  {
                      // Create GPS Dictionary
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
                      [GPSDictionary setValue:((location.coordinate.latitude >= 0) ? @"N" : @"S") forKey:(NSString *)kCGImagePropertyGPSLatitudeRef];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.coordinate.longitude)] forKey:(NSString *)kCGImagePropertyGPSLongitude];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.coordinate.longitude)] forKey:(NSString *)kCGImagePropertyGPSLongitude];
                      [GPSDictionary setValue:((location.coordinate.longitude >= 0) ? @"E" : @"W") forKey:(NSString *)kCGImagePropertyGPSLongitudeRef];
                      [GPSDictionary setValue:[formatter stringFromDate:[location timestamp]] forKey:(NSString *)kCGImagePropertyGPSDateStamp];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.altitude)] forKey:(NSString *)kCGImagePropertyGPSAltitude];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.horizontalAccuracy)] forKey:(NSString *)(NSString *)@"HorizontalAccuracy"];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.verticalAccuracy)] forKey:(NSString *)(NSString *)@"VerticalAccuracy"];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.speed)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSSpeed];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.course)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSDestBearing];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.altitude)] forKey:(NSString *)kCGImagePropertyGPSAltitude];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.horizontalAccuracy)] forKey:(NSString *)(NSString *)@"HorizontalAccuracy"];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.verticalAccuracy)] forKey:(NSString *)(NSString *)@"VerticalAccuracy"];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.speed)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSSpeed];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.course)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSDestBearing];
 
                      [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss:SS"];
                      //timestampstr = [formatter stringFromDate:loc.timestamp];
