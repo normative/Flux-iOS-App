@@ -44,8 +44,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - Location Singleton Delegate Methods
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
-    [self reverseGeocodeLocation:newLocation];
+
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateAddressWithPlacemark:(CLPlacemark *)placemark{
+    NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
+    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+    locationLabel.text = locationString;
 }
 
 
@@ -71,33 +74,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     
     //the popover will be presented from the okButton view
     [popover presentPopoverFromView:sender];
-}
-
-#pragma mark - Location_Geocoding
-
-- (void)reverseGeocodeLocation:(CLLocation*)thelocation
-{
-    theGeocoder = [[CLGeocoder alloc] init];
-    
-    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error) {
-        
-        if (error)
-        {
-            if (error.code == kCLErrorNetwork || (error.code == kCLErrorGeocodeFoundPartialResult))
-            {
-                NSLog(@"No internet connection for reverse geolocation");
-            }
-            else
-                NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
-        }
-        else
-        {
-            CLPlacemark *placemark = [placemarks objectAtIndex:0];
-            NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-            locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-            locationLabel.text = locationString;
-        }
-    }];
 }
 
 #pragma mark - OpenGL Methods

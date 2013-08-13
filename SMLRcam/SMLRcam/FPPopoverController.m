@@ -186,7 +186,7 @@
     [_contentView setNeedsDisplay];
     [_touchView setNeedsDisplay];
     
-    [self.contentView setFrame:CGRectMake(20, self.contentView.frame.origin.y+20, self.touchView.frame.size.width-40,self.contentView.frame.size.height)];
+    [self.contentView setFrame:CGRectMake(20, self.contentView.frame.origin.y+30, self.touchView.frame.size.width-40,self.contentView.frame.size.height)];
 
 }
 

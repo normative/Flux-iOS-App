@@ -49,6 +49,8 @@
     if ([CLLocationManager headingAvailable]) {
         [locationManager startUpdatingHeading];
     }
+    else
+        NSLog(@"No Heading Information Available");
 }
 - (void)endLocating{
     [locationManager stopUpdatingLocation];
@@ -67,17 +69,17 @@
     if ([delegate respondsToSelector:@selector(LocationManager:didUpdateLocation:)]) {
         [delegate LocationManager:self didUpdateLocation:self.location];
     }
+    [self reverseGeocodeLocation:self.location];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
     if (newHeading.headingAccuracy < 0)
         return;
-    
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading);
     
-    if ([delegate respondsToSelector:@selector(LocationManager:didUpdateHeading:)]) {
-        [delegate LocationManager:self didUpdateHeading:self.heading];
+    if ([delegate respondsToSelector:@selector(LocationManager:didUpdateToHeading:)]) {
+        [delegate LocationManager:self didUpdateToHeading:self.heading];
     }
 }
 
@@ -87,6 +89,38 @@
     {
         [self endLocating];
     }
+}
+
+#pragma mark - location geocoding
+- (void)reverseGeocodeLocation:(CLLocation*)thelocation
+{
+    CLGeocoder* theGeocoder = [[CLGeocoder alloc] init];
+    
+    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error) {
+        
+        if (error)
+        {
+            if (error.code == kCLErrorNetwork)
+            {
+                NSLog(@"No internet connection for reverse geolocation");
+                //Alert(@"No Internet connection!");
+            }
+            else if (error.code == kCLErrorGeocodeFoundPartialResult){
+                NSLog(@"Only partial placemark returned");
+            }
+            else
+                NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
+        }
+        else
+        {
+            self.placemark = [placemarks lastObject];
+            
+            //fire the delegate method with the given placemark
+            if ([delegate respondsToSelector:@selector(LocationManager:didUpdateAddressWithPlacemark:)]) {
+                [delegate LocationManager:self didUpdateAddressWithPlacemark:self.placemark];
+            }
+        }
+    }];
 }
 
 @end

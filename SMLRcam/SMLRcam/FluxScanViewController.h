@@ -32,7 +32,6 @@
     
     
     FluxLocationServicesSingleton *locationManager;
-    CLGeocoder *theGeocoder;
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;

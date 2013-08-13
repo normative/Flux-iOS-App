@@ -48,6 +48,7 @@
 		AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */; };
 		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
 		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
+		AA7457BA17BA78CF008988C1 /* FluxRotatingCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */; };
 		AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */; };
 		AA7FBD3E17A6DD7600410E6B /* FluxCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBD3D17A6DD7600410E6B /* FluxCameraViewController.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
@@ -119,6 +120,8 @@
 		AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTCheckboxButton.m; sourceTree = "<group>"; };
 		AA70841817B2D9FF005D4F9F /* FluxFilterDrawerObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterDrawerObject.h; sourceTree = "<group>"; };
 		AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterDrawerObject.m; sourceTree = "<group>"; };
+		AA7457B817BA78CF008988C1 /* FluxRotatingCompassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRotatingCompassButton.h; sourceTree = "<group>"; };
+		AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRotatingCompassButton.m; sourceTree = "<group>"; };
 		AA7FBCF517A6CB1700410E6B /* FluxImageAnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageAnnotationViewController.h; sourceTree = "<group>"; };
 		AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageAnnotationViewController.m; sourceTree = "<group>"; };
 		AA7FBD3C17A6DD7600410E6B /* FluxCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraViewController.h; sourceTree = "<group>"; };
@@ -311,6 +314,8 @@
 		AA4CEF6C17A9586F00202A74 /* Custom UI Elements */ = {
 			isa = PBXGroup;
 			children = (
+				AA7457B817BA78CF008988C1 /* FluxRotatingCompassButton.h */,
+				AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */,
 				AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */,
 				AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */,
 				AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */,
@@ -468,6 +473,7 @@
 				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
 				AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
+				AA7457BA17BA78CF008988C1 /* FluxRotatingCompassButton.m in Sources */,
 				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
 				AA7FBD3E17A6DD7600410E6B /* FluxCameraViewController.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
@@ -578,7 +584,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -597,7 +603,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;

@@ -13,23 +13,25 @@
 @protocol LocationServicesSingletonDelegate <NSObject>
 @optional
 - (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation*)newLocation;
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateHeading:(CLLocationDirection)newHeading;
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateToHeading:(CLLocationDirection)newHeading;
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateAddressWithPlacemark:(CLPlacemark*)placemark;
 @end
 
 
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     CLLocationManager * locationManager;
-    
-    id __unsafe_unretained delegate;
+    __weak id <LocationServicesSingletonDelegate> delegate;
 }
-
-@property (unsafe_unretained) id <LocationServicesSingletonDelegate> delegate;
+@property (nonatomic, weak) id <LocationServicesSingletonDelegate> delegate;
 @property (nonatomic, weak) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
+@property (nonatomic,weak) CLPlacemark* placemark;
 
 + (id)sharedManager;
 
 - (void)startLocating;
 - (void)endLocating;
+
+- (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 
 @end

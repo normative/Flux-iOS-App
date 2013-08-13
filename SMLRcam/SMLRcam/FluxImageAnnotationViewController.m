@@ -30,41 +30,6 @@
     //[self ConfirmImage:nil];
 }
 
-#pragma mark - location geocoding
-- (void)reverseGeocodeLocation:(CLLocation*)thelocation
-{
-    theGeocoder = [[CLGeocoder alloc] init];
-   
-    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error) {
-        
-        if (error)
-        {
-            if (error.code == kCLErrorNetwork || (error.code == kCLErrorGeocodeFoundPartialResult))
-            {
-                NSLog(@"No internet connection for reverse geolocation");
-                //Alert(@"No Internet connection!");
-            }
-            else
-                NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
-        }
-        else
-        {
-            CLPlacemark *placemark = [placemarks objectAtIndex:0];
-            NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-            locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-            locationLabel.text = locationString;
-            
-            NSString *locatedAt = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
-            NSLog(@"I am currently at Address %@",locatedAt);
-            
-            locatedAt = [placemark.addressDictionary valueForKey:@"SubLocality"];
-            NSLog(@"I am currently at SubLocality %@",locatedAt);
-            
-            NSLog(@"%@", [placemark.addressDictionary description]);
-        }
-    }];
-}
-
 #pragma mark - image manipulation
 
 //blurs an image using coreImage. Blur is between 0-1
@@ -120,7 +85,7 @@
 {
     [super viewDidLoad];
     
-    
+    locationManager = [FluxLocationServicesSingleton sharedManager];
     
     [backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
     [self AddGradientImageToBackgroundWithAlpha:0.7];
@@ -190,7 +155,9 @@
     timestamp = theTimestamp;
     location = theLocation;
     
-    [self reverseGeocodeLocation:location];
+    NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
+    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+    locationLabel.text = locationString;
 }
 
 - (void)didReceiveMemoryWarning
