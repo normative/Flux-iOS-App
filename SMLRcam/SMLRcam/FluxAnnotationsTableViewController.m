@@ -8,8 +8,9 @@
 
 #import "FluxAnnotationsTableViewController.h"
 #import "FluxAnnotationTableViewCell.h"
-
 #import "FluxScanImageObject.h"
+
+#import "IDMPhotoBrowser.h"
 
 @interface FluxAnnotationsTableViewController ()
 
@@ -116,6 +117,27 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+//    NSArray *photosURL = @[[NSURL URLWithString:@"http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_b.jpg"],
+//                           [NSURL URLWithString:@"http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_b.jpg"],
+//                           [NSURL URLWithString:@"http://farm4.static.flickr.com/3364/3338617424_7ff836d55f_b.jpg"],
+//                           [NSURL URLWithString:@"http://farm4.static.flickr.com/3590/3329114220_5fbc5bc92b_b.jpg"]];
+//    
+//    // Create an array to store IDMPhoto objects
+//    NSMutableArray *photos = [[NSMutableArray alloc] init];
+//    
+//    for (NSURL *url in photosURL) {
+//        IDMPhoto *photo = [IDMPhoto photoWithURL:url];
+//        [photos addObject:photo];
+//    }
+//    
+//    //IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:[tableView cellForRowAtIndexPath:indexPath].contentView];
+//    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos];
+//    browser.displayArrowButton = NO;
+//    
+//    // Show
+//    [self presentViewController:browser animated:YES completion:nil];
+    
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
