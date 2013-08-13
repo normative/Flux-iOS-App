@@ -11,10 +11,6 @@
 
 #pragma mark- OpenGL Init
 
-
-
-
-
 static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
 static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;};
 

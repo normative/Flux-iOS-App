@@ -556,9 +556,7 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
     [operation setCompletionBlockWithSuccess:success failure:failure];
 
     operation.credential = self.defaultCredential;
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
     operation.SSLPinningMode = self.defaultSSLPinningMode;
-#endif
     operation.allowsInvalidSSLCertificate = self.allowsInvalidSSLCertificate;
 
     return operation;
@@ -739,8 +737,8 @@ static void AFNetworkReachabilityReleaseCallback(const void *info) {
 
     HTTPClient.stringEncoding = self.stringEncoding;
     HTTPClient.parameterEncoding = self.parameterEncoding;
-    HTTPClient.registeredHTTPOperationClassNames = [self.registeredHTTPOperationClassNames copyWithZone:zone];
-    HTTPClient.defaultHeaders = [self.defaultHeaders copyWithZone:zone];
+    HTTPClient.registeredHTTPOperationClassNames = [self.registeredHTTPOperationClassNames mutableCopyWithZone:zone];
+    HTTPClient.defaultHeaders = [self.defaultHeaders mutableCopyWithZone:zone];
 #ifdef _SYSTEMCONFIGURATION_H
     HTTPClient.networkReachabilityStatusBlock = self.networkReachabilityStatusBlock;
 #endif

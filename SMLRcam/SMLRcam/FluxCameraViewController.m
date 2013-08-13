@@ -47,6 +47,7 @@
     
     [retakeButton setHidden:YES];
     [useButton setHidden:YES];
+    
     [self setupAVCapture];
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
@@ -502,7 +503,7 @@
     //self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
     //annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     //self.modalPresentationStyle = UIModalPresentationCurrentContext;
-
+    
     [self presentViewController:annotationsView animated:YES completion:nil];
 }
 
