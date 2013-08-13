@@ -28,8 +28,6 @@
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     
-    
-    
     FluxLocationServicesSingleton *locationManager;
     CLGeocoder *theGeocoder;
 }
