@@ -9,6 +9,16 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>Pods-DACircularProgress.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>6</integer>
+		</dict>
+		<key>Pods-IDMPhotoBrowser.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>7</integer>
+		</dict>
 		<key>Pods-RestKit.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -18,6 +28,11 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
+		</dict>
+		<key>Pods-SVProgressHUD.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
 		</dict>
 		<key>Pods-TransitionKit.xcscheme</key>
 		<dict>
@@ -32,12 +47,47 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>0149A64683D24048B4FEBE83</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>0344BF30B3C64B9A872EBD2F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>1A008A1E7FFF40FDA7AA1605</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1E763EA9B2E04FAC9949E7F1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>31B33F7F61DE4FD19FE89141</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>35F821B7F86B482DBFD74B4C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>367FC7AD14FE46F0BC6C3616</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>3B2419F7A2934E49917FE9C8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>3F9E884DEEAD4516914DB53C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -52,7 +102,47 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>5E80513934254CD59F3C9394</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>6DBDD38D33D34B3E8BECF90D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>73C8D6BBE0984D608254E0CC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>776E346B850043F09A30BE6A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>8075173733874DD1BE6C83EA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>93CF3B66F3F94037AAC603B7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>97503F81FD6041979C0616E3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A49AE38F1A8244BCBF779635</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A6447F435FD04F8CBD129607</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -62,7 +152,42 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>A8111E3839E749EAA14B7690</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>A830ECCE624C48AFA621A963</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>A9FEA2309E524044B32810D6</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>AA07ABF5FD454B3FB0794134</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>AEF30E91FBEE4B8792C081F5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B357662F386E4F8E91517CC4</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B3601DBA45BB48A4B2B50B35</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>B47588D4C12A46AF953F7B77</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -72,7 +197,42 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>B72E588CDBEE4604ABCAF73C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>C3B3FB19985B4F1A84AF307B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C72E97754F544BE6A39CE587</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C8A84973CAA34F1690BE271A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C8E6495E7E354203B114F458</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D98AB6AD5DC94FAEA6D5718A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EC7C3523186B42A7BFF1CCFF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F06507340AB44CE1BC6D6CFD</key>
 		<dict>
 			<key>primary</key>
 			<true/>

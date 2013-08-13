@@ -175,7 +175,12 @@
     temp  = [temp stringByReplacingCharactersInRange:NSMakeRange (temp.length-2, 2) withString:[temp substringFromIndex:temp.length-2].lowercaseString];
     timestampLabel.text = temp;
     
-    locationLabel.text = [NSString stringWithFormat:@"%f, %f",location.coordinate.latitude, location.coordinate.longitude];
+    if (location!=nil) {
+        locationLabel.text = [NSString stringWithFormat:@"%f, %f",location.coordinate.latitude, location.coordinate.longitude];
+    }
+    else{
+        locationLabel.text = @"";
+    }
 }
 
 - (void)setCapturedImage:(UIImage *)theCapturedImage andImageData:(NSMutableData*)imageData andImageMetadata:(NSMutableDictionary*)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation{

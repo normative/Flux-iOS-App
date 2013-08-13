@@ -8,11 +8,13 @@
 
 #import "FluxScanViewController.h"
 #import "UIViewController+MMDrawerController.h"
+#import "FPPopoverController.h"
+
+
+#import "FluxAnnotationsTableViewController.h"
+
 
 #pragma mark- OpenGL Init
-
-
-
 
 
 static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
@@ -57,7 +59,21 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideRight animated:YES completion:nil];
 }
 
-#pragma mark Location_Geocoding
+#pragma mark - TopView Methods
+
+- (IBAction)showAnnotationsView:(id)sender {
+    FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
+    
+    
+    
+    FPPopoverController *popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
+    popover.arrowDirection = FPPopoverNoArrow;
+    
+    //the popover will be presented from the okButton view
+    [popover presentPopoverFromView:sender];
+}
+
+#pragma mark - Location_Geocoding
 
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation
 {
@@ -70,7 +86,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
             if (error.code == kCLErrorNetwork || (error.code == kCLErrorGeocodeFoundPartialResult))
             {
                 NSLog(@"No internet connection for reverse geolocation");
-                //Alert(@"No Internet connection!");
             }
             else
                 NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
@@ -85,7 +100,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     }];
 }
 
-#pragma mark Init
+#pragma mark - OpenGL Methods
+
 
 + (Class)layerClass {
     return [CAEAGLLayer class];
@@ -119,7 +135,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [super viewDidLoad];
     
     [self setupLocationManager];
-    //leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(showLeftDrawer:)];
+    
+    //temporarily set the date range label to today's date
+    NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"dd MMM, YYYY"];
+    [dateRangeLabel setText:[formatter stringFromDate:[NSDate date]]];
     
     
     // Do any additional setup after loading the view, typically from a nib.
