@@ -20,9 +20,6 @@
     
     __weak IBOutlet UIButton *tempBackBtn;
     
-    __weak IBOutlet UIButton *leftDrawerButton;
-    __weak IBOutlet UIButton *rightDrawerButton;
-    
     CLGeocoder *theGeocoder;
     
     //location + motion
