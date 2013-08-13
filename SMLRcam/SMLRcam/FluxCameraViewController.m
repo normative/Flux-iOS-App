@@ -271,11 +271,14 @@
     
     __block NSDate *startTime = [NSDate date];
     
+    // Collect position and orientation information prior to copying image
+    CLLocation *location = locationManager.location;
+    CMAttitude *att = motionManager.deviceMotion.attitude;
+    
     __block NSDate *endTime = [NSDate date];
     __block NSTimeInterval executionTime = [endTime timeIntervalSinceDate:startTime];
-    NSLog(@"Execution Time (0.5): %f", executionTime);
+    NSLog(@"Execution Time (1): %f", executionTime);
     
-    //make fake image for now
     // Find out the current orientation and tell the still image output.
 	AVCaptureConnection *stillImageConnection = [stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
 	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
@@ -293,17 +296,18 @@
              {
                  endTime = [NSDate date];
                  executionTime = [endTime timeIntervalSinceDate:startTime];
-                 NSLog(@"Execution Time (1): %f", executionTime);
-                 
-                 // code here
-                 CFDictionaryRef metaDict = CMCopyDictionaryOfAttachments(NULL, imageDataSampleBuffer, kCMAttachmentMode_ShouldPropagate);
+                 NSLog(@"Execution Time (2): %f", executionTime);
                  
                  //save picture to photo album/locally
                  NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
                  UIImage *theimg = [UIImage imageWithData:jpeg];
                  capturedImage = theimg;
                  
-                 CFMutableDictionaryRef mutable = CFDictionaryCreateMutableCopy(NULL, 0, metaDict);
+                 // Grab a copy of the current metadata dictionary for modification - will be saved in image
+                 CFDictionaryRef metaDict = CMCopyDictionaryOfAttachments(NULL, imageDataSampleBuffer, kCMAttachmentMode_ShouldPropagate);
+                 CFMutableDictionaryRef mutableMetadata = CFDictionaryCreateMutableCopy(NULL, 0, metaDict);
+                 
+                 // Create the metadata dictionary which is saved with image as XML
                  imgMetadata = [[NSMutableDictionary alloc] init];
                  
                  // Create formatted date
@@ -312,29 +316,22 @@
                  [formatter setTimeZone:timeZone];
                  [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
                  
-                 NSMutableDictionary *GPSDictionary;
+                 NSMutableDictionary *GPSDictionary = [[NSMutableDictionary alloc] init];
                  timestampString = nil;
                  
-                 if (locationManager.location != nil)
+                 if (location != nil)
                  {
-                     CLLocation *location = locationManager.location;
-                     
-                     endTime = [NSDate date];
-                     executionTime = [endTime timeIntervalSinceDate:startTime];
-                     NSLog(@"Execution Time (2): %f", executionTime);
-
                      // Create GPS Dictionary
-                     GPSDictionary = [[NSMutableDictionary alloc] init];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
                      [GPSDictionary setValue:((location.coordinate.latitude >= 0) ? @"N" : @"S") forKey:(NSString *)kCGImagePropertyGPSLatitudeRef];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.coordinate.longitude)] forKey:(NSString *)kCGImagePropertyGPSLongitude];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.coordinate.longitude)] forKey:(NSString *)kCGImagePropertyGPSLongitude];
                      [GPSDictionary setValue:((location.coordinate.longitude >= 0) ? @"E" : @"W") forKey:(NSString *)kCGImagePropertyGPSLongitudeRef];
                      [GPSDictionary setValue:[formatter stringFromDate:[location timestamp]] forKey:(NSString *)kCGImagePropertyGPSDateStamp];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.altitude)] forKey:(NSString *)kCGImagePropertyGPSAltitude];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.horizontalAccuracy)] forKey:(NSString *)(NSString *)@"HorizontalAccuracy"];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.verticalAccuracy)] forKey:(NSString *)(NSString *)@"VerticalAccuracy"];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.speed)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSSpeed];
-                     [GPSDictionary setValue:[NSNumber numberWithFloat:fabs(location.course)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSDestBearing];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.altitude)] forKey:(NSString *)kCGImagePropertyGPSAltitude];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.horizontalAccuracy)] forKey:(NSString *)(NSString *)@"HorizontalAccuracy"];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.verticalAccuracy)] forKey:(NSString *)(NSString *)@"VerticalAccuracy"];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.speed)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSSpeed];
+                     [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.course)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSDestBearing];
 
                      [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss:SS"];
                      //timestampstr = [formatter stringFromDate:loc.timestamp];
@@ -344,31 +341,25 @@
                  else
                  {
                      NSLog(@"No location data to store with image");
-                     GPSDictionary = [[NSMutableDictionary alloc] init];
                  }
                  
-                 CFDictionarySetValue(mutable, kCGImagePropertyGPSDictionary, (void *)GPSDictionary);
+                 // Overwrite updated GPS information
+                 CFDictionarySetValue(mutableMetadata, kCGImagePropertyGPSDictionary, (void *)GPSDictionary);
                  
-                 // Add GPSDictionary to Position Section of XML
+                 // Add GPSDictionary to Position section of XML
                  [imgMetadata setValue:GPSDictionary forKey:(NSString *)@"Position"];
                  
                  //add heading
                  [imgMetadata setValue:[NSNumber numberWithDouble:locationManager.heading] forKey:(NSString *)@"Heading"];
                  
-                 NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifDictionary);
+                 NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutableMetadata, kCGImagePropertyExifDictionary);
                  //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
                  
-                 endTime = [NSDate date];
-                 executionTime = [endTime timeIntervalSinceDate:startTime];
-                 NSLog(@"Execution Time (3): %f", executionTime);
-                 
-                 // grab motion
-                 CMAttitude *att = motionManager.deviceMotion.attitude;
-                 
-                 CMRotationMatrix m = att.rotationMatrix;
-                 //GLKMatrix4 attMat = GLKMatrix4Make(m.m11, m.m12, m.m13, 0, m.m21, m.m22, m.m23, 0, m.m31, m.m32, m.m33, 0, 0, 0, 0, 1);
-                 
+                 CFDictionarySetValue(mutableMetadata, kCGImagePropertyExifDictionary, (void *)EXIFDictionary);
+
                  // Orientation Section
+                 CMRotationMatrix m = att.rotationMatrix;
+                 
                  // dump the rotation matrix as a 2-d array
                  NSMutableDictionary *OrientDictionary = [[NSMutableDictionary alloc] init];
                  NSArray *rmr1 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m11], [NSNumber numberWithDouble:m.m12],
@@ -391,10 +382,9 @@
                  NSArray *qv = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.quaternion.w],
                                 [NSNumber numberWithDouble:att.quaternion.x], [NSNumber numberWithDouble:att.quaternion.y],
                                 [NSNumber numberWithDouble:att.quaternion.z], nil];
-                 
                  [OrientDictionary setValue:qv forKey:(NSString *)@"Quaternion"];
                  
-                 CFDictionarySetValue(mutable, kCGImagePropertyExifDictionary, (void *)EXIFDictionary);
+                 // Add OrientDictionary to Orientation section of XML
                  [imgMetadata setValue:OrientDictionary forKey:(NSString *)@"Orientation"];
                  
                  // Device Section
@@ -419,12 +409,12 @@
                  
                  
                  // write the file with exif data
-                 CGImageSourceRef  source ;
+                 CGImageSourceRef  source;
                  source = CGImageSourceCreateWithData((__bridge CFDataRef)jpeg, NULL);
                  
                  CFStringRef UTI = CGImageSourceGetType(source); //this is the type of image (e.g., public.jpeg)
                  
-                 //this will be the data CGImageDestinationRef will write into
+                 // this will be the data CGImageDestinationRef will write into
                  imgData = [NSMutableData data];
                  
                  CGImageDestinationRef destination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imgData,UTI,1,NULL);
@@ -434,11 +424,11 @@
                      NSLog(@"***Could not create image destination ***");
                  }
                  
-                 //add the image contained in the image source to the destination, overidding the old metadata with our modified metadata
-                 CGImageDestinationAddImageFromSource(destination,source,0, (CFDictionaryRef) mutable);
+                 // add the image contained in the image source to the destination, over-writing the old metadata with our modified metadata
+                 CGImageDestinationAddImageFromSource(destination,source,0, (CFDictionaryRef) mutableMetadata);
                  
-                 //tell the destination to write the image data and metadata into our data object.
-                 //It will return false if something goes wrong
+                 // tell the destination to write the image data and metadata into our data object.
+                 // It will return false if something goes wrong
                  BOOL success = NO;
                  success = CGImageDestinationFinalize(destination);
                  
@@ -446,9 +436,6 @@
                  {
                      NSLog(@"***Could not create data from image destination ***");
                  }
-                 
-                 //now we have the data ready to go, so do whatever you want with it
-                 //here we just write it to disk
                  
                  //cleanup
                  CFRelease(destination);
