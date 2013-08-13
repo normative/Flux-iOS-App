@@ -8,6 +8,10 @@
 
 #import "FluxScanViewController.h"
 #import "UIViewController+MMDrawerController.h"
+#import "FPPopoverController.h"
+
+#import "FluxAnnotationsTableViewController.h"
+
 
 #pragma mark- OpenGL Init
 
@@ -38,8 +42,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - Location Singleton Delegate Methods
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
-    [self reverseGeocodeLocation:newLocation];
+
+- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateAddressWithPlacemark:(CLPlacemark *)placemark{
+    NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
+    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+    locationLabel.text = locationString;
 }
 
 
@@ -53,35 +60,22 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideRight animated:YES completion:nil];
 }
 
-#pragma mark Location_Geocoding
+#pragma mark - TopView Methods
 
-- (void)reverseGeocodeLocation:(CLLocation*)thelocation
-{
-    theGeocoder = [[CLGeocoder alloc] init];
+- (IBAction)showAnnotationsView:(id)sender {
+    FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
     
-    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error) {
-        
-        if (error)
-        {
-            if (error.code == kCLErrorNetwork || (error.code == kCLErrorGeocodeFoundPartialResult))
-            {
-                NSLog(@"No internet connection for reverse geolocation");
-                //Alert(@"No Internet connection!");
-            }
-            else
-                NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
-        }
-        else
-        {
-            CLPlacemark *placemark = [placemarks objectAtIndex:0];
-            NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-            locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-            locationLabel.text = locationString;
-        }
-    }];
+    
+    
+    FPPopoverController *popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
+    popover.arrowDirection = FPPopoverNoArrow;
+    
+    //the popover will be presented from the okButton view
+    [popover presentPopoverFromView:sender];
 }
 
-#pragma mark Init
+#pragma mark - OpenGL Methods
+
 
 + (Class)layerClass {
     return [CAEAGLLayer class];
@@ -115,7 +109,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [super viewDidLoad];
     
     [self setupLocationManager];
-    //leftDrawerButton = [[MMDrawerBarButtonItem alloc] initWithTarget:self action:@selector(showLeftDrawer:)];
+    
+    //temporarily set the date range label to today's date
+    NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"dd MMM, YYYY"];
+    [dateRangeLabel setText:[formatter stringFromDate:[NSDate date]]];
     
     
     // Do any additional setup after loading the view, typically from a nib.

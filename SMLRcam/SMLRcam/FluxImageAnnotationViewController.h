@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import "KTPlaceholderTextView.h"
+#import "FluxLocationServicesSingleton.h"
 
 @interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate>{
     
@@ -18,7 +19,7 @@
     NSDate *timestamp;
     CLLocation *location;
     
-    CLGeocoder *theGeocoder;
+    FluxLocationServicesSingleton*locationManager;
     
     __weak IBOutlet UIImageView *backgroundImageView;
     __weak IBOutlet KTPlaceholderTextView *annotationTextView;
@@ -29,8 +30,6 @@
 //init
 - (void)setCapturedImage:(UIImage *)theCapturedImage andImageData:(NSMutableData*)imageData andImageMetadata:(NSMutableDictionary*)imageMetadata andTimestamp:(NSDate*)timestamp andLocation:(CLLocation*)theLocation;
 - (void)LoadUI;
-//location
-- (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 //image
 - (UIImage *)BlurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur;
 - (void)AddGradientImageToBackgroundWithAlpha:(CGFloat)alpha;
