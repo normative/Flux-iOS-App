@@ -36,6 +36,9 @@
         // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
         locationManager.distanceFilter = kCLDistanceFilterNone;
         
+        // This will drain battery faster, but for now, we want to make sure that we continue to get frequent updates
+        locationManager.pausesLocationUpdatesAutomatically = NO;
+        
         locationMeasurements = [[NSMutableArray alloc] init];
         
         if ([CLLocationManager headingAvailable]) {
