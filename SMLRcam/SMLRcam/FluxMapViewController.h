@@ -14,18 +14,19 @@
 @interface FluxMapViewController : UIViewController <LocationServicesSingletonDelegate, MKMapViewDelegate> {
     __weak IBOutlet MKMapView *mapView;
     
-    __weak IBOutlet UILabel *dateLabel;
-    __weak IBOutlet UILabel *locationLabel;
-    __weak IBOutlet UIButton *detailButton;
+    // Status Bar
+    __weak IBOutlet UIButton *exitMapBtn;
+    __weak IBOutlet UILabel *currentDateLbl;
+    __weak IBOutlet UILabel *currentLocalityLbl;
+    __weak IBOutlet UIButton *detailBtn;
     
-    __weak IBOutlet UIButton *tempBackBtn;
-    
+    // location information coder
     CLGeocoder *theGeocoder;
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
 }
 
-- (IBAction) tempBackAction:(id)sender;
+- (IBAction) exitMapView:(id)sender;
 
 @end

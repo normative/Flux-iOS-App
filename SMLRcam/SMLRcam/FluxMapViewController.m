@@ -10,103 +10,113 @@
 
 @interface FluxMapViewController ()
 
+- (void) setupLocationManager;
 - (void) setupMapView;
-- (void)reverseGeocodeLocation:(CLLocation*)thelocation;
+
+- (void) setStatusBarLocationLabel:(NSString*)locationString;
+- (void) setStatusBarDateLabel;
+
+- (void) reverseGeocodeLocation:(CLLocation*)thelocation;
 
 @end
 
 @implementation FluxMapViewController
 
--(BOOL)shouldAutorotate {
-    return YES;
-}
-- (NSUInteger)supportedInterfaceOrientations {
-    return UIInterfaceOrientationMaskLandscape;
-}
-
-- (void) setupMapView
-{
-    [mapView setMapType: MKMapTypeStandard];
-    [mapView setShowsUserLocation:YES];
-    [mapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
-    
-    MKCoordinateRegion region = { {0.0, 0.0 }, { 0.0, 0.0 } };
-    region.span.longitudeDelta = 0.005;
-    region.span.latitudeDelta = 0.005;
-    [mapView setRegion:region animated:YES];
-    [mapView setDelegate:self];
-}
-
-#pragma mark Location/Orientation Init
-//allocates the location object and sets some parameters
-- (void)setupLocationManager
-{
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-    [locationManager setDelegate:self];
-    
-    if (locationManager.location != nil) {
-        [self LocationManager:locationManager didUpdateLocation:locationManager.location];
-    }
-}
-
-- (void)startUpdatingLocationAndHeading
-{
-    [locationManager startLocating];
-}
-
-#pragma mark - location geocoding
+#pragma mark - additional functions
+#pragma mark - get location info
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation
 {
     theGeocoder = [[CLGeocoder alloc] init];
-    
-    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error) {
-        
-        if (error)
-        {
-            if (error.code == kCLErrorNetwork || (error.code == kCLErrorGeocodeFoundPartialResult))
-            {
-                NSLog(@"No internet connection for reverse geolocation");
-                //Alert(@"No Internet connection!");
-            }
-            else
+    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error){
+        if (error){
+            
+            if (error.code == kCLErrorNetwork || (error.code == kCLErrorGeocodeFoundPartialResult)) {
+                
+                NSLog(@"Error - No internet connection for reverse geolocation");
+            } else {
+                
                 NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
-        }
-        else
-        {
+            }
+        } else {
+            
             CLPlacemark *placemark = [placemarks objectAtIndex:0];
             NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
             locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-            locationLabel.text = [NSString stringWithFormat: @"Central %@", locationString];
+            [self setStatusBarLocationLabel: locationString];
             
             NSString *locatedAt = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
-            NSLog(@"I am currently at Address %@",locatedAt);
+            NSLog(@"User current address - %@",locatedAt);
             
             locatedAt = [placemark.addressDictionary valueForKey:@"SubLocality"];
-            NSLog(@"I am currently at SubLocality %@",locatedAt);
+            NSLog(@"User current subLocality - %@",locatedAt);
             
-            NSLog(@"%@", [placemark.addressDictionary description]);
+            NSLog(@"User current address description - %@", [placemark.addressDictionary description]);
         }
     }];
 }
 
-#pragma mark - Location manager delegate methods
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
-    
-    CLLocationCoordinate2D loc = [newLocation coordinate];
-    [mapView setCenterCoordinate:loc];
-    [self reverseGeocodeLocation: newLocation];
-    
-    NSLog(@"%@", [NSString stringWithFormat:@"%f", newLocation.coordinate.latitude]);
-    NSLog(@"%@", [NSString stringWithFormat:@"%f", newLocation.coordinate.longitude]);
-}
-
-- (void)stopUpdatingLocationAndHeading
+#pragma mark - delegate methods
+#pragma mark - mapView delegate methods
+- (void) mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
 {
-    [locationManager endLocating];
+    [self reverseGeocodeLocation:userLocation.location];
 }
 
+#pragma mark - set label
+#pragma mark - set location label
+- (void) setStatusBarLocationLabel: (NSString*) locationString
+{
+    [currentLocalityLbl setText: locationString];
+}
 
-#pragma mark Init
+#pragma mark - set date label
+- (void) setStatusBarDateLabel
+{
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+    [dateFormat setDateFormat:@"MMM dd, yyyy"];
+    NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
+    [currentDateLbl setText: todayDateString];
+}
+
+#pragma mark - initialize and allocate objects
+#pragma mark - location manage config
+//allocates the location object and sets some parameters
+- (void)setupLocationManager
+{
+    locationManager = [FluxLocationServicesSingleton sharedManager];
+}
+
+#pragma mark - mapview config
+- (void) setupMapView
+{
+    [mapView setMapType: MKMapTypeStandard];
+    [mapView setShowsUserLocation: YES];
+    [mapView setUserTrackingMode: MKUserTrackingModeFollowWithHeading];
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 0.5, 0.5);
+    
+    [mapView setRegion:viewRegion animated:YES];
+    [mapView setDelegate:self];
+}
+
+#pragma mark - IBActions
+#pragma mark - Back button
+- (IBAction) exitMapView:(id)sender
+{
+    [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - rotation and orientations
+-(BOOL)shouldAutorotate
+{
+    return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskLandscape;
+}
+
+#pragma mark - viewcontroller methods
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -120,27 +130,16 @@
 {
     [super viewDidLoad];
     
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
-    [dateFormat setDateFormat:@"MMM dd, yyyy"];
-    NSString *dateString = [dateFormat stringFromDate:[NSDate date]];
-    [dateLabel setText: dateString];
-    
     [self setupLocationManager];
-    [self startUpdatingLocationAndHeading];
-    
     [self setupMapView];
+    
+    [self setStatusBarDateLabel];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-#pragma mark - temp IBAction
-- (IBAction) tempBackAction:(id)sender
-{
-    [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
