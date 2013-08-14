@@ -13,7 +13,7 @@
 
 #import "FluxImageAnnotationViewController.h"
 
-@interface FluxCameraViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate, LocationServicesSingletonDelegate>{
+@interface FluxCameraViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate>{
     
     //AV Capture
     AVCaptureVideoPreviewLayer *previewLayer;

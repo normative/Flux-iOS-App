@@ -11,7 +11,7 @@
 
 #import "FluxLocationServicesSingleton.h"
 
-@interface FluxMapViewController : UIViewController <LocationServicesSingletonDelegate, MKMapViewDelegate> {
+@interface FluxMapViewController : UIViewController <MKMapViewDelegate> {
     __weak IBOutlet MKMapView *mapView;
     
     __weak IBOutlet UILabel *dateLabel;

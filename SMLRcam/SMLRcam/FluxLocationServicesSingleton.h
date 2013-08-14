@@ -18,20 +18,11 @@ extern NSString* const FluxLocationServicesSingletonKeyHeading;
 extern NSString* const FluxLocationServicesSingletonKeyPlacemark;
 
 @class FluxLocationServicesSingleton;
-@protocol LocationServicesSingletonDelegate <NSObject>
-@optional
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation*)newLocation;
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateToHeading:(CLLocationDirection)newHeading;
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateAddressWithPlacemark:(CLPlacemark*)placemark;
-@end
-
 
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     CLLocationManager * locationManager;
-    __weak id <LocationServicesSingletonDelegate> delegate;
     NSMutableArray *locationMeasurements;
 }
-@property (nonatomic, weak) id <LocationServicesSingletonDelegate> delegate;
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
 @property (nonatomic) CLPlacemark* placemark;

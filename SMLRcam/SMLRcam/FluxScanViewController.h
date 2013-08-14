@@ -18,7 +18,7 @@
 
 
 
-@interface FluxScanViewController : UIViewController<LocationServicesSingletonDelegate>{
+@interface FluxScanViewController : UIViewController{
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;

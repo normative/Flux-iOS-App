@@ -18,8 +18,6 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
 
 @implementation FluxLocationServicesSingleton
 
-@synthesize delegate;
-
 + (id)sharedManager {
     static FluxLocationServicesSingleton *sharedFluxLocationServicesSingleton = nil;
     static dispatch_once_t onceToken;
