@@ -27,11 +27,9 @@
     __weak IBOutlet UIButton *CameraButton;
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
-    
-    
+    __weak IBOutlet UILabel *dateRangeLabel;
     
     FluxLocationServicesSingleton *locationManager;
-    CLGeocoder *theGeocoder;
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
@@ -43,6 +41,7 @@
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
+- (IBAction)showAnnotationsView:(id)sender;
 
 
 @end
