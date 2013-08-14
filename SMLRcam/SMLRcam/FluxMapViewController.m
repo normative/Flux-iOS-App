@@ -42,10 +42,10 @@
 - (void)setupLocationManager
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
-    [locationManager setDelegate:self];
     
-    if (locationManager.location != nil) {
-        [self LocationManager:locationManager didUpdateLocation:locationManager.location];
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePosition:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     }
 }
 
@@ -89,15 +89,18 @@
     }];
 }
 
-#pragma mark - Location manager delegate methods
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
-    
-    CLLocationCoordinate2D loc = [newLocation coordinate];
-    [mapView setCenterCoordinate:loc];
-    [self reverseGeocodeLocation: newLocation];
-    
-    NSLog(@"%@", [NSString stringWithFormat:@"%f", newLocation.coordinate.latitude]);
-    NSLog(@"%@", [NSString stringWithFormat:@"%f", newLocation.coordinate.longitude]);
+-(void)updatePosition:(NSNotification *)notification
+{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLLocation *newLocation = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyLocation];
+        CLLocationCoordinate2D loc = [newLocation coordinate];
+        [mapView setCenterCoordinate:loc];
+        [self reverseGeocodeLocation: newLocation];
+        
+        NSLog(@"%@", [NSString stringWithFormat:@"%f", newLocation.coordinate.latitude]);
+        NSLog(@"%@", [NSString stringWithFormat:@"%f", newLocation.coordinate.longitude]);
+    }
 }
 
 - (void)stopUpdatingLocationAndHeading

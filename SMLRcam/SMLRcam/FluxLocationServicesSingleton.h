@@ -10,6 +10,12 @@
 #import <CoreLocation/CoreLocation.h>
 
 extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
+extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
+extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
+
+extern NSString* const FluxLocationServicesSingletonKeyLocation;
+extern NSString* const FluxLocationServicesSingletonKeyHeading;
+extern NSString* const FluxLocationServicesSingletonKeyPlacemark;
 
 @class FluxLocationServicesSingleton;
 @protocol LocationServicesSingletonDelegate <NSObject>

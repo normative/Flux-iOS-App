@@ -27,5 +27,6 @@
 }
 
 - (IBAction) tempBackAction:(id)sender;
+- (void)updatePosition:(NSNotification *)notification;
 
 @end

@@ -38,6 +38,7 @@
 - (void)setupLocationManager;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
+- (void)updatePlacemark:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;

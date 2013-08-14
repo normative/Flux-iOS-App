@@ -216,10 +216,14 @@
 }
 
 
--(void)updatePositionLabels:(CLLocation *) newLocation
+-(void)updatePositionLabels:(NSNotification *)notification
 {
-    latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
-    longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLLocation *newLocation = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyLocation];
+        latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
+        longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
+    }
 }
 
 - (void)stopUpdatingLocationAndHeading
@@ -235,7 +239,6 @@
 	motionManager.showsDeviceMovementDisplay = YES;
     motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
 }
-
 
 - (void)startDeviceMotion
 {
