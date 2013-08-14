@@ -28,20 +28,20 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 {
     // Create the manager object
     locationManager = [FluxLocationServicesSingleton sharedManager];
-
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-    }
 }
 
 - (void)startUpdatingLocation
 {
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    }
     [locationManager startLocating];
 }
 
 - (void)stopUpdatingLocation
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [locationManager endLocating];
 }
 

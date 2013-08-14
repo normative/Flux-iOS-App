@@ -64,6 +64,8 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
         NSLog(@"No Heading Information Available");
 }
 - (void)endLocating{
+#warning Don't stop updating location now. Need to keep reference count to figure out when to disable.
+    return;
     [locationManager stopUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {

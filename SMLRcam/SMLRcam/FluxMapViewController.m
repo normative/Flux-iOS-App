@@ -42,15 +42,14 @@
 - (void)setupLocationManager
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
-    
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePosition:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-    }
 }
 
 - (void)startUpdatingLocationAndHeading
 {
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePosition:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+    }
     [locationManager startLocating];
 }
 
@@ -105,6 +104,7 @@
 
 - (void)stopUpdatingLocationAndHeading
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [locationManager endLocating];
 }
 
