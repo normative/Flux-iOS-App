@@ -49,7 +49,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     locationLabel.text = locationString;
 }
 
-
 #pragma mark - Drawer Methods
 
 - (IBAction)showLeftDrawer:(id)sender {

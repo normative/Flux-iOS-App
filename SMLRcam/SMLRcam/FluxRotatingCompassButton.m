@@ -55,12 +55,40 @@
 }
 
 //button highlight
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    [self.imageView setAlpha:0.55];
+- (void)hesitateUpdate
+{
+    [self setNeedsDisplay];
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
+-(void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self.imageView setAlpha:0.55];
+    
+    [super touchesBegan:touches withEvent:event];
+    [self setNeedsDisplay];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesMoved:touches withEvent:event];
+    [self setNeedsDisplay];
+    
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesCancelled:touches withEvent:event];
+    [self setNeedsDisplay];
+    [self performSelector:@selector(hesitateUpdate) withObject:nil afterDelay:0.1];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
     [self.imageView setAlpha:1.0];
+
+    [super touchesEnded:touches withEvent:event];
+    [self setNeedsDisplay];
+    [self performSelector:@selector(hesitateUpdate) withObject:nil afterDelay:0.1];
 }
 
 /*

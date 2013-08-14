@@ -16,7 +16,7 @@
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
-
+@class FluxRotatingCompassButton;
 
 @interface FluxScanViewController : UIViewController<LocationServicesSingletonDelegate>{
     
@@ -28,6 +28,8 @@
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;
+    
+    __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     
     FluxLocationServicesSingleton *locationManager;
 }
@@ -42,6 +44,5 @@
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
 - (IBAction)showAnnotationsView:(id)sender;
-
 
 @end

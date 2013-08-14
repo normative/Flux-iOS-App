@@ -136,15 +136,15 @@
                                         <rect key="frame" x="150" y="5" width="10" height="49"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xN1-Hn-BAU" customClass="FluxRotatingCompassButton">
-                                        <rect key="frame" x="13" y="10" width="40" height="40"/>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y5x-Yz-kwG" customClass="FluxRotatingCompassButton">
+                                        <rect key="frame" x="13" y="13" width="40" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <state key="normal" image="compassButton">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <segue destination="YQi-AC-BdW" kind="modal" id="d1X-lA-xeH"/>
+                                            <segue destination="YQi-AC-BdW" kind="modal" id="ZRs-ga-Mdo"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -208,6 +208,7 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
+                        <outlet property="compassBtn" destination="y5x-Yz-kwG" id="nsE-Eu-Hmo"/>
                         <outlet property="dateRangeLabel" destination="gcr-O9-W42" id="CHd-dY-cVi"/>
                         <outlet property="headerView" destination="jDD-EI-IPQ" id="ftp-vl-dD5"/>
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
@@ -805,7 +806,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="389" y="756"/>
+            <point key="canvasLocation" x="-907" y="88"/>
         </scene>
     </scenes>
     <resources>
