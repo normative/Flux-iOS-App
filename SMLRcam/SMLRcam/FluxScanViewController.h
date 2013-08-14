@@ -18,7 +18,7 @@
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : UIViewController<LocationServicesSingletonDelegate>{
+@interface FluxScanViewController : UIViewController{
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
@@ -40,6 +40,7 @@
 - (void)setupLocationManager;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
+- (void)updatePlacemark:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;

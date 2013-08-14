@@ -8,9 +8,15 @@
 
 #import "FluxLocationServicesSingleton.h"
 
-@implementation FluxLocationServicesSingleton
+NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
+NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
+NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocationServicesSingletonDidUpdatePlacemark";
 
-@synthesize delegate;
+NSString* const FluxLocationServicesSingletonKeyLocation = @"FluxLocationServicesSingletonKeyLocation";
+NSString* const FluxLocationServicesSingletonKeyHeading = @"FluxLocationServicesSingletonKeyHeading";
+NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServicesSingletonKeyPlacemark";
+
+@implementation FluxLocationServicesSingleton
 
 + (id)sharedManager {
     static FluxLocationServicesSingleton *sharedFluxLocationServicesSingleton = nil;
@@ -58,6 +64,8 @@
         NSLog(@"No Heading Information Available");
 }
 - (void)endLocating{
+#warning Don't stop updating location now. Need to keep reference count to figure out when to disable.
+    return;
     [locationManager stopUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -169,11 +177,13 @@
     NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
           self.location.coordinate.longitude);
 
-    // If necessary, respond to delegates
-    if ([delegate respondsToSelector:@selector(LocationManager:didUpdateLocation:)]) {
-        [delegate LocationManager:self didUpdateLocation:self.location];
+    // Notify observers of updated position
+    if (self.location != nil)
+    {
+        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.location forKey:FluxLocationServicesSingletonKeyLocation];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfoDict];
+        [self reverseGeocodeLocation:self.location];
     }
-    [self reverseGeocodeLocation:self.location];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
@@ -182,8 +192,12 @@
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading);
     
-    if ([delegate respondsToSelector:@selector(LocationManager:didUpdateToHeading:)]) {
-        [delegate LocationManager:self didUpdateToHeading:self.heading];
+    // Notify observers of updated heading (note that heading has been cast from a double to an NSNumber)
+    // Since heading is a double, assume that we only have a valid heading if we have a location
+    if (self.location != nil)
+    {
+        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:self.heading] forKey:FluxLocationServicesSingletonKeyHeading];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateHeading object:self userInfo:userInfoDict];
     }
 }
 
@@ -219,9 +233,11 @@
         {
             self.placemark = [placemarks lastObject];
             
-            //fire the delegate method with the given placemark
-            if ([delegate respondsToSelector:@selector(LocationManager:didUpdateAddressWithPlacemark:)]) {
-                [delegate LocationManager:self didUpdateAddressWithPlacemark:self.placemark];
+            // Notify observers of updated address with placemark
+            if (self.placemark != nil)
+            {
+                NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.placemark forKey:FluxLocationServicesSingletonKeyPlacemark];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdatePlacemark object:self userInfo:userInfoDict];
             }
         }
     }];

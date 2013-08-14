@@ -28,25 +28,32 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 {
     // Create the manager object
     locationManager = [FluxLocationServicesSingleton sharedManager];
-    [locationManager setDelegate:self];
 }
 
 - (void)startUpdatingLocation
 {
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    }
     [locationManager startLocating];
 }
 
 - (void)stopUpdatingLocation
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [locationManager endLocating];
 }
 
-#pragma mark - Location Singleton Delegate Methods
-
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateAddressWithPlacemark:(CLPlacemark *)placemark{
-    NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-    locationLabel.text = locationString;
+-(void)updatePlacemark:(NSNotification *)notification
+{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLPlacemark *placemark = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyPlacemark];
+        NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
+        locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+        locationLabel.text = locationString;
+    }
 }
 
 #pragma mark - Drawer Methods
