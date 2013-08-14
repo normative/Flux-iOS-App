@@ -203,9 +203,10 @@
 - (void)setupLocationManager
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
-    [locationManager setDelegate:self];
-    if (locationManager.location != nil) {
-        [self LocationManager:locationManager didUpdateLocation:locationManager.location];
+    
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     }
 }
 
@@ -214,9 +215,9 @@
     [locationManager startLocating];
 }
 
-#pragma mark - Location manager delegate methods
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
-    
+
+-(void)updatePositionLabels:(CLLocation *) newLocation
+{
     latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
 }

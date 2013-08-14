@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
+extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
+
 @class FluxLocationServicesSingleton;
 @protocol LocationServicesSingletonDelegate <NSObject>
 @optional

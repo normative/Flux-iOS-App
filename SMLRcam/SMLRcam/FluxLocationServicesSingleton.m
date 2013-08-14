@@ -8,6 +8,8 @@
 
 #import "FluxLocationServicesSingleton.h"
 
+NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
+
 @implementation FluxLocationServicesSingleton
 
 @synthesize delegate;
@@ -169,6 +171,8 @@
     NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
           self.location.coordinate.longitude);
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self.location];
+    
     // If necessary, respond to delegates
     if ([delegate respondsToSelector:@selector(LocationManager:didUpdateLocation:)]) {
         [delegate LocationManager:self didUpdateLocation:self.location];

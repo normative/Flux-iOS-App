@@ -71,6 +71,7 @@
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
 
+- (void)updatePositionLabels:(CLLocation *)newLocation;
 - (void)UpdateMotionLabels:(NSTimer*)timer;
 
 //utilities
