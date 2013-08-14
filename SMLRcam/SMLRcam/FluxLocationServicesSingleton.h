@@ -24,9 +24,9 @@
     NSMutableArray *locationMeasurements;
 }
 @property (nonatomic, weak) id <LocationServicesSingletonDelegate> delegate;
-@property (nonatomic, weak) CLLocation* location;
+@property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
-@property (nonatomic,weak) CLPlacemark* placemark;
+@property (nonatomic) CLPlacemark* placemark;
 
 + (id)sharedManager;
 
