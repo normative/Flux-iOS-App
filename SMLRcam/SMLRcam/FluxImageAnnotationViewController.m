@@ -78,6 +78,11 @@
     [darkenImageView setAlpha:alpha];
     [backgroundImageView addSubview:darkenImageView];
 }
+#pragma mark - Network Services
+- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didUploadImage:(FluxScanImageObject *)imageObject{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 
 #pragma mark - view loading / popping
 
@@ -148,8 +153,9 @@
     }
 }
 
-- (void)setCapturedImage:(UIImage *)theCapturedImage andImageData:(NSMutableData*)imageData andImageMetadata:(NSMutableDictionary*)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation{
-    capturedImage = theCapturedImage;
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImageData:(NSMutableData *)imageData andImageMetadata:(NSMutableDictionary *)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation{
+    imageObject = imgObject;
+    capturedImage = imageObject.contentImage;
     imgData = imageData;
     imgMetadata = imageMetadata;
     timestamp = theTimestamp;
@@ -206,7 +212,9 @@
     NSString *fullPathMeta = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.xml", [dateFormat stringFromDate:timestamp]]];
     [imgMetadata writeToFile:fullPathMeta atomically:YES];
     
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [imageObject setDescriptionString:annotationTextView.text];
+    FluxAPIInteraction *apiInteraction = [[FluxAPIInteraction alloc]init];
+    [apiInteraction setDelegate:self];
+    [apiInteraction uploadImage:imageObject];
 }
 @end

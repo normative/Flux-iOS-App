@@ -38,7 +38,6 @@
         [objectManager addResponseDescriptor:userResponseDescriptor];
         
         //and again for image-related calls
-        
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"images" keyPath:nil statusCodes:statusCodes];
         
         RKRequestDescriptor *imageObjectRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider imagePOSTMapping] objectClass:[FluxScanImageObject class] rootKeyPath:@"image" method:RKRequestMethodPOST];
@@ -50,6 +49,7 @@
         
         //set username and password
         //[objectManager.HTTPClient setAuthorizationHeaderWithUsername:@"username" password:@"password"];
+        
         //show network activity indicator
         [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
         //show alert if there is no network connectivity
@@ -130,12 +130,7 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",serverURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
-        
         NSLog(@"Found %i Results",[result count]);
-        
-        
-        FluxScanImageObject *imageObject = [result firstObject];
-        NSLog(@"Mapped the image with ID: %i", imageObject.imageID);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
     }];
@@ -153,20 +148,23 @@
     }];
     
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
+        if ([result count]>0) {
+            NSLog(@"Successfully Uploaded Image to account # %i",[[result firstObject]userID]);
+            if ([delegate respondsToSelector:@selector(APIInteraction:didUploadImage:)])
+            {
+                [delegate APIInteraction:self didUploadImage:[result firstObject]];
+            }
+        }
         
-        NSLog(@"Successfully Uploaded Image to account # %i",[[result firstObject]userID]);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
     }];
 
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
-    
-    
 }
 
 - (void)createUser:(FluxUserObject*)user{
-    
-    // POST to create
+
     [objectManager postObject:user path:@"/users" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result){
             if ([result count]>0) {
                 

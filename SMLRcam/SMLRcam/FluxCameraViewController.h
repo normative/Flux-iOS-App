@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMotion/CoreMotion.h>
 #import "FluxLocationServicesSingleton.h"
+#import "FluxScanImageObject.h"
 
 #import "FluxImageAnnotationViewController.h"
 
@@ -33,6 +34,7 @@
     CMMotionManager *motionManager;
     
     //captured Data
+    FluxScanImageObject *capturedImageObject;
     UIImage *capturedImage;
     NSMutableDictionary *imgMetadata;
     NSMutableData *imgData;

@@ -10,14 +10,18 @@
 #import <CoreLocation/CoreLocation.h>
 #import "KTPlaceholderTextView.h"
 #import "FluxLocationServicesSingleton.h"
+#import "FluxScanImageObject.h"
 
-@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate>{
+#import "FluxAPIInteraction.h"
+
+@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate, APIInteractionDelegate>{
     
     UIImage * capturedImage;
     NSMutableDictionary *imgMetadata;
     NSMutableData *imgData;
     NSDate *timestamp;
     CLLocation *location;
+    FluxScanImageObject*imageObject;
     
     FluxLocationServicesSingleton*locationManager;
     
@@ -28,7 +32,7 @@
 }
 
 //init
-- (void)setCapturedImage:(UIImage *)theCapturedImage andImageData:(NSMutableData*)imageData andImageMetadata:(NSMutableDictionary*)imageMetadata andTimestamp:(NSDate*)timestamp andLocation:(CLLocation*)theLocation;
+- (void)setCapturedImage:(FluxScanImageObject*)imgObject andImageData:(NSMutableData*)imageData andImageMetadata:(NSMutableDictionary*)imageMetadata andTimestamp:(NSDate*)theTimestamp andLocation:(CLLocation*)theLocation;
 - (void)LoadUI;
 //image
 - (UIImage *)BlurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur;

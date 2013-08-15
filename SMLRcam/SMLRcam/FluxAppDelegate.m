@@ -63,14 +63,6 @@
         [defaults synchronize];
     }
     
-//    NSMutableDictionary *query = [NSMutableDictionary dictionary];
-//    [query setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
-//    [query setObject:account forKey:(id)kSecAttrAccount];
-//    [query setObject:(id)kSecAttrAccessibleWhenUnlocked forKey:(id)kSecAttrAccessible];
-//    [query setObject:[inputString dataUsingEncoding:NSUTF8StringEncoding] forKey:(id)kSecValueData];
-//    
-//    OSStatus error = SecItemAdd((CFDictionaryRef)query, NULL);
-    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];
     // Override point for customization after application launch.

@@ -18,6 +18,7 @@
 - (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didreturnImage:(UIImage*)image;
 - (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didreturnImageMetadata:(FluxScanImageObject*)imageObject;
 - (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didreturnImageList:(NSDictionary*)imageList;
+- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didUploadImage:(FluxScanImageObject*)imageObject;
 
 //users
 - (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didCreateUser:(FluxUserObject*)userObject;
@@ -32,8 +33,6 @@
 @property (nonatomic, weak) id <APIInteractionDelegate> delegate;
 
 #pragma mark - image methods
-
-#pragma mark get images
 
 //returns the raw image given an imageID
 - (void)getImageForID:(int)imageID;
@@ -50,18 +49,15 @@
 //test purposes
 - (void)getAllImages;
 
-#pragma mark upload images
+//uploads an image. All account info is stored within the imageObject
 - (void)uploadImage:(FluxScanImageObject*)img;
 
-#pragma mark - user methods
-
-#pragma mark get users
+#pragma mark  - Users
 
 //returns user for a given userID
 - (void)getUserForID:(int)userID;
 
-#pragma mark user creation
-
+//creates a user with the given object
 - (void)createUser:(FluxUserObject*)user;
 
 

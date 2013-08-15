@@ -123,20 +123,20 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 //    [obj2 setUserName:@"worky16"];
 //    [obj2 setPrivacy:NO];
     
-    FluxScanImageObject * obj1 = [[FluxScanImageObject alloc]init];
-    [obj1 setTimestampString:[[NSDate date]description]];
-    [obj1 setDescriptionString:@"Johny sitting in front of the CN Tower"];
-    [obj1 setContentImage:[UIImage imageNamed:@"pic1.png"]];
-    [obj1 setUserID:55];
-    [obj1 setCameraID:32];
-    [obj1 setCategoryID:10];
-    [obj1 setLatitude:5.0];
-    [obj1 setLongitude:5.0];
-    [obj1 setAltitude:5.0];
+//    FluxScanImageObject * obj1 = [[FluxScanImageObject alloc]init];
+//    [obj1 setTimestampString:[[NSDate date]description]];
+//    [obj1 setDescriptionString:@"Johny sitting in front of the CN Tower"];
+//    [obj1 setContentImage:[UIImage imageNamed:@"pic1.png"]];
+//    [obj1 setUserID:55];
+//    [obj1 setCameraID:32];
+//    [obj1 setCategoryID:10];
+//    [obj1 setLatitude:5.0];
+//    [obj1 setLongitude:5.0];
+//    [obj1 setAltitude:5.0];
     //[apiInteraction createUser:obj2];
     
     
-    [apiInteraction uploadImage:obj1];
+    //[apiInteraction uploadImage:obj1];
     //[apiInteraction getImageForID:16];
     //[apiInteraction getUserForID:40];
     //[apiInteraction getImageForID:12];
