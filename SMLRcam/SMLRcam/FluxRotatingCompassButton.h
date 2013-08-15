@@ -15,4 +15,6 @@
     FluxLocationServicesSingleton* locationManager;
 }
 
+- (void)headingUpdated;
+
 @end

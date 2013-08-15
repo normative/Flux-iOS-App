@@ -26,7 +26,10 @@
         //custom init
         
         locationManager = [FluxLocationServicesSingleton sharedManager];
-        [locationManager addObserver:self forKeyPath:@"compassButton" options:NSKeyValueObservingOptionNew context:nil];
+        if (locationManager != nil)
+        {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        }
         
         rotatingView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         [rotatingView setImage:[UIImage imageNamed:@"compassButton_Exterior.png"]];
@@ -40,18 +43,11 @@
 }
 
 
-#pragma mark - Heading observation
+#pragma mark - Heading changes
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
-                        change:(NSDictionary *)change
-                       context:(void *)context
-{
-    if ([keyPath isEqualToString:@"compassButton"] )
-    {
-        #warning vastly incomplete implementation here, at this point it merely rotates the view based off of heading.
-        CGAffineTransform transform = CGAffineTransformMakeRotation((float)locationManager.heading/36);
-        rotatingView.transform = transform;
-    }
+- (void)headingUpdated{
+    CGAffineTransform transform = CGAffineTransformMakeRotation((float)locationManager.heading/36);
+    rotatingView.transform = transform;
 }
 
 //button highlight
