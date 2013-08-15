@@ -114,8 +114,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [super viewDidLoad];
     
     [self setupLocationManager];
-    
-    FluxAPIInteraction *apiInteraction = [[FluxAPIInteraction alloc]init];
+//    
+//    FluxAPIInteraction *apiInteraction = [[FluxAPIInteraction alloc]init];
     
 //    FluxUserObject *obj2 = [[FluxUserObject alloc]init];
 //    [obj2 setFirstName:@"Jim"];
