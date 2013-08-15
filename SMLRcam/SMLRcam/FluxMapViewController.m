@@ -92,9 +92,7 @@
     [mapView setMapType: MKMapTypeStandard];
     [mapView setShowsUserLocation: YES];
     [mapView setUserTrackingMode: MKUserTrackingModeFollowWithHeading];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 0.5, 0.5);
-    
-    [mapView setRegion:viewRegion animated:YES];
+
     [mapView setDelegate:self];
 }
 
@@ -102,7 +100,10 @@
 #pragma mark - Back button
 - (IBAction) exitMapView:(id)sender
 {
-    [[self presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^(void) {
+        [mapView setUserTrackingMode:MKUserTrackingModeNone];
+        [mapView setDelegate:nil];
+    }];
 }
 
 #pragma mark - rotation and orientations
