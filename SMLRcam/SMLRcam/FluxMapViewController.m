@@ -106,7 +106,7 @@
 }
 
 #pragma mark - rotation and orientations
--(BOOL)shouldAutorotate
+- (BOOL)shouldAutorotate
 {
     return YES;
 }

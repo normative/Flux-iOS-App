@@ -106,8 +106,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     }
 }
 
-
-
 #pragma mark - view lifecycle
 
 - (void)viewDidLoad
@@ -138,12 +136,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 - (void)viewWillDisappear:(BOOL)animated{
     [self stopUpdatingLocation];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 - (void)didReceiveMemoryWarning
