@@ -278,6 +278,7 @@
     // Collect position and orientation information prior to copying image
     CLLocation *location = locationManager.location;
     CMAttitude *att = motionManager.deviceMotion.attitude;
+    CLLocationDirection heading = locationManager.heading;
     
     __block NSDate *endTime = [NSDate date];
     __block NSTimeInterval executionTime = [endTime timeIntervalSinceDate:startTime];
@@ -440,6 +441,11 @@
                  {
                      NSLog(@"***Could not create data from image destination ***");
                  }
+                 int userID = 57;
+                 int cameraID = 42;
+                 int categoryID = 10;
+                 
+                capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll];
                  
                  //cleanup
                  CFRelease(destination);
@@ -480,21 +486,9 @@
     
     
     FluxImageAnnotationViewController *annotationsView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxImageAnnotationViewController"];
-    
-    [annotationsView setCapturedImage:capturedImage andImageData:imgData andImageMetadata:imgMetadata andTimestamp:theDate andLocation:locationManager.location];
-    
+    [annotationsView setCapturedImage:capturedImageObject andImageData:imgData andImageMetadata:imgMetadata andTimestamp:theDate andLocation:locationManager.location];
     annotationsView.view.backgroundColor = [UIColor clearColor];
-    
-//    self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
-//    annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-//    [self presentViewController:annotationsView animated:YES completion:NULL];
-    
-    
     annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    //self.navigationController.modalPresentationStyle = UIModalPresentationCurrentContext;
-    //annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    //self.modalPresentationStyle = UIModalPresentationCurrentContext;
-    
     [self presentViewController:annotationsView animated:YES completion:nil];
 }
 
@@ -534,6 +528,8 @@
 //	}
 //}
 
+
+//not called for now
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     // only check for the annotations segue
