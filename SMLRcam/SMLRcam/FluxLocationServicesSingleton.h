@@ -9,28 +9,29 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
-@class FluxLocationServicesSingleton;
-@protocol LocationServicesSingletonDelegate <NSObject>
-@optional
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation*)newLocation;
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateHeading:(CLLocationDirection)newHeading;
-@end
+extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
+extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
+extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
+extern NSString* const FluxLocationServicesSingletonKeyLocation;
+extern NSString* const FluxLocationServicesSingletonKeyHeading;
+extern NSString* const FluxLocationServicesSingletonKeyPlacemark;
+
+@class FluxLocationServicesSingleton;
 
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     CLLocationManager * locationManager;
-    
-    id __weak delegate;
     NSMutableArray *locationMeasurements;
 }
-
-@property (weak) id <LocationServicesSingletonDelegate> delegate;
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
+@property (nonatomic) CLPlacemark* placemark;
 
 + (id)sharedManager;
 
 - (void)startLocating;
 - (void)endLocating;
+
+- (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 
 @end

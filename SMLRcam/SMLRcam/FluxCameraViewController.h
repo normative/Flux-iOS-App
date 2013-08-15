@@ -13,7 +13,7 @@
 
 #import "FluxImageAnnotationViewController.h"
 
-@interface FluxCameraViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate, LocationServicesSingletonDelegate>{
+@interface FluxCameraViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate>{
     
     //AV Capture
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -71,6 +71,7 @@
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
 
+- (void)updatePositionLabels:(NSNotification *)notification;
 - (void)UpdateMotionLabels:(NSTimer*)timer;
 
 //utilities

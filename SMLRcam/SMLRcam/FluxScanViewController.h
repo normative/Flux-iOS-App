@@ -18,7 +18,7 @@
 
 
 
-@interface FluxScanViewController : UIViewController<LocationServicesSingletonDelegate>{
+@interface FluxScanViewController : UIViewController{
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
@@ -27,9 +27,9 @@
     __weak IBOutlet UIButton *CameraButton;
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
+    __weak IBOutlet UILabel *dateRangeLabel;
     
     FluxLocationServicesSingleton *locationManager;
-    CLGeocoder *theGeocoder;
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
@@ -38,9 +38,11 @@
 - (void)setupLocationManager;
 - (void)startUpdatingLocation;
 - (void)stopUpdatingLocation;
+- (void)updatePlacemark:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
+- (IBAction)showAnnotationsView:(id)sender;
 
 
 @end

@@ -203,26 +203,31 @@
 - (void)setupLocationManager
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
-    [locationManager setDelegate:self];
-    if (locationManager.location != nil) {
-        [self LocationManager:locationManager didUpdateLocation:locationManager.location];
-    }
 }
 
 - (void)startUpdatingLocationAndHeading
 {
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+    }
     [locationManager startLocating];
 }
 
-#pragma mark - Location manager delegate methods
-- (void)LocationManager:(FluxLocationServicesSingleton *)locationSingleton didUpdateLocation:(CLLocation *)newLocation{
-    
-    latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
-    longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
+
+-(void)updatePositionLabels:(NSNotification *)notification
+{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLLocation *newLocation = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyLocation];
+        latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
+        longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
+    }
 }
 
 - (void)stopUpdatingLocationAndHeading
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [locationManager endLocating];
 }
 
@@ -234,7 +239,6 @@
 	motionManager.showsDeviceMovementDisplay = YES;
     motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
 }
-
 
 - (void)startDeviceMotion
 {
