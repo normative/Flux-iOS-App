@@ -119,7 +119,24 @@
 
 - (NSUInteger)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskLandscape;
+    return UIInterfaceOrientationMaskAll;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationLandscapeRight;
+}
+
+- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
+        NSLog(@"its protratit");
+        
+        [self dismissViewControllerAnimated:YES completion:^(void) {
+            //[mapView setUserTrackingMode:MKUserTrackingModeNone];
+            [myMapView setDelegate:nil];
+        }];
+    }
 }
 
 #pragma mark - viewcontroller methods

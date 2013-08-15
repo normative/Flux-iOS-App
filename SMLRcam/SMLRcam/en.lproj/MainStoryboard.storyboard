@@ -214,6 +214,7 @@
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
                         <outlet property="locationLabel" destination="uRS-ak-qsJ" id="nEB-8Y-IuR"/>
                         <outlet property="rightDriawerButton" destination="bIP-WR-7T3" id="ruk-5m-2yg"/>
+                        <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" id="AGI-r8-OnT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -829,4 +830,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="AGI-r8-OnT"/>
+    </inferredMetricsTieBreakers>
 </document>
