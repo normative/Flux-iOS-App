@@ -59,7 +59,10 @@
 #pragma mark - mapView delegate methods
 - (void) mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
 {
-    [self reverseGeocodeLocation:userLocation.location];
+    if (userLocation.location.horizontalAccuracy > 0) {
+        
+        [self reverseGeocodeLocation:userLocation.location];
+    }
 }
 
 #pragma mark - set label
@@ -89,11 +92,13 @@
 #pragma mark - mapview config
 - (void) setupMapView
 {
-    [mapView setMapType: MKMapTypeStandard];
-    [mapView setShowsUserLocation: YES];
-    [mapView setUserTrackingMode: MKUserTrackingModeFollowWithHeading];
-
-    [mapView setDelegate:self];
+    [myMapView setMapType: MKMapTypeStandard];
+    [myMapView setShowsUserLocation: YES];
+    [myMapView setUserTrackingMode: MKUserTrackingModeFollowWithHeading];
+    
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(myMapView.userLocation.coordinate, 0.5, 0.5);
+    [myMapView setRegion:viewRegion animated:YES];
+    [myMapView setDelegate:self];
 }
 
 #pragma mark - IBActions
@@ -101,8 +106,8 @@
 - (IBAction) exitMapView:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:^(void) {
-        [mapView setUserTrackingMode:MKUserTrackingModeNone];
-        [mapView setDelegate:nil];
+        //[mapView setUserTrackingMode:MKUserTrackingModeNone];
+        [myMapView setDelegate:nil];
     }];
 }
 

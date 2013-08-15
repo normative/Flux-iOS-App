@@ -12,7 +12,7 @@
 #import "FluxLocationServicesSingleton.h"
 
 @interface FluxMapViewController : UIViewController <MKMapViewDelegate> {
-    __weak IBOutlet MKMapView *mapView;
+    __weak IBOutlet MKMapView *myMapView;
     
     // Status Bar
     __weak IBOutlet UIButton *exitMapBtn;

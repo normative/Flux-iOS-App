@@ -801,7 +801,7 @@
                         <outlet property="currentLocalityLbl" destination="JmX-7R-HAO" id="Nvy-oc-CST"/>
                         <outlet property="detailBtn" destination="xWR-yM-mDc" id="CuR-68-WVh"/>
                         <outlet property="exitMapBtn" destination="8m5-U6-aYN" id="uXu-Y1-Ds6"/>
-                        <outlet property="mapView" destination="hT0-9E-Cfm" id="VdH-Ip-pkQ"/>
+                        <outlet property="myMapView" destination="hT0-9E-Cfm" id="jNM-cI-FMA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
