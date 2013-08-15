@@ -12,13 +12,14 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import "FluxLocationServicesSingleton.h"
+#import "FluxAPIInteraction.h"
 
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
 
 
-@interface FluxScanViewController : UIViewController<LocationServicesSingletonDelegate>{
+@interface FluxScanViewController : UIViewController<LocationServicesSingletonDelegate, APIInteractionDelegate>{
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;

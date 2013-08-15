@@ -13,6 +13,9 @@
 #import "FluxRightDrawerViewController.h"
 #import "FluxScanViewController.h"
 
+#import <Security/Security.h>
+
+
 
 @implementation FluxAppDelegate
 
@@ -59,6 +62,14 @@
         [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Save Pictures"];
         [defaults synchronize];
     }
+    
+//    NSMutableDictionary *query = [NSMutableDictionary dictionary];
+//    [query setObject:(id)kSecClassGenericPassword forKey:(id)kSecClass];
+//    [query setObject:account forKey:(id)kSecAttrAccount];
+//    [query setObject:(id)kSecAttrAccessibleWhenUnlocked forKey:(id)kSecAttrAccessible];
+//    [query setObject:[inputString dataUsingEncoding:NSUTF8StringEncoding] forKey:(id)kSecValueData];
+//    
+//    OSStatus error = SecItemAdd((CFDictionaryRef)query, NULL);
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];

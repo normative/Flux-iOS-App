@@ -13,6 +13,8 @@
 #import <ImageIO/ImageIO.h>
 #import <QuartzCore/CoreAnimation.h>
 
+#import "FluxScanImageObject.h"
+
 
 
 @interface FluxCameraViewController ()
