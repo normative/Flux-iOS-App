@@ -547,9 +547,9 @@
         [cameraButton setHidden:NO];
         
         // Get reference to the destination view controller
-        FluxImageAnnotationViewController *vc = [segue destinationViewController];
+        //FluxImageAnnotationViewController *vc = [segue destinationViewController];
         // Set the captured image + metadata
-        [vc setCapturedImage:capturedImage andImageData:imgData andImageMetadata:imgMetadata andTimestamp:theDate andLocation:locationManager.location];
+        //[vc setCapturedImage:capturedImage andImageData:imgData andImageMetadata:imgMetadata andTimestamp:theDate andLocation:locationManager.location];
     }
 }
 

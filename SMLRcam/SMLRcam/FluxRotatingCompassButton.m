@@ -36,8 +36,6 @@
         [rotatingView setContentMode:UIViewContentModeScaleAspectFit];        
         
         [self.imageView addSubview:rotatingView];
-        
-        
     }
     return self;
 }
@@ -46,7 +44,7 @@
 #pragma mark - Heading changes
 
 - (void)headingUpdated{
-    CGAffineTransform transform = CGAffineTransformMakeRotation((float)locationManager.heading/36);
+    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading*M_PI/180.0);
     rotatingView.transform = transform;
 }
 

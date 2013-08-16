@@ -74,12 +74,19 @@
     
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
-        if ([delegate respondsToSelector:@selector(APIInteraction:didreturnImage:)])
-        {
-            [delegate APIInteraction:self didreturnImage:image];
+    AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request imageProcessingBlock:nil                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+            if ([delegate respondsToSelector:@selector(APIInteraction:didreturnImage:)])
+            {
+                [delegate APIInteraction:self didreturnImage:image];
+            }
         }
-    }];
+       failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+           NSLog(@"Failed with error: %@", [error localizedDescription]);
+           if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+           {
+               [delegate APIInteraction:self didFailWithError:error];
+           }
+       }];
     [operation start];
 }
 
@@ -89,10 +96,18 @@
 
         
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request success:^(UIImage *image) {
+    
+    AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request imageProcessingBlock:nil                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
             if ([delegate respondsToSelector:@selector(APIInteraction:didreturnImage:)])
             {
                 [delegate APIInteraction:self didreturnImage:image];
+            }
+        }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
+            NSLog(@"Failed with error: %@", [error localizedDescription]);
+            if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+            {
+                [delegate APIInteraction:self didFailWithError:error];
             }
         }];
     [operation start];
@@ -115,6 +130,10 @@
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
+        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        {
+            [delegate APIInteraction:self didFailWithError:error];
+        }
     }];
     [operation start];
 }
@@ -133,6 +152,10 @@
         NSLog(@"Found %i Results",[result count]);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
+        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        {
+            [delegate APIInteraction:self didFailWithError:error];
+        }
     }];
     [operation start];
 }
@@ -158,9 +181,24 @@
         
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
+        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        {
+            [delegate APIInteraction:self didFailWithError:error];
+        }
     }];
-
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
+    
+    if ([delegate respondsToSelector:@selector(APIInteraction:uploadProgress:ofExpectedPacketSize:)])
+    {
+        [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+            if (totalBytesExpectedToWrite > 0 && totalBytesExpectedToWrite < NSUIntegerMax) {
+                [delegate APIInteraction:self uploadProgress:(float)totalBytesWritten ofExpectedPacketSize:(float)totalBytesExpectedToWrite];
+            }
+            NSLog(@"bytesWritten: %d, totalBytesWritten: %lld, totalBytesExpectedToWrite: %lld", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
+        }];
+    }
+    // monitor upload progress
+    
 }
 
 - (void)createUser:(FluxUserObject*)user{
@@ -178,6 +216,10 @@
         }
     }failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
+        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        {
+            [delegate APIInteraction:self didFailWithError:error];
+        }
     }];
 }
 
@@ -198,6 +240,10 @@
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
+        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        {
+            [delegate APIInteraction:self didFailWithError:error];
+        }
     }];
     [operation start];
 }

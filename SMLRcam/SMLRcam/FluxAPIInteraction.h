@@ -23,6 +23,7 @@
 //users
 - (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didCreateUser:(FluxUserObject*)userObject;
 
+- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size;
 - (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didFailWithError:(NSError*)e;
 @end
 

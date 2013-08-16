@@ -470,6 +470,10 @@
                                     <constraint firstAttribute="height" constant="25" id="NYA-iI-BSw"/>
                                 </constraints>
                             </view>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Ss0-wE-S9d">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="2"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
@@ -494,9 +498,11 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
+                        <outlet property="acceptButton" destination="QRl-Rt-OHm" id="TOY-h7-fc2"/>
                         <outlet property="annotationTextView" destination="cD1-Yd-7FG" id="Sft-AM-e7Y"/>
                         <outlet property="backgroundImageView" destination="5Te-BV-B4d" id="VMg-E3-gr0"/>
                         <outlet property="locationLabel" destination="f4P-hO-VzB" id="zFz-1L-PCp"/>
+                        <outlet property="progressView" destination="Ss0-wE-S9d" id="BSd-24-YGv"/>
                         <outlet property="timestampLabel" destination="xfF-UK-JPe" id="qF0-PO-oJ1"/>
                     </connections>
                 </viewController>
