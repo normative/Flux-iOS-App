@@ -31,6 +31,12 @@
 		2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2204371917B925870017EA93 /* FluxMapViewController.m */; };
 		2204371C17B926260017EA93 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2204371B17B926260017EA93 /* MapKit.framework */; };
 		220FE04F17BE632300A7E379 /* FluxNatigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 220FE04E17BE632300A7E379 /* FluxNatigationViewController.m */; };
+		220FE06D17BEACAD00A7E379 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FE06C17BEACAD00A7E379 /* SenTestingKit.framework */; };
+		220FE06E17BEACAD00A7E379 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B681785CA59005CF054 /* Foundation.framework */; };
+		220FE06F17BEACAD00A7E379 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B661785CA59005CF054 /* UIKit.framework */; };
+		220FE07517BEACAD00A7E379 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 220FE07317BEACAD00A7E379 /* InfoPlist.strings */; };
+		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
+		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -62,6 +68,16 @@
 		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
 		AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAED6C9717A2CD92004888FE /* PassthroughView.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		220FE07917BEACAD00A7E379 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17604B5B1785CA59005CF054 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 17604B621785CA59005CF054;
+			remoteInfo = Flux;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		17604B631785CA59005CF054 /* Flux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flux.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -95,6 +111,13 @@
 		2204371B17B926260017EA93 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		220FE04D17BE632300A7E379 /* FluxNatigationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxNatigationViewController.h; sourceTree = "<group>"; };
 		220FE04E17BE632300A7E379 /* FluxNatigationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxNatigationViewController.m; sourceTree = "<group>"; };
+		220FE06B17BEACAD00A7E379 /* Flux Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Flux Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		220FE06C17BEACAD00A7E379 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		220FE07217BEACAD00A7E379 /* Flux Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Flux Tests-Info.plist"; sourceTree = "<group>"; };
+		220FE07417BEACAD00A7E379 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		220FE07817BEACAD00A7E379 /* Flux Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Flux Tests-Prefix.pch"; sourceTree = "<group>"; };
+		22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_LocationServiceSingleton_Test.m; sourceTree = "<group>"; };
+		22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_MotionManagerSingleton.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		AA0BE05017A6B84800E41947 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		AA134AFA17AAD09500725AB1 /* MMDrawerBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerBarButtonItem.h; sourceTree = "<group>"; };
@@ -180,6 +203,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		220FE06817BEACAD00A7E379 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				220FE06D17BEACAD00A7E379 /* SenTestingKit.framework in Frameworks */,
+				220FE06F17BEACAD00A7E379 /* UIKit.framework in Frameworks */,
+				220FE06E17BEACAD00A7E379 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -187,6 +220,7 @@
 			isa = PBXGroup;
 			children = (
 				17604B6C1785CA59005CF054 /* Flux */,
+				220FE07017BEACAD00A7E379 /* Flux Tests */,
 				17604B651785CA59005CF054 /* Frameworks */,
 				17604B641785CA59005CF054 /* Products */,
 				CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */,
@@ -197,6 +231,7 @@
 			isa = PBXGroup;
 			children = (
 				17604B631785CA59005CF054 /* Flux.app */,
+				220FE06B17BEACAD00A7E379 /* Flux Tests.octest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -221,6 +256,7 @@
 				17604B681785CA59005CF054 /* Foundation.framework */,
 				17604B6A1785CA59005CF054 /* CoreGraphics.framework */,
 				DCDC5AB9480146C1BC963853 /* libPods.a */,
+				220FE06C17BEACAD00A7E379 /* SenTestingKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -265,6 +301,26 @@
 				2204371917B925870017EA93 /* FluxMapViewController.m */,
 			);
 			name = "Map Views";
+			sourceTree = "<group>";
+		};
+		220FE07017BEACAD00A7E379 /* Flux Tests */ = {
+			isa = PBXGroup;
+			children = (
+				22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */,
+				22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */,
+				220FE07117BEACAD00A7E379 /* Supporting Files */,
+			);
+			path = "Flux Tests";
+			sourceTree = "<group>";
+		};
+		220FE07117BEACAD00A7E379 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				220FE07217BEACAD00A7E379 /* Flux Tests-Info.plist */,
+				220FE07317BEACAD00A7E379 /* InfoPlist.strings */,
+				220FE07817BEACAD00A7E379 /* Flux Tests-Prefix.pch */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		AA134AF817AAB8C700725AB1 /* Drawers */ = {
@@ -421,6 +477,24 @@
 			productReference = 17604B631785CA59005CF054 /* Flux.app */;
 			productType = "com.apple.product-type.application";
 		};
+		220FE06A17BEACAD00A7E379 /* Flux Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 220FE07D17BEACAD00A7E379 /* Build configuration list for PBXNativeTarget "Flux Tests" */;
+			buildPhases = (
+				220FE06717BEACAD00A7E379 /* Sources */,
+				220FE06817BEACAD00A7E379 /* Frameworks */,
+				220FE06917BEACAD00A7E379 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				220FE07A17BEACAD00A7E379 /* PBXTargetDependency */,
+			);
+			name = "Flux Tests";
+			productName = "Flux Tests";
+			productReference = 220FE06B17BEACAD00A7E379 /* Flux Tests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -433,6 +507,9 @@
 				TargetAttributes = {
 					17604B621785CA59005CF054 = {
 						DevelopmentTeam = 3R58XXN523;
+					};
+					220FE06A17BEACAD00A7E379 = {
+						TestTargetID = 17604B621785CA59005CF054;
 					};
 				};
 			};
@@ -449,6 +526,7 @@
 			projectRoot = "";
 			targets = (
 				17604B621785CA59005CF054 /* Flux */,
+				220FE06A17BEACAD00A7E379 /* Flux Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -464,6 +542,14 @@
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA08279E17A6AE030079672A /* Media.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		220FE06917BEACAD00A7E379 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				220FE07517BEACAD00A7E379 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -541,7 +627,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		220FE06717BEACAD00A7E379 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */,
+				22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		220FE07A17BEACAD00A7E379 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 17604B621785CA59005CF054 /* Flux */;
+			targetProxy = 220FE07917BEACAD00A7E379 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		17604B6F1785CA59005CF054 /* InfoPlist.strings */ = {
@@ -558,6 +661,14 @@
 				17604B7F1785CA59005CF054 /* en */,
 			);
 			name = MainStoryboard.storyboard;
+			sourceTree = "<group>";
+		};
+		220FE07317BEACAD00A7E379 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				220FE07417BEACAD00A7E379 /* en */,
+			);
+			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -657,6 +768,63 @@
 			};
 			name = Release;
 		};
+		220FE07B17BEACAD00A7E379 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Flux.app/Flux";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Flux Tests/Flux Tests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "Flux Tests/Flux Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		220FE07C17BEACAD00A7E379 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Flux.app/Flux";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				ENABLE_NS_ASSERTIONS = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Flux Tests/Flux Tests-Prefix.pch";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "Flux Tests/Flux Tests-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -674,6 +842,15 @@
 			buildConfigurations = (
 				17604B871785CA59005CF054 /* Debug */,
 				17604B881785CA59005CF054 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		220FE07D17BEACAD00A7E379 /* Build configuration list for PBXNativeTarget "Flux Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				220FE07B17BEACAD00A7E379 /* Debug */,
+				220FE07C17BEACAD00A7E379 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
