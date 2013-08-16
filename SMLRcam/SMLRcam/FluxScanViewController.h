@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "MMDrawerBarButtonItem.h"
+#import "FluxMapViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import "FluxLocationServicesSingleton.h"
@@ -23,6 +24,8 @@
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
     GLuint _colorRenderBuffer;
+    
+    UIInterfaceOrientation changeToOrientation;
 
     __weak IBOutlet UIButton *CameraButton;
     __weak IBOutlet UIView *headerView;
