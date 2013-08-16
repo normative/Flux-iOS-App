@@ -30,6 +30,7 @@
 		17604B9F1785FF78005CF054 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9A1785F4DA005CF054 /* QuartzCore.framework */; };
 		2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2204371917B925870017EA93 /* FluxMapViewController.m */; };
 		2204371C17B926260017EA93 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2204371B17B926260017EA93 /* MapKit.framework */; };
+		220FE04F17BE632300A7E379 /* FluxNatigationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 220FE04E17BE632300A7E379 /* FluxNatigationViewController.m */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -55,6 +56,10 @@
 		AA7FBD3E17A6DD7600410E6B /* FluxCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBD3D17A6DD7600410E6B /* FluxCameraViewController.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
+		AAD2DFF117BBBD0500D572A4 /* FluxAPIInteraction.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF017BBBD0500D572A4 /* FluxAPIInteraction.m */; };
+		AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */; };
+		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
+		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
 		AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAED6C9717A2CD92004888FE /* PassthroughView.m */; };
 /* End PBXBuildFile section */
 
@@ -88,6 +93,8 @@
 		2204371817B925870017EA93 /* FluxMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapViewController.h; sourceTree = "<group>"; };
 		2204371917B925870017EA93 /* FluxMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMapViewController.m; sourceTree = "<group>"; };
 		2204371B17B926260017EA93 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		220FE04D17BE632300A7E379 /* FluxNatigationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxNatigationViewController.h; sourceTree = "<group>"; };
+		220FE04E17BE632300A7E379 /* FluxNatigationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxNatigationViewController.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		AA0BE05017A6B84800E41947 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		AA134AFA17AAD09500725AB1 /* MMDrawerBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerBarButtonItem.h; sourceTree = "<group>"; };
@@ -135,6 +142,13 @@
 		AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRightDrawerViewController.m; sourceTree = "<group>"; };
 		AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSwitchTableViewCell.h; sourceTree = "<group>"; };
 		AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSwitchTableViewCell.m; sourceTree = "<group>"; };
+		AAD2DFEF17BBBD0500D572A4 /* FluxAPIInteraction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAPIInteraction.h; sourceTree = "<group>"; };
+		AAD2DFF017BBBD0500D572A4 /* FluxAPIInteraction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAPIInteraction.m; sourceTree = "<group>"; };
+		AAD2DFF317BBFC8200D572A4 /* FluxUserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxUserObject.h; sourceTree = "<group>"; };
+		AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxUserObject.m; sourceTree = "<group>"; };
+		AAD2DFF617BD1F9A00D572A4 /* FluxMappingProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMappingProvider.h; sourceTree = "<group>"; };
+		AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMappingProvider.m; sourceTree = "<group>"; };
+		AAD2DFF917BD54BA00D572A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AAED6C9617A2CD92004888FE /* PassthroughView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassthroughView.h; sourceTree = "<group>"; };
 		AAED6C9717A2CD92004888FE /* PassthroughView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PassthroughView.m; sourceTree = "<group>"; };
 		CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
@@ -146,6 +160,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */,
 				2204371C17B926260017EA93 /* MapKit.framework in Frameworks */,
 				AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */,
 				17604B9F1785FF78005CF054 /* QuartzCore.framework in Frameworks */,
@@ -189,6 +204,7 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AAD2DFF917BD54BA00D572A4 /* Security.framework */,
 				2204371B17B926260017EA93 /* MapKit.framework */,
 				AA0BE05017A6B84800E41947 /* OpenGLES.framework */,
 				17604B9D1785F522005CF054 /* CoreMedia.framework */,
@@ -215,8 +231,8 @@
 				17604B751785CA59005CF054 /* FluxAppDelegate.h */,
 				17604B761785CA59005CF054 /* FluxAppDelegate.m */,
 				17604B7E1785CA59005CF054 /* MainStoryboard.storyboard */,
-				AA85AD7117A999A9003EBC89 /* Scan View */,
 				AA08279D17A6ADD00079672A /* Media.xcassets */,
+				AA85AD7117A999A9003EBC89 /* Scan View */,
 				2204371717B925380017EA93 /* Map Views */,
 				AA85AD7217A999D4003EBC89 /* Camera Views */,
 				AA4CEF6C17A9586F00202A74 /* Custom UI Elements */,
@@ -299,6 +315,12 @@
 			children = (
 				AA4CE15D17B58433008D04BE /* FluxScanImageObject.h */,
 				AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */,
+				AAD2DFF317BBFC8200D572A4 /* FluxUserObject.h */,
+				AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */,
+				AAD2DFEF17BBBD0500D572A4 /* FluxAPIInteraction.h */,
+				AAD2DFF017BBBD0500D572A4 /* FluxAPIInteraction.m */,
+				AAD2DFF617BD1F9A00D572A4 /* FluxMappingProvider.h */,
+				AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -367,6 +389,8 @@
 		AA85AD7217A999D4003EBC89 /* Camera Views */ = {
 			isa = PBXGroup;
 			children = (
+				220FE04D17BE632300A7E379 /* FluxNatigationViewController.h */,
+				220FE04E17BE632300A7E379 /* FluxNatigationViewController.m */,
 				AA7FBD3C17A6DD7600410E6B /* FluxCameraViewController.h */,
 				AA7FBD3D17A6DD7600410E6B /* FluxCameraViewController.m */,
 				AA7FBCF517A6CB1700410E6B /* FluxImageAnnotationViewController.h */,
@@ -484,6 +508,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA4CE16817B919F1008D04BE /* FPPopoverView.m in Sources */,
+				220FE04F17BE632300A7E379 /* FluxNatigationViewController.m in Sources */,
 				AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */,
 				AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */,
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
@@ -502,13 +527,16 @@
 				17604B771785CA59005CF054 /* FluxAppDelegate.m in Sources */,
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
+				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */,
 				AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */,
 				AA4CE16D17B921E1008D04BE /* FluxAnnotationsTableViewController.m in Sources */,
 				AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */,
+				AAD2DFF117BBBD0500D572A4 /* FluxAPIInteraction.m in Sources */,
 				AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */,
+				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
 				AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

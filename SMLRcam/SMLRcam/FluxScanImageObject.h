@@ -8,36 +8,45 @@
 
 #import <Foundation/Foundation.h>
 
-
-typedef struct {
-    double yaw;
-    double pitch;
-    double roll;
-} Attitude;
-
-typedef struct {
-    double longitue;
-    double latitude;
-    double altitude;
-} Location;
-
 @interface FluxScanImageObject : NSObject
 
 
 //image itself
 @property (nonatomic, weak)UIImage *contentImage;
-@property (nonatomic) int ImageID;
+
 
 //location
-@property (nonatomic) Location location;
+@property (nonatomic) float longitude;
+@property (nonatomic) float latitude;
+@property (nonatomic) float altitude;
 
 //orientation
-@property (nonatomic) Attitude attitude;
+@property (nonatomic) float yaw;
+@property (nonatomic) float pitch;
+@property (nonatomic) float roll;
+@property (nonatomic) float heading;
+
 
 //other
-@property (nonatomic,strong) NSDate* timestampDate;
-@property (nonatomic, weak) NSString* userName;
+@property (nonatomic, weak) NSString* timestampString;
 @property (nonatomic, weak) NSString* descriptionString;
 @property (nonatomic) int categoryID;
+@property (nonatomic) int cameraID;
+@property (nonatomic) int imageID;
+@property (nonatomic) int userID;
+
+- (id)initWithImage:(UIImage*)img
+     fromUserWithID:(int)userID
+        andCameraID:(int)camID
+      andCategoryID:(int)catID
+withDescriptionString:(NSString*)description
+        andlatitude:(float)latitude
+       andlongitude:(float)longitude
+        andaltitude:(float)altitude
+         andHeading:(float)heading
+             andYaw:(float)yaw
+           andPitch:(float)pitch
+            andRoll:(float)roll
+;
 
 @end

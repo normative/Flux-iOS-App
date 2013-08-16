@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 
 #import "MMDrawerBarButtonItem.h"
+#import "FluxMapViewController.h"
+#import "FPPopoverController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import "FluxLocationServicesSingleton.h"
@@ -20,9 +22,13 @@
 
 @interface FluxScanViewController : UIViewController{
     
+    FPPopoverController *popover;
+    
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
     GLuint _colorRenderBuffer;
+    
+    UIInterfaceOrientation changeToOrientation;
 
     __weak IBOutlet UIButton *CameraButton;
     __weak IBOutlet UIView *headerView;
@@ -32,14 +38,13 @@
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     
     FluxLocationServicesSingleton *locationManager;
+    
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 
 - (void)setupLocationManager;
-- (void)startUpdatingLocation;
-- (void)stopUpdatingLocation;
 - (void)updatePlacemark:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;

@@ -34,33 +34,33 @@
     [super viewDidLoad];
     
     FluxScanImageObject * obj1 = [[FluxScanImageObject alloc]init];
-    [obj1 setTimestampDate:[NSDate date]];
+    [obj1 setTimestampString:[[NSDate date]description]];
     [obj1 setDescriptionString:@"Johny sitting in front of the CN Tower"];
-    [obj1 setUserName:@"Karren246"];
+    [obj1 setUserID:1];
     [obj1 setContentImage:[UIImage imageNamed:@"pic1.png"]];
     
     FluxScanImageObject * obj2 = [[FluxScanImageObject alloc]init];
-    [obj2 setTimestampDate:[NSDate date]];
+    [obj2 setTimestampString:[[NSDate date]description]];
     [obj2 setDescriptionString:@"Great view of Toronto Western Hospital"];
-    [obj2 setUserName:@"VDub19"];
+    [obj2 setUserID:2];
     [obj2 setContentImage:[UIImage imageNamed:@"pic2.png"]];
     
     FluxScanImageObject * obj3 = [[FluxScanImageObject alloc]init];
-    [obj3 setTimestampDate:[NSDate date]];
+    [obj3 setTimestampString:[[NSDate date]description]];
     [obj3 setDescriptionString:@"Best pork sandwiches in town!"];
-    [obj3 setUserName:@"Jon_4"];
+    [obj3 setUserID:3];
     [obj3 setContentImage:[UIImage imageNamed:@"pic3.png"]];
     
     FluxScanImageObject * obj4 = [[FluxScanImageObject alloc]init];
-    [obj4 setTimestampDate:[NSDate date]];
+    [obj4 setTimestampString:[[NSDate date]description]];
     [obj4 setDescriptionString:@"Some cool graffiti"];
-    [obj4 setUserName:@"my_username"];
+    [obj4 setUserID:4];
     [obj4 setContentImage:[UIImage imageNamed:@"pic1.png"]];
     
     FluxScanImageObject * obj5 = [[FluxScanImageObject alloc]init];
-    [obj5 setTimestampDate:[NSDate date]];
+    [obj5 setTimestampString:[[NSDate date]description]];
     [obj5 setDescriptionString:@"Chili Peppers live at the ACC!"];
-    [obj5 setUserName:@"band_freak_47"];
+    [obj5 setUserID:5];
     [obj5 setContentImage:[UIImage imageNamed:@"pic2.png"]];
     
     self.annotationsTableViewArray = [[NSArray alloc]initWithObjects:obj1,obj2,obj3,obj4,obj5, nil];
@@ -106,12 +106,12 @@
         cell = [[FluxAnnotationTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     cell.descriptionLabel.text = [[self.annotationsTableViewArray objectAtIndex:indexPath.row]descriptionString];
-    cell.userLabel.text = [[self.annotationsTableViewArray objectAtIndex:indexPath.row]userName];
+    cell.userLabel.text = [NSString stringWithFormat:@"User: %i",[[self.annotationsTableViewArray objectAtIndex:indexPath.row]userID]];
     [cell.contentImageView setImage:[[self.annotationsTableViewArray objectAtIndex:indexPath.row]contentImage]];
     
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY"];
-    [cell.timestampLabel setText:[formatter stringFromDate:[[self.annotationsTableViewArray objectAtIndex:indexPath.row]timestampDate]]];
+    [cell.timestampLabel setText:[[self.annotationsTableViewArray objectAtIndex:indexPath.row]timestampString]];
     
     return cell;
 }

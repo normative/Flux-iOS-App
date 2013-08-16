@@ -13,6 +13,9 @@
 #import "FluxRightDrawerViewController.h"
 #import "FluxScanViewController.h"
 
+#import <Security/Security.h>
+
+
 
 @implementation FluxAppDelegate
 
@@ -52,13 +55,24 @@
     
     [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
     
-    //save picture by default
+    //set settings defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
+    NSNumber * uploadPic = [defaults objectForKey:@"Network Services"];
     if (savePic == nil) {
         [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Save Pictures"];
         [defaults synchronize];
     }
+    if (uploadPic == nil) {
+        [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Network Services"];
+        [defaults synchronize];
+    }
+    
+
+    
+    
+    
+    
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];
