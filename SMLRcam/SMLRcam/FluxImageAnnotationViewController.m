@@ -205,49 +205,64 @@
     //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default.
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if (![[defaults objectForKey:@"Save Pictures"]boolValue]) {
+    bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
+    bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
+    
+    [imgMetadata setValue:annotationTextView.text forKey:(NSString *)@"descriptionString"];
+    
+    //if we're saving it anywhere
+    if (savelocally || pushToCloud) {
+        if (savelocally) {
+            UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
+            
+            //saves it locally for now.
+            
+            //destibnation path
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
+            NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"ImagesFolder"];
+            NSError *error;
+            if (![[NSFileManager defaultManager] fileExistsAtPath:dataPath])
+            {
+                [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:&error]; //Create folder
+            }
+            
+            NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+            [dateFormat setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
+            
+            //add our image to the path
+            NSString *fullPath = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [dateFormat stringFromDate:timestamp]]];
+            [imgData writeToFile:fullPath atomically:YES];
+            
+            // build the metadata file...
+            NSString *fullPathMeta = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.xml", [dateFormat stringFromDate:timestamp]]];
+            [imgMetadata writeToFile:fullPathMeta atomically:YES];
+        }
+        if (pushToCloud) {
+            [progressView setFrame:CGRectMake(progressView.frame.origin.x, -10, progressView.frame.size.width, progressView.frame.size.height)];
+            [progressView setHidden:NO];
+            [UIView beginAnimations:@"lowerProgressView" context:nil];
+            [UIView setAnimationDuration:0.5];
+            [progressView setFrame:CGRectMake(progressView.frame.origin.x, 0, progressView.frame.size.width, progressView.frame.size.height)];
+            [UIView commitAnimations];
+            
+            [acceptButton setEnabled:NO];
+            progressView.progress = 0;
+            [imageObject setDescriptionString:annotationTextView.text];
+            FluxAPIInteraction *apiInteraction = [[FluxAPIInteraction alloc]init];
+            [apiInteraction setDelegate:self];
+            [apiInteraction uploadImage:imageObject];
+        }
+        //if we're not waiting for the OK from network services to exit the view, exit right here.
+        else{
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+
+    }
+    else{
         [self dismissViewControllerAnimated:YES completion:nil];
-        return;
     }
-    
-    UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
-    
-    //saves it locally for now.
-    
-    //destibnation path
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-    NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"ImagesFolder"];
-    NSError *error;
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dataPath])
-    {
-        [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:&error]; //Create folder
-    }
-    
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-    [dateFormat setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
-    
-    //add our image to the path
-    NSString *fullPath = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [dateFormat stringFromDate:timestamp]]];
-    [imgData writeToFile:fullPath atomically:YES];
-    
-    // build the metadata file...
-    NSString *fullPathMeta = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.xml", [dateFormat stringFromDate:timestamp]]];
-    [imgMetadata writeToFile:fullPathMeta atomically:YES];
-    
-    [progressView setFrame:CGRectMake(progressView.frame.origin.x, -10, progressView.frame.size.width, progressView.frame.size.height)];
-    [progressView setHidden:NO];
-    [UIView beginAnimations:@"lowerProgressView" context:nil];
-    [UIView setAnimationDuration:0.5];
-    [progressView setFrame:CGRectMake(progressView.frame.origin.x, 0, progressView.frame.size.width, progressView.frame.size.height)];
-    [UIView commitAnimations];
-    
-    [acceptButton setEnabled:NO];
-    progressView.progress = 0;
-    [imageObject setDescriptionString:annotationTextView.text];
-    FluxAPIInteraction *apiInteraction = [[FluxAPIInteraction alloc]init];
-    [apiInteraction setDelegate:self];
-    [apiInteraction uploadImage:imageObject];
+
+
 }
 @end

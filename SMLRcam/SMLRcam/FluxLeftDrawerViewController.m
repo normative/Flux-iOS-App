@@ -27,7 +27,7 @@
 {
     [super viewDidLoad];
     
-    leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures", nil];
+    leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -90,6 +90,12 @@
         [defaults setObject:[NSNumber numberWithBool:setting] forKey:string];
         [defaults synchronize];
     }
+    
+    if ([string isEqualToString:@"Network Services"]) {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:[NSNumber numberWithBool:setting] forKey:string];
+        [defaults synchronize];
+    }
 }
 
 //temporary, ugly, not really extensible code.
@@ -98,6 +104,10 @@
     if ([string isEqualToString:@"Save Pictures"]) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         return [defaults objectForKey:@"Save Pictures"];
+    }
+    else if ([string isEqualToString:@"Network Services"]){
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        return [defaults objectForKey:@"Network Services"];
     }
     else{
         return nil;
