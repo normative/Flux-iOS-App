@@ -7,9 +7,8 @@
 //
 
 #import "FluxScanViewController.h"
-#import "UIViewController+MMDrawerController.h"
-#import "FPPopoverController.h"
 
+#import "UIViewController+MMDrawerController.h"
 #import "FluxAnnotationsTableViewController.h"
 
 
@@ -72,7 +71,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (IBAction)showAnnotationsView:(id)sender {
     FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
     
-    FPPopoverController *popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
+    popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
     popover.arrowDirection = FPPopoverNoArrow;
     
     //the popover will be presented from the okButton view
@@ -128,12 +127,13 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 - (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    NSLog(@"to orientation is %i", toInterfaceOrientation);
-    
     if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
-        NSLog(@"toInterfaceOrientation - %i", toInterfaceOrientation);
-        
         changeToOrientation = toInterfaceOrientation;
+        
+        if (popover != nil) {
+            [popover dismissPopoverAnimated:NO];
+        }
+        
         [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
     }
 }

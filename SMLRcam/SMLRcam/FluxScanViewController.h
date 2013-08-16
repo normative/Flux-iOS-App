@@ -10,6 +10,7 @@
 
 #import "MMDrawerBarButtonItem.h"
 #import "FluxMapViewController.h"
+#import "FPPopoverController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import "FluxLocationServicesSingleton.h"
@@ -20,6 +21,8 @@
 @class FluxRotatingCompassButton;
 
 @interface FluxScanViewController : UIViewController{
+    
+    FPPopoverController *popover;
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
@@ -35,6 +38,7 @@
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     
     FluxLocationServicesSingleton *locationManager;
+    
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
