@@ -7,9 +7,8 @@
 //
 
 #import "FluxScanViewController.h"
-#import "UIViewController+MMDrawerController.h"
-#import "FPPopoverController.h"
 
+#import "UIViewController+MMDrawerController.h"
 #import "FluxAnnotationsTableViewController.h"
 
 
@@ -49,11 +48,12 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - Drawer Methods
-
+// Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
 }
 
+// Right Drawer
 - (IBAction)showRightDrawer:(id)sender {
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideRight animated:YES completion:nil];
 }
@@ -63,13 +63,21 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (IBAction)showAnnotationsView:(id)sender {
     FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
     
-    
-    
-    FPPopoverController *popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
+    popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
     popover.arrowDirection = FPPopoverNoArrow;
     
     //the popover will be presented from the okButton view
     [popover presentPopoverFromView:sender];
+}
+
+# pragma mark - prepare segue action with identifer
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+    if ([[segue identifier] isEqualToString:@"pushMapModalView"]) {
+        FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
+        fluxMapViewController.myViewOrientation = changeToOrientation;
+    }
+    
 }
 
 #pragma mark - OpenGL Methods
@@ -98,8 +106,36 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     }
 }
 
-#pragma mark - view lifecycle
+#pragma mark - orientation and rotation
+// Presenting mapview if current view is switching
+- (BOOL) shouldAutorotate
+{
+    return YES;
+}
 
+- (NSUInteger) supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+}
+
+- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+        changeToOrientation = toInterfaceOrientation;
+        
+        if (popover != nil) {
+            [popover dismissPopoverAnimated:NO];
+        }
+        
+        [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
+    }
+}
+
+- (UIInterfaceOrientation) preferredInterfaceOrientationForPresentation
+{
+    return changeToOrientation ? changeToOrientation : UIInterfaceOrientationPortraitUpsideDown;
+}
+
+#pragma mark - view lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -110,7 +146,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY"];
     [dateRangeLabel setText:[formatter stringFromDate:[NSDate date]]];
-    
     
     // Do any additional setup after loading the view, typically from a nib.
 }
@@ -131,7 +166,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [super didReceiveMemoryWarning];
     // Release any cached data, images, etc that aren't in use.
 }
-
 
 @end
 

@@ -214,6 +214,7 @@
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
                         <outlet property="locationLabel" destination="uRS-ak-qsJ" id="nEB-8Y-IuR"/>
                         <outlet property="rightDriawerButton" destination="bIP-WR-7T3" id="ruk-5m-2yg"/>
+                        <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" id="AGI-r8-OnT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -509,12 +510,13 @@
             </objects>
             <point key="canvasLocation" x="1336" y="56"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Flux Natigation View Controller-->
         <scene sceneID="eut-rm-gfx">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="TJg-hI-cnC" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="TJg-hI-cnC" customClass="FluxNatigationViewController" sceneMemberID="viewController">
                     <toolbarItems/>
                     <nil key="simulatedTopBarMetrics"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="YxK-yr-g0s">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -720,7 +722,7 @@
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="91t-QI-bo7">
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="91t-QI-bo7">
                                         <rect key="frame" x="245" y="10" width="100" height="21"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
@@ -803,11 +805,11 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
-                        <outlet property="currentDateLbl" destination="91t-QI-bo7" id="VN2-Vu-9YU"/>
-                        <outlet property="currentLocalityLbl" destination="JmX-7R-HAO" id="Nvy-oc-CST"/>
-                        <outlet property="detailBtn" destination="xWR-yM-mDc" id="CuR-68-WVh"/>
-                        <outlet property="exitMapBtn" destination="8m5-U6-aYN" id="uXu-Y1-Ds6"/>
                         <outlet property="myMapView" destination="hT0-9E-Cfm" id="jNM-cI-FMA"/>
+                        <outlet property="statusBarExitMapBtn" destination="8m5-U6-aYN" id="Kyq-PK-K4F"/>
+                        <outlet property="statusBarcurrentDateLbl" destination="91t-QI-bo7" id="eSy-YO-wQY"/>
+                        <outlet property="statusBarcurrentLocalityLbl" destination="JmX-7R-HAO" id="yAg-sr-BnV"/>
+                        <outlet property="statusBardetailBtn" destination="xWR-yM-mDc" id="n3E-AX-lbp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -835,4 +837,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="AGI-r8-OnT"/>
+    </inferredMetricsTieBreakers>
 </document>
