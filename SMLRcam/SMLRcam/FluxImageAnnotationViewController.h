@@ -29,6 +29,8 @@
     __weak IBOutlet KTPlaceholderTextView *annotationTextView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *timestampLabel;
+    __weak IBOutlet UIProgressView *progressView;
+    __weak IBOutlet UIButton *acceptButton;
 }
 
 //init

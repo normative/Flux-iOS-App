@@ -36,8 +36,6 @@
         [rotatingView setContentMode:UIViewContentModeScaleAspectFit];        
         
         [self.imageView addSubview:rotatingView];
-        
-        
     }
     return self;
 }
