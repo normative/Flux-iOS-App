@@ -594,10 +594,6 @@ static CAKeyframeAnimation * bounceKeyFrameAnimationForDistanceOnView(CGFloat di
 
 - (NSUInteger) supportedInterfaceOrientations
 {
-    //Because your app is only landscape, your view controller for the view in your
-    // popover needs to support only landscape
-    //return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
-    
     return UIInterfaceOrientationMaskAll;
 }
 

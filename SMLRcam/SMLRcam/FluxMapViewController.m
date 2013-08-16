@@ -22,6 +22,8 @@
 
 @implementation FluxMapViewController
 
+@synthesize myViewOrientation;
+
 #pragma mark - additional functions
 #pragma mark - get location info
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation
@@ -42,7 +44,7 @@
             CLPlacemark *placemark = [placemarks objectAtIndex:0];
             NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
             locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-            [self setStatusBarLocationLabel: locationString];
+            [self setStatusBarLocationLabel:locationString];
             
             NSString *locatedAt = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
             NSLog(@"User current address - %@",locatedAt);
@@ -67,9 +69,9 @@
 
 #pragma mark - set label
 #pragma mark - set location label
-- (void) setStatusBarLocationLabel: (NSString*) locationString
+- (void) setStatusBarLocationLabel:(NSString*) locationString
 {
-    [currentLocalityLbl setText: locationString];
+    [statusBarcurrentLocalityLbl setText:locationString];
 }
 
 #pragma mark - set date label
@@ -78,7 +80,7 @@
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
     [dateFormat setDateFormat:@"MMM dd, yyyy"];
     NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
-    [currentDateLbl setText: todayDateString];
+    [statusBarcurrentDateLbl setText:todayDateString];
 }
 
 #pragma mark - initialize and allocate objects
@@ -92,9 +94,9 @@
 #pragma mark - mapview config
 - (void) setupMapView
 {
-    [myMapView setMapType: MKMapTypeStandard];
-    [myMapView setShowsUserLocation: YES];
-    [myMapView setUserTrackingMode: MKUserTrackingModeFollowWithHeading];
+    [myMapView setMapType:MKMapTypeStandard];
+    [myMapView setShowsUserLocation:YES];
+    [myMapView setUserTrackingMode:MKUserTrackingModeFollowWithHeading];
     
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(myMapView.userLocation.coordinate, 0.5, 0.5);
     [myMapView setRegion:viewRegion animated:YES];
@@ -124,13 +126,12 @@
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
-    return UIInterfaceOrientationLandscapeRight;
+    return myViewOrientation ? myViewOrientation : UIInterfaceOrientationLandscapeRight;
 }
 
 - (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        NSLog(@"its protratit");
         
         [self dismissViewControllerAnimated:YES completion:^(void) {
             //[mapView setUserTrackingMode:MKUserTrackingModeNone];
@@ -139,7 +140,7 @@
     }
 }
 
-#pragma mark - viewcontroller methods
+#pragma mark - view lifecycle
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];

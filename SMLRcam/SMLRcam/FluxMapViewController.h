@@ -12,20 +12,25 @@
 #import "FluxLocationServicesSingleton.h"
 
 @interface FluxMapViewController : UIViewController <MKMapViewDelegate> {
-    __weak IBOutlet MKMapView *myMapView;
-    
-    // Status Bar
-    __weak IBOutlet UIButton *exitMapBtn;
-    __weak IBOutlet UILabel *currentDateLbl;
-    __weak IBOutlet UILabel *currentLocalityLbl;
-    __weak IBOutlet UIButton *detailBtn;
+    // Currnet View Orientation Direction (
+    UIInterfaceOrientation myViewOrientation;
     
     // location information coder
     CLGeocoder *theGeocoder;
     
+    // Map View
+    __weak IBOutlet MKMapView *myMapView;
+    
+    // Status Bar
+    __weak IBOutlet UIButton *statusBarExitMapBtn;
+    __weak IBOutlet UIButton *statusBardetailBtn;
+    __weak IBOutlet UILabel *statusBarcurrentDateLbl;
+    __weak IBOutlet UILabel *statusBarcurrentLocalityLbl;
+    
     //location + motion
     FluxLocationServicesSingleton *locationManager;
 }
+@property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
 
 - (IBAction) exitMapView:(id)sender;
 
