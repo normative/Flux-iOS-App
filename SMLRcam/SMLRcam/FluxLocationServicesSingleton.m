@@ -24,6 +24,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (id)init {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"%s", __func__);
     if (self = [super init]) {
         
         // Create the manager object
@@ -55,6 +57,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (void)startLocating{
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"%s", __func__);
     [locationManager startUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -65,9 +69,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     }
 }
 - (void)endLocating{
-#warning Don't stop updating location now. Need to keep reference count to figure out when to disable.
-    return;
-    
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"%s", __func__);
     [locationManager stopUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -111,9 +114,9 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
-    //NSLog(@"Adding new location  with date: %@ \nAnd Location: %0.15f, %0.15f, %f +/- %f (h), %f (v)",
-    //      [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude,
-    //      newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
+    NSLog(@"Adding new location  with date: %@ \nAnd Location: %0.15f, %0.15f, %f +/- %f (h), %f (v)",
+          [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude,
+          newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
     
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];
@@ -203,6 +206,9 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"%s", __func__);
+    
     // The location "unknown" error simply means the manager is currently unable to get the location.
     if ([error code] != kCLErrorLocationUnknown)
     {

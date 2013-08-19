@@ -10,7 +10,6 @@
 
 @interface FluxMapViewController ()
 
-- (void) setupLocationManager;
 - (void) setupMapView;
 
 - (void) setStatusBarLocationLabel:(NSString*)locationString;
@@ -84,12 +83,6 @@
 }
 
 #pragma mark - initialize and allocate objects
-#pragma mark - location manage config
-//allocates the location object and sets some parameters
-- (void)setupLocationManager
-{
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-}
 
 #pragma mark - mapview config
 - (void) setupMapView
@@ -154,7 +147,7 @@
 {
     [super viewDidLoad];
     
-    [self setupLocationManager];
+    locationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMapView];
     
     [self setStatusBarDateLabel];

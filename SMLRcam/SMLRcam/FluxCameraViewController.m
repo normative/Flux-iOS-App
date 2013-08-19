@@ -40,7 +40,7 @@
 
 - (void)viewDidLoad
 {
-    [self setupLocationManager];
+    locationManager = [FluxLocationServicesSingleton sharedManager];
 
     [self AddGridlinesToView];
     
@@ -53,14 +53,19 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    [self startUpdatingLocationAndHeading];
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+    }
+    
     [self startDeviceMotion];
     [self restartAVCapture];
     testTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateMotionLabels:) userInfo:nil repeats:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    [self stopUpdatingLocationAndHeading];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     [self stopDeviceMotion];
 }
 
@@ -201,33 +206,11 @@
 
 #pragma mark Location/Orientation Init
 
-//allocates the location object and sets some parameters
-- (void)setupLocationManager
-{
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-}
-
-- (void)startUpdatingLocationAndHeading
-{
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-    }
-    [locationManager startLocating];
-}
-
-
 -(void)updatePositionLabels:(NSNotification *)notification
 {
     CLLocation *newLocation = locationManager.location;
     latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
-}
-
-- (void)stopUpdatingLocationAndHeading
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [locationManager endLocating];
 }
 
 //starts the motion manager and sets an update interval
@@ -473,7 +456,6 @@
 - (IBAction)ConfirmImage:(id)sender {
     [self pauseAVCapture];
     [self stopDeviceMotion];
-    [self stopUpdatingLocationAndHeading];
     
     //clean up UI
     [gridView setHidden:NO];
@@ -535,7 +517,6 @@
         //cleanup this view
         [self pauseAVCapture];
         [self stopDeviceMotion];
-        [self stopUpdatingLocationAndHeading];
         
         //clean up UI
         [gridView setHidden:NO];
