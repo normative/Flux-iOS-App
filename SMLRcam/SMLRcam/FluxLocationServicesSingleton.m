@@ -24,7 +24,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (id)init {
-    NSLog(@"%s",__func__);
     if (self = [super init]) {
         
         // Create the manager object
@@ -57,11 +56,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (void)startLocating{
-    NSLog(@"%s",__func__);
-    
-    self.number_of_clients++;
-    NSLog(@"New number of location clients: %d", self.number_of_clients);
-    
     [locationManager startUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -72,11 +66,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     }
 }
 - (void)endLocating{
-    NSLog(@"%s",__func__);
-    
-    self.number_of_clients--;
-    NSLog(@"New number of location clients: %d", self.number_of_clients);
-    
 #warning Don't stop updating location now. Need to keep reference count to figure out when to disable.
     return;
     
@@ -215,7 +204,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"%s",__func__);
     // The location "unknown" error simply means the manager is currently unable to get the location.
     if ([error code] != kCLErrorLocationUnknown)
     {

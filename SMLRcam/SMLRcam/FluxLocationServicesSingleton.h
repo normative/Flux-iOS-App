@@ -22,7 +22,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
 @property (nonatomic) CLPlacemark* placemark;
-@property (atomic) NSInteger number_of_clients;
 
 + (id)sharedManager;
 
