@@ -11,7 +11,7 @@
 
 #import "FluxLocationServicesSingleton.h"
 
-@interface FluxMapViewController : UIViewController {
+@interface FluxMapViewController : UIViewController {    
     // Currnet View Orientation Direction (
     UIInterfaceOrientation myViewOrientation;
     
@@ -21,8 +21,9 @@
     // Status Bar
     __weak IBOutlet UIButton *statusBarExitMapBtn;
     __weak IBOutlet UIButton *statusBardetailBtn;
-    __weak IBOutlet UILabel *statusBarcurrentDateLbl;
-    __weak IBOutlet UILabel *statusBarcurrentLocalityLbl;
+    __weak IBOutlet UILabel *statusBarCurrentDateLbl;
+    __weak IBOutlet UILabel *statusBarCurrentLocalityLbl;
+    __weak IBOutlet UILabel *statusBarCurrentMoment;
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
