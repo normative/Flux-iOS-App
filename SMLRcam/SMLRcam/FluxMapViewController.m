@@ -14,8 +14,11 @@
 - (void) setupMapView;
 - (void) setupStatusBarContent;
 
+- (void) updateLoadingMessage: (NSTimer *)thisTimer;
+
 - (void) setStatusBarLocationLabel;
 - (void) setStatusBarDateLabel;
+- (void) setStatusBarMomentLabel;
 
 @end
 
@@ -35,7 +38,7 @@
     {
         locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
     }
-    [statusBarcurrentLocalityLbl setText: locationString];
+    [statusBarCurrentLocalityLbl setText: locationString];
 }
 
 // set status bar date label
@@ -44,7 +47,34 @@
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
     [dateFormat setDateFormat:@"MMM dd, yyyy"];
     NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
-    [statusBarcurrentDateLbl setText:todayDateString];
+    [statusBarCurrentDateLbl setText:todayDateString];
+}
+
+// set status bar moment label
+- (void) setStatusBarMomentLabel
+{
+    [statusBarCurrentMoment setText:@"0 Moment"];
+}
+
+#pragma mark - @selector
+
+- (void) updateLoadingMessage: (NSTimer *)thisTimer
+{
+    if ([statusBarCurrentLocalityLbl.text hasPrefix:@"Loading "])
+    {
+        // if statusBarCurrentLocalityLbl is less than the length of "Loading ...", append a "." at the end of the text
+        if (statusBarCurrentLocalityLbl.text.length < 11)
+        {
+            [statusBarCurrentLocalityLbl setText:[NSString stringWithFormat:@"%@.", statusBarCurrentLocalityLbl.text]];
+        }
+        else
+            [statusBarCurrentLocalityLbl setText:@"Loading "];
+    }
+    else
+    {
+        [thisTimer invalidate];
+        thisTimer = nil;
+    }
 }
 
 #pragma mark - initialize and allocate objects
@@ -74,8 +104,19 @@
 
 - (void) setupStatusBarContent
 {
-    [statusBarcurrentLocalityLbl setText:@"Loading"];
+    // assign text to locality label
+    [statusBarCurrentLocalityLbl setText:@"Loading "];
+    [NSTimer scheduledTimerWithTimeInterval: 0.5
+                                     target: self
+                                   selector: @selector(updateLoadingMessage:)
+                                   userInfo: nil
+                                    repeats: YES];
+    
+    // assign text to date label
     [self setStatusBarDateLabel];
+    
+    // assign text to moment label
+    [self setStatusBarMomentLabel];
 }
 
 #pragma mark - IBActions

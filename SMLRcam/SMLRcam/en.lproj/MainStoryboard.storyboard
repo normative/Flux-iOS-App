@@ -806,15 +806,16 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="myMapView" destination="hT0-9E-Cfm" id="jNM-cI-FMA"/>
+                        <outlet property="statusBarCurrentDateLbl" destination="91t-QI-bo7" id="qe6-Vg-UJk"/>
+                        <outlet property="statusBarCurrentLocalityLbl" destination="JmX-7R-HAO" id="Kq6-yN-bFH"/>
+                        <outlet property="statusBarCurrentMoment" destination="Imf-Ey-SB3" id="jHV-LH-tvl"/>
                         <outlet property="statusBarExitMapBtn" destination="8m5-U6-aYN" id="Kyq-PK-K4F"/>
-                        <outlet property="statusBarcurrentDateLbl" destination="91t-QI-bo7" id="eSy-YO-wQY"/>
-                        <outlet property="statusBarcurrentLocalityLbl" destination="JmX-7R-HAO" id="yAg-sr-BnV"/>
                         <outlet property="statusBardetailBtn" destination="xWR-yM-mDc" id="n3E-AX-lbp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="498" y="788"/>
+            <point key="canvasLocation" x="496" y="791"/>
         </scene>
     </scenes>
     <resources>
