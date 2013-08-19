@@ -57,8 +57,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (void)startLocating{
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"%s", __func__);
     [locationManager startUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -69,8 +67,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     }
 }
 - (void)endLocating{
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"%s", __func__);
     [locationManager stopUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -206,9 +202,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"%s", __func__);
-    
+    NSLog(@"Failed with error: %@", [error localizedDescription]);
     // The location "unknown" error simply means the manager is currently unable to get the location.
     if ([error code] != kCLErrorLocationUnknown)
     {
