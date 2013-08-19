@@ -31,6 +31,7 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
+    NSLog(@"%s",__func__);
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
@@ -40,9 +41,9 @@
 
 - (void)viewDidLoad
 {
+    NSLog(@"%s",__func__);
     [self setupLocationManager];
-    [self startUpdatingLocationAndHeading];
-    [self setupMotionManager];
+
     [self AddGridlinesToView];
     
     [retakeButton setHidden:YES];
@@ -54,24 +55,37 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    [self startDeviceMotion];
+    NSLog(@"%s",__func__);
     [self startUpdatingLocationAndHeading];
+    [self startDeviceMotion];
     [self restartAVCapture];
     testTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateMotionLabels:) userInfo:nil repeats:YES];
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    NSLog(@"%s",__func__);
+    ;
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    NSLog(@"%s",__func__);
+    [self stopUpdatingLocationAndHeading];
+    [self stopDeviceMotion];
+}
+
 - (void)viewDidDisappear:(BOOL)animated{
+    NSLog(@"%s",__func__);
     [testTimer invalidate];
 }
 
 - (void)dealloc{
-    [self stopUpdatingLocationAndHeading];
-    [self stopDeviceMotion];
+    NSLog(@"%s",__func__);
     motionManager = nil;
 }
 
 - (void)didReceiveMemoryWarning
 {
+    NSLog(@"%s",__func__);
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
@@ -202,11 +216,13 @@
 //allocates the location object and sets some parameters
 - (void)setupLocationManager
 {
+    NSLog(@"%s",__func__);
     locationManager = [FluxLocationServicesSingleton sharedManager];
 }
 
 - (void)startUpdatingLocationAndHeading
 {
+    NSLog(@"%s",__func__);
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -227,6 +243,7 @@
 
 - (void)stopUpdatingLocationAndHeading
 {
+    NSLog(@"%s",__func__);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [locationManager endLocating];
 }
@@ -268,11 +285,12 @@
 #pragma mark - UI Actions
 
 - (IBAction)CloseCamera:(id)sender {
+    NSLog(@"%s",__func__);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)TakePicture:(id)sender {
-    
+    NSLog(@"%s",__func__);
     __block NSDate *startTime = [NSDate date];
     
     // Collect position and orientation information prior to copying image
@@ -462,6 +480,7 @@
 }
 
 - (IBAction)RetakePictureAction:(id)sender {
+    NSLog(@"%s",__func__);
     [self restartAVCapture];
     [useButton setHidden:YES];
     [retakeButton setHidden:YES];
@@ -473,6 +492,7 @@
 }
 
 - (IBAction)ConfirmImage:(id)sender {
+    NSLog(@"%s",__func__);
     
     [self pauseAVCapture];
     [self stopDeviceMotion];
@@ -532,6 +552,7 @@
 //not called for now
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
+    NSLog(@"%s",__func__);
     // only check for the annotations segue
     if ([[segue identifier] isEqualToString:@"cameraPush"])
     {

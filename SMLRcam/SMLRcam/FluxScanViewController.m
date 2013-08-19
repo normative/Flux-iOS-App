@@ -25,15 +25,9 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 //allocates the location object and sets some parameters
 - (void)setupLocationManager
 {
+    NSLog(@"%s",__func__);
     // Create the manager object
     locationManager = [FluxLocationServicesSingleton sharedManager];
-    
-    if (locationManager != nil)
-    {
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-    }
-    [locationManager startLocating];
 }
 
 -(void)updatePlacemark:(NSNotification *)notification
@@ -72,7 +66,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 # pragma mark - prepare segue action with identifer
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
+    NSLog(@"%s",__func__);
     if ([[segue identifier] isEqualToString:@"pushMapModalView"]) {
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
@@ -119,6 +113,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 - (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
+    NSLog(@"%s",__func__);
     if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
         changeToOrientation = toInterfaceOrientation;
         
@@ -138,6 +133,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 #pragma mark - view lifecycle
 - (void)viewDidLoad
 {
+    NSLog(@"%s",__func__);
     [super viewDidLoad];
     
     [self setupLocationManager];
@@ -151,11 +147,33 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    NSLog(@"%s",__func__);
     [locationManager startLocating];
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    NSLog(@"%s",__func__);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [locationManager endLocating];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    NSLog(@"%s",__func__);
+    ;
+}
+
+- (void)viewDidDisappear:(BOOL)animated{
+    NSLog(@"%s",__func__);
+    ;
 }
 
 - (void)viewDidUnload
 {
+    NSLog(@"%s",__func__);
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -163,6 +181,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 - (void)didReceiveMemoryWarning
 {
+    NSLog(@"%s",__func__);
     [super didReceiveMemoryWarning];
     // Release any cached data, images, etc that aren't in use.
 }

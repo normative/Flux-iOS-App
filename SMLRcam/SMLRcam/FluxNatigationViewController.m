@@ -34,6 +34,7 @@
 # pragma mark - view lifecycle
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
+    NSLog(@"%s",__func__);
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
@@ -43,12 +44,14 @@
 
 - (void)viewDidLoad
 {
+    NSLog(@"%s",__func__);
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
 }
 
 - (void)didReceiveMemoryWarning
 {
+    NSLog(@"%s",__func__);
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
