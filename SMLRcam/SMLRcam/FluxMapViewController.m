@@ -10,6 +10,7 @@
 
 @interface FluxMapViewController ()
 
+- (void) setupLocationManager;
 - (void) setupMapView;
 - (void) setupStatusBarContent;
 
@@ -57,7 +58,6 @@
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setStatusBarLocationLabel) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     }
-    [locationManager startLocating];
 }
 
 // initialize and allocate memory to the map view object
@@ -132,7 +132,7 @@
 {
     [super viewDidLoad];
     
-    locationManager = [FluxLocationServicesSingleton sharedManager];
+    [self setupLocationManager];
     [self setupMapView];
     [self setupStatusBarContent];
 }

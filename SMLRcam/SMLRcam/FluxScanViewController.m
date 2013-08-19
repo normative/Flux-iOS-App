@@ -22,20 +22,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 #pragma mark - location
 
-//allocates the location object and sets some parameters
-- (void)setupLocationManager
-{
-    // Create the manager object
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-    
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-    }
-    [locationManager startLocating];
-}
-
--(void)updatePlacemark
+-(void)updatePlacemark:(NSNotification *)notification
 {
     NSString *locationString = locationManager.subadministativearea;
     NSString *sublocality = locationManager.sublocality;
@@ -179,10 +166,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     // Release any cached data, images, etc that aren't in use.
 }
 
-- (void)dealloc{
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"%s", __func__);
-    
+- (void)dealloc
+{
     locationManager = nil;
 }
 

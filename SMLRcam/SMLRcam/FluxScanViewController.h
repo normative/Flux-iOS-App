@@ -43,8 +43,7 @@
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 
-- (void)setupLocationManager;
-- (void)updatePlacemark;
+- (void)updatePlacemark:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
