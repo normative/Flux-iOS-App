@@ -41,6 +41,7 @@
 - (void)viewDidLoad
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
+    [self setupMotionManager];
 
     [self AddGridlinesToView];
     
@@ -56,6 +57,7 @@
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+        [self updatePositionLabels:nil];
     }
     
     [self startDeviceMotion];

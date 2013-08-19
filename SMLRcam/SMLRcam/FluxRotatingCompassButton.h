@@ -15,6 +15,6 @@
     FluxLocationServicesSingleton* locationManager;
 }
 
-- (void)headingUpdated;
+- (void)headingUpdated:(NSNotification *)notification;
 
 @end
