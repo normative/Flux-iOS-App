@@ -153,8 +153,7 @@
     {
         [self dismissViewControllerAnimated:YES completion:^(void)
         {
-            //[mapView setUserTrackingMode:MKUserTrackingModeNone];
-            [myMapView setDelegate:nil];
+            //[myMapView setDelegate:nil];
         }];
     }
 }
