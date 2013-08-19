@@ -38,7 +38,6 @@
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     
     FluxLocationServicesSingleton *locationManager;
-    
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;

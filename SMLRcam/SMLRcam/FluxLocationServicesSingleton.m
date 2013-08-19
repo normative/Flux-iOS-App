@@ -222,26 +222,28 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
             {
                 NSLog(@"No internet connection for reverse geolocation");
                 //Alert(@"No Internet connection!");
+                return;
             }
             else if (error.code == kCLErrorGeocodeFoundPartialResult){
                 NSLog(@"Only partial placemark returned");
             }
-            else
+            else {
                 NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
-        }
-        else
-        {
-            self.placemark = [placemarks lastObject];
-            
-            // Notify observers of updated address with placemark
-            if (self.placemark != nil)
-            {
-                NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.placemark forKey:FluxLocationServicesSingletonKeyPlacemark];
-                [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdatePlacemark object:self userInfo:userInfoDict];
+                return;
             }
+        }
+        
+        self.placemark = [placemarks lastObject];
+            
+        // Notify observers of updated address with placemark
+        if (self.placemark != nil)
+        {
+            NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.placemark forKey:FluxLocationServicesSingletonKeyPlacemark];
+            [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdatePlacemark object:self userInfo:userInfoDict];
         }
     }];
 }
+
 
 @end
 

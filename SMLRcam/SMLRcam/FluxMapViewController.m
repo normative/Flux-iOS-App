@@ -13,10 +13,8 @@
 - (void) setupLocationManager;
 - (void) setupMapView;
 
-- (void) setStatusBarLocationLabel:(NSString*)locationString;
+- (void) setStatusBarLocationLabel:(NSNotification *)notification;
 - (void) setStatusBarDateLabel;
-
-- (void) reverseGeocodeLocation:(CLLocation*)thelocation;
 
 @end
 
@@ -24,57 +22,21 @@
 
 @synthesize myViewOrientation;
 
-#pragma mark - additional functions
-#pragma mark - get location info
-- (void)reverseGeocodeLocation:(CLLocation*)thelocation
-{
-    theGeocoder = [[CLGeocoder alloc] init];
-    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error){
-        if (error){
-            
-            if (error.code == kCLErrorNetwork || (error.code == kCLErrorGeocodeFoundPartialResult)) {
-                
-                NSLog(@"Error - No internet connection for reverse geolocation");
-            } else {
-                
-                NSLog(@"Error Reverse Geolocating: %@", [error localizedDescription]);
-            }
-        } else {
-            
-            CLPlacemark *placemark = [placemarks objectAtIndex:0];
-            NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-            locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-            [self setStatusBarLocationLabel:locationString];
-            
-            NSString *locatedAt = [[placemark.addressDictionary valueForKey:@"FormattedAddressLines"] componentsJoinedByString:@", "];
-            NSLog(@"User current address - %@",locatedAt);
-            
-            locatedAt = [placemark.addressDictionary valueForKey:@"SubLocality"];
-            NSLog(@"User current subLocality - %@",locatedAt);
-            
-            NSLog(@"User current address description - %@", [placemark.addressDictionary description]);
-        }
-    }];
-}
+#pragma mark - set label
 
-#pragma mark - delegate methods
-#pragma mark - mapView delegate methods
-- (void) mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
+// set status bar location label
+- (void) setStatusBarLocationLabel:(NSNotification *)notification
 {
-    if (userLocation.location.horizontalAccuracy > 0) {
-        
-        [self reverseGeocodeLocation:userLocation.location];
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLPlacemark *placemark = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyPlacemark];
+        NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
+        locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+        statusBarcurrentLocalityLbl.text = locationString;
     }
 }
 
-#pragma mark - set label
-#pragma mark - set location label
-- (void) setStatusBarLocationLabel:(NSString*) locationString
-{
-    [statusBarcurrentLocalityLbl setText:locationString];
-}
-
-#pragma mark - set date label
+// set status bar date label
 - (void) setStatusBarDateLabel
 {
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
@@ -84,14 +46,22 @@
 }
 
 #pragma mark - initialize and allocate objects
-#pragma mark - location manage config
-//allocates the location object and sets some parameters
+
+// initialize and allocate memory to the location manager object and register for nsnotification service
 - (void)setupLocationManager
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
+    
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setStatusBarLocationLabel:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    }
+    [locationManager startLocating];
 }
 
 #pragma mark - mapview config
+
+// initialize and allocate memory to the map view object
 - (void) setupMapView
 {
     [myMapView setMapType:MKMapTypeStandard];
@@ -100,20 +70,21 @@
     
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(myMapView.userLocation.coordinate, 0.5, 0.5);
     [myMapView setRegion:viewRegion animated:YES];
-    [myMapView setDelegate:self];
 }
 
 #pragma mark - IBActions
-#pragma mark - Back button
+
+// IBAction for exiting the map view
 - (IBAction) exitMapView:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:^(void) {
-        //[mapView setUserTrackingMode:MKUserTrackingModeNone];
+        
         [myMapView setDelegate:nil];
     }];
 }
 
 #pragma mark - rotation and orientations
+
 - (BOOL)shouldAutorotate
 {
     return YES;
@@ -141,6 +112,7 @@
 }
 
 #pragma mark - view lifecycle
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
