@@ -211,7 +211,6 @@
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     }
-    [locationManager startLocating];
 }
 
 
@@ -228,7 +227,6 @@
 - (void)stopUpdatingLocationAndHeading
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [locationManager endLocating];
 }
 
 //starts the motion manager and sets an update interval

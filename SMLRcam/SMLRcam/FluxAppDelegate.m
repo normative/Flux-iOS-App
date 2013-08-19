@@ -68,12 +68,6 @@
         [defaults synchronize];
     }
     
-
-    
-    
-    
-    
-    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];
     // Override point for customization after application launch.
