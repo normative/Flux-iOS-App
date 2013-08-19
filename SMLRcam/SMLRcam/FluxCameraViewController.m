@@ -233,12 +233,9 @@
 
 -(void)updatePositionLabels:(NSNotification *)notification
 {
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLLocation *newLocation = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyLocation];
-        latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
-        longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
-    }
+    CLLocation *newLocation = locationManager.location;
+    latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
+    longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
 }
 
 - (void)stopUpdatingLocationAndHeading

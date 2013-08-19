@@ -32,13 +32,10 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 -(void)updatePlacemark:(NSNotification *)notification
 {
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLPlacemark *placemark = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyPlacemark];
-        NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-        locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-        locationLabel.text = locationString;
-    }
+    CLPlacemark *placemark = locationManager.placemark;
+    NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
+    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+    locationLabel.text = locationString;
 }
 
 #pragma mark - Drawer Methods

@@ -12,10 +12,6 @@ NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationS
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
 NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocationServicesSingletonDidUpdatePlacemark";
 
-NSString* const FluxLocationServicesSingletonKeyLocation = @"FluxLocationServicesSingletonKeyLocation";
-NSString* const FluxLocationServicesSingletonKeyHeading = @"FluxLocationServicesSingletonKeyHeading";
-NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServicesSingletonKeyPlacemark";
-
 @implementation FluxLocationServicesSingleton
 
 + (id)sharedManager {
@@ -199,8 +195,7 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
     // Notify observers of updated position
     if (self.location != nil)
     {
-        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.location forKey:FluxLocationServicesSingletonKeyLocation];
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfoDict];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self];
         [self reverseGeocodeLocation:self.location];
     }
 }
@@ -211,12 +206,11 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading);
     
-    // Notify observers of updated heading (note that heading has been cast from a double to an NSNumber)
+    // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
     if (self.location != nil)
     {
-        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:self.heading] forKey:FluxLocationServicesSingletonKeyHeading];
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateHeading object:self userInfo:userInfoDict];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateHeading object:self];
     }
 }
 
@@ -256,8 +250,7 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
             // Notify observers of updated address with placemark
             if (self.placemark != nil)
             {
-                NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.placemark forKey:FluxLocationServicesSingletonKeyPlacemark];
-                [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdatePlacemark object:self userInfo:userInfoDict];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdatePlacemark object:self];
             }
         }
     }];
