@@ -24,8 +24,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 - (id)init {
-    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
-    NSLog(@"%s", __func__);
     if (self = [super init]) {
         
         // Create the manager object
