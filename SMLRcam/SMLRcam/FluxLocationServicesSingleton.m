@@ -33,7 +33,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
             return nil;
         }
         locationManager.delegate = self;
-        self.number_of_clients = 0;
         
         // This is the most important property to set for the manager. It ultimately determines how the manager will
         // attempt to acquire location and thus, the amount of power that will be consumed.
