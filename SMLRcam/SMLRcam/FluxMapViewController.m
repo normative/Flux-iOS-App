@@ -126,7 +126,7 @@
 {
     [self dismissViewControllerAnimated:YES completion:^(void)
     {
-        [myMapView setDelegate:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     }];
 }
 
