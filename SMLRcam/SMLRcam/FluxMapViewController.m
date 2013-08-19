@@ -12,8 +12,9 @@
 
 - (void) setupLocationManager;
 - (void) setupMapView;
+- (void) setupStatusBarContent;
 
-- (void) setStatusBarLocationLabel:(NSNotification *)notification;
+- (void) setStatusBarLocationLabel;
 - (void) setStatusBarDateLabel;
 
 @end
@@ -25,15 +26,16 @@
 #pragma mark - set label
 
 // set status bar location label
-- (void) setStatusBarLocationLabel:(NSNotification *)notification
+- (void) setStatusBarLocationLabel
 {
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLPlacemark *placemark = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyPlacemark];
-        NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-        locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-        statusBarcurrentLocalityLbl.text = locationString;
+    NSString *locationString = locationManager.subadministativearea;
+    NSString *sublocality = locationManager.sublocality;
+    
+    if (sublocality.length > 0)
+    {
+        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
     }
+    [statusBarcurrentLocalityLbl setText: locationString];
 }
 
 // set status bar date label
@@ -54,12 +56,10 @@
     
     if (locationManager != nil)
     {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setStatusBarLocationLabel:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setStatusBarLocationLabel) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     }
     [locationManager startLocating];
 }
-
-#pragma mark - mapview config
 
 // initialize and allocate memory to the map view object
 - (void) setupMapView
@@ -72,13 +72,19 @@
     [myMapView setRegion:viewRegion animated:YES];
 }
 
+- (void) setupStatusBarContent
+{
+    [statusBarcurrentLocalityLbl setText:@"Loading"];
+    [self setStatusBarDateLabel];
+}
+
 #pragma mark - IBActions
 
 // IBAction for exiting the map view
 - (IBAction) exitMapView:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:^(void) {
-        
+    [self dismissViewControllerAnimated:YES completion:^(void)
+    {
         [myMapView setDelegate:nil];
     }];
 }
@@ -102,9 +108,10 @@
 
 - (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation)) {
-        
-        [self dismissViewControllerAnimated:YES completion:^(void) {
+    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation))
+    {
+        [self dismissViewControllerAnimated:YES completion:^(void)
+        {
             //[mapView setUserTrackingMode:MKUserTrackingModeNone];
             [myMapView setDelegate:nil];
         }];
@@ -128,8 +135,7 @@
     
     [self setupLocationManager];
     [self setupMapView];
-    
-    [self setStatusBarDateLabel];
+    [self setupStatusBarContent];
 }
 
 - (void)didReceiveMemoryWarning

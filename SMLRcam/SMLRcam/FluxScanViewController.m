@@ -30,20 +30,21 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     
     if (locationManager != nil)
     {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     }
     [locationManager startLocating];
 }
 
--(void)updatePlacemark:(NSNotification *)notification
+-(void)updatePlacemark
 {
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLPlacemark *placemark = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyPlacemark];
-        NSString * locationString = [placemark.addressDictionary valueForKey:@"SubLocality"];
-        locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-        locationLabel.text = locationString;
+    NSString *locationString = locationManager.subadministativearea;
+    NSString *sublocality = locationManager.sublocality;
+    
+    if (sublocality.length > 0)
+    {
+        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
     }
+    [locationLabel setText: locationString];
 }
 
 #pragma mark - Drawer Methods

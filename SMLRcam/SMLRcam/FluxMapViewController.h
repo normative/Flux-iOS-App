@@ -15,9 +15,6 @@
     // Currnet View Orientation Direction (
     UIInterfaceOrientation myViewOrientation;
     
-    // location information coder
-    CLGeocoder *theGeocoder;
-    
     // Map View
     __weak IBOutlet MKMapView *myMapView;
     

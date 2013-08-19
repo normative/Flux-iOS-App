@@ -27,6 +27,9 @@ extern NSString* const FluxLocationServicesSingletonKeyPlacemark;
 @property (nonatomic) CLLocationDirection heading;
 @property (nonatomic) CLPlacemark* placemark;
 
+@property (nonatomic) NSString* sublocality;
+@property (nonatomic) NSString* subadministativearea;
+
 + (id)sharedManager;
 
 - (void)startLocating;

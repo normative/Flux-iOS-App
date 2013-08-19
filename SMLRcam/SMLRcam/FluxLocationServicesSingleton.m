@@ -214,8 +214,8 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
 {
     CLGeocoder* theGeocoder = [[CLGeocoder alloc] init];
     
-    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error) {
-        
+    [theGeocoder reverseGeocodeLocation:thelocation completionHandler:^(NSArray *placemarks, NSError *error)
+    {
         if (error)
         {
             if (error.code == kCLErrorNetwork)
@@ -234,12 +234,20 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
         }
         
         self.placemark = [placemarks lastObject];
-            
+        
         // Notify observers of updated address with placemark
         if (self.placemark != nil)
         {
-            NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.placemark forKey:FluxLocationServicesSingletonKeyPlacemark];
-            [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdatePlacemark object:self userInfo:userInfoDict];
+            NSString *newSubLocality = [self.placemark.addressDictionary valueForKey:@"SubLocality"];
+            NSString *newSubAdministrativeArea = [self.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"];
+            
+            if (![self.subadministativearea isEqualToString: newSubAdministrativeArea] || ![self.sublocality isEqualToString: newSubLocality])
+            {
+                self.sublocality = newSubLocality;
+                self.subadministativearea = newSubAdministrativeArea;
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdatePlacemark object:self];
+            }
         }
     }];
 }
