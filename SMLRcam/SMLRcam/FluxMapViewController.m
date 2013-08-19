@@ -10,7 +10,6 @@
 
 @interface FluxMapViewController ()
 
-- (void) setupLocationManager;
 - (void) setupMapView;
 - (void) setupStatusBarContent;
 
@@ -133,7 +132,7 @@
 {
     [super viewDidLoad];
     
-    [self setupLocationManager];
+    locationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMapView];
     [self setupStatusBarContent];
 }

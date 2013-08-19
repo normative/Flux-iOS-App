@@ -72,7 +72,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 # pragma mark - prepare segue action with identifer
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
     if ([[segue identifier] isEqualToString:@"pushMapModalView"]) {
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
@@ -140,7 +139,9 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 {
     [super viewDidLoad];
     
-    [self setupLocationManager];
+    // Start the location manager service which will continue for the life of the app
+    locationManager = [FluxLocationServicesSingleton sharedManager];
+    [locationManager startLocating];
     
     //temporarily set the date range label to today's date
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
@@ -151,12 +152,23 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    [locationManager startLocating];
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+        [self updatePlacemark:nil];
+    }
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
+    
+    [locationManager endLocating];
+    
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
@@ -165,6 +177,13 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 {
     [super didReceiveMemoryWarning];
     // Release any cached data, images, etc that aren't in use.
+}
+
+- (void)dealloc{
+    NSLog(@"!!!!!!!!!!!!!!!!!!!!!");
+    NSLog(@"%s", __func__);
+    
+    locationManager = nil;
 }
 
 @end

@@ -28,7 +28,8 @@
         locationManager = [FluxLocationServicesSingleton sharedManager];
         if (locationManager != nil)
         {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+            [self headingUpdated:nil];
         }
         
         rotatingView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
@@ -43,7 +44,8 @@
 
 #pragma mark - Heading changes
 
-- (void)headingUpdated{
+- (void)headingUpdated:(NSNotification *)notification
+{
     CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading*M_PI/180.0);
     rotatingView.transform = transform;
 }

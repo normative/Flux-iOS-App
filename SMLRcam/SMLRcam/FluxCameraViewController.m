@@ -40,9 +40,9 @@
 
 - (void)viewDidLoad
 {
-    [self setupLocationManager];
-    [self startUpdatingLocationAndHeading];
+    locationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMotionManager];
+
     [self AddGridlinesToView];
     
     [retakeButton setHidden:YES];
@@ -54,10 +54,21 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+        [self updatePositionLabels:nil];
+    }
+    
     [self startDeviceMotion];
-    [self startUpdatingLocationAndHeading];
     [self restartAVCapture];
     testTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateMotionLabels:) userInfo:nil repeats:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [self stopDeviceMotion];
 }
 
 - (void)viewDidDisappear:(BOOL)animated{
@@ -65,8 +76,6 @@
 }
 
 - (void)dealloc{
-    [self stopUpdatingLocationAndHeading];
-    [self stopDeviceMotion];
     motionManager = nil;
 }
 
@@ -199,36 +208,11 @@
 
 #pragma mark Location/Orientation Init
 
-//allocates the location object and sets some parameters
-- (void)setupLocationManager
-{
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-}
-
-- (void)startUpdatingLocationAndHeading
-{
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-    }
-    [locationManager startLocating];
-}
-
-
 -(void)updatePositionLabels:(NSNotification *)notification
 {
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLLocation *newLocation = [userInfoDict objectForKey:FluxLocationServicesSingletonKeyLocation];
-        latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
-        longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
-    }
-}
-
-- (void)stopUpdatingLocationAndHeading
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [locationManager endLocating];
+    CLLocation *newLocation = locationManager.location;
+    latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
+    longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
 }
 
 //starts the motion manager and sets an update interval
@@ -272,7 +256,6 @@
 }
 
 - (IBAction)TakePicture:(id)sender {
-    
     __block NSDate *startTime = [NSDate date];
     
     // Collect position and orientation information prior to copying image
@@ -473,10 +456,8 @@
 }
 
 - (IBAction)ConfirmImage:(id)sender {
-    
     [self pauseAVCapture];
     [self stopDeviceMotion];
-    [self stopUpdatingLocationAndHeading];
     
     //clean up UI
     [gridView setHidden:NO];
@@ -538,7 +519,6 @@
         //cleanup this view
         [self pauseAVCapture];
         [self stopDeviceMotion];
-        [self stopUpdatingLocationAndHeading];
         
         //clean up UI
         [gridView setHidden:NO];
