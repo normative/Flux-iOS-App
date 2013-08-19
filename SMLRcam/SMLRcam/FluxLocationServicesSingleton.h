@@ -17,8 +17,6 @@ extern NSString* const FluxLocationServicesSingletonKeyLocation;
 extern NSString* const FluxLocationServicesSingletonKeyHeading;
 extern NSString* const FluxLocationServicesSingletonKeyPlacemark;
 
-@class FluxLocationServicesSingleton;
-
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     CLLocationManager * locationManager;
     NSMutableArray *locationMeasurements;

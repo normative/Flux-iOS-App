@@ -196,9 +196,8 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
     // Since heading is a double, assume that we only have a valid heading if we have a location
     if (self.location != nil)
     {
-        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithDouble:self.heading] forKey:FluxLocationServicesSingletonKeyHeading];
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateHeading object:self userInfo:userInfoDict];
-    }
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateHeading object:self];
+        }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
