@@ -28,8 +28,8 @@
 
 
 //other
-@property (nonatomic, weak) NSString* timestampString;
-@property (nonatomic, weak) NSString* descriptionString;
+@property (nonatomic, strong) NSString* timestampString;
+@property (nonatomic, strong) NSString* descriptionString;
 @property (nonatomic) int categoryID;
 @property (nonatomic) int cameraID;
 @property (nonatomic) int imageID;

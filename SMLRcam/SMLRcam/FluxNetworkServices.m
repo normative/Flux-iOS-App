@@ -152,7 +152,8 @@
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/closest.json" keyPath:nil statusCodes:statusCodes];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
-    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         NSLog(@"Found %i Results",[result count]);
         
@@ -161,7 +162,7 @@
             [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
         if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
         {
-            [delegate NetworkServices:self didreturnImageList:mutableDictionary];
+            [delegate NetworkServices:self didreturnImageList: mutableDictionary];
         }
         
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {

@@ -20,49 +20,19 @@
 
 @synthesize tableViewdict;
 
+#pragma mark - delegate methods
 
--(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID{
-    
-    [[self.tableViewdict objectForKey:[NSString stringWithFormat:@"%i",imageID]]setContentImage:image];
+// Network delegate
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
+         didreturnImage:(UIImage *)image
+             forImageID:(int)imageID
+{
+    NSNumber *objKey = [NSNumber numberWithInt: imageID];
+    [[self.tableViewdict objectForKey:objKey] setContentImage:image];
     
     NSArray * arr = [self.tableViewdict allKeys];
-    int index = [arr indexOfObject:[self.tableViewdict objectForKey:[NSString stringWithFormat:@"%i",imageID]]];
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:1], nil] withRowAnimation:UITableViewRowAnimationFade];
-}
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-     networkServices = [[FluxNetworkServices alloc]init];
-    [networkServices setDelegate:self];
-    
-    //self.tableViewdict = [[NSMutableDictionary alloc]init];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void)setTableViewDictionary:(NSMutableDictionary*)imageDict{
-    self.tableViewdict = [[NSMutableDictionary alloc]initWithDictionary:imageDict];
-    
+    int index = [arr indexOfObject:objKey];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:0], nil] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 #pragma mark - Table view data source
@@ -76,33 +46,34 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [[self.tableViewdict allKeys] count];
+    return [self.tableViewdict count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"annotationsFeedCell";
-    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
+    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-    if (cell == nil) {
-        cell = [[FluxAnnotationTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    if (cell == nil)
+    {
+        cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                  reuseIdentifier:CellIdentifier];
     }
-    cell.descriptionLabel.text = [[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]descriptionString];
+
+    NSNumber *objkey = [[self.tableViewdict allKeys] objectAtIndex:indexPath.row];
+    FluxScanImageObject *rowObject = [self.tableViewdict objectForKey: objkey];
     
-    //cell.descriptionLabel.text = [[self.annotationsTableViewArray objectAtIndex:indexPath.row]descriptionString];
-    cell.userLabel.text = [NSString stringWithFormat:@"User: %i",[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]userID]];
-    cell.imageID = (int)[[self.tableViewdict allKeys]objectAtIndex:indexPath.row];
-    
-    if ([[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]contentImage] == nil) {
-        [networkServices getThumbImageForID:[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]imageID]];
+    cell.imageID = rowObject.imageID;
+    if (rowObject.contentImage == nil)
+    {
+        [networkServices getThumbImageForID:cell.imageID];
     }
     else
-        [cell.contentImageView setImage:[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]contentImage]];
-    
-    NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"dd MMM, YYYY"];
-    [cell.timestampLabel setText:[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]timestampString]];
-    
+        [cell.contentImageView setImage:rowObject.contentImage];
+    cell.descriptionLabel.text = rowObject.descriptionString;
+    cell.userLabel.text = [NSString stringWithFormat:@"User: %i",rowObject.userID];
+    cell.timestampLabel.text = rowObject.timestampString;
+
     return cell;
 }
 
@@ -181,5 +152,48 @@
 }
 
  */
+
+
+#pragma mark - view lifecycle
+
+- (id)initWithStyle:(UITableViewStyle)style
+{
+    self = [super initWithStyle:style];
+    
+    if (self)
+    {
+        // Custom initialization
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if(self = [super initWithCoder:aDecoder])
+    {
+        self.tableViewdict = [[NSMutableDictionary alloc] init];
+    }
+    return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
+    
+    // Uncomment the following line to preserve selection between presentations.
+    // self.clearsSelectionOnViewWillAppear = NO;
+    
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
 
 @end
