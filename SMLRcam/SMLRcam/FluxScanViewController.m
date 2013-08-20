@@ -90,8 +90,10 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 # pragma mark - prepare segue action with identifer
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([[segue identifier] isEqualToString:@"pushMapModalView"]) {
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"pushMapModalView"])
+    {
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
     }

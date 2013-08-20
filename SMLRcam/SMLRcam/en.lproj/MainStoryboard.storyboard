@@ -245,16 +245,40 @@
                         <color key="backgroundColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
                         <color key="separatorColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                        <navigationBar key="tableHeaderView" contentMode="scaleToFill" translucent="NO" id="Zpq-Cg-TUz">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                            <items>
-                                <navigationItem title="Settings" id="jXH-La-jUV"/>
-                            </items>
-                        </navigationBar>
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="P7i-Gq-Xon">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="89"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="leftDrawTopBackground" translatesAutoresizingMaskIntoConstraints="NO" id="FSa-Pa-Fno">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="89"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="89" id="fGT-nY-LSs"/>
+                                    </constraints>
+                                </imageView>
+                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="fluxLogo" translatesAutoresizingMaskIntoConstraints="NO" id="IFa-rn-Lpc">
+                                    <rect key="frame" x="105" y="21" width="110" height="48"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="48" id="X2W-hl-Yr3"/>
+                                        <constraint firstAttribute="width" constant="110" id="yvE-wy-sPT"/>
+                                    </constraints>
+                                </imageView>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstAttribute="centerX" secondItem="IFa-rn-Lpc" secondAttribute="centerX" id="0JF-La-BBU"/>
+                                <constraint firstAttribute="trailing" secondItem="FSa-Pa-Fno" secondAttribute="trailing" id="2Jq-uA-5wi"/>
+                                <constraint firstAttribute="bottom" secondItem="FSa-Pa-Fno" secondAttribute="bottom" id="Z5l-r4-ZCm"/>
+                                <constraint firstItem="IFa-rn-Lpc" firstAttribute="top" secondItem="P7i-Gq-Xon" secondAttribute="top" constant="21" id="bnR-NT-oOK"/>
+                                <constraint firstAttribute="centerY" secondItem="IFa-rn-Lpc" secondAttribute="centerY" id="h6C-TK-PaJ"/>
+                                <constraint firstItem="FSa-Pa-Fno" firstAttribute="top" secondItem="P7i-Gq-Xon" secondAttribute="top" id="i0R-ja-X6S"/>
+                                <constraint firstItem="FSa-Pa-Fno" firstAttribute="leading" secondItem="P7i-Gq-Xon" secondAttribute="leading" id="qXy-bO-HPa"/>
+                            </constraints>
+                        </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="switchCell" id="MSE-z0-mb8" customClass="FluxDrawerSwitchTableViewCell">
-                                <rect key="frame" x="0.0" y="66" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="111" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="MSE-z0-mb8" id="PsQ-Pw-hXc">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -283,7 +307,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="segmentedCell" id="1pr-VT-Bvd" customClass="FluxDrawerSegmentedTableViewCell">
-                                <rect key="frame" x="0.0" y="110" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="155" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="1pr-VT-Bvd" id="yub-Cx-4AZ">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
@@ -316,12 +340,11 @@
                             </tableViewCell>
                         </prototypes>
                         <connections>
-                            <outlet property="dataSource" destination="Vvz-Vg-Om2" id="PoL-83-oXL"/>
-                            <outlet property="delegate" destination="Vvz-Vg-Om2" id="Dfp-y7-bN7"/>
+                            <outlet property="dataSource" destination="Vvz-Vg-Om2" id="Zt5-y9-jYF"/>
+                            <outlet property="delegate" destination="Vvz-Vg-Om2" id="Iy7-i4-Rg2"/>
                         </connections>
                     </tableView>
                     <nil key="simulatedStatusBarMetrics"/>
-                    <nil key="simulatedTopBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rRr-3t-24N" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -917,7 +940,9 @@
         <image name="filterButton" width="38.880001068115234" height="14.880000114440918"/>
         <image name="filter_Events" width="13.920000076293945" height="13"/>
         <image name="filter_Places" width="13.920000076293945" height="13"/>
+        <image name="fluxLogo" width="110" height="48"/>
         <image name="headerSeperator" width="3" height="46"/>
+        <image name="leftDrawTopBackground" width="320" height="109"/>
         <image name="locationIcon" width="8.6400003433227539" height="12.479999542236328"/>
         <image name="menuButton" width="26.879999160766602" height="15.840000152587891"/>
         <image name="retakeButton" width="92" height="33"/>
