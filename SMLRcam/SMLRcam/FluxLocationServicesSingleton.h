@@ -30,6 +30,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
 - (void)startLocating;
 - (void)endLocating;
+- (void)orientationChanged:(NSNotification *)notification;
 
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 

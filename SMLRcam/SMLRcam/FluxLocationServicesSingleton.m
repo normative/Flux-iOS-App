@@ -57,6 +57,9 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 - (void)startLocating{
     [locationManager startUpdatingLocation];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:nil];
+    [self orientationChanged:nil];
+    
     if ([CLLocationManager headingAvailable]) {
         [locationManager startUpdatingHeading];
     }
@@ -67,11 +70,25 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 - (void)endLocating{
     [locationManager stopUpdatingLocation];
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    
     if ([CLLocationManager headingAvailable]) {
         [locationManager stopUpdatingHeading];
     }
 }
 
+- (void)orientationChanged:(NSNotification *)notification
+{
+    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+
+    if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown)
+    {
+        // Face-up, face-down, and unknown will preserve the previous frame
+        return;
+    }
+    
+    locationManager.headingOrientation = orientation;
+}
 
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations{
@@ -189,7 +206,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     if (newHeading.headingAccuracy < 0)
         return;
     // Use the true heading if it is valid.
-    self.heading = ((newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading);
+    self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
     
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
@@ -208,7 +225,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     }
 }
 
-#pragma mark - location geocoding
+#pragma mark - Location geocoding
+
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation
 {
     CLGeocoder* theGeocoder = [[CLGeocoder alloc] init];
