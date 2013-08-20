@@ -101,12 +101,13 @@
 
 //returns the thumb image given an imageID
 - (void)getThumbImageForID:(int)imageID{
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image",objectManager.baseURL,imageID];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?size=thumb",objectManager.baseURL,imageID];
 
         
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request imageProcessingBlock:nil                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+        
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImage:forImageID:)])
             {
                 [delegate NetworkServices:self didreturnImage:image forImageID:imageID];
@@ -194,7 +195,7 @@
 }
 
 - (void)uploadImage:(FluxScanImageObject*)img{
-   
+   NSLog(@"%d",img.contentImage.imageOrientation);
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:img method:RKRequestMethodPOST path:@"/images" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:UIImageJPEGRepresentation(img.contentImage, 1.0)
