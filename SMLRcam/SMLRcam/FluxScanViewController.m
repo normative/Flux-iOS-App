@@ -10,6 +10,7 @@
 
 #import "UIViewController+MMDrawerController.h"
 #import "FluxAnnotationsTableViewController.h"
+#import "FluxOpenGLViewController.h"
 
 
 #pragma mark- OpenGL Init
@@ -97,6 +98,24 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     //the popover will be presented from the okButton view
     [popover presentPopoverFromView:sender];
 }
+#pragma mark - OpenGLView Setup
+
+-(void)setupOpenGLView{
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+    
+    FluxOpenGLViewController *openGLView;
+    
+    // setup the opengl controller
+    // first get an instance from storyboard
+    openGLView = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
+    // then add the glkview as the subview of the parent view
+    [self.view insertSubview:openGLView.view belowSubview:headerView];
+    // add the glkViewController as the child of self
+    [self addChildViewController:openGLView];
+    [openGLView didMoveToParentViewController:self];
+    openGLView.view.frame = self.view.bounds;
+}
 
 # pragma mark - prepare segue action with identifer
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -107,29 +126,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     }
 }
 
-#pragma mark - OpenGL Methods
-
-
-+ (Class)layerClass {
-    return [CAEAGLLayer class];
-}
-
-- (void)setupLayer {
-    _eaglLayer = (CAEAGLLayer*) self.view.layer;
-    _eaglLayer.opaque = YES;
-}
-
-- (void)setupContext {
-    EAGLRenderingAPI api = kEAGLRenderingAPIOpenGLES2;
-    _context = [[EAGLContext alloc] initWithAPI:api];
-    if (!_context) {
-        NSLog(@"Failed to initialize OpenGLES 2.0 context");
-    }
-    
-    if (![EAGLContext setCurrentContext:_context]) {
-        NSLog(@"Failed to set current OpenGL context");
-    }
-}
 #pragma mark - AV Capture Methods
 
 - (void)setupAVCapture
@@ -254,11 +250,10 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self setupLayer];
-    [self setupContext];
     [self setupAVCapture];
     [self setupLocationManager];
     [self setupNetworkServices];
+    [self setupOpenGLView];
     
     imageDict = [[NSMutableDictionary alloc]init];
     

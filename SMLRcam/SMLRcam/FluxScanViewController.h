@@ -17,9 +17,6 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxNetworkServices.h"
 
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-
 @class FluxRotatingCompassButton;
 
 @interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>{
@@ -29,6 +26,7 @@
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
     GLuint _colorRenderBuffer;
+
     
     
     
@@ -50,7 +48,6 @@
     FluxNetworkServices * networkServices;
     
     NSMutableDictionary*imageDict;
-    
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
@@ -68,7 +65,6 @@
 - (void)setupAVCapture;
 - (void)setupNetworkServices;
 
-- (void)setupLayer;
-- (void)setupContext;
+- (void)setupOpenGLView;
 
 @end
