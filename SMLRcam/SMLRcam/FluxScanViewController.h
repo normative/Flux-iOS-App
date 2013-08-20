@@ -47,12 +47,18 @@
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     
     FluxLocationServicesSingleton *locationManager;
+    FluxNetworkServices * networkServices;
+    
+    NSMutableDictionary*imageDict;
+    
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 
-- (void)updatePlacemark:(NSNotification *)notification;
+- (void)didUpdatePlacemark:(NSNotification *)notification;
+- (void)didUpdateHeading:(NSNotification *)notification;
+- (void)didUpdateLocation:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;

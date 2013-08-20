@@ -22,7 +22,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 #pragma mark - Location
 
--(void)updatePlacemark:(NSNotification *)notification
+-(void)didUpdatePlacemark:(NSNotification *)notification
 {
     NSString *locationString = locationManager.subadministativearea;
     NSString *sublocality = locationManager.sublocality;
@@ -35,18 +35,15 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 - (void)didUpdateHeading:(NSNotification *)notification{
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        
-    }
+//    CLLocationDirection heading = locationManager.heading;
+//    if (locationManager.location != nil) {
+//        ;
+//    }
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLLocation *loc = [userInfoDict objectForKey:@"FluxLocationServicesSingletonKeyLocation"];
-        [networkServices getImagesForLocation:loc.coordinate andRadius:50];
-    }
+    CLLocation *loc = locationManager.location;
+    [networkServices getImagesForLocation:loc.coordinate andRadius:50];
 }
 
 #pragma mark - Network Services
@@ -238,10 +235,17 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    [self setupLayer];
+    [self setupContext];
+    [self setupAVCapture];
+
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];
     [locationManager startLocating];
+    
+    [self setupNetworkServices];
+    
+    imageDict = [[NSMutableDictionary alloc]init];
     
     //temporarily set the date range label to today's date
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
@@ -254,13 +258,19 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (void)viewWillAppear:(BOOL)animated{
     if (locationManager != nil)
     {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-        [self updatePlacemark:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+        [self didUpdatePlacemark:nil];
+        [self didUpdateHeading:nil];
+        [self didUpdateLocation:nil];
     }
+    [self restartAVCapture];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self pauseAVCapture];
 }
 
 - (void)viewDidUnload
