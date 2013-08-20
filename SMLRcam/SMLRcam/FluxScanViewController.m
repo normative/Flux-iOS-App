@@ -20,6 +20,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 @implementation FluxScanViewController
 
+@synthesize imageDict;
+
 #pragma mark - Location
 
 //allocates the location object and sets some parameters
@@ -71,9 +73,30 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma Networking Delegate Methods
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList{
-    imageDict = imageList;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
+{
+    NSLog(@"this is networkservice");
+    for (id key in imageList) {
+        FluxScanImageObject *imgObj = [imageList objectForKey:key];
+        
+        NSLog(@"networkservice1 rowObject - imageID %i", imgObj.imageID);
+        NSLog(@"networkservice1 rowObject - descriptionString %@", imgObj.descriptionString);
+        NSLog(@"networkservice1 rowObject - userID %i", imgObj.userID);
+        NSLog(@"networkservice1 rowObject - timestampString %@", imgObj.timestampString);
+    }
+    
+    self.imageDict = imageList;
+
+    for (id key in self.imageDict) {
+        FluxScanImageObject *imgObj = [self.imageDict objectForKey:key];
+        
+        NSLog(@"networkservice2 rowObject - imageID %i", imgObj.imageID);
+        NSLog(@"networkservice2 rowObject - descriptionString %@", imgObj.descriptionString);
+        NSLog(@"networkservice2 rowObject - userID %i", imgObj.userID);
+        NSLog(@"networkservice2 rowObject - timestampString %@", imgObj.timestampString);
+    }
 }
+
 #pragma mark - Drawer Methods
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
@@ -90,7 +113,30 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (IBAction)showAnnotationsView:(id)sender {
     FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
     
-    [annotationsFeedView setTableViewDictionary:imageDict];
+    
+     NSLog(@"IBAction showAnnotationsView");
+    
+    for (id key in self.imageDict) {
+     FluxScanImageObject *imgObj = [self.imageDict objectForKey:key];
+     
+     NSLog(@"showAnnotationsView1 rowObject - imageID %i", imgObj.imageID);
+     NSLog(@"showAnnotationsView1 rowObject - descriptionString %@", imgObj.descriptionString);
+     NSLog(@"showAnnotationsView1 rowObject - userID %i", imgObj.userID);
+     NSLog(@"showAnnotationsView1 rowObject - timestampString %@", imgObj.timestampString);
+     }
+    
+    [annotationsFeedView setTableViewdict: self.imageDict];
+
+    
+    for (id key in annotationsFeedView.tableViewdict) {
+        FluxScanImageObject *imgObj = [annotationsFeedView.tableViewdict objectForKey:key];
+        
+        NSLog(@"showAnnotationsView2 rowObject - imageID %i", imgObj.imageID);
+        NSLog(@"showAnnotationsView2 rowObject - descriptionString %@", imgObj.descriptionString);
+        NSLog(@"showAnnotationsView2 rowObject - userID %i", imgObj.userID);
+        NSLog(@"showAnnotationsView2 rowObject - timestampString %@", imgObj.timestampString);
+    }
+    
     popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
     popover.arrowDirection = FPPopoverNoArrow;
     
@@ -251,6 +297,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - view lifecycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -260,7 +307,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self setupLocationManager];
     [self setupNetworkServices];
     
-    imageDict = [[NSMutableDictionary alloc]init];
+    self.imageDict = [[NSMutableDictionary alloc]init];
     
     //temporarily set the date range label to today's date
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];

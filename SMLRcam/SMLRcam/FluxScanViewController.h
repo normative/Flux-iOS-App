@@ -30,8 +30,6 @@
     EAGLContext* _context;
     GLuint _colorRenderBuffer;
     
-    
-    
     AVCaptureVideoPreviewLayer *previewLayer;
 	AVCaptureVideoDataOutput *videoDataOutput;
 	dispatch_queue_t videoDataOutputQueue;
@@ -48,11 +46,9 @@
     
     FluxLocationServicesSingleton *locationManager;
     FluxNetworkServices * networkServices;
-    
-    NSMutableDictionary*imageDict;
-    
 }
 
+@property (nonatomic, strong) NSMutableDictionary * imageDict;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 

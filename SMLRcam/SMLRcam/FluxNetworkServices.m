@@ -161,7 +161,7 @@
             [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
         if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
         {
-            [delegate NetworkServices:self didreturnImageList:mutableDictionary];
+            [delegate NetworkServices:self didreturnImageList: mutableDictionary];
         }
         
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {

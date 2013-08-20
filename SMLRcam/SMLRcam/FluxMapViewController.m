@@ -58,7 +58,8 @@
 }
 
 #pragma mark - delegate methods
-#pragma mark - mapView delegate methods
+
+// mapView delegate methods
 - (void) mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
 {
     if (userLocation.location.horizontalAccuracy > 0) {
@@ -68,13 +69,14 @@
 }
 
 #pragma mark - set label
-#pragma mark - set location label
+
+// set location label
 - (void) setStatusBarLocationLabel:(NSString*) locationString
 {
     [statusBarcurrentLocalityLbl setText:locationString];
 }
 
-#pragma mark - set date label
+// set date label
 - (void) setStatusBarDateLabel
 {
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
@@ -84,14 +86,14 @@
 }
 
 #pragma mark - initialize and allocate objects
-#pragma mark - location manage config
+
 //allocates the location object and sets some parameters
 - (void)setupLocationManager
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
 }
 
-#pragma mark - mapview config
+// mapview config
 - (void) setupMapView
 {
     [myMapView setMapType:MKMapTypeStandard];
@@ -104,7 +106,7 @@
 }
 
 #pragma mark - IBActions
-#pragma mark - Back button
+
 - (IBAction) exitMapView:(id)sender
 {
     [self dismissViewControllerAnimated:YES completion:^(void) {
@@ -141,6 +143,7 @@
 }
 
 #pragma mark - view lifecycle
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];

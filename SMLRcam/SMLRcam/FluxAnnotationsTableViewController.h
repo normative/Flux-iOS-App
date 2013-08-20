@@ -10,11 +10,12 @@
 
 #import "FluxNetworkServices.h"
 
-@interface FluxAnnotationsTableViewController : UITableViewController<NetworkServicesDelegate>{
+@class FluxScanImageObject;
+
+@interface FluxAnnotationsTableViewController : UITableViewController <NetworkServicesDelegate>
+{
     FluxNetworkServices *networkServices;
 }
 @property (nonatomic, strong)NSMutableDictionary*tableViewdict;
-
-- (void)setTableViewDictionary:(NSMutableDictionary*)imageDict;
 
 @end

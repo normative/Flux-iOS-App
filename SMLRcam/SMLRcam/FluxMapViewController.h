@@ -11,7 +11,8 @@
 
 #import "FluxLocationServicesSingleton.h"
 
-@interface FluxMapViewController : UIViewController <MKMapViewDelegate> {
+@interface FluxMapViewController : UIViewController <MKMapViewDelegate>
+{
     // Currnet View Orientation Direction (
     UIInterfaceOrientation myViewOrientation;
     
