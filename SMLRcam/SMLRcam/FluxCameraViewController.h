@@ -66,10 +66,6 @@
 - (void)restartAVCapture;
 - (void)AddGridlinesToView;
 
-- (void)setupLocationManager;
-- (void)startUpdatingLocationAndHeading;
-- (void)stopUpdatingLocationAndHeading;
-
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
 

@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "FluxAPIInteraction.h"
+#import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
 #import "FluxMappingProvider.h"
 
@@ -14,9 +14,10 @@
 
 
 //serverURL
-#define serverURL @"http://192.168.0.65/"
+#define externServerURL @"http://blooming-bastion-5493.herokuapp.com/"
+#define localServerURL @"http://192.168.0.65/"
 
-@implementation FluxAPIInteraction
+@implementation FluxNetworkServices
 
 @synthesize delegate;
 
@@ -24,7 +25,15 @@
 - (id)init {
     if (self = [super init]) {
         
-        objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:serverURL]];
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        BOOL isremote = [[defaults objectForKey:@"Server Location"]intValue];
+        if (isremote) {
+            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:externServerURL]];
+        }
+        else{
+            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:localServerURL]];
+        }
+        
         
         NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful);
         
@@ -70,21 +79,21 @@
 
 //returns the raw image (thumb for now) given an image ID
 - (void)getImageForID:(int)imageID{
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image",serverURL,imageID];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image",objectManager.baseURL,imageID];
     
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request imageProcessingBlock:nil                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            if ([delegate respondsToSelector:@selector(APIInteraction:didreturnImage:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImage:forImageID:)])
             {
-                [delegate APIInteraction:self didreturnImage:image];
+                [delegate NetworkServices:self didreturnImage:image forImageID:imageID];
             }
         }
        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
            NSLog(@"Failed with error: %@", [error localizedDescription]);
-           if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+           if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
            {
-               [delegate APIInteraction:self didFailWithError:error];
+               [delegate NetworkServices:self didFailWithError:error];
            }
        }];
     [operation start];
@@ -92,22 +101,22 @@
 
 //returns the thumb image given an imageID
 - (void)getThumbImageForID:(int)imageID{
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image",serverURL,imageID];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image",objectManager.baseURL,imageID];
 
         
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request imageProcessingBlock:nil                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-            if ([delegate respondsToSelector:@selector(APIInteraction:didreturnImage:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImage:forImageID:)])
             {
-                [delegate APIInteraction:self didreturnImage:image];
+                [delegate NetworkServices:self didreturnImage:image forImageID:imageID];
             }
         }
         failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error) {
             NSLog(@"Failed with error: %@", [error localizedDescription]);
-            if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
             {
-                [delegate APIInteraction:self didFailWithError:error];
+                [delegate NetworkServices:self didFailWithError:error];
             }
         }];
     [operation start];
@@ -117,44 +126,67 @@
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:[NSString stringWithFormat:@"/images/%i.json",imageID] keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",serverURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         
         NSLog(@"Found %i Results",[result count]);
         if ([result count]>0) {
-            if ([delegate respondsToSelector:@selector(APIInteraction:didreturnImageMetadata:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:)])
             {
-                [delegate APIInteraction:self didreturnImageMetadata:[result firstObject]];
+                [delegate NetworkServices:self didreturnImageMetadata:[result firstObject]];
             }
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
         {
-            [delegate APIInteraction:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error];
         }
     }];
     [operation start];
 }
 
 - (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius{
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/closest.json" keyPath:nil statusCodes:statusCodes];
     
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
+        NSLog(@"Found %i Results",[result count]);
+        
+        NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
+        for (FluxScanImageObject*obj in result.array)
+            [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
+        if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
+        {
+            [delegate NetworkServices:self didreturnImageList:mutableDictionary];
+        }
+        
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        {
+            [delegate NetworkServices:self didFailWithError:error];
+        }
+    }];
+    [operation start];
 }
 
 - (void)getAllImages{
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",serverURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         NSLog(@"Found %i Results",[result count]);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
         {
-            [delegate APIInteraction:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error];
         }
     }];
     [operation start];
@@ -164,35 +196,35 @@
    
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:img method:RKRequestMethodPOST path:@"/images" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        [formData appendPartWithFileData:UIImagePNGRepresentation(img.contentImage)
+        [formData appendPartWithFileData:UIImageJPEGRepresentation(img.contentImage, 1.0)
                                     name:@"image[image]"
-                                fileName:@"photo.png"
-                                mimeType:@"image/png"];
+                                fileName:@"photo.jpeg"
+                                mimeType:@"image/jpeg"];
     }];
     
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         if ([result count]>0) {
             NSLog(@"Successfully Uploaded Image to account # %i",[[result firstObject]userID]);
-            if ([delegate respondsToSelector:@selector(APIInteraction:didUploadImage:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:)])
             {
-                [delegate APIInteraction:self didUploadImage:[result firstObject]];
+                [delegate NetworkServices:self didUploadImage:[result firstObject]];
             }
         }
         
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
         {
-            [delegate APIInteraction:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error];
         }
     }];
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
     
-    if ([delegate respondsToSelector:@selector(APIInteraction:uploadProgress:ofExpectedPacketSize:)])
+    if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:)])
     {
         [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
             if (totalBytesExpectedToWrite > 0 && totalBytesExpectedToWrite < NSUIntegerMax) {
-                [delegate APIInteraction:self uploadProgress:(float)totalBytesWritten ofExpectedPacketSize:(float)totalBytesExpectedToWrite];
+                [delegate NetworkServices:self uploadProgress:(float)totalBytesWritten ofExpectedPacketSize:(float)totalBytesExpectedToWrite];
             }
             NSLog(@"bytesWritten: %d, totalBytesWritten: %lld, totalBytesExpectedToWrite: %lld", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
         }];
@@ -209,16 +241,16 @@
                 FluxUserObject*temp = [result firstObject];
                 NSLog(@"Successfuly Created userObject %i with details: %@ %@: %@",temp.userID,temp.firstName, temp.lastName,temp.userName);
 
-                if ([delegate respondsToSelector:@selector(APIInteraction:didCreateUser:)])
+                if ([delegate respondsToSelector:@selector(NetworkServices:didCreateUser:)])
                 {
-                    [delegate APIInteraction:self didCreateUser:temp];
+                    [delegate NetworkServices:self didCreateUser:temp];
                 }
         }
     }failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
         {
-            [delegate APIInteraction:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error];
         }
     }];
 }
@@ -227,22 +259,22 @@
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping] method:RKRequestMethodAny pathPattern:[NSString stringWithFormat:@"/users/%i.json",userID] keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",serverURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         
         NSLog(@"Found %i Results",[result count]);
         if ([result count]>0) {
-            if ([delegate respondsToSelector:@selector(APIInteraction:didreturnImageMetadata:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:)])
             {
-                [delegate APIInteraction:self didreturnImageMetadata:[result firstObject]];
+                [delegate NetworkServices:self didreturnImageMetadata:[result firstObject]];
             }
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(APIInteraction:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
         {
-            [delegate APIInteraction:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error];
         }
     }];
     [operation start];

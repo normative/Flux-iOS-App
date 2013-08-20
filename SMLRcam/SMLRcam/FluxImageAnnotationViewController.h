@@ -12,9 +12,9 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxScanImageObject.h"
 
-#import "FluxAPIInteraction.h"
+#import "FluxNetworkServices.h"
 
-@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate, APIInteractionDelegate>{
+@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate, NetworkServicesDelegate>{
     
     UIImage * capturedImage;
     NSMutableDictionary *imgMetadata;

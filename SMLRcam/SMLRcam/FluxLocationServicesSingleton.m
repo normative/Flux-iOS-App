@@ -12,10 +12,6 @@ NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationS
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
 NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocationServicesSingletonDidUpdatePlacemark";
 
-NSString* const FluxLocationServicesSingletonKeyLocation = @"FluxLocationServicesSingletonKeyLocation";
-NSString* const FluxLocationServicesSingletonKeyHeading = @"FluxLocationServicesSingletonKeyHeading";
-NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServicesSingletonKeyPlacemark";
-
 @implementation FluxLocationServicesSingleton
 
 + (id)sharedManager {
@@ -32,6 +28,10 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
         
         // Create the manager object
         locationManager = [[CLLocationManager alloc] init];
+        if (locationManager == nil)
+        {
+            return nil;
+        }
         locationManager.delegate = self;
         
         // This is the most important property to set for the manager. It ultimately determines how the manager will
@@ -60,12 +60,11 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
     if ([CLLocationManager headingAvailable]) {
         [locationManager startUpdatingHeading];
     }
-    else
+    else {
         NSLog(@"No Heading Information Available");
+    }
 }
 - (void)endLocating{
-#warning Don't stop updating location now. Need to keep reference count to figure out when to disable.
-    return;
     [locationManager stopUpdatingLocation];
     
     if ([CLLocationManager headingAvailable]) {
@@ -109,8 +108,9 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
-    NSLog(@"Adding new location  with date: %@ \nAnd Location: %0.15f, %0.15f, %f +/- %f (h), %f (v)", [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude,
-          newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
+    NSLog(@"Adding new location  with date: %@ \nAnd Location: %0.15f, %0.15f, %f +/- %f (h), %f (v)",
+          [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude,
+          newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
     
     // store all of the measurements, just so we can see what kind of data we might receive
     [locationMeasurements addObject:newLocation];
@@ -174,14 +174,13 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(corrected_lat, corrected_long);
     self.location = [[CLLocation alloc] initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
     
-    NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
-          self.location.coordinate.longitude);
+    //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
+    //      self.location.coordinate.longitude);
 
     // Notify observers of updated position
     if (self.location != nil)
     {
-        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObject:self.location forKey:FluxLocationServicesSingletonKeyLocation];
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfoDict];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self];
         [self reverseGeocodeLocation:self.location];
     }
 }
@@ -192,7 +191,7 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading > 0) ? newHeading.trueHeading : newHeading.magneticHeading);
     
-    // Notify observers of updated heading (note that heading has been cast from a double to an NSNumber)
+    // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
     if (self.location != nil)
     {
@@ -201,6 +200,7 @@ NSString* const FluxLocationServicesSingletonKeyPlacemark = @"FluxLocationServic
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"Failed with error: %@", [error localizedDescription]);
     // The location "unknown" error simply means the manager is currently unable to get the location.
     if ([error code] != kCLErrorLocationUnknown)
     {

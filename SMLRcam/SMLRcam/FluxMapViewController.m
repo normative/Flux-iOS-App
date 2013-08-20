@@ -16,7 +16,7 @@
 
 - (void) updateLoadingMessage: (NSTimer *)thisTimer;
 
-- (void) setStatusBarLocationLabel;
+- (void) setStatusBarLocationLabel:(NSNotification *)notification;
 - (void) setStatusBarDateLabel;
 - (void) setStatusBarMomentLabel;
 
@@ -29,7 +29,7 @@
 #pragma mark - set label
 
 // set status bar location label
-- (void) setStatusBarLocationLabel
+- (void) setStatusBarLocationLabel:(NSNotification *)notification
 {
     NSString *locationString = locationManager.subadministativearea;
     NSString *sublocality = locationManager.sublocality;
@@ -86,9 +86,8 @@
     
     if (locationManager != nil)
     {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setStatusBarLocationLabel) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setStatusBarLocationLabel:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     }
-    [locationManager startLocating];
 }
 
 // initialize and allocate memory to the map view object
@@ -105,12 +104,19 @@
 - (void) setupStatusBarContent
 {
     // assign text to locality label
-    [statusBarCurrentLocalityLbl setText:@"Loading "];
-    [NSTimer scheduledTimerWithTimeInterval: 0.5
-                                     target: self
-                                   selector: @selector(updateLoadingMessage:)
-                                   userInfo: nil
-                                    repeats: YES];
+    // Check to see if either any location text already exists. Otherwise display loading prompt.
+    NSString *locationString = locationManager.subadministativearea;
+    NSString *sublocality = locationManager.sublocality;
+    if ((sublocality.length > 0) || (locationString.length > 0))
+    {
+        [self setStatusBarLocationLabel:nil];
+    }
+    else
+    {
+        [statusBarCurrentLocalityLbl setText:@"Loading "];
+        [NSTimer scheduledTimerWithTimeInterval: 0.5 target: self selector: @selector(updateLoadingMessage:)
+                                       userInfo: nil repeats: YES];
+    }
     
     // assign text to date label
     [self setStatusBarDateLabel];
@@ -124,6 +130,7 @@
 // IBAction for exiting the map view
 - (IBAction) exitMapView:(id)sender
 {
+#warning Look at this. Only called when back button is clicked, not due to rotation to portrait mode, and it appears an exception is being raised when leaving map view
     [self dismissViewControllerAnimated:YES completion:^(void)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
