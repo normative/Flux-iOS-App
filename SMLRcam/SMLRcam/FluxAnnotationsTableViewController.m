@@ -73,19 +73,7 @@
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User: %i",rowObject.userID];
     cell.timestampLabel.text = rowObject.timestampString;
-    
-    /*
-    //lets see each object
-    NSLog(@"index path: %i", indexPath.row);
-    NSLog(@"objkey    : %@", objkey);
-    
-    NSLog(@"rowObject - imageID %i", rowObject.imageID);
-    NSLog(@"rowObject - descriptionString %@", rowObject.descriptionString);
-    NSLog(@"rowObject - userID %i", rowObject.userID);
-    NSLog(@"rowObject - timestampString %@", rowObject.timestampString);
-    */
-    
-    
+
     return cell;
 }
 
@@ -194,18 +182,6 @@
     
     networkServices = [[FluxNetworkServices alloc]init];
     [networkServices setDelegate:self];
-    
-    NSLog(@"this is the dic %@", self.tableViewdict);
-    /*
-     NSLog(@"imageList %i", [self.tableViewdict count]);
-     for (id key in self.tableViewdict) {
-     FluxScanImageObject *imgObj = [self.tableViewdict objectForKey:key];
-     
-     NSLog(@"ABC rowObject - imageID %i", imgObj.imageID);
-     NSLog(@"rowObject - descriptionString %@", imgObj.descriptionString);
-     NSLog(@"rowObject - userID %i", imgObj.userID);
-     NSLog(@"rowObject - timestampString %@", imgObj.timestampString);
-     } */
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;

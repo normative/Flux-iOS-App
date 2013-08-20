@@ -32,7 +32,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     
     if (locationManager != nil)
     {
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -67,37 +66,21 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - Network Services
+
 - (void)setupNetworkServices{
     networkServices = [[FluxNetworkServices alloc]init];
     [networkServices setDelegate:self];
 }
 
 #pragma Networking Delegate Methods
+
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
 {
-    NSLog(@"this is networkservice");
-    for (id key in imageList) {
-        FluxScanImageObject *imgObj = [imageList objectForKey:key];
-        
-        NSLog(@"networkservice1 rowObject - imageID %i", imgObj.imageID);
-        NSLog(@"networkservice1 rowObject - descriptionString %@", imgObj.descriptionString);
-        NSLog(@"networkservice1 rowObject - userID %i", imgObj.userID);
-        NSLog(@"networkservice1 rowObject - timestampString %@", imgObj.timestampString);
-    }
-    
     self.imageDict = imageList;
-
-    for (id key in self.imageDict) {
-        FluxScanImageObject *imgObj = [self.imageDict objectForKey:key];
-        
-        NSLog(@"networkservice2 rowObject - imageID %i", imgObj.imageID);
-        NSLog(@"networkservice2 rowObject - descriptionString %@", imgObj.descriptionString);
-        NSLog(@"networkservice2 rowObject - userID %i", imgObj.userID);
-        NSLog(@"networkservice2 rowObject - timestampString %@", imgObj.timestampString);
-    }
 }
 
 #pragma mark - Drawer Methods
+
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
@@ -109,34 +92,13 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - TopView Methods
+
 //show list of images currently visible
 - (IBAction)showAnnotationsView:(id)sender {
     FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
-    
-    
-     NSLog(@"IBAction showAnnotationsView");
-    
-    for (id key in self.imageDict) {
-     FluxScanImageObject *imgObj = [self.imageDict objectForKey:key];
-     
-     NSLog(@"showAnnotationsView1 rowObject - imageID %i", imgObj.imageID);
-     NSLog(@"showAnnotationsView1 rowObject - descriptionString %@", imgObj.descriptionString);
-     NSLog(@"showAnnotationsView1 rowObject - userID %i", imgObj.userID);
-     NSLog(@"showAnnotationsView1 rowObject - timestampString %@", imgObj.timestampString);
-     }
-    
+ 
     [annotationsFeedView setTableViewdict: self.imageDict];
 
-    
-    for (id key in annotationsFeedView.tableViewdict) {
-        FluxScanImageObject *imgObj = [annotationsFeedView.tableViewdict objectForKey:key];
-        
-        NSLog(@"showAnnotationsView2 rowObject - imageID %i", imgObj.imageID);
-        NSLog(@"showAnnotationsView2 rowObject - descriptionString %@", imgObj.descriptionString);
-        NSLog(@"showAnnotationsView2 rowObject - userID %i", imgObj.userID);
-        NSLog(@"showAnnotationsView2 rowObject - timestampString %@", imgObj.timestampString);
-    }
-    
     popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
     popover.arrowDirection = FPPopoverNoArrow;
     
@@ -145,9 +107,10 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 # pragma mark - prepare segue action with identifer
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    
-    if ([[segue identifier] isEqualToString:@"pushMapModalView"]) {
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"pushMapModalView"])
+    {
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
     }
@@ -155,24 +118,28 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 #pragma mark - OpenGL Methods
 
-
-+ (Class)layerClass {
++ (Class)layerClass
+{
     return [CAEAGLLayer class];
 }
 
-- (void)setupLayer {
+- (void)setupLayer
+{
     _eaglLayer = (CAEAGLLayer*) self.view.layer;
     _eaglLayer.opaque = YES;
 }
 
-- (void)setupContext {
+- (void)setupContext
+{
     EAGLRenderingAPI api = kEAGLRenderingAPIOpenGLES2;
     _context = [[EAGLContext alloc] initWithAPI:api];
-    if (!_context) {
+    if (!_context)
+    {
         NSLog(@"Failed to initialize OpenGLES 2.0 context");
     }
     
-    if (![EAGLContext setCurrentContext:_context]) {
+    if (![EAGLContext setCurrentContext:_context])
+    {
         NSLog(@"Failed to set current OpenGL context");
     }
 }
@@ -254,15 +221,19 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 	}
 }
 
--(void)pauseAVCapture{
+-(void)pauseAVCapture
+{
     AVCaptureSession * currentSession  = previewLayer.session;
-    if (currentSession !=nil && [currentSession isRunning]) {
+    if (currentSession !=nil && [currentSession isRunning])
+    {
         [currentSession stopRunning];
     }
 }
--(void)restartAVCapture{
+-(void)restartAVCapture
+{
     AVCaptureSession * currentSession  = previewLayer.session;
-    if (currentSession !=nil  && ![currentSession isRunning]) {
+    if (currentSession !=nil  && ![currentSession isRunning])
+    {
         [currentSession startRunning];
     }
 }
@@ -274,16 +245,19 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     return YES;
 }
 
-- (NSUInteger) supportedInterfaceOrientations {
+- (NSUInteger) supportedInterfaceOrientations
+{
     return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
 }
 
 - (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
-    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
+    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation))
+    {
         changeToOrientation = toInterfaceOrientation;
         
-        if (popover != nil) {
+        if (popover != nil)
+        {
             [popover dismissPopoverAnimated:NO];
         }
         
@@ -313,16 +287,16 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY"];
     [dateRangeLabel setText:[formatter stringFromDate:[NSDate date]]];
-    
-    // Do any additional setup after loading the view, typically from a nib.
 }
 
-- (void)viewWillAppear:(BOOL)animated{
+- (void)viewWillAppear:(BOOL)animated
+{
     [locationManager startLocating];
     [self restartAVCapture];
 }
 
-- (void)viewDidDisappear:(BOOL)animated{
+- (void)viewDidDisappear:(BOOL)animated
+{
     [self pauseAVCapture];
 }
 
