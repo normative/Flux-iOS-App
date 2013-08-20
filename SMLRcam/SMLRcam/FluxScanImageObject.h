@@ -12,7 +12,7 @@
 
 
 //image itself
-@property (nonatomic, weak)UIImage *contentImage;
+@property (nonatomic, strong)UIImage *contentImage;
 
 
 //location

@@ -114,10 +114,6 @@
     [self LoadUI];
 	// Do any additional setup after loading the view.
 }
-
-- (void)viewWillAppear:(BOOL)animated{
-    NSLog(@"Annotation Appeared");
-}
 - (void)viewDidAppear:(BOOL)animated{
     UIImageView*tempBackgroundImageView = [[UIImageView alloc]initWithFrame:backgroundImageView.frame];
     [tempBackgroundImageView setContentMode:backgroundImageView.contentMode];
