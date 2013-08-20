@@ -48,5 +48,4 @@ withDescriptionString:(NSString*)description
            andPitch:(float)pitch
             andRoll:(float)roll
 ;
-
 @end

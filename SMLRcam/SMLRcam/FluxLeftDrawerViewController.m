@@ -27,7 +27,7 @@
 {
     [super viewDidLoad];
     
-    leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services", nil];
+    leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services",@"Local Network", nil];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -57,19 +57,36 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"buttonCell";
-    FluxDrawerSwitchTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
+    if (indexPath.row <2) {
+        static NSString *CellIdentifier = @"switchCell";
+        FluxDrawerSwitchTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
+        
+        if (cell == nil) {
+            cell = [[FluxDrawerSwitchTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+        
+        [cell setDelegate:self];
+        // Configure the cell...
+        cell.theLabel.text = [leftDrawerTableViewArray objectAtIndex:indexPath.row];
+        cell.theSwitch.on = [[self GetSettingForString:[leftDrawerTableViewArray objectAtIndex:indexPath.row]] boolValue];
+        
+        return cell;
+    }
+    static NSString *CellIdentifier = @"segmentedCell";
+    FluxDrawerSegmentedTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
     
     if (cell == nil) {
-        cell = [[FluxDrawerSwitchTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[FluxDrawerSegmentedTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     [cell setDelegate:self];
-    // Configure the cell...
-    cell.theLabel.text = [leftDrawerTableViewArray objectAtIndex:indexPath.row];
-    cell.theSwitch.on = [[self GetSettingForString:[leftDrawerTableViewArray objectAtIndex:indexPath.row]] boolValue];
+    // Configure the cell..
+    
+    //switch is set to local by default
+    cell.segmentedControl.selectedSegmentIndex = [[self GetSettingForString:@"Server Location"]intValue];
     
     return cell;
+
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -80,6 +97,12 @@
 -(void)SwitchCell:(FluxDrawerSwitchTableViewCell *)switchCell switchWasTapped:(UISwitch *)theSwitch{
     //gets a reference to the cell hit
     [self SettingActionForString:[NSString stringWithFormat:@"%@",[leftDrawerTableViewArray objectAtIndex:[self.tableView indexPathForCell:switchCell].row]] andSetting:theSwitch.on];
+}
+
+- (void)SegmentedCell:(FluxDrawerSegmentedTableViewCell *)segmentedCell segmentedControlWasTapped:(UISegmentedControl *)segmented{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[NSNumber numberWithInt:segmented.selectedSegmentIndex] forKey:@"Server Location"];
+    [defaults synchronize];
 }
 
 //temporary, ugly, not really extensible code.
@@ -108,6 +131,10 @@
     else if ([string isEqualToString:@"Network Services"]){
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         return [defaults objectForKey:@"Network Services"];
+    }
+    else if ([string isEqualToString:@"Server Location"]){
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        return [defaults objectForKey:@"Server Location"];
     }
     else{
         return nil;

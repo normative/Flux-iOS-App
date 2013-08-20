@@ -13,20 +13,29 @@
 #import "FPPopoverController.h"
 
 #import <QuartzCore/QuartzCore.h>
+#import <AVFoundation/AVFoundation.h>
 #import "FluxLocationServicesSingleton.h"
+#import "FluxNetworkServices.h"
 
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : UIViewController{
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>{
     
     FPPopoverController *popover;
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;
     GLuint _colorRenderBuffer;
+    
+    
+    
+    AVCaptureVideoPreviewLayer *previewLayer;
+	AVCaptureVideoDataOutput *videoDataOutput;
+	dispatch_queue_t videoDataOutputQueue;
+    AVCaptureDevice *device;
     
     UIInterfaceOrientation changeToOrientation;
 
@@ -48,5 +57,11 @@
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
 - (IBAction)showAnnotationsView:(id)sender;
+
+- (void)setupAVCapture;
+- (void)setupNetworkServices;
+
+- (void)setupLayer;
+- (void)setupContext;
 
 @end

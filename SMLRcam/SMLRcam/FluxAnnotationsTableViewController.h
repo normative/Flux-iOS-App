@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FluxAnnotationsTableViewController : UITableViewController{
-    
-}
-@property (nonatomic, strong)NSArray*annotationsTableViewArray;
+#import "FluxNetworkServices.h"
 
-- (void)setTableViewArray:(NSArray*)array;
+@interface FluxAnnotationsTableViewController : UITableViewController<NetworkServicesDelegate>{
+    FluxNetworkServices *networkServices;
+}
+@property (nonatomic, strong)NSMutableDictionary*tableViewdict;
+
+- (void)setTableViewDictionary:(NSMutableDictionary*)imageDict;
 
 @end

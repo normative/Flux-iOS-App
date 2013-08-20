@@ -59,6 +59,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * uploadPic = [defaults objectForKey:@"Network Services"];
+    NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
     if (savePic == nil) {
         [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Save Pictures"];
         [defaults synchronize];
@@ -67,12 +68,11 @@
         [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Network Services"];
         [defaults synchronize];
     }
-    
-
-    
-    
-    
-    
+    //set local by default
+    if (isLocalURL == nil) {
+        [defaults setObject:[NSNumber numberWithInt:0] forKey:@"Server Location"];
+        [defaults synchronize];
+    }
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];

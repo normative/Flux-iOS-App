@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "FluxDrawerSwitchTableViewCell.h"
+#import "FluxDrawerSegmentedTableViewCell.h"
 
-@interface FluxLeftDrawerViewController : UITableViewController<DrawerSwitchTableViewCellDelegate>{
+@interface FluxLeftDrawerViewController : UITableViewController<DrawerSwitchTableViewCellDelegate, SegmentedCellDelegate>{
     NSArray *leftDrawerTableViewArray;
 }
 

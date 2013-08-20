@@ -20,7 +20,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 @implementation FluxScanViewController
 
-#pragma mark - location
+#pragma mark - Location
 
 -(void)updatePlacemark:(NSNotification *)notification
 {
@@ -34,6 +34,31 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [locationLabel setText: locationString];
 }
 
+- (void)didUpdateHeading:(NSNotification *)notification{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        
+    }
+}
+
+- (void)didUpdateLocation:(NSNotification *)notification{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLLocation *loc = [userInfoDict objectForKey:@"FluxLocationServicesSingletonKeyLocation"];
+        [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+    }
+}
+
+#pragma mark - Network Services
+- (void)setupNetworkServices{
+    networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
+}
+
+#pragma Networking Delegate Methods
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList{
+    imageDict = imageList;
+}
 #pragma mark - Drawer Methods
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
@@ -46,10 +71,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - TopView Methods
-
+//show list of images currently visible
 - (IBAction)showAnnotationsView:(id)sender {
     FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
     
+    [annotationsFeedView setTableViewDictionary:imageDict];
     popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
     popover.arrowDirection = FPPopoverNoArrow;
     
@@ -63,7 +89,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
     }
-    
 }
 
 #pragma mark - OpenGL Methods
@@ -83,12 +108,100 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     _context = [[EAGLContext alloc] initWithAPI:api];
     if (!_context) {
         NSLog(@"Failed to initialize OpenGLES 2.0 context");
-        exit(1);
     }
     
     if (![EAGLContext setCurrentContext:_context]) {
         NSLog(@"Failed to set current OpenGL context");
-        exit(1);
+    }
+}
+#pragma mark - AV Capture Methods
+
+- (void)setupAVCapture
+{
+	NSError *error = nil;
+	
+	AVCaptureSession *session = [AVCaptureSession new];
+    [session setSessionPreset:AVCaptureSessionPresetHigh]; // full resolution photo...
+	
+    // Select a video device, make an input
+    device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    
+    //set autofocus
+    BOOL locked = [device lockForConfiguration:nil];
+    if (locked)
+    {
+        device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
+        [device unlockForConfiguration];
+    }
+ 	
+    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    
+    if (error == nil)
+    {
+        if ( [session canAddInput:deviceInput] )
+            [session addInput:deviceInput];
+        
+        // Make a still image output
+        //stillImageOutput = [AVCaptureStillImageOutput new];
+        //[stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:(__bridge void *)(AVCaptureStillImageIsCapturingStillImageContext)];
+//        if ( [session canAddOutput:stillImageOutput] )
+//            [session addOutput:stillImageOutput];
+        
+        // Make a video data output
+        videoDataOutput = [AVCaptureVideoDataOutput new];
+        
+        // we want BGRA, both CoreGraphics and OpenGL work well with 'BGRA'
+        NSDictionary *rgbOutputSettings = [NSDictionary dictionaryWithObject:
+                                           [NSNumber numberWithInt:kCMPixelFormat_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
+        [videoDataOutput setVideoSettings:rgbOutputSettings];
+        [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
+        
+        // create a serial dispatch queue used for the sample buffer delegate as well as when a still image is captured
+        // a serial dispatch queue must be used to guarantee that video frames will be delivered in order
+        // see the header doc for setSampleBufferDelegate:queue: for more information
+        videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
+        [videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
+        
+        if ([session canAddOutput:videoDataOutput]){
+            [session addOutput:videoDataOutput];
+        }
+        [[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
+        previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
+        [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
+        [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+        CALayer *rootLayer = [self.view layer];
+        //[rootLayer setMasksToBounds:YES];
+        [previewLayer setFrame:self.view.bounds];
+        [rootLayer insertSublayer:previewLayer atIndex:0];
+        //[rootLayer addSublayer:previewLayer];
+        [session startRunning];
+    }
+    
+	//[session release];
+    
+	if (error)
+    {
+		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[error code]]
+															message:[error localizedDescription]
+														   delegate:nil
+												  cancelButtonTitle:@"Dismiss"
+												  otherButtonTitles:nil];
+		[alertView show];
+		//[alertView release];
+		[self pauseAVCapture];
+	}
+}
+
+-(void)pauseAVCapture{
+    AVCaptureSession * currentSession  = previewLayer.session;
+    if (currentSession !=nil && [currentSession isRunning]) {
+        [currentSession stopRunning];
+    }
+}
+-(void)restartAVCapture{
+    AVCaptureSession * currentSession  = previewLayer.session;
+    if (currentSession !=nil  && ![currentSession isRunning]) {
+        [currentSession startRunning];
     }
 }
 
