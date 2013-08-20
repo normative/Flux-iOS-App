@@ -11,27 +11,27 @@
 #import "FluxUserObject.h"
 #import <CoreLocation/CoreLocation.h>
 
-@class FluxAPIInteraction;
-@protocol APIInteractionDelegate <NSObject>
+@class FluxNetworkServices;
+@protocol NetworkServicesDelegate <NSObject>
 @optional
 //images
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didreturnImage:(UIImage*)image;
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didreturnImageMetadata:(FluxScanImageObject*)imageObject;
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didreturnImageList:(NSDictionary*)imageList;
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didUploadImage:(FluxScanImageObject*)imageObject;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage*)image forImageID:(int)imageID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMetadata:(FluxScanImageObject*)imageObject;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary*)imageList;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject*)imageObject;
 
 //users
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didCreateUser:(FluxUserObject*)userObject;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject;
 
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size;
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didFailWithError:(NSError*)e;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e;
 @end
 
-@interface FluxAPIInteraction : NSObject{
+@interface FluxNetworkServices : NSObject{
     RKObjectManager *objectManager;
-    __weak id <APIInteractionDelegate> delegate;
+    __weak id <NetworkServicesDelegate> delegate;
 }
-@property (nonatomic, weak) id <APIInteractionDelegate> delegate;
+@property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
 
 #pragma mark - image methods
 

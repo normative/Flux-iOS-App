@@ -18,7 +18,17 @@
 
 @implementation FluxAnnotationsTableViewController
 
-@synthesize annotationsTableViewArray;
+@synthesize tableViewdict;
+
+
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID{
+    
+    [[self.tableViewdict objectForKey:[NSString stringWithFormat:@"%i",imageID]]setContentImage:image];
+    
+    NSArray * arr = [self.tableViewdict allKeys];
+    int index = [arr indexOfObject:[self.tableViewdict objectForKey:[NSString stringWithFormat:@"%i",imageID]]];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:1], nil] withRowAnimation:UITableViewRowAnimationFade];
+}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -32,40 +42,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+     networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
     
-    FluxScanImageObject * obj1 = [[FluxScanImageObject alloc]init];
-    [obj1 setTimestampString:[[NSDate date]description]];
-    [obj1 setDescriptionString:@"Johny sitting in front of the CN Tower"];
-    [obj1 setUserID:1];
-    [obj1 setContentImage:[UIImage imageNamed:@"pic1.png"]];
+    //self.tableViewdict = [[NSMutableDictionary alloc]init];
     
-    FluxScanImageObject * obj2 = [[FluxScanImageObject alloc]init];
-    [obj2 setTimestampString:[[NSDate date]description]];
-    [obj2 setDescriptionString:@"Great view of Toronto Western Hospital"];
-    [obj2 setUserID:2];
-    [obj2 setContentImage:[UIImage imageNamed:@"pic2.png"]];
-    
-    FluxScanImageObject * obj3 = [[FluxScanImageObject alloc]init];
-    [obj3 setTimestampString:[[NSDate date]description]];
-    [obj3 setDescriptionString:@"Best pork sandwiches in town!"];
-    [obj3 setUserID:3];
-    [obj3 setContentImage:[UIImage imageNamed:@"pic3.png"]];
-    
-    FluxScanImageObject * obj4 = [[FluxScanImageObject alloc]init];
-    [obj4 setTimestampString:[[NSDate date]description]];
-    [obj4 setDescriptionString:@"Some cool graffiti"];
-    [obj4 setUserID:4];
-    [obj4 setContentImage:[UIImage imageNamed:@"pic1.png"]];
-    
-    FluxScanImageObject * obj5 = [[FluxScanImageObject alloc]init];
-    [obj5 setTimestampString:[[NSDate date]description]];
-    [obj5 setDescriptionString:@"Chili Peppers live at the ACC!"];
-    [obj5 setUserID:5];
-    [obj5 setContentImage:[UIImage imageNamed:@"pic2.png"]];
-    
-    self.annotationsTableViewArray = [[NSArray alloc]initWithObjects:obj1,obj2,obj3,obj4,obj5, nil];
-    
-
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -79,8 +60,9 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setTableViewArray:(NSArray*)array{
-    self.annotationsTableViewArray = array;
+- (void)setTableViewDictionary:(NSMutableDictionary*)imageDict{
+    self.tableViewdict = [[NSMutableDictionary alloc]initWithDictionary:imageDict];
+    
 }
 
 #pragma mark - Table view data source
@@ -94,7 +76,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return self.annotationsTableViewArray.count;
+    return [[self.tableViewdict allKeys] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -105,13 +87,21 @@
     if (cell == nil) {
         cell = [[FluxAnnotationTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.descriptionLabel.text = [[self.annotationsTableViewArray objectAtIndex:indexPath.row]descriptionString];
-    cell.userLabel.text = [NSString stringWithFormat:@"User: %i",[[self.annotationsTableViewArray objectAtIndex:indexPath.row]userID]];
-    [cell.contentImageView setImage:[[self.annotationsTableViewArray objectAtIndex:indexPath.row]contentImage]];
+    cell.descriptionLabel.text = [[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]descriptionString];
+    
+    //cell.descriptionLabel.text = [[self.annotationsTableViewArray objectAtIndex:indexPath.row]descriptionString];
+    cell.userLabel.text = [NSString stringWithFormat:@"User: %i",[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]userID]];
+    cell.imageID = (int)[[self.tableViewdict allKeys]objectAtIndex:indexPath.row];
+    
+    if ([[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]contentImage] == nil) {
+        [networkServices getThumbImageForID:[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]imageID]];
+    }
+    else
+        [cell.contentImageView setImage:[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]contentImage]];
     
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY"];
-    [cell.timestampLabel setText:[[self.annotationsTableViewArray objectAtIndex:indexPath.row]timestampString]];
+    [cell.timestampLabel setText:[[self.tableViewdict objectForKey:[[self.tableViewdict allKeys]objectAtIndex:indexPath.row]]timestampString]];
     
     return cell;
 }

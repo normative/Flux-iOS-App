@@ -79,16 +79,16 @@
     [backgroundImageView addSubview:darkenImageView];
 }
 #pragma mark - Network Services
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didUploadImage:(FluxScanImageObject *)imageObject{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)imageObject{
     progressView.progress = 1;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction didFailWithError:(NSError *)e{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
     [acceptButton setEnabled:YES];
 }
 
-- (void)APIInteraction:(FluxAPIInteraction *)APIInteraction uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
     if (progressView.frame.origin.y != 0) {
 
         
@@ -249,9 +249,9 @@
             [acceptButton setEnabled:NO];
             progressView.progress = 0;
             [imageObject setDescriptionString:annotationTextView.text];
-            FluxAPIInteraction *apiInteraction = [[FluxAPIInteraction alloc]init];
-            [apiInteraction setDelegate:self];
-            [apiInteraction uploadImage:imageObject];
+            FluxNetworkServices *networkServices = [[FluxNetworkServices alloc]init];
+            [networkServices setDelegate:self];
+            [networkServices uploadImage:imageObject];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
         else{

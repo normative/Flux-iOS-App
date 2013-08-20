@@ -15,14 +15,14 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
 #import "FluxLocationServicesSingleton.h"
-#import "FluxAPIInteraction.h"
+#import "FluxNetworkServices.h"
 
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : UIViewController<APIInteractionDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>{
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>{
     
     FPPopoverController *popover;
     
@@ -47,7 +47,9 @@
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     
     FluxLocationServicesSingleton *locationManager;
-    FluxAPIInteraction * networkServices;
+    FluxNetworkServices * networkServices;
+    
+    NSMutableDictionary*imageDict;
     
 }
 
@@ -55,13 +57,16 @@
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 
 - (void)setupLocationManager;
-- (void)updatePlacemark:(NSNotification *)notification;
+- (void)didUpdatePlacemark:(NSNotification *)notification;
+- (void)didUpdateHeading:(NSNotification *)notification;
+- (void)didUpdateLocation:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
 - (IBAction)showAnnotationsView:(id)sender;
 
 - (void)setupAVCapture;
+- (void)setupNetworkServices;
 
 - (void)setupLayer;
 - (void)setupContext;

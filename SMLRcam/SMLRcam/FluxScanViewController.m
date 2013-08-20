@@ -31,12 +31,14 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     if (locationManager != nil)
     {
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     }
     [locationManager startLocating];
 }
 
--(void)updatePlacemark:(NSNotification *)notification
+-(void)didUpdatePlacemark:(NSNotification *)notification
 {
     NSDictionary *userInfoDict = [notification userInfo];
     if (userInfoDict != nil) {
@@ -47,6 +49,31 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     }
 }
 
+- (void)didUpdateHeading:(NSNotification *)notification{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        
+    }
+}
+
+- (void)didUpdateLocation:(NSNotification *)notification{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLLocation *loc = [userInfoDict objectForKey:@"FluxLocationServicesSingletonKeyLocation"];
+        [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+    }
+}
+
+#pragma mark - Network Services
+- (void)setupNetworkServices{
+    networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
+}
+
+#pragma Networking Delegate Methods
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList{
+    imageDict = imageList;
+}
 #pragma mark - Drawer Methods
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
@@ -59,10 +86,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 #pragma mark - TopView Methods
-
+//show list of images currently visible
 - (IBAction)showAnnotationsView:(id)sender {
     FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
     
+    [annotationsFeedView setTableViewDictionary:imageDict];
     popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
     popover.arrowDirection = FPPopoverNoArrow;
     
@@ -229,8 +257,10 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self setupLayer];
     [self setupContext];
     [self setupAVCapture];
-    
     [self setupLocationManager];
+    [self setupNetworkServices];
+    
+    imageDict = [[NSMutableDictionary alloc]init];
     
     //temporarily set the date range label to today's date
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
