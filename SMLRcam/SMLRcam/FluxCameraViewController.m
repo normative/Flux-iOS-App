@@ -66,7 +66,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     
     [self stopDeviceMotion];
 }
@@ -208,31 +208,11 @@
 
 #pragma mark Location/Orientation Init
 
-//allocates the location object and sets some parameters
-- (void)setupLocationManager
-{
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-}
-
-- (void)startUpdatingLocationAndHeading
-{
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePositionLabels:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-    }
-}
-
-
 -(void)updatePositionLabels:(NSNotification *)notification
 {
     CLLocation *newLocation = locationManager.location;
     latitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.latitude];
     longitudeLabel.text = [NSString stringWithFormat:@"%f",newLocation.coordinate.longitude];
-}
-
-- (void)stopUpdatingLocationAndHeading
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 //starts the motion manager and sets an update interval
