@@ -800,9 +800,13 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="9"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jHc-ID-d6Q">
-                                <rect key="frame" x="13" y="506" width="96" height="33"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jHc-ID-d6Q">
+                                <rect key="frame" x="15" y="506" width="96" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="33" id="fkD-8j-cdu"/>
+                                    <constraint firstAttribute="width" constant="96" id="uYY-iF-ddN"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal" image="retakeButton">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -811,9 +815,13 @@
                                     <action selector="RetakePictureAction:" destination="BuG-5Y-vZZ" eventType="touchUpInside" id="gnq-He-I5g"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6e-HX-z1e">
-                                <rect key="frame" x="227" y="506" width="73" height="33"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b6e-HX-z1e">
+                                <rect key="frame" x="232" y="506" width="73" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="73" id="bEb-E5-H4I"/>
+                                    <constraint firstAttribute="height" constant="33" id="bc3-1D-dr9"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal" image="useButton">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -825,9 +833,13 @@
                         </subviews>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="Udn-Av-rwG" firstAttribute="top" secondItem="jHc-ID-d6Q" secondAttribute="bottom" constant="29" id="HBU-8d-mei"/>
+                            <constraint firstItem="Udn-Av-rwG" firstAttribute="top" secondItem="b6e-HX-z1e" secondAttribute="bottom" constant="29" id="HJN-6A-25h"/>
                             <constraint firstItem="3ze-nY-6n7" firstAttribute="top" secondItem="M2N-pS-ztO" secondAttribute="top" constant="15" id="SEW-7u-Kf1"/>
+                            <constraint firstAttribute="trailing" secondItem="b6e-HX-z1e" secondAttribute="trailing" constant="15" id="ah8-Qu-AuJ"/>
                             <constraint firstAttribute="bottom" secondItem="3Av-wb-2Ce" secondAttribute="bottom" constant="20" id="eX0-j7-N80"/>
                             <constraint firstAttribute="centerX" secondItem="3Av-wb-2Ce" secondAttribute="centerX" id="g8x-5B-eSN"/>
+                            <constraint firstItem="jHc-ID-d6Q" firstAttribute="leading" secondItem="M2N-pS-ztO" secondAttribute="leading" constant="15" id="hlz-f8-bzr"/>
                             <constraint firstItem="3ze-nY-6n7" firstAttribute="leading" secondItem="M2N-pS-ztO" secondAttribute="leading" constant="15" id="nPe-IY-jQy"/>
                         </constraints>
                     </view>
