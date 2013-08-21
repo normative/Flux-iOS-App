@@ -124,6 +124,31 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         NSLog(@"Failed to set current OpenGL context");
     }
 }
+
+
+#pragma mark - Gesture Recognizer
+- (void)setupPanGesture{
+    UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+    [panGesture setMaximumNumberOfTouches:1];
+    [panGesture setDelegate:self];
+    [self.view addGestureRecognizer:panGesture];
+}
+
+//called during pan gesture, location is available as well as translation.
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
+    NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
+}
+
+//limit to only vertical panning
+- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer {
+    CGPoint translation = [panGestureRecognizer translationInView:self.view];
+    return fabs(translation.y) > fabs(translation.x);
+}
+
+
+
+
+
 #pragma mark - AV Capture Methods
 
 - (void)setupAVCapture
@@ -259,6 +284,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self setupLayer];
     [self setupContext];
     [self setupAVCapture];
+    [self setupPanGesture];
 
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];

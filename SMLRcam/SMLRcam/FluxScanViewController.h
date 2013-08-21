@@ -22,7 +22,7 @@
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>{
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,UIGestureRecognizerDelegate>{
     
     FPPopoverController *popover;
     
@@ -65,5 +65,8 @@
 
 - (void)setupLayer;
 - (void)setupContext;
+
+- (void)setupPanGesture;
+- (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
 
 @end
