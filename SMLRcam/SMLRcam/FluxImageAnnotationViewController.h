@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 #import "KTPlaceholderTextView.h"
+#import "HMSegmentedControl.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxScanImageObject.h"
 
@@ -31,6 +32,7 @@
     __weak IBOutlet UILabel *timestampLabel;
     __weak IBOutlet UIProgressView *progressView;
     __weak IBOutlet UIButton *acceptButton;
+    __strong IBOutlet HMSegmentedControl *objectSelectionSegmentedControl;
 }
 
 //init
@@ -43,6 +45,7 @@
 //UIActions
 - (IBAction)PopViewController:(id)sender;
 - (IBAction)ConfirmImage:(id)sender;
+- (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl;
 
 
 

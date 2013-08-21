@@ -79,7 +79,7 @@
 
 //returns the raw image (thumb for now) given an image ID
 - (void)getImageForID:(int)imageID{
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image",objectManager.baseURL,imageID];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?size=oriented",objectManager.baseURL,imageID];
     
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];

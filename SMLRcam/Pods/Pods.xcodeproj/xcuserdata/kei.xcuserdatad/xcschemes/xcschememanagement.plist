@@ -14,6 +14,11 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
+		<key>Pods-HMSegmentedControl.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
 		<key>Pods-IDMPhotoBrowser.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -47,6 +52,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>0522548E1073478C9A9498F3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>0ECC3B40A396403C9ADC6E3F</key>
 		<dict>
 			<key>primary</key>
@@ -57,12 +67,32 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>15AC9FEAB22E49B5BF63E3AB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>2C444A4BBD8E42DBADFB9C3D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>4F774E5E5C3A480A834343E1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>513804D73BB84CAA9BE8E625</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>67A34931A8E84A56A7E664A3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>792238D270564B56AB810405</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -82,7 +112,27 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>E6ADF5AFCB6741AE96EF9DB5</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>EA8ED0178A474584AC2BF8AF</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>ECE6FDFCAF32467F86BEC3AA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>EE68A059B3B54E1696566B2C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F5DF88930CC84E9FB803C83D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

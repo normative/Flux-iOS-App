@@ -22,7 +22,7 @@
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>{
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,UIGestureRecognizerDelegate>{
     
     FPPopoverController *popover;
     
@@ -51,6 +51,7 @@
 @property (nonatomic, strong) NSMutableDictionary * imageDict;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
+@property (nonatomic, strong) UIImageView*thumbView;
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
@@ -65,5 +66,9 @@
 
 - (void)setupLayer;
 - (void)setupContext;
+
+- (void)setupPanGesture;
+- (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
+- (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
 
 @end
