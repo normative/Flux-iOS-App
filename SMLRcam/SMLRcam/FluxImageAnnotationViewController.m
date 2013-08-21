@@ -31,7 +31,7 @@
 }
 
 - (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl {
-	NSLog(@"Selected index %i (via UIControlEventValueChanged)", segmentedControl.selectedSegmentIndex);
+    [imageObject setCategoryID:segmentedControl.selectedSegmentIndex];
 }
 
 #pragma mark - image manipulation
@@ -186,6 +186,8 @@
     [segmentedControl setBackgroundColor:[UIColor clearColor]];
     [segmentedControl setSelectionLocation:HMSegmentedControlSelectionLocationDown];
     [segmentedControl setSelectionStyle:HMSegmentedControlSelectionStyleTextWidthStrip];
+    [segmentedControl setSelectedSegmentIndex:0];
+    [imageObject setCategoryID:0];
     [self.view addSubview:segmentedControl];
 }
 
