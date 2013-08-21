@@ -69,5 +69,6 @@
 
 - (void)setupPanGesture;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
+- (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
 
 @end

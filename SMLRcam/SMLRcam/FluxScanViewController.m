@@ -128,10 +128,19 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 #pragma mark - Gesture Recognizer
 - (void)setupPanGesture{
+    //pan
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [panGesture setMaximumNumberOfTouches:1];
     [panGesture setDelegate:self];
     [self.view addGestureRecognizer:panGesture];
+    
+    //longpress
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
+                                               initWithTarget:self
+                                               action:@selector(handleLongPress:)];
+    [longPress setNumberOfTouchesRequired:1];
+    longPress.minimumPressDuration = 0.5;
+    [self.view addGestureRecognizer:longPress];
     
     //thumb Circle
     thumbView = [[UIImageView alloc]init];
@@ -139,13 +148,62 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [thumbView setHidden:YES];
     [self.view addSubview:thumbView];
 }
+- (void)handleLongPress:(UILongPressGestureRecognizer *) sender{
+    //prevent multiple touches
+    if (![sender isEnabled]) return;
+    
+    if(sender.state == UIGestureRecognizerStateBegan)
+    {
+        [thumbView setHidden:NO];
+        [thumbView setCenter:[sender locationInView:self.view]];
+        
+        [UIView animateWithDuration:0.2f
+                         animations:^{
+                             //[thumbView setFrame:CGRectMake(thumbView.frame.origin.x, thumbView.frame.origin.y, 98, 98)];
+                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 2.0, 2.0);
+                         }];
+    }
+    else if(sender.state == UIGestureRecognizerStateChanged)
+    {
+        NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
+        
+        
+        [thumbView setCenter:[sender locationInView:self.view]];
+        //close it if the gesture has ended
+        if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
+            [UIView animateWithDuration:0.05f
+                             animations:^{
+                                 [thumbView setFrame:CGRectMake([sender locationInView:self.view].x-25, [sender locationInView:self.view].y-25, 50, 50)];
+                             }
+                             completion:^(BOOL finished){
+                                 [thumbView setHidden:YES];
+                             }];
+        }
+    }
+    
+    else if(sender.state == UIGestureRecognizerStateEnded)
+    {
+        [UIView animateWithDuration:0.05f
+                         animations:^{
+                             [thumbView setFrame:CGRectMake([sender locationInView:self.view].x-25, [sender locationInView:self.view].y-25, 50, 50)];
+                         }
+                         completion:^(BOOL finished){
+                             [thumbView setHidden:YES];
+                         }];
+    }
+    
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+    return YES;
+}
 
 //called during pan gesture, location is available as well as translation.
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
 
     NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
     
-
+    
     [thumbView setCenter:[sender locationInView:self.view]];
     //close it if the gesture has ended
     if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
@@ -157,7 +215,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
                              [thumbView setHidden:YES];
                          }];
     }
-     
+    
 }
 
 //limit to only vertical panning
@@ -173,7 +231,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
                          animations:^{
                              [thumbView setFrame:CGRectMake(thumbView.frame.origin.x, thumbView.frame.origin.y, 98, 98)];
                          }];
-
+        
         return YES;
     }
     return NO;
