@@ -129,7 +129,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 
 #pragma mark - Gesture Recognizer
-- (void)setupPanGesture{
+- (void)setupGestureHandlers{
     //pan
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [panGesture setMaximumNumberOfTouches:1];
@@ -145,10 +145,15 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self.view addGestureRecognizer:longPress];
     
     //thumb Circle
-    thumbView = [[UIImageView alloc]init];
-    [thumbView setImage:[UIImage imageNamed:@"thumbCircle.png"]];
+    thumbView = [[FluxClockSlidingControl alloc]initWithFrame:CGRectMake(0, 0, 100, 110)];
+    thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
     [thumbView setHidden:YES];
     [self.view addSubview:thumbView];
+    
+    
+    //start with today's date
+    [thumbView.timeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
+
 }
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender{
     //prevent multiple touches
@@ -156,8 +161,10 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     
     if(sender.state == UIGestureRecognizerStateBegan)
     {
+        [thumbView setStartingYCoord:[sender locationInView:self.view].y];
         [thumbView setHidden:NO];
         [thumbView setCenter:[sender locationInView:self.view]];
+        
         
         [UIView animateWithDuration:0.2f
                          animations:^{
@@ -168,26 +175,15 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     else if(sender.state == UIGestureRecognizerStateChanged)
     {
         NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
-        
-        
         [thumbView setCenter:[sender locationInView:self.view]];
-        //close it if the gesture has ended
-        if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
-            [UIView animateWithDuration:0.05f
-                             animations:^{
-                                 [thumbView setFrame:CGRectMake([sender locationInView:self.view].x-25, [sender locationInView:self.view].y-25, 50, 50)];
-                             }
-                             completion:^(BOOL finished){
-                                 [thumbView setHidden:YES];
-                             }];
-        }
+        [self setThumbViewDate:[sender locationInView:self.view].y];
     }
     
-    else if(sender.state == UIGestureRecognizerStateEnded)
+    else if((sender.state == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled))
     {
         [UIView animateWithDuration:0.05f
                          animations:^{
-                             [thumbView setFrame:CGRectMake([sender locationInView:self.view].x-25, [sender locationInView:self.view].y-25, 50, 50)];
+                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
                          }
                          completion:^(BOOL finished){
                              [thumbView setHidden:YES];
@@ -204,14 +200,14 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
 
     NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
-    
+    [self setThumbViewDate:[sender locationInView:self.view].y];
     
     [thumbView setCenter:[sender locationInView:self.view]];
     //close it if the gesture has ended
     if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
         [UIView animateWithDuration:0.05f
                          animations:^{
-                             [thumbView setFrame:CGRectMake([sender locationInView:self.view].x-25, [sender locationInView:self.view].y-25, 50, 50)];
+                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
                          }
                          completion:^(BOOL finished){
                              [thumbView setHidden:YES];
@@ -222,21 +218,43 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 //limit to only vertical panning
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer {
+    if (thumbView.frame.size.width>70) {
+        return NO;
+    }
     CGPoint translation = [panGestureRecognizer translationInView:self.view];
     //if its vertical
     if (fabs(translation.y) > fabs(translation.x)) {
-        
+        [thumbView setStartingYCoord:[panGestureRecognizer locationInView:self.view].y];
         [thumbView setHidden:NO];
         [thumbView setCenter:[panGestureRecognizer locationInView:self.view]];
         
         [UIView animateWithDuration:0.2f
                          animations:^{
-                             [thumbView setFrame:CGRectMake(thumbView.frame.origin.x, thumbView.frame.origin.y, 98, 98)];
+                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 2.0, 2.0);
                          }];
         
         return YES;
     }
     return NO;
+}
+
+- (void)setThumbViewDate:(float)yCoord{
+    
+    //if adding
+    if (previousYCoord>yCoord) {
+        NSDate *now = [NSDate date];
+        int daysToAdd = roundf(yCoord);
+        NSDate *newDate = [now dateByAddingTimeInterval:60*60*24*daysToAdd];
+        [thumbView changeTimeString:[dateFormatter stringFromDate:newDate]adding:YES];
+    }
+    else{
+        NSDate *now = [NSDate date];
+        int daysToSubtract = roundf(yCoord)*-1;
+        NSDate *newDate = [now dateByAddingTimeInterval:60*60*24*daysToSubtract];
+        [thumbView changeTimeString:[dateFormatter stringFromDate:newDate]adding:NO];
+    }
+    previousYCoord = yCoord;
+
 }
 
 #pragma mark - AV Capture Methods
@@ -374,7 +392,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self setupLayer];
     [self setupContext];
     [self setupAVCapture];
-    [self setupPanGesture];
+    [self setupGestureHandlers];
 
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];
@@ -385,9 +403,9 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     self.imageDict = [[NSMutableDictionary alloc]init];
     
     //temporarily set the date range label to today's date
-    NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"dd MMM, YYYY"];
-    [dateRangeLabel setText:[formatter stringFromDate:[NSDate date]]];
+    dateFormatter  = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"dd MMM, YYYY"];
+    [dateRangeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
