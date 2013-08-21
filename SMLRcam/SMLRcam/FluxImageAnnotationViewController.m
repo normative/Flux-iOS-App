@@ -197,7 +197,6 @@
     [segmentedControl setFrame:objectSelectionSegmentedControl.frame];
     [segmentedControl setSegmentEdgeInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     [segmentedControl setSelectionIndicatorHeight:0.0f];
-    //[segmentedControl setSegmentEdgeInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     [segmentedControl addTarget:self action:@selector(segmentedControlChangedValue:) forControlEvents:UIControlEventValueChanged];
     [segmentedControl setBackgroundColor:[UIColor clearColor]];
     [segmentedControl setSelectionLocation:HMSegmentedControlSelectionLocationDown];

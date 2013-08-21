@@ -11,6 +11,7 @@
 #import "MMDrawerBarButtonItem.h"
 #import "FluxMapViewController.h"
 #import "FPPopoverController.h"
+#import "FluxClockSlidingControl.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -43,6 +44,8 @@
     __weak IBOutlet UILabel *dateRangeLabel;
     
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
+    NSDateFormatter *dateFormatter;
+    float previousYCoord;
     
     FluxLocationServicesSingleton *locationManager;
     FluxNetworkServices * networkServices;
@@ -51,7 +54,7 @@
 @property (nonatomic, strong) NSMutableDictionary * imageDict;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
-@property (nonatomic, strong) UIImageView*thumbView;
+@property (nonatomic, strong) FluxClockSlidingControl*thumbView;
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
@@ -67,8 +70,9 @@
 - (void)setupLayer;
 - (void)setupContext;
 
-- (void)setupPanGesture;
+- (void)setupGestureHandlers;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
+- (void)setThumbViewDate:(float)yCoord;
 
 @end

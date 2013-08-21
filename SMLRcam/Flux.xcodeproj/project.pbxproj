@@ -61,6 +61,7 @@
 		AA7457BA17BA78CF008988C1 /* FluxRotatingCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */; };
 		AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */; };
 		AA7FBD3E17A6DD7600410E6B /* FluxCameraViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBD3D17A6DD7600410E6B /* FluxCameraViewController.m */; };
+		AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
 		AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF017BBBD0500D572A4 /* FluxNetworkServices.m */; };
@@ -164,6 +165,8 @@
 		AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageAnnotationViewController.m; sourceTree = "<group>"; };
 		AA7FBD3C17A6DD7600410E6B /* FluxCameraViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraViewController.h; sourceTree = "<group>"; };
 		AA7FBD3D17A6DD7600410E6B /* FluxCameraViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraViewController.m; sourceTree = "<group>"; };
+		AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxClockSlidingControl.h; sourceTree = "<group>"; };
+		AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxClockSlidingControl.m; sourceTree = "<group>"; };
 		AAB24E4817AAE21E00A9BE59 /* FluxRightDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRightDrawerViewController.h; sourceTree = "<group>"; };
 		AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRightDrawerViewController.m; sourceTree = "<group>"; };
 		AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSwitchTableViewCell.h; sourceTree = "<group>"; };
@@ -414,6 +417,8 @@
 		AA4CEF6C17A9586F00202A74 /* Custom UI Elements */ = {
 			isa = PBXGroup;
 			children = (
+				AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */,
+				AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */,
 				AA7457B817BA78CF008988C1 /* FluxRotatingCompassButton.h */,
 				AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */,
 				AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */,
@@ -626,6 +631,7 @@
 				AA4CE16D17B921E1008D04BE /* FluxAnnotationsTableViewController.m in Sources */,
 				AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
+				AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */,
 				AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
