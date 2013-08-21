@@ -10,16 +10,10 @@
 
 #import "UIViewController+MMDrawerController.h"
 #import "FluxAnnotationsTableViewController.h"
-#import "FluxOpenGLViewController.h"
-
-
-#pragma mark- OpenGL Init
-
-static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
-static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;};
 
 
 @implementation FluxScanViewController
+@synthesize imageDict;
 
 #pragma mark - Location
 
@@ -31,10 +25,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     
     if (locationManager != nil)
     {
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     }
     [locationManager startLocating];
 }
@@ -48,32 +39,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
         locationLabel.text = locationString;
     }
-}
-
-- (void)didUpdateHeading:(NSNotification *)notification{
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        
-    }
-}
-
-- (void)didUpdateLocation:(NSNotification *)notification{
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLLocation *loc = [userInfoDict objectForKey:@"FluxLocationServicesSingletonKeyLocation"];
-        [networkServices getImagesForLocation:loc.coordinate andRadius:50];
-    }
-}
-
-#pragma mark - Network Services
-- (void)setupNetworkServices{
-    networkServices = [[FluxNetworkServices alloc]init];
-    [networkServices setDelegate:self];
-}
-
-#pragma Networking Delegate Methods
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList{
-    imageDict = imageList;
 }
 
 #pragma mark - Drawer Methods
@@ -99,23 +64,28 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     //the popover will be presented from the okButton view
     [popover presentPopoverFromView:sender];
 }
-#pragma mark - OpenGLView Setup
+#pragma mark - OpenGLView
 
 -(void)setupOpenGLView{
     UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
                                                            bundle:[NSBundle mainBundle]];
+
     
-    FluxOpenGLViewController *openGLView;
     
     // setup the opengl controller
     // first get an instance from storyboard
-    openGLView = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
+    openGLController = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
+    [openGLController setTheDelegate:self];
     // then add the glkview as the subview of the parent view
-    [self.view insertSubview:openGLView.view belowSubview:headerView];
+    [self.view insertSubview:openGLController.view belowSubview:headerView];
     // add the glkViewController as the child of self
-    [self addChildViewController:openGLView];
-    [openGLView didMoveToParentViewController:self];
-    openGLView.view.frame = self.view.bounds;
+    [self addChildViewController:openGLController];
+    [openGLController didMoveToParentViewController:self];
+    openGLController.view.frame = self.view.bounds;
+}
+
+- (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary *)aImageDict{
+    self.imageDict = aImageDict;
 }
 
 # pragma mark - prepare segue action with identifer
@@ -253,7 +223,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [super viewDidLoad];
     [self setupAVCapture];
     [self setupLocationManager];
-    [self setupNetworkServices];
     [self setupOpenGLView];
     
     imageDict = [[NSMutableDictionary alloc]init];

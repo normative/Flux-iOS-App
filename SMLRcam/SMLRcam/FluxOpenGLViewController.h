@@ -8,7 +8,20 @@
 
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
-@interface FluxOpenGLViewController : GLKViewController{
+#import "FluxLocationServicesSingleton.h"
+#import "FluxNetworkServices.h"
+
+
+@class FluxOpenGLViewController;
+@protocol OpenGLViewDelegate <NSObject>
+@optional
+//images
+- (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary*)aImageDict;
+@end
+
+
+
+@interface FluxOpenGLViewController : GLKViewController<NetworkServicesDelegate>{
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
@@ -26,9 +39,17 @@
     GLuint _positionVBO;
     GLuint _texcoordVBO;
     GLuint _indexVBO;
+    
+    
+    FluxLocationServicesSingleton *locationManager;
+    FluxNetworkServices * networkServices;
 
+    __weak id <OpenGLViewDelegate> theDelegate;
 }
+
+@property (nonatomic, weak) id <OpenGLViewDelegate> theDelegate;
 @property (strong, nonatomic) EAGLContext *context;
+@property (nonatomic, strong)NSMutableDictionary*imageDict;
 
 
 //- (GLuint) sub_texture:(demoImage*)img;
@@ -40,4 +61,9 @@
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
+
+- (void)setupLocationManager;
+- (void)didUpdateLocation:(NSNotification *)notification;
+- (void)didUpdateHeading:(NSNotification *)notification;
+- (void)setupNetworkServices;
 @end

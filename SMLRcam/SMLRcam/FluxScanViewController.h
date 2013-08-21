@@ -11,6 +11,7 @@
 #import "MMDrawerBarButtonItem.h"
 #import "FluxMapViewController.h"
 #import "FPPopoverController.h"
+#import "FluxOpenGLViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -19,16 +20,11 @@
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>{
+
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, OpenGLViewDelegate>{
     
     FPPopoverController *popover;
-    
-    CAEAGLLayer* _eaglLayer;
-    EAGLContext* _context;
-    GLuint _colorRenderBuffer;
-
-    
-    
+   
     
     AVCaptureVideoPreviewLayer *previewLayer;
 	AVCaptureVideoDataOutput *videoDataOutput;
@@ -47,24 +43,23 @@
     FluxLocationServicesSingleton *locationManager;
     FluxNetworkServices * networkServices;
     
-    NSMutableDictionary*imageDict;
+    FluxOpenGLViewController*openGLController;
+    
+    
 }
 
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
+@property (nonatomic, strong)NSMutableDictionary*imageDict;
 
 - (void)setupLocationManager;
 - (void)didUpdatePlacemark:(NSNotification *)notification;
-- (void)didUpdateHeading:(NSNotification *)notification;
-- (void)didUpdateLocation:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
 - (IBAction)showAnnotationsView:(id)sender;
 
 - (void)setupAVCapture;
-- (void)setupNetworkServices;
-
 - (void)setupOpenGLView;
 
 @end

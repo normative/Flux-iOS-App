@@ -381,9 +381,66 @@ void init(){
 
 @implementation FluxOpenGLViewController
 
+@synthesize imageDict,theDelegate;
+
+#pragma mark - Location
+
+//allocates the location object and sets some parameters
+- (void)setupLocationManager
+{
+    // Create the manager object
+    locationManager = [FluxLocationServicesSingleton sharedManager];
+    
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+    }
+    [locationManager startLocating];
+}
+
+- (void)didUpdateHeading:(NSNotification *)notification{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        
+    }
+}
+
+- (void)didUpdateLocation:(NSNotification *)notification{
+    NSDictionary *userInfoDict = [notification userInfo];
+    if (userInfoDict != nil) {
+        CLLocation *loc = [userInfoDict objectForKey:@"FluxLocationServicesSingletonKeyLocation"];
+        [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+    }
+}
+
+
+#pragma mark - Network Services
+- (void)setupNetworkServices{
+    networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList{
+    imageDict = imageList;
+    if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)]) {
+        [theDelegate OpenGLView:self didUpdateImageList:imageDict];
+    }
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID{
+    
+}
+
+#pragma View Lifecycle
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    
+    imageDict = [[NSMutableDictionary alloc]init];
+    [self setupLocationManager];
+    [self setupNetworkServices];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     
