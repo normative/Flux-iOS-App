@@ -618,7 +618,7 @@ void init(){
     _program = glCreateProgram();
     
     // Create and compile vertex shader.
-    vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
+    vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shaders/Shader" ofType:@"vsh"];
     // vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"testshader" ofType:@"vsh"];
     //test
     
@@ -629,7 +629,7 @@ void init(){
     
     // Create and compile fragment shader.
     //test
-    fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
+    fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shaders/Shader" ofType:@"fsh"];
     //fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"testshader" ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
         NSLog(@"Failed to compile fragment shader");

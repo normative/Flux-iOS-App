@@ -64,18 +64,18 @@
             </objects>
             <point key="canvasLocation" x="-275" y="-667"/>
         </scene>
-        <!--View Controller - OpenGLView-->
+        <!--Flux OpenGL View Controller - OpenGLView-->
         <scene sceneID="T7t-bK-Hkt">
             <objects>
-                <viewController storyboardIdentifier="openGLViewController" title="OpenGLView" id="0bI-12-kHe" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="openGLViewController" title="OpenGLView" id="0bI-12-kHe" customClass="FluxOpenGLViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="z0A-Kv-Uro"/>
                         <viewControllerLayoutGuide type="bottom" id="PpX-b5-L9n"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="m8a-Mf-OPM">
+                    <view key="view" contentMode="scaleToFill" id="m8a-Mf-OPM" customClass="GLKView">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p12-6b-dHX" userLabel="First Responder" sceneMemberID="firstResponder"/>

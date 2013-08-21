@@ -75,6 +75,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList{
     imageDict = imageList;
 }
+
 #pragma mark - Drawer Methods
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
