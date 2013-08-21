@@ -64,10 +64,10 @@
             </objects>
             <point key="canvasLocation" x="-275" y="-667"/>
         </scene>
-        <!--View Controller-->
+        <!--View Controller - OpenGLView-->
         <scene sceneID="T7t-bK-Hkt">
             <objects>
-                <viewController storyboardIdentifier="openGLViewController" id="0bI-12-kHe" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="openGLViewController" title="OpenGLView" id="0bI-12-kHe" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="z0A-Kv-Uro"/>
                         <viewControllerLayoutGuide type="bottom" id="PpX-b5-L9n"/>
@@ -75,7 +75,7 @@
                     <view key="view" contentMode="scaleToFill" id="m8a-Mf-OPM">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p12-6b-dHX" userLabel="First Responder" sceneMemberID="firstResponder"/>

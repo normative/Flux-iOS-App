@@ -22,12 +22,17 @@
     
     GLuint _vertexArray;
     GLuint _vertexBuffer;
+    GLKTextureInfo* _texture;
+    GLuint _positionVBO;
+    GLuint _texcoordVBO;
+    GLuint _indexVBO;
+
 }
 @property (strong, nonatomic) EAGLContext *context;
-@property (strong, nonatomic) GLKBaseEffect *effect;
-- (GLuint) init_texture: (demoImage*)img;
-//- (GLuint) sub_texture:(demoImage*)img;
 
+
+//- (GLuint) sub_texture:(demoImage*)img;
+- (void)setupBuffers;
 - (void)setupGL;
 - (void)tearDownGL;
 - (void) checkShaderLimitations;

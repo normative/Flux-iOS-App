@@ -7,8 +7,8 @@
 //
 
 #import "FluxOpenGLViewController.h"
+#import "ImageViewerImageUtil.h"
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
 
 // Uniform index.
 enum
@@ -24,9 +24,32 @@ GLint uniforms[NUM_UNIFORMS];
 enum
 {
     ATTRIB_VERTEX,
-    ATTRIB_NORMAL,
+    ATTRIB_TEXCOORD,
     NUM_ATTRIBUTES
 };
+GLfloat testvertexData[18] =
+{
+    
+    0.5f, 0.5f, 0.5f,
+    -0.5f, 0.5f, 0.5f,
+    0.5f, -0.5f, 0.5f,
+    0.5f, -0.5f, 0.5f,
+    -0.5f, 0.5f, 0.5f,
+    -0.5f, -0.5f, 0.5f
+};
+
+
+GLfloat textureCoord[12] =
+{
+    
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+    1.0f, 0.0f,
+    1.0f, 0.0f,
+    0.0f, 1.0f,
+    0.0f, 0.0f
+};
+GLubyte indexdata[6]={0,1,2,3,4,5};
 
 typedef struct {
 	double x;
@@ -413,47 +436,47 @@ void init(){
     NSLog(@"Maximum vertex texture image unit = %d",maxvertextureunits);
     
 }
-- (GLuint)init_texture: (demoImage*) img{
+- (void)setupBuffers
+{
     
-    GLuint texName;
-    glGenTextures(1, &texName);
-    glBindTexture(GL_TEXTURE_2D, texName);
+    glGenBuffers(1, &_indexVBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexdata), indexdata, GL_STATIC_DRAW);
     
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glGenBuffers(1, &_positionVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    //test
+    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_STATIC_DRAW);
     
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     
-    glTexImage2D(GL_TEXTURE_2D, 0, img->format, img->width, img->height, 0, img->format, img->type,img->data);
-    // glGenerateMipmap(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    return texName;
+    
+    glEnableVertexAttribArray(ATTRIB_VERTEX);
+    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
+    
+    glGenBuffers(1, &_texcoordVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
 }
 
 - (void)setupGL
 {
     
-    NSString* filePathName = nil;
+    
     [EAGLContext setCurrentContext:self.context];
     
     [self loadShaders];
     
-    self.effect = [[GLKBaseEffect alloc] init];
-    self.effect.light0.enabled = GL_TRUE;
-    self.effect.light0.diffuseColor = GLKVector4Make(1.0f, 0.4f, 0.4f, 1.0f);
-    
     [self checkShaderLimitations];
-    filePathName = [[NSBundle mainBundle] pathForResource:@"2013070517521850" ofType:@"jpg"];
-    NSLog(@"%@",filePathName);
-    image = imgLoadImageJPG([filePathName cStringUsingEncoding:NSASCIIStringEncoding], false);
     
     init();
     compute_new_intersection();
     multiply_vertices();
     
-    texture[0]= [self init_texture:image];
+    
     
     g_vertex_buffer_data[0] = result[0].x;
     g_vertex_buffer_data[1] = result[0].y;
@@ -476,22 +499,27 @@ void init(){
     
     
     
+    
+    
+    
     glEnable(GL_DEPTH_TEST);
     
-    glGenVertexArraysOES(1, &_vertexArray);
-    glBindVertexArrayOES(_vertexArray);
+    NSError *error;
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+    _texture = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Ripple FRONT TEXTURE ERROR: %@", error);
     
-    glGenBuffers(1, &_vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    //bind the texture to texture unit 0
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(_texture.target, _texture.name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
-    glEnableVertexAttribArray(GLKVertexAttribPosition);
-    glVertexAttribPointer(GLKVertexAttribPosition, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    /*
-     glEnableVertexAttribArray(GLKVertexAttribNormal);
-     glVertexAttribPointer(GLKVertexAttribNormal, 3, GL_FLOAT, GL_FALSE, 24, BUFFER_OFFSET(12));
-     */
-    glBindVertexArrayOES(0);
+    [self setupBuffers];
+    
+    
+    
+    
 }
 
 - (void)tearDownGL
@@ -501,7 +529,6 @@ void init(){
     glDeleteBuffers(1, &_vertexBuffer);
     glDeleteVertexArraysOES(1, &_vertexArray);
     
-    self.effect = nil;
     
     if (_program) {
         glDeleteProgram(_program);
@@ -513,37 +540,45 @@ void init(){
 
 - (void)update
 {
-    ray_origin = GLKVector3Make(0.0, 0.0, 0.0);
+    /*
+     ray_origin = GLKVector3Make(0.0, 0.0, 0.0);
+     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
+     
+     GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
+     
+     
+     
+     
+     
+     // Compute the model view matrix for the object rendered with GLKit
+     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.0f);
+     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
+     
+     
+     
+     // Compute the model view matrix for the object rendered with ES2
+     modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.0f);
+     
+     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
+     
+     //  _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
+     
+     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+     
+     tViewMatrix = GLKMatrix4MakeLookAt(ray_origin.x, ray_origin.y, ray_origin.z, centrevec.x, centrevec.y, centrevec.z, upvec.x, upvec.y, upvec.z);
+     
+     
+     GLKMatrix4 tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
+     
+     _tBiasMVP = GLKMatrix4Multiply(biasMatrix,tMVP);
+     */
+    
+    //test
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-    
-    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
-    
-    self.effect.transform.projectionMatrix = projectionMatrix;
-    
-    
-    
-    // Compute the model view matrix for the object rendered with GLKit
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.0f);
-    modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
-    
-    self.effect.transform.modelviewMatrix = modelViewMatrix;
-    
-    // Compute the model view matrix for the object rendered with ES2
-    modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.0f);
-    
-    modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
-    
-    //  _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-    
+    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-    
-    tViewMatrix = GLKMatrix4MakeLookAt(ray_origin.x, ray_origin.y, ray_origin.z, centrevec.x, centrevec.y, centrevec.z, upvec.x, upvec.y, upvec.z);
-    
-    
-    GLKMatrix4 tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
-    
-    _tBiasMVP = GLKMatrix4Multiply(biasMatrix,tMVP);
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -551,12 +586,7 @@ void init(){
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    glBindVertexArrayOES(_vertexArray);
     
-    // Render the object with GLKit
-    [self.effect prepareToDraw];
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
     
     // Render the object again with ES2
     glUseProgram(_program);
@@ -566,17 +596,15 @@ void init(){
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX], 1, 0, _tBiasMVP.m);
     
     
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture[0]);
+    //glActiveTexture(GL_TEXTURE0);
+    //glBindTexture(GL_TEXTURE_2D, texture[0]);
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER], 0);
     
     
+    glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
     
-    
-    
-    glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
@@ -591,13 +619,18 @@ void init(){
     
     // Create and compile vertex shader.
     vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"vsh"];
+    // vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"testshader" ofType:@"vsh"];
+    //test
+    
     if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
         NSLog(@"Failed to compile vertex shader");
         return NO;
     }
     
     // Create and compile fragment shader.
+    //test
     fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shader" ofType:@"fsh"];
+    //fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"testshader" ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
         NSLog(@"Failed to compile fragment shader");
         return NO;
@@ -611,9 +644,9 @@ void init(){
     
     // Bind attribute locations.
     // This needs to be done prior to linking.
-    glBindAttribLocation(_program, GLKVertexAttribPosition, "position");
-    //glBindAttribLocation(_program, GLKVertexAttribNormal, "normal");
     
+    glBindAttribLocation(_program, ATTRIB_VERTEX, "position");
+    glBindAttribLocation(_program, ATTRIB_TEXCOORD, "texCoord");
     // Link program.
     if (![self linkProgram:_program]) {
         NSLog(@"Failed to link program: %d", _program);
@@ -735,4 +768,3 @@ void init(){
 }
 
 @end
-
