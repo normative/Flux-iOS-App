@@ -20,7 +20,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 @implementation FluxScanViewController
 
-@synthesize imageDict;
+@synthesize imageDict,thumbView;
 
 #pragma mark - Location
 
@@ -132,22 +132,52 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [panGesture setMaximumNumberOfTouches:1];
     [panGesture setDelegate:self];
     [self.view addGestureRecognizer:panGesture];
+    
+    //thumb Circle
+    thumbView = [[UIImageView alloc]init];
+    [thumbView setImage:[UIImage imageNamed:@"thumbCircle.png"]];
+    [thumbView setHidden:YES];
+    [self.view addSubview:thumbView];
 }
 
 //called during pan gesture, location is available as well as translation.
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
+
     NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
+    
+
+    [thumbView setCenter:[sender locationInView:self.view]];
+    //close it if the gesture has ended
+    if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
+        [UIView animateWithDuration:0.05f
+                         animations:^{
+                             [thumbView setFrame:CGRectMake([sender locationInView:self.view].x-25, [sender locationInView:self.view].y-25, 50, 50)];
+                         }
+                         completion:^(BOOL finished){
+                             [thumbView setHidden:YES];
+                         }];
+    }
+     
 }
 
 //limit to only vertical panning
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer {
     CGPoint translation = [panGestureRecognizer translationInView:self.view];
-    return fabs(translation.y) > fabs(translation.x);
+    //if its vertical
+    if (fabs(translation.y) > fabs(translation.x)) {
+        
+        [thumbView setHidden:NO];
+        [thumbView setCenter:[panGestureRecognizer locationInView:self.view]];
+        
+        [UIView animateWithDuration:0.2f
+                         animations:^{
+                             [thumbView setFrame:CGRectMake(thumbView.frame.origin.x, thumbView.frame.origin.y, 98, 98)];
+                         }];
+
+        return YES;
+    }
+    return NO;
 }
-
-
-
-
 
 #pragma mark - AV Capture Methods
 

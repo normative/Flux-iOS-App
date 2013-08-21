@@ -51,6 +51,7 @@
 @property (nonatomic, strong) NSMutableDictionary * imageDict;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
+@property (nonatomic, strong) UIImageView*thumbView;
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
