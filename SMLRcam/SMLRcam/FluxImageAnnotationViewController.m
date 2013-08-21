@@ -101,6 +101,22 @@
     progressView.progress = bytesSent/size -0.05;
 }
 
+# pragma mark - orientation and rotation
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
+- (NSUInteger) supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
 
 #pragma mark - view loading / popping
 
