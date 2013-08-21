@@ -195,15 +195,16 @@
     //segmentedControl
     HMSegmentedControl *segmentedControl = [[HMSegmentedControl alloc] initWithSectionImages:@[[UIImage imageNamed:@"place_unselected"], [UIImage imageNamed:@"person_unselected"], [UIImage imageNamed:@"thing_unselected"], [UIImage imageNamed:@"event_unselected"]] sectionSelectedImages:@[[UIImage imageNamed:@"place_selected"], [UIImage imageNamed:@"person_selected"], [UIImage imageNamed:@"thing_selected"], [UIImage imageNamed:@"event_selected"]]];
     [segmentedControl setFrame:objectSelectionSegmentedControl.frame];
+    
     [segmentedControl setSegmentEdgeInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     [segmentedControl setSelectionIndicatorHeight:0.0f];
-    //[segmentedControl setSegmentEdgeInset:UIEdgeInsetsMake(0, 0, 0, 0)];
     [segmentedControl addTarget:self action:@selector(segmentedControlChangedValue:) forControlEvents:UIControlEventValueChanged];
     [segmentedControl setBackgroundColor:[UIColor clearColor]];
     [segmentedControl setSelectionLocation:HMSegmentedControlSelectionLocationDown];
     [segmentedControl setSelectionStyle:HMSegmentedControlSelectionStyleTextWidthStrip];
     [segmentedControl setSelectedSegmentIndex:0];
     [imageObject setCategoryID:0];
+    
     [self.view addSubview:segmentedControl];
 }
 
