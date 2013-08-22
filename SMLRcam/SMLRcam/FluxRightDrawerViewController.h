@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "FluxDrawerCheckboxFilterTableViewCell.h"
+#import "FluxHashtagTableViewCell.h"
 
 @interface FluxRightDrawerViewController : UITableViewController<DrawerCheckboxTableViewCellDelegate,UISearchBarDelegate, UISearchDisplayDelegate>{
     
