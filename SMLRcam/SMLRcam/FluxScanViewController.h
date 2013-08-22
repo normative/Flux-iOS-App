@@ -18,9 +18,6 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxNetworkServices.h"
 
-#include <OpenGLES/ES2/gl.h>
-#include <OpenGLES/ES2/glext.h>
-
 @class FluxRotatingCompassButton;
 
 @interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,UIGestureRecognizerDelegate>{
@@ -57,18 +54,13 @@
 @property (nonatomic, strong) FluxClockSlidingControl*thumbView;
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
-- (void)didUpdateHeading:(NSNotification *)notification;
-- (void)didUpdateLocation:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
 - (IBAction)showAnnotationsView:(id)sender;
 
 - (void)setupAVCapture;
-- (void)setupNetworkServices;
-
-- (void)setupLayer;
-- (void)setupContext;
+- (void)setupOpenGLView;
 
 - (void)setupGestureHandlers;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;

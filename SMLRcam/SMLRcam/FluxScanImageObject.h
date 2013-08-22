@@ -14,7 +14,6 @@
 //image itself
 @property (nonatomic, strong)UIImage *contentImage;
 
-
 //location
 @property (nonatomic) float longitude;
 @property (nonatomic) float latitude;

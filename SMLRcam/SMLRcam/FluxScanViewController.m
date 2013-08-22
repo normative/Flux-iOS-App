@@ -12,13 +12,8 @@
 #import "FluxAnnotationsTableViewController.h"
 
 
-#pragma mark- OpenGL Init
-
-static CGFloat DegreesToRadians(CGFloat degrees) {return degrees * M_PI / 180;};
-static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;};
-
-
 @implementation FluxScanViewController
+@synthesize imageDict;
 
 @synthesize imageDict,thumbView;
 
@@ -87,6 +82,29 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     
     //the popover will be presented from the okButton view
     [popover presentPopoverFromView:sender];
+}
+#pragma mark - OpenGLView
+
+-(void)setupOpenGLView{
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+
+    
+    
+    // setup the opengl controller
+    // first get an instance from storyboard
+    openGLController = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
+    [openGLController setTheDelegate:self];
+    // then add the glkview as the subview of the parent view
+    [self.view insertSubview:openGLController.view belowSubview:headerView];
+    // add the glkViewController as the child of self
+    [self addChildViewController:openGLController];
+    [openGLController didMoveToParentViewController:self];
+    openGLController.view.frame = self.view.bounds;
+}
+
+- (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary *)aImageDict{
+    self.imageDict = aImageDict;
 }
 
 # pragma mark - prepare segue action with identifer
@@ -391,8 +409,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self setupLayer];
-    [self setupContext];
     [self setupAVCapture];
     [self setupGestureHandlers];
 
