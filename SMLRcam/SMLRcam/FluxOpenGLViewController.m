@@ -242,25 +242,31 @@ void tangentplaneRotation(sensorPose *sp){
  fprintf(stderr,"ecef.z = %.1f m (3546587.4)\n", ecef.z);
  }
  */
-
 void compute_new_intersection()
 {
+    bool isinvertible;
 	
-    rotationMat= GLKMatrix4Make(
-                                -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
+    GLKMatrix4 rotationMat_t= GLKMatrix4Make(
+                                             -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
     
+    // rotationMat = GLKMatrix4Invert(rotationMat_t, &isinvertible );
     
+    rotationMat = rotationMat_t;
     GLKVector4 _z_ray = GLKVector4Make(0.0, 0.0, -1.0, 1.0);
     GLKVector4 _ray = GLKMatrix4MultiplyVector4(rotationMat, _z_ray);
     GLKVector3 _v = GLKVector3Make(_ray.x, _ray.y, _ray.z);
+    
+    NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
     //float angle_with_y_deg =  180.0/PI* atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
     float angle_with_y_rad =atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
     // fprintf(stderr,"angle_with_y_deg = %.5f \n", angle_with_y_deg);
-    
+    NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
     
     //normal plane
     
     GLKVector4 _plane_normal = GLKVector4Make(0.0, 0.0, 1.0, 1.0);
+    basenormalMat = GLKMatrix4Identity;
+    
     basenormalMat = GLKMatrix4RotateWithVector3(basenormalMat, angle_with_y_rad, GLKVector3Make(0.0,0.0, 1.0));
     
     
@@ -289,14 +295,19 @@ void compute_new_intersection()
     GLKVector4 up = GLKMatrix4MultiplyVector4(rotationMat, GLKVector4Make(0.0, 1.0, 0.0, 1.0));
     upvec = GLKVector3Normalize(GLKVector3Make(up.x, up.y, up.z));
     
-    bool isinvertible;
+    
     //set eye
     GLKVector4 _eye_at = GLKMatrix4MultiplyVector4(GLKMatrix4Invert(basenormalMat, &isinvertible) ,GLKVector4Make(0.0, 14.0, 0.0, 1.0));
     eye_at = GLKVector3Make(_eye_at.x, _eye_at.y, _eye_at.z);
     eye_origin = GLKVector3Make(0.0, 0.0, 0.0);
     eye_up = GLKVector3Make(0.0, 0.0, 1.0);
     
+    NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
+    NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
+    NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
+    
 }
+
 GLKVector4 result[4];
 void multiply_vertices()
 {
@@ -502,9 +513,8 @@ void init(){
     
     glGenBuffers(1, &_positionVBO);
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-    //test
-    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_STATIC_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    //    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_STATIC_DRAW);
     
     
     
@@ -563,8 +573,8 @@ void init(){
     
     NSError *error;
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    _texture = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Ripple FRONT TEXTURE ERROR: %@", error);
+    _texture = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image2" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
     
     //bind the texture to texture unit 0
     glActiveTexture(GL_TEXTURE0);
@@ -597,45 +607,35 @@ void init(){
 
 - (void)update
 {
-    /*
-     ray_origin = GLKVector3Make(0.0, 0.0, 0.0);
-     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-     
-     GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
-     
-     
-     
-     
-     
-     // Compute the model view matrix for the object rendered with GLKit
-     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -1.0f);
-     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
-     
-     
-     
-     // Compute the model view matrix for the object rendered with ES2
-     modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 1.0f);
-     
-     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
-     
-     //  _normalMatrix = GLKMatrix3InvertAndTranspose(GLKMatrix4GetMatrix3(modelViewMatrix), NULL);
-     
-     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-     
-     tViewMatrix = GLKMatrix4MakeLookAt(ray_origin.x, ray_origin.y, ray_origin.z, centrevec.x, centrevec.y, centrevec.z, upvec.x, upvec.y, upvec.z);
-     
-     
-     GLKMatrix4 tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
-     
-     _tBiasMVP = GLKMatrix4Multiply(biasMatrix,tMVP);
-     */
-    
-    //test
+    ray_origin = GLKVector3Make(0.0, 0.0, 0.0);
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(65.0f), aspect, 0.1f, 100.0f);
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, -4.0f);
+    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
+    
+    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
+    
+    
+    
+    
+    
+   
+    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
+    modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
+    
+    
+
+    
     _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
+    
+    tViewMatrix = GLKMatrix4MakeLookAt(ray_origin.x, ray_origin.y, ray_origin.z, centrevec.x, centrevec.y, centrevec.z, upvec.x, upvec.y, upvec.z);
+    
+    
+    GLKMatrix4 tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
+    
+    _tBiasMVP = GLKMatrix4Multiply(biasMatrix,tMVP);
+
+
+
+
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -727,7 +727,7 @@ void init(){
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
     uniforms[UNIFORM_TBIASMVP_MATRIX] = glGetUniformLocation(_program, "tBiasMVP");
-    uniforms[UNIFORM_MYTEXTURE_SAMPLER] = glGetUniformLocation(_program, "myTextureSampler");
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER] = glGetUniformLocation(_program, "textureSampler");
     
     
     
