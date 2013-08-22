@@ -37,6 +37,7 @@
 		220FE07517BEACAD00A7E379 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 220FE07317BEACAD00A7E379 /* InfoPlist.strings */; };
 		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
 		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
+		895B6E7017C6A6670052C571 /* Image2.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E6F17C6A6670052C571 /* Image2.png */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -123,6 +124,7 @@
 		220FE07817BEACAD00A7E379 /* Flux Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Flux Tests-Prefix.pch"; sourceTree = "<group>"; };
 		22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_LocationServiceSingleton_Test.m; sourceTree = "<group>"; };
 		22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_MotionManagerSingleton.m; sourceTree = "<group>"; };
+		895B6E6F17C6A6670052C571 /* Image2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image2.png; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		AA0BE05017A6B84800E41947 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		AA134AFA17AAD09500725AB1 /* MMDrawerBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerBarButtonItem.h; sourceTree = "<group>"; };
@@ -278,8 +280,7 @@
 		17604B6C1785CA59005CF054 /* Flux */ = {
 			isa = PBXGroup;
 			children = (
-				89EA9E1417C685D4006B288A /* Image2.png */,
-				89EA9E1217C6847E006B288A /* Image.png */,
+				895B6E6F17C6A6670052C571 /* Image2.png */,
 				17604B751785CA59005CF054 /* FluxAppDelegate.h */,
 				17604B761785CA59005CF054 /* FluxAppDelegate.m */,
 				17604B7E1785CA59005CF054 /* MainStoryboard.storyboard */,
@@ -571,13 +572,12 @@
 			files = (
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
+				895B6E7017C6A6670052C571 /* Image2.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
-				89EA9E1517C685DB006B288A /* Image2.png in Resources */,
 				AA08279E17A6AE030079672A /* Media.xcassets in Resources */,
-				89EA9E1317C6847E006B288A /* Image.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -13,7 +13,6 @@
 
 
 @implementation FluxScanViewController
-@synthesize imageDict;
 
 @synthesize imageDict,thumbView;
 
@@ -107,45 +106,6 @@
     self.imageDict = aImageDict;
 }
 
-# pragma mark - prepare segue action with identifer
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([[segue identifier] isEqualToString:@"pushMapModalView"])
-    {
-        FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
-        fluxMapViewController.myViewOrientation = changeToOrientation;
-    }
-}
-
-#pragma mark - OpenGL Methods
-
-+ (Class)layerClass
-{
-    return [CAEAGLLayer class];
-}
-
-- (void)setupLayer
-{
-    _eaglLayer = (CAEAGLLayer*) self.view.layer;
-    _eaglLayer.opaque = YES;
-}
-
-- (void)setupContext
-{
-    EAGLRenderingAPI api = kEAGLRenderingAPIOpenGLES2;
-    _context = [[EAGLContext alloc] initWithAPI:api];
-    if (!_context)
-    {
-        NSLog(@"Failed to initialize OpenGLES 2.0 context");
-    }
-    
-    if (![EAGLContext setCurrentContext:_context])
-    {
-        NSLog(@"Failed to set current OpenGL context");
-    }
-}
-
-
 #pragma mark - Gesture Recognizer
 - (void)setupGestureHandlers{
     //pan
@@ -170,7 +130,7 @@
     
     
     
-
+    
 }
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender{
     //prevent multiple touches
@@ -216,7 +176,7 @@
 
 //called during pan gesture, location is available as well as translation.
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
-
+    
     NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
     [self setThumbViewDate:[sender locationInView:self.view].y];
     
@@ -274,7 +234,19 @@
         [thumbView changeTimeString:[dateFormatter stringFromDate:newDate]adding:NO];
     }
     previousYCoord = yCoord;
+    
+}
 
+
+
+# pragma mark - prepare segue action with identifer
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"pushMapModalView"])
+    {
+        FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
+        fluxMapViewController.myViewOrientation = changeToOrientation;
+    }
 }
 
 #pragma mark - AV Capture Methods
@@ -411,6 +383,7 @@
     [super viewDidLoad];
     [self setupAVCapture];
     [self setupGestureHandlers];
+    [self setupOpenGLView];
 
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];

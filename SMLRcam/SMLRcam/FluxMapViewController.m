@@ -130,7 +130,6 @@
 // IBAction for exiting the map view
 - (IBAction) exitMapView:(id)sender
 {
-#warning Look at this. Only called when back button is clicked, not due to rotation to portrait mode, and it appears an exception is being raised when leaving map view
     [self dismissViewControllerAnimated:YES completion:^(void)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];

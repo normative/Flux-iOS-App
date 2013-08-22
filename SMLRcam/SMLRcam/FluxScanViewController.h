@@ -12,6 +12,7 @@
 #import "FluxMapViewController.h"
 #import "FPPopoverController.h"
 #import "FluxClockSlidingControl.h"
+#import "FluxOpenGLViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -20,16 +21,13 @@
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,UIGestureRecognizerDelegate>{
-    
+
+
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate>{
     FPPopoverController *popover;
-    
-    CAEAGLLayer* _eaglLayer;
-    EAGLContext* _context;
-    GLuint _colorRenderBuffer;
-    
+   
     AVCaptureVideoPreviewLayer *previewLayer;
-	AVCaptureVideoDataOutput *videoDataOutput;
+    AVCaptureVideoDataOutput *videoDataOutput;
 	dispatch_queue_t videoDataOutputQueue;
     AVCaptureDevice *device;
     
@@ -39,19 +37,23 @@
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;
-    
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     NSDateFormatter *dateFormatter;
     float previousYCoord;
     
+    FluxOpenGLViewController*openGLController;
+    
     FluxLocationServicesSingleton *locationManager;
-    FluxNetworkServices * networkServices;
+    FluxNetworkServices *networkServices;
+    
 }
 
-@property (nonatomic, strong) NSMutableDictionary * imageDict;
+@property (nonatomic, strong) FluxClockSlidingControl*thumbView;
+@property (nonatomic, strong)NSMutableDictionary*imageDict;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
-@property (nonatomic, strong) FluxClockSlidingControl*thumbView;
+- (void)didUpdateHeading:(NSNotification *)notification;
+- (void)didUpdateLocation:(NSNotification *)notification;
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
 
@@ -60,6 +62,7 @@
 - (IBAction)showAnnotationsView:(id)sender;
 
 - (void)setupAVCapture;
+- (void)setupNetworkServices;
 - (void)setupOpenGLView;
 
 - (void)setupGestureHandlers;
