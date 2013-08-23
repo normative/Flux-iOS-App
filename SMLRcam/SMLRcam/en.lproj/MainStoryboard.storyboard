@@ -440,25 +440,48 @@
                             </connections>
                         </searchBar>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="checkCell" id="vRi-Y6-GJL" customClass="FluxDrawerCheckboxFilterTableViewCell">
-                                <rect key="frame" x="0.0" y="66" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="hashCell" rowHeight="94" id="vRi-Y6-GJL" customClass="FluxHashtagTableViewCell">
+                                <rect key="frame" x="0.0" y="66" width="320" height="94"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="vRi-Y6-GJL" id="AjF-vG-C6z">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="93"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu" translatesAutoresizingMaskIntoConstraints="NO" id="zJx-IE-Z8a">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="93"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
+                                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        </textView>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="hashTextView" destination="zJx-IE-Z8a" id="vBI-rW-GlS"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="checkCell" id="QdD-3t-86w" customClass="FluxDrawerCheckboxFilterTableViewCell">
+                                <rect key="frame" x="0.0" y="160" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="QdD-3t-86w" id="uAU-fh-2Yi">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rb3-gw-Og0">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Vv0-30-val">
                                             <rect key="frame" x="20" y="12" width="20" height="20"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aXv-RB-chO">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Uc2-Uo-kfd">
                                             <rect key="frame" x="60" y="12" width="130" height="20"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vso-Uc-VqF" userLabel="Checkbox" customClass="KTCheckboxButton">
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3Sv-UR-BVi" userLabel="Checkbox" customClass="KTCheckboxButton">
                                             <rect key="frame" x="195" y="4" width="35" height="35"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -470,9 +493,9 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                 <connections>
-                                    <outlet property="checkbox" destination="Vso-Uc-VqF" id="VPj-fI-Kj7"/>
-                                    <outlet property="descriptorIconImageView" destination="rb3-gw-Og0" id="Vvn-4l-Sut"/>
-                                    <outlet property="descriptorLabel" destination="aXv-RB-chO" id="nRg-Tn-VvV"/>
+                                    <outlet property="checkbox" destination="3Sv-UR-BVi" id="Z0J-1a-Q40"/>
+                                    <outlet property="descriptorIconImageView" destination="Vv0-30-val" id="T3m-XN-0Cf"/>
+                                    <outlet property="descriptorLabel" destination="Uc2-Uo-kfd" id="1FR-vh-Qi7"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -485,7 +508,7 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="filterSearchBar" destination="XO3-dp-sLR" id="7db-uk-iRG"/>
-                        <outlet property="searchDisplayController" destination="WEI-ga-z1A" id="YU6-1F-7TN"/>
+                        <outlet property="searchDisplayController" destination="XJj-NB-dlC" id="jtb-FH-DBS"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Q0i-Iw-wbg" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -496,6 +519,14 @@
                         <outlet property="searchContentsController" destination="1dv-P4-izr" id="jS6-H7-hGu"/>
                         <outlet property="searchResultsDataSource" destination="1dv-P4-izr" id="0Z1-Zt-yKF"/>
                         <outlet property="searchResultsDelegate" destination="1dv-P4-izr" id="GhC-JQ-YKm"/>
+                    </connections>
+                </searchDisplayController>
+                <searchDisplayController id="XJj-NB-dlC">
+                    <connections>
+                        <outlet property="delegate" destination="1dv-P4-izr" id="rtI-BM-sJW"/>
+                        <outlet property="searchContentsController" destination="1dv-P4-izr" id="Mxe-vh-1kp"/>
+                        <outlet property="searchResultsDataSource" destination="1dv-P4-izr" id="NcG-7z-eJQ"/>
+                        <outlet property="searchResultsDelegate" destination="1dv-P4-izr" id="ivK-L1-iQn"/>
                     </connections>
                 </searchDisplayController>
             </objects>

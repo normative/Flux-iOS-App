@@ -151,8 +151,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self.view addSubview:thumbView];
     
     
-    //start with today's date
-    [thumbView.timeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
+    
 
 }
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender{
@@ -164,7 +163,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         [thumbView setStartingYCoord:[sender locationInView:self.view].y];
         [thumbView setHidden:NO];
         [thumbView setCenter:[sender locationInView:self.view]];
-        
+        //start with today's date
+        [thumbView.timeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
         
         [UIView animateWithDuration:0.2f
                          animations:^{
@@ -227,6 +227,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         [thumbView setStartingYCoord:[panGestureRecognizer locationInView:self.view].y];
         [thumbView setHidden:NO];
         [thumbView setCenter:[panGestureRecognizer locationInView:self.view]];
+        //start with today's date
+        [thumbView.timeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
         
         [UIView animateWithDuration:0.2f
                          animations:^{

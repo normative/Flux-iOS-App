@@ -28,14 +28,20 @@ __maintainer__ = "Ryan Martens"
 __status__ = "Development"
 
 class TestCases:
-    start_times = {'1': datetime.datetime(2013, 07, 05, 17, 40),
-                   '2': datetime.datetime(2013, 07, 05, 17, 42, 10),
-                   '3': datetime.datetime(2013, 07, 05, 17, 46),
-                   '4': datetime.datetime(2013, 07, 05, 17, 48),
-                   '5': datetime.datetime(2013, 07, 05, 17, 51),
-                   '6': datetime.datetime(2013, 07, 05, 17, 57),
+#     start_times = {'1': datetime.datetime(2013, 7, 5, 17, 40),
+#                    '2': datetime.datetime(2013, 7, 5, 17, 42, 10),
+#                    '3': datetime.datetime(2013, 7, 5, 17, 46),
+#                    '4': datetime.datetime(2013, 7, 5, 17, 48),
+#                    '5': datetime.datetime(2013, 7, 5, 17, 51),
+#                    '6': datetime.datetime(2013, 7, 5, 17, 57),
+#                   }
+
+    start_times = {'1': datetime.datetime(2013,8,21,17,26),
+                   '2': datetime.datetime(2013,8,21,17,31,30),
+                   '3': datetime.datetime(2013,8,21,17,35),
+                   '6': datetime.datetime(2013,8,21,17,39),
                   }
-    
+        
     test6_ref_locations = [{'Latitude': 43.319865, 'Longitude': -79.799914},
                            {'Latitude': 43.320223, 'Longitude': -79.799548},
                            {'Latitude': 43.320444, 'Longitude': -79.799313},
@@ -119,7 +125,7 @@ def parse_directory(dirname, test_results):
 def calculate_pm(date, position):
     pm_latlong = "%.15f, %.15f" % (position["Longitude"], position["Latitude"],)
     #pm_name = position["DateStamp"]
-    pm_name = string_to_date(date, True).strftime("%Y-%m-%d %H:%M:%S")
+    pm_name = string_to_date(date, False).strftime("%Y-%m-%d %H:%M:%S")
     pm = KML.Placemark(
             KML.name(pm_name),
             KML.styleUrl("#pushpin-ylw"),
@@ -132,7 +138,7 @@ def create_xml_template():
     doc = KML.kml(
         etree.Comment(' required when using gx-prefixed elements '),
         KML.Document(
-            KML.name("Experiments - Collection 1 - iPhone"),
+            KML.name("Experiments - Collection 2 - iPhone"),
             KML.Style(KML.IconStyle(KML.scale(1.0),
                                     KML.Icon(KML.href("http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png"),),
                                     id="mystyle"),id="pushpin-ylw"),
@@ -160,24 +166,28 @@ def string_to_date(str_date, short_format):
 
     return datetime.datetime(year, month, day, hour, minute, second)
 
-def new_test_required(cur_id, cur_test_idx):
-    if (cur_test_idx == 0):
+def new_test_required(cur_id, cur_test_key):
+    new_test_req = False
+    
+    if (cur_test_key == None):
         new_test_req = True
-        cur_test_idx = 1
+        cur_test_key = sorted(TestCases.start_times.keys())[0]
     else:
         current_time = string_to_date(cur_id["DateStamp"], False)
-        next_idx = str(cur_test_idx + 1)
-
-        if TestCases.start_times.has_key(next_idx) and (current_time >= TestCases.start_times[next_idx]):
-            new_test_req = True
-            cur_test_idx = int(next_idx)
+        sorted_keys = sorted(TestCases.start_times.keys())
+        cur_idx = sorted_keys.index(cur_test_key)
+        if (cur_idx < len(sorted_keys) - 1):
+            next_key = sorted_keys[cur_idx + 1]
+            if (current_time >= TestCases.start_times[next_key]):
+                new_test_req = True
+                cur_test_key = next_key
         else:
             new_test_req = False
-    
-    return (new_test_req, cur_test_idx)
+
+    return (new_test_req, cur_test_key)
 
 def add_test_placemarks(doc, test_results):
-    cur_test = 0
+    cur_test = None
     new_test_req = True
     fld = 0
 
@@ -187,7 +197,7 @@ def add_test_placemarks(doc, test_results):
         (new_test_req, cur_test) = new_test_required(item, cur_test);
 
         if (new_test_req == True):
-            fld = KML.Folder(KML.name("Test #%d" %cur_test))
+            fld = KML.Folder(KML.name("Test #%s" %cur_test))
             doc.Document.append(fld)
         
         placemark = calculate_pm(key, item)
