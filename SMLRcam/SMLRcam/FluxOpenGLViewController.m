@@ -454,39 +454,17 @@ void init(){
 {
     // Create the manager object
     locationManager = [FluxLocationServicesSingleton sharedManager];
-    
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-    }
-    [locationManager startLocating];
 }
-/* Ryan
+
 - (void)didUpdateHeading:(NSNotification *)notification{
     //CLLocationDirection heading = locationManager.heading;
+    CMAttitude *att = motionManager.deviceMotion.attitude;
+    NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
     [networkServices getImagesForLocation:loc.coordinate andRadius:50];
-}
-*/
-
-
-- (void)didUpdateHeading:(NSNotification *)notification{
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        
-    }
-}
-
-- (void)didUpdateLocation:(NSNotification *)notification{
-    NSDictionary *userInfoDict = [notification userInfo];
-    if (userInfoDict != nil) {
-        CLLocation *loc = [userInfoDict objectForKey:@"FluxLocationServicesSingletonKeyLocation"];
-        [networkServices getImagesForLocation:loc.coordinate andRadius:50];
-    }
 }
 
 
@@ -508,7 +486,7 @@ void init(){
 }
 
 #pragma mark - Motion Manager
-/* Ryan
+
 //starts the motion manager and sets an update interval
 - (void)setupMotionManager{
     motionManager = [[CMMotionManager alloc] init];
@@ -533,16 +511,16 @@ void init(){
     }
 }
 
-*/
-#pragma View Lifecycle
+
+#pragma mark - View Lifecycle
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    
     imageDict = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
-   // Ryan[self setupMotionManager];
+    [self setupMotionManager];
     [self setupNetworkServices];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -557,19 +535,33 @@ void init(){
     
     [self setupGL];
 }
-/* Ryan
+
 - (void)viewWillAppear:(BOOL)animated
 {
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+        // Call these immediately since location is not always updated frequently (use current value)
+        [self didUpdateHeading:nil];
+        [self didUpdateLocation:nil];
+    }
+    
     [self startDeviceMotion];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+    
     [self stopDeviceMotion];
 }
-*/
+
 - (void)dealloc
 {
+    motionManager = nil;
+    
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {

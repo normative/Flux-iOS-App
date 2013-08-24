@@ -51,7 +51,7 @@ typedef struct {
     
     
     FluxLocationServicesSingleton *locationManager;
-   // CMMotionManager *motionManager;
+    CMMotionManager *motionManager;
     FluxNetworkServices * networkServices;
 
     __weak id <OpenGLViewDelegate> theDelegate;
@@ -73,9 +73,9 @@ typedef struct {
 - (BOOL)validateProgram:(GLuint)prog;
 
 - (void)setupLocationManager;
-//- (void)setupMotionManager;
-//- (void)startDeviceMotion;
-//- (void)stopDeviceMotion;
+- (void)setupMotionManager;
+- (void)startDeviceMotion;
+- (void)stopDeviceMotion;
 - (void)didUpdateLocation:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
 - (void)setupNetworkServices;
