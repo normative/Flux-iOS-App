@@ -6,13 +6,11 @@
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "FluxCameraViewController.h"
-
-#import "FluxImageAnnotationViewController.h"
-
 #import <ImageIO/ImageIO.h>
 #import <QuartzCore/CoreAnimation.h>
 
+#import "FluxCameraViewController.h"
+#import "FluxImageAnnotationViewController.h"
 
 
 @interface FluxCameraViewController ()
@@ -67,12 +65,9 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-    
-    [self stopDeviceMotion];
-}
 
-- (void)viewDidDisappear:(BOOL)animated{
     [testTimer invalidate];
+    [self stopDeviceMotion];
 }
 
 - (void)dealloc{
@@ -217,35 +212,28 @@
 
 //starts the motion manager and sets an update interval
 - (void)setupMotionManager{
-    motionManager = [[CMMotionManager alloc] init];
-	
-	// Tell CoreMotion to show the compass calibration HUD when required to provide true north-referenced attitude
-	motionManager.showsDeviceMovementDisplay = YES;
-    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
+    motionManager = [FluxMotionManagerSingleton sharedManager];
 }
 
 - (void)startDeviceMotion
 {
     if (motionManager) {
-        // New in iOS 5.0: Attitude that is referenced to true north
-        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
+        [motionManager startDeviceMotion];
     }
 }
 
 - (void)stopDeviceMotion
 {
     if (motionManager) {
-        [motionManager stopDeviceMotionUpdates];
+        [motionManager stopDeviceMotion];
     }
 }
 
 - (void)UpdateMotionLabels:(NSTimer*)timer{
     if (motionManager) {
-        if ([motionManager isDeviceMotionActive]) {
-            xLabel.text = [NSString stringWithFormat:@"%f",motionManager.deviceMotion.attitude.yaw];
-            yLabel.text = [NSString stringWithFormat:@"%f",motionManager.deviceMotion.attitude.pitch];
-            zLabel.text = [NSString stringWithFormat:@"%f",motionManager.deviceMotion.attitude.roll];
-        }
+        xLabel.text = [NSString stringWithFormat:@"%f",motionManager.attitude.yaw];
+        yLabel.text = [NSString stringWithFormat:@"%f",motionManager.attitude.pitch];
+        zLabel.text = [NSString stringWithFormat:@"%f",motionManager.attitude.roll];
     }
 }
 
@@ -260,7 +248,7 @@
     
     // Collect position and orientation information prior to copying image
     CLLocation *location = locationManager.location;
-    CMAttitude *att = motionManager.deviceMotion.attitude;
+    CMAttitude *att = motionManager.attitude;
     CLLocationDirection heading = locationManager.heading;
     
     __block NSDate *endTime = [NSDate date];
