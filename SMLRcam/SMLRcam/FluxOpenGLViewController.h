@@ -7,6 +7,7 @@
 //
 
 #import <GLKit/GLKit.h>
+#import <CoreMotion/CoreMotion.h>
 #import "ImageViewerImageUtil.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxNetworkServices.h"
@@ -20,6 +21,14 @@
 @end
 
 
+
+typedef struct {
+    
+    GLKMatrix4 rotationMatrix;
+    GLKVector3 rotation_ypr;
+    GLKVector3 position;
+    GLKVector3 ecef;
+} sensorPose;
 
 @interface FluxOpenGLViewController : GLKViewController<NetworkServicesDelegate>{
     GLuint _program;
@@ -42,6 +51,7 @@
     
     
     FluxLocationServicesSingleton *locationManager;
+   // CMMotionManager *motionManager;
     FluxNetworkServices * networkServices;
 
     __weak id <OpenGLViewDelegate> theDelegate;
@@ -63,6 +73,9 @@
 - (BOOL)validateProgram:(GLuint)prog;
 
 - (void)setupLocationManager;
+//- (void)setupMotionManager;
+//- (void)startDeviceMotion;
+//- (void)stopDeviceMotion;
 - (void)didUpdateLocation:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
 - (void)setupNetworkServices;

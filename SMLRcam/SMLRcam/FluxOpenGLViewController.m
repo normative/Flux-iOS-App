@@ -51,18 +51,6 @@ GLfloat textureCoord[12] =
 };
 GLubyte indexdata[6]={0,1,2,3,4,5};
 
-typedef struct {
-	double x;
-    double y;
-    double z;
-} Point3D;
-
-typedef struct {
-    
-    float rotation[4][4];
-    Point3D position;
-    Point3D ecef;
-} sensorPose;
 
 //iPhone5 model
 
@@ -169,7 +157,7 @@ void WGS84_to_ECEF(sensorPose *sp){
     double flatness;
     
     
-    Point3D lla_rad; //latitude, longitude, altitude
+   GLKVector3 lla_rad; //latitude, longitude, altitude
     
     lla_rad.x = sp->position.x*PI/180.0;
     lla_rad.y = sp->position.y*PI/180.0;
@@ -196,7 +184,7 @@ void tangentplaneRotation(sensorPose *sp){
     float rotation_te[16];
     
     
-    Point3D lla_rad; //latitude, longitude, altitude
+    GLKVector3 lla_rad; //latitude, longitude, altitude
     
     lla_rad.x = sp->position.x*PI/180.0;
     lla_rad.y = sp->position.y*PI/180.0;
@@ -242,6 +230,71 @@ void tangentplaneRotation(sensorPose *sp){
  fprintf(stderr,"ecef.z = %.1f m (3546587.4)\n", ecef.z);
  }
  */
+void calculateCoordinatesTP(GLKVector3 originposition, GLKVector3 position, GLKVector3 *positionTP)
+{
+    
+}
+void compute_look_parameters(sensorPose *sp, GLKVector3 *plane_normal)
+{
+    
+}
+//distance - distance of plane
+void computeProjectionParameters(sensorPose *sp, GLKVector3 *planeNormal, float distance, GLKVector3 userLocation)
+{
+    
+    
+    bool isinvertible;
+	GLKVector3 positionTP;
+   //sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
+    if(distance <0.0)
+    {
+        NSLog(@"distance is a scalar, setting to positive");
+        distance =  -1.0 *distance;
+    }
+    
+    calculateCoordinatesTP(userLocation, sp->position, &positionTP);
+    
+    NSLog(@"postionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
+    
+   // rotationMat = rotationMat_t;
+    GLKVector3 zRay = GLKVector3Make(positionTP.x, positionTP.y, (positionTP.z -distance));
+    zRay = GLKVector3Normalize(zRay);
+    
+    GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
+    
+    
+    NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+    
+    //normal plane
+    GLKVector3 planeNormalI = GLKVector3Make(positionTP.x, positionTP.y, positionTP.z);
+    basenormalMat = GLKMatrix4Identity;
+    
+   // basenormalMat = GLKMatrix4RotateWithVector3(basenormalMat, angle_with_y_rad, GLKVector3Make(0.0,0.0, 1.0));
+    
+    
+  //  GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(sp->rotationMatrix, planeNormalI);
+    //intersection with plane
+    GLKVector3 N = planeNormalRotated;
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(v);
+    //fprintf(stderr,"Ray direction is  = [%.2f, %.2f, %.2f]\n",V.x, V.y, V.z);
+    
+    float vd = GLKVector3DotProduct(N,V);
+    
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) +distance);
+    float t = v0/vd;
+    
+
+    centrevec = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    
+    GLKVector4 up = GLKMatrix4MultiplyVector4(rotationMat, GLKVector4Make(0.0, 1.0, 0.0, 1.0));
+    upvec = GLKVector3Normalize(GLKVector3Make(up.x, up.y, up.z));
+    
+    
+}
+
+
 void compute_new_intersection()
 {
     bool isinvertible;
@@ -409,6 +462,17 @@ void init(){
     }
     [locationManager startLocating];
 }
+/* Ryan
+- (void)didUpdateHeading:(NSNotification *)notification{
+    //CLLocationDirection heading = locationManager.heading;
+}
+
+- (void)didUpdateLocation:(NSNotification *)notification{
+    CLLocation *loc = locationManager.location;
+    [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+}
+*/
+
 
 - (void)didUpdateHeading:(NSNotification *)notification{
     NSDictionary *userInfoDict = [notification userInfo];
@@ -443,6 +507,33 @@ void init(){
     
 }
 
+#pragma mark - Motion Manager
+/* Ryan
+//starts the motion manager and sets an update interval
+- (void)setupMotionManager{
+    motionManager = [[CMMotionManager alloc] init];
+	
+	// Tell CoreMotion to show the compass calibration HUD when required to provide true north-referenced attitude
+	motionManager.showsDeviceMovementDisplay = YES;
+    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
+}
+
+- (void)startDeviceMotion
+{
+    if (motionManager) {
+        // New in iOS 5.0: Attitude that is referenced to true north
+        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
+    }
+}
+
+- (void)stopDeviceMotion
+{
+    if (motionManager) {
+        [motionManager stopDeviceMotionUpdates];
+    }
+}
+
+*/
 #pragma View Lifecycle
 - (void)viewDidLoad
 {
@@ -451,6 +542,7 @@ void init(){
     
     imageDict = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
+   // Ryan[self setupMotionManager];
     [self setupNetworkServices];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -465,7 +557,17 @@ void init(){
     
     [self setupGL];
 }
+/* Ryan
+- (void)viewWillAppear:(BOOL)animated
+{
+    [self startDeviceMotion];
+}
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [self stopDeviceMotion];
+}
+*/
 - (void)dealloc
 {
     [self tearDownGL];
