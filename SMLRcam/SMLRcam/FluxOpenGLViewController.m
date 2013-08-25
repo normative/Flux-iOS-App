@@ -458,7 +458,7 @@ void init(){
 
 - (void)didUpdateHeading:(NSNotification *)notification{
     //CLLocationDirection heading = locationManager.heading;
-    CMAttitude *att = motionManager.deviceMotion.attitude;
+    CMAttitude *att = motionManager.attitude;
     NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
 }
 
@@ -489,25 +489,20 @@ void init(){
 
 //starts the motion manager and sets an update interval
 - (void)setupMotionManager{
-    motionManager = [[CMMotionManager alloc] init];
-	
-	// Tell CoreMotion to show the compass calibration HUD when required to provide true north-referenced attitude
-	motionManager.showsDeviceMovementDisplay = YES;
-    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
+    motionManager = [FluxMotionManagerSingleton sharedManager];
 }
 
 - (void)startDeviceMotion
 {
     if (motionManager) {
-        // New in iOS 5.0: Attitude that is referenced to true north
-        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
+        [motionManager startDeviceMotion];
     }
 }
 
 - (void)stopDeviceMotion
 {
     if (motionManager) {
-        [motionManager stopDeviceMotionUpdates];
+        [motionManager stopDeviceMotion];
     }
 }
 

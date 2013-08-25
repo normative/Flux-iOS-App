@@ -7,9 +7,9 @@
 //
 
 #import <GLKit/GLKit.h>
-#import <CoreMotion/CoreMotion.h>
 #import "ImageViewerImageUtil.h"
 #import "FluxLocationServicesSingleton.h"
+#import "FluxMotionManagerSingleton.h"
 #import "FluxNetworkServices.h"
 
 
@@ -51,7 +51,7 @@ typedef struct {
     
     
     FluxLocationServicesSingleton *locationManager;
-    CMMotionManager *motionManager;
+    FluxMotionManagerSingleton *motionManager;
     FluxNetworkServices * networkServices;
 
     __weak id <OpenGLViewDelegate> theDelegate;
