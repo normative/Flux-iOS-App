@@ -531,7 +531,7 @@ void init(){
     [self setupGL];
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewWillAppear
 {
     if (locationManager != nil)
     {
@@ -545,14 +545,13 @@ void init(){
     [self startDeviceMotion];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (void)viewWillDisappear
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     
     [self stopDeviceMotion];
 }
-
 - (void)dealloc
 {
     motionManager = nil;
