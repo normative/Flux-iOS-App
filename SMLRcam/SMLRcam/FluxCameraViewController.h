@@ -8,11 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CoreMotion/CoreMotion.h>
+#import "FluxImageAnnotationViewController.h"
 #import "FluxLocationServicesSingleton.h"
+#import "FluxMotionManagerSingleton.h"
 #import "FluxScanImageObject.h"
 
-#import "FluxImageAnnotationViewController.h"
 
 @interface FluxCameraViewController : UIViewController<AVCaptureVideoDataOutputSampleBufferDelegate>{
     
@@ -31,7 +31,7 @@
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
-    CMMotionManager *motionManager;
+    FluxMotionManagerSingleton *motionManager;
     
     //captured Data
     FluxScanImageObject *capturedImageObject;
