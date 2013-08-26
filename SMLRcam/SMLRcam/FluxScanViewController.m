@@ -464,6 +464,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
                              [headerView setHidden:YES];
                              [self.drawerContainerView setHidden:YES];
                              [self startDeviceMotion];
+                             camMode = [NSNumber numberWithInt:1];
                          }];
         
         CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
@@ -477,8 +478,6 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
         CameraButton.layer.transform = CATransform3DIdentity;
         CameraButton.transform = CGAffineTransformScale(CameraButton.transform, 2.0, 2.0);
-        
-        camMode = [NSNumber numberWithInt:1];
     }
     //going to confirm cam
     else{
