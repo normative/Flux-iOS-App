@@ -17,6 +17,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "FluxLocationServicesSingleton.h"
 #import "FluxNetworkServices.h"
+#import <CoreMotion/CoreMotion.h>
 
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
@@ -34,7 +35,13 @@
     AVCaptureVideoPreviewLayer *previewLayer;
 	AVCaptureVideoDataOutput *videoDataOutput;
 	dispatch_queue_t videoDataOutputQueue;
+    AVCaptureStillImageOutput *stillImageOutput;
     AVCaptureDevice *device;
+    
+    UIImageView *gridView;
+    NSNumber* camMode; //0 = off, 1 = on, 2 = confirm
+    FluxScanImageObject *capturedImageObject;
+    UIImage *capturedImage;
     
     UIInterfaceOrientation changeToOrientation;
 
@@ -44,16 +51,22 @@
     __weak IBOutlet UILabel *dateRangeLabel;
     
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
+    
+    UIPanGestureRecognizer *panGesture;
+    UILongPressGestureRecognizer *longPressGesture;
     NSDateFormatter *dateFormatter;
     float previousYCoord;
     
     FluxLocationServicesSingleton *locationManager;
+    CMMotionManager *motionManager;
     FluxNetworkServices * networkServices;
 }
 
 @property (nonatomic, strong) NSMutableDictionary * imageDict;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
+@property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
+@property (weak, nonatomic) IBOutlet UIView *cameraApproveContainerView;
 @property (nonatomic, strong) FluxClockSlidingControl*thumbView;
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
@@ -63,9 +76,17 @@
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
 - (IBAction)showAnnotationsView:(id)sender;
+- (IBAction)cameraButtonAction:(id)sender;
+- (IBAction)approveImageAction:(id)sender;
+- (IBAction)retakeImageAction:(id)sender;
 
 - (void)setupAVCapture;
 - (void)setupNetworkServices;
+- (void)takePicture;
+
+
+- (void)setupCameraView;
+- (void)setUIForCamMode:(NSNumber*)mode;
 
 - (void)setupLayer;
 - (void)setupContext;

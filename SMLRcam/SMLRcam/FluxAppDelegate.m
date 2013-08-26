@@ -45,7 +45,7 @@
          BOOL shouldRecognizeTouch = NO;
          if(drawerController.openSide == MMDrawerSideNone &&
             [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
-             UIView * customView = scanViewController.leftDrawerButton;
+             UIView * customView = scanViewController.drawerContainerView;
              CGPoint location = [touch locationInView:customView];
              shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
          }
