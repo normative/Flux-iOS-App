@@ -25,6 +25,11 @@
         
         motionManager = [[CMMotionManager alloc] init];
         
+        if (motionManager == nil)
+        {
+            return nil;
+        }
+        
         // Tell CoreMotion to show the compass calibration HUD when required to provide true north-referenced attitude
         //ths is the ugly figure 8 on the screen. We might scrap this doen the road.
         motionManager.showsDeviceMovementDisplay = YES;
@@ -37,11 +42,21 @@
     if (motionManager) {
         // New in iOS 5.0: Attitude that is referenced to true north
         [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
+        
+        motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
     }
 }
+
 - (void)stopDeviceMotion{
     if (motionManager) {
         [motionManager stopDeviceMotionUpdates];
+        [motionUpdateTimer invalidate];
+    }
+}
+
+- (void)UpdateDeviceMotion:(NSTimer*)timer{
+    if ((motionManager) && ([motionManager isDeviceMotionActive])) {
+        self.attitude = motionManager.deviceMotion.attitude;
     }
 }
 

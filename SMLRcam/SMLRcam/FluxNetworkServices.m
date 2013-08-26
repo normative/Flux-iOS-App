@@ -195,7 +195,6 @@
 }
 
 - (void)uploadImage:(FluxScanImageObject*)img{
-   NSLog(@"%d",img.contentImage.imageOrientation);
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:img method:RKRequestMethodPOST path:@"/images" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:UIImageJPEGRepresentation(img.contentImage, 1.0)

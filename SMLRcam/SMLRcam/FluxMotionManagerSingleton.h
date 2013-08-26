@@ -11,7 +11,10 @@
 
 @interface FluxMotionManagerSingleton : NSObject {
     CMMotionManager * motionManager;
+    NSTimer *motionUpdateTimer;
 }
+
+@property (nonatomic) CMAttitude* attitude;
 
 + (id)sharedManager;
 

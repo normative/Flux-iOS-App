@@ -56,6 +56,7 @@ withDescriptionString:(NSString *)description
         self.userID = userID;
         self.cameraID = camID;
         self.categoryID = catID;
+        self.timestampString = timestampStr;
         self.descriptionString = description;
         self.latitude = latitude;
         self.longitude = longitude;

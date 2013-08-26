@@ -330,4 +330,8 @@
     [self setNeedsDisplay];
 }
 
+- (NSString*)titleForIndex:(int)index{
+    return [self.sectionTitles objectAtIndex:index];
+}
+
 @end

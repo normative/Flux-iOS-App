@@ -31,7 +31,7 @@
 }
 
 - (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl {
-    [imageObject setCategoryID:segmentedControl.selectedSegmentIndex];
+    
 }
 
 #pragma mark - image manipulation
@@ -85,11 +85,20 @@
 #pragma mark - Network Services
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)imageObject{
     progressView.progress = 1;
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self PopViewController:nil];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
     [acceptButton setEnabled:YES];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
+                                                        message:[e localizedDescription]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+    [alertView show];
+    [progressView setHidden:YES];
+    progressView.progress = 0;
+    
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
@@ -179,7 +188,7 @@
     //time string, it takes the stores date, parses it and makes the
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY h:mma"];
-    NSString *temp =[formatter stringFromDate:timestamp];
+    NSString *temp =[formatter stringFromDate:[NSDate date]];
     temp  = [temp stringByReplacingCharactersInRange:NSMakeRange (temp.length-2, 2) withString:[temp substringFromIndex:temp.length-2].lowercaseString];
     timestampLabel.text = temp;
     
@@ -221,6 +230,16 @@
     locationLabel.text = locationString;
 }
 
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andLocation:(CLLocation *)theLocation{
+    imageObject = imgObject;
+    capturedImage = imageObject.contentImage;
+    location = theLocation;
+    
+    NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
+    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+    locationLabel.text = locationString;
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -228,18 +247,24 @@
 }
 
 - (IBAction)PopViewController:(id)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AnnotationViewPopped" object:imageObject];
+
     [self dismissViewControllerAnimated:YES completion:nil];
     //[self.navigationController popToRootViewControllerAnimated:YES];
 }
-
 - (IBAction)ConfirmImage:(id)sender {
-    //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default.
+    //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default...
+    //[imageObject setCategoryID:[objectSelectionSegmentedControl titleForIndex:objectSelectionSegmentedControl.selectedSegmentIndex]];
+    //[imageObject setCategoryID:@"TBD"];
+    [imageObject setDescriptionString:annotationTextView.text];
+    [imageObject setCategoryID:10];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
     [imgMetadata setValue:annotationTextView.text forKey:(NSString *)@"descriptionString"];
+    
     
     //if we're saving it anywhere
     if (savelocally || pushToCloud) {
@@ -279,19 +304,18 @@
             
             [acceptButton setEnabled:NO];
             progressView.progress = 0;
-            [imageObject setDescriptionString:annotationTextView.text];
             FluxNetworkServices *networkServices = [[FluxNetworkServices alloc]init];
             [networkServices setDelegate:self];
             [networkServices uploadImage:imageObject];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
         else{
-            [self dismissViewControllerAnimated:YES completion:nil];
+            [self PopViewController:nil];
         }
 
     }
     else{
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self PopViewController:nil];
     }
 
 
