@@ -365,6 +365,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 		//[alertView release];
 		[self pauseAVCapture];
 	}
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(annotationsViewDidPop:)  name:@"AnnotationViewPopped"  object:nil];
 }
 
 -(void)pauseAVCapture
@@ -499,6 +501,13 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         }
 
     }
+}
+
+- (void)annotationsViewDidPop:(NSNotification *)notification{
+    if (notification.object != nil) {
+        //theres a new image object here.
+    }
+    [self setUIForCamMode:[NSNumber numberWithInt:0]];
 }
 
 #pragma mark AVCam Methods
@@ -680,9 +689,9 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 //             }
              int userID = 57;
              int cameraID = 42;
-             int categoryID = 10;
+             NSString* categoryID = @"";
              
-             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll];
+             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll];
              
              //cleanup
 //             CFRelease(destination);
@@ -710,7 +719,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self pauseAVCapture];
     [self stopDeviceMotion];
     
-    [self performSelector:@selector(setUIForCamMode:) withObject:[NSNumber numberWithInt:0] afterDelay:0.5];
+    //[self performSelector:@selector(setUIForCamMode:) withObject:[NSNumber numberWithInt:0] afterDelay:0.3];
     
     
     FluxImageAnnotationViewController *annotationsView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxImageAnnotationViewController"];
@@ -792,6 +801,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self setupNetworkServices];
     
     self.imageDict = [[NSMutableDictionary alloc]init];
+    
     
     //temporarily set the date range label to today's date
     dateFormatter  = [[NSDateFormatter alloc] init];

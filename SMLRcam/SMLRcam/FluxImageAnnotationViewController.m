@@ -31,7 +31,7 @@
 }
 
 - (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl {
-    [imageObject setCategoryID:segmentedControl.selectedSegmentIndex];
+    
 }
 
 #pragma mark - image manipulation
@@ -90,6 +90,15 @@
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
     [acceptButton setEnabled:YES];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
+                                                        message:[e localizedDescription]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+    [alertView show];
+    [progressView setHidden:YES];
+    progressView.progress = 0;
+    
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
@@ -126,7 +135,7 @@
     
     locationManager = [FluxLocationServicesSingleton sharedManager];
     
-    //[backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
+    [backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
     [self AddGradientImageToBackgroundWithAlpha:0.7];
     
     
@@ -238,18 +247,23 @@
 }
 
 - (IBAction)PopViewController:(id)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"AnnotationViewPopped" object:imageObject];
+
     [self dismissViewControllerAnimated:YES completion:nil];
     //[self.navigationController popToRootViewControllerAnimated:YES];
 }
-
 - (IBAction)ConfirmImage:(id)sender {
-    //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default.
+    //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default...
+    //[imageObject setCategoryID:[objectSelectionSegmentedControl titleForIndex:objectSelectionSegmentedControl.selectedSegmentIndex]];
+    //[imageObject setCategoryID:@"TBD"];
+    [imageObject setDescriptionString:annotationTextView.text];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
     [imgMetadata setValue:annotationTextView.text forKey:(NSString *)@"descriptionString"];
+    
     
     //if we're saving it anywhere
     if (savelocally || pushToCloud) {
@@ -289,19 +303,18 @@
             
             [acceptButton setEnabled:NO];
             progressView.progress = 0;
-            [imageObject setDescriptionString:annotationTextView.text];
             FluxNetworkServices *networkServices = [[FluxNetworkServices alloc]init];
             [networkServices setDelegate:self];
             [networkServices uploadImage:imageObject];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
         else{
-            [self dismissViewControllerAnimated:YES completion:nil];
+            [self PopViewController:nil];
         }
 
     }
     else{
-        [self dismissViewControllerAnimated:YES completion:nil];
+        [self PopViewController:nil];
     }
 
 

@@ -56,6 +56,7 @@
     UILongPressGestureRecognizer *longPressGesture;
     NSDateFormatter *dateFormatter;
     float previousYCoord;
+
     
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
@@ -87,6 +88,7 @@
 
 - (void)setupCameraView;
 - (void)setUIForCamMode:(NSNumber*)mode;
+- (void)annotationsViewDidPop:(NSNotification *)notification;
 
 - (void)setupLayer;
 - (void)setupContext;

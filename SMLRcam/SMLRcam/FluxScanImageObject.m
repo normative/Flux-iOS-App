@@ -10,13 +10,14 @@
 
 @implementation FluxScanImageObject
 
-- (id)initWithImage:(UIImage *)img fromUserWithID:(int)userID andCameraID:(int)camID andCategoryID:(int)catID withDescriptionString:(NSString *)description andlatitude:(float)latitude andlongitude:(float)longitude andaltitude:(float)altitude andHeading:(float)heading andYaw:(float)yaw andPitch:(float)pitch andRoll:(float)roll{
+- (id)initWithImage:(UIImage *)img fromUserWithID:(int)userID atTimestampString:(NSString *)timestampStr andCameraID:(int)camID andCategoryID:(NSString *)catID withDescriptionString:(NSString *)description andlatitude:(float)latitude andlongitude:(float)longitude andaltitude:(float)altitude andHeading:(float)heading andYaw:(float)yaw andPitch:(float)pitch andRoll:(float)roll{
     self = [super init];
     if (self) {
         self.contentImage = img;
         self.userID = userID;
         self.cameraID = camID;
         self.categoryID = catID;
+        self.timestampString = timestampStr;
         self.descriptionString = description;
         self.latitude = latitude;
         self.longitude = longitude;
