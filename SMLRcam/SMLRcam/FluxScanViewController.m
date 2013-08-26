@@ -96,6 +96,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     {
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
+        fluxMapViewController.mapAnnotationsDictionary = self.imageDict;
     }
 }
 

@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <MapKit/MapKit.h>
 
-@interface FluxScanImageObject : NSObject
+@interface FluxScanImageObject : NSObject <MKAnnotation>
 
 
 //image itself
 @property (nonatomic, strong)UIImage *contentImage;
-
 
 //location
 @property (nonatomic) float longitude;
@@ -26,7 +26,6 @@
 @property (nonatomic) float roll;
 @property (nonatomic) float heading;
 
-
 //other
 @property (nonatomic, strong) NSString* timestampString;
 @property (nonatomic, strong) NSString* descriptionString;
@@ -35,17 +34,22 @@
 @property (nonatomic) int imageID;
 @property (nonatomic) int userID;
 
-- (id)initWithImage:(UIImage*)img
-     fromUserWithID:(int)userID
-        andCameraID:(int)camID
-      andCategoryID:(int)catID
+- (id)  initWithImage:(UIImage*)img
+       fromUserWithID:(int)userID
+          andCameraID:(int)camID
+        andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
-        andlatitude:(float)latitude
-       andlongitude:(float)longitude
-        andaltitude:(float)altitude
-         andHeading:(float)heading
-             andYaw:(float)yaw
-           andPitch:(float)pitch
-            andRoll:(float)roll
-;
+          andlatitude:(float)latitude
+         andlongitude:(float)longitude
+          andaltitude:(float)altitude
+           andHeading:(float)heading
+               andYaw:(float)yaw
+             andPitch:(float)pitch
+              andRoll:(float)roll;
+
+// MKAnnoation getter methods;
+- (NSString *)title;
+- (NSString *)subtitle;
+- (CLLocationCoordinate2D)coordinate;
+
 @end

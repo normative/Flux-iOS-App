@@ -10,9 +10,48 @@
 
 @implementation FluxScanImageObject
 
-- (id)initWithImage:(UIImage *)img fromUserWithID:(int)userID andCameraID:(int)camID andCategoryID:(int)catID withDescriptionString:(NSString *)description andlatitude:(float)latitude andlongitude:(float)longitude andaltitude:(float)altitude andHeading:(float)heading andYaw:(float)yaw andPitch:(float)pitch andRoll:(float)roll{
+#pragma mark - getter methods
+
+//
+- (NSString*)title
+{
+    return [NSString stringWithFormat:@"location date: %@", self.timestampString];
+}
+
+//
+- (NSString*)subtitle
+{
+    return self.descriptionString;
+}
+
+//
+- (CLLocationCoordinate2D)coordinate
+{
+    CLLocationCoordinate2D theCoordinate;
+    theCoordinate.longitude = self.latitude;
+    theCoordinate.longitude = self.longitude;
+    
+    return theCoordinate;
+}
+
+#pragma mark - nsobject life cycle
+
+- (id)  initWithImage:(UIImage *)img
+       fromUserWithID:(int)userID
+          andCameraID:(int)camID
+        andCategoryID:(int)catID
+withDescriptionString:(NSString *)description
+          andlatitude:(float)latitude
+         andlongitude:(float)longitude
+          andaltitude:(float)altitude
+           andHeading:(float)heading
+               andYaw:(float)yaw
+             andPitch:(float)pitch
+              andRoll:(float)roll
+{
     self = [super init];
-    if (self) {
+    if (self)
+    {
         self.contentImage = img;
         self.userID = userID;
         self.cameraID = camID;

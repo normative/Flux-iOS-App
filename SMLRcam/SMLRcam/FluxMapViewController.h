@@ -10,10 +10,19 @@
 #import <MapKit/MapKit.h>
 
 #import "FluxLocationServicesSingleton.h"
+#import "FluxNetworkServices.h"
 
-@interface FluxMapViewController : UIViewController {    
-    // Currnet View Orientation Direction (
+@class FluxScanImageObject;
+
+@interface FluxMapViewController : UIViewController<MKMapViewDelegate, NetworkServicesDelegate> {
+    // Currnet View Orientation Direction
     UIInterfaceOrientation myViewOrientation;
+    
+    MKAnnotationView *userAnnotationView;
+    CLLocationDegrees userLastSynchedLat;
+    CLLocationDegrees userLastSynchedLong;
+    
+    NSMutableDictionary *mapAnnotationsDictionary;
     
     // Map View
     __weak IBOutlet MKMapView *myMapView;
@@ -25,11 +34,19 @@
     __weak IBOutlet UILabel *statusBarCurrentLocalityLbl;
     __weak IBOutlet UILabel *statusBarCurrentMoment;
     
+    // button
+    __weak IBOutlet UIButton *locateMeBtn;
+    
     //location + motion
     FluxLocationServicesSingleton *locationManager;
+    
+    //network service
+    FluxNetworkServices *networkServiceManager;
 }
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
+@property (nonatomic, strong) NSMutableDictionary *mapAnnotationsDictionary;
 
-- (IBAction) exitMapView:(id)sender;
+- (IBAction)onExitMapBtn:(id)sender;
+- (IBAction)onLocateMeBtn:(id)sender;
 
 @end
