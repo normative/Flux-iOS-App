@@ -126,7 +126,7 @@
     
     locationManager = [FluxLocationServicesSingleton sharedManager];
     
-    [backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
+    //[backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
     [self AddGradientImageToBackgroundWithAlpha:0.7];
     
     
@@ -179,7 +179,7 @@
     //time string, it takes the stores date, parses it and makes the
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY h:mma"];
-    NSString *temp =[formatter stringFromDate:timestamp];
+    NSString *temp =[formatter stringFromDate:[NSDate date]];
     temp  = [temp stringByReplacingCharactersInRange:NSMakeRange (temp.length-2, 2) withString:[temp substringFromIndex:temp.length-2].lowercaseString];
     timestampLabel.text = temp;
     
@@ -214,6 +214,16 @@
     imgData = imageData;
     imgMetadata = imageMetadata;
     timestamp = theTimestamp;
+    location = theLocation;
+    
+    NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
+    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
+    locationLabel.text = locationString;
+}
+
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andLocation:(CLLocation *)theLocation{
+    imageObject = imgObject;
+    capturedImage = imageObject.contentImage;
     location = theLocation;
     
     NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
