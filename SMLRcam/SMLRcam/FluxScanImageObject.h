@@ -30,7 +30,7 @@
 //other
 @property (nonatomic, strong) NSString* timestampString;
 @property (nonatomic, strong) NSString* descriptionString;
-@property (nonatomic, strong) NSString* categoryID;
+@property (nonatomic) int categoryID;
 @property (nonatomic) int cameraID;
 @property (nonatomic) int imageID;
 @property (nonatomic) int userID;
@@ -39,7 +39,7 @@
      fromUserWithID:(int)userID
   atTimestampString:(NSString*)timestampStr
         andCameraID:(int)camID
-      andCategoryID:(NSString*)catID
+      andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
         andlatitude:(float)latitude
        andlongitude:(float)longitude

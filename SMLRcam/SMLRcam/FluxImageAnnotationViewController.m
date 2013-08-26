@@ -85,7 +85,7 @@
 #pragma mark - Network Services
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)imageObject{
     progressView.progress = 1;
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self PopViewController:nil];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
@@ -257,6 +257,7 @@
     //[imageObject setCategoryID:[objectSelectionSegmentedControl titleForIndex:objectSelectionSegmentedControl.selectedSegmentIndex]];
     //[imageObject setCategoryID:@"TBD"];
     [imageObject setDescriptionString:annotationTextView.text];
+    [imageObject setCategoryID:10];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];

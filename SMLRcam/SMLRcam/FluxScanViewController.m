@@ -689,7 +689,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 //             }
              int userID = 57;
              int cameraID = 42;
-             NSString* categoryID = @"";
+             int categoryID = 10;
              
              capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll];
              
