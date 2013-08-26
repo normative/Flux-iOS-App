@@ -233,20 +233,25 @@ void tangentplaneRotation(sensorPose *sp){
 void setParametersTP(GLKVector3 location){
     
 }
-void setupViewingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float distance)
+void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float distance)
 {
-    GLKVector4 pts[4];
+    GLKVector3 pts[4];
     int i;
     
-    pts[0] = GLKVector4Make(-250.0, 14.0, -250.0, 1.0);
-    pts[1] = GLKVector4Make(250.0, 14.0, -250.0, 1.0);
-    pts[2] = GLKVector4Make(250.0,  14.0, 250.0, 1.0);
-    pts[3] = GLKVector4Make(-250.0, 14.0, 250.0, 1.0);
+    if(distance <0.0)
+    {
+        NSLog(@"Distance is scalar should not be negative ... converting to positive");
+    }
+    
+    pts[0] = GLKVector3Make(-250.0, -250.0, -1.0 *distance);
+    pts[1] = GLKVector3Make(250.0, -250.0, -1.0 *distance);
+    pts[2] = GLKVector3Make(250.0,  250.0, -1.0 * distance);
+    pts[3] = GLKVector3Make(-250.0, 250.0, -1.0 *distance);
     
     // fprintf(stderr, "NEW VECTORS\n");
     for(i=0;i<4;i++)
     {
-     //   result[i] = GLKMatrix4MultiplyVector4( GLKMatrix4Transpose(basenormalMat), pts[i]);
+     //   result[i] = GLKMatrix4MultiplyVector3( rotationMatrix, pts[i]);
         //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
     }
 
@@ -316,7 +321,7 @@ int computeProjectionParametersUser(sensorPose *sp, GLKVector3 *planeNormal, flo
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
     
-    // setupViewingPlane(positionTP, sp->rotationMatrix, distance);
+    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
     return 0;
 }
@@ -382,7 +387,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
     
-     // setupViewingPlane(positionTP, sp->rotationMatrix, distance);
+     setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
     return 0;
 }
@@ -617,11 +622,6 @@ void init(){
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
-    [self setupGL];
-}
-
-- (void)viewWillAppear
-{
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -632,15 +632,35 @@ void init(){
     }
     
     [self startDeviceMotion];
+
+    [self setupGL];
 }
 
-- (void)viewWillDisappear
+/*
+- (void)viewWillAppear:(BOOL)animated
+{
+   
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+        // Call these immediately since location is not always updated frequently (use current value)
+        [self didUpdateHeading:nil];
+        [self didUpdateLocation:nil];
+    }
+    
+    [self startDeviceMotion];
+     NSLog(@"View Did Appear");
+}
+
+- (void)viewWillDisappear:(BOOL)animated
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     
     [self stopDeviceMotion];
 }
+*/
 - (void)dealloc
 {
     motionManager = nil;
@@ -720,8 +740,8 @@ void init(){
     compute_new_intersection();
     multiply_vertices();
     
-    
-    
+   // computeProjectionParametersUser(&usp, &planeNormal, distance, userLocation,&vpuser);
+   // computeProjectionParametersImage(&sp, &planeNormal, distance, userLocation, &vpimage);
     g_vertex_buffer_data[0] = result[0].x;
     g_vertex_buffer_data[1] = result[0].y;
     g_vertex_buffer_data[2] = result[0].z;       //0
@@ -810,8 +830,10 @@ void init(){
     
     _tBiasMVP = GLKMatrix4Multiply(biasMatrix,tMVP);
 
-
-
+    CLLocation *location = locationManager.location;
+    CMAttitude *att = motionManager.attitude;
+    
+     NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
 
 }
 
