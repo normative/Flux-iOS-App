@@ -53,6 +53,8 @@ typedef struct {
     GLuint _texcoordVBO;
     GLuint _indexVBO;
     
+    sensorPose _userPose;
+    sensorPose _imagePose;
     
     FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;
@@ -68,6 +70,7 @@ typedef struct {
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
+- (void)updateBuffers;
 - (void)setupGL;
 - (void)tearDownGL;
 - (void) checkShaderLimitations;
