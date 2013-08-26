@@ -34,10 +34,11 @@
 @property (nonatomic) int imageID;
 @property (nonatomic) int userID;
 
-- (id)  initWithImage:(UIImage*)img
-       fromUserWithID:(int)userID
-          andCameraID:(int)camID
-        andCategoryID:(int)catID
+- (id)initWithImage:(UIImage*)img
+     fromUserWithID:(int)userID
+  atTimestampString:(NSString*)timestampStr
+        andCameraID:(int)camID
+      andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
           andlatitude:(float)latitude
          andlongitude:(float)longitude
