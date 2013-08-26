@@ -20,7 +20,11 @@
 - (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary*)aImageDict;
 @end
 
-
+typedef struct{
+    GLKVector3 origin;
+    GLKVector3 at;
+    GLKVector3 up;
+} viewParameters;
 
 typedef struct {
     

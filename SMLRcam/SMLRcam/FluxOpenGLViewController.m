@@ -230,20 +230,101 @@ void tangentplaneRotation(sensorPose *sp){
  fprintf(stderr,"ecef.z = %.1f m (3546587.4)\n", ecef.z);
  }
  */
+void setParametersTP(GLKVector3 location){
+    
+}
+void setupViewingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float distance)
+{
+    GLKVector4 pts[4];
+    int i;
+    
+    pts[0] = GLKVector4Make(-250.0, 14.0, -250.0, 1.0);
+    pts[1] = GLKVector4Make(250.0, 14.0, -250.0, 1.0);
+    pts[2] = GLKVector4Make(250.0,  14.0, 250.0, 1.0);
+    pts[3] = GLKVector4Make(-250.0, 14.0, 250.0, 1.0);
+    
+    // fprintf(stderr, "NEW VECTORS\n");
+    for(i=0;i<4;i++)
+    {
+     //   result[i] = GLKMatrix4MultiplyVector4( GLKMatrix4Transpose(basenormalMat), pts[i]);
+        //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
+    }
+
+    
+}
 void calculateCoordinatesTP(GLKVector3 originposition, GLKVector3 position, GLKVector3 *positionTP)
 {
     
 }
-void compute_look_parameters(sensorPose *sp, GLKVector3 *plane_normal)
+int computeProjectionParametersUser(sensorPose *sp, GLKVector3 *planeNormal, float distance, viewParameters *vp, GLKVector3 userLocation)
 {
+    viewParameters viewP;
+	GLKVector3 positionTP;
+    //sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
+    if(distance <0.0)
+    {
+        NSLog(@"distance is a scalar, setting to positive");
+        distance =  -1.0 *distance;
+    }
     
+    setParametersTP(userLocation);
+    
+    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
+    
+    // rotationMat = rotationMat_t;
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    zRay = GLKVector3Normalize(zRay);
+    
+    GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
+    
+    
+    NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+    
+    //normal plane
+    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(sp->rotationMatrix, planeNormalI);
+    //intersection with plane
+    GLKVector3 N = planeNormalRotated;
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(v);
+    
+    
+    float vd = GLKVector3DotProduct(N,V);
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+    float t = v0/vd;
+    
+    if(vd==0)
+    {
+        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        return -1;
+    }
+    if(v0 < 0)
+    {
+        
+        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        return -1;
+    }
+    
+    
+    
+    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    viewP.up = GLKMatrix4MultiplyVector3(rotationMat, GLKVector3Make(0.0, 1.0, 0.0));
+    viewP.up = GLKVector3Normalize(viewP.up);
+    
+    (*vp).origin = GLKVector3Add(positionTP, P0);
+    (*vp).at = GLKVector3Add(positionTP, viewP.at);
+    (*vp).up = GLKVector3Add(positionTP, viewP.up);
+    
+    
+    // setupViewingPlane(positionTP, sp->rotationMatrix, distance);
+    
+    return 0;
 }
 //distance - distance of plane
-void computeProjectionParameters(sensorPose *sp, GLKVector3 *planeNormal, float distance, GLKVector3 userLocation)
+int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, GLKVector3 userLocation, viewParameters *vp)
 {
     
-    
-    bool isinvertible;
+    viewParameters viewP;
 	GLKVector3 positionTP;
    //sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
     if(distance <0.0)
@@ -254,10 +335,10 @@ void computeProjectionParameters(sensorPose *sp, GLKVector3 *planeNormal, float 
     
     calculateCoordinatesTP(userLocation, sp->position, &positionTP);
     
-    NSLog(@"postionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
-    
+    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
+
    // rotationMat = rotationMat_t;
-    GLKVector3 zRay = GLKVector3Make(positionTP.x, positionTP.y, (positionTP.z -distance));
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
@@ -266,32 +347,44 @@ void computeProjectionParameters(sensorPose *sp, GLKVector3 *planeNormal, float 
     NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
     //normal plane
-    GLKVector3 planeNormalI = GLKVector3Make(positionTP.x, positionTP.y, positionTP.z);
-    basenormalMat = GLKMatrix4Identity;
-    
-   // basenormalMat = GLKMatrix4RotateWithVector3(basenormalMat, angle_with_y_rad, GLKVector3Make(0.0,0.0, 1.0));
-    
-    
-  //  GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
+    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(sp->rotationMatrix, planeNormalI);
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
-    //fprintf(stderr,"Ray direction is  = [%.2f, %.2f, %.2f]\n",V.x, V.y, V.z);
+   
     
     float vd = GLKVector3DotProduct(N,V);
-    
-    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) +distance);
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
     float t = v0/vd;
-    
 
-    centrevec = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    if(vd==0)
+    {
+        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        return -1;
+    }
+    if(v0 < 0)
+    {
+        
+        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        return -1;
+    }
+
     
-    GLKVector4 up = GLKMatrix4MultiplyVector4(rotationMat, GLKVector4Make(0.0, 1.0, 0.0, 1.0));
-    upvec = GLKVector3Normalize(GLKVector3Make(up.x, up.y, up.z));
+    
+    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    viewP.up = GLKMatrix4MultiplyVector3(rotationMat, GLKVector3Make(0.0, 1.0, 0.0));
+    viewP.up = GLKVector3Normalize(viewP.up);
+    
+    (*vp).origin = GLKVector3Add(positionTP, P0);
+    (*vp).at = GLKVector3Add(positionTP, viewP.at);
+    (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
     
+     // setupViewingPlane(positionTP, sp->rotationMatrix, distance);
+    
+    return 0;
 }
 
 
@@ -336,15 +429,11 @@ void compute_new_intersection()
     
     float v0 = -1.0 * (GLKVector3DotProduct(N,P0) +distance);
     float t = v0/vd;
-    
-    //   fprintf(stderr," t = %.4f\n",t);
+       //   fprintf(stderr," t = %.4f\n",t);
     centrevec = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     
     
-    // fprintf(stderr,"Intersection with plane is  = [%.2f, %.2f, %.2f]\n",point.x, point.y, point.z);
-    
-    //set lookAt coordinates
-    //centrevec = point;
+  
     GLKVector4 up = GLKMatrix4MultiplyVector4(rotationMat, GLKVector4Make(0.0, 1.0, 0.0, 1.0));
     upvec = GLKVector3Normalize(GLKVector3Make(up.x, up.y, up.z));
     
@@ -601,7 +690,7 @@ void init(){
     
     glGenBuffers(1, &_positionVBO);
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
     //    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_STATIC_DRAW);
     
     
