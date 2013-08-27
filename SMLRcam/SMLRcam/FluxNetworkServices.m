@@ -14,7 +14,7 @@
 
 
 //serverURL
-#define externServerURL @"http://blooming-bastion-5493.herokuapp.com/"
+#define externServerURL @"http://54.221.222.71/"
 #define localServerURL @"http://192.168.0.65/"
 
 @implementation FluxNetworkServices
