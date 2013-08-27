@@ -14,8 +14,25 @@
 enum
 {
     UNIFORM_MODELVIEWPROJECTION_MATRIX,
-    UNIFORM_TBIASMVP_MATRIX,
-    UNIFORM_MYTEXTURE_SAMPLER,
+    
+    UNIFORM_TBIASMVP_MATRIX0,
+    UNIFORM_TBIASMVP_MATRIX1,
+    UNIFORM_TBIASMVP_MATRIX2,
+    UNIFORM_TBIASMVP_MATRIX3,
+    UNIFORM_TBIASMVP_MATRIX4,
+    UNIFORM_TBIASMVP_MATRIX5,
+    UNIFORM_TBIASMVP_MATRIX6,
+    UNIFORM_TBIASMVP_MATRIX7,
+    
+    UNIFORM_MYTEXTURE_SAMPLER0,
+    UNIFORM_MYTEXTURE_SAMPLER1,
+    UNIFORM_MYTEXTURE_SAMPLER2,
+    UNIFORM_MYTEXTURE_SAMPLER3,
+    UNIFORM_MYTEXTURE_SAMPLER4,
+    UNIFORM_MYTEXTURE_SAMPLER5,
+    UNIFORM_MYTEXTURE_SAMPLER6,
+    UNIFORM_MYTEXTURE_SAMPLER7,
+    
     NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -791,6 +808,46 @@ void init(){
     NSLog(@"Maximum vertex texture image unit = %d",maxvertextureunits);
     
 }
+
+-(void)updateImageData
+{
+    viewParameters vpimage;
+    GLKVector3 planeNormal;
+    GLKMatrix4 tMVP;
+    float distance = 14.0;
+    int i;
+    
+    _imagePose[0].rotationMatrix= GLKMatrix4Make(
+                                                -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
+    
+    
+    
+    _imagePose[1].rotationMatrix= GLKMatrix4Make(-0.813819, -0.317586, -0.486659, 0, -0.283285, -0.514396, 0.809411, 0, -0.507394, 0.796577, 0.328658, 0, 0, 0, 0, 1);
+                                                 
+    _imagePose[2].rotationMatrix= GLKMatrix4Make(-0.778916, -0.582085, -0.233384, 0, -0.183547, -0.144254, 0.972369, 0, -0.599667, 0.80023, 0.00552136, 0, 0, 0, 0, 1);
+                                                 
+     _imagePose[3].rotationMatrix= GLKMatrix4Make(-0.782513, -0.555458, -0.281319, 0, 0.126055, -0.583794, 0.802057, 0, -0.609741, 0.592158, 0.526844, 0, 0, 0, 0, 1);
+                                                 
+    _imagePose[4].rotationMatrix= GLKMatrix4Make(-0.456448, -0.858032, -0.235448, 0, -0.315959, -0.0910644, 0.944393, 0, -0.83176, 0.505458, -0.229537, 0, 0, 0, 0, 1);
+                                                 
+    for(i =0; i < 5; i++)
+    {
+        
+        _imagePose[i].position.x =0.0;
+        _imagePose[i].position.y =0.0;
+        _imagePose[i].position.z =0.0;
+        
+
+        computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose.position, &vpimage);
+        tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
+                                       vpimage.at.x, vpimage.at.y, vpimage.at.z,
+                                           vpimage.up.x, vpimage.up.y, vpimage.up.z);
+        tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
+        
+        _tBiasMVP[i] = GLKMatrix4Multiply(biasMatrix,tMVP);
+    }
+}
+
 - (void)updateBuffers
 {
     
@@ -866,15 +923,54 @@ void init(){
     
     NSError *error;
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    _texture = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image2" ofType:@"png"] options:options error:&error];
+    _texture[0] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image0" ofType:@"png"] options:options error:&error];
     if (error) NSLog(@"Image texture error %@", error);
     
+    
+    _texture[0] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image0" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+    _texture[1] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image1" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+    _texture[2] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image2" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+    _texture[3] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image3" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+    _texture[4] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image4" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+    
     //bind the texture to texture unit 0
+    /*
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(_texture.target, _texture.name);
+    glBindTexture(_texture[0].target, _texture[0].name);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(_texture[1].target, _texture[1].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(_texture[2].target, _texture[2].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(_texture[3].target, _texture[3].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(_texture[4].target, _texture[4].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    */
     [self setupBuffers];
     
     
@@ -903,8 +999,8 @@ void init(){
     
 
    // CLLocation *location = locationManager.location;
-   // CMAttitude *att = motionManager.attitude;
-   /*
+    CMAttitude *att = motionManager.attitude;
+  
     _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
     _userPose.rotationMatrix.m01 = att.rotationMatrix.m12;
     _userPose.rotationMatrix.m02 = att.rotationMatrix.m13;
@@ -924,37 +1020,32 @@ void init(){
     _userPose.rotationMatrix.m31 = 0.0;
     _userPose.rotationMatrix.m32 = 0.0;
     _userPose.rotationMatrix.m33 = 1.0;
-    */
-    
-    _userPose.rotationMatrix= GLKMatrix4Make(
-                                           -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
     
     
-    _imagePose.rotationMatrix= GLKMatrix4Make(
-                                             -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
+  //  _userPose.rotationMatrix= GLKMatrix4Make(
+   //                                        -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
     
-    _userPose.position.x =0.0;
+    
+       _userPose.position.x =0.0;
     _userPose.position.y =0.0;
     _userPose.position.z =0.0;
     
     
-    _imagePose.position.x =0.0;
-    _imagePose.position.y =0.0;
-    _imagePose.position.z =0.0;
     
     GLKVector3 planeNormal;
     float distance = 14.0;
     viewParameters vpuser;
-    viewParameters vpimage;
     
     
     
-    _userPose.rotationMatrix = _imagePose.rotationMatrix;
+    
+   // _userPose.rotationMatrix = _imagePose.rotationMatrix;
     
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
-    computeProjectionParametersImage(&_imagePose, &planeNormal, distance, _userPose.position, &vpimage);
+    
+    
     
    
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
@@ -978,22 +1069,9 @@ void init(){
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
     
-    tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
-                                       vpimage.at.x, vpimage.at.y, vpimage.at.z,
-                                       vpimage.up.x, vpimage.up.y, vpimage.up.z);
     
-    
-    
-    
-    
-    
-    //tViewMatrix = GLKMatrix4MakeLookAt(ray_origin.x, ray_origin.y, ray_origin.z, centrevec.x, centrevec.y, centrevec.z, upvec.x, upvec.y, upvec.z);
-    
-
-    
-    GLKMatrix4 tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
-    
-    _tBiasMVP = GLKMatrix4Multiply(biasMatrix,tMVP);
+    [self updateImageData];
+  
         [self updateBuffers];
     
     
@@ -1014,14 +1092,44 @@ void init(){
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX], 1, 0, _tBiasMVP.m);
-    
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
     
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, texture[0]);
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER], 0);
+    
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(_texture[0].target, _texture[0].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(_texture[1].target, _texture[1].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER1], 1);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(_texture[2].target, _texture[2].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER2], 2);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(_texture[3].target, _texture[3].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER3], 3);
+    
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(_texture[4].target, _texture[4].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
     
     
     glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
@@ -1090,8 +1198,18 @@ void init(){
     
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-    uniforms[UNIFORM_TBIASMVP_MATRIX] = glGetUniformLocation(_program, "tBiasMVP");
-    uniforms[UNIFORM_MYTEXTURE_SAMPLER] = glGetUniformLocation(_program, "textureSampler");
+    uniforms[UNIFORM_TBIASMVP_MATRIX0] = glGetUniformLocation(_program, "tBiasMVP[0]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX1] = glGetUniformLocation(_program, "tBiasMVP[1]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX2] = glGetUniformLocation(_program, "tBiasMVP[2]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX3] = glGetUniformLocation(_program, "tBiasMVP[3]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX4] = glGetUniformLocation(_program, "tBiasMVP[4]");
+    
+    
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER0] = glGetUniformLocation(_program, "textureSampler[0]");
+     uniforms[UNIFORM_MYTEXTURE_SAMPLER1] = glGetUniformLocation(_program, "textureSampler[1]");
+     uniforms[UNIFORM_MYTEXTURE_SAMPLER2] = glGetUniformLocation(_program, "textureSampler[2]");
+     uniforms[UNIFORM_MYTEXTURE_SAMPLER3] = glGetUniformLocation(_program, "textureSampler[3]");
+     uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
     
     
     

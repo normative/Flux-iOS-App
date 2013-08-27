@@ -68,17 +68,21 @@ attribute vec4 position;
 attribute vec2 texCoord;
 //varying lowp vec4 colorVarying;
 varying vec2 ttmp;
-varying highp vec4 texCoordVarying;
+varying highp vec4 texCoordVarying[8];
 
 uniform mat4 modelViewProjectionMatrix;
-uniform mat4 tBiasMVP;
+uniform mat4 tBiasMVP[8];
 
 void main()
 {
     
     ttmp = texCoord;
     
-    texCoordVarying =  tBiasMVP  * vec4(position.x, position.y, position.z, 1.0);
+    texCoordVarying[0] =  tBiasMVP[0]  * vec4(position.x, position.y, position.z, 1.0);
+     texCoordVarying[1] =  tBiasMVP[1]  * vec4(position.x, position.y, position.z, 1.0);
+     texCoordVarying[2] =  tBiasMVP[2]  * vec4(position.x, position.y, position.z, 1.0);
+     texCoordVarying[3] =  tBiasMVP[3]  * vec4(position.x, position.y, position.z, 1.0);
+     texCoordVarying[4] =  tBiasMVP[4]  * vec4(position.x, position.y, position.z, 1.0);
     gl_Position = modelViewProjectionMatrix * vec4(position.x, position.y, position.z, 1.0);
     
     

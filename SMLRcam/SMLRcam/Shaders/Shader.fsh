@@ -65,28 +65,74 @@ void main()
 */
 
 varying lowp vec2 ttmp;
-varying highp vec4 texCoordVarying;
-uniform sampler2D textureSampler;
+varying highp vec4 texCoordVarying[8];
+uniform sampler2D textureSampler[8];
 void main()
 {
     lowp vec2  ttemp;
     ttemp = ttmp;
-    
-    highp vec2 projCoord = texCoordVarying.st/ texCoordVarying.q;
-    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying.q >0.0)
+    int flag =0;
+    highp vec2 projCoord = texCoordVarying[0].st/ texCoordVarying[0].q;
+    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[0].q >0.0)
     {
         
         if(projCoord.s >0.0 && projCoord.t> 0.0)
-            gl_FragColor = vec4(texture2D(textureSampler, projCoord).rgb,1.0);
-        else
-            gl_FragColor =vec4(0.0, 0.0, 0.0, 0.0);
-    }
-    else
+        {
+            gl_FragColor = vec4(texture2D(textureSampler[0], projCoord).rgb,1.0);
+            flag = 1;
+        }
         
-        gl_FragColor =vec4(0.0, 0.0, 0.0, 0.0);
+    }
     
+    projCoord = texCoordVarying[1].st/ texCoordVarying[1].q;
+    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[1].q >0.0)
+    {
+        
+        if(projCoord.s >0.0 && projCoord.t> 0.0)
+        {
+            gl_FragColor = vec4(texture2D(textureSampler[1], projCoord).rgb,1.0);
+            flag =1;
+        }
+        
+    }
+
+    projCoord = texCoordVarying[2].st/ texCoordVarying[2].q;
+    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[2].q >0.0)
+    {
+        
+        if(projCoord.s >0.0 && projCoord.t> 0.0)
+        {
+            gl_FragColor = vec4(texture2D(textureSampler[2], projCoord).rgb,1.0);
+            flag =1;
+        }
+            
+        
+    }
     
-    
+    projCoord = texCoordVarying[3].st/ texCoordVarying[3].q;
+    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[3].q >0.0)
+    {
+        
+        if(projCoord.s >0.0 && projCoord.t> 0.0)
+        {
+            gl_FragColor = vec4(texture2D(textureSampler[3], projCoord).rgb,1.0);
+            flag =1;
+        }
+        
+    }
+    projCoord = texCoordVarying[4].st/ texCoordVarying[4].q;
+    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[4].q >0.0)
+    {
+        
+        if(projCoord.s >0.0 && projCoord.t> 0.0)
+        {
+            gl_FragColor = vec4(texture2D(textureSampler[4], projCoord).rgb,1.0);
+            flag =1;
+        }
+    }
+    if(flag ==0)
+        gl_FragColor =vec4(0.0, 0.0, 0.0, 1.0);
+        
 }
 
 

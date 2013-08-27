@@ -38,9 +38,7 @@ typedef struct {
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix4 _tBiasMVP;
-    GLKMatrix4 _tBiasMVP1 ;
-    GLKMatrix4 _tBiasMVP2;
+    GLKMatrix4 _tBiasMVP[8];
     
     
     
@@ -48,13 +46,13 @@ typedef struct {
     
     GLuint _vertexArray;
     GLuint _vertexBuffer;
-    GLKTextureInfo* _texture;
+    GLKTextureInfo* _texture[8];
     GLuint _positionVBO;
     GLuint _texcoordVBO;
     GLuint _indexVBO;
     
     sensorPose _userPose;
-    sensorPose _imagePose;
+    sensorPose _imagePose[8];
     
     FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;
