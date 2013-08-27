@@ -805,7 +805,7 @@
                                     <constraint firstAttribute="width" constant="33" id="oaR-b6-eMb"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" title="Button" image="25B96459-2202-4709-BC47-9C8DDF6D37BC">
+                                <state key="normal" title="Button" image="E5FD262D-BC96-4CF9-940F-73688A8B868B">
                                     <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -1075,16 +1075,15 @@
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vKt-uU-SfL">
-                                <rect key="frame" x="518" y="270" width="30" height="30"/>
+                                <rect key="frame" x="507" y="259" width="41" height="41"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="l7M-fT-RbN"/>
-                                    <constraint firstAttribute="width" constant="30" id="t3m-Bc-taI"/>
+                                    <constraint firstAttribute="height" constant="41" id="VC6-nr-l9b"/>
+                                    <constraint firstAttribute="width" constant="41" id="gtR-E4-p80"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <state key="normal" title="me">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
+                                <fontDescription key="fontDescription" type="boldSystem" size="button"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal" image="LocationHeading" backgroundImage="ButtonBackground"/>
                                 <connections>
                                     <action selector="onLocateMeBtn:" destination="YQi-AC-BdW" eventType="touchUpInside" id="URB-Jq-VSm"/>
                                 </connections>
@@ -1092,10 +1091,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="vKt-uU-SfL" secondAttribute="trailing" constant="20" id="5SC-Ha-Ubr"/>
+                            <constraint firstItem="dHc-uE-pLe" firstAttribute="top" secondItem="vKt-uU-SfL" secondAttribute="bottom" constant="20" id="9Dn-0S-THC"/>
                             <constraint firstItem="Zpg-FP-Bvy" firstAttribute="top" secondItem="h5i-Bp-Cdx" secondAttribute="bottom" constant="20" id="FHo-GS-mlQ"/>
                             <constraint firstAttribute="trailing" secondItem="Zpg-FP-Bvy" secondAttribute="trailing" constant="20" symbolic="YES" id="fii-JB-7pc"/>
-                            <constraint firstAttribute="trailing" secondItem="vKt-uU-SfL" secondAttribute="trailing" constant="20" id="gKE-3B-gqy"/>
-                            <constraint firstItem="dHc-uE-pLe" firstAttribute="top" secondItem="vKt-uU-SfL" secondAttribute="bottom" constant="20" id="pUk-g8-agG"/>
                             <constraint firstItem="Zpg-FP-Bvy" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" constant="20" symbolic="YES" id="uQc-SQ-PWI"/>
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
@@ -1118,7 +1117,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="25B96459-2202-4709-BC47-9C8DDF6D37BC" width="30.239999771118164" height="30.239999771118164">
+        <image name="ButtonBackground" width="32" height="30"/>
+        <image name="E5FD262D-BC96-4CF9-940F-73688A8B868B" width="30.239999771118164" height="30.239999771118164">
             <mutableData key="keyedArchiveRepresentation">
 YnBsaXN0MDDUAQIDBAUGOzxYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK0HCBEW
 GxwgISksLzU4VSRudWxs1AkKCwwNDg8QViRjbGFzc1xOU0ltYWdlRmxhZ3NWTlNSZXBzV05TQ29sb3KA
@@ -1453,6 +1453,7 @@ AJYAmACdAKAAogCkAKYAqACtAMQAxgDITBJMF0wiTCtMPkxCTFVMYExpTG5Mdkx5TH5MjUyRTJhMoEyt
 TLJMtEy2TLtMw0zGTMtM00zWTOhM60zwAAAAAAAAAgEAAAAAAAAAPwAAAAAAAAAAAAAAAAAATPI
 </mutableData>
         </image>
+        <image name="LocationHeading" width="41" height="41"/>
         <image name="annottionsButton" width="26" height="25"/>
         <image name="approveButton" width="30.239999771118164" height="30.239999771118164"/>
         <image name="camButton" width="43.200000762939453" height="43.200000762939453"/>
