@@ -49,7 +49,6 @@
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
 @property (nonatomic, strong) NSMutableDictionary *mapAnnotationsDictionary;
 
-- (IBAction)onExitMapBtn:(id)sender;
 - (IBAction)onLocateMeBtn:(id)sender;
 
 @end

@@ -348,18 +348,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
 }
 
-// IBAction for exiting the map view
-- (IBAction)onExitMapBtn:(id)sender
-{
-    [self dismissViewControllerAnimated:YES completion:^(void)
-    {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-        
-        [self.view removeGestureRecognizer:pinchRecognizer];
-    }];
-}
-
 #pragma mark - rotation and orientations
 
 - (BOOL)shouldAutorotate
