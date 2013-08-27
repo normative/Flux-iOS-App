@@ -73,7 +73,7 @@ void main()
     ttemp = ttmp;
     
     highp vec2 projCoord = texCoordVarying.st/ texCoordVarying.q;
-    if(projCoord.s <1.0 && projCoord.t <1.0)
+    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying.q >0.0)
     {
         
         if(projCoord.s >0.0 && projCoord.t> 0.0)

@@ -251,8 +251,8 @@ void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float d
     // fprintf(stderr, "NEW VECTORS\n");
     for(i=0;i<4;i++)
     {
-       result[i] = GLKMatrix4MultiplyVector4( rotationMatrix, pts[i]);
-        //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
+       result[i] = GLKMatrix4MultiplyVector4( (rotationMatrix), pts[i]);
+       fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
     }
 
     
@@ -288,7 +288,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(usp->rotationMatrix, planeNormalI);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((usp->rotationMatrix), planeNormalI);
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
@@ -314,15 +314,19 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    viewP.up = GLKMatrix4MultiplyVector3(rotationMat, GLKVector3Make(0.0, 1.0, 0.0));
-    viewP.up = GLKVector3Normalize(viewP.up);
+    viewP.up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    //viewP.up = GLKVector3Normalize(viewP.up);
     
     (*vp).origin = GLKVector3Add(positionTP, P0);
-    (*vp).at = GLKVector3Add(positionTP, viewP.at);
+    //(*vp).at = GLKVector3Add(positionTP, viewP.at);
+    
+    (*vp).at =V;
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
     
-    setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
+    
+    
+    //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
     
     return 0;
 }
@@ -354,7 +358,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(sp->rotationMatrix, planeNormalI);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((sp->rotationMatrix), planeNormalI);
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
@@ -380,12 +384,14 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    viewP.up = GLKMatrix4MultiplyVector3(rotationMat, GLKVector3Make(0.0, 1.0, 0.0));
-    viewP.up = GLKVector3Normalize(viewP.up);
+    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    //viewP.up = GLKVector3Normalize(viewP.up);
     
     
     (*vp).origin = GLKVector3Add(positionTP, P0);
-    (*vp).at = GLKVector3Add(positionTP, viewP.at);
+    //(*vp).at = GLKVector3Add(positionTP, viewP.at);
+    (*vp).at = V;
+    
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
     
@@ -457,6 +463,70 @@ void compute_new_intersection()
     
 }
 
+void compute_new_intersectionZ()
+{
+    bool isinvertible;
+	
+    GLKMatrix4 rotationMat_t= GLKMatrix4Make(
+                                             -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
+    zMatrix = rotationMat_t;
+    // rotationMat = GLKMatrix4Invert(rotationMat_t, &isinvertible );
+    
+    rotationMat = rotationMat_t;
+    GLKVector4 _z_ray = GLKVector4Make(0.0, 0.0, -1.0, 1.0);
+    GLKVector4 _ray = GLKMatrix4MultiplyVector4(rotationMat, _z_ray);
+    GLKVector3 _v = GLKVector3Make(_ray.x, _ray.y, _ray.z);
+    
+    NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
+    //float angle_with_y_deg =  180.0/PI* atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
+    float angle_with_y_rad =atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
+    // fprintf(stderr,"angle_with_y_deg = %.5f \n", angle_with_y_deg);
+    NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
+    
+    //normal plane
+    /*
+    GLKVector4 _plane_normal = GLKVector4Make(0.0, 0.0, 1.0, 1.0);
+    basenormalMat = GLKMatrix4Identity;
+    
+    basenormalMat = GLKMatrix4RotateWithVector3(basenormalMat, angle_with_y_rad, GLKVector3Make(0.0,0.0, 1.0));
+    
+    
+    GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
+    float distance = 14.0;
+    
+    //intersection with plane
+    GLKVector3 N = GLKVector3Make(_plane_normal_rotated.x, _plane_normal_rotated.y, _plane_normal_rotated.z);
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(_v);
+    //fprintf(stderr,"Ray direction is  = [%.2f, %.2f, %.2f]\n",V.x, V.y, V.z);
+    
+    float vd = GLKVector3DotProduct(N,V);
+    
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) +distance);
+    float t = v0/vd;
+    //   fprintf(stderr," t = %.4f\n",t);
+     
+    
+    centrevec = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    */
+    
+    
+    GLKVector4 up = GLKMatrix4MultiplyVector4(rotationMat, GLKVector4Make(0.0, 1.0, 0.0, 1.0));
+    upvec = GLKVector3Normalize(GLKVector3Make(up.x, up.y, up.z));
+    centrevec = _v;
+    
+    //set eye
+    GLKVector4 _eye_at = GLKMatrix4MultiplyVector4(GLKMatrix4Invert(basenormalMat, &isinvertible) ,GLKVector4Make(0.0, 14.0, 0.0, 1.0));
+    //eye_at = GLKVector3Make(_eye_at.x, _eye_at.y, _eye_at.z);
+    eye_origin = GLKVector3Make(0.0, 0.0, 0.0);
+    //eye_up = GLKVector3Make(0.0, 0.0, 1.0);
+    eye_at = centrevec;
+    eye_up = upvec;
+    NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
+    NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
+    NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
+    
+}
 
 void multiply_vertices()
 {
@@ -723,6 +793,29 @@ void init(){
 }
 - (void)updateBuffers
 {
+    
+    g_vertex_buffer_data[0] = result[0].x;
+    g_vertex_buffer_data[1] = result[0].y;
+    g_vertex_buffer_data[2] = result[0].z;       //0
+    g_vertex_buffer_data[3] = result[1].x;
+    g_vertex_buffer_data[4] = result[1].y;
+    g_vertex_buffer_data[5] = result[1].z;  //1
+    g_vertex_buffer_data[6] = result[2].x;
+    g_vertex_buffer_data[7] = result[2].y;
+    g_vertex_buffer_data[8] = result[2].z;  //2
+    g_vertex_buffer_data[9]	= result[2].x;
+    g_vertex_buffer_data[10] = result[2].y;
+    g_vertex_buffer_data[11] = result[2].z;   //2
+    g_vertex_buffer_data[12] = result[0].x;
+    g_vertex_buffer_data[13] = result[0].y;
+    g_vertex_buffer_data[14] = result[0].z; //0
+    g_vertex_buffer_data[15] = result[3].x;
+    g_vertex_buffer_data[16] = result[3].y;
+    g_vertex_buffer_data[17] = result[3].z;   //3
+    
+    
+    
+    
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
 }
@@ -762,9 +855,9 @@ void init(){
     [self checkShaderLimitations];
     
     init();
-    compute_new_intersection();
+  //  compute_new_intersectionZ();
      //multiply_vertices();
-    multiply_vertices_Zaxis();
+   // multiply_vertices_Zaxis();
     
     
     
@@ -809,22 +902,22 @@ void init(){
 {
     
 
-    CLLocation *location = locationManager.location;
-    CMAttitude *att = motionManager.attitude;
+   // CLLocation *location = locationManager.location;
+   // CMAttitude *att = motionManager.attitude;
    /*
     _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
     _userPose.rotationMatrix.m01 = att.rotationMatrix.m12;
     _userPose.rotationMatrix.m02 = att.rotationMatrix.m13;
     _userPose.rotationMatrix.m03 = 0.0;
     
-    _userPose.rotationMatrix.m10 = att.rotationMatrix.m11;
-    _userPose.rotationMatrix.m11 = att.rotationMatrix.m12;
-    _userPose.rotationMatrix.m12 = att.rotationMatrix.m13;
+    _userPose.rotationMatrix.m10 = att.rotationMatrix.m21;
+    _userPose.rotationMatrix.m11 = att.rotationMatrix.m22;
+    _userPose.rotationMatrix.m12 = att.rotationMatrix.m23;
     _userPose.rotationMatrix.m13 = 0.0;
     
-    _userPose.rotationMatrix.m20 = att.rotationMatrix.m21;
-    _userPose.rotationMatrix.m21 = att.rotationMatrix.m22;
-    _userPose.rotationMatrix.m22 = att.rotationMatrix.m23;
+    _userPose.rotationMatrix.m20 = att.rotationMatrix.m31;
+    _userPose.rotationMatrix.m21 = att.rotationMatrix.m32;
+    _userPose.rotationMatrix.m22 = att.rotationMatrix.m33;
     _userPose.rotationMatrix.m23 = 0.0;
     
     _userPose.rotationMatrix.m30 = 0.0;
@@ -834,7 +927,7 @@ void init(){
     */
     
     _userPose.rotationMatrix= GLKMatrix4Make(
-                                             -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
+                                           -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
     
     
     _imagePose.rotationMatrix= GLKMatrix4Make(
@@ -856,22 +949,25 @@ void init(){
     
     
     
+    _userPose.rotationMatrix = _imagePose.rotationMatrix;
     
+    setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
-    
-    
-    
- //   computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
- //   computeProjectionParametersImage(&_imagePose, &planeNormal, distance, _userPose.position, &vpimage);
+    computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
+    computeProjectionParametersImage(&_imagePose, &planeNormal, distance, _userPose.position, &vpimage);
     
    
     float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
-  /*
-    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(vpuser.origin.x, vpuser.origin.y, vpuser.origin.z, vpuser.at.x, vpuser.at.y, vpuser.at.z , vpuser.up.x, vpuser.up.y, vpuser.up.z);
-    */
-    
-    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
+    //GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
+  
+    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(vpuser.origin.x, vpuser.origin.y, vpuser.origin.z,
+                                                 vpuser.at.x, vpuser.at.y, vpuser.at.z ,
+                                                 vpuser.up.x, vpuser.up.y, vpuser.up.z);
+
+    NSLog(@"eye origin:x=%f y=%f z=%f", vpuser.origin.x, vpuser.origin.y, vpuser.origin.z);
+    NSLog(@"eye at    :x=%f y=%f z=%f", vpuser.at.x, vpuser.at.y, vpuser.at.z);
+    NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
+    //GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
     
 
     
@@ -880,43 +976,25 @@ void init(){
     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
     
     
-    _modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, modelViewMatrix);
-    /*
-    tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z, vpimage.at.x, vpimage.at.y, vpimage.at.z, vpimage.up.x, vpimage.up.y, vpimage.up.z);
+    _modelViewProjectionMatrix = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
     
-    */
-    
-    
+    tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
+                                       vpimage.at.x, vpimage.at.y, vpimage.at.z,
+                                       vpimage.up.x, vpimage.up.y, vpimage.up.z);
     
     
-    tViewMatrix = GLKMatrix4MakeLookAt(ray_origin.x, ray_origin.y, ray_origin.z, centrevec.x, centrevec.y, centrevec.z, upvec.x, upvec.y, upvec.z);
+    
+    
+    
+    
+    //tViewMatrix = GLKMatrix4MakeLookAt(ray_origin.x, ray_origin.y, ray_origin.z, centrevec.x, centrevec.y, centrevec.z, upvec.x, upvec.y, upvec.z);
     
 
     
     GLKMatrix4 tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
     
     _tBiasMVP = GLKMatrix4Multiply(biasMatrix,tMVP);
-    
-    g_vertex_buffer_data[0] = result[0].x;
-    g_vertex_buffer_data[1] = result[0].y;
-    g_vertex_buffer_data[2] = result[0].z;       //0
-    g_vertex_buffer_data[3] = result[1].x;
-    g_vertex_buffer_data[4] = result[1].y;
-    g_vertex_buffer_data[5] = result[1].z;  //1
-    g_vertex_buffer_data[6] = result[2].x;
-    g_vertex_buffer_data[7] = result[2].y;
-    g_vertex_buffer_data[8] = result[2].z;  //2
-    g_vertex_buffer_data[9]	= result[2].x;
-    g_vertex_buffer_data[10] = result[2].y;
-    g_vertex_buffer_data[11] = result[2].z;   //2
-    g_vertex_buffer_data[12] = result[0].x;
-    g_vertex_buffer_data[13] = result[0].y;
-    g_vertex_buffer_data[14] = result[0].z; //0
-    g_vertex_buffer_data[15] = result[3].x;
-    g_vertex_buffer_data[16] = result[3].y;
-    g_vertex_buffer_data[17] = result[3].z;   //3
-    
-    [self updateBuffers];
+        [self updateBuffers];
     
     
     
