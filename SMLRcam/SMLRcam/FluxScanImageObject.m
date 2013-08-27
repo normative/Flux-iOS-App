@@ -28,7 +28,7 @@
 - (CLLocationCoordinate2D)coordinate
 {
     CLLocationCoordinate2D theCoordinate;
-    theCoordinate.longitude = self.latitude;
+    theCoordinate.latitude = self.latitude;
     theCoordinate.longitude = self.longitude;
     
     return theCoordinate;

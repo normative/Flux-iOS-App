@@ -18,6 +18,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (int)   getZoomLevel;
 - (float) getScale;
 
+- (void) setupPinchGesture;
 - (void) setupNetworkServiceManager;
 - (void) setupLocationManager;
 - (void) setupAnnotationView;
@@ -100,27 +101,18 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 #pragma mark - delegate methods
 
 //
-- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+- (BOOL)                            gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+   shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    float scale = [self getScale];
-    
-    for (id <MKAnnotation>annotation in myMapView.annotations)
-    {
-        if ([annotation isKindOfClass:[MKUserLocation class]])
-        {
-            userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
-            [self setUserHeadingDirection];
-        }
-        else
-        {
-            MKAnnotationView *annotationView = [myMapView viewForAnnotation:annotation];
-            annotationView.transform = CGAffineTransformMakeScale(scale, scale);
-        }
+    if ([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+        return YES;
     }
+    return NO;
 }
 
 //
-- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+- (MKAnnotationView *)mapView:(MKMapView *)mapView
+            viewForAnnotation:(id<MKAnnotation>)annotation
 {
     if ([annotation isKindOfClass:[FluxScanImageObject class]])
     {
@@ -132,7 +124,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             
             locationAnnotationView.enabled = YES;
             locationAnnotationView.canShowCallout = YES;
-            locationAnnotationView.image = [UIImage imageNamed:@"locationPinWithRadius.png"];
+            locationAnnotationView.image = [UIImage imageNamed:@"locationPin.png"];
         }
         else
         {
@@ -151,7 +143,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             userAnnotationView.image = [UIImage imageNamed:@"userPinWithRadius.png"];
             userAnnotationView.enabled = NO;
             
-            NSLog(@"First time set user location annotation");
+            [self.view bringSubviewToFront:userAnnotationView];
+            
             double scale = [self getScale];
             userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
         }
@@ -181,13 +174,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     if (mode != MKUserTrackingModeFollow)
     {
-        userAnnotationView.image = [UIImage imageNamed:@"userPin.png"];
         [locateMeBtn setHidden:NO];
     }
     else
     {
         double scale = [self getScale];
-        userAnnotationView.image = [UIImage imageNamed:@"userPinWithRadius.png"];
         userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
         [locateMeBtn setHidden:YES];
     }
@@ -229,8 +220,28 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - @selector
 
+//
+- (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture
+{
+    float scale = [self getScale];
+    
+    for (id <MKAnnotation>annotation in myMapView.annotations)
+    {
+        if ([annotation isKindOfClass:[MKUserLocation class]])
+        {
+            userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
+            [self setUserHeadingDirection];
+        }
+        else
+        {
+            MKAnnotationView *annotationView = [myMapView viewForAnnotation:annotation];
+            annotationView.transform = CGAffineTransformMakeScale(scale, scale);
+        }
+    }
+}
+
 // animating loading message when it is currently unable to update the location label
-- (void) updateLoadingMessage: (NSTimer *)thisTimer
+- (void)updateLoadingMessage:(NSTimer *)thisTimer
 {
     if ([statusBarCurrentLocalityLbl.text hasPrefix:@"Loading "])
     {
@@ -250,6 +261,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 }
 
 #pragma mark - initialize and allocate objects
+
+- (void)setupPinchGesture
+{
+    pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
+    [pinchRecognizer setDelegate:self];
+    
+    [self.view addGestureRecognizer:pinchRecognizer];
+}
 
 // initial and allocate memory to the network service manager
 - (void)setupNetworkServiceManager
@@ -272,16 +291,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 - (void) setupAnnotationView
 {
-    NSLog(@"map annotaiton dictionary count is %i", [mapAnnotationsDictionary count]);
     for (id key in mapAnnotationsDictionary)
     {
         FluxScanImageObject *locationObject = [mapAnnotationsDictionary objectForKey:key];
-            
-        // add annotation to map
         [myMapView addAnnotation: locationObject];
-            
-        // insert object to dic
-        [mapAnnotationsDictionary setObject:locationObject forKey:key];
     }
 }
 
@@ -293,17 +306,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [myMapView setShowsUserLocation:YES];
     [myMapView setUserTrackingMode:MKUserTrackingModeFollow];
     
-    NSLog(@"default latitude Delta");
-    NSLog(@"longitudeDelta %f",myMapView.region.span.latitudeDelta);
-    NSLog(@"longitudeDelta %f",myMapView.region.span.longitudeDelta);
-    
-    
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(myMapView.userLocation.coordinate, 0.01, 0.01);
     
     [myMapView setRegion:viewRegion animated:YES];
-    NSLog(@"after adding region");
-    NSLog(@"longitudeDelta %f",myMapView.region.span.latitudeDelta);
-    NSLog(@"longitudeDelta %f",myMapView.region.span.longitudeDelta);
 }
 
 // setting the status bar content
@@ -350,6 +355,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        
+        [self.view removeGestureRecognizer:pinchRecognizer];
     }];
 }
 
@@ -378,12 +385,22 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         {
             [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
             [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+            
+            [self.view removeGestureRecognizer:pinchRecognizer];
             //[myMapView setDelegate:nil];
         }];
     }
 }
 
 #pragma mark - view lifecycle
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super initWithCoder:aDecoder]) {
+        mapAnnotationsDictionary = [[NSMutableDictionary alloc] init];
+    }
+    return self;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -397,14 +414,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    myLocationPinImageview = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"userPinWithRadius.png"]];
-    
+ 
     userLastSynchedLocation.latitude = -1;
     userLastSynchedLocation.longitude = -1;
     
-    mapAnnotationsDictionary = [[NSMutableDictionary alloc] init];
     [locateMeBtn setHidden:YES];
     
+    [self setupPinchGesture];
     [self setupLocationManager];
     [self setupMapView];
     [self setupStatusBarContent];
