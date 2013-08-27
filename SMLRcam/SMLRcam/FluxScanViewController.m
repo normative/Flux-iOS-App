@@ -201,16 +201,24 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
                              //[thumbView setFrame:CGRectMake(thumbView.frame.origin.x, thumbView.frame.origin.y, 98, 98)];
                              thumbView.transform = CGAffineTransformScale(thumbView.transform, 2.0, 2.0);
                          }];
+        startXCoord = [sender locationInView:self.view].x;
     }
     else if(sender.state == UIGestureRecognizerStateChanged)
     {
         NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
         [thumbView setCenter:[sender locationInView:self.view]];
         [self setThumbViewDate:[sender locationInView:self.view].y];
+        
+        if (abs(startXCoord - [sender locationInView:self.view].x) > 75) {
+            //we've gone too far to the right, kill it
+        }
     }
     
     else if((sender.state == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled))
     {
+        if ([thumbView isHidden]) {
+            return;
+        }
         [UIView animateWithDuration:0.05f
                          animations:^{
                              thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
@@ -293,6 +301,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 - (void)setupAVCapture
 {
+    AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
+    
 	NSError *error = nil;
 	
 	AVCaptureSession *session = [AVCaptureSession new];
@@ -363,7 +373,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 												  otherButtonTitles:nil];
 		[alertView show];
 		//[alertView release];
-		[self pauseAVCapture];
+        [self pauseAVCapture];
 	}
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(annotationsViewDidPop:)  name:@"AnnotationViewPopped"  object:nil];
@@ -377,13 +387,40 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         [currentSession stopRunning];
     }
 }
--(void)restartAVCapture
+
+//restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
+-(void)restartAVCaptureWithBlur:(BOOL)blur
 {
-    AVCaptureSession * currentSession  = previewLayer.session;
-    if (currentSession !=nil  && ![currentSession isRunning])
-    {
-        [currentSession startRunning];
+    //don't add a blur if we haven't captured an image yet.
+    if (capturedImage != nil && blur) {
+        [gridView setAlpha:0.0];
+        [CameraButton setAlpha:0.0];
+        [blurView setImage:[self blurImage:capturedImage]];
+        [blurView setHidden:NO];
+        [UIView animateWithDuration:0.2 animations:^{
+            [blurView setAlpha:1.0];
+        }completion:nil];
     }
+    dispatch_async(AVCaptureBackgroundQueue, ^{
+        //start AVCapture
+        AVCaptureSession * currentSession  = previewLayer.session;
+        if (currentSession !=nil  && ![currentSession isRunning])
+        {
+            [currentSession startRunning];
+        }
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            //completion callback
+            if (blur) {
+                [UIView animateWithDuration:0.2 animations:^{
+                    [blurView setAlpha:0.0];
+                    [gridView setAlpha:1.0];
+                    [CameraButton setAlpha:1.0];
+                }completion:^(BOOL finished){
+                    [blurView setHidden:YES];
+                }];
+            }
+        });
+    });
 }
 
 #pragma mark Camera View
@@ -399,6 +436,18 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [gridView setAlpha:0.0];
     [gridView setContentMode:UIViewContentModeScaleAspectFill];
     [self.view insertSubview:gridView belowSubview:CameraButton];
+    
+    blackView = [[UIView alloc]initWithFrame:self.view.bounds];
+    [blackView setBackgroundColor:[UIColor blackColor]];
+    [blackView setAlpha:0.0];
+    [blackView setHidden:YES];
+    [self.view addSubview:blackView];
+    
+    blurView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [blurView setBackgroundColor:[UIColor clearColor]];
+    [blurView setAlpha:0.0];
+    [blurView setHidden:YES];
+    [self.view addSubview:blurView];
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
@@ -421,7 +470,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         [headerView setHidden:NO];
         [self.drawerContainerView setHidden:NO];
         [CameraButton setHidden:NO];
-        [self restartAVCapture];
+        [self restartAVCaptureWithBlur:NO];
         
         [UIView animateWithDuration:0.3f
                          animations:^{
@@ -484,6 +533,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     //going to confirm cam
     else{
         [self pauseAVCapture];
+        
         [self.cameraApproveContainerView setHidden:NO];
         [CameraButton setHidden:YES];
         [gridView setHidden:YES];
@@ -515,6 +565,15 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     
     
     __block NSDate *startTime = [NSDate date];
+    
+    
+    //black Animation
+    [blackView setHidden:NO];
+    [UIView animateWithDuration:0.09 animations:^{
+        [blackView setAlpha:0.9];
+    }completion:^(BOOL finished){
+
+    }];
     
     // Collect position and orientation information prior to copying image
     CLLocation *location = locationManager.location;
@@ -699,6 +758,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
              
              //UI Updates
              [self setUIForCamMode:[NSNumber numberWithInt:2]];
+             [UIView animateWithDuration:0.09 animations:^{
+                 [blackView setAlpha:0.0];
+             }completion:^(BOOL finished){
+                 [blackView setHidden:YES];
+             }];
          }
      }];
 }
@@ -730,11 +794,11 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 }
 
 - (IBAction)retakeImageAction:(id)sender {
-    [self restartAVCapture];
     [gridView setHidden:NO];
     [self.cameraApproveContainerView setHidden:YES];
     [CameraButton setHidden:NO];
     camMode = [NSNumber numberWithInt:1];
+    [self restartAVCaptureWithBlur:YES];
     //[self setUIForCamMode:[NSNumber numberWithInt:1]];
 }
 
@@ -747,6 +811,33 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 //        
 //    }
 //}
+
+#pragma mark Image Capture Helper Methods
+-(UIImage*)blurImage:(UIImage *)img{
+    //CGImage blows away image metadata, keep orientation
+    UIImageOrientation orientation = img.imageOrientation;
+    
+    CIImage *inputImage = [[CIImage alloc] initWithCGImage:img.CGImage];
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    
+    //clamp the borders so the blur doesnt shrink the borders of the image
+    CIFilter *clampFilter = [CIFilter filterWithName:@"CIAffineClamp"];
+    [clampFilter setValue:inputImage forKey:kCIInputImageKey];
+    [clampFilter setValue:[NSValue valueWithBytes:&transform objCType:@encode(CGAffineTransform)] forKey:@"inputTransform"];
+    CIImage *outputImage = [clampFilter outputImage];
+    
+    //adds gaussian blur to the image
+    CIFilter *blurFilter = [CIFilter filterWithName:@"CIGaussianBlur" keysAndValues:kCIInputImageKey, outputImage, @"inputRadius", [NSNumber numberWithFloat:35], nil];
+    outputImage = [blurFilter outputImage];
+    
+    //output the image
+    CGImageRef cgimg = [context createCGImage:outputImage fromRect:inputImage.extent];
+    UIImage *blurredImage = [UIImage imageWithCGImage:cgimg scale:1.0 orientation:orientation];
+    CGImageRelease(cgimg);
+    
+    return blurredImage;
+}
 
 
 
@@ -801,8 +892,8 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [self setupNetworkServices];
     
     self.imageDict = [[NSMutableDictionary alloc]init];
-    
-    
+    [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
+    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     //temporarily set the date range label to today's date
     dateFormatter  = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"dd MMM, YYYY"];
@@ -819,7 +910,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
-    [self restartAVCapture];
+    [self restartAVCaptureWithBlur:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

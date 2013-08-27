@@ -19,6 +19,8 @@
 #import "FluxNetworkServices.h"
 #import <CoreMotion/CoreMotion.h>
 
+#import <dispatch/dispatch.h>
+
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
 
@@ -42,6 +44,9 @@
     NSNumber* camMode; //0 = off, 1 = on, 2 = confirm
     FluxScanImageObject *capturedImageObject;
     UIImage *capturedImage;
+    UIView *blackView;
+    UIImageView*blurView;
+    dispatch_queue_t AVCaptureBackgroundQueue;
     
     UIInterfaceOrientation changeToOrientation;
 
@@ -56,6 +61,7 @@
     UILongPressGestureRecognizer *longPressGesture;
     NSDateFormatter *dateFormatter;
     float previousYCoord;
+    float startXCoord;
 
     
     FluxLocationServicesSingleton *locationManager;
@@ -84,6 +90,9 @@
 - (void)setupAVCapture;
 - (void)setupNetworkServices;
 - (void)takePicture;
+- (UIImage*)blurImage:(UIImage*)img;
+-(void)restartAVCaptureWithBlur:(BOOL)blur;
+-(void)pauseAVCapture;
 
 
 - (void)setupCameraView;

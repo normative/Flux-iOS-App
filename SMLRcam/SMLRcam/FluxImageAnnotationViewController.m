@@ -174,16 +174,14 @@
         {
             [keyboard setAlpha:0.7];
             break;
-            //Keyboard is now a UIView reference to the UIKeyboard we want. From here we can add a subview
-            //to th keyboard like a new button
-            
-            //Do what ever you want to do to your keyboard here...
         }
     }
     
     //hide progressView
     [progressView setHidden:YES];
 
+    [timestampLabel setFont:[UIFont fontWithName:@"Akkurat" size:timestampLabel.font.pointSize]];
+    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
     
     //time string, it takes the stores date, parses it and makes the
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];

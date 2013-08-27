@@ -17,6 +17,14 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
+        
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    if(self = [super initWithCoder:aDecoder]) {
+        [self.theLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.theLabel.font.pointSize]];
     }
     return self;
 }

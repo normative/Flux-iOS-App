@@ -10,13 +10,20 @@
 
 @implementation FluxDrawerSegmentedTableViewCell
 
-@synthesize delegate;
+@synthesize delegate,segmentedControl;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    if(self = [super initWithCoder:aDecoder]) {
+        [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"Akkurat" size:13.0], UITextAttributeFont, nil] forState:UIControlStateNormal];
     }
     return self;
 }

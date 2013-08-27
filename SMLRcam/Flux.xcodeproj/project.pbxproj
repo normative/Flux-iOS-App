@@ -45,6 +45,8 @@
 		AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */; };
 		AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */; };
 		AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */; };
+		AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */; };
+		AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA47BECB17CBE84300ED9B39 /* AKKURATB.ttf */; };
 		AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */; };
 		AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */; };
 		AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */; };
@@ -131,6 +133,8 @@
 		AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerViewController.m; sourceTree = "<group>"; };
 		AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSegmentedTableViewCell.h; sourceTree = "<group>"; };
 		AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSegmentedTableViewCell.m; sourceTree = "<group>"; };
+		AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AKKURAT.ttf; sourceTree = "<group>"; };
+		AA47BECB17CBE84300ED9B39 /* AKKURATB.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AKKURATB.ttf; sourceTree = "<group>"; };
 		AA4CE0FE17B43579008D04BE /* FluxLocationServicesSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLocationServicesSingleton.h; sourceTree = "<group>"; };
 		AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLocationServicesSingleton.m; sourceTree = "<group>"; };
 		AA4CE10117B52EDF008D04BE /* FluxMotionManagerSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMotionManagerSingleton.h; sourceTree = "<group>"; };
@@ -349,6 +353,15 @@
 			path = MMDrawerController;
 			sourceTree = "<group>";
 		};
+		AA47BEC517CBDA5100ED9B39 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				AA47BECB17CBE84300ED9B39 /* AKKURATB.ttf */,
+				AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */,
+			);
+			name = Fonts;
+			sourceTree = "<group>";
+		};
 		AA4CE0FD17B43559008D04BE /* Tools */ = {
 			isa = PBXGroup;
 			children = (
@@ -403,6 +416,7 @@
 		AA4CEF6C17A9586F00202A74 /* Custom UI Elements */ = {
 			isa = PBXGroup;
 			children = (
+				AA47BEC517CBDA5100ED9B39 /* Fonts */,
 				AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */,
 				AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */,
 				AA7457B817BA78CF008988C1 /* FluxRotatingCompassButton.h */,
@@ -451,12 +465,12 @@
 		AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */ = {
 			isa = PBXGroup;
 			children = (
+				AA134B0C17AAD17200725AB1 /* FluxLeftDrawerViewController.h */,
+				AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */,
 				AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */,
 				AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */,
 				AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */,
 				AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */,
-				AA134B0C17AAD17200725AB1 /* FluxLeftDrawerViewController.h */,
-				AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */,
 			);
 			name = "Left Drawer";
 			sourceTree = "<group>";
@@ -468,10 +482,10 @@
 				AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */,
 				AA70841217B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.h */,
 				AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */,
-				AA70841817B2D9FF005D4F9F /* FluxFilterDrawerObject.h */,
-				AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */,
 				AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */,
 				AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */,
+				AA70841817B2D9FF005D4F9F /* FluxFilterDrawerObject.h */,
+				AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */,
 			);
 			name = "Right Drawer";
 			sourceTree = "<group>";
@@ -557,10 +571,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
+				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA08279E17A6AE030079672A /* Media.xcassets in Resources */,
 			);

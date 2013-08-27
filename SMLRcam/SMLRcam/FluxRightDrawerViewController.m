@@ -74,7 +74,23 @@
     }
     else
         return @"Search Results";
+}
 
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    // Create label with section title
+    UILabel *label = [[UILabel alloc] init];
+    label.frame = CGRectMake(20, 0, 100, 23);
+    label.textColor = [UIColor lightGrayColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor clearColor];
+    
+    // Create header view and add label as a subview
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
+    [view setBackgroundColor:[UIColor clearColor]];
+    [view addSubview:label];
+    
+    return view;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
