@@ -39,21 +39,21 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 @synthesize myViewOrientation;
 @synthesize mapAnnotationsDictionary;
 
+#pragma mark - getter methods
+
+//
 - (int)getZoomLevel
 {
-    //NSLog(@"get Zoom level called");
-    //NSLog(@"latitudeDelta %f",myMapView.region.span.latitudeDelta);
-    //NSLog(@"longitudeDelta %f",myMapView.region.span.longitudeDelta);
-    
     return 21 - round(log2(myMapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * myMapView.bounds.size.width)));
 }
 
+//
 - (float)getScale
 {
     return -1 * sqrt((double)(1 - pow(([self getZoomLevel]/20.0), 2.0))) + 1.1;
 }
 
-#pragma mark - set label
+#pragma mark - setter methods
 
 // set the user annotation heading direction as heading updating
 - (void)setUserHeadingDirection
@@ -64,7 +64,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
         
         // heading direction to be improve
-        CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading*M_PI/180.0);
+        CGAffineTransform transform = CGAffineTransformRotate(userAnnotationView.transform ,-(float)locationManager.heading*M_PI/180.0);
         userAnnotationView.transform = transform;
     }
 }
@@ -98,6 +98,26 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 }
 
 #pragma mark - delegate methods
+
+//
+- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
+{
+    float scale = [self getScale];
+    
+    for (id <MKAnnotation>annotation in myMapView.annotations)
+    {
+        if ([annotation isKindOfClass:[MKUserLocation class]])
+        {
+            userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
+            [self setUserHeadingDirection];
+        }
+        else
+        {
+            MKAnnotationView *annotationView = [myMapView viewForAnnotation:annotation];
+            annotationView.transform = CGAffineTransformMakeScale(scale, scale);
+        }
+    }
+}
 
 //
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -141,13 +161,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         }
         
         userLastSynchedLocation =  mapView.userLocation.coordinate;
-        //[self setUserHeadingDirection];
+        [self setUserHeadingDirection];
         return userAnnotationView;
     }
     
     return nil;
 }
 
+//
 - (void)            mapView:(MKMapView *)mapView
   didChangeUserTrackingMode:(MKUserTrackingMode)mode
                    animated:(BOOL)animated
@@ -165,10 +186,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
     else
     {
-        //MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(myMapView.userLocation.coordinate, 0.01, 0.01);
-        //MKCoordinateRegion adjustedRegion = [myMapView regionThatFits:viewRegion];
-        //[myMapView setRegion:viewRegion animated:YES];
-        
         double scale = [self getScale];
         userAnnotationView.image = [UIImage imageNamed:@"userPinWithRadius.png"];
         userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
@@ -189,9 +206,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         userLastSynchedLocation.latitude = userLocation.location.coordinate.latitude;
         userLastSynchedLocation.longitude = userLocation.location.coordinate.longitude;
     }
-    
-    float scale = [self getScale];
-    userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
 }
 
 // call back from the image request
@@ -252,7 +266,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setStatusBarLocationLabel:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-        //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUserHeadingDirection) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setUserHeadingDirection) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     }
 }
 
@@ -285,7 +299,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(myMapView.userLocation.coordinate, 0.01, 0.01);
-    //MKCoordinateRegion adjustedRegion = [myMapView regionThatFits:viewRegion];
+    
     [myMapView setRegion:viewRegion animated:YES];
     NSLog(@"after adding region");
     NSLog(@"longitudeDelta %f",myMapView.region.span.latitudeDelta);
@@ -322,11 +336,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 //
 - (IBAction)onLocateMeBtn:(id)sender
 {
-    userAnnotationView.transform = CGAffineTransformMakeScale(0.5, 0.5);
-    
     if ([myMapView userTrackingMode] != MKUserTrackingModeFollow)
     {
         [myMapView setUserTrackingMode:MKUserTrackingModeFollow];
+        [self setUserHeadingDirection];
     }
 }
 
@@ -336,7 +349,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self dismissViewControllerAnimated:YES completion:^(void)
     {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-        //[[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     }];
 }
 
@@ -364,7 +377,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         [self dismissViewControllerAnimated:YES completion:^(void)
         {
             [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-            //[[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
             //[myMapView setDelegate:nil];
         }];
     }
