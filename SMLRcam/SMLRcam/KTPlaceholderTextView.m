@@ -20,6 +20,10 @@
 }
 
 - (void)awakeFromNib {
+    [self setFont:[UIFont fontWithName:@"Akkurat" size:self.font.pointSize]];
+    [self setTextColor:[UIColor whiteColor]];
+    
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isEditing:) name:UITextViewTextDidChangeNotification object:self];
     placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, -18, 200, 75)];
     [placeholderLabel setFont:self.font];

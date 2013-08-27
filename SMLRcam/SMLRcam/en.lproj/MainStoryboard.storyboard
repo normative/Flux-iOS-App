@@ -146,7 +146,7 @@
                                             <constraint firstAttribute="width" constant="68" id="HHp-wZ-9lu"/>
                                             <constraint firstAttribute="height" constant="60" id="SyX-oz-n8Y"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="11"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="11"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -285,7 +285,6 @@
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <action selector="ConfirmImage:" destination="BuG-5Y-vZZ" eventType="touchUpInside" id="tA8-PJ-3Jt"/>
                                             <action selector="approveImageAction:" destination="2" eventType="touchUpInside" id="ldw-DX-tzS"/>
                                         </connections>
                                     </button>
@@ -301,7 +300,6 @@
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <action selector="RetakePictureAction:" destination="BuG-5Y-vZZ" eventType="touchUpInside" id="k1m-Gp-JMO"/>
                                             <action selector="retakeImageAction:" destination="2" eventType="touchUpInside" id="k4v-Tu-v2Z"/>
                                         </connections>
                                     </button>
@@ -442,7 +440,7 @@
                                     <outlet property="theSwitch" destination="CGd-O9-aqF" id="V5w-Op-iqg"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="segmentedCell" id="1pr-VT-Bvd" customClass="FluxDrawerSegmentedTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="segmentedCell" id="1pr-VT-Bvd" customClass="FluxDrawerSegmentedTableViewCell">
                                 <rect key="frame" x="0.0" y="155" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="1pr-VT-Bvd" id="yub-Cx-4AZ">
@@ -955,7 +953,7 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <gestureRecognizers/>
                             </mapView>
-                            <view alpha="0.79999999999999982" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zpg-FP-Bvy">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Zpg-FP-Bvy" userLabel="Header View">
                                 <rect key="frame" x="20" y="20" width="528" height="41"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
@@ -1061,7 +1059,7 @@
                                         </state>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.51000000000000001" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="LRJ-tS-B4a" firstAttribute="leading" secondItem="8m5-U6-aYN" secondAttribute="trailing" constant="8" id="10n-0t-hW9"/>
                                     <constraint firstItem="xWR-yM-mDc" firstAttribute="leading" secondItem="cyG-Ie-OLN" secondAttribute="trailing" constant="4" id="5id-N7-cxZ"/>

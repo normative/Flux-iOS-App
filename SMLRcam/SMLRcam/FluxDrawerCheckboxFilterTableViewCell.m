@@ -17,7 +17,6 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        
     }
     return self;
 }
@@ -25,6 +24,7 @@
 - (id)initWithCoder:(NSCoder *)aDecoder{
     if(self = [super initWithCoder:aDecoder]) {
         [self setBackgroundColor:[UIColor clearColor]];
+        [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
     }
     return self;
 }
@@ -47,11 +47,13 @@
 -(void)setIsActive:(BOOL)bActive{
     active = bActive;
     if (active) {
-        [self.descriptorLabel setFont:[UIFont boldSystemFontOfSize:self.descriptorLabel.font.pointSize]];
+        //[self.descriptorLabel setFont:[UIFont boldSystemFontOfSize:self.descriptorLabel.font.pointSize]];
+        [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.descriptorLabel.font.pointSize]];
         [self.descriptorLabel setTextColor:[UIColor whiteColor]];
     }
     else{
-        [self.descriptorLabel setFont:[UIFont systemFontOfSize:self.descriptorLabel.font.pointSize]];
+        //[self.descriptorLabel setFont:[UIFont systemFontOfSize:self.descriptorLabel.font.pointSize]];
+        [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
         [self.descriptorLabel setTextColor:[UIColor lightGrayColor]];
     }
     [self.checkbox setChecked:active];

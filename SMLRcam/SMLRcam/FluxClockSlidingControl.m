@@ -37,7 +37,7 @@
         
         self.timeLabel = [[UILabel alloc]initWithFrame:CGRectMake(25, -1, 80, 15)];
         [self.timeLabel setTextColor:[UIColor whiteColor]];
-        [self.timeLabel setFont:[UIFont systemFontOfSize:10.0]];
+        [self.timeLabel setFont:[UIFont fontWithName:@"Akkurat" size:10.0]];
         [self.timeLabel setBackgroundColor:[UIColor clearColor]];
         [self insertSubview:self.timeLabel aboveSubview:circleView];
         

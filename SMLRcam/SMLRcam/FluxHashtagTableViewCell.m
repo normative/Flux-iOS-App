@@ -31,7 +31,7 @@
 }
 
 - (void)textViewDidBeginEditing:(UITextView *)textView{
-    NSLog(@"SHould begin editing");
+    NSLog(@"Should begin editing");
 }
 
 -(void)textViewDidChange:(UITextView *)textView{
