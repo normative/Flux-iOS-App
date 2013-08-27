@@ -413,6 +413,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self setupMapView];
     [self setupStatusBarContent];
     [self setupAnnotationView];
+    
+    myMapView setSa
 }
 
 - (void)didReceiveMemoryWarning
