@@ -15,13 +15,13 @@
 @class FluxScanImageObject;
 
 @interface FluxMapViewController : UIViewController<MKMapViewDelegate, NetworkServicesDelegate> {
+    UIImageView *myLocationPinImageview;
+    
     // Currnet View Orientation Direction
     UIInterfaceOrientation myViewOrientation;
     
     MKAnnotationView *userAnnotationView;
-    CLLocationDegrees userLastSynchedLat;
-    CLLocationDegrees userLastSynchedLong;
-    
+    CLLocationCoordinate2D userLastSynchedLocation;
     NSMutableDictionary *mapAnnotationsDictionary;
     
     // Map View
