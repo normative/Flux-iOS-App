@@ -11,7 +11,8 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 #import "FluxNetworkServices.h"
-
+#import <CoreVideo/CVOpenGLESTextureCache.h>
+#import <AVFoundation/AVFoundation.h>
 
 @class FluxOpenGLViewController;
 @protocol OpenGLViewDelegate <NSObject>
@@ -34,7 +35,7 @@ typedef struct {
     GLKVector3 ecef;
 } sensorPose;
 
-@interface FluxOpenGLViewController : GLKViewController<NetworkServicesDelegate>{
+@interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate, NetworkServicesDelegate>{
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
@@ -53,6 +54,18 @@ typedef struct {
     
     sensorPose _userPose;
     sensorPose _imagePose[8];
+    
+    
+    
+    CGFloat _screenWidth;
+    CGFloat _screenHeight;
+    size_t _videoTextureWidth;
+    size_t _videoTextureHeight;
+    CVOpenGLESTextureRef _videotexture;
+    NSString *_sessionPreset;
+    AVCaptureSession *_session;
+    CVOpenGLESTextureCacheRef _videoTextureCache;
+    
     
     FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;

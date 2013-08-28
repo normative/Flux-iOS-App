@@ -707,6 +707,121 @@ void init(){
     }
 }
 
+#pragma mark - AV Capture 
+- (void)cleanUpTextures
+
+{
+    if (_videotexture)
+    {
+        CFRelease(_videotexture);
+        _videotexture = NULL;
+    }
+    
+    // Periodic texture cache flush every frame
+    CVOpenGLESTextureCacheFlush(_videoTextureCache, 0);
+}
+
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection
+{
+    CVReturn err;
+	CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+    _videoTextureWidth = CVPixelBufferGetWidth(pixelBuffer);
+    _videoTextureHeight = CVPixelBufferGetHeight(pixelBuffer);
+    
+    if (!_videoTextureCache)
+    {
+        NSLog(@"No video texture cache");
+        return;
+    }
+    
+    [self cleanUpTextures];
+    
+    // CVOpenGLESTextureCacheCreateTextureFromImage will create GLES texture
+    // optimally from CVImageBufferRef.
+    
+    glActiveTexture(GL_TEXTURE7);
+    err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                       _videoTextureCache,
+                                                       pixelBuffer,
+                                                       NULL,
+                                                       GL_TEXTURE_2D,
+                                                       GL_RGBA,
+                                                       _videoTextureWidth,
+                                                       _videoTextureHeight,
+                                                       GL_BGRA,
+                                                       GL_UNSIGNED_BYTE,
+                                                       0,
+                                                       &_videotexture);
+    if (err)
+    {
+        NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+    }
+    
+    glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+}
+
+- (void)setupAVCapture
+{
+
+    CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
+
+    if (err)
+    {
+        NSLog(@"Error at CVOpenGLESTextureCacheCreate %d", err);
+        return;
+    }
+    
+    //-- Setup Capture Session.
+    _session = [[AVCaptureSession alloc] init];
+    [_session beginConfiguration];
+    
+    //-- Set preset session size.
+    [_session setSessionPreset:_sessionPreset];
+    
+    //-- Creata a video device and input from that Device.  Add the input to the capture session.
+    AVCaptureDevice * videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    if(videoDevice == nil)
+        assert(0);
+    
+    //-- Add the device to the session.
+    NSError *error;
+    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
+    if(error)
+        assert(0);
+    
+    [_session addInput:input];
+    
+    //-- Create the output for the capture session.
+    AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
+    [dataOutput setAlwaysDiscardsLateVideoFrames:YES]; // Probably want to set this to NO when recording
+    
+    //-- Set to 32BGRA.
+    [dataOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]
+                                                             forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
+    
+    // Set dispatch to be on the main thread so OpenGL can do things with the data
+    [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    
+    [_session addOutput:dataOutput];
+    [_session commitConfiguration];
+    
+    [_session startRunning];
+}
+
+- (void)tearDownAVCapture
+{
+    [self cleanUpTextures];
+    
+    CFRelease(_videoTextureCache);
+}
+
+
 
 #pragma mark - View Lifecycle
 
@@ -729,6 +844,16 @@ void init(){
     view.context = self.context;
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
+    _screenWidth = [UIScreen mainScreen].bounds.size.width;
+    _screenHeight = [UIScreen mainScreen].bounds.size.height;
+    view.contentScaleFactor = [UIScreen mainScreen].scale;
+    
+           _sessionPreset = AVCaptureSessionPreset640x480;
+    
+    
+    
+    
+    
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -739,8 +864,9 @@ void init(){
     }
     
     [self startDeviceMotion];
-
+    
     [self setupGL];
+    [self setupAVCapture];
 }
 
 /*
@@ -1072,7 +1198,7 @@ void init(){
     
     [self updateImageData];
   
-        [self updateBuffers];
+  [self updateBuffers];
     
     
     
@@ -1131,6 +1257,15 @@ void init(){
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
     
+   
+    if(_videotexture !=NULL)
+    {
+       glActiveTexture(GL_TEXTURE7);
+       glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
+       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+       glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
+    }
     
     glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
     
@@ -1210,7 +1345,7 @@ void init(){
      uniforms[UNIFORM_MYTEXTURE_SAMPLER2] = glGetUniformLocation(_program, "textureSampler[2]");
      uniforms[UNIFORM_MYTEXTURE_SAMPLER3] = glGetUniformLocation(_program, "textureSampler[3]");
      uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
-    
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER7] = glGetUniformLocation(_program, "textureSampler[7]");
     
     
     // Release vertex and fragment shaders.

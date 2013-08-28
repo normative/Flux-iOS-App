@@ -115,7 +115,7 @@ void main()
         
         if(projCoord.s >0.0 && projCoord.t> 0.0)
         {
-            gl_FragColor = vec4(texture2D(textureSampler[3], projCoord).rgb,1.0);
+            gl_FragColor = vec4(texture2D(textureSampler[3], projCoord).rgb, 1.0);
             flag =1;
         }
         
@@ -126,13 +126,14 @@ void main()
         
         if(projCoord.s >0.0 && projCoord.t> 0.0)
         {
-            gl_FragColor = vec4(texture2D(textureSampler[4], projCoord).rgb,1.0);
+            gl_FragColor = vec4(texture2D(textureSampler[4], projCoord).rgb, 1.0);
             flag =1;
         }
     }
     if(flag ==0)
-        gl_FragColor =vec4(0.0, 0.0, 0.0, 1.0);
-        
+    {
+        gl_FragColor =texture2D(textureSampler[7],texCoordVarying[7].st);
+    }
 }
 
 
