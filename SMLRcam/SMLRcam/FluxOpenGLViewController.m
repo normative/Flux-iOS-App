@@ -47,15 +47,15 @@ enum
 GLfloat testvertexData[18] =
 {
     
-    0.5f, 0.5f, 0.5f,
-    -0.5f, 0.5f, 0.5f,
-    0.5f, -0.5f, 0.5f,
-    0.5f, -0.5f, 0.5f,
-    -0.5f, 0.5f, 0.5f,
-    -0.5f, -0.5f, 0.5f
+    1.0f, 1.0f, 0.0f,
+    -1.0f, 1.0f, 0.0f,
+    1.0f, -1.0f, 0.0f,
+    1.0f, -1.0f, 0.0f,
+    -1.0f, 1.0f, 0.0f,
+    -1.0f, -1.0f, 0.0f
 };
 
-
+/*
 GLfloat textureCoord[12] =
 {
     
@@ -66,6 +66,19 @@ GLfloat textureCoord[12] =
     0.0f, 1.0f,
     0.0f, 0.0f
 };
+*/
+GLfloat textureCoord[12] =
+{
+    
+    0.0f, 0.0f,
+    0.0f, 1.0f,
+    1.0f, 0.0f,
+    1.0f, 0.0f,
+    0.0f, 1.0f,
+    1.0f, 1.0f
+};
+
+
 GLubyte indexdata[6]={0,1,2,3,4,5};
 
 
@@ -1000,7 +1013,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
 }
 - (void)setupBuffers
 {
@@ -1011,9 +1025,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     glGenBuffers(1, &_positionVBO);
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-    //    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_STATIC_DRAW);
-    
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
     
     
     glEnableVertexAttribArray(ATTRIB_VERTEX);

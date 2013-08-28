@@ -84,7 +84,7 @@ void main()
      texCoordVarying[3] =  tBiasMVP[3]  * vec4(position.x, position.y, position.z, 1.0);
      texCoordVarying[4] =  tBiasMVP[4]  * vec4(position.x, position.y, position.z, 1.0);
     texCoordVarying[7].st = texCoord;
-    gl_Position = modelViewProjectionMatrix * vec4(position.x, position.y, position.z, 1.0);
-    
+    //gl_Position = modelViewProjectionMatrix * vec4(position.x, position.y, position.z, 1.0);
+    gl_Position = position;
     
 }

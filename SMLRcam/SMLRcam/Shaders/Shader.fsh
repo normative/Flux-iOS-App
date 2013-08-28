@@ -130,10 +130,9 @@ void main()
             flag =1;
         }
     }
-    if(flag ==0)
-    {
+   
         gl_FragColor =texture2D(textureSampler[7],texCoordVarying[7].st);
-    }
+    
 }
 
 
