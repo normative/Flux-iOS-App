@@ -42,13 +42,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - getter methods
 
-//
+// get current map zoom level
 - (int)getZoomLevel
 {
     return 21 - round(log2(myMapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * myMapView.bounds.size.width)));
 }
 
-//
+// return proper scale size for the annotations in the map view
 - (float)getScale
 {
     return -1 * sqrt((double)(1 - pow(([self getZoomLevel]/20.0), 2.0))) + 1.1;
@@ -95,16 +95,47 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
-    [statusBarCurrentMoment setText:@"0 Moment"];
+    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [mapAnnotationsDictionary count]]];
 }
 
 #pragma mark - delegate methods
 
-//
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage*)image forImageID:(int)imageID
+{
+    // add missing image
+    
+}
+
+- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+    if (![view isKindOfClass:[MKUserLocation class]])
+    {
+        FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
+        
+        if (annotation.contentImage != nil) {
+            view.leftCalloutAccessoryView = [[UIImageView alloc] initWithImage: annotation.contentImage];
+        }
+        else
+        {
+            [networkServiceManager getImageForID:annotation.imageID];
+        }
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+    if (![view isKindOfClass:[MKUserLocation class]] && [view.leftCalloutAccessoryView.layer animationForKey:@"loadingAnimation"])
+    {
+        [view.leftCalloutAccessoryView.layer removeAnimationForKey:@"loadingAnimation"];
+    }
+}
+
+// only allow pinch gesture recognizer
 - (BOOL)                            gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    if ([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+    if ([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]])
+    {
         return YES;
     }
     return NO;
@@ -125,6 +156,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             locationAnnotationView.enabled = YES;
             locationAnnotationView.canShowCallout = YES;
             locationAnnotationView.image = [UIImage imageNamed:@"locationPin.png"];
+            
+            locationAnnotationView.leftCalloutAccessoryView = [[UIImageView alloc] initWithImage: [UIImage imageNamed:@"loading.png"]];
         }
         else
         {
@@ -161,7 +194,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     return nil;
 }
 
-//
+// show locateMeBtn when user tracking mode changed to not follow
 - (void)            mapView:(MKMapView *)mapView
   didChangeUserTrackingMode:(MKUserTrackingMode)mode
                    animated:(BOOL)animated
@@ -184,7 +217,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
 }
 
-//
+// make a network update call when user has moved a certain distance
 -       (void) mapView:(MKMapView *)mapView
  didUpdateUserLocation:(MKUserLocation *)userLocation
 {
@@ -216,11 +249,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             [mapAnnotationsDictionary setObject:locationObject forKey:key];
         }
     }
+    [self setStatusBarMomentLabel];
 }
 
 #pragma mark - @selector
 
-//
+// handle pinch gesture call
 - (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture
 {
     float scale = [self getScale];
@@ -262,6 +296,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - initialize and allocate objects
 
+// register pinch gesture recognizer callback
 - (void)setupPinchGesture
 {
     pinchRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
@@ -289,6 +324,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
 }
 
+// initialize and allocate memory for annotation view
 - (void) setupAnnotationView
 {
     for (id key in mapAnnotationsDictionary)
@@ -338,7 +374,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - IBActions
 
-//
+// switch user tracking mode to MKUserTrackingModeFollow
 - (IBAction)onLocateMeBtn:(id)sender
 {
     if ([myMapView userTrackingMode] != MKUserTrackingModeFollow)
