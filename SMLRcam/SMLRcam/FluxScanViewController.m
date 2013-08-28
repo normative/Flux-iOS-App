@@ -911,7 +911,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
-    [self restartAVCaptureWithBlur:NO];
+    [self restartAVCaptureWithBlur:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

@@ -28,6 +28,11 @@
 	<string>5</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>AKKURAT.ttf</string>
+		<string>AKKURATB.ttf</string>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -40,6 +45,8 @@
 	</array>
 	<key>UIStatusBarHidden</key>
 	<true/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDefault</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -48,11 +55,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>AKKURAT.ttf</string>
-		<string>AKKURATB.ttf</string>
-	</array>
+	<false/>
 </dict>
 </plist>
