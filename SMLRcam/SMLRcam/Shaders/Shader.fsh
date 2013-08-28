@@ -67,12 +67,12 @@ void main()
 varying lowp vec2 ttmp;
 varying highp vec4 texCoordVarying[8];
 uniform sampler2D textureSampler[8];
-uniform lowp mat4 textureModelMatrix;
+uniform highp mat4 textureModelMatrix;
 void main()
 {
     lowp vec2  ttemp;
-    lowp vec4 resultVec;
-    lowp vec4 tempVec;
+    highp vec4 resultVec;
+    highp vec4 tempVec;
     ttemp = ttmp;
     int flag =0;
     highp vec2 projCoord = texCoordVarying[0].st/ texCoordVarying[0].q;
@@ -143,11 +143,22 @@ void main()
             if(projCoord.s >0.0 && projCoord.t> 0.0)
             {
                 projCoord.t = 1.0 - projCoord.t;
-                tempVec.xy = projCoord.st;
+               
+                tempVec.x = -0.5 + projCoord.s;
+                tempVec.y = -0.5 + projCoord.t;
+                tempVec.z = 0.0;
+                tempVec.w =1.0;
+                
+                
                 
                 resultVec = textureModelMatrix * tempVec;
+                resultVec.x = 0.5 + resultVec.x;
+                resultVec.y = 0.5 + resultVec.y;
                 
-                gl_FragColor = texture2D(textureSampler[7], projCoord.st).rgba;
+
+                
+                
+                gl_FragColor = texture2D(textureSampler[7], resultVec.st).rgba;
                 
             }
         }

@@ -1245,9 +1245,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   //  tMVP = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
     tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
 
-    _tBiasMVP[6] = GLKMatrix4Multiply(textranslate2, tmpmatrix);
+    _tBiasMVP[6] = texrotate;
     
-    _tBiasMVP[6] = GLKMatrix4Identity;
+   // _tBiasMVP[6] = GLKMatrix4Identity;
     _tBiasMVP[7] = GLKMatrix4Multiply(biasMatrix,tMVP);
   
   [self updateBuffers];
