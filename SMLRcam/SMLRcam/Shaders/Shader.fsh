@@ -67,9 +67,12 @@ void main()
 varying lowp vec2 ttmp;
 varying highp vec4 texCoordVarying[8];
 uniform sampler2D textureSampler[8];
+uniform lowp mat4 textureModelMatrix;
 void main()
 {
     lowp vec2  ttemp;
+    lowp vec4 resultVec;
+    lowp vec4 tempVec;
     ttemp = ttmp;
     int flag =0;
     highp vec2 projCoord = texCoordVarying[0].st/ texCoordVarying[0].q;
@@ -130,9 +133,29 @@ void main()
             flag =1;
         }
     }
-   
-        gl_FragColor =texture2D(textureSampler[7],texCoordVarying[7].st);
     
+    if(flag==0)
+    {
+        projCoord = texCoordVarying[7].st/ texCoordVarying[7].q;
+        if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[7].q >0.0)
+        {
+            
+            if(projCoord.s >0.0 && projCoord.t> 0.0)
+            {
+                projCoord.t = 1.0 - projCoord.t;
+                tempVec.xy = projCoord.st;
+                
+                resultVec = textureModelMatrix * tempVec;
+                
+                gl_FragColor = texture2D(textureSampler[7], projCoord.st).rgba;
+                
+            }
+        }
+       //gl_FragColor = texture2D(textureSampler[7], texCoordVarying[7].xy);
+      // gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
+    
+   // gl_FragColor = texture2D(textureSampler[7], texCoordVarying.st).rgba;
 }
 
 

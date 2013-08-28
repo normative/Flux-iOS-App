@@ -94,6 +94,7 @@
     // first get an instance from storyboard
     openGLController = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
     [openGLController setTheDelegate:self];
+    
     // then add the glkview as the subview of the parent view
     [self.view insertSubview:openGLController.view belowSubview:headerView];
     // add the glkViewController as the child of self

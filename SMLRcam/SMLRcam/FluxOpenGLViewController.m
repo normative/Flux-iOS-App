@@ -282,7 +282,7 @@ void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float d
     for(i=0;i<4;i++)
     {
        result[i] = GLKMatrix4MultiplyVector4( (rotationMatrix), pts[i]);
-       fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
+       //fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
     }
 
     
@@ -314,7 +314,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     GLKVector3 v = GLKMatrix4MultiplyVector3(usp->rotationMatrix, zRay);
     
     
-    NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+    //NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
@@ -375,7 +375,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     //calculateCoordinatesTP(userLocation, sp->position, &positionTP);
     
-    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
+   // NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
 
    // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
@@ -384,7 +384,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     
-    NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+   // NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
@@ -445,11 +445,11 @@ void compute_new_intersection()
     GLKVector4 _ray = GLKMatrix4MultiplyVector4(rotationMat, _z_ray);
     GLKVector3 _v = GLKVector3Make(_ray.x, _ray.y, _ray.z);
     
-    NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
+   // NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
     //float angle_with_y_deg =  180.0/PI* atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
     float angle_with_y_rad =atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
     // fprintf(stderr,"angle_with_y_deg = %.5f \n", angle_with_y_deg);
-    NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
+   // NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
     
     //normal plane
     
@@ -487,9 +487,9 @@ void compute_new_intersection()
     eye_origin = GLKVector3Make(0.0, 0.0, 0.0);
     eye_up = GLKVector3Make(0.0, 0.0, 1.0);
     
-    NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
-    NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
-    NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
+  //  NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
+  //  NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
+   // NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
     
 }
 
@@ -673,7 +673,7 @@ void init(){
 - (void)didUpdateHeading:(NSNotification *)notification{
     //CLLocationDirection heading = locationManager.heading;
     CMAttitude *att = motionManager.attitude;
-    NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
+   // NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
@@ -985,7 +985,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         _tBiasMVP[i] = GLKMatrix4Multiply(biasMatrix,tMVP);
     }
+
+
+
+
+
 }
+
+
 
 - (void)updateBuffers
 {
@@ -1013,8 +1020,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
 }
 - (void)setupBuffers
 {
@@ -1025,9 +1032,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     glGenBuffers(1, &_positionVBO);
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
     
     
     glEnableVertexAttribArray(ATTRIB_VERTEX);
@@ -1063,8 +1070,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     NSError *error;
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    _texture[0] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image0" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Image texture error %@", error);
+    
     
     
     _texture[0] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image0" ofType:@"png"] options:options error:&error];
@@ -1166,7 +1172,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
    //                                        -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
     
     
-       _userPose.position.x =0.0;
+    _userPose.position.x =0.0;
     _userPose.position.y =0.0;
     _userPose.position.z =0.0;
     
@@ -1195,9 +1201,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                  vpuser.at.x, vpuser.at.y, vpuser.at.z ,
                                                  vpuser.up.x, vpuser.up.y, vpuser.up.z);
 
-    NSLog(@"eye origin:x=%f y=%f z=%f", vpuser.origin.x, vpuser.origin.y, vpuser.origin.z);
-    NSLog(@"eye at    :x=%f y=%f z=%f", vpuser.at.x, vpuser.at.y, vpuser.at.z);
-    NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
+  //  NSLog(@"eye origin:x=%f y=%f z=%f", vpuser.origin.x, vpuser.origin.y, vpuser.origin.z);
+  //  NSLog(@"eye at    :x=%f y=%f z=%f", vpuser.at.x, vpuser.at.y, vpuser.at.z);
+  //  NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
     //GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
     
 
@@ -1210,7 +1216,39 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _modelViewProjectionMatrix = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
     
     
+    
+ 
+    
+  
+    
     [self updateImageData];
+    
+    
+  // GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
+ //   GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(1.0f, 0.0f, 0.0f);
+   
+    _imagePose[7].position.x =0.0;
+    _imagePose[7].position.y =0.0;
+    _imagePose[7].position.z =0.0;
+    
+    
+    tViewMatrix =viewMatrix;
+    
+    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(-1.0*PI/2.0, 0.0, 0.0, 1.0);
+    GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(-0.5, -0.5, 0.0);
+    GLKMatrix4 textranslate2 = GLKMatrix4MakeTranslation(0.5, 0.5, 0.0);
+ 
+    GLKMatrix4 tmpmatrix = GLKMatrix4Multiply(texrotate, textranslate);
+    //  modelViewMatrix = GLKMatrix4Multiply(textranslate, texrotate);
+  //  modelViewMatrix = GLKMatrix4Multiply(tViewMatrix, modelViewMatrix);
+    
+  //  tMVP = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
+    tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
+
+    _tBiasMVP[6] = GLKMatrix4Multiply(textranslate2, tmpmatrix);
+    
+    _tBiasMVP[6] = GLKMatrix4Identity;
+    _tBiasMVP[7] = GLKMatrix4Multiply(biasMatrix,tMVP);
   
   [self updateBuffers];
     
@@ -1237,7 +1275,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
-    
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX7], 1, 0, _tBiasMVP[7].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[6].m);
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, texture[0]);
     
@@ -1352,7 +1391,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     uniforms[UNIFORM_TBIASMVP_MATRIX2] = glGetUniformLocation(_program, "tBiasMVP[2]");
     uniforms[UNIFORM_TBIASMVP_MATRIX3] = glGetUniformLocation(_program, "tBiasMVP[3]");
     uniforms[UNIFORM_TBIASMVP_MATRIX4] = glGetUniformLocation(_program, "tBiasMVP[4]");
-    
+    uniforms[UNIFORM_TBIASMVP_MATRIX7] = glGetUniformLocation(_program, "tBiasMVP[7]");
+     uniforms[UNIFORM_TBIASMVP_MATRIX6] = glGetUniformLocation(_program, "textureModelMatrix");
     
     uniforms[UNIFORM_MYTEXTURE_SAMPLER0] = glGetUniformLocation(_program, "textureSampler[0]");
      uniforms[UNIFORM_MYTEXTURE_SAMPLER1] = glGetUniformLocation(_program, "textureSampler[1]");
