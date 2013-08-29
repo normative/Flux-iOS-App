@@ -19,7 +19,7 @@
 @property (nonatomic) float latitude;
 @property (nonatomic) float altitude;
 
-//orientation
+//orientation (euler angles)
 @property (nonatomic) float yaw;
 @property (nonatomic) float pitch;
 @property (nonatomic) float roll;

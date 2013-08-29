@@ -26,7 +26,7 @@
                                                              bundle: nil];
 
     //hide status bar
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     
     FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
     FluxRightDrawerViewController * rightSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxRightDrawerViewController"];

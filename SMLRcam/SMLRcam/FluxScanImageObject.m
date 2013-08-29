@@ -25,6 +25,10 @@
         self.yaw = yaw;
         self.pitch = pitch;
         self.roll = roll;
+        self.qw = qw;
+        self.qx = qx;
+        self.qy = qy;
+        self.qz = qz;
     }
     
     return self;
