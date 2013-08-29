@@ -54,7 +54,7 @@
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
 		AA349A2E17C5420700C72E24 /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = AA349A2D17C5420700C72E24 /* Shaders */; };
-        AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */; };
+		AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */; };
 		AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA47BECB17CBE84300ED9B39 /* AKKURATB.ttf */; };
 		AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */; };
 		AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */; };
@@ -801,7 +801,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -820,7 +820,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;

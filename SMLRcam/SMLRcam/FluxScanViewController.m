@@ -780,11 +780,27 @@
 //             {
 //                 NSLog(@"***Could not create data from image destination ***");
 //             }
-             int userID = 57;
-             int cameraID = 42;
-             int categoryID = 10;
+             int userID = 1;
+             int cameraID = 1;
+             int categoryID = 1;
              
-             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll andQW:att.quaternion.w andQX:att.quaternion.x andQY:att.quaternion.y andQZ:att.quaternion.z];
+             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage
+                                                              fromUserWithID:userID
+                                                           atTimestampString:[[NSDate date]description]
+                                                                 andCameraID:cameraID
+                                                               andCategoryID:categoryID
+                                                       withDescriptionString:@""
+                                                                 andlatitude:location.coordinate.latitude
+                                                                andlongitude:location.coordinate.longitude
+                                                                 andaltitude:location.altitude
+                                                                  andHeading:heading
+                                                                      andYaw:att.yaw
+                                                                    andPitch:att.pitch
+                                                                     andRoll:att.roll
+                                                                       andQW:att.quaternion.w
+                                                                       andQX:att.quaternion.x
+                                                                       andQY:att.quaternion.y
+                                                                       andQZ:att.quaternion.z];
              
              //cleanup
 //             CFRelease(destination);
