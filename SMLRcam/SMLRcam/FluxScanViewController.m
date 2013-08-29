@@ -748,7 +748,7 @@
              [self setUIForCamMode:[NSNumber numberWithInt:2]];
              [UIView animateWithDuration:0.09 animations:^{
                  [blackView setAlpha:0.0];
-             }completion:^(BOOL finished){
+             } completion:^(BOOL finished) {
                  [blackView setHidden:YES];
              }];
          }

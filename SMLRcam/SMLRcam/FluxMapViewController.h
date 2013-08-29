@@ -14,8 +14,12 @@
 
 @class FluxScanImageObject;
 
-@interface FluxMapViewController : UIViewController<MKMapViewDelegate, NetworkServicesDelegate> {
-    UIImageView *myLocationPinImageview;
+@interface FluxMapViewController : UIViewController<MKMapViewDelegate, UIGestureRecognizerDelegate, NetworkServicesDelegate>
+{
+    UIActivityIndicatorView *activityIndicator;
+    
+    //
+    UIPinchGestureRecognizer *pinchRecognizer;
     
     // Currnet View Orientation Direction
     UIInterfaceOrientation myViewOrientation;
@@ -43,10 +47,10 @@
     //network service
     FluxNetworkServices *networkServiceManager;
 }
+
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
 @property (nonatomic, strong) NSMutableDictionary *mapAnnotationsDictionary;
 
-- (IBAction)onExitMapBtn:(id)sender;
 - (IBAction)onLocateMeBtn:(id)sender;
 
 @end

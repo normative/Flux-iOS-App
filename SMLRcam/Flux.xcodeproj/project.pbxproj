@@ -49,6 +49,7 @@
 		AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFF17AAD09500725AB1 /* MMDrawerVisualState.m */; };
 		AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */; };
 		AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */; };
+		AA1BCE3C17CD0ADD00136EFF /* FluxMapButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1BCE3B17CD0ADD00136EFF /* FluxMapButton.m */; };
 		AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */; };
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
@@ -144,6 +145,8 @@
 		AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MMDrawerController.m"; sourceTree = "<group>"; };
 		AA134B0C17AAD17200725AB1 /* FluxLeftDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLeftDrawerViewController.h; sourceTree = "<group>"; };
 		AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerViewController.m; sourceTree = "<group>"; };
+		AA1BCE3A17CD0ADD00136EFF /* FluxMapButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapButton.h; sourceTree = "<group>"; };
+		AA1BCE3B17CD0ADD00136EFF /* FluxMapButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMapButton.m; sourceTree = "<group>"; };
 		AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSegmentedTableViewCell.h; sourceTree = "<group>"; };
 		AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSegmentedTableViewCell.m; sourceTree = "<group>"; };
 		AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewerImageUtil.h; sourceTree = "<group>"; };
@@ -456,6 +459,8 @@
 				AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */,
 				AA7457B817BA78CF008988C1 /* FluxRotatingCompassButton.h */,
 				AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */,
+				AA1BCE3A17CD0ADD00136EFF /* FluxMapButton.h */,
+				AA1BCE3B17CD0ADD00136EFF /* FluxMapButton.m */,
 				AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */,
 				AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */,
 				AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */,
@@ -683,6 +688,7 @@
 				AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA7457BA17BA78CF008988C1 /* FluxRotatingCompassButton.m in Sources */,
+				AA1BCE3C17CD0ADD00136EFF /* FluxMapButton.m in Sources */,
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
 				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
