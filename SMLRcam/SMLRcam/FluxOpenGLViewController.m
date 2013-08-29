@@ -827,6 +827,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [_session startRunning];
 }
 
+-(void)pauseAVCapture
+{
+    if (_session !=nil && [_session isRunning])
+    {
+        [_session stopRunning];
+    }
+}
+
+//restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
+-(void)restartAVCapture
+{
+    //start AVCapture
+    if (_session !=nil  && ![_session isRunning])
+    {
+        [_session startRunning];
+    }
+}
+
 - (void)tearDownAVCapture
 {
     [self cleanUpTextures];
@@ -863,29 +881,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
            _sessionPreset = AVCaptureSessionPreset640x480;
     
-    
-    
-    
-    
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-        // Call these immediately since location is not always updated frequently (use current value)
-        [self didUpdateHeading:nil];
-        [self didUpdateLocation:nil];
-    }
-    
-    [self startDeviceMotion];
-    
     [self setupGL];
     [self setupAVCapture];
 }
 
-/*
 - (void)viewWillAppear:(BOOL)animated
 {
-   
+    [super viewWillAppear:animated];
+    
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -896,17 +899,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     [self startDeviceMotion];
+    [self restartAVCapture];
+    
      NSLog(@"View Did Appear");
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     
     [self stopDeviceMotion];
+    [self pauseAVCapture];
 }
-*/
+
 - (void)dealloc
 {
     motionManager = nil;
