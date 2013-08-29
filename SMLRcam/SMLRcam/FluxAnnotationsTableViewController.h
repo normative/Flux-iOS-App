@@ -15,6 +15,7 @@
 @interface FluxAnnotationsTableViewController : UITableViewController <NetworkServicesDelegate>
 {
     FluxNetworkServices *networkServices;
+    CAGradientLayer* maskLayer;
 }
 @property (nonatomic, strong)NSMutableDictionary*tableViewdict;
 

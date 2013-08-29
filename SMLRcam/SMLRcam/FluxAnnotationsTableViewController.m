@@ -9,6 +9,7 @@
 #import "FluxAnnotationsTableViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxScanImageObject.h"
+#import <QuartzCore/QuartzCore.h>
 
 #import "IDMPhotoBrowser.h"
 
@@ -43,10 +44,41 @@
     return 1;
 }
 
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    return @"Tags Nearby";
+}
+
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UILabel *label = [[UILabel alloc] init];
+    label.frame = CGRectMake(20, 0, 100, 22);
+    label.textColor = [UIColor lightGrayColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor clearColor];
+    
+    UIView*backgroundView = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, 24)];
+    [backgroundView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
+    
+    // Create header view and add label as a subview
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 22)];
+    [view setBackgroundColor:[UIColor clearColor]];
+    [view addSubview:backgroundView];
+    [view addSubview:label];
+    
+    
+    
+    return view;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
     return [self.tableViewdict count];
+}
+
+- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
+    return cell.frame.size.height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -77,29 +109,26 @@
     return cell;
 }
 
+//remove all but selected cell - not called right now
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
-//    NSArray *photosURL = @[[NSURL URLWithString:@"http://farm4.static.flickr.com/3567/3523321514_371d9ac42f_b.jpg"],
-//                           [NSURL URLWithString:@"http://farm4.static.flickr.com/3629/3339128908_7aecabc34b_b.jpg"],
-//                           [NSURL URLWithString:@"http://farm4.static.flickr.com/3364/3338617424_7ff836d55f_b.jpg"],
-//                           [NSURL URLWithString:@"http://farm4.static.flickr.com/3590/3329114220_5fbc5bc92b_b.jpg"]];
-//    
-//    // Create an array to store IDMPhoto objects
-//    NSMutableArray *photos = [[NSMutableArray alloc] init];
-//    
-//    for (NSURL *url in photosURL) {
-//        IDMPhoto *photo = [IDMPhoto photoWithURL:url];
-//        [photos addObject:photo];
-//    }
-//    
-//    //IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:[tableView cellForRowAtIndexPath:indexPath].contentView];
-//    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos];
-//    browser.displayArrowButton = NO;
-//    
-//    // Show
-//    [self presentViewController:browser animated:YES completion:nil];
-    
+    NSMutableArray *cellIndicesToBeDeleted = [[NSMutableArray alloc] init];
+    for (int i = 0; i < [tableView numberOfRowsInSection:0]; i++) {
+        if (i != indexPath.row) {
+            NSIndexPath *p = [NSIndexPath indexPathForRow:i inSection:1];
+            [cellIndicesToBeDeleted addObject:p];
+        }
+    }
+    [tableView deleteRowsAtIndexPaths:cellIndicesToBeDeleted
+                     withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.view.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
+    [CATransaction commit];
 }
 
 /*
@@ -173,6 +202,10 @@
 
 }
 - (void)showPopoverAnimated:(BOOL)animated{
+    if ([self.tableViewdict count]>0) {
+        [self.tableView reloadData];
+        [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+    }
     if (animated) {
         [self.view setHidden:NO];
         [UIView animateWithDuration:0.3f
@@ -208,6 +241,7 @@
     if(self = [super initWithCoder:aDecoder])
     {
         self.tableViewdict = [[NSMutableDictionary alloc] init];
+        
     }
     return self;
 }
@@ -218,16 +252,13 @@
     
     networkServices = [[FluxNetworkServices alloc]init];
     [networkServices setDelegate:self];
+    [self.view setBackgroundColor:[UIColor clearColor]];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
-- (void)viewDidAppear:(BOOL)animated{
-    
 }
 
 - (void)didReceiveMemoryWarning
