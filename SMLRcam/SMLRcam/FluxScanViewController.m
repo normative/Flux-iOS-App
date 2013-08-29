@@ -738,9 +738,7 @@
              int cameraID = 42;
              int categoryID = 10;
              
-             NSString* username = @"username57";
-             
-             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andUsername:username andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll andQW:att.quaternion.w andQX:att.quaternion.x andQY:att.quaternion.y andQZ:att.quaternion.z];
+             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll andQW:att.quaternion.w andQX:att.quaternion.x andQY:att.quaternion.y andQZ:att.quaternion.z];
              
              //cleanup
 //             CFRelease(destination);

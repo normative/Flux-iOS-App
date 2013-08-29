@@ -48,7 +48,6 @@
 - (id)initWithImage:(UIImage*)img
      fromUserWithID:(int)userID
   atTimestampString:(NSString*)timestampStr
-        andUsername:(NSString*)username
         andCameraID:(int)camID
       andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
