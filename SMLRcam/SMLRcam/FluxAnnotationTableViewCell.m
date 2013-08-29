@@ -17,7 +17,17 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
+
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    if(self = [super initWithCoder:aDecoder]) {
         [self.descriptionLabel setAdjustsFontSizeToFitWidth:YES];
+        [self.descriptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptionLabel.font.pointSize]];
+        [self.userLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.userLabel.font.pointSize]];
+        [self.timestampLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.timestampLabel.font.pointSize]];
     }
     return self;
 }

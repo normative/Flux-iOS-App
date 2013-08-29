@@ -15,7 +15,12 @@
 @interface FluxAnnotationsTableViewController : UITableViewController <NetworkServicesDelegate>
 {
     FluxNetworkServices *networkServices;
+    CAGradientLayer* maskLayer;
 }
 @property (nonatomic, strong)NSMutableDictionary*tableViewdict;
+
+- (void)dismissPopoverAnimated:(BOOL)animated;
+- (void)showPopoverAnimated:(BOOL)animated;
+- (BOOL)popoverIsHidden;
 
 @end

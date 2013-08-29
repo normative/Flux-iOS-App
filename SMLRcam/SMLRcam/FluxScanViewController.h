@@ -10,7 +10,6 @@
 
 #import "MMDrawerBarButtonItem.h"
 #import "FluxMapViewController.h"
-#import "FPPopoverController.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxOpenGLViewController.h"
 
@@ -54,6 +53,7 @@
     
     UIPanGestureRecognizer *panGesture;
     UILongPressGestureRecognizer *longPressGesture;
+    UITapGestureRecognizer *tapGesture;
     NSDateFormatter *dateFormatter;
     float previousYCoord;
     float startXCoord;
@@ -79,7 +79,7 @@
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
-- (IBAction)showAnnotationsView:(id)sender;
+- (IBAction)annotationsButtonAction:(id)sender;
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
 - (IBAction)retakeImageAction:(id)sender;
@@ -98,6 +98,7 @@
 - (void)annotationsViewDidPop:(NSNotification *)notification;
 
 - (void)setupGestureHandlers;
+- (void)handleTapGesture:(UITapGestureRecognizer*) sender;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
 - (void)setThumbViewDate:(float)yCoord;
