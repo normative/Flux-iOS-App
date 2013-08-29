@@ -20,11 +20,17 @@
 @property (nonatomic) float latitude;
 @property (nonatomic) float altitude;
 
-//orientation
+//orientation (euler angles)
 @property (nonatomic) float yaw;
 @property (nonatomic) float pitch;
 @property (nonatomic) float roll;
 @property (nonatomic) float heading;
+
+// orientation (quaternions)
+@property (nonatomic) float qw;
+@property (nonatomic) float qx;
+@property (nonatomic) float qy;
+@property (nonatomic) float qz;
 
 //other
 @property (nonatomic, strong) NSString* timestampString;
@@ -46,7 +52,11 @@ withDescriptionString:(NSString*)description
            andHeading:(float)heading
                andYaw:(float)yaw
              andPitch:(float)pitch
-              andRoll:(float)roll;
+              andRoll:(float)roll
+                andQW:(float)qw
+                andQX:(float)qx
+                andQY:(float)qy
+                andQZ:(float)qz;
 
 // MKAnnoation getter methods;
 - (NSString *)title;

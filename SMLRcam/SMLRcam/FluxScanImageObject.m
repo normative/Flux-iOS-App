@@ -48,7 +48,11 @@ withDescriptionString:(NSString*)description
          andHeading:(float)heading
              andYaw:(float)yaw
            andPitch:(float)pitch
-            andRoll:(float)roll;
+            andRoll:(float)roll
+              andQW:(float)qw
+              andQX:(float)qx
+              andQY:(float)qy
+              andQZ:(float)qz;
 {
     self = [super init];
     if (self)
@@ -66,6 +70,10 @@ withDescriptionString:(NSString*)description
         self.yaw = yaw;
         self.pitch = pitch;
         self.roll = roll;
+        self.qw = qw;
+        self.qx = qx;
+        self.qy = qy;
+        self.qz = qz;
     }
     
     return self;

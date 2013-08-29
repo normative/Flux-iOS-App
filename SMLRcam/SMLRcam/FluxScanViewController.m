@@ -579,6 +579,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     // Collect position and orientation information prior to copying image
     CLLocation *location = locationManager.location;
     CMAttitude *att = motionManager.deviceMotion.attitude;
+    // TODO: motionManager.deviceMotion.attitude.quaternion.
     CLLocationDirection heading = locationManager.heading;
     
     __block NSDate *endTime = [NSDate date];
@@ -749,9 +750,16 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 //             }
              int userID = 57;
              int cameraID = 42;
-             int categoryID = 10;
+             int categoryID = 1;
              
-             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll];
+             // TODO: these need to be set up from the orientation
+             CGFloat qw = 1.2;
+             CGFloat qx = 3.4;
+             CGFloat qy = 5.6;
+             CGFloat qz = 7.8;
+             
+             
+             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll andQW:qw andQX:qx andQY:qy andQZ:qz];
              
              //cleanup
 //             CFRelease(destination);
