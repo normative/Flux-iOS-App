@@ -16,6 +16,8 @@
 
 @interface FluxMapViewController : UIViewController<MKMapViewDelegate, UIGestureRecognizerDelegate, NetworkServicesDelegate>
 {
+    UIActivityIndicatorView *activityIndicator;
+    
     //
     UIPinchGestureRecognizer *pinchRecognizer;
     

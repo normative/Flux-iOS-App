@@ -38,7 +38,8 @@
 
 - (id)initWithImage:(UIImage*)img
      fromUserWithID:(int)userID
-  atTimestampString:(NSString*)timestampStr
+  atTimestampString:(NSString *)timestampStr
+        andUsername:(NSString *)username
         andCameraID:(int)camID
       andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
@@ -55,6 +56,7 @@ withDescriptionString:(NSString*)description
     {
         self.contentImage = img;
         self.userID = userID;
+        self.username = username;
         self.cameraID = camID;
         self.categoryID = catID;
         self.timestampString = timestampStr;

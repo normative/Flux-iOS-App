@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
+#import <GLKit/GLKit.h>
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
@@ -28,7 +29,11 @@
 
 //other
 @property (nonatomic, strong) NSString* timestampString;
+@property (nonatomic, strong) NSString* username;
 @property (nonatomic, strong) NSString* descriptionString;
+
+@property (nonatomic) GLKQuaternion rotation;
+
 @property (nonatomic) int categoryID;
 @property (nonatomic) int cameraID;
 @property (nonatomic) int imageID;
@@ -37,6 +42,7 @@
 - (id)initWithImage:(UIImage*)img
      fromUserWithID:(int)userID
   atTimestampString:(NSString*)timestampStr
+        andUsername:(NSString*)username
         andCameraID:(int)camID
       andCategoryID:(int)catID
 withDescriptionString:(NSString*)description

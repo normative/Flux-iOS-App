@@ -100,10 +100,23 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - delegate methods
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage*)image forImageID:(int)imageID
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
+         didreturnImage:(UIImage*)image
+             forImageID:(int)imageID
 {
-    // add missing image
-    
+    for (FluxScanImageObject *annotation in myMapView.annotations)
+    {
+        if (annotation.imageID == imageID)
+        {
+            annotation.contentImage = image;
+         
+            FluxScanImageObject *mapAnnotationObject = [mapAnnotationsDictionary objectForKey: [NSNumber numberWithInt:imageID]];
+            mapAnnotationObject.contentImage = image;
+            
+            [activityIndicator stopAnimating];
+            break;
+        }
+    }
 }
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
@@ -112,21 +125,26 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
         
-        if (annotation.contentImage != nil) {
+        if (annotation.contentImage != nil)
+        {
             view.leftCalloutAccessoryView = [[UIImageView alloc] initWithImage: annotation.contentImage];
         }
         else
         {
-            [networkServiceManager getImageForID:annotation.imageID];
+            activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [activityIndicator startAnimating];
+            view.leftCalloutAccessoryView = activityIndicator;
+            
+            [networkServiceManager getThumbImageForID:annotation.imageID];
         }
     }
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
-    if (![view isKindOfClass:[MKUserLocation class]] && [view.leftCalloutAccessoryView.layer animationForKey:@"loadingAnimation"])
+    if (![view isKindOfClass:[MKUserLocation class]] && [activityIndicator isAnimating])
     {
-        [view.leftCalloutAccessoryView.layer removeAnimationForKey:@"loadingAnimation"];
+        [activityIndicator stopAnimating];
     }
 }
 
@@ -156,8 +174,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             locationAnnotationView.enabled = YES;
             locationAnnotationView.canShowCallout = YES;
             locationAnnotationView.image = [UIImage imageNamed:@"locationPin.png"];
-            
-            locationAnnotationView.leftCalloutAccessoryView = [[UIImageView alloc] initWithImage: [UIImage imageNamed:@"loading.png"]];
         }
         else
         {
@@ -446,6 +462,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupPinchGesture];
     [self setupLocationManager];
+    [self setupNetworkServiceManager];
     [self setupMapView];
     [self setupStatusBarContent];
     [self setupAnnotationView];

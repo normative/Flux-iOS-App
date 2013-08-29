@@ -751,7 +751,22 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
              int cameraID = 42;
              int categoryID = 10;
              
-             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll];
+             NSString* username = [NSString stringWithFormat: @"Username%i", userID];
+             
+             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage
+                                                              fromUserWithID:userID
+                                                           atTimestampString:[[NSDate date]description]
+                                                                 andUsername: @""
+                                                                 andCameraID:cameraID
+                                                               andCategoryID:categoryID
+                                                       withDescriptionString:username
+                                                                 andlatitude:location.coordinate.latitude
+                                                                andlongitude:location.coordinate.longitude
+                                                                 andaltitude:location.altitude
+                                                                  andHeading:heading
+                                                                      andYaw:att.yaw
+                                                                    andPitch:att.pitch
+                                                                     andRoll:att.roll];
              
              //cleanup
 //             CFRelease(destination);
@@ -761,7 +776,7 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
              [self setUIForCamMode:[NSNumber numberWithInt:2]];
              [UIView animateWithDuration:0.09 animations:^{
                  [blackView setAlpha:0.0];
-             }completion:^(BOOL finished){
+             } completion:^(BOOL finished) {
                  [blackView setHidden:YES];
              }];
          }
