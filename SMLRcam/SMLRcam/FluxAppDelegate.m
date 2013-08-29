@@ -45,7 +45,7 @@
          BOOL shouldRecognizeTouch = NO;
          if(drawerController.openSide == MMDrawerSideNone &&
             [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
-             UIView * customView = scanViewController.leftDrawerButton;
+             UIView * customView = scanViewController.drawerContainerView;
              CGPoint location = [touch locationInView:customView];
              shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
          }
@@ -74,6 +74,8 @@
         [defaults synchronize];
     }
     
+    
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];
     // Override point for customization after application launch.
@@ -81,9 +83,7 @@
     [self.window makeKeyAndVisible];
     return YES;
     
-//    // Override point for customization after application launch.
-//    [self.window makeKeyAndVisible];
-//    return YES;
+
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application

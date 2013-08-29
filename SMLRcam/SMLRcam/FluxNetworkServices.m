@@ -14,7 +14,8 @@
 
 
 //serverURL
-#define externServerURL @"http://blooming-bastion-5493.herokuapp.com/"
+//#define externServerURL @"http://54.221.222.71/"
+#define externServerURL @"http://54.221.254.230/"
 #define localServerURL @"http://192.168.0.65/"
 
 @implementation FluxNetworkServices
@@ -195,7 +196,6 @@
 }
 
 - (void)uploadImage:(FluxScanImageObject*)img{
-   NSLog(@"%d",img.contentImage.imageOrientation);
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:img method:RKRequestMethodPOST path:@"/images" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         [formData appendPartWithFileData:UIImageJPEGRepresentation(img.contentImage, 1.0)
