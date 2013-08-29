@@ -18,6 +18,9 @@
 #import <AVFoundation/AVFoundation.h>
 #import "FluxLocationServicesSingleton.h"
 #import "FluxNetworkServices.h"
+#import <CoreMotion/CoreMotion.h>
+
+#import <dispatch/dispatch.h>
 
 @class FluxRotatingCompassButton;
 
@@ -29,7 +32,16 @@
     AVCaptureVideoPreviewLayer *previewLayer;
     AVCaptureVideoDataOutput *videoDataOutput;
 	dispatch_queue_t videoDataOutputQueue;
+    AVCaptureStillImageOutput *stillImageOutput;
     AVCaptureDevice *device;
+    
+    UIImageView *gridView;
+    NSNumber* camMode; //0 = off, 1 = on, 2 = confirm
+    FluxScanImageObject *capturedImageObject;
+    UIImage *capturedImage;
+    UIView *blackView;
+    UIImageView*blurView;
+    dispatch_queue_t AVCaptureBackgroundQueue;
     
     UIInterfaceOrientation changeToOrientation;
 
@@ -37,33 +49,53 @@
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;
+
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
+    
+    UIPanGestureRecognizer *panGesture;
+    UILongPressGestureRecognizer *longPressGesture;
     NSDateFormatter *dateFormatter;
     float previousYCoord;
+    float startXCoord;
     
     FluxOpenGLViewController*openGLController;
     
     FluxLocationServicesSingleton *locationManager;
+    CMMotionManager *motionManager;
     FluxNetworkServices *networkServices;
     
 }
 
-@property (nonatomic, strong) FluxClockSlidingControl*thumbView;
 @property (nonatomic, strong)NSMutableDictionary*imageDict;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
-- (void)didUpdateHeading:(NSNotification *)notification;
-- (void)didUpdateLocation:(NSNotification *)notification;
+@property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
+@property (weak, nonatomic) IBOutlet UIView *cameraApproveContainerView;
+@property (nonatomic, strong) FluxClockSlidingControl*thumbView;
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
+- (void)didUpdateHeading:(NSNotification *)notification;
+- (void)didUpdateLocation:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
 - (IBAction)showAnnotationsView:(id)sender;
+- (IBAction)cameraButtonAction:(id)sender;
+- (IBAction)approveImageAction:(id)sender;
+- (IBAction)retakeImageAction:(id)sender;
 
 - (void)setupAVCapture;
 - (void)setupNetworkServices;
 - (void)setupOpenGLView;
+- (void)takePicture;
+- (UIImage*)blurImage:(UIImage*)img;
+-(void)restartAVCaptureWithBlur:(BOOL)blur;
+-(void)pauseAVCapture;
+
+
+- (void)setupCameraView;
+- (void)setUIForCamMode:(NSNumber*)mode;
+- (void)annotationsViewDidPop:(NSNotification *)notification;
 
 - (void)setupGestureHandlers;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
