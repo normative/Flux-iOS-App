@@ -156,6 +156,42 @@
 
 #pragma mark - view lifecycle
 
+- (void)dismissPopoverAnimated:(BOOL)animated{
+    if (animated) {
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [self.view setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished){
+                             [self.view setHidden:YES];
+                         }];
+    }
+    else{
+        [self.view setAlpha:0.0];
+        [self.view setHidden:YES];
+    }
+
+}
+- (void)showPopoverAnimated:(BOOL)animated{
+    if (animated) {
+        [self.view setHidden:NO];
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [self.view setAlpha:1.0];
+                         }
+                         completion:nil];
+    }
+    else{
+        [self.view setHidden:NO];
+        [self.view setAlpha:1.0];
+    }
+
+}
+
+- (BOOL)popoverIsHidden{
+    return self.view.isHidden;
+}
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -188,6 +224,10 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    
 }
 
 - (void)didReceiveMemoryWarning

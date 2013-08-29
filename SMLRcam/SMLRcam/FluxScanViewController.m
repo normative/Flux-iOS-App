@@ -108,15 +108,14 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
 
 //show list of images currently visible
 - (IBAction)showAnnotationsView:(id)sender {
-    FluxAnnotationsTableViewController *annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
- 
-    [annotationsFeedView setTableViewdict: self.imageDict];
-
-    popover = [[FPPopoverController alloc] initWithViewController:annotationsFeedView];
-    popover.arrowDirection = FPPopoverNoArrow;
     
-    //the popover will be presented from the okButton view
-    [popover presentPopoverFromView:sender];
+    if ([annotationsFeedView.view isHidden]) {
+        [annotationsFeedView setTableViewdict:self.imageDict];
+        [annotationsFeedView showPopoverAnimated:YES];
+    }
+    else{
+        [annotationsFeedView dismissPopoverAnimated:YES];
+    }
 }
 
 # pragma mark - prepare segue action with identifer
@@ -449,6 +448,12 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     [blurView setAlpha:0.0];
     [blurView setHidden:YES];
     [self.view addSubview:blurView];
+    
+    annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
+    [annotationsFeedView.view setFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
+    [annotationsFeedView.view setHidden:YES];
+    [annotationsFeedView.view setAlpha:0.0];
+    [self.view addSubview:annotationsFeedView.view];
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
@@ -860,9 +865,9 @@ static CGFloat RadiansToDegrees(CGFloat radians) {return radians * 180.0 / M_PI;
     {
         changeToOrientation = toInterfaceOrientation;
         
-        if (popover != nil)
+        if (![annotationsFeedView popoverIsHidden])
         {
-            [popover dismissPopoverAnimated:NO];
+            [annotationsFeedView dismissPopoverAnimated:NO];
         }
         
         [self performSegueWithIdentifier:@"pushMapModalView" sender:self];

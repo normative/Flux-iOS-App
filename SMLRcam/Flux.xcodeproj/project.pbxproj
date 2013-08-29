@@ -50,9 +50,6 @@
 		AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */; };
 		AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */; };
 		AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */; };
-		AA4CE16717B919F1008D04BE /* FPPopoverController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE16217B919F1008D04BE /* FPPopoverController.m */; };
-		AA4CE16817B919F1008D04BE /* FPPopoverView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE16417B919F1008D04BE /* FPPopoverView.m */; };
-		AA4CE16917B919F1008D04BE /* FPTouchView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE16617B919F1008D04BE /* FPTouchView.m */; };
 		AA4CE16D17B921E1008D04BE /* FluxAnnotationsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */; };
 		AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */; };
 		AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */; };
@@ -141,15 +138,8 @@
 		AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMotionManagerSingleton.m; sourceTree = "<group>"; };
 		AA4CE15D17B58433008D04BE /* FluxScanImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxScanImageObject.h; sourceTree = "<group>"; };
 		AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxScanImageObject.m; sourceTree = "<group>"; };
-		AA4CE16117B919F1008D04BE /* FPPopoverController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverController.h; sourceTree = "<group>"; };
-		AA4CE16217B919F1008D04BE /* FPPopoverController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPopoverController.m; sourceTree = "<group>"; };
-		AA4CE16317B919F1008D04BE /* FPPopoverView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPPopoverView.h; sourceTree = "<group>"; };
-		AA4CE16417B919F1008D04BE /* FPPopoverView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPPopoverView.m; sourceTree = "<group>"; };
-		AA4CE16517B919F1008D04BE /* FPTouchView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FPTouchView.h; sourceTree = "<group>"; };
-		AA4CE16617B919F1008D04BE /* FPTouchView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FPTouchView.m; sourceTree = "<group>"; };
 		AA4CE16B17B921E1008D04BE /* FluxAnnotationsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAnnotationsTableViewController.h; sourceTree = "<group>"; };
 		AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAnnotationsTableViewController.m; sourceTree = "<group>"; };
-		AA4CE16E17B925A2008D04BE /* ARCMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARCMacros.h; sourceTree = "<group>"; };
 		AA4CE18017B9581E008D04BE /* FluxAnnotationTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAnnotationTableViewCell.h; sourceTree = "<group>"; };
 		AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAnnotationTableViewCell.m; sourceTree = "<group>"; };
 		AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTPlaceholderTextView.h; sourceTree = "<group>"; };
@@ -388,20 +378,6 @@
 			name = Network;
 			sourceTree = "<group>";
 		};
-		AA4CE16017B919E2008D04BE /* FPPopover */ = {
-			isa = PBXGroup;
-			children = (
-				AA4CE16E17B925A2008D04BE /* ARCMacros.h */,
-				AA4CE16117B919F1008D04BE /* FPPopoverController.h */,
-				AA4CE16217B919F1008D04BE /* FPPopoverController.m */,
-				AA4CE16317B919F1008D04BE /* FPPopoverView.h */,
-				AA4CE16417B919F1008D04BE /* FPPopoverView.m */,
-				AA4CE16517B919F1008D04BE /* FPTouchView.h */,
-				AA4CE16617B919F1008D04BE /* FPTouchView.m */,
-			);
-			name = FPPopover;
-			sourceTree = "<group>";
-		};
 		AA4CE16A17B921A3008D04BE /* TopView */ = {
 			isa = PBXGroup;
 			children = (
@@ -435,7 +411,6 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
-				AA4CE16017B919E2008D04BE /* FPPopover */,
 				AA134AF917AAD09500725AB1 /* MMDrawerController */,
 			);
 			name = "3rd Party";
@@ -631,7 +606,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */,
-				AA4CE16817B919F1008D04BE /* FPPopoverView.m in Sources */,
 				AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */,
 				AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */,
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
@@ -642,8 +616,6 @@
 				AA7457BA17BA78CF008988C1 /* FluxRotatingCompassButton.m in Sources */,
 				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
-				AA4CE16917B919F1008D04BE /* FPTouchView.m in Sources */,
-				AA4CE16717B919F1008D04BE /* FPPopoverController.m in Sources */,
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
 				AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */,
 				17604B771785CA59005CF054 /* FluxAppDelegate.m in Sources */,

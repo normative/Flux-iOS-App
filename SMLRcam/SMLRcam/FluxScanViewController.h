@@ -10,8 +10,8 @@
 
 #import "MMDrawerBarButtonItem.h"
 #import "FluxMapViewController.h"
-#import "FPPopoverController.h"
 #import "FluxClockSlidingControl.h"
+#import "FluxAnnotationsTableViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -28,7 +28,7 @@
 
 @interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate,UIGestureRecognizerDelegate>{
     
-    FPPopoverController *popover;
+    FluxAnnotationsTableViewController *annotationsFeedView;
     
     CAEAGLLayer* _eaglLayer;
     EAGLContext* _context;

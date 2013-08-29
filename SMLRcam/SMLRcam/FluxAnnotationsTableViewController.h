@@ -18,4 +18,8 @@
 }
 @property (nonatomic, strong)NSMutableDictionary*tableViewdict;
 
+- (void)dismissPopoverAnimated:(BOOL)animated;
+- (void)showPopoverAnimated:(BOOL)animated;
+- (BOOL)popoverIsHidden;
+
 @end
