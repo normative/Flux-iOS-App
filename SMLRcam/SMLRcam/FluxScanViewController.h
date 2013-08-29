@@ -12,6 +12,7 @@
 #import "FluxMapViewController.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxOpenGLViewController.h"
+#import "FluxAnnotationsTableViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -26,7 +27,7 @@
 
 
 @interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate>{
-    FPPopoverController *popover;
+    FluxAnnotationsTableViewController *annotationsFeedView;
    
     AVCaptureVideoPreviewLayer *previewLayer;
     AVCaptureVideoDataOutput *videoDataOutput;

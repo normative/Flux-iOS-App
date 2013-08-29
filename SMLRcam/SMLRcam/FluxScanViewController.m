@@ -459,28 +459,29 @@
     [blurView setHidden:YES];
     [self.view addSubview:blurView];
     
-    annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
-    [annotationsFeedView.view setFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
-    [annotationsFeedView.view setHidden:YES];
-    [annotationsFeedView.view setAlpha:0.0];
-    [self addChildViewController:annotationsFeedView];
-    [annotationsFeedView didMoveToParentViewController:self];
-    [self.view insertSubview:annotationsFeedView.view belowSubview:headerView];
-    
-    //fade out the bottom of the feedView
-    CAGradientLayer* maskLayer = [CAGradientLayer layer];
-    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
-    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
-    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
-    maskLayer.locations = [NSArray arrayWithObjects:
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.8],
-                           [NSNumber numberWithFloat:1.0], nil];
-    maskLayer.bounds = annotationsFeedView.view.layer.bounds;
-    maskLayer.anchorPoint = CGPointZero;
-    annotationsFeedView.view.layer.mask = maskLayer;
+#warning annotationsTableView is here, commented out
+//    annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
+//    [annotationsFeedView.view setFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
+//    [annotationsFeedView.view setHidden:YES];
+//    [annotationsFeedView.view setAlpha:0.0];
+//    [self addChildViewController:annotationsFeedView];
+//    [annotationsFeedView didMoveToParentViewController:self];
+//    [self.view insertSubview:annotationsFeedView.view belowSubview:headerView];
+//    
+//    //fade out the bottom of the feedView
+//    CAGradientLayer* maskLayer = [CAGradientLayer layer];
+//    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
+//    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
+//    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
+//    maskLayer.locations = [NSArray arrayWithObjects:
+//                           [NSNumber numberWithFloat:0.0],
+//                           [NSNumber numberWithFloat:0.0],
+//                           [NSNumber numberWithFloat:0.0],
+//                           [NSNumber numberWithFloat:0.8],
+//                           [NSNumber numberWithFloat:1.0], nil];
+//    maskLayer.bounds = annotationsFeedView.view.layer.bounds;
+//    maskLayer.anchorPoint = CGPointZero;
+//    annotationsFeedView.view.layer.mask = maskLayer;
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
