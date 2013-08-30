@@ -245,7 +245,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
         
         // heading direction to be improve
-        CGAffineTransform transform = CGAffineTransformRotate(userAnnotationView.transform ,-(float)locationManager.heading*M_PI/180.0);
+        CGAffineTransform transform = CGAffineTransformRotate(userAnnotationView.transform ,(float)locationManager.heading*M_PI/180.0);
         userAnnotationView.transform = transform;
     }
 }
