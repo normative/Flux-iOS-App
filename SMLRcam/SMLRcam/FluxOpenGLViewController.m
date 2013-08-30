@@ -700,45 +700,46 @@ void init(){
         NSLog(@"Error at CVOpenGLESTextureCacheCreate %d", err);
         return;
     }
+//
+//    //-- Setup Capture Session.
+//    _session = [[AVCaptureSession alloc] init];
+//    [_session beginConfiguration];
+//    
+//    //-- Set preset session size.
+//    [_session setSessionPreset:_sessionPreset];
+//    
+//    //-- Creata a video device and input from that Device.  Add the input to the capture session.
+//    AVCaptureDevice * videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+//    if(videoDevice == nil)
+//        assert(0);
+//    
+//    //-- Add the device to the session.
+//    NSError *error;
+//    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
+//    if(error)
+//        assert(0);
+//    
+//    [_session addInput:input];
+//    
+//    //-- Create the output for the capture session.
+//    AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
+//    [dataOutput setAlwaysDiscardsLateVideoFrames:YES]; // Probably want to set this to NO when recording
+//    
+
+//    
+//    // Set dispatch to be on the main thread so OpenGL can do things with the data
+//    [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+//    
+//    [_session addOutput:dataOutput];
+//    [_session commitConfiguration];
+//    
+//    [_session startRunning];
+    cameraManager = [FluxAVCameraSingleton sharedCamera];
+    [cameraManager setSampleBufferDelegate:self forViewController:self];
     
-    //-- Setup Capture Session.
-    _session = [[AVCaptureSession alloc] init];
-    [_session beginConfiguration];
-    
-    //-- Set preset session size.
-    [_session setSessionPreset:_sessionPreset];
-    
-    //-- Creata a video device and input from that Device.  Add the input to the capture session.
-    AVCaptureDevice * videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    if(videoDevice == nil)
-        assert(0);
-    
-    //-- Add the device to the session.
-    NSError *error;
-    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
-    if(error)
-        assert(0);
-    
-    [_session addInput:input];
-    
-    //-- Create the output for the capture session.
-    AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
-    [dataOutput setAlwaysDiscardsLateVideoFrames:YES]; // Probably want to set this to NO when recording
-    
-    //-- Set to 32BGRA.
-    [dataOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]
-                                                             forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
-    
-    // Set dispatch to be on the main thread so OpenGL can do things with the data
-    [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
-    
-    [_session addOutput:dataOutput];
-    [_session commitConfiguration];
-    
-    [_session startRunning];
 }
 
--(void)pauseAVCapture
+-(void)pauseAVCaptureForScanView
 {
     if (_session !=nil && [_session isRunning])
     {
@@ -822,7 +823,7 @@ void init(){
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     
     [self stopDeviceMotion];
-    [self pauseAVCapture];
+    //[self pauseAVCapture];
 }
 
 - (void)dealloc
