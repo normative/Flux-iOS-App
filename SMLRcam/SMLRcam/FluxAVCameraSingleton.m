@@ -61,6 +61,7 @@
             [self.videoDataOutput setVideoSettings:rgbOutputSettings];
             [self.videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
             
+            
             // create a serial dispatch queue used for the sample buffer delegate as well as when a still image is captured
             // a serial dispatch queue must be used to guarantee that video frames will be delivered in order
             // see the header doc for setSampleBufferDelegate:queue: for more information
@@ -70,6 +71,7 @@
                 [self.session addOutput:self.videoDataOutput];
             }
             [[self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
+            
             [self.session startRunning];
         }
         
@@ -108,14 +110,14 @@
     }
 }
 
-- (void)setSampleBufferDelegate:(id < AVCaptureVideoDataOutputSampleBufferDelegate >)sampleBufferDelegate forViewController:(UIViewController *)VC {
-    if ([sampleBufferDelegate isKindOfClass:[GLKViewController class]]) {
-        [self.videoDataOutput setSampleBufferDelegate:sampleBufferDelegate queue:dispatch_get_main_queue()];
-    }
-    else{
-        [self.videoDataOutput setSampleBufferDelegate:sampleBufferDelegate queue:self.videoDataOutputQueue];
-    }    
-}
+//- (void)setSampleBufferDelegate:(id < AVCaptureVideoDataOutputSampleBufferDelegate >)sampleBufferDelegate forViewController:(UIViewController *)VC {
+//    if ([sampleBufferDelegate isKindOfClass:[GLKViewController class]]) {
+//        [self.videoDataOutput setSampleBufferDelegate:sampleBufferDelegate queue:dispatch_get_main_queue()];
+//    }
+//    else{
+//        [self.videoDataOutput setSampleBufferDelegate:sampleBufferDelegate queue:self.videoDataOutputQueue];
+//    }    
+//}
 
 
 @end

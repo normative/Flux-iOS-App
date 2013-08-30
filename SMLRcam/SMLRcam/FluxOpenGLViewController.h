@@ -68,7 +68,6 @@ typedef struct {
     size_t _videoTextureHeight;
     CVOpenGLESTextureRef _videotexture;
     NSString *_sessionPreset;
-    AVCaptureSession *_session;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
     

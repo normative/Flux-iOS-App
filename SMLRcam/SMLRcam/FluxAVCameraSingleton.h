@@ -22,8 +22,6 @@
 -(void)pauseAVCapture;
 - (void)restartAVCapture;
 
-- (void)setSampleBufferDelegate:(id < AVCaptureVideoDataOutputSampleBufferDelegate >)sampleBufferDelegate forViewController:(UIViewController*)VC;
-
 + (id)sharedCamera;
 
 

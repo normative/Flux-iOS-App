@@ -760,14 +760,15 @@ void init(){
 
 //    
 //    // Set dispatch to be on the main thread so OpenGL can do things with the data
-//    [dataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+
 //    
 //    [_session addOutput:dataOutput];
 //    [_session commitConfiguration];
 //    
 //    [_session startRunning];
     cameraManager = [FluxAVCameraSingleton sharedCamera];
-    [cameraManager setSampleBufferDelegate:self forViewController:self];
+    [cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    //[cameraManager setSampleBufferDelegate:self forViewController:self];
     
 }
 
