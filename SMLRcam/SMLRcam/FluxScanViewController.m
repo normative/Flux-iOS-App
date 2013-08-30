@@ -312,96 +312,138 @@
 - (void)setupAVCapture
 {
     AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
+//    
+//	NSError *error = nil;
+//	
+//	AVCaptureSession *session = [AVCaptureSession new];
+//    [session setSessionPreset:AVCaptureSessionPresetHigh]; // full resolution photo...
+//	
+//    // Select a video device, make an input
+//    device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+//    
+//    //set autofocus
+//    BOOL locked = [device lockForConfiguration:nil];
+//    if (locked)
+//    {
+//        device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
+//        [device unlockForConfiguration];
+//    }
+// 	
+//    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+//    
+//    if (error == nil)
+//    {
+//        if ( [session canAddInput:deviceInput] )
+//            [session addInput:deviceInput];
+//        
+//        // Make a still image output
+//        stillImageOutput = [AVCaptureStillImageOutput new];
+//        //[stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:(__bridge void *)(AVCaptureStillImageIsCapturingStillImageContext)];
+//        if ( [session canAddOutput:stillImageOutput] )
+//            [session addOutput:stillImageOutput];
+//        
+//        // Make a video data output
+//        videoDataOutput = [AVCaptureVideoDataOutput new];
+//        
+//        // we want BGRA, both CoreGraphics and OpenGL work well with 'BGRA'
+//        NSDictionary *rgbOutputSettings = [NSDictionary dictionaryWithObject:
+//                                           [NSNumber numberWithInt:kCMPixelFormat_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
+//        [videoDataOutput setVideoSettings:rgbOutputSettings];
+//        [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
+//        
+//        // create a serial dispatch queue used for the sample buffer delegate as well as when a still image is captured
+//        // a serial dispatch queue must be used to guarantee that video frames will be delivered in order
+//        // see the header doc for setSampleBufferDelegate:queue: for more information
+//        videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
+//        [videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
+//        
+//        if ([session canAddOutput:videoDataOutput]){
+//            [session addOutput:videoDataOutput];
+//        }
+//        [[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
+//        previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
+//        [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
+//        [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+//        CALayer *rootLayer = [self.view layer];
+//        //[rootLayer setMasksToBounds:YES];
+//        [previewLayer setFrame:self.view.bounds];
+//        [rootLayer insertSublayer:previewLayer atIndex:0];
+//        //[rootLayer addSublayer:previewLayer];
+//        [session startRunning];
+//    }
+//    
+//	//[session release];
+//    
+//	if (error)
+//    {
+//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[error code]]
+//															message:[error localizedDescription]
+//														   delegate:nil
+//												  cancelButtonTitle:@"Dismiss"
+//												  otherButtonTitles:nil];
+//		[alertView show];
+//		//[alertView release];
+//        [self pauseAVCapture];
+//	}
+    cameraManager = [FluxAVCameraSingleton sharedCamera];
+    previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
+    [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
+    [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+    CALayer *rootLayer = [self.view layer];
+    //[rootLayer setMasksToBounds:YES];
+    [previewLayer setFrame:self.view.bounds];
+    [rootLayer insertSublayer:previewLayer atIndex:0];
+    //[rootLayer addSublayer:previewLayer];
+    //[cameraManager.videoDataOutput setSampleBufferDelegate:self queue:cameraManager.videoDataOutputQueue];
     
-	NSError *error = nil;
-	
-	AVCaptureSession *session = [AVCaptureSession new];
-    [session setSessionPreset:AVCaptureSessionPresetHigh]; // full resolution photo...
-	
-    // Select a video device, make an input
-    device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    
-    //set autofocus
-    BOOL locked = [device lockForConfiguration:nil];
-    if (locked)
-    {
-        device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
-        [device unlockForConfiguration];
-    }
- 	
-    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
-    
-    if (error == nil)
-    {
-        if ( [session canAddInput:deviceInput] )
-            [session addInput:deviceInput];
-        
-        // Make a still image output
-        stillImageOutput = [AVCaptureStillImageOutput new];
-        //[stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:(__bridge void *)(AVCaptureStillImageIsCapturingStillImageContext)];
-        if ( [session canAddOutput:stillImageOutput] )
-            [session addOutput:stillImageOutput];
-        
-        // Make a video data output
-        videoDataOutput = [AVCaptureVideoDataOutput new];
-        
-        // we want BGRA, both CoreGraphics and OpenGL work well with 'BGRA'
-        NSDictionary *rgbOutputSettings = [NSDictionary dictionaryWithObject:
-                                           [NSNumber numberWithInt:kCMPixelFormat_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
-        [videoDataOutput setVideoSettings:rgbOutputSettings];
-        [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
-        
-        // create a serial dispatch queue used for the sample buffer delegate as well as when a still image is captured
-        // a serial dispatch queue must be used to guarantee that video frames will be delivered in order
-        // see the header doc for setSampleBufferDelegate:queue: for more information
-        videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
-        [videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
-        
-        if ([session canAddOutput:videoDataOutput]){
-            [session addOutput:videoDataOutput];
-        }
-        [[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
-        previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
-        [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
-        [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-        CALayer *rootLayer = [self.view layer];
-        //[rootLayer setMasksToBounds:YES];
-        [previewLayer setFrame:self.view.bounds];
-        [rootLayer insertSublayer:previewLayer atIndex:0];
-        //[rootLayer addSublayer:previewLayer];
-        [session startRunning];
-    }
-    
-	//[session release];
-    
-	if (error)
-    {
-		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[error code]]
-															message:[error localizedDescription]
-														   delegate:nil
-												  cancelButtonTitle:@"Dismiss"
-												  otherButtonTitles:nil];
-		[alertView show];
-		//[alertView release];
-        [self pauseAVCapture];
-	}
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(annotationsViewDidPop:)  name:@"AnnotationViewPopped"  object:nil];
 }
 
 -(void)pauseAVCapture
 {
-    AVCaptureSession * currentSession  = previewLayer.session;
-    if (currentSession !=nil && [currentSession isRunning])
-    {
-        [currentSession stopRunning];
-    }
+//    AVCaptureSession * currentSession  = previewLayer.session;
+//    if (currentSession !=nil && [currentSession isRunning])
+//    {
+//        [currentSession stopRunning];
+//    }
+    [cameraManager pauseAVCapture];
 }
 
 //restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
 -(void)restartAVCaptureWithBlur:(BOOL)blur
 {
     //don't add a blur if we haven't captured an image yet.
+//    if (capturedImage != nil && blur) {
+//        [gridView setAlpha:0.0];
+//        [CameraButton setAlpha:0.0];
+//        [blurView setImage:[self blurImage:capturedImage]];
+//        [blurView setHidden:NO];
+//        [UIView animateWithDuration:0.2 animations:^{
+//            [blurView setAlpha:1.0];
+//        }completion:nil];
+//    }
+//    dispatch_async(AVCaptureBackgroundQueue, ^{
+//        //start AVCapture
+//        AVCaptureSession * currentSession  = previewLayer.session;
+//        if (currentSession !=nil  && ![currentSession isRunning])
+//        {
+//            [currentSession startRunning];
+//        }
+//        dispatch_sync(dispatch_get_main_queue(), ^{
+//            //completion callback
+//            if (blur) {
+//                [UIView animateWithDuration:0.2 animations:^{
+//                    [blurView setAlpha:0.0];
+//                    [gridView setAlpha:1.0];
+//                    [CameraButton setAlpha:1.0];
+//                }completion:^(BOOL finished){
+//                    [blurView setHidden:YES];
+//                }];
+//            }
+//        });
+//    });
+    
     if (capturedImage != nil && blur) {
         [gridView setAlpha:0.0];
         [CameraButton setAlpha:0.0];
@@ -413,11 +455,7 @@
     }
     dispatch_async(AVCaptureBackgroundQueue, ^{
         //start AVCapture
-        AVCaptureSession * currentSession  = previewLayer.session;
-        if (currentSession !=nil  && ![currentSession isRunning])
-        {
-            [currentSession startRunning];
-        }
+        [cameraManager restartAVCapture];
         dispatch_sync(dispatch_get_main_queue(), ^{
             //completion callback
             if (blur) {
@@ -431,6 +469,11 @@
             }
         });
     });
+    
+    
+    
+    
+    
 }
 
 #pragma mark Camera View
@@ -487,6 +530,7 @@
 - (IBAction)cameraButtonAction:(id)sender {
     //camera is off, open it
     if ([camMode isEqualToNumber:[NSNumber numberWithInt:0]]) {
+        
         [self setUIForCamMode:[NSNumber numberWithInt:1]];
     }
     else{
@@ -505,6 +549,7 @@
         [self.drawerContainerView setHidden:NO];
         [CameraButton setHidden:NO];
         [self restartAVCaptureWithBlur:NO];
+        [openGLController.view setHidden:NO];
         
         [UIView animateWithDuration:0.3f
                          animations:^{
@@ -512,12 +557,15 @@
                              [self.drawerContainerView setAlpha:1.0];
                              [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
                              [gridView setAlpha:0.0];
+                             [openGLController.view setAlpha:1.0];
                          }
                          completion:^(BOOL finished){
                              //stops drawing them
                              [panGesture setEnabled:YES];
                              [longPressGesture setEnabled:YES];
                              [gridView setHidden:YES];
+                             //[cameraManager setSampleBufferDelegate:openGLController forViewController:openGLController];
+
                          }];
         
         CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
@@ -542,14 +590,16 @@
                              [headerView setAlpha:0.0];
                              [self.drawerContainerView setAlpha:0.0];
                              [gridView setAlpha:1.0];
-                             //CameraButton.transform = CGAffineTransformScale(CameraButton.transform, 2.0, 2.0);
+                             [openGLController.view setAlpha:0.0];
                          }
                          completion:^(BOOL finished){
                              //stops drawing them
                              [headerView setHidden:YES];
                              [self.drawerContainerView setHidden:YES];
                              [self startDeviceMotion];
+                             [openGLController.view setHidden:YES];
                              camMode = [NSNumber numberWithInt:1];
+                             //[cameraManager setSampleBufferDelegate:self forViewController:self];
                          }];
         
         CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
@@ -619,12 +669,12 @@
     NSLog(@"Execution Time (1): %f", executionTime);
     
     // Find out the current orientation and tell the still image output.
-	AVCaptureConnection *stillImageConnection = [stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+	AVCaptureConnection *stillImageConnection = [cameraManager.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
 	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
 	AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
 	[stillImageConnection setVideoOrientation:avcaptureOrientation];
 	[stillImageConnection setVideoScaleAndCropFactor:1.0];
-	[stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
+	[cameraManager.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
                                                   completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
      {
          if (error)
@@ -780,9 +830,9 @@
 //             {
 //                 NSLog(@"***Could not create data from image destination ***");
 //             }
-             int userID = 57;
-             int cameraID = 42;
-             int categoryID = 10;
+             int userID = 1;
+             int cameraID = 1;
+             int categoryID = 1;
              
              capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage fromUserWithID:userID atTimestampString:[[NSDate date]description] andCameraID:cameraID andCategoryID:categoryID withDescriptionString:@"" andlatitude:location.coordinate.latitude andlongitude:location.coordinate.longitude andaltitude:location.altitude andHeading:heading andYaw:att.yaw andPitch:att.pitch andRoll:att.roll andQW:att.quaternion.w andQX:att.quaternion.x andQY:att.quaternion.y andQZ:att.quaternion.z];
              
@@ -943,6 +993,7 @@
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
+#warning deal with this later
     [self restartAVCaptureWithBlur:YES];
 }
 
