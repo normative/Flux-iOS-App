@@ -793,9 +793,10 @@ void init(){
     NSNumber *objKey = [NSNumber numberWithInt: imageID];
     [self.theImages setObject:image forKey:objKey];
     
-    if([self.theImages count] == 5)
+    if([self.theImages count] <= 5)
     {
-        [self updateImageTextures];
+        [self updateImageTexturesKey:(objKey)];
+        //[self updateImageTextures];
     }
     
 }
@@ -1071,11 +1072,29 @@ err = glGetError();								\
 }													\
 }
 
+- (void) updateImageTexturesKey:(id)key
+{
+    NSError *error;
+    static int i = 0;
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+    UIImage *teximage = [_theImages objectForKey:key];
+    NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+    _texture[i++] = [GLKTextureLoader textureWithContentsOfData:imgData
+                                                      options:options error:&error];
+    if (error)
+        NSLog(@"Image texture error %@", error);
+    else
+        NSLog(@"Added Image texture %d to render list", (i - 1));
+
+    _opengltexturesset =1;
+  
+}
+
 - (void) updateImageTextures
 {
     NSError *error;
     int i =0;
-    glGenTextures(5, _textureRaw);
+    // glGenTextures(5, _textureRaw);
      NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     for (id key in _theImages)
     {
@@ -1495,47 +1514,62 @@ err = glGetError();								\
     if(_opengltexturesset==1)
     {
    
-        NSLog(@"rendering texture0");
-         NSLog(@"rendering texture0");
-         NSLog(@"rendering texture0");
-         NSLog(@"rendering texture0");
-         NSLog(@"rendering texture0"); NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0"); NSLog(@"rendering texture0");
         
+        for(int i = 0; i < 5; i++)
+        {
+            if (_texture[i] != nil)
+            {
+                NSLog(@"rendering texture%d", i);
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(_texture[i].target, _texture[i].name);
+                // glBindTexture(GL_TEXTURE_2D, _textureRaw[i]);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
+            }
+            
+        }
+/*
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(_texture[0].target, _texture[0].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[0]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
+            
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(_texture[1].target, _texture[1].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[1]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER1], 1);
+            
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(_texture[2].target, _texture[2].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[2]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER2], 2);
+            
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(_texture[3].target, _texture[3].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[3]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER3], 3);
         
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(_texture[0].target, _texture[0].name);
-// glBindTexture(GL_TEXTURE_2D, _textureRaw[0]);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
-        
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(_texture[1].target, _texture[1].name);
-// glBindTexture(GL_TEXTURE_2D, _textureRaw[1]);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER1], 1);
-        
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(_texture[2].target, _texture[2].name);
-// glBindTexture(GL_TEXTURE_2D, _textureRaw[2]);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER2], 2);
-        
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(_texture[3].target, _texture[3].name);
-// glBindTexture(GL_TEXTURE_2D, _textureRaw[3]);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER3], 3);
-    
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(_texture[4].target, _texture[4].name);
-// glBindTexture(GL_TEXTURE_2D, _textureRaw[4]);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(_texture[4].target, _texture[4].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[4]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
+*/
     }
    
     if(_videotexture !=NULL)
