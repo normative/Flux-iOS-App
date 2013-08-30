@@ -758,7 +758,7 @@ void init(){
             
             if(![_requestList objectForKey:key ])
             {
-                [networkServices getThumbImageForID:locationObject.imageID];
+                [networkServices getImageForID:locationObject.imageID];
                 [_requestList setObject:key forKey:key];
             }
             
@@ -959,7 +959,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    _opengltexturesset =0;
     imageDict = [[NSMutableDictionary alloc]init];
     _theImages = [[NSMutableDictionary alloc]init];
     _requestList = [[NSMutableDictionary alloc]init];
@@ -1058,14 +1058,77 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
 }
 
+#define GetGLError()									\
+{														\
+GLenum err = glGetError();							\
+while (err != GL_NO_ERROR) {						\
+NSLog(@"GLError %s set in File:%s Line:%d\n",	\
+GetGLErrorString(err),					\
+__FILE__,								\
+__LINE__);								\
+err = glGetError();								\
+}													\
+}
+
 - (void) updateImageTextures
 {
     NSError *error;
     int i =0;
+    glGenTextures(5, _textureRaw);
      NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     for (id key in _theImages)
     {
+        
+       // _texture[i] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Documents/Test.jpg" ofType:@"jpg"] options:options error:&error];
+      //  if (error) NSLog(@"Image texture error %@", error);
+        
+        
         UIImage *teximage = [_theImages objectForKey:key];
+        NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+        _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
+                                                         options:options error:&error];
+        if (error) NSLog(@"Image texture error %@", error);
+        
+        
+        // Identify the home directory and file name
+        //   NSString  *jpgPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Test.jpg"];
+        
+        // Write the file.  Choose YES atomically to enforce an all or none write. Use the NO flag if partially written files are okay which can occur in cases of corruption
+        //        _texture2[i] = [GLKTextureLoader textureWithContentsOfData: imgData options:options error:&error];
+        //  CGImage
+        
+        
+        // _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
+        //  [imgData writeToFile:jpgPath atomically:YES];
+        
+        // if (error) NSLog(@"Image texture error %@", error);
+        
+        /*
+        demoimage = imgLoadImageUIImage(teximage, 1);
+
+        
+        glBindTexture(GL_TEXTURE_2D, _textureRaw[i]);
+        
+        // Set up filter and wrap modes for this texture object
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        
+        // Indicate that pixel rows are tightly packed
+        //  (defaults to stride of 4 which is kind of only good for
+        //  RGBA or FLOAT data types)
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        
+        // Allocate and load image data into texture
+        glTexImage2D(GL_TEXTURE_2D, 0, demoimage->format, demoimage->width, demoimage->height, 0,
+                     demoimage->format, demoimage->type, demoimage->data);
+        
+        // Create mipmaps for this texture for better image quality
+       // glGenerateMipmap(GL_TEXTURE_2D);
+        
+       // GetGLError();
+        
         
        // [[texImage
       //  _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:nil error:&error];
@@ -1080,15 +1143,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
       //  CGImage
       
         
-        _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
+       // _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
       //  [imgData writeToFile:jpgPath atomically:YES];
         
-        if (error) NSLog(@"Image texture error %@", error);
-        
+       // if (error) NSLog(@"Image texture error %@", error);
+       */
         i++;
        
     }
-
+    _opengltexturesset =1;
 }
 
 -(void)updateImageMetaData
@@ -1428,34 +1491,48 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
     
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(_texture[0].target, _texture[0].name);
+    if(_opengltexturesset==1)
+    {
+   
+        NSLog(@"rendering texture0");
+         NSLog(@"rendering texture0");
+         NSLog(@"rendering texture0");
+         NSLog(@"rendering texture0");
+         NSLog(@"rendering texture0"); NSLog(@"rendering texture0");
+        
+        
+        glActiveTexture(GL_TEXTURE0);
+   glBindTexture(_texture[0], _texture[0].name);
+//     glBindTexture(GL_TEXTURE_2D, _textureRaw[0]);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(_texture[1].target, _texture[1].name);
+    //glBindTexture(_texture[1].target, _texture[1].name);
+     glBindTexture(GL_TEXTURE_2D, _textureRaw[1]);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER1], 1);
     glActiveTexture(GL_TEXTURE2);
     glBindTexture(_texture[2].target, _texture[2].name);
+//glBindTexture(GL_TEXTURE_2D, _textureRaw[2]);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER2], 2);
     glActiveTexture(GL_TEXTURE3);
-    glBindTexture(_texture[3].target, _texture[3].name);
+   glBindTexture(_texture[3].target, _texture[3].name);
+  //  glBindTexture(GL_TEXTURE_2D, _textureRaw[3]);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER3], 3);
     
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(_texture[4].target, _texture[4].name);
+   // glBindTexture(GL_TEXTURE_2D, _textureRaw[4]);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
-    
+    }
    
     if(_videotexture !=NULL)
     {
