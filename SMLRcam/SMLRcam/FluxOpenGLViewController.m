@@ -862,6 +862,20 @@ void init(){
 }
 
 
+- (void)pauseOpenGLRender{
+    
+}
+
+- (void)restartOpenGLRender{
+    
+}
+
+#warning incomplete implementation
+- (BOOL)openGLRenderIsActive{
+    return YES;
+}
+
+
 
 #pragma mark - OpenGL Texture & Metadata Manipulation
 

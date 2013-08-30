@@ -192,8 +192,6 @@
     [view addSubview:backgroundView];
     [view addSubview:label];
     
-    
-    
     return view;
 }
 
@@ -1070,6 +1068,7 @@
         if (![annotationsTableView isHidden])
         {
             [annotationsTableView setHidden:YES];
+            [openGLController pauseOpenGLRender];
         }
         
         [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
@@ -1118,6 +1117,10 @@
         [self didUpdateLocation:nil];
     }
     [self restartAVCaptureWithBlur:YES];
+    
+    if (![openGLController openGLRenderIsActive]) {
+        [openGLController restartOpenGLRender];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
