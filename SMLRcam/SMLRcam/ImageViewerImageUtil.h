@@ -24,7 +24,7 @@ typedef struct demoImageRec
 	GLuint rowByteSize;
 	
 } demoImage;
-
+demoImage* imgLoadImageUIImage(UIImage *image, int flipVertical);
 demoImage* imgLoadImage(const char* filepathname, int flipVertical);
 demoImage* imgLoadImageJPG(const char* filepathname, int flipVertical);
 
