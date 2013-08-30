@@ -209,8 +209,8 @@
     [segmentedControl setBackgroundColor:[UIColor clearColor]];
     [segmentedControl setSelectionLocation:HMSegmentedControlSelectionLocationDown];
     [segmentedControl setSelectionStyle:HMSegmentedControlSelectionStyleTextWidthStrip];
-    [segmentedControl setSelectedSegmentIndex:0];
-    [imageObject setCategoryID:0];
+    [segmentedControl setSelectedSegmentIndex:1];
+    [imageObject setCategoryID:2];
     
     [self.view addSubview:segmentedControl];
 }
