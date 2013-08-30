@@ -95,36 +95,16 @@
 
 -(void)pauseAVCapture
 {
-    AVCaptureSession * currentSession  = previewLayer.session;
-    if (currentSession !=nil && [currentSession isRunning])
+    if (self.session !=nil && [self.session isRunning])
     {
-        [currentSession stopRunning];
+        [self.session stopRunning];
     }
 }
 
 - (void)restartAVCapture{
-//    dispatch_async(AVCaptureBackgroundQueue, ^{
-//        //start AVCapture
-//        AVCaptureSession * currentSession  = previewLayer.session;
-//        if (currentSession !=nil  && ![currentSession isRunning])
-//        {
-//            [currentSession startRunning];
-//        }
-//        dispatch_sync(dispatch_get_main_queue(), ^{
-//            //completion callback
-//                [UIView animateWithDuration:0.2 animations:^{
-//                    [blurView setAlpha:0.0];
-//                    //[gridView setAlpha:1.0];
-//                    //[CameraButton setAlpha:1.0];
-//                }completion:^(BOOL finished){
-//                    [blurView setHidden:YES];
-//                }];
-//        });
-//    });
-    AVCaptureSession * currentSession  = previewLayer.session;
-    if (currentSession !=nil  && ![currentSession isRunning])
+    if (self.session !=nil  && ![self.session isRunning])
     {
-        [currentSession startRunning];
+        [self.session startRunning];
     }
 }
 

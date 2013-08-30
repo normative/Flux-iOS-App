@@ -632,6 +632,38 @@ void init(){
     }
 }
 
+#pragma mark - Network Services
+
+- (void)setupNetworkServices
+{
+    networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
+{
+    imageDict = imageList;
+    if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
+    {
+        [theDelegate OpenGLView:self didUpdateImageList:imageDict];
+    }
+    
+    [self populateMetaData];
+    [self populateImageData];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
+{
+    NSNumber *objKey = [NSNumber numberWithInt: imageID];
+    [self.theImages setObject:image forKey:objKey];
+    
+    if([self.theImages count] <= 5)
+    {
+        [self updateImageTexturesKey:(objKey)];
+    }
+    
+}
+
 #pragma mark - AV Capture 
 - (void)cleanUpTextures
 {
@@ -739,31 +771,6 @@ void init(){
     
 }
 
--(void)pauseAVCaptureForScanView
-{
-    if (_session !=nil && [_session isRunning])
-    {
-        [_session stopRunning];
-    }
-}
-
-//restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
--(void)restartAVCapture
-{
-    //start AVCapture
-    if (_session !=nil  && ![_session isRunning])
-    {
-        [_session startRunning];
-    }
-}
-
-- (void)tearDownAVCapture
-{
-    [self cleanUpTextures];
-    
-    CFRelease(_videoTextureCache);
-}
-
 
 #pragma mark - View Lifecycle
 
@@ -812,7 +819,6 @@ void init(){
     }
     
     [self startDeviceMotion];
-    [self restartAVCapture];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -855,37 +861,7 @@ void init(){
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Network Services
 
-- (void)setupNetworkServices
-{
-    networkServices = [[FluxNetworkServices alloc]init];
-    [networkServices setDelegate:self];
-}
-
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
-{
-    imageDict = imageList;
-    if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
-    {
-        [theDelegate OpenGLView:self didUpdateImageList:imageDict];
-    }
-    
-    [self populateMetaData];
-    [self populateImageData];
-}
-
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
-{
-    NSNumber *objKey = [NSNumber numberWithInt: imageID];
-    [self.theImages setObject:image forKey:objKey];
-    
-    if([self.theImages count] <= 5)
-    {
-        [self updateImageTexturesKey:(objKey)];
-    }
-    
-}
 
 #pragma mark - OpenGL Texture & Metadata Manipulation
 

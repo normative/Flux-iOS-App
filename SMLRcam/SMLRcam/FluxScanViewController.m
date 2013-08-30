@@ -616,7 +616,7 @@
     }
     //going to confirm cam
     else{
-        [self pauseAVCapture];
+        [cameraManager pauseAVCapture];
         
         [self.cameraApproveContainerView setHidden:NO];
         [CameraButton setHidden:YES];
@@ -1009,7 +1009,6 @@
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
-#warning deal with this later
     [self restartAVCaptureWithBlur:YES];
 }
 

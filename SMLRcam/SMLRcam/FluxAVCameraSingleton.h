@@ -11,16 +11,7 @@
 #import <dispatch/dispatch.h>
 
 @interface FluxAVCameraSingleton : NSObject{
-    AVCaptureVideoPreviewLayer *previewLayer;
-	
-    
     AVCaptureDevice *device;
-    
-    UIImageView*blurView;
-    //dispatch_queue_t AVCaptureBackgroundQueue;
-    
-    
-
 }
 @property (nonatomic, strong)AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic, strong)AVCaptureSession *session;
@@ -29,7 +20,6 @@
 
 
 -(void)pauseAVCapture;
-- (void)startAVCapture;
 - (void)restartAVCapture;
 
 - (void)setSampleBufferDelegate:(id < AVCaptureVideoDataOutputSampleBufferDelegate >)sampleBufferDelegate forViewController:(UIViewController*)VC;
