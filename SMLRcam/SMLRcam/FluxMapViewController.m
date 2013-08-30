@@ -106,15 +106,20 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 {
     for (FluxScanImageObject *annotation in myMapView.annotations)
     {
-        if (annotation.imageID == imageID)
+        if ([annotation isKindOfClass: [FluxScanImageObject class]])
         {
-            annotation.contentImage = image;
-         
-            FluxScanImageObject *mapAnnotationObject = [mapAnnotationsDictionary objectForKey: [NSNumber numberWithInt:imageID]];
-            mapAnnotationObject.contentImage = image;
-            
-            [activityIndicator stopAnimating];
-            break;
+            NSLog(@"annotation imageID is %i", annotation.imageID);
+            if (annotation.imageID == imageID)
+            {
+                annotation.contentImage = image;
+                
+                MKAnnotationView *annotationView = [myMapView viewForAnnotation: annotation];
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:annotation.contentImage];
+                annotationView.leftCalloutAccessoryView = calloutImageView;
+                
+                [activityIndicator stopAnimating];
+                break;
+            }
         }
     }
 }
@@ -125,16 +130,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
         
-        if (annotation.contentImage != nil)
+        if (annotation.contentImage == nil)
         {
-            view.leftCalloutAccessoryView = [[UIImageView alloc] initWithImage: annotation.contentImage];
-        }
-        else
-        {
-            activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-            [activityIndicator startAnimating];
-            view.leftCalloutAccessoryView = activityIndicator;
-            
             [networkServiceManager getThumbImageForID:annotation.imageID];
         }
     }
@@ -174,6 +171,19 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             locationAnnotationView.enabled = YES;
             locationAnnotationView.canShowCallout = YES;
             locationAnnotationView.image = [UIImage imageNamed:@"locationPin.png"];
+            
+            FluxScanImageObject *fluxImageObject = (FluxScanImageObject *)annotation;
+            
+            if (fluxImageObject.contentImage != nil)
+            {
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:fluxImageObject.contentImage];
+                locationAnnotationView.leftCalloutAccessoryView = calloutImageView;
+            }
+            else
+            {
+                locationAnnotationView.leftCalloutAccessoryView = activityIndicator;
+                [activityIndicator startAnimating];
+            }
         }
         else
         {
@@ -348,6 +358,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         FluxScanImageObject *locationObject = [mapAnnotationsDictionary objectForKey:key];
         [myMapView addAnnotation: locationObject];
     }
+    
+    activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activityIndicator.backgroundColor = [UIColor whiteColor];
 }
 
 // initialize and allocate memory to the map view object
@@ -427,7 +440,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
             
             [self.view removeGestureRecognizer:pinchRecognizer];
-            //[myMapView setDelegate:nil];
+            
+            activityIndicator = nil;
         }];
     }
 }
@@ -463,9 +477,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self setupPinchGesture];
     [self setupLocationManager];
     [self setupNetworkServiceManager];
+    
     [self setupMapView];
-    [self setupStatusBarContent];
     [self setupAnnotationView];
+    [self setupStatusBarContent];
 }
 
 - (void)didReceiveMemoryWarning
