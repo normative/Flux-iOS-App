@@ -48,7 +48,6 @@ typedef struct {
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     GLKTextureInfo* _texture[8];
-    GLuint _textureRaw[8];
     
     int _opengltexturesset;
     

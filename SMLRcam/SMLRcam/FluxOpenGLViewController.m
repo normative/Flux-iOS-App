@@ -12,6 +12,20 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
+#pragma mark - OpenGL globals and types
+
+#define GetGLError()									\
+{														\
+GLenum err = glGetError();							\
+while (err != GL_NO_ERROR) {						\
+NSLog(@"GLError %s set in File:%s Line:%d\n",	\
+GetGLErrorString(err),					\
+__FILE__,								\
+__LINE__);								\
+err = glGetError();								\
+}													\
+}
+
 // Uniform index.
 enum
 {
@@ -37,6 +51,7 @@ enum
     
     NUM_UNIFORMS
 };
+
 GLint uniforms[NUM_UNIFORMS];
 
 // Attribute index.
@@ -46,6 +61,7 @@ enum
     ATTRIB_TEXCOORD,
     NUM_ATTRIBUTES
 };
+
 GLfloat testvertexData[18] =
 {
     
@@ -69,6 +85,7 @@ GLfloat textureCoord[12] =
     0.0f, 0.0f
 };
 */
+
 GLfloat textureCoord[12] =
 {
     
@@ -82,7 +99,6 @@ GLfloat textureCoord[12] =
 
 
 GLubyte indexdata[6]={0,1,2,3,4,5};
-
 
 //iPhone5 model
 
@@ -129,15 +145,13 @@ demoImage *image1;
 demoImage *image2;
 GLfloat g_vertex_buffer_data[18];
 GLKVector4 result[4];
+
+#pragma mark - OpenGL Utility Routines
+
 void init_pose()
 {
-    
-    
-    
+
 }
-
-
-
 
 void init_camera_model()
 {
@@ -147,34 +161,6 @@ void init_camera_model()
     camera_perspective = 	GLKMatrix4MakePerspective(_fov * 180.0/3.14, aspect, 0.001f, 50.0f);
     
 }
-/*
- int init_texture(int width, int height)
- {
- int i;
- 
- fprintf(stderr, "w = %d, h = %d\n", width, height);
- 
- 
- for(i =0; i <3; i++)
- {
- glGenTextures(1, &texture[i]);
- glBindTexture(GL_TEXTURE_2D, texture[i]);
- 
- glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
- glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
- glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
- glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- 
- glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
- 
- glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE,NULL);
- //        glGenerateMipmap(GL_TEXTURE_2D);
- glBindTexture(GL_TEXTURE_2D, 0);
- }
- return 1;
- }
- */
-
 
 #define PI 3.1415926535898
 #define a_WGS84 6378137.0
@@ -182,39 +168,10 @@ void init_camera_model()
 
 GLKMatrix4 rotation_teM;
 
-
 void WGS84_to_ECEF(sensorPose *sp){
     double normal;
     double eccentricity;
     double flatness;
-    
-    
-   GLKVector3 lla_rad; //latitude, longitude, altitude
-    
-    lla_rad.x = sp->position.x*PI/180.0;
-    lla_rad.y = sp->position.y*PI/180.0;
-    lla_rad.z = sp->position.z;
-    
-    
-    
-    flatness = (a_WGS84 - b_WGS84) / a_WGS84;
-    
-    eccentricity = sqrt(flatness * (2 - flatness));
-    normal = a_WGS84 / sqrt(1 - (eccentricity * eccentricity * sin(lla_rad.x) *sin(lla_rad.x)));
-    
-    
-    sp->ecef.x = (lla_rad.z + normal)* cos(lla_rad.x) * cos(lla_rad.y);
-    sp->ecef.y = (lla_rad.z + normal)* cos(lla_rad.x) * sin(lla_rad.y);
-    sp->ecef.z = (lla_rad.z + (1- eccentricity* eccentricity)*normal)* sin(lla_rad.x);
-    
-    
-}
-
-
-void tangentplaneRotation(sensorPose *sp){
-    
-    float rotation_te[16];
-    
     
     GLKVector3 lla_rad; //latitude, longitude, altitude
     
@@ -222,9 +179,27 @@ void tangentplaneRotation(sensorPose *sp){
     lla_rad.y = sp->position.y*PI/180.0;
     lla_rad.z = sp->position.z;
     
+    flatness = (a_WGS84 - b_WGS84) / a_WGS84;
+    
+    eccentricity = sqrt(flatness * (2 - flatness));
+    normal = a_WGS84 / sqrt(1 - (eccentricity * eccentricity * sin(lla_rad.x) *sin(lla_rad.x)));
+
+    sp->ecef.x = (lla_rad.z + normal)* cos(lla_rad.x) * cos(lla_rad.y);
+    sp->ecef.y = (lla_rad.z + normal)* cos(lla_rad.x) * sin(lla_rad.y);
+    sp->ecef.z = (lla_rad.z + (1- eccentricity* eccentricity)*normal)* sin(lla_rad.x);
     
     
+}
+
+void tangentplaneRotation(sensorPose *sp){
     
+    float rotation_te[16];
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
     
     rotation_te[0] = -1.0 * sin(lla_rad.y);
     rotation_te[1] = cos(lla_rad.y);
@@ -245,26 +220,13 @@ void tangentplaneRotation(sensorPose *sp){
     
     rotation_teM = GLKMatrix4MakeWithArray(rotation_te);
     
-};
-/*
- void test_wgs84_tangent_conversions()
- {
- lla_rad.x = 0.59341195;
- lla_rad.y = -2.0478571;
- lla_rad.z = 251.702;
- 
- WGS84_to_ECEF();
- 
- fprintf(stderr,"TEST\n");
- fprintf(stderr,"----\n");
- fprintf(stderr,"ecef.x = %.1f m (-2430601.8) \n", ecef.x);
- fprintf(stderr,"ecef.y = %.1f m (-4702442.7) \n", ecef.y);
- fprintf(stderr,"ecef.z = %.1f m (3546587.4)\n", ecef.z);
- }
- */
-void setParametersTP(GLKVector3 location){
+}
+
+void setParametersTP(GLKVector3 location)
+{
     
 }
+
 void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float distance)
 {
     GLKVector4 pts[4];
@@ -286,13 +248,12 @@ void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float d
        result[i] = GLKMatrix4MultiplyVector4( (rotationMatrix), pts[i]);
        //fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
     }
-
-    
 }
 void calculateCoordinatesTP(GLKVector3 originposition, GLKVector3 position, GLKVector3 *positionTP)
 {
     
 }
+
 int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, float distance, viewParameters *vp)
 {
     viewParameters viewP;
@@ -316,7 +277,6 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(usp->rotationMatrix, zRay);
     
-    
     //NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
     //normal plane
@@ -326,7 +286,6 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
-    
     
     float vd = GLKVector3DotProduct(N,V);
     float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
@@ -344,8 +303,6 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
         return -1;
     }
     
-    
-    
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     //viewP.up = GLKVector3Normalize(viewP.up);
@@ -355,43 +312,42 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     (*vp).at =V;
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
-    
-    
-    
-    
+
     //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
     
     return 0;
 }
+
 //distance - distance of plane
 int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, sensorPose userPose, viewParameters *vp)
 {
     
     viewParameters viewP;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
-   //sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
+//    sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
     if(distance <0.0)
     {
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
     
-    //calculateCoordinatesTP(userLocation, sp->position, &positionTP);
+//    calculateCoordinatesTP(userLocation, sp->position, &positionTP);
     
-   // NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
+//    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
 
-   // rotationMat = rotationMat_t;
+//    rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     
-   // NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+//    NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((sp->rotationMatrix), planeNormalI);
+    
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
@@ -426,30 +382,30 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     positionTP.z = 0;
 
     
-   // positionTP.z = sp->ecef.z -userPose.ecef.z;
+//    positionTP.z = sp->ecef.z -userPose.ecef.z;
 //    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
-  //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
+//    NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
-    //viewP.up = GLKVector3Normalize(viewP.up);
+//    viewP.up = GLKVector3Normalize(viewP.up);
     
     
     (*vp).origin = GLKVector3Add(positionTP, P0);
-    //(*vp).at = GLKVector3Add(positionTP, viewP.at);
+//    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
     (*vp).at =GLKVector3Add(positionTP, V);
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
-    
-    // setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
+//    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
     return 0;
 }
 
 GLKMatrix4 zMatrix;
+
 void compute_new_intersection()
 {
     bool isinvertible;
@@ -514,8 +470,6 @@ void compute_new_intersection()
 
 void compute_new_intersectionZ()
 {
-    bool isinvertible;
-	
     GLKMatrix4 rotationMat_t= GLKMatrix4Make(
                                              -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
     zMatrix = rotationMat_t;
@@ -565,7 +519,7 @@ void compute_new_intersectionZ()
     centrevec = _v;
     
     //set eye
-    GLKVector4 _eye_at = GLKMatrix4MultiplyVector4(GLKMatrix4Invert(basenormalMat, &isinvertible) ,GLKVector4Make(0.0, 14.0, 0.0, 1.0));
+    //GLKVector4 _eye_at = GLKMatrix4MultiplyVector4(GLKMatrix4Invert(basenormalMat, &isinvertible) ,GLKVector4Make(0.0, 14.0, 0.0, 1.0));
     //eye_at = GLKVector3Make(_eye_at.x, _eye_at.y, _eye_at.z);
     eye_origin = GLKVector3Make(0.0, 0.0, 0.0);
     //eye_up = GLKVector3Make(0.0, 0.0, 1.0);
@@ -593,8 +547,8 @@ void multiply_vertices()
         result[i] = GLKMatrix4MultiplyVector4( GLKMatrix4Transpose(basenormalMat), pts[i]);
         //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
     }
-    
 }
+
 void multiply_vertices_Zaxis()
 {
     GLKVector4 pts[4];
@@ -627,54 +581,8 @@ void init(){
     
     
 };
-/*
- GLfloat gCubeVertexData[216] =
- {
- // Data layout for each line below is:
- // positionX, positionY, positionZ,     normalX, normalY, normalZ,
- 0.5f, -0.5f, -0.5f,        1.0f, 0.0f, 0.0f,
- 0.5f, 0.5f, -0.5f,         1.0f, 0.0f, 0.0f,
- 0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
- 0.5f, -0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
- 0.5f, 0.5f, -0.5f,          1.0f, 0.0f, 0.0f,
- 0.5f, 0.5f, 0.5f,         1.0f, 0.0f, 0.0f,
- 
- 0.5f, 0.5f, -0.5f,         0.0f, 1.0f, 0.0f,
- -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
- 0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
- 0.5f, 0.5f, 0.5f,          0.0f, 1.0f, 0.0f,
- -0.5f, 0.5f, -0.5f,        0.0f, 1.0f, 0.0f,
- -0.5f, 0.5f, 0.5f,         0.0f, 1.0f, 0.0f,
- 
- -0.5f, 0.5f, -0.5f,        -1.0f, 0.0f, 0.0f,
- -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
- -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
- -0.5f, 0.5f, 0.5f,         -1.0f, 0.0f, 0.0f,
- -0.5f, -0.5f, -0.5f,       -1.0f, 0.0f, 0.0f,
- -0.5f, -0.5f, 0.5f,        -1.0f, 0.0f, 0.0f,
- 
- -0.5f, -0.5f, -0.5f,       0.0f, -1.0f, 0.0f,
- 0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
- -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
- -0.5f, -0.5f, 0.5f,        0.0f, -1.0f, 0.0f,
- 0.5f, -0.5f, -0.5f,        0.0f, -1.0f, 0.0f,
- 0.5f, -0.5f, 0.5f,         0.0f, -1.0f, 0.0f,
- 
- 0.5f, 0.5f, 0.5f,          0.0f, 0.0f, 1.0f,
- -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
- 0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
- 0.5f, -0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
- -0.5f, 0.5f, 0.5f,         0.0f, 0.0f, 1.0f,
- -0.5f, -0.5f, 0.5f,        0.0f, 0.0f, 1.0f,
- 
- 0.5f, -0.5f, -0.5f,        0.0f, 0.0f, -1.0f,
- -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
- 0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
- 0.5f, 0.5f, -0.5f,         0.0f, 0.0f, -1.0f,
- -0.5f, -0.5f, -0.5f,       0.0f, 0.0f, -1.0f,
- -0.5f, 0.5f, -0.5f,        0.0f, 0.0f, -1.0f
- };
- */
+
+#pragma mark - FluxOpenGLViewController
 
 @implementation FluxOpenGLViewController
 
@@ -690,141 +598,42 @@ void init(){
 }
 
 - (void)didUpdateHeading:(NSNotification *)notification{
-    //CLLocationDirection heading = locationManager.heading;
-    CMAttitude *att = motionManager.attitude;
-   // NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
+//    CLLocationDirection heading = locationManager.heading;
+//    CMAttitude *att = motionManager.attitude;
+//    NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
     [networkServices getImagesForLocation:loc.coordinate andRadius:50];
 }
--(void) populateMetaData
-{
-    NSLog(@"Image dictionary count is %i", [imageDict count]);
-    int i =0;
-    GLKQuaternion quaternion;
-    
-    
-    
-    for (id key in imageDict)
-    {
-        if (1)
-        {
-            FluxScanImageObject *locationObject = [imageDict objectForKey:key];
-            
-            
-            if(i <5)
-            {
-                _imagePose[i].position.x =  locationObject.latitude;
-                _imagePose[i].position.y =  locationObject.longitude;
-                _imagePose[i].position.z =  locationObject.altitude;
-
-                quaternion.x = locationObject.qx;
-                quaternion.y = locationObject.qy;
-                quaternion.z = locationObject.qz;
-                quaternion.w = locationObject.qw;
-            
-                _imagePose[i].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
-                
-                NSLog(@"Loaded meta data for image %d quaternion [%f %f %f %f]", i, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-            }
-            
-            
-            
-            // add annotation to map
-           // [myMapView addAnnotation: locationObject];
-            
-            // insert object to dic
-           // [mapAnnotationsDictionary setObject:locationObject forKey:key];
-            i++;
-        }
-    }
-}
-
-
--(void) populateImageData
-{
-    NSLog(@"Image dictionary count is %i", [imageDict count]);
-    int i =0;
-    GLKQuaternion quaternion;
-    
-    
-    
-    for (id key in imageDict)
-    {
-        if (1)
-        {
-            FluxScanImageObject *locationObject = [imageDict objectForKey:key];
-            
-            if(![_requestList objectForKey:key ])
-            {
-                [networkServices getImageForID:locationObject.imageID];
-                [_requestList setObject:key forKey:key];
-            }
-            
-            // add annotation to map
-            // [myMapView addAnnotation: locationObject];
-            
-            // insert object to dic
-            // [mapAnnotationsDictionary setObject:locationObject forKey:key];
-            i++;
-        }
-    }
-}
-
-#pragma mark - Network Services
-- (void)setupNetworkServices{
-    networkServices = [[FluxNetworkServices alloc]init];
-    [networkServices setDelegate:self];
-}
-
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList{
-    imageDict = imageList;
-    if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)]) {
-        [theDelegate OpenGLView:self didUpdateImageList:imageDict];
-    }
-    [self populateMetaData];
-    [self populateImageData];
-}
-
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
-{
-    NSNumber *objKey = [NSNumber numberWithInt: imageID];
-    [self.theImages setObject:image forKey:objKey];
-    
-    if([self.theImages count] <= 5)
-    {
-        [self updateImageTexturesKey:(objKey)];
-        //[self updateImageTextures];
-    }
-    
-}
 
 #pragma mark - Motion Manager
 
 //starts the motion manager and sets an update interval
-- (void)setupMotionManager{
+- (void)setupMotionManager
+{
     motionManager = [FluxMotionManagerSingleton sharedManager];
 }
 
 - (void)startDeviceMotion
 {
-    if (motionManager) {
+    if (motionManager)
+    {
         [motionManager startDeviceMotion];
     }
 }
 
 - (void)stopDeviceMotion
 {
-    if (motionManager) {
+    if (motionManager)
+    {
         [motionManager stopDeviceMotion];
     }
 }
 
 #pragma mark - AV Capture 
 - (void)cleanUpTextures
-
 {
     if (_videotexture)
     {
@@ -838,8 +647,8 @@ void init(){
 
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
-didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-       fromConnection:(AVCaptureConnection *)connection
+        didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+        fromConnection:(AVCaptureConnection *)connection
 {
     CVReturn err;
 	CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -955,13 +764,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 
-
 #pragma mark - View Lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _opengltexturesset =0;
+    _opengltexturesset = 0;
     imageDict = [[NSMutableDictionary alloc]init];
     _theImages = [[NSMutableDictionary alloc]init];
     _requestList = [[NSMutableDictionary alloc]init];
@@ -1004,8 +812,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self startDeviceMotion];
     [self restartAVCapture];
-    
-     NSLog(@"View Did Appear");
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -1048,28 +854,83 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Dispose of any resources that can be recreated.
 }
 
-- (void) checkShaderLimitations{
-    GLint maxtextureunits;
-    GLint maxvertextureunits;
+#pragma mark - Network Services
+
+- (void)setupNetworkServices
+{
+    networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
+{
+    imageDict = imageList;
+    if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
+    {
+        [theDelegate OpenGLView:self didUpdateImageList:imageDict];
+    }
     
-    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxtextureunits);
-    NSLog(@"Maximum texture image units = %d",maxtextureunits);
+    [self populateMetaData];
+    [self populateImageData];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
+{
+    NSNumber *objKey = [NSNumber numberWithInt: imageID];
+    [self.theImages setObject:image forKey:objKey];
     
-    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxvertextureunits);
-    NSLog(@"Maximum vertex texture image unit = %d",maxvertextureunits);
+    if([self.theImages count] <= 5)
+    {
+        [self updateImageTexturesKey:(objKey)];
+    }
     
 }
 
-#define GetGLError()									\
-{														\
-GLenum err = glGetError();							\
-while (err != GL_NO_ERROR) {						\
-NSLog(@"GLError %s set in File:%s Line:%d\n",	\
-GetGLErrorString(err),					\
-__FILE__,								\
-__LINE__);								\
-err = glGetError();								\
-}													\
+#pragma mark - OpenGL Texture & Metadata Manipulation
+
+-(void) populateMetaData
+{
+    NSLog(@"Image dictionary count is %i", [imageDict count]);
+    int i = 0;
+    GLKQuaternion quaternion;
+    
+    for (id key in imageDict)
+    {
+        FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+        
+        if(i <5)
+        {
+            _imagePose[i].position.x =  locationObject.latitude;
+            _imagePose[i].position.y =  locationObject.longitude;
+            _imagePose[i].position.z =  locationObject.altitude;
+            
+            quaternion.x = locationObject.qx;
+            quaternion.y = locationObject.qy;
+            quaternion.z = locationObject.qz;
+            quaternion.w = locationObject.qw;
+            
+            _imagePose[i].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+            
+            NSLog(@"Loaded meta data for image %d quaternion [%f %f %f %f]", i, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+        }
+        i++;
+    }
+}
+
+-(void) populateImageData
+{
+    NSLog(@"Image dictionary count is %i", [imageDict count]);
+    
+    for (id key in imageDict)
+    {
+        FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+        
+        if(![_requestList objectForKey:key ])
+        {
+            [networkServices getImageForID:locationObject.imageID];
+            [_requestList setObject:key forKey:key];
+        }
+    }
 }
 
 - (void) updateImageTexturesKey:(id)key
@@ -1082,96 +943,15 @@ err = glGetError();								\
     _texture[i++] = [GLKTextureLoader textureWithContentsOfData:imgData
                                                       options:options error:&error];
     if (error)
-        NSLog(@"Image texture error %@", error);
-    else
-        NSLog(@"Added Image texture %d to render list", (i - 1));
-
-    _opengltexturesset =1;
-  
-}
-
-- (void) updateImageTextures
-{
-    NSError *error;
-    int i =0;
-    // glGenTextures(5, _textureRaw);
-     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    for (id key in _theImages)
     {
-        
-       // _texture[i] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Documents/Test.jpg" ofType:@"jpg"] options:options error:&error];
-      //  if (error) NSLog(@"Image texture error %@", error);
-        
-        
-        UIImage *teximage = [_theImages objectForKey:key];
-        NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
-        _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
-                                                         options:options error:&error];
-        if (error) NSLog(@"Image texture error %@", error);
-        
-        
-        // Identify the home directory and file name
-        //   NSString  *jpgPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Test.jpg"];
-        
-        // Write the file.  Choose YES atomically to enforce an all or none write. Use the NO flag if partially written files are okay which can occur in cases of corruption
-        //        _texture2[i] = [GLKTextureLoader textureWithContentsOfData: imgData options:options error:&error];
-        //  CGImage
-        
-        
-        // _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
-        //  [imgData writeToFile:jpgPath atomically:YES];
-        
-        // if (error) NSLog(@"Image texture error %@", error);
-        
-        /*
-        demoimage = imgLoadImageUIImage(teximage, 1);
-
-        
-        glBindTexture(GL_TEXTURE_2D, _textureRaw[i]);
-        
-        // Set up filter and wrap modes for this texture object
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        
-        // Indicate that pixel rows are tightly packed
-        //  (defaults to stride of 4 which is kind of only good for
-        //  RGBA or FLOAT data types)
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        
-        // Allocate and load image data into texture
-        glTexImage2D(GL_TEXTURE_2D, 0, demoimage->format, demoimage->width, demoimage->height, 0,
-                     demoimage->format, demoimage->type, demoimage->data);
-        
-        // Create mipmaps for this texture for better image quality
-       // glGenerateMipmap(GL_TEXTURE_2D);
-        
-       // GetGLError();
-        
-        
-       // [[texImage
-      //  _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:nil error:&error];
-        
-//        NSData *imgData = UIImagePNGRepresentation(teximage); // 1 is compression quality
-        
-          // Identify the home directory and file name
-       //   NSString  *jpgPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Test.jpg"];
-          
-          // Write the file.  Choose YES atomically to enforce an all or none write. Use the NO flag if partially written files are okay which can occur in cases of corruption
-//        _texture2[i] = [GLKTextureLoader textureWithContentsOfData: imgData options:options error:&error];
-      //  CGImage
-      
-        
-       // _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
-      //  [imgData writeToFile:jpgPath atomically:YES];
-        
-       // if (error) NSLog(@"Image texture error %@", error);
-       */
-        i++;
-       
+        NSLog(@"Image texture error %@", error);
     }
-    _opengltexturesset =1;
+    else
+    {
+        NSLog(@"Added Image texture %d to render list", (i - 1));
+        _opengltexturesset++;
+    }
+  
 }
 
 -(void)updateImageMetaData
@@ -1182,31 +962,8 @@ err = glGetError();								\
     float distance = 14.0;
     int i;
     
-    
-    
-    
-//    _imagePose[0].rotationMatrix= GLKMatrix4Make(
-//                                                -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
-//    
-//    
-//    
-//    _imagePose[1].rotationMatrix= GLKMatrix4Make(-0.813819, -0.317586, -0.486659, 0, -0.283285, -0.514396, 0.809411, 0, -0.507394, 0.796577, 0.328658, 0, 0, 0, 0, 1);
-//                                                 
-//    _imagePose[2].rotationMatrix= GLKMatrix4Make(-0.778916, -0.582085, -0.233384, 0, -0.183547, -0.144254, 0.972369, 0, -0.599667, 0.80023, 0.00552136, 0, 0, 0, 0, 1);
-//                                                 
-//     _imagePose[3].rotationMatrix= GLKMatrix4Make(-0.782513, -0.555458, -0.281319, 0, 0.126055, -0.583794, 0.802057, 0, -0.609741, 0.592158, 0.526844, 0, 0, 0, 0, 1);
-//                                                 
-//    _imagePose[4].rotationMatrix= GLKMatrix4Make(-0.456448, -0.858032, -0.235448, 0, -0.315959, -0.0910644, 0.944393, 0, -0.83176, 0.505458, -0.229537, 0, 0, 0, 0, 1);
-    
-    
     for(i =0; i < 5; i++)
     {
-        //_imagePose[i].position.x =0.0;
-       // _imagePose[i].position.y =0.0;
-       // _imagePose[i].position.z =0.0;
-
-        
-        
         computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
         tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
                                        vpimage.at.x, vpimage.at.y, vpimage.at.z,
@@ -1215,18 +972,10 @@ err = glGetError();								\
         
         _tBiasMVP[i] = GLKMatrix4Multiply(biasMatrix,tMVP);
     }
-
-
-
-
-
 }
-
-
 
 - (void)updateBuffers
 {
-    
     g_vertex_buffer_data[0] = result[0].x;
     g_vertex_buffer_data[1] = result[0].y;
     g_vertex_buffer_data[2] = result[0].z;       //0
@@ -1246,16 +995,41 @@ err = glGetError();								\
     g_vertex_buffer_data[16] = result[3].y;
     g_vertex_buffer_data[17] = result[3].z;   //3
     
-    
-    
-    
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
     //glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
 }
+
+#pragma mark - OpenGL Setup
+
+- (void)setupGL
+{
+    [EAGLContext setCurrentContext:self.context];
+    
+    [self loadShaders];
+    
+    [self checkShaderLimitations];
+    
+    init();
+    glEnable(GL_DEPTH_TEST);
+    [self setupBuffers];
+}
+
+- (void)tearDownGL
+{
+    [EAGLContext setCurrentContext:self.context];
+    
+    glDeleteBuffers(1, &_vertexBuffer);
+    glDeleteVertexArraysOES(1, &_vertexArray);
+    
+    if (_program) {
+        glDeleteProgram(_program);
+        _program = 0;
+    }
+}
+
 - (void)setupBuffers
 {
-    
     glGenBuffers(1, &_indexVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexdata), indexdata, GL_STATIC_DRAW);
@@ -1263,9 +1037,6 @@ err = glGetError();								\
     glGenBuffers(1, &_positionVBO);
     glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
-    
     
     glEnableVertexAttribArray(ATTRIB_VERTEX);
     glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
@@ -1278,100 +1049,10 @@ err = glGetError();								\
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
 }
 
-- (void)setupGL
-{
-    [EAGLContext setCurrentContext:self.context];
-    
-    [self loadShaders];
-    
-    [self checkShaderLimitations];
-    
-    init();
-  //  compute_new_intersectionZ();
-     //multiply_vertices();
-   // multiply_vertices_Zaxis();
-    
-    
-    
-    
-    glEnable(GL_DEPTH_TEST);
-    
-    NSError *error;
-    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    
-    
-    /*
-    _texture[0] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image0" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Image texture error %@", error);
-    
-    _texture[1] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image1" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Image texture error %@", error);
-    
-    _texture[2] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image2" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Image texture error %@", error);
-    
-    _texture[3] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image3" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Image texture error %@", error);
-    
-    _texture[4] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image4" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Image texture error %@", error);
-    */
-    
-    //bind the texture to texture unit 0
-    /*
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(_texture[0].target, _texture[0].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(_texture[1].target, _texture[1].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(_texture[2].target, _texture[2].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(_texture[3].target, _texture[3].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    
-    
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(_texture[4].target, _texture[4].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    */
-    [self setupBuffers];
-    
-    
-    
-}
-
-- (void)tearDownGL
-{
-    [EAGLContext setCurrentContext:self.context];
-    
-    glDeleteBuffers(1, &_vertexBuffer);
-    glDeleteVertexArraysOES(1, &_vertexArray);
-    
-    
-    if (_program) {
-        glDeleteProgram(_program);
-        _program = 0;
-    }
-}
-
 #pragma mark - GLKView and GLKViewController delegate methods
 
 - (void)update
 {
-    
-
-   // CLLocation *location = locationManager.location;
     CMAttitude *att = motionManager.attitude;
   
     _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
@@ -1394,106 +1075,60 @@ err = glGetError();								\
     _userPose.rotationMatrix.m32 = 0.0;
     _userPose.rotationMatrix.m33 = 1.0;
     
-    
-  //  _userPose.rotationMatrix= GLKMatrix4Make(
-   //                                        -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
-    
-    
-    _userPose.position.x =0.0;
-    _userPose.position.y =0.0;
-    _userPose.position.z =0.0;
-    
     _userPose.position.x =locationManager.location.coordinate.latitude;
     _userPose.position.y =locationManager.location.coordinate.longitude;
     _userPose.position.z =locationManager.location.altitude;
     
     GLKVector3 planeNormal;
-    float distance = 14.0;
+    float distance = 40.0;
     viewParameters vpuser;
-    
-    
-    
-    
-   // _userPose.rotationMatrix = _imagePose.rotationMatrix;
-    
+
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
-    
+
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
-    
-    
-    
-   
-    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    //GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
+
+//    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+//    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
   
     GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(vpuser.origin.x, vpuser.origin.y, vpuser.origin.z,
                                                  vpuser.at.x, vpuser.at.y, vpuser.at.z ,
                                                  vpuser.up.x, vpuser.up.y, vpuser.up.z);
 
-  //  NSLog(@"eye origin:x=%f y=%f z=%f", vpuser.origin.x, vpuser.origin.y, vpuser.origin.z);
-  //  NSLog(@"eye at    :x=%f y=%f z=%f", vpuser.at.x, vpuser.at.y, vpuser.at.z);
-  //  NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
-    //GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
-    
-
-    
+//    NSLog(@"eye origin:x=%f y=%f z=%f", vpuser.origin.x, vpuser.origin.y, vpuser.origin.z);
+//    NSLog(@"eye at    :x=%f y=%f z=%f", vpuser.at.x, vpuser.at.y, vpuser.at.z);
+//    NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
+//    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
     
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
     
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
-    
-    
-    
- 
-    
-  
-    
+
     [self updateImageMetaData];
-    
-    
-  // GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
- //   GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(1.0f, 0.0f, 0.0f);
+
+//    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
+//    GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(1.0f, 0.0f, 0.0f);
    
     _imagePose[7].position.x =0.0;
     _imagePose[7].position.y =0.0;
     _imagePose[7].position.z =0.0;
-    
-    
-    tViewMatrix =viewMatrix;
+
+    tViewMatrix = viewMatrix;
     
     GLKMatrix4 texrotate = GLKMatrix4MakeRotation(-1.0*PI/2.0, 0.0, 0.0, 1.0);
-    GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(-0.5, -0.5, 0.0);
-    GLKMatrix4 textranslate2 = GLKMatrix4MakeTranslation(0.5, 0.5, 0.0);
- 
-    GLKMatrix4 tmpmatrix = GLKMatrix4Multiply(texrotate, textranslate);
-    //  modelViewMatrix = GLKMatrix4Multiply(textranslate, texrotate);
-  //  modelViewMatrix = GLKMatrix4Multiply(tViewMatrix, modelViewMatrix);
-    
-  //  tMVP = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
     tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
-
     _tBiasMVP[6] = texrotate;
-    
-   // _tBiasMVP[6] = GLKMatrix4Identity;
     _tBiasMVP[7] = GLKMatrix4Multiply(biasMatrix,tMVP);
-  
-  [self updateBuffers];
-    
-    
-    
-    
-    
+
+    [self updateBuffers];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    
-    
+
     // Render the object again with ES2
     glUseProgram(_program);
     
@@ -1511,15 +1146,8 @@ err = glGetError();								\
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
     
-    if(_opengltexturesset==1)
+    if(_opengltexturesset >= 1)
     {
-   
-//        NSLog(@"rendering texture0");
-//        NSLog(@"rendering texture0");
-//        NSLog(@"rendering texture0");
-//        NSLog(@"rendering texture0");
-//        NSLog(@"rendering texture0"); NSLog(@"rendering texture0");
-        
         for(int i = 0; i < 5; i++)
         {
             if (_texture[i] != nil)
@@ -1527,52 +1155,14 @@ err = glGetError();								\
                 NSLog(@"rendering texture%d", i);
                 glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(_texture[i].target, _texture[i].name);
-                // glBindTexture(GL_TEXTURE_2D, _textureRaw[i]);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
             }
-            
         }
-/*
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(_texture[0].target, _texture[0].name);
-    // glBindTexture(GL_TEXTURE_2D, _textureRaw[0]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
-            
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(_texture[1].target, _texture[1].name);
-    // glBindTexture(GL_TEXTURE_2D, _textureRaw[1]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER1], 1);
-            
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(_texture[2].target, _texture[2].name);
-    // glBindTexture(GL_TEXTURE_2D, _textureRaw[2]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER2], 2);
-            
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(_texture[3].target, _texture[3].name);
-    // glBindTexture(GL_TEXTURE_2D, _textureRaw[3]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER3], 3);
-        
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(_texture[4].target, _texture[4].name);
-    // glBindTexture(GL_TEXTURE_2D, _textureRaw[4]);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
-*/
     }
    
-    if(_videotexture !=NULL)
+    if(_videotexture != NULL)
     {
        glActiveTexture(GL_TEXTURE7);
        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
@@ -1587,6 +1177,18 @@ err = glGetError();								\
 
 #pragma mark -  OpenGL ES 2 shader compilation
 
+- (void) checkShaderLimitations{
+    GLint maxtextureunits;
+    GLint maxvertextureunits;
+    
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxtextureunits);
+    NSLog(@"Maximum texture image units = %d",maxtextureunits);
+    
+    glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxvertextureunits);
+    NSLog(@"Maximum vertex texture image unit = %d",maxvertextureunits);
+    
+}
+
 - (BOOL)loadShaders
 {
     GLuint vertShader, fragShader;
@@ -1597,8 +1199,6 @@ err = glGetError();								\
     
     // Create and compile vertex shader.
     vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shaders/Shader" ofType:@"vsh"];
-    // vertShaderPathname = [[NSBundle mainBundle] pathForResource:@"testshader" ofType:@"vsh"];
-    //test
     
     if (![self compileShader:&vertShader type:GL_VERTEX_SHADER file:vertShaderPathname]) {
         NSLog(@"Failed to compile vertex shader");
@@ -1606,9 +1206,7 @@ err = glGetError();								\
     }
     
     // Create and compile fragment shader.
-    //test
     fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"Shaders/Shader" ofType:@"fsh"];
-    //fragShaderPathname = [[NSBundle mainBundle] pathForResource:@"testshader" ofType:@"fsh"];
     if (![self compileShader:&fragShader type:GL_FRAGMENT_SHADER file:fragShaderPathname]) {
         NSLog(@"Failed to compile fragment shader");
         return NO;
@@ -1625,6 +1223,7 @@ err = glGetError();								\
     
     glBindAttribLocation(_program, ATTRIB_VERTEX, "position");
     glBindAttribLocation(_program, ATTRIB_TEXCOORD, "texCoord");
+    
     // Link program.
     if (![self linkProgram:_program]) {
         NSLog(@"Failed to link program: %d", _program);
@@ -1653,13 +1252,13 @@ err = glGetError();								\
     uniforms[UNIFORM_TBIASMVP_MATRIX3] = glGetUniformLocation(_program, "tBiasMVP[3]");
     uniforms[UNIFORM_TBIASMVP_MATRIX4] = glGetUniformLocation(_program, "tBiasMVP[4]");
     uniforms[UNIFORM_TBIASMVP_MATRIX7] = glGetUniformLocation(_program, "tBiasMVP[7]");
-     uniforms[UNIFORM_TBIASMVP_MATRIX6] = glGetUniformLocation(_program, "textureModelMatrix");
+    uniforms[UNIFORM_TBIASMVP_MATRIX6] = glGetUniformLocation(_program, "textureModelMatrix");
     
     uniforms[UNIFORM_MYTEXTURE_SAMPLER0] = glGetUniformLocation(_program, "textureSampler[0]");
-     uniforms[UNIFORM_MYTEXTURE_SAMPLER1] = glGetUniformLocation(_program, "textureSampler[1]");
-     uniforms[UNIFORM_MYTEXTURE_SAMPLER2] = glGetUniformLocation(_program, "textureSampler[2]");
-     uniforms[UNIFORM_MYTEXTURE_SAMPLER3] = glGetUniformLocation(_program, "textureSampler[3]");
-     uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER1] = glGetUniformLocation(_program, "textureSampler[1]");
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER2] = glGetUniformLocation(_program, "textureSampler[2]");
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER3] = glGetUniformLocation(_program, "textureSampler[3]");
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER7] = glGetUniformLocation(_program, "textureSampler[7]");
     
     
