@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <dispatch/dispatch.h>
 
 @interface FluxAVCameraSingleton : NSObject{
     AVCaptureDevice *device;
