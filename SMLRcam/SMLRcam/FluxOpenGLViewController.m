@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 Arjun Chopra. All rights reserved.
 //
 
+#import "FluxOpenGLViewController.h"
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
-#import "FluxOpenGLViewController.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
