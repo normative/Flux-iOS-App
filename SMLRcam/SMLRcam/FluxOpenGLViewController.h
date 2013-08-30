@@ -48,6 +48,7 @@ typedef struct {
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     GLKTextureInfo* _texture[8];
+    GLKTextureInfo* _texture2[8];
     GLuint _positionVBO;
     GLuint _texcoordVBO;
     GLuint _indexVBO;
@@ -77,7 +78,8 @@ typedef struct {
 @property (nonatomic, weak) id <OpenGLViewDelegate> theDelegate;
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, strong)NSMutableDictionary*imageDict;
-
+@property (nonatomic, strong)NSMutableDictionary*theImages;
+@property (nonatomic, strong)NSMutableDictionary *requestList;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
