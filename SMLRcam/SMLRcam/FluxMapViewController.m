@@ -18,6 +18,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (int)   getZoomLevel;
 - (float) getScale;
 
+- (void) setUserHeadingDirection;
+- (void) setStatusBarLocationLabel:(NSNotification *)notification;
+- (void) setStatusBarDateLabel;
+- (void) setStatusBarMomentLabel;
+
+- (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture;
+- (void)updateLoadingMessage:(NSTimer *)thisTimer;
+
 - (void) setupPinchGesture;
 - (void) setupNetworkServiceManager;
 - (void) setupLocationManager;
@@ -25,78 +33,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void) setupMapView;
 - (void) setupStatusBarContent;
 
-- (void) updateLoadingMessage: (NSTimer *)thisTimer;
-
-- (void) setStatusBarLocationLabel:(NSNotification *)notification;
-- (void) setStatusBarDateLabel;
-- (void) setStatusBarMomentLabel;
-
-- (void) setUserHeadingDirection;
-
 @end
 
 @implementation FluxMapViewController
 
 @synthesize myViewOrientation;
 @synthesize mapAnnotationsDictionary;
-
-#pragma mark - getter methods
-
-// get current map zoom level
-- (int)getZoomLevel
-{
-    return 21 - round(log2(myMapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * myMapView.bounds.size.width)));
-}
-
-// return proper scale size for the annotations in the map view
-- (float)getScale
-{
-    return -1 * sqrt((double)(1 - pow(([self getZoomLevel]/20.0), 2.0))) + 1.1;
-}
-
-#pragma mark - setter methods
-
-// set the user annotation heading direction as heading updating
-- (void)setUserHeadingDirection
-{
-    if (userAnnotationView != nil)
-    {
-        double scale = [self getScale];
-        userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
-        
-        // heading direction to be improve
-        CGAffineTransform transform = CGAffineTransformRotate(userAnnotationView.transform ,-(float)locationManager.heading*M_PI/180.0);
-        userAnnotationView.transform = transform;
-    }
-}
-
-// set status bar location label
-- (void)setStatusBarLocationLabel:(NSNotification *)notification
-{
-    NSString *locationString = locationManager.subadministativearea;
-    NSString *sublocality = locationManager.sublocality;
-    
-    if (sublocality.length > 0)
-    {
-        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
-    }
-    [statusBarCurrentLocalityLbl setText: locationString];
-}
-
-// set status bar date label
-- (void)setStatusBarDateLabel
-{
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
-    [dateFormat setDateFormat:@"MMM dd, yyyy"];
-    NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
-    [statusBarCurrentDateLbl setText:todayDateString];
-}
-
-// set status bar moment label
-- (void)setStatusBarMomentLabel
-{
-    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [mapAnnotationsDictionary count]]];
-}
 
 #pragma mark - delegate methods
 
@@ -276,6 +218,64 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         }
     }
     [self setStatusBarMomentLabel];
+}
+
+#pragma mark - getter methods
+
+// get current map zoom level
+- (int)getZoomLevel
+{
+    return 21 - round(log2(myMapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * myMapView.bounds.size.width)));
+}
+
+// return proper scale size for the annotations in the map view
+- (float)getScale
+{
+    return -1 * sqrt((double)(1 - pow(([self getZoomLevel]/20.0), 2.0))) + 1.1;
+}
+
+#pragma mark - setter methods
+
+// set the user annotation heading direction as heading updating
+- (void)setUserHeadingDirection
+{
+    if (userAnnotationView != nil)
+    {
+        double scale = [self getScale];
+        userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
+        
+        // heading direction to be improve
+        CGAffineTransform transform = CGAffineTransformRotate(userAnnotationView.transform ,(float)locationManager.heading*M_PI/180.0);
+        userAnnotationView.transform = transform;
+    }
+}
+
+// set status bar location label
+- (void)setStatusBarLocationLabel:(NSNotification *)notification
+{
+    NSString *locationString = locationManager.subadministativearea;
+    NSString *sublocality = locationManager.sublocality;
+    
+    if (sublocality.length > 0)
+    {
+        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
+    }
+    [statusBarCurrentLocalityLbl setText: locationString];
+}
+
+// set status bar date label
+- (void)setStatusBarDateLabel
+{
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+    [dateFormat setDateFormat:@"MMM dd, yyyy"];
+    NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
+    [statusBarCurrentDateLbl setText:todayDateString];
+}
+
+// set status bar moment label
+- (void)setStatusBarMomentLabel
+{
+    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [mapAnnotationsDictionary count]]];
 }
 
 #pragma mark - @selector

@@ -18,6 +18,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "FluxLocationServicesSingleton.h"
 #import "FluxNetworkServices.h"
+#import "FluxAVCameraSingleton.h"
 #import <CoreMotion/CoreMotion.h>
 
 #import <dispatch/dispatch.h>
@@ -30,10 +31,8 @@
     FluxAnnotationsTableViewController *annotationsFeedView;
    
     AVCaptureVideoPreviewLayer *previewLayer;
-    AVCaptureVideoDataOutput *videoDataOutput;
-	dispatch_queue_t videoDataOutputQueue;
-    AVCaptureStillImageOutput *stillImageOutput;
     AVCaptureDevice *device;
+    FluxAVCameraSingleton *cameraManager;
     
     UIImageView *gridView;
     NSNumber* camMode; //0 = off, 1 = on, 2 = confirm

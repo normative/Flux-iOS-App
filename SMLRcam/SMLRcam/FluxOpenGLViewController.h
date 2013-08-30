@@ -14,11 +14,13 @@
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import <AVFoundation/AVFoundation.h>
 
+#import "FluxAVCameraSingleton.h"
+
 @class FluxOpenGLViewController;
 @protocol OpenGLViewDelegate <NSObject>
 @optional
-//images
-- (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary*)aImageDict;
+//updated ImageList
+- (void)OpenGLView:(FluxOpenGLViewController*)glView didUpdateImageList:(NSMutableDictionary*)imgList;
 @end
 
 typedef struct{
@@ -66,13 +68,13 @@ typedef struct {
     size_t _videoTextureHeight;
     CVOpenGLESTextureRef _videotexture;
     NSString *_sessionPreset;
-    AVCaptureSession *_session;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
     
     FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;
     FluxNetworkServices * networkServices;
+    FluxAVCameraSingleton *cameraManager;
 
     __weak id <OpenGLViewDelegate> theDelegate;
 }
@@ -101,4 +103,9 @@ typedef struct {
 - (void)didUpdateLocation:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
 - (void)setupNetworkServices;
+
+//AVCam Methods
+- (void)setupAVCapture;
+
+
 @end
