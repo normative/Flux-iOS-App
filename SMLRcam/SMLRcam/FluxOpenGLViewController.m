@@ -984,6 +984,28 @@ void init(){
     
     init();
     glEnable(GL_DEPTH_TEST);
+    
+    
+    
+    NSError *error;
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+    
+    
+    
+    _texture[7] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"background" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+  
+     glActiveTexture(GL_TEXTURE7);
+     glBindTexture(_texture[7].target, _texture[7].name);
+     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+     
+    
+    
+    
+    
+    
     [self setupBuffers];
 }
 
@@ -1133,7 +1155,15 @@ void init(){
             }
         }
     }
+    
+        glActiveTexture(GL_TEXTURE7);
+         glBindTexture(_texture[7].target, _texture[7].name);
+    
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
    
+/*
     if(_videotexture != NULL)
     {
        glActiveTexture(GL_TEXTURE7);
@@ -1142,7 +1172,7 @@ void init(){
        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
     }
-    
+    */
     glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
     
 }
