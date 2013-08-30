@@ -402,11 +402,6 @@
 
 -(void)pauseAVCapture
 {
-//    AVCaptureSession * currentSession  = previewLayer.session;
-//    if (currentSession !=nil && [currentSession isRunning])
-//    {
-//        [currentSession stopRunning];
-//    }
     [cameraManager pauseAVCapture];
 }
 
@@ -414,36 +409,7 @@
 -(void)restartAVCaptureWithBlur:(BOOL)blur
 {
     //don't add a blur if we haven't captured an image yet.
-//    if (capturedImage != nil && blur) {
-//        [gridView setAlpha:0.0];
-//        [CameraButton setAlpha:0.0];
-//        [blurView setImage:[self blurImage:capturedImage]];
-//        [blurView setHidden:NO];
-//        [UIView animateWithDuration:0.2 animations:^{
-//            [blurView setAlpha:1.0];
-//        }completion:nil];
-//    }
-//    dispatch_async(AVCaptureBackgroundQueue, ^{
-//        //start AVCapture
-//        AVCaptureSession * currentSession  = previewLayer.session;
-//        if (currentSession !=nil  && ![currentSession isRunning])
-//        {
-//            [currentSession startRunning];
-//        }
-//        dispatch_sync(dispatch_get_main_queue(), ^{
-//            //completion callback
-//            if (blur) {
-//                [UIView animateWithDuration:0.2 animations:^{
-//                    [blurView setAlpha:0.0];
-//                    [gridView setAlpha:1.0];
-//                    [CameraButton setAlpha:1.0];
-//                }completion:^(BOOL finished){
-//                    [blurView setHidden:YES];
-//                }];
-//            }
-//        });
-//    });
-    
+   
     if (capturedImage != nil && blur) {
         [gridView setAlpha:0.0];
         [CameraButton setAlpha:0.0];
@@ -616,7 +582,7 @@
     }
     //going to confirm cam
     else{
-        [self pauseAVCapture];
+        [cameraManager pauseAVCapture];
         
         [self.cameraApproveContainerView setHidden:NO];
         [CameraButton setHidden:YES];
@@ -1009,7 +975,6 @@
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
-#warning deal with this later
     [self restartAVCaptureWithBlur:YES];
 }
 

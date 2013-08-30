@@ -19,8 +19,8 @@
 @class FluxOpenGLViewController;
 @protocol OpenGLViewDelegate <NSObject>
 @optional
-//endedCaptureSession
-- (void)OpenGLViewDidEndCaptureSession:(FluxOpenGLViewController *)glView;
+//updated ImageList
+- (void)OpenGLView:(FluxOpenGLViewController*)glView didUpdateImageList:(NSMutableDictionary*)imgList;
 @end
 
 typedef struct{
@@ -68,7 +68,6 @@ typedef struct {
     size_t _videoTextureHeight;
     CVOpenGLESTextureRef _videotexture;
     NSString *_sessionPreset;
-    AVCaptureSession *_session;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
     
@@ -107,8 +106,6 @@ typedef struct {
 
 //AVCam Methods
 - (void)setupAVCapture;
--(void)pauseAVCaptureForScanView;
--(void)restartAVCapture;
 
 
 @end

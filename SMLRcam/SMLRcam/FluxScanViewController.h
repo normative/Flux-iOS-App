@@ -31,9 +31,6 @@
     FluxAnnotationsTableViewController *annotationsFeedView;
    
     AVCaptureVideoPreviewLayer *previewLayer;
-    AVCaptureVideoDataOutput *videoDataOutput;
-	dispatch_queue_t videoDataOutputQueue;
-    AVCaptureStillImageOutput *stillImageOutput;
     AVCaptureDevice *device;
     FluxAVCameraSingleton *cameraManager;
     
