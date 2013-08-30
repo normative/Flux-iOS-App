@@ -648,7 +648,6 @@ void init(){
         [theDelegate OpenGLView:self didUpdateImageList:imageDict];
     }
     
-    [self populateMetaData];
     [self populateImageData];
 }
 
@@ -866,35 +865,6 @@ void init(){
 
 #pragma mark - OpenGL Texture & Metadata Manipulation
 
--(void) populateMetaData
-{
-    NSLog(@"Image dictionary count is %i", [imageDict count]);
-    int i = 0;
-    GLKQuaternion quaternion;
-    
-    for (id key in imageDict)
-    {
-        FluxScanImageObject *locationObject = [imageDict objectForKey:key];
-        
-        if(i <5)
-        {
-            _imagePose[i].position.x =  locationObject.latitude;
-            _imagePose[i].position.y =  locationObject.longitude;
-            _imagePose[i].position.z =  locationObject.altitude;
-            
-            quaternion.x = locationObject.qx;
-            quaternion.y = locationObject.qy;
-            quaternion.z = locationObject.qz;
-            quaternion.w = locationObject.qw;
-            
-            _imagePose[i].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
-            
-            NSLog(@"Loaded meta data for image %d quaternion [%f %f %f %f]", i, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-        }
-        i++;
-    }
-}
-
 -(void) populateImageData
 {
     NSLog(@"Image dictionary count is %i", [imageDict count]);
@@ -905,6 +875,7 @@ void init(){
         
         if(![_requestList objectForKey:key ])
         {
+            NSLog(@"Adding id %@ to request list", key);
             [networkServices getImageForID:locationObject.imageID];
             [_requestList setObject:key forKey:key];
         }
@@ -918,7 +889,7 @@ void init(){
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     UIImage *teximage = [_theImages objectForKey:key];
     NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
-    _texture[i++] = [GLKTextureLoader textureWithContentsOfData:imgData
+    _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
                                                       options:options error:&error];
     if (error)
     {
@@ -926,10 +897,33 @@ void init(){
     }
     else
     {
-        NSLog(@"Added Image texture %d to render list", (i - 1));
+        NSLog(@"Added Image texture to render list in slot %d", (i));
+        [self updateImageMetadataKey:key index:i];
+        i++;
         _opengltexturesset++;
     }
   
+}
+
+-(void) updateImageMetadataKey:(id)key index:(int)idx
+{
+    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [imageDict count]);
+    GLKQuaternion quaternion;
+
+    FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+
+    _imagePose[idx].position.x =  locationObject.latitude;
+    _imagePose[idx].position.y =  locationObject.longitude;
+    _imagePose[idx].position.z =  locationObject.altitude;
+    
+    quaternion.x = locationObject.qx;
+    quaternion.y = locationObject.qy;
+    quaternion.z = locationObject.qz;
+    quaternion.w = locationObject.qw;
+    
+    _imagePose[idx].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+    
+    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
 -(void)updateImageMetaData
@@ -1126,11 +1120,11 @@ void init(){
     
     if(_opengltexturesset >= 1)
     {
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < _opengltexturesset; i++)
         {
             if (_texture[i] != nil)
             {
-                NSLog(@"rendering texture%d", i);
+//                NSLog(@"rendering texture%d", i);
                 glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(_texture[i].target, _texture[i].name);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
