@@ -376,11 +376,11 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
     positionTP.z = 0;
-    
+   /*
     positionTP.x = 0;
     positionTP.y = 0;
     positionTP.z = 0;
-
+*/
     
 //    positionTP.z = sp->ecef.z -userPose.ecef.z;
 //    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
@@ -397,7 +397,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
 //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
     (*vp).at =GLKVector3Add(positionTP, V);
-    (*vp).up = GLKVector3Add(positionTP, viewP.up);
+    (*vp).up = viewP.up;
     
 //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
