@@ -376,7 +376,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
     positionTP.z = 0;
-    /*
+   /*
     positionTP.x = 0;
     positionTP.y = 0;
     positionTP.z = 0;

@@ -9,8 +9,8 @@
 #import "FluxScanViewController.h"
 
 #import "UIViewController+MMDrawerController.h"
-#import "FluxAnnotationsTableViewController.h"
 #import "FluxImageAnnotationViewController.h"
+#import "FluxAnnotationTableViewCell.h"
 
 #import <ImageIO/ImageIO.h>
 
@@ -58,6 +58,19 @@
     self.imageDict = imageList;
 }
 
+//called by annotationsTableview
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
+         didreturnImage:(UIImage *)image
+             forImageID:(int)imageID
+{
+    NSNumber *objKey = [NSNumber numberWithInt: imageID];
+    [[self.imageDict objectForKey:objKey] setContentImage:image];
+    
+    NSArray * arr = [self.imageDict allKeys];
+    int index = [arr indexOfObject:objKey];
+    [annotationsTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:0], nil] withRowAnimation:UITableViewRowAnimationFade];
+}
+
 #pragma mark - Motion Methods
 
 //starts the motion manager and sets an update interval
@@ -96,24 +109,153 @@
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideRight animated:YES completion:nil];
 }
 
-#pragma mark - TopView Methods
+#pragma mark - Annotations Feed Methods
 
-//show list of images currently visible
+//show list of images currently visible.
+- (void)setupAnnotationsTableView{
+    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
+    [annotationsTableView setHidden:YES];
+    [annotationsTableView setAlpha:0.0];
+    
+    //fade out the bottom of the feedView
+    CAGradientLayer* maskLayer = [CAGradientLayer layer];
+    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
+    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
+    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
+    maskLayer.locations = [NSArray arrayWithObjects:
+                           [NSNumber numberWithFloat:0.0],
+                           [NSNumber numberWithFloat:0.0],
+                           [NSNumber numberWithFloat:0.0],
+                           [NSNumber numberWithFloat:0.8],
+                           [NSNumber numberWithFloat:1.0], nil];
+    maskLayer.bounds = annotationsTableView.layer.bounds;
+    maskLayer.anchorPoint = CGPointZero;
+    annotationsTableView.layer.mask = maskLayer;
+
+    [self.view addSubview:annotationsTableView];
+}
+
+
 - (IBAction)annotationsButtonAction:(id)sender {
     
-    if ([annotationsFeedView.view isHidden]) {
-        [annotationsFeedView setTableViewdict:self.imageDict];
-        [annotationsFeedView showPopoverAnimated:YES];
-        [panGesture setEnabled:NO];
-        [longPressGesture setEnabled:NO];
-        [CameraButton setUserInteractionEnabled:NO];
+//    if ([annotationsTableView isHidden]) {
+//        if ([self.imageDict count]>0) {
+//            [annotationsTableView reloadData];
+//            [annotationsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+//        }
+//            [annotationsTableView setHidden:NO];
+//            [UIView animateWithDuration:0.3f
+//                             animations:^{
+//                                 [self.view setAlpha:1.0];
+//                             }
+//                             completion:nil];
+//        
+//        [panGesture setEnabled:NO];
+//        [longPressGesture setEnabled:NO];
+//        [CameraButton setUserInteractionEnabled:NO];
+//    }
+//    else{
+//        [annotationsTableView setHidden:YES];
+//        
+//        [panGesture setEnabled:YES];
+//        [longPressGesture setEnabled:YES];
+//        [CameraButton setUserInteractionEnabled:YES];
+//    }
+}
+
+
+#pragma mark TableView Methods
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    // Return the number of sections.
+    return 1;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    return @"Tags Nearby";
+}
+
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UILabel *label = [[UILabel alloc] init];
+    label.frame = CGRectMake(20, 0, 100, 22);
+    label.textColor = [UIColor lightGrayColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor clearColor];
+    
+    UIView*backgroundView = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, 24)];
+    [backgroundView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
+    
+    // Create header view and add label as a subview
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 22)];
+    [view setBackgroundColor:[UIColor clearColor]];
+    [view addSubview:backgroundView];
+    [view addSubview:label];
+    
+    
+    
+    return view;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    // Return the number of rows in the section.
+    return [self.imageDict count];
+}
+
+- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
+    return cell.frame.size.height;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"annotationsFeedCell";
+    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    if (cell == nil)
+    {
+        cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                  reuseIdentifier:CellIdentifier];
     }
-    else{
-        [annotationsFeedView dismissPopoverAnimated:YES];
-        [panGesture setEnabled:YES];
-        [longPressGesture setEnabled:YES];
-        [CameraButton setUserInteractionEnabled:YES];
+    
+    NSNumber *objkey = [[self.imageDict allKeys] objectAtIndex:indexPath.row];
+    FluxScanImageObject *rowObject = [self.imageDict objectForKey: objkey];
+    
+    cell.imageID = rowObject.imageID;
+    if (rowObject.contentImage == nil)
+    {
+        [networkServices getThumbImageForID:cell.imageID];
     }
+    else
+        [cell.contentImageView setImage:rowObject.contentImage];
+    cell.descriptionLabel.text = rowObject.descriptionString;
+    cell.userLabel.text = [NSString stringWithFormat:@"User: %i",rowObject.userID];
+    cell.timestampLabel.text = rowObject.timestampString;
+    
+    return cell;
+}
+
+//remove all but selected cell - not called right now
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    //    NSMutableArray *cellIndicesToBeDeleted = [[NSMutableArray alloc] init];
+    //    for (int i = 0; i < [tableView numberOfRowsInSection:0]; i++) {
+    //        if (i != indexPath.row) {
+    //            NSIndexPath *p = [NSIndexPath indexPathForRow:i inSection:1];
+    //            [cellIndicesToBeDeleted addObject:p];
+    //        }
+    //    }
+    //    [tableView deleteRowsAtIndexPaths:cellIndicesToBeDeleted
+    //                     withRowAnimation:UITableViewRowAnimationFade];
+    //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    self.view.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
+    [CATransaction commit];
 }
 
 # pragma mark - prepare segue action with identifer
@@ -181,16 +323,16 @@
 }
 
 - (void)handleTapGesture:(UITapGestureRecognizer*) sender{
-    if (![annotationsFeedView popoverIsHidden]) {
-        
-        CGPoint touchLoc = [sender locationInView:self.view];
-        BOOL isWithinAnnotationsView = CGRectContainsPoint(annotationsFeedView.view.frame, touchLoc);
-        BOOL isWithinCameraControlsView = CGRectContainsPoint(self.drawerContainerView.frame, touchLoc);
-        isWithinCameraControlsView = NO;
-        if (!isWithinAnnotationsView && !isWithinCameraControlsView) {
-            [self annotationsButtonAction:nil];
-        }
-    }
+//    if (![annotationsFeedView popoverIsHidden]) {
+//        
+//        CGPoint touchLoc = [sender locationInView:self.view];
+//        BOOL isWithinAnnotationsView = CGRectContainsPoint(annotationsFeedView.view.frame, touchLoc);
+//        BOOL isWithinCameraControlsView = CGRectContainsPoint(self.drawerContainerView.frame, touchLoc);
+//        isWithinCameraControlsView = NO;
+//        if (!isWithinAnnotationsView && !isWithinCameraControlsView) {
+//            [self annotationsButtonAction:nil];
+//        }
+//    }
     
 }
 
@@ -925,9 +1067,9 @@
     {
         changeToOrientation = toInterfaceOrientation;
         
-        if (![annotationsFeedView popoverIsHidden])
+        if (![annotationsTableView isHidden])
         {
-            [annotationsFeedView dismissPopoverAnimated:NO];
+            [annotationsTableView setHidden:YES];
         }
         
         [self performSegueWithIdentifier:@"pushMapModalView" sender:self];

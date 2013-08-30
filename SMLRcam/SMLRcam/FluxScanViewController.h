@@ -12,7 +12,6 @@
 #import "FluxMapViewController.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxOpenGLViewController.h"
-#import "FluxAnnotationsTableViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -28,7 +27,7 @@
 
 
 @interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate>{
-    FluxAnnotationsTableViewController *annotationsFeedView;
+    UITableView*annotationsTableView;
    
     AVCaptureVideoPreviewLayer *previewLayer;
     AVCaptureDevice *device;
@@ -95,6 +94,7 @@
 
 - (void)setupCameraView;
 - (void)setUIForCamMode:(NSNumber*)mode;
+- (void)setupAnnotationsTableView;
 - (void)annotationsViewDidPop:(NSNotification *)notification;
 
 - (void)setupGestureHandlers;

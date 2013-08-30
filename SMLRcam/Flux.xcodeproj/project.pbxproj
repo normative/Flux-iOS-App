@@ -60,7 +60,6 @@
 		AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */; };
 		AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */; };
 		AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */; };
-		AA4CE16D17B921E1008D04BE /* FluxAnnotationsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */; };
 		AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */; };
 		AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */; };
 		AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */; };
@@ -163,8 +162,6 @@
 		AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMotionManagerSingleton.m; sourceTree = "<group>"; };
 		AA4CE15D17B58433008D04BE /* FluxScanImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxScanImageObject.h; sourceTree = "<group>"; };
 		AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxScanImageObject.m; sourceTree = "<group>"; };
-		AA4CE16B17B921E1008D04BE /* FluxAnnotationsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAnnotationsTableViewController.h; sourceTree = "<group>"; };
-		AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAnnotationsTableViewController.m; sourceTree = "<group>"; };
 		AA4CE18017B9581E008D04BE /* FluxAnnotationTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAnnotationTableViewCell.h; sourceTree = "<group>"; };
 		AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAnnotationTableViewCell.m; sourceTree = "<group>"; };
 		AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTPlaceholderTextView.h; sourceTree = "<group>"; };
@@ -424,8 +421,6 @@
 		AA4CE16A17B921A3008D04BE /* TopView */ = {
 			isa = PBXGroup;
 			children = (
-				AA4CE16B17B921E1008D04BE /* FluxAnnotationsTableViewController.h */,
-				AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */,
 				AA4CE18017B9581E008D04BE /* FluxAnnotationTableViewCell.h */,
 				AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */,
 			);
@@ -684,7 +679,6 @@
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */,
 				AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */,
-				AA4CE16D17B921E1008D04BE /* FluxAnnotationsTableViewController.m in Sources */,
 				AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */,
