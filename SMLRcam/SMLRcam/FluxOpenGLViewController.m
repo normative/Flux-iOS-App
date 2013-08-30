@@ -8,6 +8,8 @@
 
 #import "FluxOpenGLViewController.h"
 #import "ImageViewerImageUtil.h"
+#import "FluxMath.h"
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 // Uniform index.
@@ -305,8 +307,9 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     setParametersTP(usp->position);
     
+    WGS84_to_ECEF(usp);
     
-    
+    tangentplaneRotation(usp);
     // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -361,7 +364,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     return 0;
 }
 //distance - distance of plane
-int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, GLKVector3 userLocation, viewParameters *vp)
+int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, sensorPose userPose, viewParameters *vp)
 {
     
     viewParameters viewP;
@@ -411,7 +414,23 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         return -1;
     }
 
+    WGS84_to_ECEF(sp);
+   
     
+    positionTP.x = sp->ecef.x -userPose.ecef.x;
+    positionTP.y = sp->ecef.y -userPose.ecef.y;
+    positionTP.z = 0;
+    
+    positionTP.x = 0;
+    positionTP.y = 0;
+    positionTP.z = 0;
+
+    
+   // positionTP.z = sp->ecef.z -userPose.ecef.z;
+//    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
+    
+    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
+  //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
@@ -420,8 +439,8 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     (*vp).origin = GLKVector3Add(positionTP, P0);
     //(*vp).at = GLKVector3Add(positionTP, viewP.at);
-    (*vp).at = V;
     
+    (*vp).at =GLKVector3Add(positionTP, V);
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
     
@@ -460,7 +479,7 @@ void compute_new_intersection()
     
     
     GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
-    float distance = 14.0;
+    float distance = 40.0;
     
     //intersection with plane
     GLKVector3 N = GLKVector3Make(_plane_normal_rotated.x, _plane_normal_rotated.y, _plane_normal_rotated.z);
@@ -680,7 +699,79 @@ void init(){
     CLLocation *loc = locationManager.location;
     [networkServices getImagesForLocation:loc.coordinate andRadius:50];
 }
+-(void) populateMetaData
+{
+    NSLog(@"Image dictionary count is %i", [imageDict count]);
+    int i =0;
+    GLKQuaternion quaternion;
+    
+    
+    
+    for (id key in imageDict)
+    {
+        if (1)
+        {
+            FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+            
+            
+            if(i <5)
+            {
+                _imagePose[i].position.x =  locationObject.latitude;
+                _imagePose[i].position.y =  locationObject.longitude;
+                _imagePose[i].position.z =  locationObject.altitude;
 
+                quaternion.x = locationObject.qx;
+                quaternion.y = locationObject.qy;
+                quaternion.z = locationObject.qz;
+                quaternion.w = locationObject.qw;
+            
+                _imagePose[i].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+                
+                NSLog(@"Loaded meta data for image %d quaternion [%f %f %f %f]", i, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+            }
+            
+            
+            
+            // add annotation to map
+           // [myMapView addAnnotation: locationObject];
+            
+            // insert object to dic
+           // [mapAnnotationsDictionary setObject:locationObject forKey:key];
+            i++;
+        }
+    }
+}
+
+
+-(void) populateImageData
+{
+    NSLog(@"Image dictionary count is %i", [imageDict count]);
+    int i =0;
+    GLKQuaternion quaternion;
+    
+    
+    
+    for (id key in imageDict)
+    {
+        if (1)
+        {
+            FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+            
+            if(![_requestList objectForKey:key ])
+            {
+                [networkServices getImageForID:locationObject.imageID];
+                [_requestList setObject:key forKey:key];
+            }
+            
+            // add annotation to map
+            // [myMapView addAnnotation: locationObject];
+            
+            // insert object to dic
+            // [mapAnnotationsDictionary setObject:locationObject forKey:key];
+            i++;
+        }
+    }
+}
 
 #pragma mark - Network Services
 - (void)setupNetworkServices{
@@ -693,9 +784,20 @@ void init(){
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)]) {
         [theDelegate OpenGLView:self didUpdateImageList:imageDict];
     }
+    [self populateMetaData];
+    [self populateImageData];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
+{
+    NSNumber *objKey = [NSNumber numberWithInt: imageID];
+    [self.theImages setObject:image forKey:objKey];
+    
+    if([self.theImages count] <= 5)
+    {
+        [self updateImageTexturesKey:(objKey)];
+        //[self updateImageTextures];
+    }
     
 }
 
@@ -859,8 +961,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    _opengltexturesset =0;
     imageDict = [[NSMutableDictionary alloc]init];
+    _theImages = [[NSMutableDictionary alloc]init];
+    _requestList = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
     [self setupMotionManager];
     [self setupNetworkServices];
@@ -956,7 +1060,121 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
 }
 
--(void)updateImageData
+#define GetGLError()									\
+{														\
+GLenum err = glGetError();							\
+while (err != GL_NO_ERROR) {						\
+NSLog(@"GLError %s set in File:%s Line:%d\n",	\
+GetGLErrorString(err),					\
+__FILE__,								\
+__LINE__);								\
+err = glGetError();								\
+}													\
+}
+
+- (void) updateImageTexturesKey:(id)key
+{
+    NSError *error;
+    static int i = 0;
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+    UIImage *teximage = [_theImages objectForKey:key];
+    NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+    _texture[i++] = [GLKTextureLoader textureWithContentsOfData:imgData
+                                                      options:options error:&error];
+    if (error)
+        NSLog(@"Image texture error %@", error);
+    else
+        NSLog(@"Added Image texture %d to render list", (i - 1));
+
+    _opengltexturesset =1;
+  
+}
+
+- (void) updateImageTextures
+{
+    NSError *error;
+    int i =0;
+    // glGenTextures(5, _textureRaw);
+     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+    for (id key in _theImages)
+    {
+        
+       // _texture[i] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Documents/Test.jpg" ofType:@"jpg"] options:options error:&error];
+      //  if (error) NSLog(@"Image texture error %@", error);
+        
+        
+        UIImage *teximage = [_theImages objectForKey:key];
+        NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+        _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
+                                                         options:options error:&error];
+        if (error) NSLog(@"Image texture error %@", error);
+        
+        
+        // Identify the home directory and file name
+        //   NSString  *jpgPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Test.jpg"];
+        
+        // Write the file.  Choose YES atomically to enforce an all or none write. Use the NO flag if partially written files are okay which can occur in cases of corruption
+        //        _texture2[i] = [GLKTextureLoader textureWithContentsOfData: imgData options:options error:&error];
+        //  CGImage
+        
+        
+        // _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
+        //  [imgData writeToFile:jpgPath atomically:YES];
+        
+        // if (error) NSLog(@"Image texture error %@", error);
+        
+        /*
+        demoimage = imgLoadImageUIImage(teximage, 1);
+
+        
+        glBindTexture(GL_TEXTURE_2D, _textureRaw[i]);
+        
+        // Set up filter and wrap modes for this texture object
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        
+        // Indicate that pixel rows are tightly packed
+        //  (defaults to stride of 4 which is kind of only good for
+        //  RGBA or FLOAT data types)
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        
+        // Allocate and load image data into texture
+        glTexImage2D(GL_TEXTURE_2D, 0, demoimage->format, demoimage->width, demoimage->height, 0,
+                     demoimage->format, demoimage->type, demoimage->data);
+        
+        // Create mipmaps for this texture for better image quality
+       // glGenerateMipmap(GL_TEXTURE_2D);
+        
+       // GetGLError();
+        
+        
+       // [[texImage
+      //  _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:nil error:&error];
+        
+//        NSData *imgData = UIImagePNGRepresentation(teximage); // 1 is compression quality
+        
+          // Identify the home directory and file name
+       //   NSString  *jpgPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Test.jpg"];
+          
+          // Write the file.  Choose YES atomically to enforce an all or none write. Use the NO flag if partially written files are okay which can occur in cases of corruption
+//        _texture2[i] = [GLKTextureLoader textureWithContentsOfData: imgData options:options error:&error];
+      //  CGImage
+      
+        
+       // _texture2[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
+      //  [imgData writeToFile:jpgPath atomically:YES];
+        
+       // if (error) NSLog(@"Image texture error %@", error);
+       */
+        i++;
+       
+    }
+    _opengltexturesset =1;
+}
+
+-(void)updateImageMetaData
 {
     viewParameters vpimage;
     GLKVector3 planeNormal;
@@ -964,28 +1182,32 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     float distance = 14.0;
     int i;
     
-    _imagePose[0].rotationMatrix= GLKMatrix4Make(
-                                                -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
     
     
     
-    _imagePose[1].rotationMatrix= GLKMatrix4Make(-0.813819, -0.317586, -0.486659, 0, -0.283285, -0.514396, 0.809411, 0, -0.507394, 0.796577, 0.328658, 0, 0, 0, 0, 1);
-                                                 
-    _imagePose[2].rotationMatrix= GLKMatrix4Make(-0.778916, -0.582085, -0.233384, 0, -0.183547, -0.144254, 0.972369, 0, -0.599667, 0.80023, 0.00552136, 0, 0, 0, 0, 1);
-                                                 
-     _imagePose[3].rotationMatrix= GLKMatrix4Make(-0.782513, -0.555458, -0.281319, 0, 0.126055, -0.583794, 0.802057, 0, -0.609741, 0.592158, 0.526844, 0, 0, 0, 0, 1);
-                                                 
-    _imagePose[4].rotationMatrix= GLKMatrix4Make(-0.456448, -0.858032, -0.235448, 0, -0.315959, -0.0910644, 0.944393, 0, -0.83176, 0.505458, -0.229537, 0, 0, 0, 0, 1);
-                                                 
+//    _imagePose[0].rotationMatrix= GLKMatrix4Make(
+//                                                -0.694398, -0.469567, 0.54527, 0, 0.577056, 0.0893289, 0.811804, 0, -0.429905, 0.878366, 0.208937, 0, 0, 0, 0, 1);
+//    
+//    
+//    
+//    _imagePose[1].rotationMatrix= GLKMatrix4Make(-0.813819, -0.317586, -0.486659, 0, -0.283285, -0.514396, 0.809411, 0, -0.507394, 0.796577, 0.328658, 0, 0, 0, 0, 1);
+//                                                 
+//    _imagePose[2].rotationMatrix= GLKMatrix4Make(-0.778916, -0.582085, -0.233384, 0, -0.183547, -0.144254, 0.972369, 0, -0.599667, 0.80023, 0.00552136, 0, 0, 0, 0, 1);
+//                                                 
+//     _imagePose[3].rotationMatrix= GLKMatrix4Make(-0.782513, -0.555458, -0.281319, 0, 0.126055, -0.583794, 0.802057, 0, -0.609741, 0.592158, 0.526844, 0, 0, 0, 0, 1);
+//                                                 
+//    _imagePose[4].rotationMatrix= GLKMatrix4Make(-0.456448, -0.858032, -0.235448, 0, -0.315959, -0.0910644, 0.944393, 0, -0.83176, 0.505458, -0.229537, 0, 0, 0, 0, 1);
+    
+    
     for(i =0; i < 5; i++)
     {
-        
-        _imagePose[i].position.x =0.0;
-        _imagePose[i].position.y =0.0;
-        _imagePose[i].position.z =0.0;
-        
+        //_imagePose[i].position.x =0.0;
+       // _imagePose[i].position.y =0.0;
+       // _imagePose[i].position.z =0.0;
 
-        computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose.position, &vpimage);
+        
+        
+        computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
         tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
                                        vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                            vpimage.up.x, vpimage.up.y, vpimage.up.z);
@@ -1058,8 +1280,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)setupGL
 {
-    
-    
     [EAGLContext setCurrentContext:self.context];
     
     [self loadShaders];
@@ -1080,7 +1300,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     
     
-    
+    /*
     _texture[0] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image0" ofType:@"png"] options:options error:&error];
     if (error) NSLog(@"Image texture error %@", error);
     
@@ -1095,7 +1315,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     _texture[4] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Image4" ofType:@"png"] options:options error:&error];
     if (error) NSLog(@"Image texture error %@", error);
-    
+    */
     
     //bind the texture to texture unit 0
     /*
@@ -1126,7 +1346,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     */
     [self setupBuffers];
-    
     
     
     
@@ -1184,7 +1403,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _userPose.position.y =0.0;
     _userPose.position.z =0.0;
     
-    
+    _userPose.position.x =locationManager.location.coordinate.latitude;
+    _userPose.position.y =locationManager.location.coordinate.longitude;
+    _userPose.position.z =locationManager.location.altitude;
     
     GLKVector3 planeNormal;
     float distance = 14.0;
@@ -1229,7 +1450,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
   
     
-    [self updateImageData];
+    [self updateImageMetaData];
     
     
   // GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
@@ -1290,34 +1511,66 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
     
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(_texture[0].target, _texture[0].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(_texture[1].target, _texture[1].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER1], 1);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(_texture[2].target, _texture[2].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER2], 2);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(_texture[3].target, _texture[3].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER3], 3);
-    
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(_texture[4].target, _texture[4].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
-    
+    if(_opengltexturesset==1)
+    {
+   
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0");
+//        NSLog(@"rendering texture0"); NSLog(@"rendering texture0");
+        
+        for(int i = 0; i < 5; i++)
+        {
+            if (_texture[i] != nil)
+            {
+                NSLog(@"rendering texture%d", i);
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(_texture[i].target, _texture[i].name);
+                // glBindTexture(GL_TEXTURE_2D, _textureRaw[i]);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
+            }
+            
+        }
+/*
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(_texture[0].target, _texture[0].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[0]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
+            
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(_texture[1].target, _texture[1].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[1]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER1], 1);
+            
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(_texture[2].target, _texture[2].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[2]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER2], 2);
+            
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(_texture[3].target, _texture[3].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[3]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER3], 3);
+        
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(_texture[4].target, _texture[4].name);
+    // glBindTexture(GL_TEXTURE_2D, _textureRaw[4]);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER4], 4);
+*/
+    }
    
     if(_videotexture !=NULL)
     {
