@@ -14,8 +14,8 @@
 
 
 //serverURL
-//#define externServerURL @"http://54.221.222.71/"
-#define externServerURL @"http://54.221.254.230/"
+#define externServerURL @"http://54.221.222.71/"
+//#define externServerURL @"http://54.221.254.230/"
 #define localServerURL @"http://192.168.0.65/"
 
 @implementation FluxNetworkServices
@@ -154,6 +154,7 @@
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/closest.json" keyPath:nil statusCodes:statusCodes];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+    
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
