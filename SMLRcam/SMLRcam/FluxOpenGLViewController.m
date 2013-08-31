@@ -586,7 +586,10 @@ void init(){
 
 @implementation FluxOpenGLViewController
 
-@synthesize imageDict,theDelegate;
+@synthesize imageDict;
+@synthesize fluxImageCache;
+@synthesize fluxMetadata;
+@synthesize theDelegate;
 
 #pragma mark - Location
 

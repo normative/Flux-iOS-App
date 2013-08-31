@@ -66,6 +66,8 @@
 }
 
 @property (nonatomic, strong)NSMutableDictionary*imageDict;
+@property (strong) NSCache *fluxImageCache;
+@property (nonatomic, strong) NSMutableDictionary *fluxMetadata;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (strong, nonatomic) IBOutlet UIView *drawerContainerView;

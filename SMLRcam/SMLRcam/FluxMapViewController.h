@@ -50,6 +50,8 @@
 
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
 @property (nonatomic, strong) NSMutableDictionary *mapAnnotationsDictionary;
+@property (weak) NSCache *fluxImageCache;
+@property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
 
 - (IBAction)onLocateMeBtn:(id)sender;
 

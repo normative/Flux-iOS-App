@@ -37,6 +37,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 @implementation FluxMapViewController
 
+@synthesize fluxImageCache;
+@synthesize fluxMetadata;
 @synthesize myViewOrientation;
 @synthesize mapAnnotationsDictionary;
 

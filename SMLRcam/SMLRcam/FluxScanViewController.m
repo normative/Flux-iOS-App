@@ -16,7 +16,10 @@
 
 @implementation FluxScanViewController
 
-@synthesize imageDict,thumbView;
+@synthesize imageDict;
+@synthesize fluxImageCache;
+@synthesize fluxMetadata;
+@synthesize thumbView;
 
 #pragma mark - Location
 
@@ -263,7 +266,10 @@
     {
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
+        
         fluxMapViewController.mapAnnotationsDictionary = self.imageDict;
+        fluxMapViewController.fluxImageCache = self.fluxImageCache;
+        fluxMapViewController.fluxMetadata = self.fluxMetadata;
     }
 }
 
@@ -286,6 +292,9 @@
     [self addChildViewController:openGLController];
     [openGLController didMoveToParentViewController:self];
     openGLController.view.frame = self.view.bounds;
+    
+    openGLController.fluxImageCache = self.fluxImageCache;
+    openGLController.fluxMetadata = self.fluxMetadata;
 }
 
 - (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary *)aImageDict{
@@ -1085,6 +1094,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.imageDict = [[NSMutableDictionary alloc]init];
+    self.fluxImageCache = [[NSCache alloc] init];
+    self.fluxMetadata = [[NSMutableDictionary alloc] init];
+    
     [self setupAVCapture];
     [self setupGestureHandlers];
     [self setupCameraView];
@@ -1097,7 +1111,6 @@
     
     [self setupNetworkServices];
     
-    self.imageDict = [[NSMutableDictionary alloc]init];
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     //temporarily set the date range label to today's date
