@@ -809,8 +809,7 @@
              
              //save picture to photo album/locally
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
-             UIImage *theimg = [UIImage imageWithData:jpeg];
-             capturedImage = theimg;
+             capturedImage = [UIImage imageWithData:jpeg];
              
 //             // Grab a copy of the current metadata dictionary for modification - will be saved in image
 //             CFDictionaryRef metaDict = CMCopyDictionaryOfAttachments(NULL, imageDataSampleBuffer, kCMAttachmentMode_ShouldPropagate);
@@ -985,11 +984,20 @@
 // utility routing used during image capture to set up capture orientation
 - (AVCaptureVideoOrientation)avOrientationForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
 {
-	AVCaptureVideoOrientation result = deviceOrientation;
-	if (deviceOrientation == AVCaptureVideoOrientationLandscapeLeft )
+    AVCaptureVideoOrientation result = AVCaptureVideoOrientationPortrait;
+
+	if (deviceOrientation == AVCaptureVideoOrientationPortraitUpsideDown )
+    {
+		result = AVCaptureVideoOrientationPortraitUpsideDown;
+    }
+	else if (deviceOrientation == AVCaptureVideoOrientationLandscapeLeft )
+    {
 		result = AVCaptureVideoOrientationLandscapeRight;
+    }
 	else if ( deviceOrientation == UIDeviceOrientationLandscapeRight )
+    {
 		result = AVCaptureVideoOrientationLandscapeLeft;
+    }
 	return result;
 }
 
