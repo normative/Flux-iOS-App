@@ -138,12 +138,11 @@
     [backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
     [self AddGradientImageToBackgroundWithAlpha:0.7];
     
-    
-    
     [self LoadUI];
 	// Do any additional setup after loading the view.
 }
-- (void)viewDidAppear:(BOOL)animated{
+- (void)viewDidAppear:(BOOL)animated
+{
     UIImageView*tempBackgroundImageView = [[UIImageView alloc]initWithFrame:backgroundImageView.frame];
     [tempBackgroundImageView setContentMode:backgroundImageView.contentMode];
     [tempBackgroundImageView setImage:capturedImage];
@@ -161,7 +160,8 @@
     [UIView commitAnimations];
 }
 
-- (void)LoadUI{
+- (void)LoadUI
+{
     [annotationTextView SetPlaceholderText:[NSString stringWithFormat:@"Tell your story"]];
     [annotationTextView becomeFirstResponder];
     id keyboard;
@@ -199,7 +199,6 @@
         locationLabel.text = @"";
     }
     
-    //segmentedControl
     HMSegmentedControl *segmentedControl = [[HMSegmentedControl alloc] initWithSectionImages:@[[UIImage imageNamed:@"person_unselected"], [UIImage imageNamed:@"place_unselected"], [UIImage imageNamed:@"thing_unselected"], [UIImage imageNamed:@"event_unselected"]] sectionSelectedImages:@[[UIImage imageNamed:@"person_selected"], [UIImage imageNamed:@"place_selected"], [UIImage imageNamed:@"thing_selected"], [UIImage imageNamed:@"event_selected"]]];
     [segmentedControl setFrame:objectSelectionSegmentedControl.frame];
     
@@ -215,7 +214,8 @@
     [self.view addSubview:segmentedControl];
 }
 
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImageData:(NSMutableData *)imageData andImageMetadata:(NSMutableDictionary *)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation{
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImageData:(NSMutableData *)imageData andImageMetadata:(NSMutableDictionary *)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation
+{
     imageObject = imgObject;
     capturedImage = imageObject.contentImage;
     timestamp = theTimestamp;
@@ -226,7 +226,8 @@
     locationLabel.text = locationString;
 }
 
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andLocation:(CLLocation *)theLocation{
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andLocation:(CLLocation *)theLocation
+{
     imageObject = imgObject;
     capturedImage = imageObject.contentImage;
     location = theLocation;
@@ -248,6 +249,7 @@
 
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+
 - (IBAction)ConfirmImage:(id)sender
 {
     [imageObject setDescriptionString:annotationTextView.text];
@@ -257,10 +259,12 @@
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
     if (savelocally || pushToCloud) {
-        if (savelocally) {
+        if (savelocally)
+        {
             UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
         }
-        if (pushToCloud) {
+        if (pushToCloud)
+        {
             [progressView setFrame:CGRectMake(progressView.frame.origin.x, -10, progressView.frame.size.width, progressView.frame.size.height)];
             [progressView setHidden:NO];
             [UIView beginAnimations:@"lowerProgressView" context:nil];
