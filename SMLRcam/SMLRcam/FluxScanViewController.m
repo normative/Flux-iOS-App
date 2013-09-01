@@ -259,7 +259,7 @@
     [CATransaction commit];
 }
 
-# pragma mark - prepare segue action with identifer
+# pragma mark - Map View Transition
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([[segue identifier] isEqualToString:@"pushMapModalView"])
@@ -788,27 +788,36 @@
 }
 
 
-- (IBAction)approveImageAction:(id)sender {
+- (IBAction)approveImageAction:(id)sender
+{
     [self pauseAVCapture];
     [self stopDeviceMotion];
     
-    //[self performSelector:@selector(setUIForCamMode:) withObject:[NSNumber numberWithInt:0] afterDelay:0.3];
-    
-    
     FluxImageAnnotationViewController *annotationsView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxImageAnnotationViewController"];
-    [annotationsView setCapturedImage:capturedImageObject andLocation:locationManager.location];
+    
+    NSString *locationString = locationManager.subadministativearea;
+    NSString *sublocality = locationManager.sublocality;
+    if (sublocality.length > 0)
+    {
+        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
+    }
+
+    annotationsView.fluxImageCache = self.fluxImageCache;
+    annotationsView.fluxMetadata = self.fluxMetadata;
+    [annotationsView setCapturedImage:capturedImageObject andImage:capturedImage andLocationDescription:locationString];
+    
     annotationsView.view.backgroundColor = [UIColor clearColor];
     annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self presentViewController:annotationsView animated:YES completion:nil];
 }
 
-- (IBAction)retakeImageAction:(id)sender {
+- (IBAction)retakeImageAction:(id)sender
+{
     [gridView setHidden:NO];
     [self.cameraApproveContainerView setHidden:YES];
     [CameraButton setHidden:NO];
     camMode = [NSNumber numberWithInt:1];
     [self restartAVCaptureWithBlur:YES];
-    //[self setUIForCamMode:[NSNumber numberWithInt:1]];
 }
 
 //-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{

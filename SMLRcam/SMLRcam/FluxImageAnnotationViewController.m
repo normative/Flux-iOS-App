@@ -133,14 +133,13 @@
 {
     [super viewDidLoad];
     
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-    
     [backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
     [self AddGradientImageToBackgroundWithAlpha:0.7];
     
     [self LoadUI];
 	// Do any additional setup after loading the view.
 }
+
 - (void)viewDidAppear:(BOOL)animated
 {
     UIImageView*tempBackgroundImageView = [[UIImageView alloc]initWithFrame:backgroundImageView.frame];
@@ -186,18 +185,11 @@
     //time string, it takes the stores date, parses it and makes the
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY h:mma"];
+
     NSString *temp =[formatter stringFromDate:[NSDate date]];
     temp  = [temp stringByReplacingCharactersInRange:NSMakeRange (temp.length-2, 2) withString:[temp substringFromIndex:temp.length-2].lowercaseString];
     timestampLabel.text = temp;
-    
-    if (locationManager.placemark!=nil) {
-        NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
-        locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-        locationLabel.text = locationString;
-    }
-    else{
-        locationLabel.text = @"";
-    }
+    locationLabel.text = locationDescription;
     
     HMSegmentedControl *segmentedControl = [[HMSegmentedControl alloc] initWithSectionImages:@[[UIImage imageNamed:@"person_unselected"], [UIImage imageNamed:@"place_unselected"], [UIImage imageNamed:@"thing_unselected"], [UIImage imageNamed:@"event_unselected"]] sectionSelectedImages:@[[UIImage imageNamed:@"person_selected"], [UIImage imageNamed:@"place_selected"], [UIImage imageNamed:@"thing_selected"], [UIImage imageNamed:@"event_selected"]]];
     [segmentedControl setFrame:objectSelectionSegmentedControl.frame];
@@ -214,27 +206,11 @@
     [self.view addSubview:segmentedControl];
 }
 
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImageData:(NSMutableData *)imageData andImageMetadata:(NSMutableDictionary *)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImage:(UIImage *)theImage andLocationDescription:(NSString *)theLocationString
 {
     imageObject = imgObject;
-    capturedImage = imageObject.contentImage;
-    timestamp = theTimestamp;
-    location = theLocation;
-    
-    NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
-    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-    locationLabel.text = locationString;
-}
-
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andLocation:(CLLocation *)theLocation
-{
-    imageObject = imgObject;
-    capturedImage = imageObject.contentImage;
-    location = theLocation;
-    
-    NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
-    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-    locationLabel.text = locationString;
+    capturedImage = theImage;
+    locationDescription = theLocationString;
 }
 
 - (void)didReceiveMemoryWarning
