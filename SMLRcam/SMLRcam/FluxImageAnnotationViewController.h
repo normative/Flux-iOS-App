@@ -18,8 +18,6 @@
 @interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate, NetworkServicesDelegate>{
     
     UIImage * capturedImage;
-    NSMutableDictionary *imgMetadata;
-    NSMutableData *imgData;
     NSDate *timestamp;
     CLLocation *location;
     FluxScanImageObject*imageObject;

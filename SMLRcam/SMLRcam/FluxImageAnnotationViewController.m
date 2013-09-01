@@ -218,8 +218,6 @@
 - (void)setCapturedImage:(FluxScanImageObject *)imgObject andImageData:(NSMutableData *)imageData andImageMetadata:(NSMutableDictionary *)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation{
     imageObject = imgObject;
     capturedImage = imageObject.contentImage;
-    imgData = imageData;
-    imgMetadata = imageMetadata;
     timestamp = theTimestamp;
     location = theLocation;
     
@@ -244,53 +242,23 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)PopViewController:(id)sender {
+- (IBAction)PopViewController:(id)sender
+{
     [[NSNotificationCenter defaultCenter] postNotificationName:@"AnnotationViewPopped" object:imageObject];
 
     [self dismissViewControllerAnimated:YES completion:nil];
-    //[self.navigationController popToRootViewControllerAnimated:YES];
 }
-- (IBAction)ConfirmImage:(id)sender {
-    //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default...
-    //[imageObject setCategoryID:[objectSelectionSegmentedControl titleForIndex:objectSelectionSegmentedControl.selectedSegmentIndex]];
-    //[imageObject setCategoryID:@"TBD"];
+- (IBAction)ConfirmImage:(id)sender
+{
     [imageObject setDescriptionString:annotationTextView.text];
-    //[imageObject setCategoryID:10];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
-    [imgMetadata setValue:annotationTextView.text forKey:(NSString *)@"descriptionString"];
-    
-    
-    //if we're saving it anywhere
     if (savelocally || pushToCloud) {
         if (savelocally) {
             UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
-            
-            //saves it locally for now.
-            
-            //destibnation path
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-            NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-            NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"ImagesFolder"];
-            NSError *error;
-            if (![[NSFileManager defaultManager] fileExistsAtPath:dataPath])
-            {
-                [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:&error]; //Create folder
-            }
-            
-            NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-            [dateFormat setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
-            
-            //add our image to the path
-            NSString *fullPath = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [dateFormat stringFromDate:timestamp]]];
-            [imgData writeToFile:fullPath atomically:YES];
-            
-            // build the metadata file...
-            NSString *fullPathMeta = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.xml", [dateFormat stringFromDate:timestamp]]];
-            [imgMetadata writeToFile:fullPathMeta atomically:YES];
         }
         if (pushToCloud) {
             [progressView setFrame:CGRectMake(progressView.frame.origin.x, -10, progressView.frame.size.width, progressView.frame.size.height)];
@@ -307,12 +275,14 @@
             [networkServices uploadImage:imageObject];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
-        else{
+        else
+        {
             [self PopViewController:nil];
         }
 
     }
-    else{
+    else
+    {
         [self PopViewController:nil];
     }
 
