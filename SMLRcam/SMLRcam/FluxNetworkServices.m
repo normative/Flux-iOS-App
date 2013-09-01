@@ -195,10 +195,11 @@
     [operation start];
 }
 
-- (void)uploadImage:(FluxScanImageObject*)img{
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage;
+{
     // Serialize the Article attributes then attach a file
-    NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:img method:RKRequestMethodPOST path:@"/images" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        [formData appendPartWithFileData:UIImageJPEGRepresentation(img.contentImage, 1.0)
+    NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject method:RKRequestMethodPOST path:@"/images" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 1.0)
                                     name:@"image[image]"
                                 fileName:@"photo.jpeg"
                                 mimeType:@"image/jpeg"];

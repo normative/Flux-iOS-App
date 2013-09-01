@@ -16,6 +16,9 @@
 
 @implementation FluxImageAnnotationViewController
 
+@synthesize fluxImageCache;
+@synthesize fluxMetadata;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -234,6 +237,11 @@
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
+    // Add the image and metadata to the local cache
+    [fluxImageCache setObject:capturedImage forKey:[NSNumber numberWithInt:imageObject.imageID]];
+    [fluxMetadata setObject:imageObject forKey:[NSNumber numberWithInt:imageObject.imageID]];
+    
+    // Perform any additional (optional) image save tasks
     if (savelocally || pushToCloud) {
         if (savelocally)
         {
@@ -252,7 +260,7 @@
             progressView.progress = 0;
             FluxNetworkServices *networkServices = [[FluxNetworkServices alloc]init];
             [networkServices setDelegate:self];
-            [networkServices uploadImage:imageObject];
+            [networkServices uploadImage:imageObject andImage:capturedImage];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
         else

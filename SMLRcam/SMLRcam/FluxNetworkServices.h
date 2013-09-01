@@ -51,7 +51,7 @@
 - (void)getAllImages;
 
 //uploads an image. All account info is stored within the imageObject
-- (void)uploadImage:(FluxScanImageObject*)img;
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage;
 
 #pragma mark  - Users
 
