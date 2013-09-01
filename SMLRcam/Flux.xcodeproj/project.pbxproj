@@ -36,11 +36,6 @@
 		220FE07517BEACAD00A7E379 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 220FE07317BEACAD00A7E379 /* InfoPlist.strings */; };
 		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
 		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
-		895B6E7017C6A6670052C571 /* Image0.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E6F17C6A6670052C571 /* Image0.png */; };
-		895B6E7517CD362B0052C571 /* Image1.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7117CD362B0052C571 /* Image1.png */; };
-		895B6E7617CD362B0052C571 /* Image2.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7217CD362B0052C571 /* Image2.png */; };
-		895B6E7717CD362B0052C571 /* Image3.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7317CD362B0052C571 /* Image3.png */; };
-		895B6E7817CD362B0052C571 /* Image4.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7417CD362B0052C571 /* Image4.png */; };
 		89AF5F6E17D1173D00A1C8BD /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 89AF5F6D17D1173D00A1C8BD /* background.png */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
@@ -126,11 +121,6 @@
 		220FE07817BEACAD00A7E379 /* Flux Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Flux Tests-Prefix.pch"; sourceTree = "<group>"; };
 		22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_LocationServiceSingleton_Test.m; sourceTree = "<group>"; };
 		22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_MotionManagerSingleton.m; sourceTree = "<group>"; };
-		895B6E6F17C6A6670052C571 /* Image0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image0.png; sourceTree = "<group>"; };
-		895B6E7117CD362B0052C571 /* Image1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image1.png; sourceTree = "<group>"; };
-		895B6E7217CD362B0052C571 /* Image2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image2.png; sourceTree = "<group>"; };
-		895B6E7317CD362B0052C571 /* Image3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image3.png; sourceTree = "<group>"; };
-		895B6E7417CD362B0052C571 /* Image4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image4.png; sourceTree = "<group>"; };
 		896221BE17CFCB2900EC9A44 /* FluxMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMath.h; sourceTree = "<group>"; };
 		89AF5F6D17D1173D00A1C8BD /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -285,11 +275,6 @@
 		17604B6C1785CA59005CF054 /* Flux */ = {
 			isa = PBXGroup;
 			children = (
-				895B6E7117CD362B0052C571 /* Image1.png */,
-				895B6E7217CD362B0052C571 /* Image2.png */,
-				895B6E7317CD362B0052C571 /* Image3.png */,
-				895B6E7417CD362B0052C571 /* Image4.png */,
-				895B6E6F17C6A6670052C571 /* Image0.png */,
 				89AF5F6D17D1173D00A1C8BD /* background.png */,
 				17604B751785CA59005CF054 /* FluxAppDelegate.h */,
 				17604B761785CA59005CF054 /* FluxAppDelegate.m */,
@@ -594,13 +579,8 @@
 			files = (
 				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
 				89AF5F6E17D1173D00A1C8BD /* background.png in Resources */,
-				895B6E7617CD362B0052C571 /* Image2.png in Resources */,
-				895B6E7717CD362B0052C571 /* Image3.png in Resources */,
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
-				895B6E7517CD362B0052C571 /* Image1.png in Resources */,
-				895B6E7817CD362B0052C571 /* Image4.png in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
-				895B6E7017C6A6670052C571 /* Image0.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
