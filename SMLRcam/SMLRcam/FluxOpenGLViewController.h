@@ -61,6 +61,9 @@ typedef struct {
     sensorPose _imagePose[8];
     
     demoImage *demoimage;
+    float _projectionDistance;
+    
+    
     
     CGFloat _screenWidth;
     CGFloat _screenHeight;

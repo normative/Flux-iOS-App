@@ -386,7 +386,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
 //    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
-//    NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
+  //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
@@ -396,7 +396,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     (*vp).origin = GLKVector3Add(positionTP, P0);
 //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
-    (*vp).at =GLKVector3Add(positionTP, V);
+    (*vp).at =GLKVector3Add(positionTP, viewP.at);
     (*vp).up = viewP.up;
     
 //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
@@ -435,7 +435,7 @@ void compute_new_intersection()
     
     
     GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
-    float distance = 40.0;
+    float distance = 10.0;
     
     //intersection with plane
     GLKVector3 N = GLKVector3Make(_plane_normal_rotated.x, _plane_normal_rotated.y, _plane_normal_rotated.z);
@@ -931,7 +931,7 @@ void init(){
     viewParameters vpimage;
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
-    float distance = 14.0;
+    float distance = _projectionDistance;
     int i;
     
     for(i =0; i < 5; i++)
@@ -981,6 +981,8 @@ void init(){
     [self loadShaders];
     
     [self checkShaderLimitations];
+    
+    _projectionDistance = 5.0;
     
     init();
     glEnable(GL_DEPTH_TEST);
@@ -1074,7 +1076,7 @@ void init(){
     _userPose.position.z =locationManager.location.altitude;
     
     GLKVector3 planeNormal;
-    float distance = 40.0;
+    float distance = _projectionDistance;
     viewParameters vpuser;
 
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
