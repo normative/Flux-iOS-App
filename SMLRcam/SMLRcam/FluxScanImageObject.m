@@ -80,4 +80,13 @@ withDescriptionString:(NSString*)description
     
 }
 
+- (void)setImageIDFromDateAndUser
+{
+    NSString *newImageID = [NSString stringWithFormat:@"%@_%d", self.timestampString, self.userID];
+    NSLog(@"ImageID: %@", newImageID);
+
+# warning Need to set this properly once we change the type on the FluxScanImageObject (Requires server changes)
+    self.imageID = 99;
+}
+
 @end

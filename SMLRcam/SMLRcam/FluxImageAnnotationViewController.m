@@ -237,6 +237,9 @@
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
+    // Generate image id
+    [imageObject setImageIDFromDateAndUser];
+    
     // Add the image and metadata to the local cache
     [fluxImageCache setObject:capturedImage forKey:[NSNumber numberWithInt:imageObject.imageID]];
     [fluxMetadata setObject:imageObject forKey:[NSNumber numberWithInt:imageObject.imageID]];

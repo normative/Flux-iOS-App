@@ -740,7 +740,7 @@
              
              capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage
                                                               fromUserWithID:userID
-                                                           atTimestampString:[[NSDate date]description]
+                                                           atTimestampString:[startTime description]
                                                                  andCameraID:cameraID
                                                                andCategoryID:categoryID
                                                        withDescriptionString:@""

@@ -63,6 +63,8 @@ withDescriptionString:(NSString*)description
                 andQY:(float)qy
                 andQZ:(float)qz;
 
+- (void)setImageIDFromDateAndUser;
+
 // MKAnnoation getter methods;
 - (NSString *)title;
 - (NSString *)subtitle;
