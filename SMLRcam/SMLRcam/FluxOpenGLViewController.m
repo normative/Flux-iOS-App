@@ -659,11 +659,7 @@ void init(){
     NSNumber *objKey = [NSNumber numberWithInt: imageID];
     [self.theImages setObject:image forKey:objKey];
     
-    if([self.theImages count] <= 5)
-    {
-        [self updateImageTexturesKey:(objKey)];
-    }
-    
+    [self updateImageTextureKey:(objKey)];
 }
 
 #pragma mark - AV Capture 
@@ -899,10 +895,16 @@ void init(){
     }
 }
 
-- (void) updateImageTexturesKey:(id)key
+- (void) updateImageTextureKey:(id)key
 {
     NSError *error;
     static int i = 0;
+    
+    if (_texture[i] != nil)
+    {
+        [self deleteImageTextureIdx:i];
+    }
+    
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     UIImage *teximage = [_theImages objectForKey:key];
     NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
@@ -918,8 +920,20 @@ void init(){
         [self updateImageMetadataKey:key index:i];
         i++;
         _opengltexturesset++;
+        
+        // Round robin for now
+        if (i == 5) i = 0;
+        if (_opengltexturesset >= 5) _opengltexturesset = 5;
     }
   
+}
+
+- (void) deleteImageTextureIdx:(int)i
+{
+    GLKTextureInfo *curTexture = _texture[i];
+    GLuint textureName = curTexture.name;
+    glDeleteTextures(1, &textureName);
+    _texture[i] = nil;
 }
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
