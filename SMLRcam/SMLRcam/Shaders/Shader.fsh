@@ -75,7 +75,38 @@ void main()
     highp vec4 tempVec;
     ttemp = ttmp;
     int flag =0;
-    highp vec2 projCoord = texCoordVarying[0].st/ texCoordVarying[0].q;
+    
+    highp vec2 projCoord = texCoordVarying[7].st/ texCoordVarying[7].q;
+    if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[7].q >0.0)
+    {
+        
+        if(projCoord.s >0.0 && projCoord.t> 0.0)
+        {
+            projCoord.t = 1.0 - projCoord.t;
+            
+            tempVec.x = -0.5 + projCoord.s;
+            tempVec.y = -0.5 + projCoord.t;
+            tempVec.z = 0.0;
+            tempVec.w =1.0;
+            
+            
+            
+            resultVec = textureModelMatrix * tempVec;
+            resultVec.x = 0.5 + resultVec.x;
+            resultVec.y = 0.5 + resultVec.y;
+            
+            
+            
+            
+            gl_FragColor = texture2D(textureSampler[7], resultVec.st).rgba;
+            
+        }
+    }
+
+    
+    
+    
+     projCoord = texCoordVarying[0].st/ texCoordVarying[0].q;
     if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[0].q >0.0)
     {
         
@@ -134,37 +165,6 @@ void main()
         }
     }
     
-    if(flag==0)
-    {
-        projCoord = texCoordVarying[7].st/ texCoordVarying[7].q;
-        if(projCoord.s <1.0 && projCoord.t <1.0 && texCoordVarying[7].q >0.0)
-        {
-            
-            if(projCoord.s >0.0 && projCoord.t> 0.0)
-            {
-                projCoord.t = 1.0 - projCoord.t;
-               
-                tempVec.x = -0.5 + projCoord.s;
-                tempVec.y = -0.5 + projCoord.t;
-                tempVec.z = 0.0;
-                tempVec.w =1.0;
-                
-                
-                
-                resultVec = textureModelMatrix * tempVec;
-                resultVec.x = 0.5 + resultVec.x;
-                resultVec.y = 0.5 + resultVec.y;
-                
-
-                
-                
-                gl_FragColor = texture2D(textureSampler[7], resultVec.st).rgba;
-                
-            }
-        }
-       //gl_FragColor = texture2D(textureSampler[7], texCoordVarying[7].xy);
-      // gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-    }
     
    // gl_FragColor = texture2D(textureSampler[7], texCoordVarying.st).rgba;
 }

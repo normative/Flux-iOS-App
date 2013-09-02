@@ -64,7 +64,14 @@ void main()
 }
 */
 
-attribute vec4 position;
+attribute vec4 position0;
+attribute vec4 position1;
+attribute vec4 position2;
+attribute vec4 position3;
+attribute vec4 position4;
+attribute vec4 position5;
+attribute vec4 position6;
+attribute vec4 position7;
 attribute vec2 texCoord;
 //varying lowp vec4 colorVarying;
 varying vec2 ttmp;
@@ -78,16 +85,16 @@ void main()
     
     ttmp = texCoord;
     
-    texCoordVarying[0] =  tBiasMVP[0]  * vec4(position.x, position.y, position.z, 1.0);
-     texCoordVarying[1] =  tBiasMVP[1]  * vec4(position.x, position.y, position.z, 1.0);
-     texCoordVarying[2] =  tBiasMVP[2]  * vec4(position.x, position.y, position.z, 1.0);
-     texCoordVarying[3] =  tBiasMVP[3]  * vec4(position.x, position.y, position.z, 1.0);
-     texCoordVarying[4] =  tBiasMVP[4]  * vec4(position.x, position.y, position.z, 1.0);
-    texCoordVarying[7] =  tBiasMVP[7]  * vec4(position.x, position.y, position.z, 1.0);
+    texCoordVarying[0] =  tBiasMVP[0]  * vec4(position0.x, position0.y, position0.z, 1.0);
+    texCoordVarying[1] =  tBiasMVP[1]  * vec4(position1.x, position1.y, position1.z, 1.0);
+    texCoordVarying[2] =  tBiasMVP[2]  * vec4(position2.x, position2.y, position2.z, 1.0);
+    texCoordVarying[3] =  tBiasMVP[3]  * vec4(position3.x, position3.y, position3.z, 1.0);
+    texCoordVarying[4] =  tBiasMVP[4]  * vec4(position4.x, position4.y, position4.z, 1.0);
+    texCoordVarying[7] =  tBiasMVP[7]  * vec4(position7.x, position7.y, position7.z, 1.0);
     //texCoordVarying[7] = vec4(texCoord.x, texCoord.y, 1.0, 1.0);
     
     
-    gl_Position = modelViewProjectionMatrix * vec4(position.x, position.y, position.z, 1.0);
+    gl_Position = modelViewProjectionMatrix * vec4(position7.x, position7.y, position7.z, 1.0);
     //gl_Position = position;
     
 }
