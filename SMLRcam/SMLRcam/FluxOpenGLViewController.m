@@ -778,8 +778,8 @@ void init(){
     [super viewDidLoad];
     _opengltexturesset = 0;
     imageDict = [[NSMutableDictionary alloc]init];
-    _theImages = [[NSMutableDictionary alloc]init];
-    _requestList = [[NSMutableDictionary alloc]init];
+    self.theImages = [[NSMutableDictionary alloc]init];
+    self.requestList = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
     [self setupMotionManager];
     [self setupNetworkServices];
@@ -882,15 +882,27 @@ void init(){
 {
     NSLog(@"Image dictionary count is %i", [imageDict count]);
     
-    for (id key in imageDict)
+//    NSArray *sortedKeysArray = [imageDict keysSortedByValueUsingComparator:^(id obj1, id obj2) {
+//        if ([obj1 intValue] > [obj2 intValue]) {
+//            return NSOrderedDescending;
+//        }
+//        if ([obj1 intValue] < [obj2 intValue]) {
+//            return NSOrderedAscending;
+//        }
+//        return NSOrderedSame;
+//    }];
+
+    NSArray *sortedKeysArray = [[imageDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
+    
+    for (id key in sortedKeysArray)
     {
         FluxScanImageObject *locationObject = [imageDict objectForKey:key];
         
-        if(![_requestList objectForKey:key ])
+        if(![self.requestList objectForKey:key ])
         {
             NSLog(@"Adding id %@ to request list", key);
             [networkServices getImageForID:locationObject.imageID];
-            [_requestList setObject:key forKey:key];
+            [self.requestList setObject:key forKey:key];
         }
     }
 }
@@ -906,7 +918,7 @@ void init(){
     }
     
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    UIImage *teximage = [_theImages objectForKey:key];
+    UIImage *teximage = [self.theImages objectForKey:key];
     NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
     _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
                                                       options:options error:&error];
