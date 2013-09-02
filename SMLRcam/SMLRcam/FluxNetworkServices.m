@@ -208,6 +208,8 @@
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         if ([result count]>0) {
             NSLog(@"Successfully Uploaded Image to account # %i",[[result firstObject]userID]);
+            // Update the local caches with the new image id
+#warning update image id in cache
             if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:)])
             {
                 [delegate NetworkServices:self didUploadImage:[result firstObject]];

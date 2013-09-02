@@ -734,13 +734,17 @@
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
              capturedImage = [UIImage imageWithData:jpeg];
              
+             NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
+             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+             NSString *dateString = [outDateFormat stringFromDate:startTime];
+             
              int userID = 1;
              int cameraID = 1;
              int categoryID = 1;
              
              capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage
                                                               fromUserWithID:userID
-                                                           atTimestampString:[startTime description]
+                                                           atTimestampString:dateString
                                                                  andCameraID:cameraID
                                                                andCategoryID:categoryID
                                                        withDescriptionString:@""

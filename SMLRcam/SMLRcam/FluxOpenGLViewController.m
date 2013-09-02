@@ -900,7 +900,7 @@ void init(){
         
         if(![self.requestList objectForKey:key ])
         {
-            NSLog(@"Adding id %@ to request list", key);
+            NSLog(@"Adding id %@ to request list with time %@", key, locationObject.timestampString);
             [networkServices getImageForID:locationObject.imageID];
             [self.requestList setObject:key forKey:key];
         }

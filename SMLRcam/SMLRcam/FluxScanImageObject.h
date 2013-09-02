@@ -63,6 +63,7 @@ withDescriptionString:(NSString*)description
                 andQY:(float)qy
                 andQZ:(float)qz;
 
+- (NSString *)generateUniqueStringID;
 - (void)setImageIDFromDateAndUser;
 
 // MKAnnoation getter methods;
