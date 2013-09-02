@@ -13,10 +13,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
 extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
 extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
-extern NSString* const FluxLocationServicesSingletonKeyLocation;
-extern NSString* const FluxLocationServicesSingletonKeyHeading;
-extern NSString* const FluxLocationServicesSingletonKeyPlacemark;
-
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     CLLocationManager * locationManager;
     NSMutableArray *locationMeasurements;
