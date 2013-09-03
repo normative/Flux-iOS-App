@@ -48,13 +48,12 @@ typedef struct {
     
     float _rotation;
     
-    GLuint _vertexArray;
-    GLuint _vertexBuffer;
+      
     GLKTextureInfo* _texture[8];
     
     int _opengltexturesset;
     
-    GLuint _positionVBO;
+    GLuint _positionVBO[8];
     GLuint _texcoordVBO;
     GLuint _indexVBO;
     
@@ -62,6 +61,9 @@ typedef struct {
     sensorPose _imagePose[8];
     
     demoImage *demoimage;
+    float _projectionDistance;
+    
+    
     
     CGFloat _screenWidth;
     CGFloat _screenHeight;
