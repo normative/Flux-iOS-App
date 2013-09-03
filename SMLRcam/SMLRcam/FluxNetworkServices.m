@@ -16,7 +16,7 @@
 //serverURL
 //#define externServerURL @"http://54.221.222.71/"
 #define externServerURL @"http://54.221.254.230/"
-#define localServerURL @"http://192.168.0.65/"
+#define localServerURL @"http://54.221.222.71/"
 
 @implementation FluxNetworkServices
 
