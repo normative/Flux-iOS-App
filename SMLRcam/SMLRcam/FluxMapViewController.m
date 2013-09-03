@@ -40,7 +40,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 @synthesize fluxImageCache;
 @synthesize fluxMetadata;
 @synthesize myViewOrientation;
-@synthesize mapAnnotationsDictionary;
 
 #pragma mark - delegate methods
 
@@ -193,7 +192,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 {
     if (fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > 25 ||
         fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > 25 ||
-        [mapAnnotationsDictionary count] == 0)
+        [fluxMetadata count] == 0)
     {
         [networkServiceManager getImagesForLocation:userLocation.location.coordinate andRadius:50];
         
@@ -206,19 +205,16 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
      didreturnImageList:(NSMutableDictionary *)imageList
 {
-    for (id key in imageList)
+    // Need to update all metadata objects (in case they change in the future)
+    for (id curKey in [imageList allKeys])
     {
-        if (![mapAnnotationsDictionary objectForKey:key])
-        {
-            FluxScanImageObject *locationObject = [imageList objectForKey:key];
-            
-            // add annotation to map
-            [myMapView addAnnotation: locationObject];
-            
-            // insert object to dic
-            [mapAnnotationsDictionary setObject:locationObject forKey:key];
-        }
+        FluxScanImageObject *locationObject = [imageList objectForKey:curKey];
+        [fluxMetadata setObject:locationObject forKey:locationObject.localID];
+        
+        // add annotation to map
+        [myMapView addAnnotation: locationObject];
     }
+
     [self setStatusBarMomentLabel];
 }
 
@@ -277,7 +273,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
-    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [mapAnnotationsDictionary count]]];
+    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [fluxMetadata count]]];
 }
 
 #pragma mark - @selector
@@ -355,9 +351,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 // initialize and allocate memory for annotation view
 - (void) setupAnnotationView
 {
-    for (id key in mapAnnotationsDictionary)
+    for (id key in fluxMetadata)
     {
-        FluxScanImageObject *locationObject = [mapAnnotationsDictionary objectForKey:key];
+        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
         [myMapView addAnnotation: locationObject];
     }
     
@@ -453,7 +449,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder]) {
-        mapAnnotationsDictionary = [[NSMutableDictionary alloc] init];
+        ;
     }
     return self;
 }

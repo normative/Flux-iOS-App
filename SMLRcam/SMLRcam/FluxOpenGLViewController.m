@@ -644,6 +644,7 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
 {
+    // Need to update all metadata objects (in case they change in the future)
     for (id curKey in [imageList allKeys])
     {
         FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];

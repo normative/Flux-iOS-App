@@ -272,8 +272,6 @@
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
         
-#warning Switch mapAnnotationsDictionary to be fluxMetadata instead
-        fluxMapViewController.mapAnnotationsDictionary = self.fluxMetadata;
         fluxMapViewController.fluxImageCache = self.fluxImageCache;
         fluxMapViewController.fluxMetadata = self.fluxMetadata;
     }
