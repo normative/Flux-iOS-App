@@ -84,6 +84,7 @@ typedef struct {
 @property (strong, nonatomic) EAGLContext *context;
 @property (weak) NSCache *fluxImageCache;
 @property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
+@property (nonatomic, strong)NSMutableArray *nearbyList;
 @property (nonatomic, strong)NSMutableDictionary *requestList;
 
 //- (GLuint) sub_texture:(demoImage*)img;

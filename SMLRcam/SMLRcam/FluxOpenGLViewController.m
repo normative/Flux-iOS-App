@@ -644,6 +644,9 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
 {
+    // Clear out the list of nearby images.
+    self.nearbyList = [[NSMutableArray alloc] init];
+    
     // Need to update all metadata objects even if they exist (in case they change in the future)
     // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
     // when a desired image is loaded (happens after the texture is loaded)
@@ -651,10 +654,13 @@ void init(){
     {
         FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
         [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
+        [self.nearbyList addObject:curImgObj.localID];
     }
-
-#warning Currently fluxMetadata contains all metadata entries (not just nearby ones). Need to come up with a pruned list.
     
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
+    NSUInteger rangeLen = ([self.nearbyList count] >= 5 ? 5 : [self.nearbyList count]);
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
+
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
     {
         [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
@@ -797,6 +803,7 @@ void init(){
 {
     [super viewDidLoad];
     _opengltexturesset = 0;
+    self.nearbyList = [[NSMutableArray alloc]init];
     self.requestList = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
     [self setupMotionManager];
@@ -920,9 +927,7 @@ void init(){
 //        return NSOrderedSame;
 //    }];
 
-    NSArray *sortedKeysArray = [[fluxMetadata allKeys] sortedArrayUsingSelector:@selector(compare:)];
-    
-    for (id key in sortedKeysArray)
+    for (id key in self.nearbyList)
     {
         FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
         
@@ -961,7 +966,7 @@ void init(){
     else
     {
         NSLog(@"Added Image texture to render list in slot %d", (i));
-        [self updateImageMetadataKey:key index:i];
+        [self updateImageMetadataKey:localID index:i];
         i++;
         _opengltexturesset++;
         
