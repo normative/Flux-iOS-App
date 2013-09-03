@@ -16,7 +16,6 @@
 
 @implementation FluxScanViewController
 
-@synthesize imageDict;
 @synthesize fluxImageCache;
 @synthesize fluxMetadata;
 @synthesize thumbView;
@@ -56,17 +55,12 @@
 
 #pragma Networking Delegate Methods
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
-{
-    self.imageDict = imageList;
-}
-
 //called by annotationsTableview
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
          didreturnImage:(UIImage *)image
              forImageID:(int)imageID
 {
-    for (FluxScanImageObject *curImgObj in [self.imageDict allKeys])
+    for (FluxScanImageObject *curImgObj in [fluxMetadata allKeys])
     {
         if ([curImgObj isKindOfClass: [FluxScanImageObject class]])
         {
@@ -80,7 +74,7 @@
 
     NSNumber *objKey = [NSNumber numberWithInt: imageID];
     
-    NSArray * arr = [self.imageDict allKeys];
+    NSArray * arr = [fluxMetadata allKeys];
     int index = [arr indexOfObject:objKey];
     [annotationsTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:0], nil] withRowAnimation:UITableViewRowAnimationFade];
 }
@@ -153,7 +147,7 @@
 - (IBAction)annotationsButtonAction:(id)sender {
     
 //    if ([annotationsTableView isHidden]) {
-//        if ([self.imageDict count]>0) {
+//        if ([fluxMetadata count]>0) {
 //            [annotationsTableView reloadData];
 //            [annotationsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
 //        }
@@ -212,7 +206,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [self.imageDict count];
+    return [fluxMetadata count];
 }
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -231,8 +225,8 @@
                                                   reuseIdentifier:CellIdentifier];
     }
     
-    NSNumber *objkey = [[self.imageDict allKeys] objectAtIndex:indexPath.row];
-    FluxScanImageObject *rowObject = [self.imageDict objectForKey: objkey];
+    NSNumber *objkey = [[fluxMetadata allKeys] objectAtIndex:indexPath.row];
+    FluxScanImageObject *rowObject = [fluxMetadata objectForKey: objkey];
     
     cell.imageID = rowObject.imageID;
     if ([fluxImageCache objectForKey:rowObject.localID] == nil)
@@ -278,7 +272,8 @@
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
         
-        fluxMapViewController.mapAnnotationsDictionary = self.imageDict;
+#warning Switch mapAnnotationsDictionary to be fluxMetadata instead
+        fluxMapViewController.mapAnnotationsDictionary = self.fluxMetadata;
         fluxMapViewController.fluxImageCache = self.fluxImageCache;
         fluxMapViewController.fluxMetadata = self.fluxMetadata;
     }
@@ -306,10 +301,6 @@
     
     openGLController.fluxImageCache = self.fluxImageCache;
     openGLController.fluxMetadata = self.fluxMetadata;
-}
-
-- (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary *)aImageDict{
-    self.imageDict = aImageDict;
 }
 
 #pragma mark - Gesture Recognizer
@@ -912,7 +903,6 @@
 {
     [super viewDidLoad];
 
-    self.imageDict = [[NSMutableDictionary alloc]init];
     self.fluxImageCache = [[NSCache alloc] init];
     self.fluxMetadata = [[NSMutableDictionary alloc] init];
     

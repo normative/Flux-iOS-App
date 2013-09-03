@@ -586,7 +586,6 @@ void init(){
 
 @implementation FluxOpenGLViewController
 
-@synthesize imageDict;
 @synthesize fluxImageCache;
 @synthesize fluxMetadata;
 @synthesize theDelegate;
@@ -650,12 +649,12 @@ void init(){
         FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
         [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
     }
-    
-    imageDict = imageList;
+
+#warning Currently fluxMetadata contains all metadata entries (not just nearby ones). Need to come up with a pruned list.
     
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
     {
-        [theDelegate OpenGLView:self didUpdateImageList:imageDict];
+        [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
     }
     
     [self populateImageData];
@@ -795,7 +794,6 @@ void init(){
 {
     [super viewDidLoad];
     _opengltexturesset = 0;
-    imageDict = [[NSMutableDictionary alloc]init];
     self.requestList = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
     [self setupMotionManager];
@@ -907,9 +905,9 @@ void init(){
 
 -(void) populateImageData
 {
-    NSLog(@"Image dictionary count is %i", [imageDict count]);
+    NSLog(@"Image dictionary count is %i", [fluxMetadata count]);
     
-//    NSArray *sortedKeysArray = [imageDict keysSortedByValueUsingComparator:^(id obj1, id obj2) {
+//    NSArray *sortedKeysArray = [fluxMetadata keysSortedByValueUsingComparator:^(id obj1, id obj2) {
 //        if ([obj1 intValue] > [obj2 intValue]) {
 //            return NSOrderedDescending;
 //        }
@@ -981,10 +979,10 @@ void init(){
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
 {
-    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [imageDict count]);
+    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxMetadata count]);
     GLKQuaternion quaternion;
 
-    FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+    FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
 
     _imagePose[idx].position.x =  locationObject.latitude;
     _imagePose[idx].position.y =  locationObject.longitude;
