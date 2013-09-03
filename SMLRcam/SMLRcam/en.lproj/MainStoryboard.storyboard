@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4488.2" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="Vvz-Vg-Om2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4504" systemVersion="12E55" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="Vvz-Vg-Om2">
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3715.3"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3734.1"/>
     </dependencies>
     <scenes>
         <!--Flux Annotations Table View Controller-->
         <scene sceneID="s0u-Ev-oig">
             <objects>
                 <tableViewController storyboardIdentifier="FluxAnnotationsTableViewController" id="xSq-pb-FNJ" customClass="FluxAnnotationsTableViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="lZG-FG-QRt">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="lZG-FG-QRt">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="annotationsFeedCell" rowHeight="85" id="lBb-tb-ItB" customClass="FluxAnnotationTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="annotationsFeedCell" rowHeight="85" id="lBb-tb-ItB" customClass="FluxAnnotationTableViewCell">
                                 <rect key="frame" x="0.0" y="22" width="320" height="85"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="lBb-tb-ItB" id="9HH-tN-0cl">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="lBb-tb-ItB" id="9HH-tN-0cl">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="84"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
@@ -98,8 +98,28 @@
                     <view key="view" contentMode="scaleToFill" id="m8a-Mf-OPM" customClass="GLKView">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minimumValue="-20" maximumValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="SPB-bW-OK8">
+                                <rect key="frame" x="20" y="432" width="94" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <connections>
+                                    <action selector="onPositionStepperValueChanged:" destination="0bI-12-kHe" eventType="valueChanged" id="d0D-Zs-EU2"/>
+                                </connections>
+                            </stepper>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="50" translatesAutoresizingMaskIntoConstraints="NO" id="xsX-x2-WEd">
+                                <rect key="frame" x="18" y="469" width="284" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="onDistanceSliderValueChanged:" destination="0bI-12-kHe" eventType="valueChanged" id="Vvd-CP-j5A"/>
+                                </connections>
+                            </slider>
+                        </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </view>
+                    <connections>
+                        <outlet property="DistanceSlider" destination="xsX-x2-WEd" id="qeK-Gi-dG0"/>
+                        <outlet property="PositionStepper" destination="SPB-bW-OK8" id="u0U-F5-WcJ"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p12-6b-dHX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -411,7 +431,7 @@
         <scene sceneID="WPV-4t-AMh">
             <objects>
                 <tableViewController storyboardIdentifier="FluxLeftDrawerViewController" title="Settings" id="Vvz-Vg-Om2" customClass="FluxLeftDrawerViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="eNU-Zf-zPX">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="eNU-Zf-zPX">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.098039217289999994" green="0.098039217289999994" blue="0.098039217289999994" alpha="1" colorSpace="calibratedRGB"/>
@@ -448,10 +468,10 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="switchCell" id="MSE-z0-mb8" customClass="FluxDrawerSwitchTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="switchCell" id="MSE-z0-mb8" customClass="FluxDrawerSwitchTableViewCell">
                                 <rect key="frame" x="0.0" y="111" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="MSE-z0-mb8" id="PsQ-Pw-hXc">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MSE-z0-mb8" id="PsQ-Pw-hXc">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
@@ -477,10 +497,10 @@
                                     <outlet property="theSwitch" destination="CGd-O9-aqF" id="V5w-Op-iqg"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="segmentedCell" id="1pr-VT-Bvd" customClass="FluxDrawerSegmentedTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="segmentedCell" id="1pr-VT-Bvd" customClass="FluxDrawerSegmentedTableViewCell">
                                 <rect key="frame" x="0.0" y="155" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="1pr-VT-Bvd" id="yub-Cx-4AZ">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="1pr-VT-Bvd" id="yub-Cx-4AZ">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
@@ -525,7 +545,7 @@
         <scene sceneID="elA-Id-XP7">
             <objects>
                 <tableViewController storyboardIdentifier="FluxRightDrawerViewController" id="1dv-P4-izr" customClass="FluxRightDrawerViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" allowsMultipleSelection="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Wms-Sj-mCX">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsMultipleSelection="YES" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Wms-Sj-mCX">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.098039217293262482" green="0.098039217293262482" blue="0.098039217293262482" alpha="1" colorSpace="calibratedRGB"/>
@@ -540,10 +560,10 @@
                             </connections>
                         </searchBar>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="hashCell" rowHeight="94" id="vRi-Y6-GJL" customClass="FluxHashtagTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="hashCell" rowHeight="94" id="vRi-Y6-GJL" customClass="FluxHashtagTableViewCell">
                                 <rect key="frame" x="0.0" y="66" width="320" height="94"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="vRi-Y6-GJL" id="AjF-vG-C6z">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vRi-Y6-GJL" id="AjF-vG-C6z">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="93"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
@@ -563,10 +583,10 @@
                                     <outlet property="hashTextView" destination="zJx-IE-Z8a" id="vBI-rW-GlS"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" ambiguous="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="checkCell" id="QdD-3t-86w" customClass="FluxDrawerCheckboxFilterTableViewCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="checkCell" id="QdD-3t-86w" customClass="FluxDrawerCheckboxFilterTableViewCell">
                                 <rect key="frame" x="0.0" y="160" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" ambiguous="YES" tableViewCell="QdD-3t-86w" id="uAU-fh-2Yi">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="QdD-3t-86w" id="uAU-fh-2Yi">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
@@ -1012,20 +1032,20 @@
         <image name="ButtonBackground" width="32" height="30"/>
         <image name="LocationHeading" width="41" height="41"/>
         <image name="annottionsButton" width="26" height="25"/>
-        <image name="approveButton" width="30.239999771118164" height="30.239999771118164"/>
-        <image name="camButton" width="43.200000762939453" height="43.200000762939453"/>
-        <image name="clockIcon" width="13.920000076293945" height="13.920000076293945"/>
-        <image name="closeButton" width="30.239999771118164" height="30.239999771118164"/>
+        <image name="approveButton" width="63" height="63"/>
+        <image name="camButton" width="90" height="90"/>
+        <image name="clockIcon" width="29" height="29"/>
+        <image name="closeButton" width="63" height="63"/>
         <image name="compassButton" width="40" height="40"/>
         <image name="detailButton" width="25" height="24"/>
-        <image name="filterButton" width="38.880001068115234" height="14.880000114440918"/>
-        <image name="filter_Events" width="13.920000076293945" height="13"/>
-        <image name="filter_Places" width="13.920000076293945" height="13"/>
+        <image name="filterButton" width="81" height="31"/>
+        <image name="filter_Events" width="29" height="27"/>
+        <image name="filter_Places" width="29" height="27"/>
         <image name="fluxLogo" width="110" height="48"/>
         <image name="headerSeperator" width="3" height="46"/>
         <image name="leftDrawTopBackground" width="320" height="109"/>
-        <image name="locationIcon" width="8.6400003433227539" height="12.479999542236328"/>
-        <image name="menuButton" width="26.879999160766602" height="15.840000152587891"/>
+        <image name="locationIcon" width="18" height="26"/>
+        <image name="menuButton" width="56" height="33"/>
         <image name="retakeButton" width="92" height="33"/>
         <image name="useButton" width="73" height="33"/>
     </resources>
