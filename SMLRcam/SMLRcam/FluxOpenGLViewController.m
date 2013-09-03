@@ -58,17 +58,10 @@ GLint uniforms[NUM_UNIFORMS];
 enum
 {
     ATTRIB_VERTEX,
-    ATTRIB_VERTEX1,
-    ATTRIB_VERTEX2,
-    ATTRIB_VERTEX3,
-    ATTRIB_VERTEX4,
-    ATTRIB_VERTEX5,
-    ATTRIB_VERTEX6,
-    ATTRIB_VERTEX7,
     ATTRIB_TEXCOORD,
     NUM_ATTRIBUTES
 };
-#define BACKGROUND_TEXTURE_NUMBER 7
+
 GLfloat testvertexData[18] =
 {
     
@@ -78,54 +71,33 @@ GLfloat testvertexData[18] =
     1.0f, -1.0f, 0.0f,
     -1.0f, 1.0f, 0.0f,
     -1.0f, -1.0f, 0.0f
-    
-   
 };
 
 /*
-GLfloat textureCoord[12] =
-{
-    
-    1.0f, 1.0f,
-    0.0f, 1.0f,
-    1.0f, 0.0f,
-    1.0f, 0.0f,
-    0.0f, 1.0f,
-    0.0f, 0.0f
-};
-*/
-//GLfloat textureCoord[12] =
-//{
-//    0.0f, 1.0f,
-//    0.0f, 0.0f,
-//    1.0f, 0.0f,
-//    1.0f, 0.0f,
-//    0.0f, 1.0f,
-//    1.0f, 1.0f
-//};
+ GLfloat textureCoord[12] =
+ {
+ 
+ 1.0f, 1.0f,
+ 0.0f, 1.0f,
+ 1.0f, 0.0f,
+ 1.0f, 0.0f,
+ 0.0f, 1.0f,
+ 0.0f, 0.0f
+ };
+ */
 
-GLfloat textureCoordFLIP[12] =
-{
-    1.0f, 1.0f,
-    1.0f, 0.0f,
-    0.0f, 0.0f,
-    0.0f, 0.0f,
-    1.0f, 1.0f,
-    0.0f, 1.0f
-};
 GLfloat textureCoord[12] =
 {
     
     0.0f, 0.0f,
+    0.0f, 1.0f,
     1.0f, 0.0f,
-    1.0f, 1.0f,
-    1.0f, 1.0f,
-    0.0f, 0.0f,
-    0.0f, 1.0f
+    1.0f, 0.0f,
+    0.0f, 1.0f,
+    1.0f, 1.0f
 };
 
 
-//GLubyte indexdata[48]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47};
 GLubyte indexdata[6]={0,1,2,3,4,5};
 
 //iPhone5 model
@@ -138,7 +110,7 @@ float iPhone5_focalLength = 0.0041; //4.10 mm
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
 
-GLKVector2 _planeCoords;
+
 GLKMatrix4 tProjectionMatrix;
 GLKMatrix4 tViewMatrix;
 GLKMatrix4 tModelMatrix;
@@ -171,16 +143,14 @@ GLKVector3 ray_origin2;
 demoImage *image;
 demoImage *image1;
 demoImage *image2;
-GLfloat g_vertex_buffer_data[8][18];
-
-GLfloat initbuffer[18];
-GLKVector4 result[8][4];
+GLfloat g_vertex_buffer_data[18];
+GLKVector4 result[4];
 
 #pragma mark - OpenGL Utility Routines
 
 void init_pose()
 {
-
+    
 }
 
 void init_camera_model()
@@ -188,7 +158,7 @@ void init_camera_model()
 	float _fov = 2 * atan2(iPhone5_pixelsize*3264.0/2.0, iPhone5_focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
-    camera_perspective = 	GLKMatrix4MakePerspective(_fov , aspect, 0.001f, 50.0f);
+    camera_perspective = 	GLKMatrix4MakePerspective(_fov * 180.0/3.14, aspect, 0.001f, 50.0f);
     
 }
 
@@ -213,7 +183,7 @@ void WGS84_to_ECEF(sensorPose *sp){
     
     eccentricity = sqrt(flatness * (2 - flatness));
     normal = a_WGS84 / sqrt(1 - (eccentricity * eccentricity * sin(lla_rad.x) *sin(lla_rad.x)));
-
+    
     sp->ecef.x = (lla_rad.z + normal)* cos(lla_rad.x) * cos(lla_rad.y);
     sp->ecef.y = (lla_rad.z + normal)* cos(lla_rad.x) * sin(lla_rad.y);
     sp->ecef.z = (lla_rad.z + (1- eccentricity* eccentricity)*normal)* sin(lla_rad.x);
@@ -257,45 +227,25 @@ void setParametersTP(GLKVector3 location)
     
 }
 
-void computePlaneCoords(GLKVector2 *planeCoords, float distance)
-{
-   
-    
-    (*planeCoords).y = (iPhone5_pixelsize*3264.0/2 * distance)/iPhone5_focalLength;
-    
-     (*planeCoords).x = (iPhone5_pixelsize*iPhone5_xpixels/2  * distance)/iPhone5_focalLength;
-}
-
-void setupRenderingPlane(GLKVector3 positionTP, GLKMatrix4 rotationMatrix, float distance, int texture_number)
+void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float distance)
 {
     GLKVector4 pts[4];
-    GLKVector2 planeCoords;
     int i;
     
     if(distance <0.0)
     {
         NSLog(@"Distance is scalar should not be negative ... converting to positive");
     }
-    /*
+    
     pts[0] = GLKVector4Make(-250.0, -250.0, -1.0 *distance, 1.0);
     pts[1] = GLKVector4Make(250.0, -250.0, -1.0 *distance, 1.0);
     pts[2] = GLKVector4Make(250.0,  250.0, -1.0 * distance, 1.0);
     pts[3] = GLKVector4Make(-250.0, 250.0, -1.0 *distance, 1.0);
-    */
-    computePlaneCoords(&planeCoords,distance);
-    pts[0] = GLKVector4Make(-1.0 * planeCoords.x, -1.0 * planeCoords.y, -1.0 *distance, 1.0);
-    pts[1] = GLKVector4Make(+1.0 * planeCoords.x, -1.0 * planeCoords.y, -1.0 *distance, 1.0);
-    pts[2] = GLKVector4Make(+1.0 * planeCoords.x, +1.0 * planeCoords.y, -1.0 *distance, 1.0);
-    pts[3] = GLKVector4Make(-1.0 * planeCoords.x, +1.0 * planeCoords.y, -1.0 *distance, 1.0);
     
     // fprintf(stderr, "NEW VECTORS\n");
     for(i=0;i<4;i++)
     {
-       result[texture_number][i] = GLKMatrix4MultiplyVector4( (rotationMatrix), pts[i]);
-       
-        result[texture_number][i].x =result[texture_number][i].x + positionTP.x;
-        result[texture_number][i].y =result[texture_number][i].y + positionTP.y;
-        result[texture_number][i].z =result[texture_number][i].z + positionTP.z;
+        result[i] = GLKMatrix4MultiplyVector4( (rotationMatrix), pts[i]);
         //fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
     }
 }
@@ -364,34 +314,35 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
     
     //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
-        return 0;
+    
+    return 0;
 }
 
 //distance - distance of plane
-int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, sensorPose userPose, viewParameters *vp, int texture_number)
+int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, sensorPose userPose, viewParameters *vp)
 {
     
     viewParameters viewP;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
-//    sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
+    //    sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
     if(distance <0.0)
     {
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
     
-//    calculateCoordinatesTP(userLocation, sp->position, &positionTP);
+    //    calculateCoordinatesTP(userLocation, sp->position, &positionTP);
     
-//    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
-
-//    rotationMat = rotationMat_t;
+    //    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
+    
+    //    rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     
-//    NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+    //    NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
@@ -401,12 +352,12 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
-   
+    
     
     float vd = GLKVector3DotProduct(N,V);
     float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
     float t = v0/vd;
-
+    
     if(vd==0)
     {
         NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
@@ -418,39 +369,38 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
-
+    
     WGS84_to_ECEF(sp);
-   
+    
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
     positionTP.z = 0;
-   /*
-    positionTP.x = 0;
-    positionTP.y = 0;
-    positionTP.z = 0;
-*/
+    /*
+     positionTP.x = 0;
+     positionTP.y = 0;
+     positionTP.z = 0;
+     */
     
-//    positionTP.z = sp->ecef.z -userPose.ecef.z;
-//    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
+    //    positionTP.z = sp->ecef.z -userPose.ecef.z;
+    //    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
-  //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
+    //    NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
-//    viewP.up = GLKVector3Normalize(viewP.up);
+    //    viewP.up = GLKVector3Normalize(viewP.up);
     
     
     (*vp).origin = GLKVector3Add(positionTP, P0);
-//    (*vp).at = GLKVector3Add(positionTP, viewP.at);
+    //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
-    (*vp).at =GLKVector3Add(positionTP, viewP.at);
+    (*vp).at =GLKVector3Add(positionTP, V);
     (*vp).up = viewP.up;
     
-//    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
-    setupRenderingPlane(positionTP,sp->rotationMatrix, distance,texture_number);
-
+    //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
+    
     return 0;
 }
 
@@ -470,11 +420,11 @@ void compute_new_intersection()
     GLKVector4 _ray = GLKMatrix4MultiplyVector4(rotationMat, _z_ray);
     GLKVector3 _v = GLKVector3Make(_ray.x, _ray.y, _ray.z);
     
-   // NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
+    // NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
     //float angle_with_y_deg =  180.0/PI* atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
     float angle_with_y_rad =atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
     // fprintf(stderr,"angle_with_y_deg = %.5f \n", angle_with_y_deg);
-   // NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
+    // NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
     
     //normal plane
     
@@ -485,7 +435,7 @@ void compute_new_intersection()
     
     
     GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
-    float distance = 10.0;
+    float distance = 40.0;
     
     //intersection with plane
     GLKVector3 N = GLKVector3Make(_plane_normal_rotated.x, _plane_normal_rotated.y, _plane_normal_rotated.z);
@@ -497,11 +447,11 @@ void compute_new_intersection()
     
     float v0 = -1.0 * (GLKVector3DotProduct(N,P0) +distance);
     float t = v0/vd;
-       //   fprintf(stderr," t = %.4f\n",t);
+    //   fprintf(stderr," t = %.4f\n",t);
     centrevec = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     
     
-  
+    
     GLKVector4 up = GLKMatrix4MultiplyVector4(rotationMat, GLKVector4Make(0.0, 1.0, 0.0, 1.0));
     upvec = GLKVector3Normalize(GLKVector3Make(up.x, up.y, up.z));
     
@@ -512,9 +462,9 @@ void compute_new_intersection()
     eye_origin = GLKVector3Make(0.0, 0.0, 0.0);
     eye_up = GLKVector3Make(0.0, 0.0, 1.0);
     
-  //  NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
-  //  NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
-   // NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
+    //  NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
+    //  NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
+    // NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
     
 }
 
@@ -538,30 +488,30 @@ void compute_new_intersectionZ()
     
     //normal plane
     /*
-    GLKVector4 _plane_normal = GLKVector4Make(0.0, 0.0, 1.0, 1.0);
-    basenormalMat = GLKMatrix4Identity;
-    
-    basenormalMat = GLKMatrix4RotateWithVector3(basenormalMat, angle_with_y_rad, GLKVector3Make(0.0,0.0, 1.0));
-    
-    
-    GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
-    float distance = 14.0;
-    
-    //intersection with plane
-    GLKVector3 N = GLKVector3Make(_plane_normal_rotated.x, _plane_normal_rotated.y, _plane_normal_rotated.z);
-    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
-    GLKVector3 V = GLKVector3Normalize(_v);
-    //fprintf(stderr,"Ray direction is  = [%.2f, %.2f, %.2f]\n",V.x, V.y, V.z);
-    
-    float vd = GLKVector3DotProduct(N,V);
-    
-    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) +distance);
-    float t = v0/vd;
-    //   fprintf(stderr," t = %.4f\n",t);
+     GLKVector4 _plane_normal = GLKVector4Make(0.0, 0.0, 1.0, 1.0);
+     basenormalMat = GLKMatrix4Identity;
      
-    
-    centrevec = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    */
+     basenormalMat = GLKMatrix4RotateWithVector3(basenormalMat, angle_with_y_rad, GLKVector3Make(0.0,0.0, 1.0));
+     
+     
+     GLKVector4 _plane_normal_rotated = GLKMatrix4MultiplyVector4(basenormalMat, _plane_normal);
+     float distance = 14.0;
+     
+     //intersection with plane
+     GLKVector3 N = GLKVector3Make(_plane_normal_rotated.x, _plane_normal_rotated.y, _plane_normal_rotated.z);
+     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+     GLKVector3 V = GLKVector3Normalize(_v);
+     //fprintf(stderr,"Ray direction is  = [%.2f, %.2f, %.2f]\n",V.x, V.y, V.z);
+     
+     float vd = GLKVector3DotProduct(N,V);
+     
+     float v0 = -1.0 * (GLKVector3DotProduct(N,P0) +distance);
+     float t = v0/vd;
+     //   fprintf(stderr," t = %.4f\n",t);
+     
+     
+     centrevec = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+     */
     
     
     GLKVector4 up = GLKMatrix4MultiplyVector4(rotationMat, GLKVector4Make(0.0, 1.0, 0.0, 1.0));
@@ -581,42 +531,42 @@ void compute_new_intersectionZ()
     
 }
 
-//void multiply_vertices()
-//{
-//    GLKVector4 pts[4];
-//    int i;
-//    
-//    pts[0] = GLKVector4Make(-250.0, 14.0, -250.0, 1.0);
-//    pts[1] = GLKVector4Make(250.0, 14.0, -250.0, 1.0);
-//    pts[2] = GLKVector4Make(250.0,  14.0, 250.0, 1.0);
-//    pts[3] = GLKVector4Make(-250.0, 14.0, 250.0, 1.0);
-//    
-//    // fprintf(stderr, "NEW VECTORS\n");
-//    for(i=0;i<4;i++)
-//    {
-//        result[i] = GLKMatrix4MultiplyVector4( GLKMatrix4Transpose(basenormalMat), pts[i]);
-//        //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
-//    }
-//}
-//
-//void multiply_vertices_Zaxis()
-//{
-//    GLKVector4 pts[4];
-//    int i;
-//    
-//    pts[0] = GLKVector4Make(-250.0,  -250.0, -14.0,1.0);
-//    pts[1] = GLKVector4Make(250.0,  -250.0, -14.0, 1.0);
-//    pts[2] = GLKVector4Make(250.0,   250.0,-14.0, 1.0);
-//    pts[3] = GLKVector4Make(-250.0,  250.0, -14.0, 1.0);
-//    
-//    // fprintf(stderr, "NEW VECTORS\n");
-//    for(i=0;i<4;i++)
-//    {
-//        result[i] = GLKMatrix4MultiplyVector4( zMatrix, pts[i]);
-//        //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
-//    }
-//    
-//}
+void multiply_vertices()
+{
+    GLKVector4 pts[4];
+    int i;
+    
+    pts[0] = GLKVector4Make(-250.0, 14.0, -250.0, 1.0);
+    pts[1] = GLKVector4Make(250.0, 14.0, -250.0, 1.0);
+    pts[2] = GLKVector4Make(250.0,  14.0, 250.0, 1.0);
+    pts[3] = GLKVector4Make(-250.0, 14.0, 250.0, 1.0);
+    
+    // fprintf(stderr, "NEW VECTORS\n");
+    for(i=0;i<4;i++)
+    {
+        result[i] = GLKMatrix4MultiplyVector4( GLKMatrix4Transpose(basenormalMat), pts[i]);
+        //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
+    }
+}
+
+void multiply_vertices_Zaxis()
+{
+    GLKVector4 pts[4];
+    int i;
+    
+    pts[0] = GLKVector4Make(-250.0,  -250.0, -14.0,1.0);
+    pts[1] = GLKVector4Make(250.0,  -250.0, -14.0, 1.0);
+    pts[2] = GLKVector4Make(250.0,   250.0,-14.0, 1.0);
+    pts[3] = GLKVector4Make(-250.0,  250.0, -14.0, 1.0);
+    
+    // fprintf(stderr, "NEW VECTORS\n");
+    for(i=0;i<4;i++)
+    {
+        result[i] = GLKMatrix4MultiplyVector4( zMatrix, pts[i]);
+        //   fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
+    }
+    
+}
 
 void init(){
     
@@ -650,9 +600,9 @@ void init(){
 }
 
 - (void)didUpdateHeading:(NSNotification *)notification{
-//    CLLocationDirection heading = locationManager.heading;
-//    CMAttitude *att = motionManager.attitude;
-//    NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
+    //    CLLocationDirection heading = locationManager.heading;
+    //    CMAttitude *att = motionManager.attitude;
+    //    NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
@@ -710,7 +660,7 @@ void init(){
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
     NSUInteger rangeLen = ([self.nearbyList count] >= 5 ? 5 : [self.nearbyList count]);
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
-
+    
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
     {
         [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
@@ -732,13 +682,13 @@ void init(){
             break;
         }
     }
-
+    
     NSNumber *objKey = [NSNumber numberWithInt: imageID];
     
     [self updateImageTextureKey:(objKey) withLocalID:localID];
 }
 
-#pragma mark - AV Capture 
+#pragma mark - AV Capture
 - (void)cleanUpTextures
 {
     if (_videotexture)
@@ -753,8 +703,8 @@ void init(){
 
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput
-        didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-        fromConnection:(AVCaptureConnection *)connection
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection
 {
     CVReturn err;
 	CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -798,48 +748,48 @@ void init(){
 
 - (void)setupAVCapture
 {
-
+    
     CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_videoTextureCache);
-
+    
     if (err)
     {
         NSLog(@"Error at CVOpenGLESTextureCacheCreate %d", err);
         return;
     }
-//
-//    //-- Setup Capture Session.
-//    _session = [[AVCaptureSession alloc] init];
-//    [_session beginConfiguration];
-//    
-//    //-- Set preset session size.
-//    [_session setSessionPreset:_sessionPreset];
-//    
-//    //-- Creata a video device and input from that Device.  Add the input to the capture session.
-//    AVCaptureDevice * videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-//    if(videoDevice == nil)
-//        assert(0);
-//    
-//    //-- Add the device to the session.
-//    NSError *error;
-//    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
-//    if(error)
-//        assert(0);
-//    
-//    [_session addInput:input];
-//    
-//    //-- Create the output for the capture session.
-//    AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
-//    [dataOutput setAlwaysDiscardsLateVideoFrames:YES]; // Probably want to set this to NO when recording
-//    
-
-//    
-//    // Set dispatch to be on the main thread so OpenGL can do things with the data
-
-//    
-//    [_session addOutput:dataOutput];
-//    [_session commitConfiguration];
-//    
-//    [_session startRunning];
+    //
+    //    //-- Setup Capture Session.
+    //    _session = [[AVCaptureSession alloc] init];
+    //    [_session beginConfiguration];
+    //
+    //    //-- Set preset session size.
+    //    [_session setSessionPreset:_sessionPreset];
+    //
+    //    //-- Creata a video device and input from that Device.  Add the input to the capture session.
+    //    AVCaptureDevice * videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+    //    if(videoDevice == nil)
+    //        assert(0);
+    //
+    //    //-- Add the device to the session.
+    //    NSError *error;
+    //    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
+    //    if(error)
+    //        assert(0);
+    //
+    //    [_session addInput:input];
+    //
+    //    //-- Create the output for the capture session.
+    //    AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
+    //    [dataOutput setAlwaysDiscardsLateVideoFrames:YES]; // Probably want to set this to NO when recording
+    //
+    
+    //
+    //    // Set dispatch to be on the main thread so OpenGL can do things with the data
+    
+    //
+    //    [_session addOutput:dataOutput];
+    //    [_session commitConfiguration];
+    //
+    //    [_session startRunning];
     cameraManager = [FluxAVCameraSingleton sharedCamera];
     [cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
     //[cameraManager setSampleBufferDelegate:self forViewController:self];
@@ -873,7 +823,7 @@ void init(){
     _screenHeight = [UIScreen mainScreen].bounds.size.height;
     view.contentScaleFactor = [UIScreen mainScreen].scale;
     
-           _sessionPreset = AVCaptureSessionPreset640x480;
+    _sessionPreset = AVCaptureSessionPreset640x480;
     
     [self setupGL];
     [self setupAVCapture];
@@ -911,9 +861,9 @@ void init(){
 - (void)dealloc
 {
     motionManager = nil;
-
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageAnnotationDidAcquireNewPicture object:nil];
-
+    
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {
@@ -967,16 +917,16 @@ void init(){
 {
     NSLog(@"Image dictionary count is %i", [fluxMetadata count]);
     
-//    NSArray *sortedKeysArray = [fluxMetadata keysSortedByValueUsingComparator:^(id obj1, id obj2) {
-//        if ([obj1 intValue] > [obj2 intValue]) {
-//            return NSOrderedDescending;
-//        }
-//        if ([obj1 intValue] < [obj2 intValue]) {
-//            return NSOrderedAscending;
-//        }
-//        return NSOrderedSame;
-//    }];
-
+    //    NSArray *sortedKeysArray = [fluxMetadata keysSortedByValueUsingComparator:^(id obj1, id obj2) {
+    //        if ([obj1 intValue] > [obj2 intValue]) {
+    //            return NSOrderedDescending;
+    //        }
+    //        if ([obj1 intValue] < [obj2 intValue]) {
+    //            return NSOrderedAscending;
+    //        }
+    //        return NSOrderedSame;
+    //    }];
+    
     for (id key in self.nearbyList)
     {
         FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
@@ -1024,7 +974,7 @@ void init(){
         if (i == 5) i = 0;
         if (_opengltexturesset >= 5) _opengltexturesset = 5;
     }
-  
+    
 }
 
 - (void) deleteImageTextureIdx:(int)i
@@ -1039,9 +989,9 @@ void init(){
 {
     NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxMetadata count]);
     GLKQuaternion quaternion;
-
+    
     FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
-
+    
     _imagePose[idx].position.x =  locationObject.latitude;
     _imagePose[idx].position.y =  locationObject.longitude;
     _imagePose[idx].position.z =  locationObject.altitude;
@@ -1061,50 +1011,44 @@ void init(){
     viewParameters vpimage;
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
-    float distance = _projectionDistance;
+    float distance = 14.0;
     int i;
     
     for(i =0; i < 5; i++)
     {
-        computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage, i);
+        computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
         tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
-                                       vpimage.at.x, vpimage.at.y, vpimage.at.z,
+                                           vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                            vpimage.up.x, vpimage.up.y, vpimage.up.z);
         tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
         
         _tBiasMVP[i] = GLKMatrix4Multiply(biasMatrix,tMVP);
-        [self updateBuffers:i];
     }
 }
 
-- (void)updateBuffers:(int) bufferNumber
+- (void)updateBuffers
 {
-    int i = bufferNumber;
+    g_vertex_buffer_data[0] = result[0].x;
+    g_vertex_buffer_data[1] = result[0].y;
+    g_vertex_buffer_data[2] = result[0].z;       //0
+    g_vertex_buffer_data[3] = result[1].x;
+    g_vertex_buffer_data[4] = result[1].y;
+    g_vertex_buffer_data[5] = result[1].z;  //1
+    g_vertex_buffer_data[6] = result[2].x;
+    g_vertex_buffer_data[7] = result[2].y;
+    g_vertex_buffer_data[8] = result[2].z;  //2
+    g_vertex_buffer_data[9]	= result[2].x;
+    g_vertex_buffer_data[10] = result[2].y;
+    g_vertex_buffer_data[11] = result[2].z;   //2
+    g_vertex_buffer_data[12] = result[0].x;
+    g_vertex_buffer_data[13] = result[0].y;
+    g_vertex_buffer_data[14] = result[0].z; //0
+    g_vertex_buffer_data[15] = result[3].x;
+    g_vertex_buffer_data[16] = result[3].y;
+    g_vertex_buffer_data[17] = result[3].z;   //3
     
-    g_vertex_buffer_data[i][0] = result[i][0].x;
-    g_vertex_buffer_data[i][1] = result[i][0].y;
-    g_vertex_buffer_data[i][2] = result[i][0].z;       //0
-    g_vertex_buffer_data[i][3] = result[i][1].x;
-    g_vertex_buffer_data[i][4] = result[i][1].y;
-    g_vertex_buffer_data[i][5] = result[i][1].z;  //1
-    g_vertex_buffer_data[i][6] = result[i][2].x;
-    g_vertex_buffer_data[i][7] = result[i][2].y;
-    g_vertex_buffer_data[i][8] = result[i][2].z;  //2
-    g_vertex_buffer_data[i][9]  = result[i][2].x;
-    g_vertex_buffer_data[i][10] = result[i][2].y;
-    g_vertex_buffer_data[i][11] = result[i][2].z;   //2
-    g_vertex_buffer_data[i][12] = result[i][0].x;
-    g_vertex_buffer_data[i][13] = result[i][0].y;
-    g_vertex_buffer_data[i][14] = result[i][0].z; //0
-    g_vertex_buffer_data[i][15] = result[i][3].x;
-    g_vertex_buffer_data[i][16] = result[i][3].y;
-    g_vertex_buffer_data[i][17] = result[i][3].z;   //3
-  //  glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
-   // glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-  // glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
-//   glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-
-    
+    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
     //glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
 }
 
@@ -1118,8 +1062,6 @@ void init(){
     
     [self checkShaderLimitations];
     
-    _projectionDistance = 5.0;
-    
     init();
     glEnable(GL_DEPTH_TEST);
     
@@ -1130,16 +1072,16 @@ void init(){
     
     
     /*
-    _texture[7] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"background" ofType:@"png"] options:options error:&error];
-    if (error) NSLog(@"Image texture error %@", error);
-    
-  
+     _texture[7] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"background" ofType:@"png"] options:options error:&error];
+     if (error) NSLog(@"Image texture error %@", error);
+     
+     
      glActiveTexture(GL_TEXTURE7);
      glBindTexture(_texture[7].target, _texture[7].name);
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
      
-    */
+     */
     
     
     
@@ -1151,8 +1093,8 @@ void init(){
 {
     [EAGLContext setCurrentContext:self.context];
     
-    //glDeleteBuffers(1, &_vertexBuffer);
-   
+    glDeleteBuffers(1, &_vertexBuffer);
+    glDeleteVertexArraysOES(1, &_vertexArray);
     
     if (_program) {
         glDeleteProgram(_program);
@@ -1162,47 +1104,23 @@ void init(){
 
 - (void)setupBuffers
 {
-
     glGenBuffers(1, &_indexVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexdata), indexdata, GL_STATIC_DRAW);
     
-    glGenBuffers(1, &_positionVBO[0]);
- 
-    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
-   glBufferData(GL_ARRAY_BUFFER, sizeof(initbuffer), initbuffer, GL_DYNAMIC_DRAW);
-  //  glBufferData(GL_ARRAY_BUFFER, sizeof( testvertexData ), testvertexData, GL_DYNAMIC_DRAW);
+    glGenBuffers(1, &_positionVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
     
     glEnableVertexAttribArray(ATTRIB_VERTEX);
     glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
     
     glGenBuffers(1, &_texcoordVBO);
     glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_DYNAMIC_DRAW);
- 
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_STATIC_DRAW);
+    
     glEnableVertexAttribArray(ATTRIB_TEXCOORD);
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
-
-    
-//    for(i=0; i<8; i++)
-//    {
-//        glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[i]);
-//        glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data[i]), g_vertex_buffer_data[i], GL_DYNAMIC_DRAW);
-//    
-//        glEnableVertexAttribArray(ATTRIB_VERTEX+i);
-//        glVertexAttribPointer(ATTRIB_VERTEX+i, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
-//    }
-// 
-//    glGenBuffers(1, &_texcoordVBO);
-//    glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_STATIC_DRAW);
-//    
-//    glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-//    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
-
-
-
-
 }
 
 #pragma mark - GLKView and GLKViewController delegate methods
@@ -1210,7 +1128,7 @@ void init(){
 - (void)update
 {
     CMAttitude *att = motionManager.attitude;
-  
+    
     _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
     _userPose.rotationMatrix.m01 = att.rotationMatrix.m12;
     _userPose.rotationMatrix.m02 = att.rotationMatrix.m13;
@@ -1235,122 +1153,107 @@ void init(){
     _userPose.position.y =locationManager.location.coordinate.longitude;
     _userPose.position.z =locationManager.location.altitude;
     
-    GLKVector3 positionTP= GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 planeNormal;
-    float distance = _projectionDistance;
+    float distance = 40.0;
     viewParameters vpuser;
-
     
+    setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
-    setupRenderingPlane(positionTP,_userPose.rotationMatrix, distance,BACKGROUND_TEXTURE_NUMBER);
-
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
-
-//    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-//    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
-  
+    
+    //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+    //    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
+    
     GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(vpuser.origin.x, vpuser.origin.y, vpuser.origin.z,
                                                  vpuser.at.x, vpuser.at.y, vpuser.at.z ,
                                                  vpuser.up.x, vpuser.up.y, vpuser.up.z);
-
-//    NSLog(@"eye origin:x=%f y=%f z=%f", vpuser.origin.x, vpuser.origin.y, vpuser.origin.z);
-//    NSLog(@"eye at    :x=%f y=%f z=%f", vpuser.at.x, vpuser.at.y, vpuser.at.z);
-//    NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
-//    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
+    
+    //    NSLog(@"eye origin:x=%f y=%f z=%f", vpuser.origin.x, vpuser.origin.y, vpuser.origin.z);
+    //    NSLog(@"eye at    :x=%f y=%f z=%f", vpuser.at.x, vpuser.at.y, vpuser.at.z);
+    //    NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
+    //    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
     
     GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
     
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
-
+    
     [self updateImageMetaData];
-
-//    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
-//    GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(1.0f, 0.0f, 0.0f);
-   
+    
+    //    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
+    //    GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(1.0f, 0.0f, 0.0f);
+    
     _imagePose[7].position.x =0.0;
     _imagePose[7].position.y =0.0;
     _imagePose[7].position.z =0.0;
-
+    
     tViewMatrix = viewMatrix;
     
     GLKMatrix4 texrotate = GLKMatrix4MakeRotation(-1.0*PI/2.0, 0.0, 0.0, 1.0);
     tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
     _tBiasMVP[6] = texrotate;
     _tBiasMVP[7] = GLKMatrix4Multiply(biasMatrix,tMVP);
-
-    [self updateBuffers:BACKGROUND_TEXTURE_NUMBER];
+    
+    [self updateBuffers];
 }
-#define BUFFER_OFFSET(i) ((void*)(i))
+
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    
     // Render the object again with ES2
     glUseProgram(_program);
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX7], 1, 0, _tBiasMVP[7].m);
-   // glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[6].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX7], 1, 0, _tBiasMVP[7].m);
+    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[6].m);
     //glActiveTexture(GL_TEXTURE0);
-     
-     
     //glBindTexture(GL_TEXTURE_2D, texture[0]);
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
-    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(initbuffer), &g_vertex_buffer_data[7][0], GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoordFLIP, GL_DYNAMIC_DRAW);
     
-    
-
-    if(_videotexture != NULL)
-    {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
-        glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
-    }
-    glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_DYNAMIC_DRAW);
-
     if(_opengltexturesset >= 1)
     {
         for(int i = 0; i < _opengltexturesset; i++)
         {
             if (_texture[i] != nil)
             {
-//
-  
-                glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
-                glBufferData(GL_ARRAY_BUFFER, sizeof(initbuffer), &g_vertex_buffer_data[i][0], GL_DYNAMIC_DRAW);
-
-                NSLog(@"rendering texture%d", i);
-                glActiveTexture(GL_TEXTURE0);
+                //                NSLog(@"rendering texture%d", i);
+                glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(_texture[i].target, _texture[i].name);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
-                glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
-               
-                
+                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
             }
         }
     }
-   
-
+    /*
+     glActiveTexture(GL_TEXTURE7);
+     glBindTexture(_texture[7].target, _texture[7].name);
+     
+     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);*/
+    
+    
+    if(_videotexture != NULL)
+    {
+        glActiveTexture(GL_TEXTURE7);
+        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
+    }
+    
+    glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
     
 }
 
@@ -1400,14 +1303,7 @@ void init(){
     // Bind attribute locations.
     // This needs to be done prior to linking.
     
-    glBindAttribLocation(_program, ATTRIB_VERTEX, "position0");
-//    glBindAttribLocation(_program, ATTRIB_VERTEX1, "position1");
-//    glBindAttribLocation(_program, ATTRIB_VERTEX2, "position2");
-//    glBindAttribLocation(_program, ATTRIB_VERTEX3, "position3");
-//    glBindAttribLocation(_program, ATTRIB_VERTEX4, "position4");
-//    glBindAttribLocation(_program, ATTRIB_VERTEX5, "position5");
-//    glBindAttribLocation(_program, ATTRIB_VERTEX6, "position6");
-//    glBindAttribLocation(_program, ATTRIB_VERTEX7, "position7");
+    glBindAttribLocation(_program, ATTRIB_VERTEX, "position");
     glBindAttribLocation(_program, ATTRIB_TEXCOORD, "texCoord");
     
     // Link program.
@@ -1432,12 +1328,12 @@ void init(){
     
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-//    uniforms[UNIFORM_TBIASMVP_MATRIX0] = glGetUniformLocation(_program, "tBiasMVP[0]");
-//    uniforms[UNIFORM_TBIASMVP_MATRIX1] = glGetUniformLocation(_program, "tBiasMVP[1]");
-//    uniforms[UNIFORM_TBIASMVP_MATRIX2] = glGetUniformLocation(_program, "tBiasMVP[2]");
-//    uniforms[UNIFORM_TBIASMVP_MATRIX3] = glGetUniformLocation(_program, "tBiasMVP[3]");
-//    uniforms[UNIFORM_TBIASMVP_MATRIX4] = glGetUniformLocation(_program, "tBiasMVP[4]");
-//    uniforms[UNIFORM_TBIASMVP_MATRIX7] = glGetUniformLocation(_program, "tBiasMVP[7]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX0] = glGetUniformLocation(_program, "tBiasMVP[0]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX1] = glGetUniformLocation(_program, "tBiasMVP[1]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX2] = glGetUniformLocation(_program, "tBiasMVP[2]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX3] = glGetUniformLocation(_program, "tBiasMVP[3]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX4] = glGetUniformLocation(_program, "tBiasMVP[4]");
+    uniforms[UNIFORM_TBIASMVP_MATRIX7] = glGetUniformLocation(_program, "tBiasMVP[7]");
     uniforms[UNIFORM_TBIASMVP_MATRIX6] = glGetUniformLocation(_program, "textureModelMatrix");
     
     uniforms[UNIFORM_MYTEXTURE_SAMPLER0] = glGetUniformLocation(_program, "textureSampler[0]");
