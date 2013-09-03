@@ -81,15 +81,11 @@ withDescriptionString:(NSString*)description
 }
 
 - (NSString *)generateUniqueStringID
-{
-    NSDateFormatter *inputDateFormat = [[NSDateFormatter alloc] init];
-    [inputDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-    NSDate *objDate = [inputDateFormat dateFromString:self.timestampString];
-    
+{    
     NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
     [outputDateFormat setDateFormat:@"yyyyMMddHHmmss"];
     
-    NSString *stringID = [outputDateFormat stringFromDate:objDate];
+    NSString *stringID = [outputDateFormat stringFromDate:self.timestamp];
     return [NSString stringWithFormat:@"%@_%d", stringID, self.userID];
 }
 
