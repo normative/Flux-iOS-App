@@ -134,9 +134,11 @@
         
         NSLog(@"Found %i Results",[result count]);
         if ([result count]>0) {
+            FluxScanImageObject *imageObject = [result firstObject];
+            [imageObject setLocalID:[imageObject generateUniqueStringID]];
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:)])
             {
-                [delegate NetworkServices:self didreturnImageMetadata:[result firstObject]];
+                [delegate NetworkServices:self didreturnImageMetadata:imageObject];
             }
         }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
@@ -159,14 +161,19 @@
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         NSLog(@"Found %i Results",[result count]);
         
-        NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
-        for (FluxScanImageObject*obj in result.array)
-            [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
-        if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
+        if ([result count] > 0)
         {
-            [delegate NetworkServices:self didreturnImageList: mutableDictionary];
+            NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
+            for (FluxScanImageObject*obj in result.array)
+            {
+                [obj setLocalID:[obj generateUniqueStringID]];
+                [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
+            }
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
+            {
+                [delegate NetworkServices:self didreturnImageList: mutableDictionary];
+            }
         }
-        
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
@@ -185,6 +192,20 @@
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         NSLog(@"Found %i Results",[result count]);
+        
+        if ([result count] > 0)
+        {
+            NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
+            for (FluxScanImageObject*obj in result.array)
+            {
+                [obj setLocalID:[obj generateUniqueStringID]];
+                [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
+            }
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
+            {
+                [delegate NetworkServices:self didreturnImageList: mutableDictionary];
+            }
+        }
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
@@ -207,12 +228,12 @@
     
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request success:^(RKObjectRequestOperation *operation, RKMappingResult *result) {
         if ([result count]>0) {
-            NSLog(@"Successfully Uploaded Image to account # %i",[[result firstObject]userID]);
-            // Update the local caches with the new image id
-#warning update image id in cache
+            FluxScanImageObject *imageObject = [result firstObject];
+            [imageObject setLocalID:[imageObject generateUniqueStringID]];
+            NSLog(@"Successfully Uploaded Image to account # %i",imageObject.userID);
             if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:)])
             {
-                [delegate NetworkServices:self didUploadImage:[result firstObject]];
+                [delegate NetworkServices:self didUploadImage:imageObject];
             }
         }
         

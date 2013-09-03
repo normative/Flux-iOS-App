@@ -15,6 +15,8 @@
 
 #import "FluxNetworkServices.h"
 
+extern NSString* const FluxImageAnnotationDidAcquireNewPicture;
+
 @interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate, NetworkServicesDelegate>{
     
     UIImage *capturedImage;

@@ -66,8 +66,19 @@
          didreturnImage:(UIImage *)image
              forImageID:(int)imageID
 {
+    for (FluxScanImageObject *curImgObj in [self.imageDict allKeys])
+    {
+        if ([curImgObj isKindOfClass: [FluxScanImageObject class]])
+        {
+            if (curImgObj.imageID == imageID)
+            {
+                [fluxImageCache setObject:image forKey:curImgObj.localID];
+                break;
+            }
+        }
+    }
+
     NSNumber *objKey = [NSNumber numberWithInt: imageID];
-    [[self.imageDict objectForKey:objKey] setContentImage:image];
     
     NSArray * arr = [self.imageDict allKeys];
     int index = [arr indexOfObject:objKey];
@@ -224,12 +235,12 @@
     FluxScanImageObject *rowObject = [self.imageDict objectForKey: objkey];
     
     cell.imageID = rowObject.imageID;
-    if (rowObject.contentImage == nil)
+    if ([fluxImageCache objectForKey:rowObject.localID] == nil)
     {
         [networkServices getThumbImageForID:cell.imageID];
     }
     else
-        [cell.contentImageView setImage:rowObject.contentImage];
+        [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localID]];
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User: %i",rowObject.userID];
     cell.timestampLabel.text = rowObject.timestampString;
@@ -742,23 +753,22 @@
              int cameraID = 1;
              int categoryID = 1;
              
-             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage
-                                                              fromUserWithID:userID
-                                                           atTimestampString:dateString
-                                                                 andCameraID:cameraID
-                                                               andCategoryID:categoryID
-                                                       withDescriptionString:@""
-                                                                 andlatitude:location.coordinate.latitude
-                                                                andlongitude:location.coordinate.longitude
-                                                                 andaltitude:location.altitude
-                                                                  andHeading:heading
-                                                                      andYaw:att.yaw
-                                                                    andPitch:att.pitch
-                                                                     andRoll:att.roll
-                                                                       andQW:att.quaternion.w
-                                                                       andQX:att.quaternion.x
-                                                                       andQY:att.quaternion.y
-                                                                       andQZ:att.quaternion.z];
+             capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
+                                                            atTimestampString:dateString
+                                                                  andCameraID:cameraID
+                                                                andCategoryID:categoryID
+                                                        withDescriptionString:@""
+                                                                  andlatitude:location.coordinate.latitude
+                                                                 andlongitude:location.coordinate.longitude
+                                                                  andaltitude:location.altitude
+                                                                   andHeading:heading
+                                                                       andYaw:att.yaw
+                                                                     andPitch:att.pitch
+                                                                      andRoll:att.roll
+                                                                        andQW:att.quaternion.w
+                                                                        andQX:att.quaternion.x
+                                                                        andQY:att.quaternion.y
+                                                                        andQZ:att.quaternion.z];
              
              //UI Updates
              [self setUIForCamMode:[NSNumber numberWithInt:2]];

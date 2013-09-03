@@ -55,10 +55,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             NSLog(@"annotation imageID is %i", annotation.imageID);
             if (annotation.imageID == imageID)
             {
-                annotation.contentImage = image;
+                [fluxImageCache setObject:image forKey:annotation.localID];
                 
                 MKAnnotationView *annotationView = [myMapView viewForAnnotation: annotation];
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:annotation.contentImage];
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:annotation.localID]];
                 annotationView.leftCalloutAccessoryView = calloutImageView;
                 
                 [activityIndicator stopAnimating];
@@ -74,7 +74,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
         
-        if (annotation.contentImage == nil)
+        if ([fluxImageCache objectForKey:annotation.localID] == nil)
         {
             [networkServiceManager getThumbImageForID:annotation.imageID];
         }
@@ -118,9 +118,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             
             FluxScanImageObject *fluxImageObject = (FluxScanImageObject *)annotation;
             
-            if (fluxImageObject.contentImage != nil)
+            if ([fluxImageCache objectForKey:fluxImageObject.localID] != nil)
             {
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:fluxImageObject.contentImage];
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:fluxImageObject.localID]];
                 locationAnnotationView.leftCalloutAccessoryView = calloutImageView;
             }
             else

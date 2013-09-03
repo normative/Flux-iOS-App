@@ -8,6 +8,7 @@
 
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
+#import "FluxImageAnnotationViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 #import "FluxNetworkServices.h"
@@ -84,7 +85,6 @@ typedef struct {
 @property (nonatomic, strong)NSMutableDictionary*imageDict;
 @property (weak) NSCache *fluxImageCache;
 @property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
-@property (nonatomic, strong)NSMutableDictionary*theImages;
 @property (nonatomic, strong)NSMutableDictionary *requestList;
 
 //- (GLuint) sub_texture:(demoImage*)img;
@@ -102,6 +102,7 @@ typedef struct {
 - (void)setupMotionManager;
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
+- (void)didAcquireNewPicture:(NSNotification *)notification;
 - (void)didUpdateLocation:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
 - (void)setupNetworkServices;

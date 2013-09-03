@@ -645,7 +645,14 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
 {
+    for (id curKey in [imageList allKeys])
+    {
+        FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
+        [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
+    }
+    
     imageDict = imageList;
+    
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
     {
         [theDelegate OpenGLView:self didUpdateImageList:imageDict];
@@ -656,10 +663,21 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
 {
+    NSString *localID = nil;
+    for (id curKey in [fluxMetadata allKeys])
+    {
+        FluxScanImageObject *curImgObj = [fluxMetadata objectForKey:curKey];
+        if (curImgObj.imageID == imageID)
+        {
+            [fluxImageCache setObject:image forKey:curImgObj.localID];
+            localID = curImgObj.localID;
+            break;
+        }
+    }
+
     NSNumber *objKey = [NSNumber numberWithInt: imageID];
-    [self.theImages setObject:image forKey:objKey];
     
-    [self updateImageTextureKey:(objKey)];
+    [self updateImageTextureKey:(objKey) withLocalID:localID];
 }
 
 #pragma mark - AV Capture 
@@ -778,7 +796,6 @@ void init(){
     [super viewDidLoad];
     _opengltexturesset = 0;
     imageDict = [[NSMutableDictionary alloc]init];
-    self.theImages = [[NSMutableDictionary alloc]init];
     self.requestList = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
     [self setupMotionManager];
@@ -802,6 +819,8 @@ void init(){
     
     [self setupGL];
     [self setupAVCapture];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:FluxImageAnnotationDidAcquireNewPicture object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -834,7 +853,9 @@ void init(){
 - (void)dealloc
 {
     motionManager = nil;
-    
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageAnnotationDidAcquireNewPicture object:nil];
+
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {
@@ -878,6 +899,12 @@ void init(){
 
 #pragma mark - OpenGL Texture & Metadata Manipulation
 
+- (void)didAcquireNewPicture:(NSNotification *)notification
+{
+    NSLog(@"*********************************");
+    NSLog(@"%s", __func__);
+}
+
 -(void) populateImageData
 {
     NSLog(@"Image dictionary count is %i", [imageDict count]);
@@ -892,22 +919,26 @@ void init(){
 //        return NSOrderedSame;
 //    }];
 
-    NSArray *sortedKeysArray = [[imageDict allKeys] sortedArrayUsingSelector:@selector(compare:)];
+    NSArray *sortedKeysArray = [[fluxMetadata allKeys] sortedArrayUsingSelector:@selector(compare:)];
     
     for (id key in sortedKeysArray)
     {
-        FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
         
-        if(![self.requestList objectForKey:key ])
+        if((![self.requestList objectForKey:key]) && ([fluxImageCache objectForKey:locationObject.localID] == nil))
         {
             NSLog(@"Adding id %@ to request list with time %@", key, locationObject.timestampString);
             [networkServices getImageForID:locationObject.imageID];
             [self.requestList setObject:key forKey:key];
         }
+        else if ([fluxImageCache objectForKey:locationObject.localID] != nil)
+        {
+            // We already have it in cache. Do we need to do anything?
+        }
     }
 }
 
-- (void) updateImageTextureKey:(id)key
+- (void) updateImageTextureKey:(id)key withLocalID:(NSString *)localID
 {
     NSError *error;
     static int i = 0;
@@ -918,7 +949,7 @@ void init(){
     }
     
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    UIImage *teximage = [self.theImages objectForKey:key];
+    UIImage *teximage = [fluxImageCache objectForKey:localID];
     NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
     _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
                                                       options:options error:&error];

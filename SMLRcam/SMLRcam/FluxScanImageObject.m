@@ -36,28 +36,26 @@
 
 #pragma mark - nsobject life cycle
 
-- (id)initWithImage:(UIImage*)img
-     fromUserWithID:(int)userID
-  atTimestampString:(NSString *)timestampStr
-        andCameraID:(int)camID
-      andCategoryID:(int)catID
+- (id)initWithUserID:(int)userID
+   atTimestampString:(NSString *)timestampStr
+         andCameraID:(int)camID
+       andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
-        andlatitude:(float)latitude
-       andlongitude:(float)longitude
-        andaltitude:(float)altitude
-         andHeading:(float)heading
-             andYaw:(float)yaw
-           andPitch:(float)pitch
-            andRoll:(float)roll
-              andQW:(float)qw
-              andQX:(float)qx
-              andQY:(float)qy
-              andQZ:(float)qz;
+         andlatitude:(float)latitude
+        andlongitude:(float)longitude
+         andaltitude:(float)altitude
+          andHeading:(float)heading
+              andYaw:(float)yaw
+            andPitch:(float)pitch
+             andRoll:(float)roll
+               andQW:(float)qw
+               andQX:(float)qx
+               andQY:(float)qy
+               andQZ:(float)qz;
 {
     self = [super init];
     if (self)
     {
-        self.contentImage = img;
         self.userID = userID;
         self.cameraID = camID;
         self.categoryID = catID;
@@ -74,6 +72,7 @@ withDescriptionString:(NSString*)description
         self.qx = qx;
         self.qy = qy;
         self.qz = qz;
+        self.localID = [self generateUniqueStringID];
     }
     
     return self;
@@ -99,7 +98,7 @@ withDescriptionString:(NSString*)description
     NSLog(@"ImageID: %@", newImageID);
 
 # warning Need to set this properly once we change the type on the FluxScanImageObject (Requires server changes)
-    self.imageID = 99;
+    self.imageID = -1;
 }
 
 @end

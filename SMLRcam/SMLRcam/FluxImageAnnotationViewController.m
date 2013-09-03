@@ -10,6 +10,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AddressBook/ABPerson.h>
 
+NSString* const FluxImageAnnotationDidAcquireNewPicture = @"FluxImageAnnotationDidAcquireNewPicture";
+
 @interface FluxImageAnnotationViewController ()
 
 @end
@@ -86,9 +88,28 @@
     [backgroundImageView addSubview:darkenImageView];
 }
 #pragma mark - Network Services
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)imageObject{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject{
     progressView.progress = 1;
     [self PopViewController:nil];
+    
+    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+    {
+        // FluxScanImageObject exists in the local cache. Replace it with updated object.
+        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+        
+        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
+        {
+            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
+        }
+        else
+        {
+            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
+        }
+    }
+    else
+    {
+        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
+    }
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
@@ -237,12 +258,20 @@
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
-    // Generate image id
-    [imageObject setImageIDFromDateAndUser];
+    // Generate a string image id for local use
+    NSString *localID = [imageObject generateUniqueStringID];
+    [imageObject setLocalID:localID];
+//    [imageObject setImageIDFromDateAndUser];
+    
+    // Set the server-side image id to a negative value until server returns actual
+    [imageObject setImageID:-1];
     
     // Add the image and metadata to the local cache
-    [fluxImageCache setObject:capturedImage forKey:[NSNumber numberWithInt:imageObject.imageID]];
-    [fluxMetadata setObject:imageObject forKey:[NSNumber numberWithInt:imageObject.imageID]];
+    [fluxImageCache setObject:capturedImage forKey:imageObject.localID];
+    [fluxMetadata setObject:imageObject forKey:imageObject.localID];
+    
+    // Post notification for observers prior to upload
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageAnnotationDidAcquireNewPicture object:self];
     
     // Perform any additional (optional) image save tasks
     if (savelocally || pushToCloud) {
