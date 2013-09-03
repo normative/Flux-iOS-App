@@ -43,7 +43,7 @@
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
 }
 
 #pragma mark - Network Services
