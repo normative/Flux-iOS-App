@@ -644,7 +644,9 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
 {
-    // Need to update all metadata objects (in case they change in the future)
+    // Need to update all metadata objects even if they exist (in case they change in the future)
+    // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
+    // when a desired image is loaded (happens after the texture is loaded)
     for (id curKey in [imageList allKeys])
     {
         FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];

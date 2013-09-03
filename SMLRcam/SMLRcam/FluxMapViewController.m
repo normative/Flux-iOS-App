@@ -205,7 +205,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
      didreturnImageList:(NSMutableDictionary *)imageList
 {
-    // Need to update all metadata objects (in case they change in the future)
+    // Need to update all metadata objects even if they exist (in case they change in the future)
     for (id curKey in [imageList allKeys])
     {
         FluxScanImageObject *locationObject = [imageList objectForKey:curKey];
