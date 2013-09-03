@@ -73,6 +73,7 @@ withDescriptionString:(NSString*)description
         self.qy = qy;
         self.qz = qz;
         self.localID = [self generateUniqueStringID];
+        self.localThumbID = [NSString stringWithFormat:@"%@_thumb", self.localID];
     }
     
     return self;
@@ -97,7 +98,8 @@ withDescriptionString:(NSString*)description
     NSString *newImageID = [NSString stringWithFormat:@"%@_%d", self.timestampString, self.userID];
     NSLog(@"ImageID: %@", newImageID);
 
-# warning Need to set this properly once we change the type on the FluxScanImageObject (Requires server changes)
+    // Set to -1 now. App code will rely on localID.
+    // Numeric imageID will be set by the server on upload completion.
     self.imageID = -1;
 }
 

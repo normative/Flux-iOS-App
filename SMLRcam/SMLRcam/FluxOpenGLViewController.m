@@ -636,7 +636,6 @@ void init(){
 
 @implementation FluxOpenGLViewController
 
-@synthesize imageDict;
 @synthesize fluxImageCache;
 @synthesize fluxMetadata;
 @synthesize theDelegate;
@@ -695,17 +694,26 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
 {
+    // Clear out the list of nearby images.
+    self.nearbyList = [[NSMutableArray alloc] init];
+    
+    // Need to update all metadata objects even if they exist (in case they change in the future)
+    // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
+    // when a desired image is loaded (happens after the texture is loaded)
     for (id curKey in [imageList allKeys])
     {
         FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
         [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
+        [self.nearbyList addObject:curImgObj.localID];
     }
     
-    imageDict = imageList;
-    
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
+    NSUInteger rangeLen = ([self.nearbyList count] >= 5 ? 5 : [self.nearbyList count]);
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
+
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
     {
-        [theDelegate OpenGLView:self didUpdateImageList:imageDict];
+        [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
     }
     
     [self populateImageData];
@@ -845,7 +853,7 @@ void init(){
 {
     [super viewDidLoad];
     _opengltexturesset = 0;
-    imageDict = [[NSMutableDictionary alloc]init];
+    self.nearbyList = [[NSMutableArray alloc]init];
     self.requestList = [[NSMutableDictionary alloc]init];
     [self setupLocationManager];
     [self setupMotionManager];
@@ -957,9 +965,9 @@ void init(){
 
 -(void) populateImageData
 {
-    NSLog(@"Image dictionary count is %i", [imageDict count]);
+    NSLog(@"Image dictionary count is %i", [fluxMetadata count]);
     
-//    NSArray *sortedKeysArray = [imageDict keysSortedByValueUsingComparator:^(id obj1, id obj2) {
+//    NSArray *sortedKeysArray = [fluxMetadata keysSortedByValueUsingComparator:^(id obj1, id obj2) {
 //        if ([obj1 intValue] > [obj2 intValue]) {
 //            return NSOrderedDescending;
 //        }
@@ -969,9 +977,7 @@ void init(){
 //        return NSOrderedSame;
 //    }];
 
-    NSArray *sortedKeysArray = [[fluxMetadata allKeys] sortedArrayUsingSelector:@selector(compare:)];
-    
-    for (id key in sortedKeysArray)
+    for (id key in self.nearbyList)
     {
         FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
         
@@ -1010,7 +1016,7 @@ void init(){
     else
     {
         NSLog(@"Added Image texture to render list in slot %d", (i));
-        [self updateImageMetadataKey:key index:i];
+        [self updateImageMetadataKey:localID index:i];
         i++;
         _opengltexturesset++;
         
@@ -1031,10 +1037,10 @@ void init(){
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
 {
-    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [imageDict count]);
+    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxMetadata count]);
     GLKQuaternion quaternion;
 
-    FluxScanImageObject *locationObject = [imageDict objectForKey:key];
+    FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
 
     _imagePose[idx].position.x =  locationObject.latitude;
     _imagePose[idx].position.y =  locationObject.longitude;

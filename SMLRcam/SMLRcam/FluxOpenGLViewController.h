@@ -84,9 +84,9 @@ typedef struct {
 
 @property (nonatomic, weak) id <OpenGLViewDelegate> theDelegate;
 @property (strong, nonatomic) EAGLContext *context;
-@property (nonatomic, strong)NSMutableDictionary*imageDict;
 @property (weak) NSCache *fluxImageCache;
 @property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
+@property (nonatomic, strong)NSMutableArray *nearbyList;
 @property (nonatomic, strong)NSMutableDictionary *requestList;
 
 //- (GLuint) sub_texture:(demoImage*)img;
