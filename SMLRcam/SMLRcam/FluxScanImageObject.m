@@ -73,6 +73,7 @@ withDescriptionString:(NSString*)description
         self.qy = qy;
         self.qz = qz;
         self.localID = [self generateUniqueStringID];
+        self.localThumbID = [NSString stringWithFormat:@"%@_thumb", self.localID];
     }
     
     return self;

@@ -42,6 +42,7 @@
 @property (nonatomic) int imageID;
 @property (nonatomic) int userID;
 @property (nonatomic) NSString* localID;
+@property (nonatomic) NSString* localThumbID;
 
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr

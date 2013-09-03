@@ -54,10 +54,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             NSLog(@"annotation imageID is %i", annotation.imageID);
             if (annotation.imageID == imageID)
             {
-                [fluxImageCache setObject:image forKey:annotation.localID];
+                // This view gets a thumbnail image (since that is all it requested)
+                [fluxImageCache setObject:image forKey:annotation.localThumbID];
                 
                 MKAnnotationView *annotationView = [myMapView viewForAnnotation: annotation];
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:annotation.localID]];
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:annotation.localThumbID]];
                 annotationView.leftCalloutAccessoryView = calloutImageView;
                 
                 [activityIndicator stopAnimating];
@@ -73,7 +74,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
         
-        if ([fluxImageCache objectForKey:annotation.localID] == nil)
+        if ([fluxImageCache objectForKey:annotation.localThumbID] == nil)
         {
             [networkServiceManager getThumbImageForID:annotation.imageID];
         }
@@ -117,9 +118,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             
             FluxScanImageObject *fluxImageObject = (FluxScanImageObject *)annotation;
             
-            if ([fluxImageCache objectForKey:fluxImageObject.localID] != nil)
+            if ([fluxImageCache objectForKey:fluxImageObject.localThumbID] != nil)
             {
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:fluxImageObject.localID]];
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:fluxImageObject.localThumbID]];
                 locationAnnotationView.leftCalloutAccessoryView = calloutImageView;
             }
             else

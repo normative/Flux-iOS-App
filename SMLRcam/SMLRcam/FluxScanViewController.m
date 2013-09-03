@@ -66,7 +66,7 @@
         {
             if (curImgObj.imageID == imageID)
             {
-                [fluxImageCache setObject:image forKey:curImgObj.localID];
+                [fluxImageCache setObject:image forKey:curImgObj.localThumbID];
                 break;
             }
         }
@@ -229,12 +229,12 @@
     FluxScanImageObject *rowObject = [fluxMetadata objectForKey: objkey];
     
     cell.imageID = rowObject.imageID;
-    if ([fluxImageCache objectForKey:rowObject.localID] == nil)
+    if ([fluxImageCache objectForKey:rowObject.localThumbID] == nil)
     {
         [networkServices getThumbImageForID:cell.imageID];
     }
     else
-        [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localID]];
+        [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localThumbID]];
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User: %i",rowObject.userID];
     cell.timestampLabel.text = rowObject.timestampString;

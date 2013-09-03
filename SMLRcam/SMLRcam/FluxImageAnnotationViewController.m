@@ -261,6 +261,7 @@ NSString* const FluxImageAnnotationDidAcquireNewPicture = @"FluxImageAnnotationD
     // Generate a string image id for local use
     NSString *localID = [imageObject generateUniqueStringID];
     [imageObject setLocalID:localID];
+    [imageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", imageObject.localID]];
 //    [imageObject setImageIDFromDateAndUser];
     
     // Set the server-side image id to a negative value until server returns actual

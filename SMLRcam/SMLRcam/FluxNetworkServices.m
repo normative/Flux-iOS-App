@@ -136,6 +136,7 @@
         if ([result count]>0) {
             FluxScanImageObject *imageObject = [result firstObject];
             [imageObject setLocalID:[imageObject generateUniqueStringID]];
+            [imageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", imageObject.localID]];
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:)])
             {
                 [delegate NetworkServices:self didreturnImageMetadata:imageObject];
@@ -167,6 +168,7 @@
             for (FluxScanImageObject*obj in result.array)
             {
                 [obj setLocalID:[obj generateUniqueStringID]];
+                [obj setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", obj.localID]];
                 [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
             }
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
@@ -199,6 +201,7 @@
             for (FluxScanImageObject*obj in result.array)
             {
                 [obj setLocalID:[obj generateUniqueStringID]];
+                [obj setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", obj.localID]];
                 [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
             }
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
@@ -230,6 +233,7 @@
         if ([result count]>0) {
             FluxScanImageObject *imageObject = [result firstObject];
             [imageObject setLocalID:[imageObject generateUniqueStringID]];
+            [imageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", imageObject.localID]];
             NSLog(@"Successfully Uploaded Image to account # %i",imageObject.userID);
             if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:)])
             {
