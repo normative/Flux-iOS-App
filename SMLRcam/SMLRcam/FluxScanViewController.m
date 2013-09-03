@@ -151,29 +151,37 @@
 
 - (IBAction)annotationsButtonAction:(id)sender {
     
-//    if ([annotationsTableView isHidden]) {
-//        if ([fluxMetadata count]>0) {
-//            [annotationsTableView reloadData];
-//            [annotationsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-//        }
-//            [annotationsTableView setHidden:NO];
-//            [UIView animateWithDuration:0.3f
-//                             animations:^{
-//                                 [self.view setAlpha:1.0];
-//                             }
-//                             completion:nil];
-//        
-//        [panGesture setEnabled:NO];
-//        [longPressGesture setEnabled:NO];
-//        [CameraButton setUserInteractionEnabled:NO];
-//    }
-//    else{
-//        [annotationsTableView setHidden:YES];
-//        
-//        [panGesture setEnabled:YES];
-//        [longPressGesture setEnabled:YES];
-//        [CameraButton setUserInteractionEnabled:YES];
-//    }
+    if ([annotationsTableView isHidden]) {
+        if ([fluxMetadata count]>0) {
+            [annotationsTableView reloadData];
+            //if there are any rows, scroll to the top of them
+            if ([annotationsTableView numberOfRowsInSection:0]>0) {
+                            [annotationsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            }
+        }
+            [annotationsTableView setHidden:NO];
+            [UIView animateWithDuration:0.3f
+                             animations:^{
+                                 [annotationsTableView setAlpha:1.0];
+                             }
+                             completion:nil];
+        
+        [panGesture setEnabled:NO];
+        [longPressGesture setEnabled:NO];
+        [CameraButton setUserInteractionEnabled:NO];
+    }
+    else{
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [annotationsTableView setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished){
+                             [annotationsTableView setHidden:YES];
+                             [panGesture setEnabled:YES];
+                             [longPressGesture setEnabled:YES];
+                             [CameraButton setUserInteractionEnabled:YES];
+                         }];
+    }
 }
 
 
@@ -224,9 +232,6 @@
     static NSString *CellIdentifier = @"annotationsFeedCell";
     FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-
-//    FluxAnnotationTableViewCell *cell = (FluxAnnotationTableViewCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-//    
     if (cell == nil)
     {
         cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault

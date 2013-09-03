@@ -312,7 +312,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     (*vp).at =V;
     (*vp).up = GLKVector3Add(positionTP, viewP.up);
-
+    
     //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
     
     return 0;
