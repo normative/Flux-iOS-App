@@ -74,7 +74,7 @@
             }
             [[self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:YES];
             
-            [self.session startRunning];
+            [self restartAVCapture];
         }
         
         //[session release];

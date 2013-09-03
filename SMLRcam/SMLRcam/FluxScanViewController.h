@@ -26,7 +26,7 @@
 
 
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate>{
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate, UITableViewDataSource, UITableViewDelegate>{
     UITableView*annotationsTableView;
    
     AVCaptureVideoPreviewLayer *previewLayer;

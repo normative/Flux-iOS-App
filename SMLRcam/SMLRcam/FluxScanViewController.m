@@ -76,7 +76,7 @@
     
     NSArray * arr = [fluxMetadata allKeys];
     int index = [arr indexOfObject:objKey];
-    [annotationsTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:0], nil] withRowAnimation:UITableViewRowAnimationFade];
+//    [annotationsTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:0], nil] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 #pragma mark - Motion Methods
@@ -124,6 +124,11 @@
     annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
     [annotationsTableView setHidden:YES];
     [annotationsTableView setAlpha:0.0];
+    [annotationsTableView setBackgroundColor:[UIColor clearColor]];
+    [annotationsTableView setDelegate:self];
+    [annotationsTableView setDataSource:self];
+    
+    [annotationsTableView registerNib:[UINib nibWithNibName:@"FluxAnnotationTableViewCell" bundle:nil] forCellReuseIdentifier:@"annotationsFeedCell"];
     
     //fade out the bottom of the feedView
     CAGradientLayer* maskLayer = [CAGradientLayer layer];
@@ -211,7 +216,7 @@
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
-    return cell.frame.size.height;
+    return 85.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -219,6 +224,9 @@
     static NSString *CellIdentifier = @"annotationsFeedCell";
     FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
+
+//    FluxAnnotationTableViewCell *cell = (FluxAnnotationTableViewCell*)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+//    
     if (cell == nil)
     {
         cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
@@ -260,7 +268,7 @@
 {
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
-    self.view.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
+    annotationsTableView.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
     [CATransaction commit];
 }
 
@@ -909,6 +917,7 @@
     [self setupCameraView];
     [self setupMotionManager];
     [self setupOpenGLView];
+    [self setupAnnotationsTableView];
 
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];
