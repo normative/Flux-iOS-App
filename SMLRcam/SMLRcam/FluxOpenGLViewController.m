@@ -78,6 +78,8 @@ GLfloat testvertexData[18] =
     1.0f, -1.0f, 0.0f,
     -1.0f, 1.0f, 0.0f,
     -1.0f, -1.0f, 0.0f
+    
+   
 };
 
 /*
@@ -92,19 +94,38 @@ GLfloat textureCoord[12] =
     0.0f, 0.0f
 };
 */
+//GLfloat textureCoord[12] =
+//{
+//    0.0f, 1.0f,
+//    0.0f, 0.0f,
+//    1.0f, 0.0f,
+//    1.0f, 0.0f,
+//    0.0f, 1.0f,
+//    1.0f, 1.0f
+//};
 
+GLfloat textureCoordFLIP[12] =
+{
+    1.0f, 1.0f,
+    1.0f, 0.0f,
+    0.0f, 0.0f,
+    0.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f
+};
 GLfloat textureCoord[12] =
 {
     
     0.0f, 0.0f,
-    0.0f, 1.0f,
     1.0f, 0.0f,
-    1.0f, 0.0f,
-    0.0f, 1.0f,
-    1.0f, 1.0f
+    1.0f, 1.0f,
+    1.0f, 1.0f,
+    0.0f, 0.0f,
+    0.0f, 1.0f
 };
 
 
+//GLubyte indexdata[48]={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47};
 GLubyte indexdata[6]={0,1,2,3,4,5};
 
 //iPhone5 model
@@ -151,6 +172,8 @@ demoImage *image;
 demoImage *image1;
 demoImage *image2;
 GLfloat g_vertex_buffer_data[8][18];
+
+GLfloat initbuffer[18];
 GLKVector4 result[8][4];
 
 #pragma mark - OpenGL Utility Routines
@@ -987,7 +1010,7 @@ void init(){
     g_vertex_buffer_data[i][6] = result[i][2].x;
     g_vertex_buffer_data[i][7] = result[i][2].y;
     g_vertex_buffer_data[i][8] = result[i][2].z;  //2
-    g_vertex_buffer_data[i][9]	= result[i][2].x;
+    g_vertex_buffer_data[i][9]  = result[i][2].x;
     g_vertex_buffer_data[i][10] = result[i][2].y;
     g_vertex_buffer_data[i][11] = result[i][2].z;   //2
     g_vertex_buffer_data[i][12] = result[i][0].x;
@@ -996,9 +1019,12 @@ void init(){
     g_vertex_buffer_data[i][15] = result[i][3].x;
     g_vertex_buffer_data[i][16] = result[i][3].y;
     g_vertex_buffer_data[i][17] = result[i][3].z;   //3
+  //  glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
+   // glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+  // glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
+//   glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+
     
-    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[i]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data[i]), g_vertex_buffer_data[i], GL_DYNAMIC_DRAW);
     //glBufferData(GL_ARRAY_BUFFER, sizeof(testvertexData), testvertexData, GL_DYNAMIC_DRAW);
 }
 
@@ -1056,30 +1082,43 @@ void init(){
 
 - (void)setupBuffers
 {
-    
-    int i =0;
+
     glGenBuffers(1, &_indexVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexVBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexdata), indexdata, GL_STATIC_DRAW);
     
-    glGenBuffers(8, &_positionVBO[0]);
-    
-    
-    for(i=0; i<8; i++)
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[i]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data[i]), g_vertex_buffer_data[i], GL_DYNAMIC_DRAW);
-    
-        glEnableVertexAttribArray(ATTRIB_VERTEX+i);
-        glVertexAttribPointer(ATTRIB_VERTEX+i, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
-    }
+    glGenBuffers(1, &_positionVBO[0]);
  
+    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(initbuffer), initbuffer, GL_DYNAMIC_DRAW);
+  //  glBufferData(GL_ARRAY_BUFFER, sizeof( testvertexData ), testvertexData, GL_DYNAMIC_DRAW);
+    
+    glEnableVertexAttribArray(ATTRIB_VERTEX);
+    glVertexAttribPointer(ATTRIB_VERTEX, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
+    
     glGenBuffers(1, &_texcoordVBO);
     glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_STATIC_DRAW);
-    
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_DYNAMIC_DRAW);
+ 
     glEnableVertexAttribArray(ATTRIB_TEXCOORD);
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
+
+    
+//    for(i=0; i<8; i++)
+//    {
+//        glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[i]);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data[i]), g_vertex_buffer_data[i], GL_DYNAMIC_DRAW);
+//    
+//        glEnableVertexAttribArray(ATTRIB_VERTEX+i);
+//        glVertexAttribPointer(ATTRIB_VERTEX+i, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), 0);
+//    }
+// 
+//    glGenBuffers(1, &_texcoordVBO);
+//    glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_STATIC_DRAW);
+//    
+//    glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+//    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
 
 
 
@@ -1163,9 +1202,10 @@ void init(){
 
     [self updateBuffers:BACKGROUND_TEXTURE_NUMBER];
 }
-
+#define BUFFER_OFFSET(i) ((void*)(i))
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+    
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1174,53 +1214,63 @@ void init(){
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX7], 1, 0, _tBiasMVP[7].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[6].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX7], 1, 0, _tBiasMVP[7].m);
+   // glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[6].m);
     //glActiveTexture(GL_TEXTURE0);
+     
+     
     //glBindTexture(GL_TEXTURE_2D, texture[0]);
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
+    glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(initbuffer), &g_vertex_buffer_data[7][0], GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoordFLIP, GL_DYNAMIC_DRAW);
     
+    
+
+    if(_videotexture != NULL)
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
+        glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, _texcoordVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoord), textureCoord, GL_DYNAMIC_DRAW);
+
     if(_opengltexturesset >= 1)
     {
         for(int i = 0; i < _opengltexturesset; i++)
         {
             if (_texture[i] != nil)
             {
-//                NSLog(@"rendering texture%d", i);
-                glActiveTexture(GL_TEXTURE0 + i);
+//
+  
+                glBindBuffer(GL_ARRAY_BUFFER, _positionVBO[0]);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(initbuffer), &g_vertex_buffer_data[i][0], GL_DYNAMIC_DRAW);
+
+                NSLog(@"rendering texture%d", i);
+                glActiveTexture(GL_TEXTURE0);
                 glBindTexture(_texture[i].target, _texture[i].name);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
+                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0], 0);
+                glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
+               
                 
             }
         }
     }
-    /*
-        glActiveTexture(GL_TEXTURE7);
-         glBindTexture(_texture[7].target, _texture[7].name);
-    
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);*/
    
 
-    if(_videotexture != NULL)
-    {
-       glActiveTexture(GL_TEXTURE7);
-       glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
-       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-       glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
-    }
-   
-    glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
     
 }
 
@@ -1271,13 +1321,13 @@ void init(){
     // This needs to be done prior to linking.
     
     glBindAttribLocation(_program, ATTRIB_VERTEX, "position0");
-    glBindAttribLocation(_program, ATTRIB_VERTEX1, "position1");
-    glBindAttribLocation(_program, ATTRIB_VERTEX2, "position2");
-    glBindAttribLocation(_program, ATTRIB_VERTEX3, "position3");
-    glBindAttribLocation(_program, ATTRIB_VERTEX4, "position4");
-    glBindAttribLocation(_program, ATTRIB_VERTEX5, "position5");
-    glBindAttribLocation(_program, ATTRIB_VERTEX6, "position6");
-    glBindAttribLocation(_program, ATTRIB_VERTEX7, "position7");
+//    glBindAttribLocation(_program, ATTRIB_VERTEX1, "position1");
+//    glBindAttribLocation(_program, ATTRIB_VERTEX2, "position2");
+//    glBindAttribLocation(_program, ATTRIB_VERTEX3, "position3");
+//    glBindAttribLocation(_program, ATTRIB_VERTEX4, "position4");
+//    glBindAttribLocation(_program, ATTRIB_VERTEX5, "position5");
+//    glBindAttribLocation(_program, ATTRIB_VERTEX6, "position6");
+//    glBindAttribLocation(_program, ATTRIB_VERTEX7, "position7");
     glBindAttribLocation(_program, ATTRIB_TEXCOORD, "texCoord");
     
     // Link program.
@@ -1302,12 +1352,12 @@ void init(){
     
     // Get uniform locations.
     uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-    uniforms[UNIFORM_TBIASMVP_MATRIX0] = glGetUniformLocation(_program, "tBiasMVP[0]");
-    uniforms[UNIFORM_TBIASMVP_MATRIX1] = glGetUniformLocation(_program, "tBiasMVP[1]");
-    uniforms[UNIFORM_TBIASMVP_MATRIX2] = glGetUniformLocation(_program, "tBiasMVP[2]");
-    uniforms[UNIFORM_TBIASMVP_MATRIX3] = glGetUniformLocation(_program, "tBiasMVP[3]");
-    uniforms[UNIFORM_TBIASMVP_MATRIX4] = glGetUniformLocation(_program, "tBiasMVP[4]");
-    uniforms[UNIFORM_TBIASMVP_MATRIX7] = glGetUniformLocation(_program, "tBiasMVP[7]");
+//    uniforms[UNIFORM_TBIASMVP_MATRIX0] = glGetUniformLocation(_program, "tBiasMVP[0]");
+//    uniforms[UNIFORM_TBIASMVP_MATRIX1] = glGetUniformLocation(_program, "tBiasMVP[1]");
+//    uniforms[UNIFORM_TBIASMVP_MATRIX2] = glGetUniformLocation(_program, "tBiasMVP[2]");
+//    uniforms[UNIFORM_TBIASMVP_MATRIX3] = glGetUniformLocation(_program, "tBiasMVP[3]");
+//    uniforms[UNIFORM_TBIASMVP_MATRIX4] = glGetUniformLocation(_program, "tBiasMVP[4]");
+//    uniforms[UNIFORM_TBIASMVP_MATRIX7] = glGetUniformLocation(_program, "tBiasMVP[7]");
     uniforms[UNIFORM_TBIASMVP_MATRIX6] = glGetUniformLocation(_program, "textureModelMatrix");
     
     uniforms[UNIFORM_MYTEXTURE_SAMPLER0] = glGetUniformLocation(_program, "textureSampler[0]");
