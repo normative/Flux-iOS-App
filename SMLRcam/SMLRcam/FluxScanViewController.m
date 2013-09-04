@@ -119,6 +119,7 @@
     [annotationsTableView setAlpha:0.0];
     [annotationsTableView setBackgroundColor:[UIColor clearColor]];
     [annotationsTableView setSeparatorColor:[UIColor clearColor]];
+    [annotationsTableView setAllowsSelection:NO];
     [annotationsTableView setDelegate:self];
     [annotationsTableView setDataSource:self];
     
@@ -231,6 +232,7 @@
         cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
                                                   reuseIdentifier:CellIdentifier];
     }
+    [cell initCell];
     
     NSNumber *objkey = [[fluxMetadata allKeys] objectAtIndex:indexPath.row];
     FluxScanImageObject *rowObject = [fluxMetadata objectForKey: objkey];
@@ -240,11 +242,13 @@
     {
         [networkServices getThumbImageForID:cell.imageID];
     }
-    else
-        [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localThumbID]];
+    else{
+         [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localThumbID]];
+    }
     cell.descriptionLabel.text = rowObject.descriptionString;
-    cell.userLabel.text = [NSString stringWithFormat:@"User: %i",rowObject.userID];
+    cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];
     [cell.timestampLabel setText:[dateFormatter stringFromDate:rowObject.timestamp]];
+    [cell setCategory:rowObject.categoryID];
     
     return cell;
 }

@@ -37,6 +37,10 @@
 
     rightDrawerTableViewArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PlacesFilterObject, PeopleFilterObject, ThingsFilterObject, EventsFilterObject, nil];
     
+//    UIImage *searchFieldImage = [[UIImage imageNamed:@"searchFieldBG"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
+//    [self.filterSearchBar setSearchFieldBackgroundImage:searchFieldImage forState:UIControlStateNormal];
+    //[self.filterSearchBar setBackgroundImage:searchFieldImage];
+    
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
