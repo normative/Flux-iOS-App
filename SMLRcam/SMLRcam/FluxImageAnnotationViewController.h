@@ -16,6 +16,7 @@
 #import "FluxNetworkServices.h"
 
 extern NSString* const FluxImageAnnotationDidAcquireNewPicture;
+extern NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey;
 
 @interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate, NetworkServicesDelegate>{
     
