@@ -26,6 +26,8 @@ err = glGetError();								\
 }													\
 }
 
+const int number_textures = 5;
+
 // Uniform index.
 enum
 {
@@ -48,6 +50,15 @@ enum
     UNIFORM_MYTEXTURE_SAMPLER5,
     UNIFORM_MYTEXTURE_SAMPLER6,
     UNIFORM_MYTEXTURE_SAMPLER7,
+    
+    UNIFORM_RENDER_ENABLE0,
+    UNIFORM_RENDER_ENABLE1,
+    UNIFORM_RENDER_ENABLE2,
+    UNIFORM_RENDER_ENABLE3,
+    UNIFORM_RENDER_ENABLE4,
+    UNIFORM_RENDER_ENABLE5,
+    UNIFORM_RENDER_ENABLE6,
+    UNIFORM_RENDER_ENABLE7,
     
     NUM_UNIFORMS
 };
@@ -238,8 +249,8 @@ void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float d
     }
     
     pts[0] = GLKVector4Make(-250.0, -250.0, -1.0 *distance, 1.0);
-    pts[1] = GLKVector4Make(250.0, -250.0, -1.0 *distance, 1.0);
-    pts[2] = GLKVector4Make(250.0,  250.0, -1.0 * distance, 1.0);
+    pts[1] = GLKVector4Make( 250.0, -250.0, -1.0 *distance, 1.0);
+    pts[2] = GLKVector4Make( 250.0, 250.0, -1.0 * distance, 1.0);
     pts[3] = GLKVector4Make(-250.0, 250.0, -1.0 *distance, 1.0);
     
     // fprintf(stderr, "NEW VECTORS\n");
@@ -293,13 +304,13 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     if(vd==0)
     {
-        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     if(t < 0)
     {
         
-        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     
@@ -311,7 +322,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     //(*vp).at = GLKVector3Add(positionTP, viewP.at);
     
     (*vp).at =V;
-    (*vp).up = GLKVector3Add(positionTP, viewP.up);
+    (*vp).up = viewP.up;
     
     //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
     
@@ -324,18 +335,14 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     viewParameters viewP;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
-    //    sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
+    
     if(distance <0.0)
     {
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
     
-    //    calculateCoordinatesTP(userLocation, sp->position, &positionTP);
     
-    //    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
-    
-    //    rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
@@ -353,29 +360,29 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
-    
-    float vd = GLKVector3DotProduct(N,V);
-    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-    float t = v0/vd;
-    
-    if(vd==0)
-    {
-        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-        return -1;
-    }
-    if(t < 0)
-    {
-        
-        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-        return -1;
-    }
+//    
+//    float vd = GLKVector3DotProduct(N,V);
+//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+//    float t = v0/vd;
+//    
+//    if(vd==0)
+//    {
+//        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+//        return -1;
+//    }
+//    if(t < 0)
+//    {
+//        
+//        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+//        return -1;
+//    }
     
     WGS84_to_ECEF(sp);
     
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
-    positionTP.z = sp->ecef.z -userPose.ecef.z;
+  //  positionTP.z = sp->ecef.z -userPose.ecef.z;
     /*
      positionTP.x = 0;
      positionTP.y = 0;
@@ -388,16 +395,16 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
     //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
-    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+   // viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+   // viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     //    viewP.up = GLKVector3Normalize(viewP.up);
     
     
-    (*vp).origin = GLKVector3Add(positionTP, P0);
+   // (*vp).origin = GLKVector3Add(positionTP, P0);
     //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
-    (*vp).at =GLKVector3Add(positionTP, viewP.at);
-    (*vp).up = viewP.up;
+   // (*vp).at =GLKVector3Add(positionTP, viewP.at);
+    //(*vp).up = viewP.up;
     
     //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
@@ -405,23 +412,33 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     P0 = positionTP;
     V = GLKVector3Normalize(v);
+  //  V = v;
     
-    
-    vd = GLKVector3DotProduct(N,V);
-    v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-    t = v0/vd;
+    float vd = GLKVector3DotProduct(N,V);
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+    float t = v0/vd;
     
     if(vd==0)
     {
-        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-        return -1;
+       NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        return 0;
     }
     if(t < 0)
     {
         
-        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-        return -1;
+      NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        return 0;
     }
+    
+    float distancetoPlane = GLKVector3Length(GLKVector3Make(t*V.x, t*V.y, t*V.z));
+    
+    if(distancetoPlane > distance)
+    {
+        
+        NSLog(@"too far to render");
+        return 0;
+    }
+    
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     //    viewP.up = GLKVector3Normalize(viewP.up);
@@ -435,7 +452,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
 
     
-    return 0;
+    return 1;
     
     
     
@@ -594,8 +611,8 @@ void multiply_vertices_Zaxis()
     int i;
     
     pts[0] = GLKVector4Make(-250.0,  -250.0, -14.0,1.0);
-    pts[1] = GLKVector4Make(250.0,  -250.0, -14.0, 1.0);
-    pts[2] = GLKVector4Make(250.0,   250.0,-14.0, 1.0);
+    pts[1] = GLKVector4Make( 250.0,  -250.0, -14.0, 1.0);
+    pts[2] = GLKVector4Make( 250.0,   250.0,-14.0, 1.0);
     pts[3] = GLKVector4Make(-250.0,  250.0, -14.0, 1.0);
     
     // fprintf(stderr, "NEW VECTORS\n");
@@ -696,10 +713,6 @@ void init(){
         [self.nearbyList addObject:curImgObj.localID];
     }
     
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
-    NSUInteger rangeLen = ([self.nearbyList count] >= 5 ? 5 : [self.nearbyList count]);
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
-    
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
     {
         [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
@@ -710,21 +723,19 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
 {
-    NSString *localID = nil;
     for (id curKey in [fluxMetadata allKeys])
     {
         FluxScanImageObject *curImgObj = [fluxMetadata objectForKey:curKey];
         if (curImgObj.imageID == imageID)
         {
             [fluxImageCache setObject:image forKey:curImgObj.localID];
-            localID = curImgObj.localID;
-            break;
+            
+            [self.requestList removeObject:curImgObj.localID];
+            [self updateImageTextureWithLocalID:curImgObj.localID];
+
+            return;
         }
     }
-    
-    NSNumber *objKey = [NSNumber numberWithInt: imageID];
-    
-    [self updateImageTextureKey:(objKey) withLocalID:localID];
 }
 
 #pragma mark - AV Capture
@@ -842,8 +853,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     [super viewDidLoad];
     _opengltexturesset = 0;
-    self.nearbyList = [[NSMutableArray alloc]init];
-    self.requestList = [[NSMutableDictionary alloc]init];
+    self.nearbyList = [[NSMutableArray alloc] init];
+    self.renderedTextures = [[NSMutableArray alloc] initWithCapacity:number_textures];
+    for (int i = 0; i < number_textures; i++)
+    {
+        [self.renderedTextures addObject:@""];
+    }
+    self.requestList = [[NSMutableArray alloc] init];
     [self setupLocationManager];
     [self setupMotionManager];
     [self setupNetworkServices];
@@ -948,56 +964,85 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)didAcquireNewPicture:(NSNotification *)notification
 {
-    NSLog(@"*********************************");
-    NSLog(@"%s", __func__);
+    NSString* localID = [[notification userInfo] objectForKey:FluxImageAnnotationDidAcquireNewPictureLocalIDKey];
+    
+    if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
+    {
+        // We have a new picture ready in the cache.
+        // Add the ID to the current list of nearby items, and re-sort and re-prune the list
+        [self.nearbyList addObject:localID];
+        [self populateImageData];
+    }
 }
 
 -(void) populateImageData
 {
     NSLog(@"Image dictionary count is %i", [fluxMetadata count]);
     
-    //    NSArray *sortedKeysArray = [fluxMetadata keysSortedByValueUsingComparator:^(id obj1, id obj2) {
-    //        if ([obj1 intValue] > [obj2 intValue]) {
-    //            return NSOrderedDescending;
-    //        }
-    //        if ([obj1 intValue] < [obj2 intValue]) {
-    //            return NSOrderedAscending;
-    //        }
-    //        return NSOrderedSame;
-    //    }];
+    // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
+    NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
     
-    for (id key in self.nearbyList)
+    // Request images for nearby items
+    for (id localID in self.nearbyList)
     {
-        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
+        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
         
-        if((![self.requestList objectForKey:key]) && ([fluxImageCache objectForKey:locationObject.localID] == nil))
+        if(([fluxImageCache objectForKey:locationObject.localID] == nil) && (![self.requestList containsObject:localID]))
         {
-            NSLog(@"Adding id %@ to request list with time %@", key, locationObject.timestampString);
+            NSLog(@"Adding id %@ to request list", localID);
             [networkServices getImageForID:locationObject.imageID];
-            [self.requestList setObject:key forKey:key];
+            [self.requestList addObject:localID];
         }
         else if ([fluxImageCache objectForKey:locationObject.localID] != nil)
         {
-            // We already have it in cache. Do we need to do anything?
+            // We already have it in the cache. Just add the texture immediately.
+            [self updateImageTextureWithLocalID:localID];
+        }
+        else
+        {
+            // This only happens if we have already requested the image but it has not been downloaded yet.
+            // This could happen if a new image is acquired after getting a new list of items to download,
+            // or if the download is slow/stalled. Could eventually put retry logic here.
+            ;
         }
     }
 }
 
-- (void) updateImageTextureKey:(id)key withLocalID:(NSString *)localID
+- (void) updateImageTextureWithLocalID:(NSString *)localID
 {
     NSError *error;
     static int i = 0;
+    
+    // Check if texture is already being rendered
+    if ([self.renderedTextures containsObject:localID])
+    {
+        // Update the metadata in case it changed
+        [self updateImageMetadataKey:localID index:[self.renderedTextures indexOfObject:localID]];
+        return;
+    }
     
     if (_texture[i] != nil)
     {
         [self deleteImageTextureIdx:i];
     }
     
+    FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+    
+    // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     UIImage *teximage = [fluxImageCache objectForKey:localID];
-    NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
-    _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
-                                                      options:options error:&error];
+    if (imageObject.imageID < 0)
+    {
+        _texture[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
+    }
+    else
+    {
+        NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+        _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
+    }
+    
     if (error)
     {
         NSLog(@"Image texture error %@", error);
@@ -1005,13 +1050,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     else
     {
         NSLog(@"Added Image texture to render list in slot %d", (i));
+        self.renderedTextures[i] = localID;
         [self updateImageMetadataKey:localID index:i];
         i++;
         _opengltexturesset++;
         
         // Round robin for now
-        if (i == 5) i = 0;
-        if (_opengltexturesset >= 5) _opengltexturesset = 5;
+        if (i == number_textures) i = 0;
+        if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
     }
     
 }
@@ -1022,6 +1068,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLuint textureName = curTexture.name;
     glDeleteTextures(1, &textureName);
     _texture[i] = nil;
+    self.renderedTextures[i] = @"";
 }
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
@@ -1040,8 +1087,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     quaternion.z = locationObject.qz;
     quaternion.w = locationObject.qw;
     
-    _imagePose[idx].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
-    
+    //_imagePose[idx].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+    GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(-1.0*PI/2, 0.0,0.0, 1.0);
+    _imagePose[idx].rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
     NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
@@ -1050,12 +1099,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     viewParameters vpimage;
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
-    float distance = 14.0;
+    float distance = _projectionDistance;
     int i;
     
     for(i =0; i < 5; i++)
     {
-        computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
+        _validMetaData[i] =0;
+        _validMetaData[i] = computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
+        
+      
+        
         tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
                                            vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                            vpimage.up.x, vpimage.up.y, vpimage.up.z);
@@ -1102,6 +1155,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self checkShaderLimitations];
     
     init();
+    
+    _projectionDistance = 10.0;
     glEnable(GL_DEPTH_TEST);
     
     
@@ -1187,13 +1242,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _userPose.rotationMatrix.m31 = 0.0;
     _userPose.rotationMatrix.m32 = 0.0;
     _userPose.rotationMatrix.m33 = 1.0;
-    
+   
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(-1.0*PI/2, 0.0,0.0, 1.0);
+    _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
     _userPose.position.x =locationManager.location.coordinate.latitude;
     _userPose.position.y =locationManager.location.coordinate.longitude;
     _userPose.position.z =locationManager.location.altitude;
     
     GLKVector3 planeNormal;
-    float distance = 40.0;
+    float distance = _projectionDistance;
     viewParameters vpuser;
     
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
@@ -1263,14 +1320,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         for(int i = 0; i < _opengltexturesset; i++)
         {
-            if (_texture[i] != nil)
+#warning fix this to only bind on texture change
+            if ((_texture[i] != nil) && (_validMetaData[i]==1))
             {
-                //                NSLog(@"rendering texture%d", i);
+                          //  NSLog(@"rendering texture%d", i);
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
                 glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(_texture[i].target, _texture[i].name);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
+            }
+            else
+            {
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(GL_TEXTURE_2D, 0);
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],0);
             }
         }
     }
@@ -1382,6 +1447,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER7] = glGetUniformLocation(_program, "textureSampler[7]");
     
+    uniforms[UNIFORM_RENDER_ENABLE0] = glGetUniformLocation(_program, "renderEnable[0]");
+    uniforms[UNIFORM_RENDER_ENABLE1] = glGetUniformLocation(_program, "renderEnable[1]");
+    uniforms[UNIFORM_RENDER_ENABLE2] = glGetUniformLocation(_program, "renderEnable[2]");
+    uniforms[UNIFORM_RENDER_ENABLE3] = glGetUniformLocation(_program, "renderEnable[3]");
+    uniforms[UNIFORM_RENDER_ENABLE4] = glGetUniformLocation(_program, "renderEnable[4]");
+    uniforms[UNIFORM_RENDER_ENABLE5] = glGetUniformLocation(_program, "renderEnable[5]");
+    uniforms[UNIFORM_RENDER_ENABLE6] = glGetUniformLocation(_program, "renderEnable[6]");
+    uniforms[UNIFORM_RENDER_ENABLE7] = glGetUniformLocation(_program, "renderEnable[7]");
+
     
     // Release vertex and fragment shaders.
     if (vertShader) {
@@ -1474,6 +1548,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     return YES;
+}
+
+#pragma mark - Debugging UI Elements
+
+- (IBAction)onDistanceSliderValueChanged:(id)sender
+{
+    UISlider *slider = (UISlider *) sender;
+    NSLog(@"Slider Value: %f", slider.value);
+}
+
+- (IBAction)onPositionStepperValueChanged:(id)sender
+{
+    UIStepper *stepper = (UIStepper *) sender;
+    NSLog(@"Stepper Value: %f", stepper.value);
 }
 
 @end

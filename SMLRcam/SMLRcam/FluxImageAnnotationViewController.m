@@ -11,6 +11,7 @@
 #import <AddressBook/ABPerson.h>
 
 NSString* const FluxImageAnnotationDidAcquireNewPicture = @"FluxImageAnnotationDidAcquireNewPicture";
+NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageAnnotationDidAcquireNewPictureLocalIDKey";
 
 @interface FluxImageAnnotationViewController ()
 
@@ -272,7 +273,10 @@ NSString* const FluxImageAnnotationDidAcquireNewPicture = @"FluxImageAnnotationD
     [fluxMetadata setObject:imageObject forKey:imageObject.localID];
     
     // Post notification for observers prior to upload
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageAnnotationDidAcquireNewPicture object:self];
+    NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
+    [userInfoDict setObject:imageObject.localID forKey:FluxImageAnnotationDidAcquireNewPictureLocalIDKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageAnnotationDidAcquireNewPicture
+                                                        object:self userInfo:userInfoDict];
     
     // Perform any additional (optional) image save tasks
     if (savelocally || pushToCloud) {
