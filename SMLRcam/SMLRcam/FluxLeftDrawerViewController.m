@@ -27,7 +27,9 @@
 {
     [super viewDidLoad];
     
-    leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services",@"Local Network", nil];
+    leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services",@"Local Network", @"Walk Mode", @"Area Reset", nil];
+    
+    networkServices = [[FluxNetworkServices alloc] init ];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -57,7 +59,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.row <2) {
+    if ((indexPath.row <2) || (indexPath.row == 3)) {
         static NSString *CellIdentifier = @"switchCell";
         FluxDrawerSwitchTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
         
@@ -72,21 +74,37 @@
         
         return cell;
     }
-    static NSString *CellIdentifier = @"segmentedCell";
-    FluxDrawerSegmentedTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
-    
-    if (cell == nil) {
-        cell = [[FluxDrawerSegmentedTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    else if (indexPath.row == 2)
+    {
+        static NSString *CellIdentifier = @"segmentedCell";
+        FluxDrawerSegmentedTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
+        
+        if (cell == nil) {
+            cell = [[FluxDrawerSegmentedTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+        [cell setDelegate:self];
+        // Configure the cell..
+        
+        //switch is set to local by default
+        cell.segmentedControl.selectedSegmentIndex = [[self GetSettingForString:@"Server Location"]intValue];
+        
+        return cell;
     }
-    
-    [cell setDelegate:self];
-    // Configure the cell..
-    
-    //switch is set to local by default
-    cell.segmentedControl.selectedSegmentIndex = [[self GetSettingForString:@"Server Location"]intValue];
-    
-    return cell;
+    else
+    {
+        // nuke button
+        static NSString *CellIdentifier = @"buttonCell";
+        FluxDrawerButtonTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier ];
+        
+        if (cell == nil) {
+            cell = [[FluxDrawerButtonTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        }
+        [cell setDelegate:self];
 
+        cell.theLabel.text = [leftDrawerTableViewArray objectAtIndex:indexPath.row];
+
+        return cell;
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -105,6 +123,12 @@
     [defaults synchronize];
 }
 
+- (void)ButtonCell:(FluxDrawerButtonTableViewCell *)buttonCell buttonWasTapped:(UIButton *)theButton{
+    [networkServices deleteLocations];
+}
+
+
+
 //temporary, ugly, not really extensible code.
 //sets settings based on string
 - (void)SettingActionForString:(NSString *)string andSetting:(BOOL)setting{
@@ -115,6 +139,12 @@
     }
     
     if ([string isEqualToString:@"Network Services"]) {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:[NSNumber numberWithBool:setting] forKey:string];
+        [defaults synchronize];
+    }
+
+    if ([string isEqualToString:@"Walk Mode"]) {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:[NSNumber numberWithBool:setting] forKey:string];
         [defaults synchronize];
@@ -135,6 +165,10 @@
     else if ([string isEqualToString:@"Server Location"]){
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         return [defaults objectForKey:@"Server Location"];
+    }
+    else if ([string isEqualToString:@"Walk Mode"]){
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        return [defaults objectForKey:@"Walk Mode"];
     }
     else{
         return nil;

@@ -62,5 +62,6 @@
 - (void)createUser:(FluxUserObject*)user;
 
 
+- (void)deleteLocations;
 
 @end

@@ -16,7 +16,8 @@
 //serverURL
 //#define externServerURL @"http://54.221.222.71/"
 #define externServerURL @"http://54.221.254.230/"
-#define localServerURL @"http://54.221.222.71/"
+//#define localServerURL @"http://54.221.222.71/"
+#define localServerURL @"http://192.168.0.41:3001/"
 
 @implementation FluxNetworkServices
 
@@ -317,5 +318,10 @@
 }
 
 
+- (void)deleteLocations
+{
+    //execute the server call to nuke the area.
+    NSLog(@"nuking the current location");
+}
 
 @end
