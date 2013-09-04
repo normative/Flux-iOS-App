@@ -123,7 +123,8 @@
     [defaults synchronize];
 }
 
-- (void)ButtonCell:(FluxDrawerButtonTableViewCell *)buttonCell buttonWasTapped:(UIButton *)theButton{
+- (void)ButtonCell:(FluxDrawerButtonTableViewCell *)buttonCell buttonWasTapped:(UIButton *)theButton
+{
     [networkServices deleteLocations];
 }
 

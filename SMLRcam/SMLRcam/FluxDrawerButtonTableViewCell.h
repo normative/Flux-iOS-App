@@ -14,31 +14,15 @@
 - (void)ButtonCell:(FluxDrawerButtonTableViewCell *)buttonCell buttonWasTapped:(UIButton *)theButton;
 @end
 
-@interface FluxDrawerButtonTableViewCell : UITableViewCell{
-    
+@interface FluxDrawerButtonTableViewCell : UITableViewCell
+{    
     id __unsafe_unretained delegate;
 }
-
 @property (unsafe_unretained) id <DrawerButtonTableViewCellDelegate> delegate;
 
 @property (weak, nonatomic) IBOutlet UILabel *theLabel;
 @property (weak, nonatomic) IBOutlet UIButton *theButton;
+
 - (IBAction)onButtonPress:(id)sender;
+
 @end
-
-
-
-/*
-@protocol DrawerSwitchTableViewCellDelegate <NSObject>
-@optional
-- (void)SwitchCell:(FluxDrawerSwitchTableViewCell *)switchCell switchWasTapped:(UISwitch *)theSwitch;
-@end
-
-@interface FluxDrawerSwitchTableViewCell : UITableViewCell{
-    
-    id __unsafe_unretained delegate;
-}
-
-@property (unsafe_unretained) id <DrawerSwitchTableViewCellDelegate> delegate;
-
-*/
