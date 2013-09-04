@@ -977,7 +977,6 @@
         [openGLController restartOpenGLRender];
     }
     
-    [networkServices setDelegate:self];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

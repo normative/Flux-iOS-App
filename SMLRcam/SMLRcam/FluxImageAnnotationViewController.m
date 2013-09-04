@@ -242,7 +242,6 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
     capturedImage = theImage;
     locationDescription = theLocationString;
     networkServices = theNetworkServices;
-    [networkServices setDelegate:self];
 }
 
 - (void)didReceiveMemoryWarning
