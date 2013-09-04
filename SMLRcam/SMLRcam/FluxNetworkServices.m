@@ -229,7 +229,7 @@
 {
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject method:RKRequestMethodPOST path:@"/images" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 1.0)
+        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
                                     name:@"image[image]"
                                 fileName:@"photo.jpeg"
                                 mimeType:@"image/jpeg"];
