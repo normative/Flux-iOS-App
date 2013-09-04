@@ -49,6 +49,15 @@ enum
     UNIFORM_MYTEXTURE_SAMPLER6,
     UNIFORM_MYTEXTURE_SAMPLER7,
     
+    UNIFORM_RENDER_ENABLE0,
+    UNIFORM_RENDER_ENABLE1,
+    UNIFORM_RENDER_ENABLE2,
+    UNIFORM_RENDER_ENABLE3,
+    UNIFORM_RENDER_ENABLE4,
+    UNIFORM_RENDER_ENABLE5,
+    UNIFORM_RENDER_ENABLE6,
+    UNIFORM_RENDER_ENABLE7,
+    
     NUM_UNIFORMS
 };
 
@@ -1271,6 +1280,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             if ((_texture[i] != nil) && (_validMetaData[i]==1))
             {
                           //  NSLog(@"rendering texture%d", i);
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
                 glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(_texture[i].target, _texture[i].name);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -1281,6 +1291,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
                 glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(GL_TEXTURE_2D, 0);
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],0);
             }
         }
     }
@@ -1392,6 +1403,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER7] = glGetUniformLocation(_program, "textureSampler[7]");
     
+    uniforms[UNIFORM_RENDER_ENABLE0] = glGetUniformLocation(_program, "renderEnable[0]");
+    uniforms[UNIFORM_RENDER_ENABLE1] = glGetUniformLocation(_program, "renderEnable[1]");
+    uniforms[UNIFORM_RENDER_ENABLE2] = glGetUniformLocation(_program, "renderEnable[2]");
+    uniforms[UNIFORM_RENDER_ENABLE3] = glGetUniformLocation(_program, "renderEnable[3]");
+    uniforms[UNIFORM_RENDER_ENABLE4] = glGetUniformLocation(_program, "renderEnable[4]");
+    uniforms[UNIFORM_RENDER_ENABLE5] = glGetUniformLocation(_program, "renderEnable[5]");
+    uniforms[UNIFORM_RENDER_ENABLE6] = glGetUniformLocation(_program, "renderEnable[6]");
+    uniforms[UNIFORM_RENDER_ENABLE7] = glGetUniformLocation(_program, "renderEnable[7]");
+
     
     // Release vertex and fragment shaders.
     if (vertShader) {
