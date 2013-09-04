@@ -71,7 +71,6 @@ typedef struct {
     NSString *_sessionPreset;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
-    
     FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;
     FluxNetworkServices * networkServices;
@@ -87,7 +86,8 @@ typedef struct {
 @property (weak) NSCache *fluxImageCache;
 @property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
 @property (nonatomic, strong)NSMutableArray *nearbyList;
-@property (nonatomic, strong)NSMutableDictionary *requestList;
+@property (nonatomic, strong)NSMutableArray *renderedTextures;
+@property (nonatomic, strong)NSMutableArray *requestList;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;

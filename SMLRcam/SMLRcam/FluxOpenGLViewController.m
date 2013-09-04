@@ -26,6 +26,8 @@ err = glGetError();								\
 }													\
 }
 
+const int number_textures = 5;
+
 // Uniform index.
 enum
 {
@@ -711,10 +713,6 @@ void init(){
         [self.nearbyList addObject:curImgObj.localID];
     }
     
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
-    NSUInteger rangeLen = ([self.nearbyList count] >= 5 ? 5 : [self.nearbyList count]);
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
-    
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
     {
         [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
@@ -725,21 +723,19 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
 {
-    NSString *localID = nil;
     for (id curKey in [fluxMetadata allKeys])
     {
         FluxScanImageObject *curImgObj = [fluxMetadata objectForKey:curKey];
         if (curImgObj.imageID == imageID)
         {
             [fluxImageCache setObject:image forKey:curImgObj.localID];
-            localID = curImgObj.localID;
-            break;
+            
+            [self.requestList removeObject:curImgObj.localID];
+            [self updateImageTextureWithLocalID:curImgObj.localID];
+
+            return;
         }
     }
-    
-    NSNumber *objKey = [NSNumber numberWithInt: imageID];
-    
-    [self updateImageTextureKey:(objKey) withLocalID:localID];
 }
 
 #pragma mark - AV Capture
@@ -857,8 +853,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     [super viewDidLoad];
     _opengltexturesset = 0;
-    self.nearbyList = [[NSMutableArray alloc]init];
-    self.requestList = [[NSMutableDictionary alloc]init];
+    self.nearbyList = [[NSMutableArray alloc] init];
+    self.renderedTextures = [[NSMutableArray alloc] initWithCapacity:number_textures];
+    for (int i = 0; i < number_textures; i++)
+    {
+        [self.renderedTextures addObject:@""];
+    }
+    self.requestList = [[NSMutableArray alloc] init];
     [self setupLocationManager];
     [self setupMotionManager];
     [self setupNetworkServices];
@@ -963,56 +964,85 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)didAcquireNewPicture:(NSNotification *)notification
 {
-    NSLog(@"*********************************");
-    NSLog(@"%s", __func__);
+    NSString* localID = [[notification userInfo] objectForKey:FluxImageAnnotationDidAcquireNewPictureLocalIDKey];
+    
+    if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
+    {
+        // We have a new picture ready in the cache.
+        // Add the ID to the current list of nearby items, and re-sort and re-prune the list
+        [self.nearbyList addObject:localID];
+        [self populateImageData];
+    }
 }
 
 -(void) populateImageData
 {
     NSLog(@"Image dictionary count is %i", [fluxMetadata count]);
     
-    //    NSArray *sortedKeysArray = [fluxMetadata keysSortedByValueUsingComparator:^(id obj1, id obj2) {
-    //        if ([obj1 intValue] > [obj2 intValue]) {
-    //            return NSOrderedDescending;
-    //        }
-    //        if ([obj1 intValue] < [obj2 intValue]) {
-    //            return NSOrderedAscending;
-    //        }
-    //        return NSOrderedSame;
-    //    }];
+    // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
+    NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
     
-    for (id key in self.nearbyList)
+    // Request images for nearby items
+    for (id localID in self.nearbyList)
     {
-        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
+        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
         
-        if((![self.requestList objectForKey:key]) && ([fluxImageCache objectForKey:locationObject.localID] == nil))
+        if(([fluxImageCache objectForKey:locationObject.localID] == nil) && (![self.requestList containsObject:localID]))
         {
-            NSLog(@"Adding id %@ to request list with time %@", key, locationObject.timestampString);
+            NSLog(@"Adding id %@ to request list", localID);
             [networkServices getImageForID:locationObject.imageID];
-            [self.requestList setObject:key forKey:key];
+            [self.requestList addObject:localID];
         }
         else if ([fluxImageCache objectForKey:locationObject.localID] != nil)
         {
-            // We already have it in cache. Do we need to do anything?
+            // We already have it in the cache. Just add the texture immediately.
+            [self updateImageTextureWithLocalID:localID];
+        }
+        else
+        {
+            // This only happens if we have already requested the image but it has not been downloaded yet.
+            // This could happen if a new image is acquired after getting a new list of items to download,
+            // or if the download is slow/stalled. Could eventually put retry logic here.
+            ;
         }
     }
 }
 
-- (void) updateImageTextureKey:(id)key withLocalID:(NSString *)localID
+- (void) updateImageTextureWithLocalID:(NSString *)localID
 {
     NSError *error;
     static int i = 0;
+    
+    // Check if texture is already being rendered
+    if ([self.renderedTextures containsObject:localID])
+    {
+        // Update the metadata in case it changed
+        [self updateImageMetadataKey:localID index:[self.renderedTextures indexOfObject:localID]];
+        return;
+    }
     
     if (_texture[i] != nil)
     {
         [self deleteImageTextureIdx:i];
     }
     
+    FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+    
+    // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     UIImage *teximage = [fluxImageCache objectForKey:localID];
-    NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
-    _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData
-                                                      options:options error:&error];
+    if (imageObject.imageID < 0)
+    {
+        _texture[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
+    }
+    else
+    {
+        NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+        _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
+    }
+    
     if (error)
     {
         NSLog(@"Image texture error %@", error);
@@ -1020,13 +1050,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     else
     {
         NSLog(@"Added Image texture to render list in slot %d", (i));
+        self.renderedTextures[i] = localID;
         [self updateImageMetadataKey:localID index:i];
         i++;
         _opengltexturesset++;
         
         // Round robin for now
-        if (i == 5) i = 0;
-        if (_opengltexturesset >= 5) _opengltexturesset = 5;
+        if (i == number_textures) i = 0;
+        if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
     }
     
 }
@@ -1037,6 +1068,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLuint textureName = curTexture.name;
     glDeleteTextures(1, &textureName);
     _texture[i] = nil;
+    self.renderedTextures[i] = @"";
 }
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
