@@ -43,11 +43,11 @@ typedef struct {
     
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix4 _tBiasMVP[8];
-    
+    float _projectionDistance;
     
     int _validMetaData[8];
     float _rotation;
-    
+    GLKVector2 _testparams;
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     GLKTextureInfo* _texture[8];

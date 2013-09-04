@@ -320,7 +320,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     //(*vp).at = GLKVector3Add(positionTP, viewP.at);
     
     (*vp).at =V;
-    (*vp).up = GLKVector3Add(positionTP, viewP.up);
+    (*vp).up = viewP.up;
     
     //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
     
@@ -333,18 +333,14 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     viewParameters viewP;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
-    //    sp->rotation = Matrix4MakeFromYawPitchRoll(sp->.x, sp->position.y, sp->position.z);
+    
     if(distance <0.0)
     {
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
     
-    //    calculateCoordinatesTP(userLocation, sp->position, &positionTP);
     
-    //    NSLog(@"positionTP:%f %f %f", positionTP.x, positionTP.y, positionTP.y);
-    
-    //    rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
@@ -384,7 +380,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
-    positionTP.z = sp->ecef.z -userPose.ecef.z;
+  //  positionTP.z = sp->ecef.z -userPose.ecef.z;
     /*
      positionTP.x = 0;
      positionTP.y = 0;
@@ -414,7 +410,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     P0 = positionTP;
     V = GLKVector3Normalize(v);
-    
+  //  V = v;
     
     float vd = GLKVector3DotProduct(N,V);
     float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
@@ -431,6 +427,16 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
       NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return 0;
     }
+    
+    float distancetoPlane = GLKVector3Length(GLKVector3Make(t*V.x, t*V.y, t*V.z));
+    
+    if(distancetoPlane > distance)
+    {
+        
+        NSLog(@"too far to render");
+        return 0;
+    }
+    
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     //    viewP.up = GLKVector3Normalize(viewP.up);
@@ -1049,8 +1055,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     quaternion.z = locationObject.qz;
     quaternion.w = locationObject.qw;
     
-    _imagePose[idx].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
-    
+    //_imagePose[idx].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+    GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(-1.0*PI/2, 0.0,0.0, 1.0);
+    _imagePose[idx].rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
     NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
@@ -1059,7 +1067,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     viewParameters vpimage;
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
-    float distance = 10.0;
+    float distance = _projectionDistance;
     int i;
     
     for(i =0; i < 5; i++)
@@ -1115,6 +1123,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self checkShaderLimitations];
     
     init();
+    
+    _projectionDistance = 10.0;
     glEnable(GL_DEPTH_TEST);
     
     
@@ -1200,13 +1210,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _userPose.rotationMatrix.m31 = 0.0;
     _userPose.rotationMatrix.m32 = 0.0;
     _userPose.rotationMatrix.m33 = 1.0;
-    
+   
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(-1.0*PI/2, 0.0,0.0, 1.0);
+    _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
     _userPose.position.x =locationManager.location.coordinate.latitude;
     _userPose.position.y =locationManager.location.coordinate.longitude;
     _userPose.position.z =locationManager.location.altitude;
     
     GLKVector3 planeNormal;
-    float distance = 10.0;
+    float distance = _projectionDistance;
     viewParameters vpuser;
     
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
