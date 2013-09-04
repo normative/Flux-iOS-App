@@ -72,6 +72,38 @@
     [annotationsTableView reloadData];
 }
 
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
+{
+    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
+    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+    {
+        // FluxScanImageObject exists in the local cache. Replace it with updated object.
+        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+        
+        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
+        {
+            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
+        }
+        else
+        {
+            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
+        }
+    }
+    else
+    {
+        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
+    }
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithUploadError:(NSError *)e{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
+                                                        message:[e localizedDescription]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+    [alertView show];
+}
+
 #pragma mark - Motion Methods
 
 //starts the motion manager and sets an update interval
@@ -819,7 +851,8 @@
 
     annotationsView.fluxImageCache = self.fluxImageCache;
     annotationsView.fluxMetadata = self.fluxMetadata;
-    [annotationsView setCapturedImage:capturedImageObject andImage:capturedImage andLocationDescription:locationString];
+    [annotationsView setCapturedImage:capturedImageObject andImage:capturedImage andLocationDescription:locationString
+                   andNetworkServices:networkServices];
     
     annotationsView.view.backgroundColor = [UIColor clearColor];
     annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -952,6 +985,7 @@
     if (![openGLController openGLRenderIsActive]) {
         [openGLController restartOpenGLRender];
     }
+    
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

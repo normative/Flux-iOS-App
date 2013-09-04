@@ -24,6 +24,7 @@ extern NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey;
     FluxScanImageObject *imageObject;
     NSString *locationDescription;
     NSDate *timestamp;
+    FluxNetworkServices *networkServices;
     
     __weak IBOutlet UIImageView *backgroundImageView;
     __weak IBOutlet KTPlaceholderTextView *annotationTextView;
@@ -38,7 +39,8 @@ extern NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, strong) NSMutableDictionary *fluxMetadata;
 
 //init
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImage:(UIImage *)theImage andLocationDescription:(NSString *)theLocationString;
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImage:(UIImage *)theImage andLocationDescription:(NSString *)theLocationString
+            andNetworkServices:(FluxNetworkServices *)theNetworkServices;
 - (void)LoadUI;
 
 //image
