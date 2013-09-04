@@ -45,7 +45,7 @@ typedef struct {
     GLKMatrix4 _tBiasMVP[8];
     
     
-    
+    int _validMetaData[8];
     float _rotation;
     
     GLuint _vertexArray;

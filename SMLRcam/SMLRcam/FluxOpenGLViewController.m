@@ -238,8 +238,8 @@ void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float d
     }
     
     pts[0] = GLKVector4Make(-250.0, -250.0, -1.0 *distance, 1.0);
-    pts[1] = GLKVector4Make(250.0, -250.0, -1.0 *distance, 1.0);
-    pts[2] = GLKVector4Make(250.0,  250.0, -1.0 * distance, 1.0);
+    pts[1] = GLKVector4Make( 250.0, -250.0, -1.0 *distance, 1.0);
+    pts[2] = GLKVector4Make( 250.0, 250.0, -1.0 * distance, 1.0);
     pts[3] = GLKVector4Make(-250.0, 250.0, -1.0 *distance, 1.0);
     
     // fprintf(stderr, "NEW VECTORS\n");
@@ -293,13 +293,13 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     if(vd==0)
     {
-        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     if(t < 0)
     {
         
-        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     
@@ -353,22 +353,22 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
-    
-    float vd = GLKVector3DotProduct(N,V);
-    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-    float t = v0/vd;
-    
-    if(vd==0)
-    {
-        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-        return -1;
-    }
-    if(t < 0)
-    {
-        
-        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-        return -1;
-    }
+//    
+//    float vd = GLKVector3DotProduct(N,V);
+//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+//    float t = v0/vd;
+//    
+//    if(vd==0)
+//    {
+//        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+//        return -1;
+//    }
+//    if(t < 0)
+//    {
+//        
+//        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+//        return -1;
+//    }
     
     WGS84_to_ECEF(sp);
     
@@ -388,16 +388,16 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
     //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
-    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+   // viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+   // viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     //    viewP.up = GLKVector3Normalize(viewP.up);
     
     
-    (*vp).origin = GLKVector3Add(positionTP, P0);
+   // (*vp).origin = GLKVector3Add(positionTP, P0);
     //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
-    (*vp).at =GLKVector3Add(positionTP, viewP.at);
-    (*vp).up = viewP.up;
+   // (*vp).at =GLKVector3Add(positionTP, viewP.at);
+    //(*vp).up = viewP.up;
     
     //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
@@ -407,20 +407,20 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     V = GLKVector3Normalize(v);
     
     
-    vd = GLKVector3DotProduct(N,V);
-    v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-    t = v0/vd;
+    float vd = GLKVector3DotProduct(N,V);
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+    float t = v0/vd;
     
     if(vd==0)
     {
-        NSLog(@"Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-        return -1;
+       NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        return 0;
     }
     if(t < 0)
     {
         
-        NSLog(@"Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-        return -1;
+      NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        return 0;
     }
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
@@ -435,7 +435,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
 
     
-    return 0;
+    return 1;
     
     
     
@@ -594,8 +594,8 @@ void multiply_vertices_Zaxis()
     int i;
     
     pts[0] = GLKVector4Make(-250.0,  -250.0, -14.0,1.0);
-    pts[1] = GLKVector4Make(250.0,  -250.0, -14.0, 1.0);
-    pts[2] = GLKVector4Make(250.0,   250.0,-14.0, 1.0);
+    pts[1] = GLKVector4Make( 250.0,  -250.0, -14.0, 1.0);
+    pts[2] = GLKVector4Make( 250.0,   250.0,-14.0, 1.0);
     pts[3] = GLKVector4Make(-250.0,  250.0, -14.0, 1.0);
     
     // fprintf(stderr, "NEW VECTORS\n");
@@ -1050,12 +1050,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     viewParameters vpimage;
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
-    float distance = 14.0;
+    float distance = 10.0;
     int i;
     
     for(i =0; i < 5; i++)
     {
-        computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
+        _validMetaData[i] =0;
+        _validMetaData[i] = computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
+        
+      
+        
         tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
                                            vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                            vpimage.up.x, vpimage.up.y, vpimage.up.z);
@@ -1193,7 +1197,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _userPose.position.z =locationManager.location.altitude;
     
     GLKVector3 planeNormal;
-    float distance = 40.0;
+    float distance = 10.0;
     viewParameters vpuser;
     
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
@@ -1263,14 +1267,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         for(int i = 0; i < _opengltexturesset; i++)
         {
-            if (_texture[i] != nil)
+#warning fix this to only bind on texture change
+            if ((_texture[i] != nil) && (_validMetaData[i]==1))
             {
-                //                NSLog(@"rendering texture%d", i);
+                          //  NSLog(@"rendering texture%d", i);
                 glActiveTexture(GL_TEXTURE0 + i);
                 glBindTexture(_texture[i].target, _texture[i].name);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
                 glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
+            }
+            else
+            {
+                glActiveTexture(GL_TEXTURE0 + i);
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
         }
     }
