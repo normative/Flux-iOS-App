@@ -78,6 +78,8 @@ typedef struct {
     FluxAVCameraSingleton *cameraManager;
     
     __weak id <OpenGLViewDelegate> theDelegate;
+    __weak IBOutlet UISlider *DistanceSlider;
+    __weak IBOutlet UIStepper *PositionStepper;
 }
 
 @property (nonatomic, weak) id <OpenGLViewDelegate> theDelegate;
@@ -114,5 +116,7 @@ typedef struct {
 //AVCam Methods
 - (void)setupAVCapture;
 
+- (IBAction)onDistanceSliderValueChanged:(id)sender;
+- (IBAction)onPositionStepperValueChanged:(id)sender;
 
 @end

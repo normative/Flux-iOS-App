@@ -646,7 +646,7 @@ void init(){
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
 }
 
 #pragma mark - Motion Manager
@@ -1484,6 +1484,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     return YES;
+}
+
+#pragma mark - Debugging UI Elements
+
+- (IBAction)onDistanceSliderValueChanged:(id)sender
+{
+    UISlider *slider = (UISlider *) sender;
+    NSLog(@"Slider Value: %f", slider.value);
+}
+
+- (IBAction)onPositionStepperValueChanged:(id)sender
+{
+    UIStepper *stepper = (UIStepper *) sender;
+    NSLog(@"Stepper Value: %f", stepper.value);
 }
 
 @end

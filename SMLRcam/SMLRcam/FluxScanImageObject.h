@@ -32,6 +32,8 @@
 
 //other
 @property (nonatomic, strong) NSString* timestampString;
+@property (nonatomic, strong) NSDate* timestamp;
+
 @property (nonatomic, strong) NSString* username;
 @property (nonatomic, strong) NSString* descriptionString;
 

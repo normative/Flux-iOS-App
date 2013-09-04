@@ -55,6 +55,12 @@
         [objectManager addRequestDescriptor:imageObjectRequestDescriptor];
         [objectManager addResponseDescriptor:imageObjectResponseDescriptor];
         
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        [RKObjectMapping addDefaultDateFormatter:dateFormatter];
+        
         //general init
         
         //set username and password

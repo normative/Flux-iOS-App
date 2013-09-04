@@ -62,7 +62,6 @@
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
     FluxNetworkServices *networkServices;
-    
 }
 
 @property (strong) NSCache *fluxImageCache;

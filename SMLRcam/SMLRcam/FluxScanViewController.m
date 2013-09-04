@@ -43,7 +43,7 @@
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
 }
 
 #pragma mark - Network Services
@@ -60,23 +60,16 @@
          didreturnImage:(UIImage *)image
              forImageID:(int)imageID
 {
-    for (FluxScanImageObject *curImgObj in [fluxMetadata allKeys])
+    for (NSString *currentKey in [fluxMetadata allKeys])
     {
-        if ([curImgObj isKindOfClass: [FluxScanImageObject class]])
-        {
-            if (curImgObj.imageID == imageID)
+        FluxScanImageObject* currentImageObject = [fluxMetadata objectForKey:currentKey];
+            if (currentImageObject.imageID == imageID)
             {
-                [fluxImageCache setObject:image forKey:curImgObj.localThumbID];
+                [fluxImageCache setObject:image forKey:currentImageObject.localThumbID];
                 break;
             }
-        }
     }
-
-    NSNumber *objKey = [NSNumber numberWithInt: imageID];
-    
-    NSArray * arr = [fluxMetadata allKeys];
-    int index = [arr indexOfObject:objKey];
-//    [annotationsTableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:index inSection:0], nil] withRowAnimation:UITableViewRowAnimationFade];
+    [annotationsTableView reloadData];
 }
 
 #pragma mark - Motion Methods
@@ -125,6 +118,7 @@
     [annotationsTableView setHidden:YES];
     [annotationsTableView setAlpha:0.0];
     [annotationsTableView setBackgroundColor:[UIColor clearColor]];
+    [annotationsTableView setSeparatorColor:[UIColor clearColor]];
     [annotationsTableView setDelegate:self];
     [annotationsTableView setDataSource:self];
     
@@ -224,7 +218,7 @@
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
-    return 85.0;
+    return cell.frame.size.height;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -250,7 +244,7 @@
         [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localThumbID]];
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User: %i",rowObject.userID];
-    cell.timestampLabel.text = rowObject.timestampString;
+    [cell.timestampLabel setText:[dateFormatter stringFromDate:rowObject.timestamp]];
     
     return cell;
 }
@@ -749,6 +743,7 @@
              
              NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
              [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+             outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
              NSString *dateString = [outDateFormat stringFromDate:startTime];
              
              int userID = 1;
