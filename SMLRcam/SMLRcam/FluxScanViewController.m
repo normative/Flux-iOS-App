@@ -95,7 +95,7 @@
     }
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithUploadError:(NSError *)e{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
                                                         message:[e localizedDescription]
                                                        delegate:nil
