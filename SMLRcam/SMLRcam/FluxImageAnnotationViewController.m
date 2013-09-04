@@ -89,10 +89,14 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
     [backgroundImageView addSubview:darkenImageView];
 }
 #pragma mark - Network Services
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject{
-    progressView.progress = 1;
-    [self PopViewController:nil];
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
+{
+    // Temporarily disable progress bar and transition.
+//    progressView.progress = 1;
+//    [self PopViewController:nil];
     
+    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
+
     if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
     {
         // FluxScanImageObject exists in the local cache. Replace it with updated object.
@@ -232,10 +236,13 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
 }
 
 - (void)setCapturedImage:(FluxScanImageObject *)imgObject andImage:(UIImage *)theImage andLocationDescription:(NSString *)theLocationString
+      andNetworkServices:(FluxNetworkServices *)theNetworkServices
 {
     imageObject = imgObject;
     capturedImage = theImage;
     locationDescription = theLocationString;
+    networkServices = theNetworkServices;
+    [networkServices setDelegate:self];
 }
 
 - (void)didReceiveMemoryWarning
@@ -286,18 +293,12 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
         }
         if (pushToCloud)
         {
-            [progressView setFrame:CGRectMake(progressView.frame.origin.x, -10, progressView.frame.size.width, progressView.frame.size.height)];
-            [progressView setHidden:NO];
-            [UIView beginAnimations:@"lowerProgressView" context:nil];
-            [UIView setAnimationDuration:0.5];
-            [progressView setFrame:CGRectMake(progressView.frame.origin.x, 0, progressView.frame.size.width, progressView.frame.size.height)];
-            [UIView commitAnimations];
-            
             [acceptButton setEnabled:NO];
-            progressView.progress = 0;
-            FluxNetworkServices *networkServices = [[FluxNetworkServices alloc]init];
-            [networkServices setDelegate:self];
+            [annotationTextView setUserInteractionEnabled:NO];
             [networkServices uploadImage:imageObject andImage:capturedImage];
+            
+            // For now, exit immediately
+            [self PopViewController:nil];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
         else
