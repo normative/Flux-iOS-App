@@ -1105,7 +1105,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for(i =0; i < 5; i++)
     {
         _validMetaData[i] =0;
-        _validMetaData[i] = computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
+        _validMetaData[i] = (computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage) *
+                             locationManager.notMoving);
         
       
         
