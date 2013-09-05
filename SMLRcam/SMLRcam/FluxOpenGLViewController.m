@@ -700,8 +700,19 @@ void init(){
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
 {
-    // Clear out the list of nearby images.
-    self.nearbyList = [[NSMutableArray alloc] init];
+    NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
+    
+    // Iterate over the list and clear out anything that is not local-only
+    for (id localID in self.nearbyList)
+    {
+        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
+        if (locationObject.imageID < 0)
+        {
+            [localOnlyObjects addObject:localID];
+        }
+    }
+    
+    self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
     
     // Need to update all metadata objects even if they exist (in case they change in the future)
     // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
@@ -710,7 +721,10 @@ void init(){
     {
         FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
         [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
-        [self.nearbyList addObject:curImgObj.localID];
+        if (![self.nearbyList containsObject:curImgObj.localID])
+        {
+            [self.nearbyList addObject:curImgObj.localID];
+        }
     }
     
     if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
