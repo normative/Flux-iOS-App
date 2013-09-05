@@ -440,8 +440,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             
             [self.view removeGestureRecognizer:pinchRecognizer];
             
+            [EAGLContext setCurrentContext:nil];
+            
             activityIndicator = nil;
         }];
+        
     }
 }
 

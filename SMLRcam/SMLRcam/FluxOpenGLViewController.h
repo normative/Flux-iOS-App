@@ -109,10 +109,6 @@ typedef struct {
 - (void)didUpdateHeading:(NSNotification *)notification;
 - (void)setupNetworkServices;
 
-- (void)pauseOpenGLRender;
-- (void)restartOpenGLRender;
-- (BOOL)openGLRenderIsActive;
-
 //AVCam Methods
 - (void)setupAVCapture;
 

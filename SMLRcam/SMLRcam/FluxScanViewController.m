@@ -145,7 +145,7 @@
 
 
 - (IBAction)annotationsButtonAction:(id)sender {
-    
+    [fakeGalleryView setAlpha:0.0];
     if ([annotationsTableView isHidden]) {
         if ([fluxMetadata count]>0) {
             [annotationsTableView reloadData];
@@ -286,6 +286,23 @@
         fluxMapViewController.fluxImageCache = self.fluxImageCache;
         fluxMapViewController.fluxMetadata = self.fluxMetadata;
     }
+}
+
+- (IBAction)showFakeGallery:(id)sender {
+    [annotationsTableView setAlpha:0.0];
+    if (fakeGalleryView.alpha == 0.0) {
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [fakeGalleryView setAlpha:1.0];
+                         }];
+    }
+    else{
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [fakeGalleryView setAlpha:0.0];
+                         }];
+    }
+
 }
 
 #pragma mark - OpenGLView
@@ -837,7 +854,6 @@
     camMode = [NSNumber numberWithInt:1];
     [self restartAVCaptureWithBlur:YES];
 }
-
 //-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
 //    UITouch *touch = [[event allTouches] anyObject];
 //    if ([[touch.view class] ) {
@@ -898,7 +914,6 @@
         if (![annotationsTableView isHidden])
         {
             [annotationsTableView setHidden:YES];
-            [openGLController pauseOpenGLRender];
         }
         
         [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
@@ -938,6 +953,14 @@
     dateFormatter  = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"dd MMM, YYYY"];
     [dateRangeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
+    
+    fakeGalleryView = [[UIImageView alloc]initWithFrame:CGRectMake(7, 70, 306, 160)];
+    [fakeGalleryView setContentMode:UIViewContentModeScaleAspectFit];
+    [fakeGalleryView setClipsToBounds:YES];
+    [fakeGalleryView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
+    [fakeGalleryView setImage:[UIImage imageNamed:@"fakeGallery"]];
+    [fakeGalleryView setAlpha:0.0];
+    [self.view addSubview:fakeGalleryView];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -951,10 +974,6 @@
         [self didUpdateLocation:nil];
     }
     [self restartAVCaptureWithBlur:YES];
-    
-    if (![openGLController openGLRenderIsActive]) {
-        [openGLController restartOpenGLRender];
-    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

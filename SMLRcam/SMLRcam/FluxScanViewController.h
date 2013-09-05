@@ -29,6 +29,7 @@
 
 @interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate, UITableViewDataSource, UITableViewDelegate>{
     UITableView*annotationsTableView;
+    UIImageView*fakeGalleryView;
    
     AVCaptureVideoPreviewLayer *previewLayer;
     AVCaptureDevice *device;
@@ -83,6 +84,7 @@
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
 - (IBAction)retakeImageAction:(id)sender;
+- (IBAction)showFakeGallery:(id)sender;
 
 - (void)setupAVCapture;
 - (void)setupNetworkServices;
