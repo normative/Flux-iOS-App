@@ -1157,7 +1157,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     init();
     
-    _projectionDistance = 10.0;
+    _projectionDistance = 20.0;
     glEnable(GL_DEPTH_TEST);
     
     

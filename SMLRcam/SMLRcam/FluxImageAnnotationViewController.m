@@ -89,55 +89,54 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
     [backgroundImageView addSubview:darkenImageView];
 }
 #pragma mark - Network Services
-//- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
-//{
-//    // Temporarily disable progress bar and transition.
-////    progressView.progress = 1;
-////    [self PopViewController:nil];
-//    
-//    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
-//
-//    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
-//    {
-//        // FluxScanImageObject exists in the local cache. Replace it with updated object.
-//        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
-//        
-//        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
-//        {
-//            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
-//        }
-//        else
-//        {
-//            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
-//        }
-//    }
-//    else
-//    {
-//        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
-//    }
-//}
-//
-//- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
-//    [acceptButton setEnabled:YES];
-//    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
-//                                                        message:[e localizedDescription]
-//                                                       delegate:nil
-//                                              cancelButtonTitle:@"OK"
-//                                              otherButtonTitles:nil];
-//    [alertView show];
-//    [progressView setHidden:YES];
-//    progressView.progress = 0;
-//    
-//}
-//
-//- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
-//    if (progressView.frame.origin.y != 0) {
-//
-//        
-//    }
-//    //subtract 10 for the end wait
-//    progressView.progress = bytesSent/size -0.05;
-//}
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
+{
+    progressView.progress = 1;
+    [self PopViewController:nil];
+    
+    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
+
+    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+    {
+        // FluxScanImageObject exists in the local cache. Replace it with updated object.
+        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+        
+        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
+        {
+            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
+        }
+        else
+        {
+            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
+        }
+    }
+    else
+    {
+        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
+    }
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
+    [acceptButton setEnabled:YES];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
+                                                        message:[e localizedDescription]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+    [alertView show];
+    [progressView setHidden:YES];
+    progressView.progress = 0;
+    
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
+    if (progressView.frame.origin.y != 0) {
+
+        
+    }
+    //subtract 10 for the end wait
+    progressView.progress = bytesSent/size -0.05;
+}
 
 # pragma mark - orientation and rotation
 
@@ -236,12 +235,10 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
 }
 
 - (void)setCapturedImage:(FluxScanImageObject *)imgObject andImage:(UIImage *)theImage andLocationDescription:(NSString *)theLocationString
-      andNetworkServices:(FluxNetworkServices *)theNetworkServices
 {
     imageObject = imgObject;
     capturedImage = theImage;
     locationDescription = theLocationString;
-    networkServices = theNetworkServices;
 }
 
 - (void)didReceiveMemoryWarning
@@ -292,12 +289,19 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
         }
         if (pushToCloud)
         {
+            [progressView setFrame:CGRectMake(progressView.frame.origin.x, -10, progressView.frame.size.width, progressView.frame.size.height)];
+            [progressView setHidden:NO];
+            [UIView beginAnimations:@"lowerProgressView" context:nil];
+            [UIView setAnimationDuration:0.5];
+            [progressView setFrame:CGRectMake(progressView.frame.origin.x, 0, progressView.frame.size.width, progressView.frame.size.height)];
+            [UIView commitAnimations];
+            
             [acceptButton setEnabled:NO];
             [annotationTextView setUserInteractionEnabled:NO];
+            progressView.progress = 0;
+            FluxNetworkServices *networkServices = [[FluxNetworkServices alloc]init];
+            [networkServices setDelegate:self];
             [networkServices uploadImage:imageObject andImage:capturedImage];
-            
-            // For now, exit immediately
-            [self PopViewController:nil];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
         else

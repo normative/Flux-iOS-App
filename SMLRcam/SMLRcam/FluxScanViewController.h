@@ -12,6 +12,7 @@
 #import "FluxMapViewController.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxOpenGLViewController.h"
+#import "FluxCameraButton.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -43,7 +44,7 @@
     
     UIInterfaceOrientation changeToOrientation;
 
-    __weak IBOutlet UIButton *CameraButton;
+    __weak IBOutlet FluxCameraButton *CameraButton;
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;

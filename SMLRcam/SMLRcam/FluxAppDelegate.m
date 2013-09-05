@@ -35,22 +35,23 @@
     
     MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];
     
-    [drawerController setMaximumLeftDrawerWidth:250.0];
-    [drawerController setMaximumRightDrawerWidth:250.0];
-    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeCustom];
+    [drawerController setMaximumLeftDrawerWidth:256.0];
+    [drawerController setMaximumRightDrawerWidth:256.0];
+    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
     //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
-    [drawerController setGestureShouldRecognizeTouchBlock:^BOOL(MMDrawerController *drawerController, UIGestureRecognizer *gesture, UITouch *touch) {
-         BOOL shouldRecognizeTouch = NO;
-         if(drawerController.openSide == MMDrawerSideNone &&
-            [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
-             UIView * customView = scanViewController.drawerContainerView;
-             CGPoint location = [touch locationInView:customView];
-             shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
-         }
-         return shouldRecognizeTouch;
-     }];
+//    [drawerController setGestureShouldRecognizeTouchBlock:^BOOL(MMDrawerController *drawerController, UIGestureRecognizer *gesture, UITouch *touch) {
+//         BOOL shouldRecognizeTouch = NO;
+//         if(drawerController.openSide == MMDrawerSideNone &&
+//            [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
+//             UIView * customView = scanViewController.view;
+//             customView.frame = CGRectMake(0, scanViewController., scanViewController.view.frame.size.width, <#CGFloat height#>) scanViewController.view.frame.origin;
+//             CGPoint location = [touch locationInView:customView];
+//             shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
+//         }
+//         return shouldRecognizeTouch;
+//     }];
     
     
     [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
