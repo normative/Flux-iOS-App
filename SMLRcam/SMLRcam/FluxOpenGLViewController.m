@@ -1028,20 +1028,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self deleteImageTextureIdx:i];
     }
     
-    FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
-    
     // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     UIImage *teximage = [fluxImageCache objectForKey:localID];
-    if (imageObject.imageID < 0)
-    {
-        _texture[i] = [GLKTextureLoader textureWithCGImage:teximage.CGImage options:options error:&error];
-    }
-    else
-    {
-        NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
-        _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
-    }
+    NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+    _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
     
     if (error)
     {
