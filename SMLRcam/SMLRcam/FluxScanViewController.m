@@ -295,12 +295,14 @@
                          animations:^{
                              [fakeGalleryView setAlpha:1.0];
                          }];
+        [CameraButton setEnabled:NO];
     }
     else{
         [UIView animateWithDuration:0.3f
                          animations:^{
                              [fakeGalleryView setAlpha:0.0];
                          }];
+        [CameraButton setEnabled:YES];
     }
 
 }

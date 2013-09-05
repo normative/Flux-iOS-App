@@ -70,7 +70,7 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
     UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
     [bgView setImage:[UIImage imageNamed:@"leftDrawerHeaderView"]];
     //[self.tableView setBackgroundColor:[UIColor clearColor]];
-    //[self.tableView insertSubview:bgView atIndex:0];
+    [self.tableView insertSubview:bgView atIndex:0];
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -91,6 +91,27 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 {
     // Return the number of sections.
     return 1;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    return @"Settings";
+}
+
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    // Create label with section title
+    UILabel *label = [[UILabel alloc] init];
+    label.frame = CGRectMake(20, 0, 100, 23);
+    label.textColor = [UIColor whiteColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor clearColor];
+    
+    // Create header view and add label as a subview
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
+    [view setBackgroundColor:[UIColor clearColor]];
+    [view addSubview:label];
+    
+    return view;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
