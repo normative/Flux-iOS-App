@@ -9,6 +9,7 @@
 #import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
 #import "FluxMappingProvider.h"
+#import "FluxLocationServicesSingleton.h"
 
 
 
@@ -16,8 +17,8 @@
 //serverURL
 //#define externServerURL @"http://54.221.222.71/"
 #define externServerURL @"http://54.221.254.230/"
-//#define localServerURL @"http://54.221.222.71/"
-#define localServerURL @"http://192.168.0.41:3001/"
+#define localServerURL @"http://54.221.222.71/"
+//#define localServerURL @"http://192.168.0.41:3001/"
 
 @implementation FluxNetworkServices
 
@@ -322,6 +323,21 @@
 {
     //execute the server call to nuke the area.
     NSLog(@"nuking the current location");
+
+    // Create the manager object
+    FluxLocationServicesSingleton *locationManager = [FluxLocationServicesSingleton sharedManager];
+    
+    CLLocationCoordinate2D location = locationManager.location.coordinate;
+    float radius = 100;      // nuke 100m radius
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/nuke.json" keyPath:nil statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+
+    NSURLConnection *sConnection = [NSURLConnection connectionWithRequest:request delegate:nil];
+    [sConnection start];
+ 
 }
 
 @end
