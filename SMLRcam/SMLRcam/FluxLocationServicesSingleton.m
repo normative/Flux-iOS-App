@@ -51,6 +51,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
             locationManager.headingFilter = 5;
         }
     }
+    self.notMoving = 1;
     return self;
 }
 
@@ -193,6 +194,18 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 //
 #warning Currently disabling location services singleton mods
     self.location = newLocation;
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSNumber *walkMode = [defaults objectForKey:@"Walk Mode"];
+    
+    if (walkMode.intValue == 1)
+    {
+        self.notMoving = (newLocation.speed > 0.75) ? 0 : 1;
+    }
+    else
+    {
+        self.notMoving = 1;
+    }
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);

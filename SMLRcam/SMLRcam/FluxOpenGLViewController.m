@@ -1107,7 +1107,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for(i =0; i < 5; i++)
     {
         _validMetaData[i] =0;
-        _validMetaData[i] = computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage);
+        _validMetaData[i] = (computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage) *
+                             locationManager.notMoving);
         
       
         
@@ -1301,6 +1302,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
     // Render the object again with ES2
     glUseProgram(_program);
     
@@ -1317,7 +1321,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     //glBindTexture(GL_TEXTURE_2D, texture[0]);
     
     // Set our "myTextureSampler" sampler to user Texture Unit 0
+
+    // draw background first...
+    if(_videotexture != NULL)
+    {
+        glActiveTexture(GL_TEXTURE7);
+        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
+    }
     
+    // then spin through the images...
     if(_opengltexturesset >= 1)
     {
         for(int i = 0; i < _opengltexturesset; i++)
@@ -1349,7 +1364,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
      glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);*/
     
-    
+    /*
     if(_videotexture != NULL)
     {
         glActiveTexture(GL_TEXTURE7);
@@ -1358,7 +1373,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
     }
-    
+    */
     glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
     
 }

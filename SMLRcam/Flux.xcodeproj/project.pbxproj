@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */; };
 		17604B671785CA59005CF054 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B661785CA59005CF054 /* UIKit.framework */; };
 		17604B691785CA59005CF054 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B681785CA59005CF054 /* Foundation.framework */; };
 		17604B6B1785CA59005CF054 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B6A1785CA59005CF054 /* CoreGraphics.framework */; };
@@ -87,6 +88,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		173BF3E017D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerButtonTableViewCell.h; sourceTree = "<group>"; };
+		173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerButtonTableViewCell.m; sourceTree = "<group>"; };
 		17604B631785CA59005CF054 /* Flux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flux.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17604B661785CA59005CF054 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		17604B681785CA59005CF054 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -485,6 +488,8 @@
 				AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */,
 				AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */,
 				AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */,
+				173BF3E017D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.h */,
+				173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */,
 			);
 			name = "Left Drawer";
 			sourceTree = "<group>";
@@ -668,6 +673,7 @@
 				AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */,
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
+				173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */,
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */,

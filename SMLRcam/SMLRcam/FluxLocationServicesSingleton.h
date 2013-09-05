@@ -24,6 +24,8 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 @property (nonatomic) NSString* sublocality;
 @property (nonatomic) NSString* subadministativearea;
 
+@property (nonatomic) int notMoving;
+
 + (id)sharedManager;
 
 - (void)startLocating;
