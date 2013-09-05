@@ -35,8 +35,8 @@
     
     MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];
     
-    [drawerController setMaximumLeftDrawerWidth:250.0];
-    [drawerController setMaximumRightDrawerWidth:250.0];
+    [drawerController setMaximumLeftDrawerWidth:256.0];
+    [drawerController setMaximumRightDrawerWidth:256.0];
     [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.

@@ -115,7 +115,7 @@
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (tableView == self.tableView) {
         if (indexPath.section == 0) {
-            return 94.0;
+            return 156.0;
         }
         else
             return 44.0;
@@ -135,6 +135,12 @@
         if (cell == nil) {
             cell = [[FluxHashtagTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
+        
+        UIImageView*bgView = [[UIImageView alloc]initWithFrame:CGRectMake(-35, 0, 320, 156)];
+        [bgView setImage:[UIImage imageNamed:@"dummyTags"]];
+        [bgView setContentMode:UIViewContentModeScaleAspectFit];
+        //[self.tableView setBackgroundColor:[UIColor clearColor]];
+        [cell.contentView insertSubview:bgView atIndex:0];
         return cell;
     }
     static NSString *CellIdentifier = @"checkCell";
@@ -190,7 +196,7 @@
 
 - (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar{
     [self.mm_drawerController
-     setMaximumRightDrawerWidth:250.0
+     setMaximumRightDrawerWidth:256.0
      animated:YES
      completion:^(BOOL finished) {
      }];

@@ -608,25 +608,24 @@
                              [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
                              [gridView setAlpha:0.0];
                              [openGLController.view setAlpha:1.0];
+                             [[CameraButton getThumbView] setAlpha:0.0];
                          }
                          completion:^(BOOL finished){
                              //stops drawing them
                              [panGesture setEnabled:YES];
                              [longPressGesture setEnabled:YES];
                              [gridView setHidden:YES];
-                             //[cameraManager setSampleBufferDelegate:openGLController forViewController:openGLController];
-
+                             [[CameraButton getThumbView] setHidden:NO];
                          }];
         
         CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
         bounceAnimation.values = [NSArray arrayWithObjects:
-                                  [NSNumber numberWithFloat:2.0],
+                                  [NSNumber numberWithFloat:1.0],
+                                  [NSNumber numberWithFloat:0.7],
                                   [NSNumber numberWithFloat:0.9],
-                                  [NSNumber numberWithFloat:1.1],
                                   [NSNumber numberWithFloat:1.0], nil];
         bounceAnimation.duration = 0.3;
         [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
-        CameraButton.layer.transform = CATransform3DIdentity;
         
         camMode = [NSNumber numberWithInt:0];
     }
@@ -635,12 +634,15 @@
         [panGesture setEnabled:NO];
         [longPressGesture setEnabled:NO];
         [gridView setHidden:NO];
+        [[CameraButton getThumbView] setHidden:NO];
         [UIView animateWithDuration:0.3f
                          animations:^{
                              [headerView setAlpha:0.0];
                              [self.drawerContainerView setAlpha:0.0];
                              [gridView setAlpha:1.0];
                              [openGLController.view setAlpha:0.0];
+                             [[CameraButton getThumbView] setAlpha:1.0];
+                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
                          }
                          completion:^(BOOL finished){
                              //stops drawing them
@@ -649,20 +651,17 @@
                              [self startDeviceMotion];
                              [openGLController.view setHidden:YES];
                              camMode = [NSNumber numberWithInt:1];
-                             //[cameraManager setSampleBufferDelegate:self forViewController:self];
                          }];
         
         CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
         bounceAnimation.values = [NSArray arrayWithObjects:
                                   [NSNumber numberWithFloat:1.0],
-                                  [NSNumber numberWithFloat:2.1],
-                                  [NSNumber numberWithFloat:1.8],
-                                  [NSNumber numberWithFloat:2.0], nil];
+                                  [NSNumber numberWithFloat:1.5],
+                                  [NSNumber numberWithFloat:0.8],
+                                  [NSNumber numberWithFloat:1.0], nil];
         bounceAnimation.duration = 0.3;
-
+        
         [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
-        CameraButton.layer.transform = CATransform3DIdentity;
-        CameraButton.transform = CGAffineTransformScale(CameraButton.transform, 2.0, 2.0);
     }
     //going to confirm cam
     else{
