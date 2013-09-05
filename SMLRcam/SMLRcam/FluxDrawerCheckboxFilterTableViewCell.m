@@ -25,6 +25,7 @@
     if(self = [super initWithCoder:aDecoder]) {
         [self setBackgroundColor:[UIColor clearColor]];
         [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
+        [self.descriptorLabel setTextColor:[UIColor whiteColor]];
     }
     return self;
 }
@@ -48,13 +49,13 @@
     active = bActive;
     if (active) {
         //[self.descriptorLabel setFont:[UIFont boldSystemFontOfSize:self.descriptorLabel.font.pointSize]];
-        [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.descriptorLabel.font.pointSize]];
-        [self.descriptorLabel setTextColor:[UIColor whiteColor]];
+        [self.descriptorLabel setAlpha:1.0];
+        [self.descriptorIconImageView setAlpha:1.0];
     }
     else{
         //[self.descriptorLabel setFont:[UIFont systemFontOfSize:self.descriptorLabel.font.pointSize]];
-        [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
-        [self.descriptorLabel setTextColor:[UIColor lightGrayColor]];
+        [self.descriptorLabel setAlpha:0.3];
+        [self.descriptorIconImageView setAlpha:0.3];
     }
     [self.checkbox setChecked:active];
 }

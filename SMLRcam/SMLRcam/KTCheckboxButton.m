@@ -44,9 +44,11 @@
 - (void)setCheckImage:(BOOL)aChecked{
     if (aChecked) {
         [self setBackgroundImage:checkImg forState:UIControlStateNormal];
+        [self setAlpha:1.0];
     }
     else{
         [self setBackgroundImage:uncheckedImg forState:UIControlStateNormal];
+        [self setAlpha:0.3];
     }
 }
 
