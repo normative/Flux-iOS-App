@@ -945,17 +945,19 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 
-- (void)pauseOpenGLRender{
-    
+- (void)pauseOpenGLRender
+{
+    self.paused = YES;
 }
 
-- (void)restartOpenGLRender{
-    
+- (void)restartOpenGLRender
+{
+    self.paused = NO;
 }
 
-#warning incomplete implementation
-- (BOOL)openGLRenderIsActive{
-    return YES;
+- (BOOL)openGLRenderIsActive
+{
+    return [self isPaused];
 }
 
 
