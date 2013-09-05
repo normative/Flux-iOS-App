@@ -70,7 +70,7 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
     UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
     [bgView setImage:[UIImage imageNamed:@"leftDrawerHeaderView"]];
     //[self.tableView setBackgroundColor:[UIColor clearColor]];
-    [self.tableView insertSubview:bgView atIndex:0];
+    //[self.tableView insertSubview:bgView atIndex:0];
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
