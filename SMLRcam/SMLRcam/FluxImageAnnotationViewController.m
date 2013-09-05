@@ -271,8 +271,28 @@ NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageA
     // Set the server-side image id to a negative value until server returns actual
     [imageObject setImageID:-1];
     
+    // HACK
+    
+    // spin the image CW by 90deg. prior to dumping into the cache;
+    CGSize size = capturedImage.size;
+    UIGraphicsBeginImageContext(size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    
+//    CGContextTranslateCTM( context, 0.5f * size.width, 0.5f * size.height ) ;
+//    //CGContextRotateCTM( context, M_PI_2) ;
+//    [capturedImage drawInRect:(CGRect){ { -size.width * 0.5f, -size.height * 0.5f }, size } ] ;
+
+    [capturedImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+
+    UIImage *spunImage = UIGraphicsGetImageFromCurrentImageContext();
+    CGContextRestoreGState(context);
+    UIGraphicsEndImageContext();
+
+    // END HACK
+    
     // Add the image and metadata to the local cache
-    [fluxImageCache setObject:capturedImage forKey:imageObject.localID];
+    [fluxImageCache setObject:spunImage forKey:imageObject.localID];
     [fluxMetadata setObject:imageObject forKey:imageObject.localID];
     
     // Post notification for observers prior to upload
