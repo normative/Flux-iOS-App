@@ -229,7 +229,7 @@ void tangentplaneRotation(sensorPose *sp){
     rotation_te[14]= 0.0;
     rotation_te[15]= 1.0;
     
-    rotation_teM = GLKMatrix4MakeWithArray(rotation_te);
+    rotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
     
 }
 
