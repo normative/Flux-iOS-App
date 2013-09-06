@@ -431,14 +431,16 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         return 0;
     }
     
-    float distancetoPlane = GLKVector3Length(GLKVector3Make(t*V.x, t*V.y, t*V.z));
     
-    if(distancetoPlane > distance)
+    float _distanceToUser = GLKVector3Length(P0);
+    
+    if(_distanceToUser> 5.0)
     {
         
         NSLog(@"too far to render");
         return 0;
     }
+
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
