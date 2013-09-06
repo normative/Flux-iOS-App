@@ -76,6 +76,8 @@ typedef struct {
     FluxNetworkServices * networkServices;
     FluxAVCameraSingleton *cameraManager;
     
+    NSLock *_nearbyListLock;
+    
     __weak id <OpenGLViewDelegate> theDelegate;
     __weak IBOutlet UISlider *DistanceSlider;
     __weak IBOutlet UIStepper *PositionStepper;
