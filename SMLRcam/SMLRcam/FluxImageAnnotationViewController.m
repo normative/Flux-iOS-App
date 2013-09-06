@@ -10,11 +10,17 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AddressBook/ABPerson.h>
 
+NSString* const FluxImageAnnotationDidAcquireNewPicture = @"FluxImageAnnotationDidAcquireNewPicture";
+NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey = @"FluxImageAnnotationDidAcquireNewPictureLocalIDKey";
+
 @interface FluxImageAnnotationViewController ()
 
 @end
 
 @implementation FluxImageAnnotationViewController
+
+@synthesize fluxImageCache;
+@synthesize fluxMetadata;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -83,9 +89,31 @@
     [backgroundImageView addSubview:darkenImageView];
 }
 #pragma mark - Network Services
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)imageObject{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
+{
     progressView.progress = 1;
     [self PopViewController:nil];
+    
+    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
+
+    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+    {
+        // FluxScanImageObject exists in the local cache. Replace it with updated object.
+        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+        
+        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
+        {
+            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
+        }
+        else
+        {
+            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
+        }
+    }
+    else
+    {
+        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
+    }
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e{
@@ -133,17 +161,15 @@
 {
     [super viewDidLoad];
     
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-    
     [backgroundImageView setImage:[self BlurryImage:capturedImage withBlurLevel:0.2]];
     [self AddGradientImageToBackgroundWithAlpha:0.7];
-    
-    
     
     [self LoadUI];
 	// Do any additional setup after loading the view.
 }
-- (void)viewDidAppear:(BOOL)animated{
+
+- (void)viewDidAppear:(BOOL)animated
+{
     UIImageView*tempBackgroundImageView = [[UIImageView alloc]initWithFrame:backgroundImageView.frame];
     [tempBackgroundImageView setContentMode:backgroundImageView.contentMode];
     [tempBackgroundImageView setImage:capturedImage];
@@ -161,7 +187,8 @@
     [UIView commitAnimations];
 }
 
-- (void)LoadUI{
+- (void)LoadUI
+{
     [annotationTextView SetPlaceholderText:[NSString stringWithFormat:@"Tell your story"]];
     [annotationTextView becomeFirstResponder];
     id keyboard;
@@ -186,20 +213,12 @@
     //time string, it takes the stores date, parses it and makes the
     NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"dd MMM, YYYY h:mma"];
+
     NSString *temp =[formatter stringFromDate:[NSDate date]];
     temp  = [temp stringByReplacingCharactersInRange:NSMakeRange (temp.length-2, 2) withString:[temp substringFromIndex:temp.length-2].lowercaseString];
     timestampLabel.text = temp;
+    locationLabel.text = locationDescription;
     
-    if (locationManager.placemark!=nil) {
-        NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
-        locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-        locationLabel.text = locationString;
-    }
-    else{
-        locationLabel.text = @"";
-    }
-    
-    //segmentedControl
     HMSegmentedControl *segmentedControl = [[HMSegmentedControl alloc] initWithSectionImages:@[[UIImage imageNamed:@"person_unselected"], [UIImage imageNamed:@"place_unselected"], [UIImage imageNamed:@"thing_unselected"], [UIImage imageNamed:@"event_unselected"]] sectionSelectedImages:@[[UIImage imageNamed:@"person_selected"], [UIImage imageNamed:@"place_selected"], [UIImage imageNamed:@"thing_selected"], [UIImage imageNamed:@"event_selected"]]];
     [segmentedControl setFrame:objectSelectionSegmentedControl.frame];
     
@@ -215,27 +234,11 @@
     [self.view addSubview:segmentedControl];
 }
 
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImageData:(NSMutableData *)imageData andImageMetadata:(NSMutableDictionary *)imageMetadata andTimestamp:(NSDate *)theTimestamp andLocation:(CLLocation *)theLocation{
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImage:(UIImage *)theImage andLocationDescription:(NSString *)theLocationString
+{
     imageObject = imgObject;
-    capturedImage = imageObject.contentImage;
-    imgData = imageData;
-    imgMetadata = imageMetadata;
-    timestamp = theTimestamp;
-    location = theLocation;
-    
-    NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
-    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-    locationLabel.text = locationString;
-}
-
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andLocation:(CLLocation *)theLocation{
-    imageObject = imgObject;
-    capturedImage = imageObject.contentImage;
-    location = theLocation;
-    
-    NSString * locationString = [locationManager.placemark.addressDictionary valueForKey:@"SubLocality"];
-    locationString = [locationString stringByAppendingString:[NSString stringWithFormat:@", %@", [locationManager.placemark.addressDictionary valueForKey:@"SubAdministrativeArea"]]];
-    locationLabel.text = locationString;
+    capturedImage = theImage;
+    locationDescription = theLocationString;
 }
 
 - (void)didReceiveMemoryWarning
@@ -244,55 +247,68 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)PopViewController:(id)sender {
+- (IBAction)PopViewController:(id)sender
+{
     [[NSNotificationCenter defaultCenter] postNotificationName:@"AnnotationViewPopped" object:imageObject];
 
     [self dismissViewControllerAnimated:YES completion:nil];
-    //[self.navigationController popToRootViewControllerAnimated:YES];
 }
-- (IBAction)ConfirmImage:(id)sender {
-    //if they don't want it saved, toss it. If the object doesnt exist (they haven't hit the switch), then it's saved by default...
-    //[imageObject setCategoryID:[objectSelectionSegmentedControl titleForIndex:objectSelectionSegmentedControl.selectedSegmentIndex]];
-    //[imageObject setCategoryID:@"TBD"];
+
+- (IBAction)ConfirmImage:(id)sender
+{
     [imageObject setDescriptionString:annotationTextView.text];
-    //[imageObject setCategoryID:10];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
     bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
-    [imgMetadata setValue:annotationTextView.text forKey:(NSString *)@"descriptionString"];
+    // Generate a string image id for local use
+    NSString *localID = [imageObject generateUniqueStringID];
+    [imageObject setLocalID:localID];
+    [imageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", imageObject.localID]];
+//    [imageObject setImageIDFromDateAndUser];
     
+    // Set the server-side image id to a negative value until server returns actual
+    [imageObject setImageID:-1];
     
-    //if we're saving it anywhere
+    // HACK
+    
+    // spin the image CW by 90deg. prior to dumping into the cache;
+    CGSize size = capturedImage.size;
+    UIGraphicsBeginImageContext(size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    
+//    CGContextTranslateCTM( context, 0.5f * size.width, 0.5f * size.height ) ;
+//    //CGContextRotateCTM( context, M_PI_2) ;
+//    [capturedImage drawInRect:(CGRect){ { -size.width * 0.5f, -size.height * 0.5f }, size } ] ;
+
+    [capturedImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+
+    UIImage *spunImage = UIGraphicsGetImageFromCurrentImageContext();
+    CGContextRestoreGState(context);
+    UIGraphicsEndImageContext();
+
+    // END HACK
+    
+    // Add the image and metadata to the local cache
+    [fluxImageCache setObject:spunImage forKey:imageObject.localID];
+    [fluxMetadata setObject:imageObject forKey:imageObject.localID];
+    
+    // Post notification for observers prior to upload
+    NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
+    [userInfoDict setObject:imageObject.localID forKey:FluxImageAnnotationDidAcquireNewPictureLocalIDKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageAnnotationDidAcquireNewPicture
+                                                        object:self userInfo:userInfoDict];
+    
+    // Perform any additional (optional) image save tasks
     if (savelocally || pushToCloud) {
-        if (savelocally) {
+        if (savelocally)
+        {
             UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
-            
-            //saves it locally for now.
-            
-            //destibnation path
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-            NSString *documentsDirectory = [paths objectAtIndex:0]; // Get documents folder
-            NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"ImagesFolder"];
-            NSError *error;
-            if (![[NSFileManager defaultManager] fileExistsAtPath:dataPath])
-            {
-                [[NSFileManager defaultManager] createDirectoryAtPath:dataPath withIntermediateDirectories:NO attributes:nil error:&error]; //Create folder
-            }
-            
-            NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-            [dateFormat setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
-            
-            //add our image to the path
-            NSString *fullPath = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.jpg", [dateFormat stringFromDate:timestamp]]];
-            [imgData writeToFile:fullPath atomically:YES];
-            
-            // build the metadata file...
-            NSString *fullPathMeta = [dataPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.xml", [dateFormat stringFromDate:timestamp]]];
-            [imgMetadata writeToFile:fullPathMeta atomically:YES];
         }
-        if (pushToCloud) {
+        if (pushToCloud)
+        {
             [progressView setFrame:CGRectMake(progressView.frame.origin.x, -10, progressView.frame.size.width, progressView.frame.size.height)];
             [progressView setHidden:NO];
             [UIView beginAnimations:@"lowerProgressView" context:nil];
@@ -301,18 +317,21 @@
             [UIView commitAnimations];
             
             [acceptButton setEnabled:NO];
+            [annotationTextView setUserInteractionEnabled:NO];
             progressView.progress = 0;
             FluxNetworkServices *networkServices = [[FluxNetworkServices alloc]init];
             [networkServices setDelegate:self];
-            [networkServices uploadImage:imageObject];
+            [networkServices uploadImage:imageObject andImage:capturedImage];
         }
         //if we're not waiting for the OK from network services to exit the view, exit right here.
-        else{
+        else
+        {
             [self PopViewController:nil];
         }
 
     }
-    else{
+    else
+    {
         [self PopViewController:nil];
     }
 

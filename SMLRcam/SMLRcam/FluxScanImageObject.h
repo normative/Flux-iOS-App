@@ -13,9 +13,6 @@
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
 
-//image itself
-@property (nonatomic, strong)UIImage *contentImage;
-
 //location
 @property (nonatomic) float longitude;
 @property (nonatomic) float latitude;
@@ -35,6 +32,8 @@
 
 //other
 @property (nonatomic, strong) NSString* timestampString;
+@property (nonatomic, strong) NSDate* timestamp;
+
 @property (nonatomic, strong) NSString* username;
 @property (nonatomic, strong) NSString* descriptionString;
 
@@ -44,9 +43,10 @@
 @property (nonatomic) int cameraID;
 @property (nonatomic) int imageID;
 @property (nonatomic) int userID;
+@property (nonatomic) NSString* localID;
+@property (nonatomic) NSString* localThumbID;
 
-- (id)initWithImage:(UIImage*)img
-     fromUserWithID:(int)userID
+- (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr
         andCameraID:(int)camID
       andCategoryID:(int)catID
@@ -62,6 +62,9 @@ withDescriptionString:(NSString*)description
                 andQX:(float)qx
                 andQY:(float)qy
                 andQZ:(float)qz;
+
+- (NSString *)generateUniqueStringID;
+- (void)setImageIDFromDateAndUser;
 
 // MKAnnoation getter methods;
 - (NSString *)title;

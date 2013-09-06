@@ -51,6 +51,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
             locationManager.headingFilter = 5;
         }
     }
+    self.notMoving = 1;
     return self;
 }
 
@@ -189,7 +190,22 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     // Update the public location information for consumption
     temp_location = [locationMeasurements lastObject];
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(corrected_lat, corrected_long);
-    self.location = [[CLLocation alloc] initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
+//    self.location = [[CLLocation alloc] initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
+//
+#warning Currently disabling location services singleton mods
+    self.location = newLocation;
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSNumber *walkMode = [defaults objectForKey:@"Walk Mode"];
+    
+    if (walkMode.intValue == 1)
+    {
+        self.notMoving = (newLocation.speed > 0.75) ? 0 : 1;
+    }
+    else
+    {
+        self.notMoving = 1;
+    }
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);

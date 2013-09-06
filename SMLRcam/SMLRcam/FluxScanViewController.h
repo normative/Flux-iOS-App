@@ -12,7 +12,7 @@
 #import "FluxMapViewController.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxOpenGLViewController.h"
-#import "FluxAnnotationsTableViewController.h"
+#import "FluxCameraButton.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -27,8 +27,9 @@
 
 
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate>{
-    FluxAnnotationsTableViewController *annotationsFeedView;
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate, UITableViewDataSource, UITableViewDelegate>{
+    UITableView*annotationsTableView;
+    UIImageView*fakeGalleryView;
    
     AVCaptureVideoPreviewLayer *previewLayer;
     AVCaptureDevice *device;
@@ -44,7 +45,7 @@
     
     UIInterfaceOrientation changeToOrientation;
 
-    __weak IBOutlet UIButton *CameraButton;
+    __weak IBOutlet FluxCameraButton *CameraButton;
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;
@@ -63,10 +64,10 @@
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
     FluxNetworkServices *networkServices;
-    
 }
 
-@property (nonatomic, strong)NSMutableDictionary*imageDict;
+@property (strong) NSCache *fluxImageCache;
+@property (nonatomic, strong) NSMutableDictionary *fluxMetadata;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
@@ -83,6 +84,7 @@
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
 - (IBAction)retakeImageAction:(id)sender;
+- (IBAction)showFakeGallery:(id)sender;
 
 - (void)setupAVCapture;
 - (void)setupNetworkServices;
@@ -95,6 +97,7 @@
 
 - (void)setupCameraView;
 - (void)setUIForCamMode:(NSNumber*)mode;
+- (void)setupAnnotationsTableView;
 - (void)annotationsViewDidPop:(NSNotification *)notification;
 
 - (void)setupGestureHandlers;

@@ -8,6 +8,7 @@
 
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
+#import "FluxImageAnnotationViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 #import "FluxNetworkServices.h"
@@ -42,11 +43,11 @@ typedef struct {
     
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix4 _tBiasMVP[8];
+    float _projectionDistance;
     
-    
-    
+    int _validMetaData[8];
     float _rotation;
-    
+    GLKVector2 _testparams;
     GLuint _vertexArray;
     GLuint _vertexBuffer;
     GLKTextureInfo* _texture[8];
@@ -70,20 +71,25 @@ typedef struct {
     NSString *_sessionPreset;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
-    
     FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;
     FluxNetworkServices * networkServices;
     FluxAVCameraSingleton *cameraManager;
-
+    
+    NSLock *_nearbyListLock;
+    
     __weak id <OpenGLViewDelegate> theDelegate;
+    __weak IBOutlet UISlider *DistanceSlider;
+    __weak IBOutlet UIStepper *PositionStepper;
 }
 
 @property (nonatomic, weak) id <OpenGLViewDelegate> theDelegate;
 @property (strong, nonatomic) EAGLContext *context;
-@property (nonatomic, strong)NSMutableDictionary*imageDict;
-@property (nonatomic, strong)NSMutableDictionary*theImages;
-@property (nonatomic, strong)NSMutableDictionary *requestList;
+@property (weak) NSCache *fluxImageCache;
+@property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
+@property (nonatomic, strong)NSMutableArray *nearbyList;
+@property (nonatomic, strong)NSMutableArray *renderedTextures;
+@property (nonatomic, strong)NSMutableArray *requestList;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
@@ -100,12 +106,16 @@ typedef struct {
 - (void)setupMotionManager;
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
+- (void)didAcquireNewPicture:(NSNotification *)notification;
 - (void)didUpdateLocation:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
 - (void)setupNetworkServices;
 
 //AVCam Methods
 - (void)setupAVCapture;
+
+- (IBAction)onDistanceSliderValueChanged:(id)sender;
+- (IBAction)onPositionStepperValueChanged:(id)sender;
 
 
 @end

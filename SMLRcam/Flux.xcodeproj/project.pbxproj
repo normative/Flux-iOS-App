@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */; };
 		17604B671785CA59005CF054 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B661785CA59005CF054 /* UIKit.framework */; };
 		17604B691785CA59005CF054 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B681785CA59005CF054 /* Foundation.framework */; };
 		17604B6B1785CA59005CF054 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B6A1785CA59005CF054 /* CoreGraphics.framework */; };
@@ -36,11 +37,6 @@
 		220FE07517BEACAD00A7E379 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 220FE07317BEACAD00A7E379 /* InfoPlist.strings */; };
 		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
 		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
-		895B6E7017C6A6670052C571 /* Image0.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E6F17C6A6670052C571 /* Image0.png */; };
-		895B6E7517CD362B0052C571 /* Image1.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7117CD362B0052C571 /* Image1.png */; };
-		895B6E7617CD362B0052C571 /* Image2.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7217CD362B0052C571 /* Image2.png */; };
-		895B6E7717CD362B0052C571 /* Image3.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7317CD362B0052C571 /* Image3.png */; };
-		895B6E7817CD362B0052C571 /* Image4.png in Resources */ = {isa = PBXBuildFile; fileRef = 895B6E7417CD362B0052C571 /* Image4.png */; };
 		89AF5F6E17D1173D00A1C8BD /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 89AF5F6D17D1173D00A1C8BD /* background.png */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
@@ -61,14 +57,15 @@
 		AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */; };
 		AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */; };
 		AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */; };
-		AA4CE16D17B921E1008D04BE /* FluxAnnotationsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */; };
 		AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */; };
 		AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */; };
+		AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA55093817D63847004CF956 /* FluxAnnotationTableViewCell.xib */; };
 		AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */; };
 		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
 		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
 		AA7457BA17BA78CF008988C1 /* FluxRotatingCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */; };
 		AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */; };
+		AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9CC94917D80858006AF61F /* FluxCameraButton.m */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */; };
 		AAAC6C1117C65F8800B7EAD1 /* FluxHashtagTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
@@ -91,6 +88,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		173BF3E017D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerButtonTableViewCell.h; sourceTree = "<group>"; };
+		173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerButtonTableViewCell.m; sourceTree = "<group>"; };
 		17604B631785CA59005CF054 /* Flux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flux.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17604B661785CA59005CF054 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		17604B681785CA59005CF054 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -127,11 +126,6 @@
 		220FE07817BEACAD00A7E379 /* Flux Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Flux Tests-Prefix.pch"; sourceTree = "<group>"; };
 		22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_LocationServiceSingleton_Test.m; sourceTree = "<group>"; };
 		22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_MotionManagerSingleton.m; sourceTree = "<group>"; };
-		895B6E6F17C6A6670052C571 /* Image0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image0.png; sourceTree = "<group>"; };
-		895B6E7117CD362B0052C571 /* Image1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image1.png; sourceTree = "<group>"; };
-		895B6E7217CD362B0052C571 /* Image2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image2.png; sourceTree = "<group>"; };
-		895B6E7317CD362B0052C571 /* Image3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image3.png; sourceTree = "<group>"; };
-		895B6E7417CD362B0052C571 /* Image4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Image4.png; sourceTree = "<group>"; };
 		896221BE17CFCB2900EC9A44 /* FluxMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMath.h; sourceTree = "<group>"; };
 		89AF5F6D17D1173D00A1C8BD /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -165,12 +159,11 @@
 		AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMotionManagerSingleton.m; sourceTree = "<group>"; };
 		AA4CE15D17B58433008D04BE /* FluxScanImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxScanImageObject.h; sourceTree = "<group>"; };
 		AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxScanImageObject.m; sourceTree = "<group>"; };
-		AA4CE16B17B921E1008D04BE /* FluxAnnotationsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAnnotationsTableViewController.h; sourceTree = "<group>"; };
-		AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAnnotationsTableViewController.m; sourceTree = "<group>"; };
 		AA4CE18017B9581E008D04BE /* FluxAnnotationTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAnnotationTableViewCell.h; sourceTree = "<group>"; };
 		AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAnnotationTableViewCell.m; sourceTree = "<group>"; };
 		AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTPlaceholderTextView.h; sourceTree = "<group>"; };
 		AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTPlaceholderTextView.m; sourceTree = "<group>"; };
+		AA55093817D63847004CF956 /* FluxAnnotationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxAnnotationTableViewCell.xib; sourceTree = "<group>"; };
 		AA70841217B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerCheckboxFilterTableViewCell.h; sourceTree = "<group>"; };
 		AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerCheckboxFilterTableViewCell.m; sourceTree = "<group>"; };
 		AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTCheckboxButton.h; sourceTree = "<group>"; };
@@ -181,6 +174,8 @@
 		AA7457B917BA78CF008988C1 /* FluxRotatingCompassButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRotatingCompassButton.m; sourceTree = "<group>"; };
 		AA7FBCF517A6CB1700410E6B /* FluxImageAnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageAnnotationViewController.h; sourceTree = "<group>"; };
 		AA7FBCF617A6CB1700410E6B /* FluxImageAnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageAnnotationViewController.m; sourceTree = "<group>"; };
+		AA9CC94817D80858006AF61F /* FluxCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraButton.h; sourceTree = "<group>"; };
+		AA9CC94917D80858006AF61F /* FluxCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraButton.m; sourceTree = "<group>"; };
 		AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxClockSlidingControl.h; sourceTree = "<group>"; };
 		AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxClockSlidingControl.m; sourceTree = "<group>"; };
 		AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxHashtagTableViewCell.h; sourceTree = "<group>"; };
@@ -288,11 +283,6 @@
 		17604B6C1785CA59005CF054 /* Flux */ = {
 			isa = PBXGroup;
 			children = (
-				895B6E7117CD362B0052C571 /* Image1.png */,
-				895B6E7217CD362B0052C571 /* Image2.png */,
-				895B6E7317CD362B0052C571 /* Image3.png */,
-				895B6E7417CD362B0052C571 /* Image4.png */,
-				895B6E6F17C6A6670052C571 /* Image0.png */,
 				89AF5F6D17D1173D00A1C8BD /* background.png */,
 				17604B751785CA59005CF054 /* FluxAppDelegate.h */,
 				17604B761785CA59005CF054 /* FluxAppDelegate.m */,
@@ -427,10 +417,9 @@
 		AA4CE16A17B921A3008D04BE /* TopView */ = {
 			isa = PBXGroup;
 			children = (
-				AA4CE16B17B921E1008D04BE /* FluxAnnotationsTableViewController.h */,
-				AA4CE16C17B921E1008D04BE /* FluxAnnotationsTableViewController.m */,
 				AA4CE18017B9581E008D04BE /* FluxAnnotationTableViewCell.h */,
 				AA4CE18117B9581E008D04BE /* FluxAnnotationTableViewCell.m */,
+				AA55093817D63847004CF956 /* FluxAnnotationTableViewCell.xib */,
 			);
 			name = TopView;
 			sourceTree = "<group>";
@@ -452,6 +441,8 @@
 				AAED6C9617A2CD92004888FE /* PassthroughView.h */,
 				AAED6C9717A2CD92004888FE /* PassthroughView.m */,
 				AA85AD7017A995F7003EBC89 /* 3rd Party */,
+				AA9CC94817D80858006AF61F /* FluxCameraButton.h */,
+				AA9CC94917D80858006AF61F /* FluxCameraButton.m */,
 			);
 			name = "Custom UI Elements";
 			sourceTree = "<group>";
@@ -497,6 +488,8 @@
 				AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */,
 				AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */,
 				AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */,
+				173BF3E017D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.h */,
+				173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */,
 			);
 			name = "Left Drawer";
 			sourceTree = "<group>";
@@ -599,18 +592,14 @@
 			files = (
 				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
 				89AF5F6E17D1173D00A1C8BD /* background.png in Resources */,
-				895B6E7617CD362B0052C571 /* Image2.png in Resources */,
-				895B6E7717CD362B0052C571 /* Image3.png in Resources */,
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
-				895B6E7517CD362B0052C571 /* Image1.png in Resources */,
-				895B6E7817CD362B0052C571 /* Image4.png in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
-				895B6E7017C6A6670052C571 /* Image0.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
+				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
 				AA08279E17A6AE030079672A /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -684,13 +673,14 @@
 				AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */,
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
+				173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */,
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */,
 				AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */,
-				AA4CE16D17B921E1008D04BE /* FluxAnnotationsTableViewController.m in Sources */,
 				AA7FBCF717A6CB1700410E6B /* FluxImageAnnotationViewController.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
+				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */,
 				AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */,
@@ -771,7 +761,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -795,7 +785,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -808,7 +798,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jon Tirmandi (BE55Y3YRR9)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
@@ -827,7 +817,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Normative Labs (3R58XXN523)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";

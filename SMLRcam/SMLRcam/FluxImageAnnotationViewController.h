@@ -15,16 +15,15 @@
 
 #import "FluxNetworkServices.h"
 
+extern NSString* const FluxImageAnnotationDidAcquireNewPicture;
+extern NSString* const FluxImageAnnotationDidAcquireNewPictureLocalIDKey;
+
 @interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate, NetworkServicesDelegate>{
     
-    UIImage * capturedImage;
-    NSMutableDictionary *imgMetadata;
-    NSMutableData *imgData;
+    UIImage *capturedImage;
+    FluxScanImageObject *imageObject;
+    NSString *locationDescription;
     NSDate *timestamp;
-    CLLocation *location;
-    FluxScanImageObject*imageObject;
-    
-    FluxLocationServicesSingleton*locationManager;
     
     __weak IBOutlet UIImageView *backgroundImageView;
     __weak IBOutlet KTPlaceholderTextView *annotationTextView;
@@ -35,10 +34,13 @@
     __strong IBOutlet HMSegmentedControl *objectSelectionSegmentedControl;
 }
 
+@property (strong) NSCache *fluxImageCache;
+@property (nonatomic, strong) NSMutableDictionary *fluxMetadata;
+
 //init
-- (void)setCapturedImage:(FluxScanImageObject*)imgObject andImageData:(NSMutableData*)imageData andImageMetadata:(NSMutableDictionary*)imageMetadata andTimestamp:(NSDate*)theTimestamp andLocation:(CLLocation*)theLocation;
-- (void)setCapturedImage:(FluxScanImageObject *)imgObject andLocation:(CLLocation *)theLocation;
+- (void)setCapturedImage:(FluxScanImageObject *)imgObject andImage:(UIImage *)theImage andLocationDescription:(NSString *)theLocationString;
 - (void)LoadUI;
+
 //image
 - (UIImage *)BlurryImage:(UIImage *)image withBlurLevel:(CGFloat)blur;
 - (void)AddGradientImageToBackgroundWithAlpha:(CGFloat)alpha;
@@ -47,9 +49,5 @@
 - (IBAction)PopViewController:(id)sender;
 - (IBAction)ConfirmImage:(id)sender;
 - (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl;
-
-
-
-
 
 @end

@@ -35,22 +35,23 @@
     
     MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];
     
-    [drawerController setMaximumLeftDrawerWidth:250.0];
-    [drawerController setMaximumRightDrawerWidth:250.0];
-    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeCustom];
+    [drawerController setMaximumLeftDrawerWidth:256.0];
+    [drawerController setMaximumRightDrawerWidth:256.0];
+    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
     //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
-    [drawerController setGestureShouldRecognizeTouchBlock:^BOOL(MMDrawerController *drawerController, UIGestureRecognizer *gesture, UITouch *touch) {
-         BOOL shouldRecognizeTouch = NO;
-         if(drawerController.openSide == MMDrawerSideNone &&
-            [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
-             UIView * customView = scanViewController.drawerContainerView;
-             CGPoint location = [touch locationInView:customView];
-             shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
-         }
-         return shouldRecognizeTouch;
-     }];
+//    [drawerController setGestureShouldRecognizeTouchBlock:^BOOL(MMDrawerController *drawerController, UIGestureRecognizer *gesture, UITouch *touch) {
+//         BOOL shouldRecognizeTouch = NO;
+//         if(drawerController.openSide == MMDrawerSideNone &&
+//            [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
+//             UIView * customView = scanViewController.view;
+//             customView.frame = CGRectMake(0, scanViewController., scanViewController.view.frame.size.width, <#CGFloat height#>) scanViewController.view.frame.origin;
+//             CGPoint location = [touch locationInView:customView];
+//             shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
+//         }
+//         return shouldRecognizeTouch;
+//     }];
     
     
     [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
@@ -60,17 +61,26 @@
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * uploadPic = [defaults objectForKey:@"Network Services"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
+    NSNumber * isWalkMode = [defaults objectForKey:@"Walk Mode"];
+    
+    // do not save locally by default
     if (savePic == nil) {
-        [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Save Pictures"];
+        [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Save Pictures"];
         [defaults synchronize];
     }
+    // upload by default
     if (uploadPic == nil) {
-        [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Network Services"];
+        [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Network Services"];
         [defaults synchronize];
     }
     //set local by default
     if (isLocalURL == nil) {
-        [defaults setObject:[NSNumber numberWithInt:0] forKey:@"Server Location"];
+        [defaults setObject:[NSNumber numberWithInt:1] forKey:@"Server Location"];
+        [defaults synchronize];
+    }
+    
+    if (isWalkMode == nil) {
+        [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Walk Mode"];
         [defaults synchronize];
     }
     

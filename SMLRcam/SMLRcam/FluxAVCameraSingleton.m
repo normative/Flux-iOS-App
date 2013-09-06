@@ -25,6 +25,7 @@
         
         NSError *error = nil;
         
+        _dataPreview = 0;
         self.session = [AVCaptureSession new];
         [self.session setSessionPreset:AVCaptureSessionPresetHigh]; // full resolution photo...
         
@@ -66,13 +67,14 @@
             // a serial dispatch queue must be used to guarantee that video frames will be delivered in order
             // see the header doc for setSampleBufferDelegate:queue: for more information
             self.videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
+            [self.videoDataOutput setSampleBufferDelegate:self queue:self.videoDataOutputQueue];
             
             if ([self.session canAddOutput:self.videoDataOutput]){
                 [self.session addOutput:self.videoDataOutput];
             }
-            [[self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
+            [[self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:YES];
             
-            [self.session startRunning];
+            [self restartAVCapture];
         }
         
         //[session release];
@@ -110,6 +112,54 @@
     }
 }
 
+
+#pragma mark Capture
+
+
+
+- (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
+{
+	//if (!_dataPreview) {
+    //    return;
+   // }
+    
+    //CMFormatDescriptionRef formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer);
+    
+	
+		
+		
+		
+	
+        
+		CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+		
+		
+		
+		// Enqueue it for preview.  This is a shallow queue, so if image processing is taking too long,
+		// we'll drop this frame for preview (this keeps preview latency low).
+		OSStatus err = CMBufferQueueEnqueue(previewBufferQueue, sampleBuffer);
+		if ( !err ) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				CMSampleBufferRef sbuf = (CMSampleBufferRef)CMBufferQueueDequeueAndRetain(previewBufferQueue);
+				if (sbuf) {
+					CVImageBufferRef pixBuf = CMSampleBufferGetImageBuffer(sbuf);
+					[self.delegate pixelBufferReadyForDisplay:pixBuf];
+					CFRelease(sbuf);
+				}
+			});
+		
+	}
+}
+
+
+- (void)pixelBufferReadyForDisplay:(CVPixelBufferRef)pixelBuffer
+{
+	// Don't make OpenGLES calls while in the background.
+	if ( [UIApplication sharedApplication].applicationState != UIApplicationStateBackground )
+		//[oglView displayPixelBuffer:pixelBuffer];
+        NSLog(@"buffer");
+}
+
 //- (void)setSampleBufferDelegate:(id < AVCaptureVideoDataOutputSampleBufferDelegate >)sampleBufferDelegate forViewController:(UIViewController *)VC {
 //    if ([sampleBufferDelegate isKindOfClass:[GLKViewController class]]) {
 //        [self.videoDataOutput setSampleBufferDelegate:sampleBufferDelegate queue:dispatch_get_main_queue()];
@@ -118,6 +168,5 @@
 //        [self.videoDataOutput setSampleBufferDelegate:sampleBufferDelegate queue:self.videoDataOutputQueue];
 //    }    
 //}
-
 
 @end

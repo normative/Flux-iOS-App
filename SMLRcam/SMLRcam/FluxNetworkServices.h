@@ -18,7 +18,7 @@
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage*)image forImageID:(int)imageID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMetadata:(FluxScanImageObject*)imageObject;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary*)imageList;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject*)imageObject;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject*)updatedImageObject;
 
 //users
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject;
@@ -50,8 +50,8 @@
 //test purposes
 - (void)getAllImages;
 
-//uploads an image. All account info is stored within the imageObject
-- (void)uploadImage:(FluxScanImageObject*)img;
+//uploads an image. All account info is stored within the FluxScanImageObject
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage;
 
 #pragma mark  - Users
 
@@ -62,5 +62,6 @@
 - (void)createUser:(FluxUserObject*)user;
 
 
+- (void)deleteLocations;
 
 @end

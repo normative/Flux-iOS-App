@@ -36,28 +36,26 @@
 
 #pragma mark - nsobject life cycle
 
-- (id)initWithImage:(UIImage*)img
-     fromUserWithID:(int)userID
-  atTimestampString:(NSString *)timestampStr
-        andCameraID:(int)camID
-      andCategoryID:(int)catID
+- (id)initWithUserID:(int)userID
+   atTimestampString:(NSString *)timestampStr
+         andCameraID:(int)camID
+       andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
-        andlatitude:(float)latitude
-       andlongitude:(float)longitude
-        andaltitude:(float)altitude
-         andHeading:(float)heading
-             andYaw:(float)yaw
-           andPitch:(float)pitch
-            andRoll:(float)roll
-              andQW:(float)qw
-              andQX:(float)qx
-              andQY:(float)qy
-              andQZ:(float)qz;
+         andlatitude:(float)latitude
+        andlongitude:(float)longitude
+         andaltitude:(float)altitude
+          andHeading:(float)heading
+              andYaw:(float)yaw
+            andPitch:(float)pitch
+             andRoll:(float)roll
+               andQW:(float)qw
+               andQX:(float)qx
+               andQY:(float)qy
+               andQZ:(float)qz;
 {
     self = [super init];
     if (self)
     {
-        self.contentImage = img;
         self.userID = userID;
         self.cameraID = camID;
         self.categoryID = catID;
@@ -74,10 +72,31 @@ withDescriptionString:(NSString*)description
         self.qx = qx;
         self.qy = qy;
         self.qz = qz;
+        self.localID = [self generateUniqueStringID];
+        self.localThumbID = [NSString stringWithFormat:@"%@_thumb", self.localID];
     }
     
     return self;
     
+}
+
+- (NSString *)generateUniqueStringID
+{    
+    NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
+    [outputDateFormat setDateFormat:@"yyyyMMddHHmmss"];
+    
+    NSString *stringID = [outputDateFormat stringFromDate:self.timestamp];
+    return [NSString stringWithFormat:@"%@_%d", stringID, self.userID];
+}
+
+- (void)setImageIDFromDateAndUser
+{
+    NSString *newImageID = [NSString stringWithFormat:@"%@_%d", self.timestampString, self.userID];
+    NSLog(@"ImageID: %@", newImageID);
+
+    // Set to -1 now. App code will rely on localID.
+    // Numeric imageID will be set by the server on upload completion.
+    self.imageID = -1;
 }
 
 @end

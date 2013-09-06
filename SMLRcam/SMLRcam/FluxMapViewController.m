@@ -37,8 +37,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 @implementation FluxMapViewController
 
+@synthesize fluxImageCache;
+@synthesize fluxMetadata;
 @synthesize myViewOrientation;
-@synthesize mapAnnotationsDictionary;
 
 #pragma mark - delegate methods
 
@@ -53,10 +54,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             NSLog(@"annotation imageID is %i", annotation.imageID);
             if (annotation.imageID == imageID)
             {
-                annotation.contentImage = image;
+                // This view gets a thumbnail image (since that is all it requested)
+                [fluxImageCache setObject:image forKey:annotation.localThumbID];
                 
                 MKAnnotationView *annotationView = [myMapView viewForAnnotation: annotation];
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:annotation.contentImage];
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:annotation.localThumbID]];
                 annotationView.leftCalloutAccessoryView = calloutImageView;
                 
                 [activityIndicator stopAnimating];
@@ -72,7 +74,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
         
-        if (annotation.contentImage == nil)
+        if ([fluxImageCache objectForKey:annotation.localThumbID] == nil)
         {
             [networkServiceManager getThumbImageForID:annotation.imageID];
         }
@@ -116,9 +118,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             
             FluxScanImageObject *fluxImageObject = (FluxScanImageObject *)annotation;
             
-            if (fluxImageObject.contentImage != nil)
+            if ([fluxImageCache objectForKey:fluxImageObject.localThumbID] != nil)
             {
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:fluxImageObject.contentImage];
+                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:fluxImageObject.localThumbID]];
                 locationAnnotationView.leftCalloutAccessoryView = calloutImageView;
             }
             else
@@ -191,7 +193,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 {
     if (fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > 25 ||
         fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > 25 ||
-        [mapAnnotationsDictionary count] == 0)
+        [fluxMetadata count] == 0)
     {
         [networkServiceManager getImagesForLocation:userLocation.location.coordinate andRadius:50];
         
@@ -204,19 +206,16 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
      didreturnImageList:(NSMutableDictionary *)imageList
 {
-    for (id key in imageList)
+    // Need to update all metadata objects even if they exist (in case they change in the future)
+    for (id curKey in [imageList allKeys])
     {
-        if (![mapAnnotationsDictionary objectForKey:key])
-        {
-            FluxScanImageObject *locationObject = [imageList objectForKey:key];
-            
-            // add annotation to map
-            [myMapView addAnnotation: locationObject];
-            
-            // insert object to dic
-            [mapAnnotationsDictionary setObject:locationObject forKey:key];
-        }
+        FluxScanImageObject *locationObject = [imageList objectForKey:curKey];
+        [fluxMetadata setObject:locationObject forKey:locationObject.localID];
+        
+        // add annotation to map
+        [myMapView addAnnotation: locationObject];
     }
+
     [self setStatusBarMomentLabel];
 }
 
@@ -275,7 +274,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
-    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [mapAnnotationsDictionary count]]];
+    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [fluxMetadata count]]];
 }
 
 #pragma mark - @selector
@@ -353,9 +352,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 // initialize and allocate memory for annotation view
 - (void) setupAnnotationView
 {
-    for (id key in mapAnnotationsDictionary)
+    for (id key in fluxMetadata)
     {
-        FluxScanImageObject *locationObject = [mapAnnotationsDictionary objectForKey:key];
+        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
         [myMapView addAnnotation: locationObject];
     }
     
@@ -441,8 +440,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             
             [self.view removeGestureRecognizer:pinchRecognizer];
             
+            [EAGLContext setCurrentContext:nil];
+            
             activityIndicator = nil;
         }];
+        
     }
 }
 
@@ -451,7 +453,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     if (self = [super initWithCoder:aDecoder]) {
-        mapAnnotationsDictionary = [[NSMutableDictionary alloc] init];
+        ;
     }
     return self;
 }

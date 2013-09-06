@@ -9,14 +9,16 @@
 #import "FluxScanViewController.h"
 
 #import "UIViewController+MMDrawerController.h"
-#import "FluxAnnotationsTableViewController.h"
 #import "FluxImageAnnotationViewController.h"
+#import "FluxAnnotationTableViewCell.h"
 
 #import <ImageIO/ImageIO.h>
 
 @implementation FluxScanViewController
 
-@synthesize imageDict,thumbView;
+@synthesize fluxImageCache;
+@synthesize fluxMetadata;
+@synthesize thumbView;
 
 #pragma mark - Location
 
@@ -41,7 +43,7 @@
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:50];
+    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
 }
 
 #pragma mark - Network Services
@@ -53,9 +55,21 @@
 
 #pragma Networking Delegate Methods
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
+//called by annotationsTableview
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
+         didreturnImage:(UIImage *)image
+             forImageID:(int)imageID
 {
-    self.imageDict = imageList;
+    for (NSString *currentKey in [fluxMetadata allKeys])
+    {
+        FluxScanImageObject* currentImageObject = [fluxMetadata objectForKey:currentKey];
+            if (currentImageObject.imageID == imageID)
+            {
+                [fluxImageCache setObject:image forKey:currentImageObject.localThumbID];
+                break;
+            }
+    }
+    [annotationsTableView reloadData];
 }
 
 #pragma mark - Motion Methods
@@ -96,35 +110,201 @@
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideRight animated:YES completion:nil];
 }
 
-#pragma mark - TopView Methods
+#pragma mark - Annotations Feed Methods
 
-//show list of images currently visible
-- (IBAction)annotationsButtonAction:(id)sender {
+//show list of images currently visible.
+- (void)setupAnnotationsTableView{
+    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
+    [annotationsTableView setHidden:YES];
+    [annotationsTableView setAlpha:0.0];
+    [annotationsTableView setBackgroundColor:[UIColor clearColor]];
+    [annotationsTableView setSeparatorColor:[UIColor clearColor]];
+    [annotationsTableView setAllowsSelection:NO];
+    [annotationsTableView setDelegate:self];
+    [annotationsTableView setDataSource:self];
     
-    if ([annotationsFeedView.view isHidden]) {
-        [annotationsFeedView setTableViewdict:self.imageDict];
-        [annotationsFeedView showPopoverAnimated:YES];
+    [annotationsTableView registerNib:[UINib nibWithNibName:@"FluxAnnotationTableViewCell" bundle:nil] forCellReuseIdentifier:@"annotationsFeedCell"];
+    
+    //fade out the bottom of the feedView
+    CAGradientLayer* maskLayer = [CAGradientLayer layer];
+    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
+    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
+    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
+    maskLayer.locations = [NSArray arrayWithObjects:
+                           [NSNumber numberWithFloat:0.0],
+                           [NSNumber numberWithFloat:0.0],
+                           [NSNumber numberWithFloat:0.0],
+                           [NSNumber numberWithFloat:0.8],
+                           [NSNumber numberWithFloat:1.0], nil];
+    maskLayer.bounds = annotationsTableView.layer.bounds;
+    maskLayer.anchorPoint = CGPointZero;
+    annotationsTableView.layer.mask = maskLayer;
+
+    [self.view addSubview:annotationsTableView];
+}
+
+
+- (IBAction)annotationsButtonAction:(id)sender {
+    [fakeGalleryView setAlpha:0.0];
+    if ([annotationsTableView isHidden]) {
+        if ([fluxMetadata count]>0) {
+            [annotationsTableView reloadData];
+            //if there are any rows, scroll to the top of them
+            if ([annotationsTableView numberOfRowsInSection:0]>0) {
+                            [annotationsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            }
+        }
+            [annotationsTableView setHidden:NO];
+            [UIView animateWithDuration:0.3f
+                             animations:^{
+                                 [annotationsTableView setAlpha:1.0];
+                             }
+                             completion:nil];
+        
         [panGesture setEnabled:NO];
         [longPressGesture setEnabled:NO];
         [CameraButton setUserInteractionEnabled:NO];
     }
     else{
-        [annotationsFeedView dismissPopoverAnimated:YES];
-        [panGesture setEnabled:YES];
-        [longPressGesture setEnabled:YES];
-        [CameraButton setUserInteractionEnabled:YES];
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [annotationsTableView setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished){
+                             [annotationsTableView setHidden:YES];
+                             [panGesture setEnabled:YES];
+                             [longPressGesture setEnabled:YES];
+                             [CameraButton setUserInteractionEnabled:YES];
+                         }];
     }
 }
 
-# pragma mark - prepare segue action with identifer
+
+#pragma mark TableView Methods
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    // Return the number of sections.
+    return 1;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    return @"Tags Nearby";
+}
+
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UILabel *label = [[UILabel alloc] init];
+    label.frame = CGRectMake(20, 0, 100, 22);
+    label.textColor = [UIColor lightGrayColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor clearColor];
+    
+    UIView*backgroundView = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, 24)];
+    [backgroundView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
+    
+    // Create header view and add label as a subview
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 22)];
+    [view setBackgroundColor:[UIColor clearColor]];
+    [view addSubview:backgroundView];
+    [view addSubview:label];
+    
+    return view;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    // Return the number of rows in the section.
+    return [fluxMetadata count];
+}
+
+- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
+    return cell.frame.size.height;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"annotationsFeedCell";
+    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    
+    if (cell == nil)
+    {
+        cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                                  reuseIdentifier:CellIdentifier];
+    }
+    [cell initCell];
+    
+    NSNumber *objkey = [[fluxMetadata allKeys] objectAtIndex:indexPath.row];
+    FluxScanImageObject *rowObject = [fluxMetadata objectForKey: objkey];
+    
+    cell.imageID = rowObject.imageID;
+    if ([fluxImageCache objectForKey:rowObject.localThumbID] == nil)
+    {
+        [networkServices getThumbImageForID:cell.imageID];
+    }
+    else{
+         [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localThumbID]];
+    }
+    cell.descriptionLabel.text = rowObject.descriptionString;
+    cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];
+    [cell.timestampLabel setText:[dateFormatter stringFromDate:rowObject.timestamp]];
+    [cell setCategory:rowObject.categoryID];
+    
+    return cell;
+}
+
+//remove all but selected cell - not called right now
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    //    NSMutableArray *cellIndicesToBeDeleted = [[NSMutableArray alloc] init];
+    //    for (int i = 0; i < [tableView numberOfRowsInSection:0]; i++) {
+    //        if (i != indexPath.row) {
+    //            NSIndexPath *p = [NSIndexPath indexPathForRow:i inSection:1];
+    //            [cellIndicesToBeDeleted addObject:p];
+    //        }
+    //    }
+    //    [tableView deleteRowsAtIndexPaths:cellIndicesToBeDeleted
+    //                     withRowAnimation:UITableViewRowAnimationFade];
+    //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    [CATransaction begin];
+    [CATransaction setDisableActions:YES];
+    annotationsTableView.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
+    [CATransaction commit];
+}
+
+# pragma mark - Map View Transition
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([[segue identifier] isEqualToString:@"pushMapModalView"])
     {
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
-        fluxMapViewController.mapAnnotationsDictionary = self.imageDict;
+        
+        fluxMapViewController.fluxImageCache = self.fluxImageCache;
+        fluxMapViewController.fluxMetadata = self.fluxMetadata;
     }
+}
+
+- (IBAction)showFakeGallery:(id)sender {
+    [annotationsTableView setAlpha:0.0];
+    if (fakeGalleryView.alpha == 0.0) {
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [fakeGalleryView setAlpha:1.0];
+                         }];
+        [CameraButton setEnabled:NO];
+    }
+    else{
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [fakeGalleryView setAlpha:0.0];
+                         }];
+        [CameraButton setEnabled:YES];
+    }
+
 }
 
 #pragma mark - OpenGLView
@@ -146,10 +326,9 @@
     [self addChildViewController:openGLController];
     [openGLController didMoveToParentViewController:self];
     openGLController.view.frame = self.view.bounds;
-}
-
-- (void)OpenGLView:(FluxOpenGLViewController *)glView didUpdateImageList:(NSMutableDictionary *)aImageDict{
-    self.imageDict = aImageDict;
+    
+    openGLController.fluxImageCache = self.fluxImageCache;
+    openGLController.fluxMetadata = self.fluxMetadata;
 }
 
 #pragma mark - Gesture Recognizer
@@ -181,16 +360,16 @@
 }
 
 - (void)handleTapGesture:(UITapGestureRecognizer*) sender{
-    if (![annotationsFeedView popoverIsHidden]) {
-        
-        CGPoint touchLoc = [sender locationInView:self.view];
-        BOOL isWithinAnnotationsView = CGRectContainsPoint(annotationsFeedView.view.frame, touchLoc);
-        BOOL isWithinCameraControlsView = CGRectContainsPoint(self.drawerContainerView.frame, touchLoc);
-        isWithinCameraControlsView = NO;
-        if (!isWithinAnnotationsView && !isWithinCameraControlsView) {
-            [self annotationsButtonAction:nil];
-        }
-    }
+//    if (![annotationsFeedView popoverIsHidden]) {
+//        
+//        CGPoint touchLoc = [sender locationInView:self.view];
+//        BOOL isWithinAnnotationsView = CGRectContainsPoint(annotationsFeedView.view.frame, touchLoc);
+//        BOOL isWithinCameraControlsView = CGRectContainsPoint(self.drawerContainerView.frame, touchLoc);
+//        isWithinCameraControlsView = NO;
+//        if (!isWithinAnnotationsView && !isWithinCameraControlsView) {
+//            [self annotationsButtonAction:nil];
+//        }
+//    }
     
 }
 
@@ -312,90 +491,14 @@
 - (void)setupAVCapture
 {
     AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
-//    
-//	NSError *error = nil;
-//	
-//	AVCaptureSession *session = [AVCaptureSession new];
-//    [session setSessionPreset:AVCaptureSessionPresetHigh]; // full resolution photo...
-//	
-//    // Select a video device, make an input
-//    device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-//    
-//    //set autofocus
-//    BOOL locked = [device lockForConfiguration:nil];
-//    if (locked)
-//    {
-//        device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
-//        [device unlockForConfiguration];
-//    }
-// 	
-//    AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
-//    
-//    if (error == nil)
-//    {
-//        if ( [session canAddInput:deviceInput] )
-//            [session addInput:deviceInput];
-//        
-//        // Make a still image output
-//        stillImageOutput = [AVCaptureStillImageOutput new];
-//        //[stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:(__bridge void *)(AVCaptureStillImageIsCapturingStillImageContext)];
-//        if ( [session canAddOutput:stillImageOutput] )
-//            [session addOutput:stillImageOutput];
-//        
-//        // Make a video data output
-//        videoDataOutput = [AVCaptureVideoDataOutput new];
-//        
-//        // we want BGRA, both CoreGraphics and OpenGL work well with 'BGRA'
-//        NSDictionary *rgbOutputSettings = [NSDictionary dictionaryWithObject:
-//                                           [NSNumber numberWithInt:kCMPixelFormat_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
-//        [videoDataOutput setVideoSettings:rgbOutputSettings];
-//        [videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
-//        
-//        // create a serial dispatch queue used for the sample buffer delegate as well as when a still image is captured
-//        // a serial dispatch queue must be used to guarantee that video frames will be delivered in order
-//        // see the header doc for setSampleBufferDelegate:queue: for more information
-//        videoDataOutputQueue = dispatch_queue_create("VideoDataOutputQueue", DISPATCH_QUEUE_SERIAL);
-//        [videoDataOutput setSampleBufferDelegate:self queue:videoDataOutputQueue];
-//        
-//        if ([session canAddOutput:videoDataOutput]){
-//            [session addOutput:videoDataOutput];
-//        }
-//        [[videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:NO];
-//        previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:session];
-//        [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
-//        [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-//        CALayer *rootLayer = [self.view layer];
-//        //[rootLayer setMasksToBounds:YES];
-//        [previewLayer setFrame:self.view.bounds];
-//        [rootLayer insertSublayer:previewLayer atIndex:0];
-//        //[rootLayer addSublayer:previewLayer];
-//        [session startRunning];
-//    }
-//    
-//	//[session release];
-//    
-//	if (error)
-//    {
-//		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[error code]]
-//															message:[error localizedDescription]
-//														   delegate:nil
-//												  cancelButtonTitle:@"Dismiss"
-//												  otherButtonTitles:nil];
-//		[alertView show];
-//		//[alertView release];
-//        [self pauseAVCapture];
-//	}
+
     cameraManager = [FluxAVCameraSingleton sharedCamera];
     previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
     [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
     [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
     CALayer *rootLayer = [self.view layer];
-    //[rootLayer setMasksToBounds:YES];
     [previewLayer setFrame:self.view.bounds];
     [rootLayer insertSublayer:previewLayer atIndex:0];
-    //[rootLayer addSublayer:previewLayer];
-    //[cameraManager.videoDataOutput setSampleBufferDelegate:self queue:cameraManager.videoDataOutputQueue];
-    
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(annotationsViewDidPop:)  name:@"AnnotationViewPopped"  object:nil];
 }
@@ -524,25 +627,24 @@
                              [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
                              [gridView setAlpha:0.0];
                              [openGLController.view setAlpha:1.0];
+                             [[CameraButton getThumbView] setAlpha:0.0];
                          }
                          completion:^(BOOL finished){
                              //stops drawing them
                              [panGesture setEnabled:YES];
                              [longPressGesture setEnabled:YES];
                              [gridView setHidden:YES];
-                             //[cameraManager setSampleBufferDelegate:openGLController forViewController:openGLController];
-
+                             [[CameraButton getThumbView] setHidden:NO];
                          }];
         
         CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
         bounceAnimation.values = [NSArray arrayWithObjects:
-                                  [NSNumber numberWithFloat:2.0],
+                                  [NSNumber numberWithFloat:1.0],
+                                  [NSNumber numberWithFloat:0.7],
                                   [NSNumber numberWithFloat:0.9],
-                                  [NSNumber numberWithFloat:1.1],
                                   [NSNumber numberWithFloat:1.0], nil];
         bounceAnimation.duration = 0.3;
         [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
-        CameraButton.layer.transform = CATransform3DIdentity;
         
         camMode = [NSNumber numberWithInt:0];
     }
@@ -551,12 +653,15 @@
         [panGesture setEnabled:NO];
         [longPressGesture setEnabled:NO];
         [gridView setHidden:NO];
+        [[CameraButton getThumbView] setHidden:NO];
         [UIView animateWithDuration:0.3f
                          animations:^{
                              [headerView setAlpha:0.0];
                              [self.drawerContainerView setAlpha:0.0];
                              [gridView setAlpha:1.0];
                              [openGLController.view setAlpha:0.0];
+                             [[CameraButton getThumbView] setAlpha:1.0];
+                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
                          }
                          completion:^(BOOL finished){
                              //stops drawing them
@@ -565,20 +670,17 @@
                              [self startDeviceMotion];
                              [openGLController.view setHidden:YES];
                              camMode = [NSNumber numberWithInt:1];
-                             //[cameraManager setSampleBufferDelegate:self forViewController:self];
                          }];
         
         CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
         bounceAnimation.values = [NSArray arrayWithObjects:
                                   [NSNumber numberWithFloat:1.0],
-                                  [NSNumber numberWithFloat:2.1],
-                                  [NSNumber numberWithFloat:1.8],
-                                  [NSNumber numberWithFloat:2.0], nil];
+                                  [NSNumber numberWithFloat:1.5],
+                                  [NSNumber numberWithFloat:0.8],
+                                  [NSNumber numberWithFloat:1.0], nil];
         bounceAnimation.duration = 0.3;
-
+        
         [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
-        CameraButton.layer.transform = CATransform3DIdentity;
-        CameraButton.transform = CGAffineTransformScale(CameraButton.transform, 2.0, 2.0);
     }
     //going to confirm cam
     else{
@@ -658,169 +760,38 @@
              executionTime = [endTime timeIntervalSinceDate:startTime];
              NSLog(@"Execution Time (2): %f", executionTime);
              
-             //save picture to photo album/locally
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
-             UIImage *theimg = [UIImage imageWithData:jpeg];
-             capturedImage = theimg;
+             capturedImage = [UIImage imageWithData:jpeg];
              
-//             // Grab a copy of the current metadata dictionary for modification - will be saved in image
-//             CFDictionaryRef metaDict = CMCopyDictionaryOfAttachments(NULL, imageDataSampleBuffer, kCMAttachmentMode_ShouldPropagate);
-//             CFMutableDictionaryRef mutableMetadata = CFDictionaryCreateMutableCopy(NULL, 0, metaDict);
-//             
-//             // Create the metadata dictionary which is saved with image as XML
-//             imgMetadata = [[NSMutableDictionary alloc] init];
-//             
-//             // Create formatted date
-//             NSTimeZone      *timeZone   = [NSTimeZone timeZoneWithName:@"UTC"];
-//             NSDateFormatter *formatter  = [[NSDateFormatter alloc] init];
-//             [formatter setTimeZone:timeZone];
-//             [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
-//             
-//             NSMutableDictionary *GPSDictionary = [[NSMutableDictionary alloc] init];
-//             timestampString = nil;
-//             
-//             if (location != nil)
-//             {
-//                 // Create GPS Dictionary
-//                 [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.coordinate.latitude)] forKey:(NSString *)kCGImagePropertyGPSLatitude];
-//                 [GPSDictionary setValue:((location.coordinate.latitude >= 0) ? @"N" : @"S") forKey:(NSString *)kCGImagePropertyGPSLatitudeRef];
-//                 [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.coordinate.longitude)] forKey:(NSString *)kCGImagePropertyGPSLongitude];
-//                 [GPSDictionary setValue:((location.coordinate.longitude >= 0) ? @"E" : @"W") forKey:(NSString *)kCGImagePropertyGPSLongitudeRef];
-//                 [GPSDictionary setValue:[formatter stringFromDate:[location timestamp]] forKey:(NSString *)kCGImagePropertyGPSDateStamp];
-//                 [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.altitude)] forKey:(NSString *)kCGImagePropertyGPSAltitude];
-//                 [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.horizontalAccuracy)] forKey:(NSString *)(NSString *)@"HorizontalAccuracy"];
-//                 [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.verticalAccuracy)] forKey:(NSString *)(NSString *)@"VerticalAccuracy"];
-//                 [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.speed)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSSpeed];
-//                 [GPSDictionary setValue:[NSNumber numberWithDouble:fabs(location.course)] forKey:(NSString *)(NSString *)kCGImagePropertyGPSDestBearing];
-//                 
-//                 [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss:SS"];
-//                 //timestampstr = [formatter stringFromDate:loc.timestamp];
-//                 theDate = [[NSDate alloc]init];
-//                 timestampString = [formatter stringFromDate:theDate];
-//             }
-//             else
-//             {
-//                 NSLog(@"No location data to store with image");
-//             }
-//             
-//             // Overwrite updated GPS information
-//             CFDictionarySetValue(mutableMetadata, kCGImagePropertyGPSDictionary, (void *)GPSDictionary);
-//             
-//             // Add GPSDictionary to Position section of XML
-//             [imgMetadata setValue:GPSDictionary forKey:(NSString *)@"Position"];
-//             
-//             //add heading
-//             [imgMetadata setValue:[NSNumber numberWithDouble:locationManager.heading] forKey:(NSString *)@"Heading"];
-//             
-//             NSMutableDictionary *EXIFDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutableMetadata, kCGImagePropertyExifDictionary);
-//             //NSMutableDictionary *EXIFAuxDictionary = (NSMutableDictionary*)CFDictionaryGetValue(mutable, kCGImagePropertyExifAuxDictionary);
-//             
-//             CFDictionarySetValue(mutableMetadata, kCGImagePropertyExifDictionary, (void *)EXIFDictionary);
-//             
-//             // Orientation Section
-//             CMRotationMatrix m = att.rotationMatrix;
-//             
-//             // dump the rotation matrix as a 2-d array
-//             NSMutableDictionary *OrientDictionary = [[NSMutableDictionary alloc] init];
-//             NSArray *rmr1 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m11], [NSNumber numberWithDouble:m.m12],
-//                              [NSNumber numberWithDouble:m.m13], [NSNumber numberWithDouble:0.0], nil];
-//             NSArray *rmr2 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m21], [NSNumber numberWithDouble:m.m22],
-//                              [NSNumber numberWithDouble:m.m23], [NSNumber numberWithDouble:0.0], nil];
-//             NSArray *rmr3 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:m.m31], [NSNumber numberWithDouble:m.m32],
-//                              [NSNumber numberWithDouble:m.m33], [NSNumber numberWithDouble:0.0], nil];
-//             NSArray *rmr4 = [NSArray arrayWithObjects:[NSNumber numberWithDouble:0.0], [NSNumber numberWithDouble:0.0],
-//                              [NSNumber numberWithDouble:0.0], [NSNumber numberWithDouble:1.0], nil];
-//             NSArray *rm = [NSArray arrayWithObjects:rmr1, rmr2, rmr3, rmr4, nil];
-//             [OrientDictionary setValue:rm forKey:(NSString *)@"AttitudeRotationMatrix"];
-//             
-//             // dump the euler angles as an array
-//             NSArray *ev = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.yaw], [NSNumber numberWithDouble:att.pitch],
-//                            [NSNumber numberWithDouble:att.roll], nil];
-//             [OrientDictionary setValue:ev forKey:(NSString *)@"EulerAngles"];
-//             
-//             // dump the quaternion portion as an array
-//             NSArray *qv = [NSArray arrayWithObjects:[NSNumber numberWithDouble:att.quaternion.w],
-//                            [NSNumber numberWithDouble:att.quaternion.x], [NSNumber numberWithDouble:att.quaternion.y],
-//                            [NSNumber numberWithDouble:att.quaternion.z], nil];
-//             [OrientDictionary setValue:qv forKey:(NSString *)@"Quaternion"];
-//             
-//             // Add OrientDictionary to Orientation section of XML
-//             [imgMetadata setValue:OrientDictionary forKey:(NSString *)@"Orientation"];
-//             
-//             // Device Section
-//             NSMutableDictionary *DeviceDictionary = [[NSMutableDictionary alloc] init];
-//             
-//             NSUUID *duid = [[UIDevice currentDevice] identifierForVendor];
-//             NSString *model = [[UIDevice currentDevice] model];
-//             [DeviceDictionary setValue:[duid UUIDString] forKey:(NSString *)@"DeviceID"];
-//             [DeviceDictionary setValue:model forKey:(NSString *)@"Model"];
-//             [DeviceDictionary setValue:(isUsingFrontFacingCamera?@"Front":@"Back") forKey:(NSString *)@"Camera"];
-//             [DeviceDictionary setValue:NSStringFromUIInterfaceOrientation([UIApplication sharedApplication].statusBarOrientation) forKey:@"Orientation"];
-//             [imgMetadata setValue:DeviceDictionary forKey:(NSString *)@"Device"];
-//             
-//             // Image Section
-//             NSMutableDictionary *ImageDictionary = [[NSMutableDictionary alloc] init];
-//             
-//             [ImageDictionary setValue:timestampString forKey:(NSString *)@"TimeStamp"];
-//             [ImageDictionary setValue:@"SelectedCategory" forKey:(NSString *)@"Category"];
-//             [ImageDictionary setValue:@"Arbitrary Description, optionally containing #tags or @userlinks" forKey:(NSString *)@"Description"];
-//             
-//             [imgMetadata setValue:ImageDictionary forKey:(NSString *)@"Image"];
-//             
-//             
-//             // write the file with exif data
-//             CGImageSourceRef  source;
-//             source = CGImageSourceCreateWithData((__bridge CFDataRef)jpeg, NULL);
-//             
-//             CFStringRef UTI = CGImageSourceGetType(source); //this is the type of image (e.g., public.jpeg)
-//             
-//             // this will be the data CGImageDestinationRef will write into
-//             imgData = [NSMutableData data];
-//             
-//             CGImageDestinationRef destination = CGImageDestinationCreateWithData((__bridge CFMutableDataRef)imgData,UTI,1,NULL);
-//             
-//             if(!destination)
-//             {
-//                 NSLog(@"***Could not create image destination ***");
-//             }
-//             
-//             // add the image contained in the image source to the destination, over-writing the old metadata with our modified metadata
-//             CGImageDestinationAddImageFromSource(destination,source,0, (CFDictionaryRef) mutableMetadata);
-//             
-//             // tell the destination to write the image data and metadata into our data object.
-//             // It will return false if something goes wrong
-//             BOOL success = NO;
-//             success = CGImageDestinationFinalize(destination);
-//             
-//             if(!success)
-//             {
-//                 NSLog(@"***Could not create data from image destination ***");
-//             }
+             NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
+             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+             outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+             NSString *dateString = [outDateFormat stringFromDate:startTime];
+             
              int userID = 1;
              int cameraID = 1;
              int categoryID = 1;
              
-             capturedImageObject = [[FluxScanImageObject alloc]initWithImage:capturedImage
-                                                              fromUserWithID:userID
-                                                           atTimestampString:[[NSDate date]description]
-                                                                 andCameraID:cameraID
-                                                               andCategoryID:categoryID
-                                                       withDescriptionString:@""
-                                                                 andlatitude:location.coordinate.latitude
-                                                                andlongitude:location.coordinate.longitude
-                                                                 andaltitude:location.altitude
-                                                                  andHeading:heading
-                                                                      andYaw:att.yaw
-                                                                    andPitch:att.pitch
-                                                                     andRoll:att.roll
-                                                                       andQW:att.quaternion.w
-                                                                       andQX:att.quaternion.x
-                                                                       andQY:att.quaternion.y
-                                                                       andQZ:att.quaternion.z];
-             
-             //cleanup
-//             CFRelease(destination);
-//             CFRelease(source);
+             capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
+                                                            atTimestampString:dateString
+                                                                  andCameraID:cameraID
+                                                                andCategoryID:categoryID
+                                                        withDescriptionString:@""
+                                                                  andlatitude:location.coordinate.latitude
+                                                                 andlongitude:location.coordinate.longitude
+                                                                  andaltitude:location.altitude
+                                                                   andHeading:heading
+                                                                       andYaw:att.yaw
+                                                                     andPitch:att.pitch
+                                                                      andRoll:att.roll
+                                                                        andQW:att.quaternion.w
+                                                                        andQX:att.quaternion.x
+                                                                        andQY:att.quaternion.y
+                                                                        andQZ:att.quaternion.z];
+
+#warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
+             // Also set the internal timestamp variable to match the string representation
+             [capturedImageObject setTimestamp:startTime];
              
              //UI Updates
              [self setUIForCamMode:[NSNumber numberWithInt:2]];
@@ -836,38 +807,55 @@
 // utility routing used during image capture to set up capture orientation
 - (AVCaptureVideoOrientation)avOrientationForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
 {
-	AVCaptureVideoOrientation result = deviceOrientation;
-	if (deviceOrientation == AVCaptureVideoOrientationLandscapeLeft )
+    AVCaptureVideoOrientation result = AVCaptureVideoOrientationPortrait;
+
+	if (deviceOrientation == AVCaptureVideoOrientationPortraitUpsideDown )
+    {
+		result = AVCaptureVideoOrientationPortraitUpsideDown;
+    }
+	else if (deviceOrientation == AVCaptureVideoOrientationLandscapeLeft )
+    {
 		result = AVCaptureVideoOrientationLandscapeRight;
+    }
 	else if ( deviceOrientation == UIDeviceOrientationLandscapeRight )
+    {
 		result = AVCaptureVideoOrientationLandscapeLeft;
+    }
 	return result;
 }
 
 
-- (IBAction)approveImageAction:(id)sender {
+- (IBAction)approveImageAction:(id)sender
+{
     [self pauseAVCapture];
     [self stopDeviceMotion];
     
-    //[self performSelector:@selector(setUIForCamMode:) withObject:[NSNumber numberWithInt:0] afterDelay:0.3];
-    
-    
     FluxImageAnnotationViewController *annotationsView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxImageAnnotationViewController"];
-    [annotationsView setCapturedImage:capturedImageObject andLocation:locationManager.location];
+    
+    NSString *locationString = locationManager.subadministativearea;
+    NSString *sublocality = locationManager.sublocality;
+    if (sublocality.length > 0)
+    {
+        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
+    }
+
+    annotationsView.fluxImageCache = self.fluxImageCache;
+    annotationsView.fluxMetadata = self.fluxMetadata;
+    [annotationsView setCapturedImage:capturedImageObject andImage:capturedImage andLocationDescription:locationString];
+    
     annotationsView.view.backgroundColor = [UIColor clearColor];
     annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     [self presentViewController:annotationsView animated:YES completion:nil];
 }
 
-- (IBAction)retakeImageAction:(id)sender {
+- (IBAction)retakeImageAction:(id)sender
+{
     [gridView setHidden:NO];
     [self.cameraApproveContainerView setHidden:YES];
     [CameraButton setHidden:NO];
     camMode = [NSNumber numberWithInt:1];
     [self restartAVCaptureWithBlur:YES];
-    //[self setUIForCamMode:[NSNumber numberWithInt:1]];
 }
-
 //-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
 //    UITouch *touch = [[event allTouches] anyObject];
 //    if ([[touch.view class] ) {
@@ -925,9 +913,9 @@
     {
         changeToOrientation = toInterfaceOrientation;
         
-        if (![annotationsFeedView popoverIsHidden])
+        if (![annotationsTableView isHidden])
         {
-            [annotationsFeedView dismissPopoverAnimated:NO];
+            [annotationsTableView setHidden:YES];
         }
         
         [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
@@ -944,11 +932,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    self.fluxImageCache = [[NSCache alloc] init];
+    self.fluxMetadata = [[NSMutableDictionary alloc] init];
+    
     [self setupAVCapture];
     [self setupGestureHandlers];
     [self setupCameraView];
     [self setupMotionManager];
     [self setupOpenGLView];
+    [self setupAnnotationsTableView];
 
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];
@@ -956,13 +949,20 @@
     
     [self setupNetworkServices];
     
-    self.imageDict = [[NSMutableDictionary alloc]init];
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     //temporarily set the date range label to today's date
     dateFormatter  = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"dd MMM, YYYY"];
     [dateRangeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
+    
+    fakeGalleryView = [[UIImageView alloc]initWithFrame:CGRectMake(7, 70, 306, 160)];
+    [fakeGalleryView setContentMode:UIViewContentModeScaleAspectFit];
+    [fakeGalleryView setClipsToBounds:YES];
+    [fakeGalleryView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
+    [fakeGalleryView setImage:[UIImage imageNamed:@"fakeGallery"]];
+    [fakeGalleryView setAlpha:0.0];
+    [self.view addSubview:fakeGalleryView];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
