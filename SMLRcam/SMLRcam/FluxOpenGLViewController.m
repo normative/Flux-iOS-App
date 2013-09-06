@@ -26,6 +26,8 @@ err = glGetError();								\
 }													\
 }
 
+const float MAX_IMAGE_RADIUS = 7.5;
+
 const int number_textures = 5;
 
 // Uniform index.
@@ -432,9 +434,10 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     }
     
     
+//    if(distancetoPlane > (distance + 3))
     float _distanceToUser = GLKVector3Length(P0);
     
-    if(_distanceToUser> 5.0)
+    if(_distanceToUser > MAX_IMAGE_RADIUS)
     {
         
       //  NSLog(@"too far to render");
@@ -666,7 +669,7 @@ void init(){
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
+    [networkServices getImagesForLocation:loc.coordinate andRadius:10.0];
 }
 
 #pragma mark - Motion Manager
@@ -705,37 +708,40 @@ void init(){
 {
     NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
     
-    // Iterate over the list and clear out anything that is not local-only
-    for (id localID in self.nearbyList)
-    {
-        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
-        if (locationObject.imageID < 0)
+    [_nearbyListLock lock];
+    
+        // Iterate over the list and clear out anything that is not local-only
+        for (id localID in self.nearbyList)
         {
-            [localOnlyObjects addObject:localID];
+            FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
+            if (locationObject.imageID < 0)
+            {
+                [localOnlyObjects addObject:localID];
+            }
         }
-    }
-    
-    self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
-    
-    // Need to update all metadata objects even if they exist (in case they change in the future)
-    // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
-    // when a desired image is loaded (happens after the texture is loaded)
-    for (id curKey in [imageList allKeys])
-    {
-        FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
-        [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
-        if (![self.nearbyList containsObject:curImgObj.localID])
+        
+        self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
+        
+        // Need to update all metadata objects even if they exist (in case they change in the future)
+        // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
+        // when a desired image is loaded (happens after the texture is loaded)
+        for (id curKey in [imageList allKeys])
         {
-            [self.nearbyList addObject:curImgObj.localID];
+            FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
+            [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
+            if (![self.nearbyList containsObject:curImgObj.localID])
+            {
+                [self.nearbyList addObject:curImgObj.localID];
+            }
         }
-    }
+        
+        if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
+        {
+            [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
+        }
     
-    if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
-    {
-        [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
-    }
-    
-    [self populateImageData];
+        [self populateImageData];
+    [_nearbyListLock unlock];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
@@ -877,6 +883,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self.renderedTextures addObject:@""];
     }
     self.requestList = [[NSMutableArray alloc] init];
+    
+    _nearbyListLock = [[NSLock alloc] init];
+    
     [self setupLocationManager];
     [self setupMotionManager];
     [self setupNetworkServices];
@@ -985,13 +994,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     NSString* localID = [[notification userInfo] objectForKey:FluxImageAnnotationDidAcquireNewPictureLocalIDKey];
     
-    if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
-    {
-        // We have a new picture ready in the cache.
-        // Add the ID to the current list of nearby items, and re-sort and re-prune the list
-        [self.nearbyList addObject:localID];
-        [self populateImageData];
-    }
+    [_nearbyListLock lock];
+        if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
+        {
+            // We have a new picture ready in the cache.
+            // Add the ID to the current list of nearby items, and re-sort and re-prune the list
+            [self.nearbyList addObject:localID];
+            [self populateImageData];
+        }
+    [_nearbyListLock unlock];
 }
 
 -(void) populateImageData
