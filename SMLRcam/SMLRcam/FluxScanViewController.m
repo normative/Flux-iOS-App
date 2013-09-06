@@ -9,10 +9,12 @@
 #import "FluxScanViewController.h"
 
 #import "UIViewController+MMDrawerController.h"
-#import "FluxImageAnnotationViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 
 #import <ImageIO/ImageIO.h>
+
+NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
+NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
 
 @implementation FluxScanViewController
 
@@ -70,6 +72,60 @@
             }
     }
     [annotationsTableView reloadData];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
+    //subtract a bit for the end wait
+    progressView.progress = bytesSent/size -0.05;
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
+{
+    progressView.progress = 1;
+    
+    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
+    
+    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+    {
+        // FluxScanImageObject exists in the local cache. Replace it with updated object.
+        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+        
+        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
+        {
+            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
+        }
+        else
+        {
+            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
+        }
+    }
+    else
+    {
+        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
+    }
+    
+    [UIView animateWithDuration:0.2f
+                     animations:^{
+                         [progressView setAlpha:0.0];
+                     }];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
+                                                        message:[e localizedDescription]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+    [alertView show];
+    
+    
+    [UIView animateWithDuration:0.2f
+                     animations:^{
+                         [progressView setAlpha:0.0];
+                     }
+                     completion:^(BOOL finished){
+                         progressView.progress = 0;
+                     }];
 }
 
 #pragma mark - Motion Methods
@@ -146,6 +202,7 @@
 
 - (IBAction)annotationsButtonAction:(id)sender {
     [fakeGalleryView setAlpha:0.0];
+    [CameraButton setEnabled:YES];
     if ([annotationsTableView isHidden]) {
         if ([fluxMetadata count]>0) {
             [annotationsTableView reloadData];
@@ -352,25 +409,6 @@
     thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
     [thumbView setHidden:YES];
     [self.view addSubview:thumbView];
-    
-    //tap gesture to exit annotationView. This blocks the tableView taps as of now.
-    tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTapGesture:)];
-    [tapGesture setNumberOfTapsRequired:1];
-    [self.view addGestureRecognizer:tapGesture];
-}
-
-- (void)handleTapGesture:(UITapGestureRecognizer*) sender{
-//    if (![annotationsFeedView popoverIsHidden]) {
-//        
-//        CGPoint touchLoc = [sender locationInView:self.view];
-//        BOOL isWithinAnnotationsView = CGRectContainsPoint(annotationsFeedView.view.frame, touchLoc);
-//        BOOL isWithinCameraControlsView = CGRectContainsPoint(self.drawerContainerView.frame, touchLoc);
-//        isWithinCameraControlsView = NO;
-//        if (!isWithinAnnotationsView && !isWithinCameraControlsView) {
-//            [self annotationsButtonAction:nil];
-//        }
-//    }
-    
 }
 
 
@@ -486,7 +524,118 @@
     previousYCoord = yCoord;
 }
 
-#pragma mark - AV Capture Methods
+#pragma mark - Camera Methods
+
+- (void)takePicture{
+    
+    
+    __block NSDate *startTime = [NSDate date];
+    
+    
+    //black Animation
+    [blackView setHidden:NO];
+    [UIView animateWithDuration:0.09 animations:^{
+        [blackView setAlpha:0.9];
+    }completion:^(BOOL finished){
+        
+    }];
+    
+    // Collect position and orientation information prior to copying image
+    CLLocation *location = locationManager.location;
+    CMAttitude *att = motionManager.deviceMotion.attitude;
+    CLLocationDirection heading = locationManager.heading;
+    
+    __block NSDate *endTime = [NSDate date];
+    __block NSTimeInterval executionTime = [endTime timeIntervalSinceDate:startTime];
+    NSLog(@"Execution Time (1): %f", executionTime);
+    
+    // Find out the current orientation and tell the still image output.
+	AVCaptureConnection *stillImageConnection = [cameraManager.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
+	AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
+	[stillImageConnection setVideoOrientation:avcaptureOrientation];
+	[stillImageConnection setVideoScaleAndCropFactor:1.0];
+	[cameraManager.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
+                                                                completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
+     {
+         if (error)
+         {
+             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Capture Failed"]
+                                                                 message:[error localizedDescription]
+                                                                delegate:nil
+                                                       cancelButtonTitle:@"Dismiss"
+                                                       otherButtonTitles:nil];
+             [alertView show];
+         }
+         else
+         {
+             endTime = [NSDate date];
+             executionTime = [endTime timeIntervalSinceDate:startTime];
+             NSLog(@"Execution Time (2): %f", executionTime);
+             
+             NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
+             capturedImage = [UIImage imageWithData:jpeg];
+             
+             NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
+             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+             outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+             NSString *dateString = [outDateFormat stringFromDate:startTime];
+             
+             int userID = 1;
+             int cameraID = 1;
+             int categoryID = 1;
+             
+             capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
+                                                            atTimestampString:dateString
+                                                                  andCameraID:cameraID
+                                                                andCategoryID:categoryID
+                                                        withDescriptionString:@""
+                                                                  andlatitude:location.coordinate.latitude
+                                                                 andlongitude:location.coordinate.longitude
+                                                                  andaltitude:location.altitude
+                                                                   andHeading:heading
+                                                                       andYaw:att.yaw
+                                                                     andPitch:att.pitch
+                                                                      andRoll:att.roll
+                                                                        andQW:att.quaternion.w
+                                                                        andQX:att.quaternion.x
+                                                                        andQY:att.quaternion.y
+                                                                        andQZ:att.quaternion.z];
+             
+#warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
+             // Also set the internal timestamp variable to match the string representation
+             [capturedImageObject setTimestamp:startTime];
+             
+             //UI Updates
+             [self setUIForCamMode:[NSNumber numberWithInt:2]];
+             [UIView animateWithDuration:0.09 animations:^{
+                 [blackView setAlpha:0.0];
+             } completion:^(BOOL finished) {
+                 [blackView setHidden:YES];
+             }];
+         }
+     }];
+}
+
+// utility routing used during image capture to set up capture orientation
+- (AVCaptureVideoOrientation)avOrientationForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
+{
+    AVCaptureVideoOrientation result = AVCaptureVideoOrientationPortrait;
+    
+	if (deviceOrientation == AVCaptureVideoOrientationPortraitUpsideDown )
+    {
+		result = AVCaptureVideoOrientationPortraitUpsideDown;
+    }
+	else if (deviceOrientation == AVCaptureVideoOrientationLandscapeLeft )
+    {
+		result = AVCaptureVideoOrientationLandscapeRight;
+    }
+	else if ( deviceOrientation == UIDeviceOrientationLandscapeRight )
+    {
+		result = AVCaptureVideoOrientationLandscapeLeft;
+    }
+	return result;
+}
 
 - (void)setupAVCapture
 {
@@ -549,7 +698,32 @@
 
 - (void)setupCameraView{
     camMode = [NSNumber numberWithInt:0];
-    [self.cameraApproveContainerView setHidden:YES];
+    
+    //photo annotation view
+    [self.photoApprovalView removeFromSuperview];
+    [self.photoApprovalView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height+self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+    [ImageAnnotationTextView SetPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
+    [self.photoApprovalView setHidden:YES];
+    [ImageAnnotationTextView setTheDelegate:self];
+    [self.view addSubview:self.photoApprovalView];
+    
+    //segmented Control
+    HMSegmentedControl *segmentedControl = [[HMSegmentedControl alloc] initWithSectionImages:@[[UIImage imageNamed:@"btn-Annotation-person_default"], [UIImage imageNamed:@"btn-Annotation-place_default"], [UIImage imageNamed:@"btn-Annotation-thing_default"], [UIImage imageNamed:@"btn-Annotation-event_default"]] sectionSelectedImages:@[[UIImage imageNamed:@"btn-Annotation-person_selected"], [UIImage imageNamed:@"btn-Annotation-place_selected"], [UIImage imageNamed:@"btn-Annotation-thing_selected"], [UIImage imageNamed:@"btn-Annotation-event_selected"]]];
+    [segmentedControl setFrame:objectSelectionSegmentedControlPlaceholder.frame];
+    
+    //[segmentedControl setSegmentEdgeInset:UIEdgeInsetsMake(0, 0, 0, 0)];
+    [segmentedControl setSelectionIndicatorHeight:0.0f];
+    [segmentedControl addTarget:self action:@selector(segmentedControlChangedValue:) forControlEvents:UIControlEventValueChanged];
+    [segmentedControl setBackgroundColor:[UIColor clearColor]];
+    [segmentedControl setSelectionLocation:HMSegmentedControlSelectionLocationDown];
+    [segmentedControl setSelectionStyle:HMSegmentedControlSelectionStyleTextWidthStrip];
+    [segmentedControl setSelectedSegmentIndex:1];
+    [capturedImageObject setCategoryID:2];
+    [self.photoApprovalView addSubview:segmentedControl];
+    
+    [progressView setAlpha:0.0];
+
     
     //add gridlines
     gridView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"CameraGridlines.png"]];
@@ -570,30 +744,6 @@
     [blurView setAlpha:0.0];
     [blurView setHidden:YES];
     [self.view addSubview:blurView];
-    
-#warning annotationsTableView is here, commented out
-//    annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
-//    [annotationsFeedView.view setFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
-//    [annotationsFeedView.view setHidden:YES];
-//    [annotationsFeedView.view setAlpha:0.0];
-//    [self addChildViewController:annotationsFeedView];
-//    [annotationsFeedView didMoveToParentViewController:self];
-//    [self.view insertSubview:annotationsFeedView.view belowSubview:headerView];
-//    
-//    //fade out the bottom of the feedView
-//    CAGradientLayer* maskLayer = [CAGradientLayer layer];
-//    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
-//    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
-//    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
-//    maskLayer.locations = [NSArray arrayWithObjects:
-//                           [NSNumber numberWithFloat:0.0],
-//                           [NSNumber numberWithFloat:0.0],
-//                           [NSNumber numberWithFloat:0.0],
-//                           [NSNumber numberWithFloat:0.8],
-//                           [NSNumber numberWithFloat:1.0], nil];
-//    maskLayer.bounds = annotationsFeedView.view.layer.bounds;
-//    maskLayer.anchorPoint = CGPointZero;
-//    annotationsFeedView.view.layer.mask = maskLayer;
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
@@ -613,7 +763,7 @@
     //going to closed cam
     if ([mode isEqualToNumber:[NSNumber numberWithInt:0]]) {
         [self stopDeviceMotion];
-        [self.cameraApproveContainerView setHidden:YES];
+        [self hidePhotoAnnotationView];
         [headerView setHidden:NO];
         [self.drawerContainerView setHidden:NO];
         [CameraButton setHidden:NO];
@@ -652,6 +802,7 @@
     else if ([mode isEqualToNumber:[NSNumber numberWithInt:1]]){
         [panGesture setEnabled:NO];
         [longPressGesture setEnabled:NO];
+        [tapGesture setEnabled:YES];
         [gridView setHidden:NO];
         [[CameraButton getThumbView] setHidden:NO];
         [UIView animateWithDuration:0.3f
@@ -685,18 +836,38 @@
     //going to confirm cam
     else{
         [cameraManager pauseAVCapture];
-        
-        [self.cameraApproveContainerView setHidden:NO];
+        [self showPhotoAnnotationView];
         [CameraButton setHidden:YES];
         [gridView setHidden:YES];
         
         camMode = [NSNumber numberWithInt:2];
     }
-    
+}
+
+- (void)showPhotoAnnotationView{
+    if ([self.photoApprovalView isHidden]) {
+        [self.photoApprovalView setHidden:NO];
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height-self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+                         }];
+    }
+}
+- (void)hidePhotoAnnotationView{
+    if (![self.photoApprovalView isHidden]) {
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                            [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height+self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+                         }
+                         completion:^(BOOL finished){
+                             [self.photoApprovalView setHidden:YES];
+                         }];
+        [ImageAnnotationTextView resignFirstResponder];
+    }
 }
 
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    if ([camMode isEqualToNumber:[NSNumber numberWithInt:1]] || [camMode isEqualToNumber:[NSNumber numberWithInt:2]]) {
+    if ([camMode isEqualToNumber:[NSNumber numberWithInt:1]]) {
         UITouch *touch = [touches anyObject];
         if (![[touch class]isSubclassOfClass:[UIButton class]]) {
             [self setUIForCamMode:[NSNumber numberWithInt:0]];
@@ -705,166 +876,96 @@
     }
 }
 
-- (void)annotationsViewDidPop:(NSNotification *)notification{
-    if (notification.object != nil) {
-        //theres a new image object here.
-    }
-    [self setUIForCamMode:[NSNumber numberWithInt:0]];
+- (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
+    [UIView animateWithDuration:0.2f
+                     animations:^{
+                         [self.photoApprovalView setFrame:CGRectMake(0, self.photoApprovalView.frame.origin.y-200, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+                     }];
 }
 
-#pragma mark AVCam Methods
-- (void)takePicture{
-    
-    
-    __block NSDate *startTime = [NSDate date];
-    
-    
-    //black Animation
-    [blackView setHidden:NO];
-    [UIView animateWithDuration:0.09 animations:^{
-        [blackView setAlpha:0.9];
-    }completion:^(BOOL finished){
-
-    }];
-    
-    // Collect position and orientation information prior to copying image
-    CLLocation *location = locationManager.location;
-    CMAttitude *att = motionManager.deviceMotion.attitude;
-    CLLocationDirection heading = locationManager.heading;
-    
-    __block NSDate *endTime = [NSDate date];
-    __block NSTimeInterval executionTime = [endTime timeIntervalSinceDate:startTime];
-    NSLog(@"Execution Time (1): %f", executionTime);
-    
-    // Find out the current orientation and tell the still image output.
-	AVCaptureConnection *stillImageConnection = [cameraManager.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
-	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
-	AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
-	[stillImageConnection setVideoOrientation:avcaptureOrientation];
-	[stillImageConnection setVideoScaleAndCropFactor:1.0];
-	[cameraManager.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
-                                                  completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
-     {
-         if (error)
-         {
-             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Capture Failed"]
-                                                                 message:[error localizedDescription]
-                                                                delegate:nil
-                                                       cancelButtonTitle:@"Dismiss"
-                                                       otherButtonTitles:nil];
-             [alertView show];
-         }
-         else
-         {
-             endTime = [NSDate date];
-             executionTime = [endTime timeIntervalSinceDate:startTime];
-             NSLog(@"Execution Time (2): %f", executionTime);
-             
-             NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
-             capturedImage = [UIImage imageWithData:jpeg];
-             
-             NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
-             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-             outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-             NSString *dateString = [outDateFormat stringFromDate:startTime];
-             
-             int userID = 1;
-             int cameraID = 1;
-             int categoryID = 1;
-             
-             capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
-                                                            atTimestampString:dateString
-                                                                  andCameraID:cameraID
-                                                                andCategoryID:categoryID
-                                                        withDescriptionString:@""
-                                                                  andlatitude:location.coordinate.latitude
-                                                                 andlongitude:location.coordinate.longitude
-                                                                  andaltitude:location.altitude
-                                                                   andHeading:heading
-                                                                       andYaw:att.yaw
-                                                                     andPitch:att.pitch
-                                                                      andRoll:att.roll
-                                                                        andQW:att.quaternion.w
-                                                                        andQX:att.quaternion.x
-                                                                        andQY:att.quaternion.y
-                                                                        andQZ:att.quaternion.z];
-
-#warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
-             // Also set the internal timestamp variable to match the string representation
-             [capturedImageObject setTimestamp:startTime];
-             
-             //UI Updates
-             [self setUIForCamMode:[NSNumber numberWithInt:2]];
-             [UIView animateWithDuration:0.09 animations:^{
-                 [blackView setAlpha:0.0];
-             } completion:^(BOOL finished) {
-                 [blackView setHidden:YES];
-             }];
-         }
-     }];
-}
-
-// utility routing used during image capture to set up capture orientation
-- (AVCaptureVideoOrientation)avOrientationForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
-{
-    AVCaptureVideoOrientation result = AVCaptureVideoOrientationPortrait;
-
-	if (deviceOrientation == AVCaptureVideoOrientationPortraitUpsideDown )
-    {
-		result = AVCaptureVideoOrientationPortraitUpsideDown;
-    }
-	else if (deviceOrientation == AVCaptureVideoOrientationLandscapeLeft )
-    {
-		result = AVCaptureVideoOrientationLandscapeRight;
-    }
-	else if ( deviceOrientation == UIDeviceOrientationLandscapeRight )
-    {
-		result = AVCaptureVideoOrientationLandscapeLeft;
-    }
-	return result;
-}
-
-
-- (IBAction)approveImageAction:(id)sender
-{
-    [self pauseAVCapture];
-    [self stopDeviceMotion];
-    
-    FluxImageAnnotationViewController *annotationsView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxImageAnnotationViewController"];
-    
-    NSString *locationString = locationManager.subadministativearea;
-    NSString *sublocality = locationManager.sublocality;
-    if (sublocality.length > 0)
-    {
-        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
-    }
-
-    annotationsView.fluxImageCache = self.fluxImageCache;
-    annotationsView.fluxMetadata = self.fluxMetadata;
-    [annotationsView setCapturedImage:capturedImageObject andImage:capturedImage andLocationDescription:locationString];
-    
-    annotationsView.view.backgroundColor = [UIColor clearColor];
-    annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    [self presentViewController:annotationsView animated:YES completion:nil];
+- (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl {
+    [capturedImageObject setCategoryID:(segmentedControl.selectedSegmentIndex + 1)];
 }
 
 - (IBAction)retakeImageAction:(id)sender
 {
     [gridView setHidden:NO];
-    [self.cameraApproveContainerView setHidden:YES];
+    [self hidePhotoAnnotationView];
     [CameraButton setHidden:NO];
     camMode = [NSNumber numberWithInt:1];
     [self restartAVCaptureWithBlur:YES];
 }
-//-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-//    UITouch *touch = [[event allTouches] anyObject];
-//    if ([[touch.view class] ) {
-//        <#statements#>
-//    }
-//    if ([[touch.view class] isSubclassOfClass:[UILabel class]]){
-//        
-//    }
-//}
+
+- (IBAction)approveImageAction:(id)sender
+{
+    [capturedImageObject setDescriptionString:ImageAnnotationTextView.text];
+    [self saveImageObject];
+    
+    [self setUIForCamMode:[NSNumber numberWithInt:0]];
+
+}
+
+- (void)saveImageObject{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
+    bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
+    
+    // Generate a string image id for local use
+    NSString *localID = [capturedImageObject generateUniqueStringID];
+    [capturedImageObject setLocalID:localID];
+    [capturedImageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", capturedImageObject.localID]];
+    //    [imageObject setImageIDFromDateAndUser];
+    
+    // Set the server-side image id to a negative value until server returns actual
+    [capturedImageObject setImageID:-1];
+    
+    // HACK
+    
+    // spin the image CW by 90deg. prior to dumping into the cache;
+    CGSize size = capturedImage.size;
+    UIGraphicsBeginImageContext(size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    
+    //    CGContextTranslateCTM( context, 0.5f * size.width, 0.5f * size.height ) ;
+    //    //CGContextRotateCTM( context, M_PI_2) ;
+    //    [capturedImage drawInRect:(CGRect){ { -size.width * 0.5f, -size.height * 0.5f }, size } ] ;
+    
+    [capturedImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    
+    UIImage *spunImage = UIGraphicsGetImageFromCurrentImageContext();
+    CGContextRestoreGState(context);
+    UIGraphicsEndImageContext();
+    
+    // END HACK
+    
+    // Add the image and metadata to the local cache
+    [fluxImageCache setObject:spunImage forKey:capturedImageObject.localID];
+    [fluxMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
+    
+    // Post notification for observers prior to upload
+    NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
+    [userInfoDict setObject:capturedImageObject.localID forKey:FluxScanViewDidAcquireNewPictureLocalIDKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
+                                                        object:self userInfo:userInfoDict];
+    
+    // Perform any additional (optional) image save tasks
+    if (savelocally || pushToCloud) {
+        if (savelocally)
+        {
+            UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
+        }
+        if (pushToCloud)
+        {
+            [UIView animateWithDuration:0.5f
+                             animations:^{
+                                 [progressView setAlpha:1.0];
+                             }];
+            progressView.progress = 0;
+            [networkServices uploadImage:capturedImageObject andImage:capturedImage];
+        }
+    }
+}
 
 #pragma mark Image Capture Helper Methods
 -(UIImage*)blurImage:(UIImage *)img{
@@ -988,7 +1089,6 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    
     [locationManager endLocating];
     
     // Release any retained subviews of the main view.

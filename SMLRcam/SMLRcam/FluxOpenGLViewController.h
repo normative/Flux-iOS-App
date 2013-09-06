@@ -8,7 +8,7 @@
 
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
-#import "FluxImageAnnotationViewController.h"
+#import "FluxScanViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 #import "FluxNetworkServices.h"

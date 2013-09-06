@@ -306,9 +306,9 @@
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:imageUploadDidFailWithError:)])
         {
-            [delegate NetworkServices:self didFailWithError:error];
+            [delegate NetworkServices:self imageUploadDidFailWithError:error];
         }
     }];
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
