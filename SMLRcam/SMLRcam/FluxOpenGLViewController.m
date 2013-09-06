@@ -26,6 +26,8 @@ err = glGetError();								\
 }													\
 }
 
+const float MAX_IMAGE_RADIUS = 7.5;
+
 const int number_textures = 5;
 
 // Uniform index.
@@ -435,7 +437,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
 //    if(distancetoPlane > (distance + 3))
     float _distanceToUser = GLKVector3Length(P0);
     
-    if(_distanceToUser> 5.0)
+    if(_distanceToUser > MAX_IMAGE_RADIUS)
     {
         
         //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
