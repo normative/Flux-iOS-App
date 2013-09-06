@@ -65,6 +65,8 @@
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
     FluxNetworkServices *networkServices;
+    
+    UIImageView* launchView;
 }
 
 @property (strong) NSCache *fluxImageCache;
