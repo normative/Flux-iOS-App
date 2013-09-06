@@ -669,7 +669,7 @@ void init(){
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
+    [networkServices getImagesForLocation:loc.coordinate andRadius:10.0];
 }
 
 #pragma mark - Motion Manager
