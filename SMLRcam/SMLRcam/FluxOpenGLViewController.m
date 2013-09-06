@@ -440,7 +440,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     if(_distanceToUser > MAX_IMAGE_RADIUS)
     {
         
-      //  NSLog(@"too far to render");
+        //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
         return 0;
     }
 
