@@ -169,7 +169,7 @@ void init_camera_model()
 	float _fov = 2 * atan2(iPhone5_pixelsize*3264.0/2.0, iPhone5_focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
-    camera_perspective = 	GLKMatrix4MakePerspective(_fov * 180.0/3.14, aspect, 0.001f, 50.0f);
+    camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     
 }
 
