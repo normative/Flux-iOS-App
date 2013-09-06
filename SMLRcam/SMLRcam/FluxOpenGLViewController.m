@@ -382,7 +382,8 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
-  //  positionTP.z = sp->ecef.z -userPose.ecef.z;
+    positionTP.z = 0;
+    //sp->ecef.z -userPose.ecef.z;
     /*
      positionTP.x = 0;
      positionTP.y = 0;
@@ -430,14 +431,17 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         return 0;
     }
     
-    float distancetoPlane = GLKVector3Length(GLKVector3Make(t*V.x, t*V.y, t*V.z));
     
-    if(distancetoPlane > (distance + 3))
+//    if(distancetoPlane > (distance + 3))
+    float _distanceToUser = GLKVector3Length(P0);
+    
+    if(_distanceToUser> 5.0)
     {
         
-        NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
+        //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
         return 0;
     }
+
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
