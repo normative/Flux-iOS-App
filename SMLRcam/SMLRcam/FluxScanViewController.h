@@ -56,6 +56,7 @@
     UILongPressGestureRecognizer *longPressGesture;
     UITapGestureRecognizer *tapGesture;
     NSDateFormatter *dateFormatter;
+    NSDateFormatter *thumbDateFormatter;
     float previousYCoord;
     float startXCoord;
     

@@ -20,27 +20,26 @@
         [circleView setImage:[UIImage imageNamed:@"thumbCircle.png"]];
         [self addSubview:circleView];
         
-        UIImageView *clockView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
+        UIImageView *clockView = [[UIImageView alloc]initWithFrame:CGRectMake(0, -19, 15, 15)];
         [clockView setContentMode:UIViewContentModeScaleAspectFit];
         [clockView setImage:[UIImage imageNamed:@"rotatingClock_empty.png"]];
         [self addSubview:clockView];
         
-        self.minuteHandView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
+        self.minuteHandView = [[UIImageView alloc]initWithFrame:CGRectMake(0, -19, 15, 15)];
         //[clockView setContentMode:UIViewContentModeScaleAspectFill];
         [self.minuteHandView setImage:[UIImage imageNamed:@"rotatingClock_minute.png"]];
         [self addSubview:self.minuteHandView];
         
-        self.hourHandView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 15, 15)];
+        self.hourHandView = [[UIImageView alloc]initWithFrame:CGRectMake(0, -19, 15, 15)];
         //[clockView setContentMode:UIViewContentModeScaleAspectFill];
         [self.hourHandView setImage:[UIImage imageNamed:@"rotatingClock_hour.png"]];
         [self addSubview:self.hourHandView];
         
-        self.timeLabel = [[UILabel alloc]initWithFrame:CGRectMake(25, -1, 80, 15)];
+        self.timeLabel = [[UILabel alloc]initWithFrame:CGRectMake(25, -20, 80, 15)];
         [self.timeLabel setTextColor:[UIColor whiteColor]];
         [self.timeLabel setFont:[UIFont systemFontOfSize:10.0]];
         [self.timeLabel setBackgroundColor:[UIColor clearColor]];
         [self insertSubview:self.timeLabel aboveSubview:circleView];
-        
     }
     return self;
 }

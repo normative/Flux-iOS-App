@@ -66,11 +66,12 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
     
     leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services",@"Local Network", @"Walk Mode", @"Area Reset", nil];
     
-//    self.tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"leftDrawerHeaderView"]];
-    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
-    [bgView setImage:[UIImage imageNamed:@"leftDrawerHeaderView"]];
-    //[self.tableView setBackgroundColor:[UIColor clearColor]];
-    //[self.tableView insertSubview:bgView atIndex:0];
+    UIGraphicsBeginImageContext(self.view.frame.size);
+    [[UIImage imageNamed:@"leftDrawerHeaderView"] drawInRect:self.view.bounds];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    self.tableView.backgroundColor = [UIColor colorWithPatternImage:image];
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
