@@ -60,17 +60,11 @@
                                 <rect key="frame" x="7" y="5" width="306" height="60"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y5x-Yz-kwG" customClass="FluxRotatingCompassButton">
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QTA-2K-tgO" customClass="FluxRadarView">
                                         <rect key="frame" x="8" y="10" width="40" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <state key="normal" image="compassButton">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="showFakeGallery:" destination="2" eventType="touchUpInside" id="qnl-dC-4oB"/>
-                                        </connections>
-                                    </button>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                    </view>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="headerSeperator" translatesAutoresizingMaskIntoConstraints="NO" id="jUp-qZ-Pmm">
                                         <rect key="frame" x="56" y="0.0" width="3" height="60"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -112,11 +106,6 @@
                                             <action selector="annotationsButtonAction:" destination="2" eventType="touchUpInside" id="3cf-sm-Pxa"/>
                                         </connections>
                                     </button>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QTA-2K-tgO" customClass="FluxRadarView">
-                                        <rect key="frame" x="4" y="10" width="40" height="40"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.65000000000000002" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -263,7 +252,6 @@
                         <outlet property="CameraButton" destination="c58-0p-wGY" id="lft-Eq-AQi"/>
                         <outlet property="ImageAnnotationTextView" destination="cD1-Yd-7FG" id="w8n-ZW-IQh"/>
                         <outlet property="categorySegmentedControl" destination="dd8-vl-Nkf" id="pSc-oB-lxD"/>
-                        <outlet property="compassBtn" destination="y5x-Yz-kwG" id="nsE-Eu-Hmo"/>
                         <outlet property="dateRangeLabel" destination="gcr-O9-W42" id="CHd-dY-cVi"/>
                         <outlet property="drawerContainerView" destination="PUb-lB-rvW" id="ryh-HE-cwL"/>
                         <outlet property="headerView" destination="jDD-EI-IPQ" id="ftp-vl-dD5"/>
@@ -271,6 +259,7 @@
                         <outlet property="locationLabel" destination="uRS-ak-qsJ" id="nEB-8Y-IuR"/>
                         <outlet property="photoApprovalView" destination="AaZ-gz-ak3" id="wfr-4X-OhQ"/>
                         <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
+                        <outlet property="radarView" destination="QTA-2K-tgO" id="4hz-Fz-yWD"/>
                         <outlet property="rightDriawerButton" destination="bIP-WR-7T3" id="ruk-5m-2yg"/>
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" id="AGI-r8-OnT"/>
                     </connections>
@@ -620,8 +609,7 @@
         <image name="btn-Annotation-discard" width="270" height="100"/>
         <image name="btn-Annotation-save" width="270" height="100"/>
         <image name="camButton" width="80" height="80"/>
-        <image name="clockIcon" width="40" height="40"/>
-        <image name="compassButton" width="100" height="100"/>
+        <image name="clockIcon" width="23" height="24"/>
         <image name="detailButton" width="25" height="24"/>
         <image name="filterButton" width="80" height="80"/>
         <image name="filter_Events" width="40" height="40"/>
