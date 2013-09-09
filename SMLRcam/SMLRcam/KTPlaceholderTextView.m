@@ -25,7 +25,7 @@
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isEditing:) name:UITextViewTextDidChangeNotification object:self];
-    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, -18, 200, 75)];
+    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -20, 200, 75)];
     [placeholderLabel setFont:self.font];
     [placeholderLabel setBackgroundColor:[UIColor clearColor]];
     [placeholderLabel setTextColor:[UIColor lightGrayColor]];

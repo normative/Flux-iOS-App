@@ -375,7 +375,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     // setup the opengl controller
     // first get an instance from storyboard
     openGLController = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
-    [openGLController setTheDelegate:self];
     
     // then add the glkview as the subview of the parent view
     [self.view insertSubview:openGLController.view belowSubview:headerView];
@@ -709,18 +708,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self.view addSubview:self.photoApprovalView];
     
     //segmented Control
-    HMSegmentedControl *segmentedControl = [[HMSegmentedControl alloc] initWithSectionImages:@[[UIImage imageNamed:@"btn-Annotation-person_default"], [UIImage imageNamed:@"btn-Annotation-place_default"], [UIImage imageNamed:@"btn-Annotation-thing_default"], [UIImage imageNamed:@"btn-Annotation-event_default"]] sectionSelectedImages:@[[UIImage imageNamed:@"btn-Annotation-person_selected"], [UIImage imageNamed:@"btn-Annotation-place_selected"], [UIImage imageNamed:@"btn-Annotation-thing_selected"], [UIImage imageNamed:@"btn-Annotation-event_selected"]]];
-    [segmentedControl setFrame:objectSelectionSegmentedControlPlaceholder.frame];
-    
-    //[segmentedControl setSegmentEdgeInset:UIEdgeInsetsMake(0, 0, 0, 0)];
-    [segmentedControl setSelectionIndicatorHeight:0.0f];
-    [segmentedControl addTarget:self action:@selector(segmentedControlChangedValue:) forControlEvents:UIControlEventValueChanged];
-    [segmentedControl setBackgroundColor:[UIColor clearColor]];
-    [segmentedControl setSelectionLocation:HMSegmentedControlSelectionLocationDown];
-    [segmentedControl setSelectionStyle:HMSegmentedControlSelectionStyleTextWidthStrip];
-    [segmentedControl setSelectedSegmentIndex:1];
-    [capturedImageObject setCategoryID:2];
-    [self.photoApprovalView addSubview:segmentedControl];
+    [categorySegmentedControl initWithImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_selected"],[UIImage imageNamed:@"btn-Annotation-place_selected"],[UIImage imageNamed:@"btn-Annotation-thing_selected"],[UIImage imageNamed:@"btn-Annotation-event_selected"], nil] andStandardImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_default"],[UIImage imageNamed:@"btn-Annotation-place_default"],[UIImage imageNamed:@"btn-Annotation-thing_default"],[UIImage imageNamed:@"btn-Annotation-event_default"], nil]];
+    [categorySegmentedControl setDelegate:self];
+    [categorySegmentedControl setSelectedSegmentIndex:0];
+    [capturedImageObject setCategoryID:1];
     
     [progressView setAlpha:0.0];
 
@@ -883,8 +874,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      }];
 }
 
-- (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl {
-    [capturedImageObject setCategoryID:(segmentedControl.selectedSegmentIndex + 1)];
+- (void)SegmentedControlValueDidChange:(KTSegmentedButtonControl *)segmentedControl{
+    [capturedImageObject setCategoryID:(segmentedControl.selectedIndex + 1)];
 }
 
 - (IBAction)retakeImageAction:(id)sender

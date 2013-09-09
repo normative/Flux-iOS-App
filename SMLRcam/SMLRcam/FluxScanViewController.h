@@ -10,7 +10,7 @@
 
 #import "MMDrawerBarButtonItem.h"
 #import "KTPlaceholderTextView.h"
-#import "HMSegmentedControl.h"
+#import "KTSegmentedButtonControl.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxCameraButton.h"
 
@@ -33,7 +33,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate>{
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate, KTSegmentedControlDelegate>{
     
     //headerView
     __weak IBOutlet UIView *headerView;
@@ -56,7 +56,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     UIImageView*blurView;
     __strong IBOutlet FluxCameraButton *CameraButton;
     __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
-    __weak IBOutlet HMSegmentedControl *objectSelectionSegmentedControlPlaceholder;
+    __weak IBOutlet KTSegmentedButtonControl *categorySegmentedControl;
     __weak IBOutlet UIProgressView *progressView;
 
     //Network + Motion
@@ -85,6 +85,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) FluxClockSlidingControl*thumbView;
 
+
 - (void)didUpdatePlacemark:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
 - (void)didUpdateLocation:(NSNotification *)notification;
@@ -106,7 +107,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (UIImage*)blurImage:(UIImage*)img;
 -(void)restartAVCaptureWithBlur:(BOOL)blur;
 -(void)pauseAVCapture;
-- (void)segmentedControlChangedValue:(HMSegmentedControl *)segmentedControl;
 - (void)saveImageObject;
 
 
@@ -117,11 +117,9 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 
 - (void)setupAnnotationsTableView;
-- (void)annotationsViewDidPop:(NSNotification *)notification;
 
 //timeScrolling
 - (void)setupGestureHandlers;
-- (void)handleTapGesture:(UITapGestureRecognizer*) sender;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
 - (void)setThumbViewDate:(float)yCoord;

@@ -199,11 +199,6 @@
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="284"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     </imageView>
-                                    <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9ce-nc-hwb" userLabel="Segmented Control" customClass="HMSegmentedControl">
-                                        <rect key="frame" x="10" y="29" width="300" height="60"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </view>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cD1-Yd-7FG" customClass="KTPlaceholderTextView">
                                         <rect key="frame" x="10" y="112" width="300" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -233,6 +228,11 @@
                                             <action selector="retakeImageAction:" destination="2" eventType="touchUpInside" id="C2J-H8-vUI"/>
                                         </connections>
                                     </button>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dd8-vl-Nkf" customClass="KTSegmentedButtonControl">
+                                        <rect key="frame" x="10" y="16" width="300" height="73"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
@@ -257,13 +257,13 @@
                     <connections>
                         <outlet property="CameraButton" destination="c58-0p-wGY" id="lft-Eq-AQi"/>
                         <outlet property="ImageAnnotationTextView" destination="cD1-Yd-7FG" id="w8n-ZW-IQh"/>
+                        <outlet property="categorySegmentedControl" destination="dd8-vl-Nkf" id="pSc-oB-lxD"/>
                         <outlet property="compassBtn" destination="y5x-Yz-kwG" id="nsE-Eu-Hmo"/>
                         <outlet property="dateRangeLabel" destination="gcr-O9-W42" id="CHd-dY-cVi"/>
                         <outlet property="drawerContainerView" destination="PUb-lB-rvW" id="ryh-HE-cwL"/>
                         <outlet property="headerView" destination="jDD-EI-IPQ" id="ftp-vl-dD5"/>
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
                         <outlet property="locationLabel" destination="uRS-ak-qsJ" id="nEB-8Y-IuR"/>
-                        <outlet property="objectSelectionSegmentedControlPlaceholder" destination="9ce-nc-hwb" id="8Js-TD-Z2L"/>
                         <outlet property="photoApprovalView" destination="AaZ-gz-ak3" id="wfr-4X-OhQ"/>
                         <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
                         <outlet property="rightDriawerButton" destination="bIP-WR-7T3" id="ruk-5m-2yg"/>
