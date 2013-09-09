@@ -3,5 +3,3 @@ platform :ios, '5.0'
 pod 'IDMPhotoBrowser'
 
 pod 'RestKit', '~> 0.20.0'
-
-pod 'HMSegmentedControl', '~> 1.2.0'

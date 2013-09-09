@@ -13,18 +13,20 @@
 @protocol KTPlaceholderTextViewDelegate <NSObject>
 @optional
 - (void)PlaceholderTextViewReturnButtonWasPressed:(KTPlaceholderTextView *)placeholderTextView;
+- (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView*)placeholderTextView;
 @end
 
-@interface KTPlaceholderTextView : UITextView {
+@interface KTPlaceholderTextView : UITextView <UITextViewDelegate> {
     
     NSString*placeholderString;
     UILabel *placeholderLabel;
     id __unsafe_unretained delegate;
 }
 
-@property (unsafe_unretained) id <KTPlaceholderTextViewDelegate> delegate;
+@property (unsafe_unretained) id <KTPlaceholderTextViewDelegate> theDelegate;
 
 - (void)setPlaceholderColor:(UIColor*)color;
 - (void)SetPlaceholderText:(NSString*)thePlaceholder;
+- (void)resetView;
 
 @end

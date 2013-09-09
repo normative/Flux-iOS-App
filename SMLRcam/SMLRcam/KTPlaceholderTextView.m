@@ -10,7 +10,7 @@
 
 @implementation KTPlaceholderTextView
 
-@synthesize delegate;
+@synthesize theDelegate;
 
 - (id) initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
@@ -25,10 +25,11 @@
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isEditing:) name:UITextViewTextDidChangeNotification object:self];
-    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(15, -18, 200, 75)];
+    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -20, 200, 75)];
     [placeholderLabel setFont:self.font];
     [placeholderLabel setBackgroundColor:[UIColor clearColor]];
     [placeholderLabel setTextColor:[UIColor lightGrayColor]];
+    [self setDelegate:self];
 }
 
 #pragma mark - setters
@@ -43,39 +44,32 @@
     [placeholderLabel setTextColor:color];
 }
 
+- (void)resetView{
+    self.text = @"";
+    [placeholderLabel setHidden:NO];
+}
+
 
 #pragma mark - Callbacks
 //called on each keypress. Checks if the textView is blank. If it is, it shows the Placeholder label
 - (void) isEditing:(NSNotification*) notification {
     if (![self.text isEqualToString:[NSString stringWithFormat:@""]]) {
         [placeholderLabel setHidden:YES];
-        if (self.text.length >= 131) {
-            self.text = [self.text substringToIndex:130];
+        if (self.text.length >= 142) {
+            self.text = [self.text substringToIndex:141];
         }
     }
     else{
         [placeholderLabel setHidden:NO];
     }
-    
-    //tests for return key - remove for now.
-    
-//    if ([[self.text substringFromIndex:self.text.length-1] isEqualToString:@"\n"]) {
-//        if ([delegate respondsToSelector:@selector(PlaceholderTextViewReturnButtonWasPressed:)]) {
-//            [delegate PlaceholderTextViewReturnButtonWasPressed:self];
-//        }
-//        self.text = [self.text substringToIndex:self.text.length-1];
-//    }
-    
 }
 
-
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect
-{
-    // Drawing code
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView{
+    if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidBeginEditing:)]) {
+        [theDelegate PlaceholderTextViewDidBeginEditing:self];
+    }
+    return YES;
 }
-*/
+
 
 @end

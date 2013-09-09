@@ -16,8 +16,8 @@
 
 //serverURL
 //#define externServerURL @"http://54.221.222.71/"
-#define externServerURL @"http://54.221.254.230/"
-#define localServerURL @"http://54.221.222.71/"
+#define productionServerURL @"http://54.221.254.230/"
+#define testServerURL @"http://54.221.222.71/"
 //#define localServerURL @"http://192.168.0.41:3001/"
 
 @implementation FluxNetworkServices
@@ -33,11 +33,11 @@
         BOOL isremote = [[defaults objectForKey:@"Server Location"]intValue];
         if (isremote)
         {
-            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:externServerURL]];
+            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:productionServerURL]];
         }
         else
         {
-            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:localServerURL]];
+            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:testServerURL]];
         }
         
         NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful);
@@ -306,9 +306,9 @@
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:imageUploadDidFailWithError:)])
         {
-            [delegate NetworkServices:self didFailWithError:error];
+            [delegate NetworkServices:self imageUploadDidFailWithError:error];
         }
     }];
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started

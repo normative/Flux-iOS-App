@@ -18,12 +18,6 @@
 #define COCOAPODS_VERSION_MINOR_DACircularProgress 1
 #define COCOAPODS_VERSION_PATCH_DACircularProgress 0
 
-// HMSegmentedControl
-#define COCOAPODS_POD_AVAILABLE_HMSegmentedControl
-#define COCOAPODS_VERSION_MAJOR_HMSegmentedControl 1
-#define COCOAPODS_VERSION_MINOR_HMSegmentedControl 2
-#define COCOAPODS_VERSION_PATCH_HMSegmentedControl 0
-
 // IDMPhotoBrowser
 #define COCOAPODS_POD_AVAILABLE_IDMPhotoBrowser
 #define COCOAPODS_VERSION_MAJOR_IDMPhotoBrowser 1

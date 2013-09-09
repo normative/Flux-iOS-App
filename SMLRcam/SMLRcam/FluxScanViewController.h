@@ -9,49 +9,62 @@
 #import <UIKit/UIKit.h>
 
 #import "MMDrawerBarButtonItem.h"
-#import "FluxMapViewController.h"
+#import "KTPlaceholderTextView.h"
+#import "KTSegmentedButtonControl.h"
 #import "FluxClockSlidingControl.h"
-#import "FluxOpenGLViewController.h"
 #import "FluxCameraButton.h"
 
-#import <QuartzCore/QuartzCore.h>
-#import <AVFoundation/AVFoundation.h>
+#import "FluxMapViewController.h"
+#include "FluxOpenGLViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxNetworkServices.h"
 #import "FluxAVCameraSingleton.h"
-#import <CoreMotion/CoreMotion.h>
 
+#import <QuartzCore/QuartzCore.h>
+#import <AVFoundation/AVFoundation.h>
+#import <CoreMotion/CoreMotion.h>
 #import <dispatch/dispatch.h>
+
+
+extern NSString* const FluxScanViewDidAcquireNewPicture;
+extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 @class FluxRotatingCompassButton;
 
 
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate,  OpenGLViewDelegate, UITableViewDataSource, UITableViewDelegate>{
+@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate, KTSegmentedControlDelegate>{
+    
+    //headerView
+    __weak IBOutlet UIView *headerView;
+    __weak IBOutlet UILabel *locationLabel;
+    __weak IBOutlet UILabel *dateRangeLabel;
+    __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     UITableView*annotationsTableView;
     UIImageView*fakeGalleryView;
-   
+    
+    //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
     AVCaptureDevice *device;
+    dispatch_queue_t AVCaptureBackgroundQueue;
     FluxAVCameraSingleton *cameraManager;
-    
     UIImageView *gridView;
     NSNumber* camMode; //0 = off, 1 = on, 2 = confirm
     FluxScanImageObject *capturedImageObject;
     UIImage *capturedImage;
     UIView *blackView;
     UIImageView*blurView;
-    dispatch_queue_t AVCaptureBackgroundQueue;
-    
-    UIInterfaceOrientation changeToOrientation;
+    __strong IBOutlet FluxCameraButton *CameraButton;
+    __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
+    __weak IBOutlet KTSegmentedButtonControl *categorySegmentedControl;
+    __weak IBOutlet UIProgressView *progressView;
 
-    __weak IBOutlet FluxCameraButton *CameraButton;
-    __weak IBOutlet UIView *headerView;
-    __weak IBOutlet UILabel *locationLabel;
-    __weak IBOutlet UILabel *dateRangeLabel;
+    //Network + Motion
+    FluxLocationServicesSingleton *locationManager;
+    CMMotionManager *motionManager;
+    FluxNetworkServices *networkServices;
 
-    __weak IBOutlet FluxRotatingCompassButton *compassBtn;
-    
+    //time scrolling
     UIPanGestureRecognizer *panGesture;
     UILongPressGestureRecognizer *longPressGesture;
     UITapGestureRecognizer *tapGesture;
@@ -60,6 +73,7 @@
     float previousYCoord;
     float startXCoord;
     
+    //openGL
     FluxOpenGLViewController*openGLController;
     
     FluxLocationServicesSingleton *locationManager;
@@ -74,8 +88,9 @@
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
-@property (weak, nonatomic) IBOutlet UIView *cameraApproveContainerView;
+@property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) FluxClockSlidingControl*thumbView;
+
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
@@ -89,6 +104,8 @@
 - (IBAction)retakeImageAction:(id)sender;
 - (IBAction)showFakeGallery:(id)sender;
 
+
+//imageCapture
 - (void)setupAVCapture;
 - (void)setupNetworkServices;
 - (void)setupOpenGLView;
@@ -96,15 +113,19 @@
 - (UIImage*)blurImage:(UIImage*)img;
 -(void)restartAVCaptureWithBlur:(BOOL)blur;
 -(void)pauseAVCapture;
+- (void)saveImageObject;
 
 
 - (void)setupCameraView;
 - (void)setUIForCamMode:(NSNumber*)mode;
-- (void)setupAnnotationsTableView;
-- (void)annotationsViewDidPop:(NSNotification *)notification;
+- (void)showPhotoAnnotationView;
+- (void)hidePhotoAnnotationView;
 
+
+- (void)setupAnnotationsTableView;
+
+//timeScrolling
 - (void)setupGestureHandlers;
-- (void)handleTapGesture:(UITapGestureRecognizer*) sender;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
 - (void)setThumbViewDate:(float)yCoord;
