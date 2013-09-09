@@ -13,6 +13,7 @@
 #import "KTSegmentedButtonControl.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxCameraButton.h"
+#import "FluxRadarView.h"
 
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
