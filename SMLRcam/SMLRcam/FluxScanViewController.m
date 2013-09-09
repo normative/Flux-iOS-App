@@ -1092,15 +1092,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self pauseAVCapture];
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    [locationManager endLocating];
-    
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -1109,6 +1100,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)dealloc
 {
+    [locationManager endLocating];
     locationManager = nil;
 }
 

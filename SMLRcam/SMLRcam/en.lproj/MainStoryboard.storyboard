@@ -615,8 +615,7 @@
         <image name="btn-Annotation-discard" width="270" height="100"/>
         <image name="btn-Annotation-save" width="270" height="100"/>
         <image name="camButton" width="80" height="80"/>
-        <image name="clockIcon" width="23" height="24"/>
-        <image name="closeButton" width="30.239999771118164" height="30.239999771118164"/>
+        <image name="clockIcon" width="40" height="40"/>
         <image name="compassButton" width="100" height="100"/>
         <image name="detailButton" width="25" height="24"/>
         <image name="filterButton" width="80" height="80"/>

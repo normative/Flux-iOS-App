@@ -76,9 +76,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //openGL
     FluxOpenGLViewController*openGLController;
     
-    FluxLocationServicesSingleton *locationManager;
-    CMMotionManager *motionManager;
-    FluxNetworkServices *networkServices;
+    UIInterfaceOrientation *changeToOrientation;
     
     UIImageView* launchView;
 }
