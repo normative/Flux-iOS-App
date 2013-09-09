@@ -27,5 +27,6 @@
 
 - (void)setPlaceholderColor:(UIColor*)color;
 - (void)SetPlaceholderText:(NSString*)thePlaceholder;
+- (void)resetView;
 
 @end

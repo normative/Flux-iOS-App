@@ -44,14 +44,19 @@
     [placeholderLabel setTextColor:color];
 }
 
+- (void)resetView{
+    self.text = @"";
+    [placeholderLabel setHidden:NO];
+}
+
 
 #pragma mark - Callbacks
 //called on each keypress. Checks if the textView is blank. If it is, it shows the Placeholder label
 - (void) isEditing:(NSNotification*) notification {
     if (![self.text isEqualToString:[NSString stringWithFormat:@""]]) {
         [placeholderLabel setHidden:YES];
-        if (self.text.length >= 141) {
-            self.text = [self.text substringToIndex:140];
+        if (self.text.length >= 142) {
+            self.text = [self.text substringToIndex:141];
         }
     }
     else{

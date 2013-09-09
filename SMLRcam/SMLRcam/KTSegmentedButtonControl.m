@@ -24,13 +24,6 @@
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)aDecoder{
-    if(self = [super initWithCoder:aDecoder]) {
-
-    }
-    return self;
-}
-
 - (void)awakeFromNib {
     buttons = [[NSMutableArray alloc]init];
     self.selectedIndex = -1;
@@ -47,9 +40,7 @@
 }
 
 - (void)setSelectedSegmentIndex:(int)index{
-    //[self performSelector:@selector(highlightButton:) withObject:(UIButton*)[buttons objectAtIndex:index] afterDelay:0.0];
     [(UIImageView*)[buttons objectAtIndex:index]setImage:[selectionImages objectAtIndex:index]];
-    //[[buttons objectAtIndex:index] setHighlighted:YES];
     
     if (self.selectedIndex >=0) {
         [(UIImageView*)[buttons objectAtIndex:self.selectedIndex]setImage:[standardImages objectAtIndex:self.selectedIndex]];
@@ -65,11 +56,6 @@
     for (int i = 0; i<count; i++) {
         UIImageView *btnView = [[UIImageView alloc]initWithFrame:CGRectMake(xpos, 0, buttonFrameWidth, self.frame.size.height)];
         [btnView setImage:[standardImages objectAtIndex:i]];
-//        [btn setBackgroundImage:[standardImages objectAtIndex:i] forState:UIControlStateNormal];
-//        [btn setBackgroundImage:[selectionImages objectAtIndex:i] forState:UIControlStateHighlighted];
-//        //[btn addTarget:self action:@selector(buttonWasTapped:) forControlEvents:UIControlEventTouchUpInside];
-//        [btn setContentMode:UIViewContentModeScaleAspectFit];
-//        [btn setAdjustsImageWhenHighlighted:NO];
         [self addSubview:btnView];
         [buttons addObject:btnView];
         xpos += buttonFrameWidth+buttonSpacing;
@@ -88,22 +74,6 @@
             if ([delegate respondsToSelector:@selector(SegmentedControlValueDidChange:)]) {
                 [delegate SegmentedControlValueDidChange:self];
             }
-        }
-    }
-}
-
-- (void)buttonWasTapped:(id)sender{
-    [self performSelector:@selector(highlightButton:) withObject:sender afterDelay:0.0];
-    
-    for (UIButton* btn in buttons){
-        if (sender == btn) {
-            self.selectedIndex = [buttons indexOfObject:btn];
-            if ([delegate respondsToSelector:@selector(SegmentedControlValueDidChange:)]) {
-                [delegate SegmentedControlValueDidChange:self];
-            }
-        }
-        else{
-            [btn setHighlighted:NO];
         }
     }
 }

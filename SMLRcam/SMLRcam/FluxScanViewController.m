@@ -104,10 +104,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
     }
     
-    [UIView animateWithDuration:0.2f
-                     animations:^{
-                         [progressView setAlpha:0.0];
-                     }];
+    [progressView setProgress:1.0];
+    [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{
@@ -660,7 +658,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 -(void)restartAVCaptureWithBlur:(BOOL)blur
 {
     //don't add a blur if we haven't captured an image yet.
-   
     if (capturedImage != nil && blur) {
         [gridView setAlpha:0.0];
         [CameraButton setAlpha:0.0];
@@ -670,18 +667,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             [blurView setAlpha:1.0];
         }completion:nil];
     }
+    
     dispatch_async(AVCaptureBackgroundQueue, ^{
         //start AVCapture
         [cameraManager restartAVCapture];
         dispatch_sync(dispatch_get_main_queue(), ^{
             //completion callback
-            if (blur) {
+            if (blur && capturedImage) {
                 [UIView animateWithDuration:0.2 animations:^{
                     [blurView setAlpha:0.0];
                     [gridView setAlpha:1.0];
                     [CameraButton setAlpha:1.0];
                 }completion:^(BOOL finished){
                     [blurView setHidden:YES];
+                    capturedImage = nil;
                 }];
             }
         });
@@ -735,6 +734,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [blurView setAlpha:0.0];
     [blurView setHidden:YES];
     [self.view addSubview:blurView];
+    
+    [CameraButton removeFromSuperview];
+    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view insertSubview:CameraButton aboveSubview:gridView];
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
@@ -758,7 +761,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [headerView setHidden:NO];
         [self.drawerContainerView setHidden:NO];
         [CameraButton setHidden:NO];
-        [self restartAVCaptureWithBlur:NO];
+        [self restartAVCaptureWithBlur:YES];
         [openGLController.view setHidden:NO];
         
         [UIView animateWithDuration:0.3f
@@ -891,6 +894,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     [capturedImageObject setDescriptionString:ImageAnnotationTextView.text];
     [self saveImageObject];
+    [ImageAnnotationTextView resetView];
+    [categorySegmentedControl setSelectedSegmentIndex:0];
     
     [self setUIForCamMode:[NSNumber numberWithInt:0]];
 
@@ -956,6 +961,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             [networkServices uploadImage:capturedImageObject andImage:capturedImage];
         }
     }
+}
+
+-(void)hideProgressView{
+    [UIView animateWithDuration:1.2f
+                     animations:^{
+                         [progressView setAlpha:0.0];
+                     }];
 }
 
 #pragma mark Image Capture Helper Methods
