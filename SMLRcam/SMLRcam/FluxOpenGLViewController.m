@@ -244,7 +244,7 @@ void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float d
 {
     GLKVector4 pts[4];
     int i;
-    
+ 
     if(distance <0.0)
     {
         NSLog(@"Distance is scalar should not be negative ... converting to positive");
@@ -259,7 +259,7 @@ void setupRenderingPlane(GLKVector3 position, GLKMatrix4 rotationMatrix, float d
     for(i=0;i<4;i++)
     {
         result[i] = GLKMatrix4MultiplyVector4( (rotationMatrix), pts[i]);
-        //fprintf(stderr, "i: x=%.4f y=%.4f z = %.4f \n",result[i].x, result[i].y, result[i].z);
+    
     }
 }
 void calculateCoordinatesTP(GLKVector3 originposition, GLKVector3 position, GLKVector3 *positionTP)
@@ -306,13 +306,13 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     if(vd==0)
     {
-        NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+       // NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     if(t < 0)
     {
         
-        NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+       // NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     
@@ -423,13 +423,13 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     if(vd==0)
     {
-       NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+   //    NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
         return 0;
     }
     if(t < 0)
     {
         
-      NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+     // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return 0;
     }
     
@@ -669,7 +669,7 @@ void init(){
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
+    [networkServices getImagesForLocation:loc.coordinate andRadius:10.0];
 }
 
 #pragma mark - Motion Manager
@@ -1110,7 +1110,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     //_imagePose[idx].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
     GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
-    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(-1.0*PI/2, 0.0,0.0, 1.0);
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _imagePose[idx].rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
     NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
@@ -1245,28 +1245,32 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     CMAttitude *att = motionManager.attitude;
     
-    _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
-    _userPose.rotationMatrix.m01 = att.rotationMatrix.m12;
-    _userPose.rotationMatrix.m02 = att.rotationMatrix.m13;
-    _userPose.rotationMatrix.m03 = 0.0;
+//    _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
+//    _userPose.rotationMatrix.m01 = att.rotationMatrix.m12;
+//    _userPose.rotationMatrix.m02 = att.rotationMatrix.m13;
+//    _userPose.rotationMatrix.m03 = 0.0;
+//    
+//    _userPose.rotationMatrix.m10 = att.rotationMatrix.m21;
+//    _userPose.rotationMatrix.m11 = att.rotationMatrix.m22;
+//    _userPose.rotationMatrix.m12 = att.rotationMatrix.m23;
+//    _userPose.rotationMatrix.m13 = 0.0;
+//    
+//    _userPose.rotationMatrix.m20 = att.rotationMatrix.m31;
+//    _userPose.rotationMatrix.m21 = att.rotationMatrix.m32;
+//    _userPose.rotationMatrix.m22 = att.rotationMatrix.m33;
+//    _userPose.rotationMatrix.m23 = 0.0;
+//    
+//    _userPose.rotationMatrix.m30 = 0.0;
+//    _userPose.rotationMatrix.m31 = 0.0;
+//    _userPose.rotationMatrix.m32 = 0.0;
+//    _userPose.rotationMatrix.m33 = 1.0;
+    GLKQuaternion quat = GLKQuaternionMake(att.quaternion.x, att.quaternion.y, att.quaternion.z, att.quaternion.w);
+   _userPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
     
-    _userPose.rotationMatrix.m10 = att.rotationMatrix.m21;
-    _userPose.rotationMatrix.m11 = att.rotationMatrix.m22;
-    _userPose.rotationMatrix.m12 = att.rotationMatrix.m23;
-    _userPose.rotationMatrix.m13 = 0.0;
-    
-    _userPose.rotationMatrix.m20 = att.rotationMatrix.m31;
-    _userPose.rotationMatrix.m21 = att.rotationMatrix.m32;
-    _userPose.rotationMatrix.m22 = att.rotationMatrix.m33;
-    _userPose.rotationMatrix.m23 = 0.0;
-    
-    _userPose.rotationMatrix.m30 = 0.0;
-    _userPose.rotationMatrix.m31 = 0.0;
-    _userPose.rotationMatrix.m32 = 0.0;
-    _userPose.rotationMatrix.m33 = 1.0;
-   
-    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(-1.0*PI/2, 0.0,0.0, 1.0);
+    //_userPose.rotationMatrix = att.rotationMatrix;
+  GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
+    
     _userPose.position.x =locationManager.location.coordinate.latitude;
     _userPose.position.y =locationManager.location.coordinate.longitude;
     _userPose.position.z =locationManager.location.altitude;

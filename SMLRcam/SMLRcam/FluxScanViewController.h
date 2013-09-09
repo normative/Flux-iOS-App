@@ -56,6 +56,7 @@
     UILongPressGestureRecognizer *longPressGesture;
     UITapGestureRecognizer *tapGesture;
     NSDateFormatter *dateFormatter;
+    NSDateFormatter *thumbDateFormatter;
     float previousYCoord;
     float startXCoord;
     
@@ -64,6 +65,8 @@
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
     FluxNetworkServices *networkServices;
+    
+    UIImageView* launchView;
 }
 
 @property (strong) NSCache *fluxImageCache;

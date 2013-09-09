@@ -67,6 +67,11 @@
 
 }
 
+
+- (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 40.0f;
+}
+
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     if (tableView == self.tableView) {
         if (section == 0) {
@@ -83,7 +88,7 @@
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     // Create label with section title
     UILabel *label = [[UILabel alloc] init];
-    label.frame = CGRectMake(20, 0, 100, 23);
+    label.frame = CGRectMake(20, 20, 100, 23);
     label.textColor = [UIColor lightGrayColor];
     [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
     label.text = [self tableView:tableView titleForHeaderInSection:section];

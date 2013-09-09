@@ -384,7 +384,7 @@
         [thumbView setHidden:NO];
         [thumbView setCenter:[sender locationInView:self.view]];
         //start with today's date
-        [thumbView.timeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
+        [thumbView.timeLabel setText:[thumbDateFormatter stringFromDate:[NSDate date]]];
         
         [UIView animateWithDuration:0.2f
                          animations:^{
@@ -456,7 +456,7 @@
         [thumbView setHidden:NO];
         [thumbView setCenter:[panGestureRecognizer locationInView:self.view]];
         //start with today's date
-        [thumbView.timeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
+        [thumbView.timeLabel setText:[thumbDateFormatter stringFromDate:[NSDate date]]];
         
         [UIView animateWithDuration:0.2f
                          animations:^{
@@ -475,13 +475,13 @@
         NSDate *now = [NSDate date];
         int daysToAdd = roundf(yCoord);
         NSDate *newDate = [now dateByAddingTimeInterval:60*60*24*daysToAdd];
-        [thumbView changeTimeString:[dateFormatter stringFromDate:newDate]adding:YES];
+        [thumbView changeTimeString:[thumbDateFormatter stringFromDate:newDate]adding:YES];
     }
     else{
         NSDate *now = [NSDate date];
         int daysToSubtract = roundf(yCoord)*-1;
         NSDate *newDate = [now dateByAddingTimeInterval:60*60*24*daysToSubtract];
-        [thumbView changeTimeString:[dateFormatter stringFromDate:newDate]adding:NO];
+        [thumbView changeTimeString:[thumbDateFormatter stringFromDate:newDate]adding:NO];
     }
     previousYCoord = yCoord;
 }
@@ -953,12 +953,15 @@
     [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     //temporarily set the date range label to today's date
     dateFormatter  = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd MMM, YYYY"];
+    [dateFormatter setDateFormat:@"MMMM d, YYYY"];
     [dateRangeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
     
-    fakeGalleryView = [[UIImageView alloc]initWithFrame:CGRectMake(7, 70, 306, 160)];
+    thumbDateFormatter  = [[NSDateFormatter alloc] init];
+    [thumbDateFormatter setDateFormat:@"MMM d, YYYY"];
+    
+    fakeGalleryView = [[UIImageView alloc]initWithFrame:CGRectMake(7, 70, 306, 161)];
     [fakeGalleryView setContentMode:UIViewContentModeScaleAspectFit];
-    [fakeGalleryView setClipsToBounds:YES];
+    //[fakeGalleryView setClipsToBounds:YES];
     [fakeGalleryView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
     [fakeGalleryView setImage:[UIImage imageNamed:@"fakeGallery"]];
     [fakeGalleryView setAlpha:0.0];

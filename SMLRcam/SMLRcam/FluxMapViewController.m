@@ -187,12 +187,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
 }
 
+const float minmovedist = 0.00025;     // approx 25m (little more, little less, best around about 43deg lat)
+
 // make a network update call when user has moved a certain distance
 -       (void) mapView:(MKMapView *)mapView
  didUpdateUserLocation:(MKUserLocation *)userLocation
 {
-    if (fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > 25 ||
-        fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > 25 ||
+    if (fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > minmovedist ||
+        fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist ||
         [fluxMetadata count] == 0)
     {
         [networkServiceManager getImagesForLocation:userLocation.location.coordinate andRadius:50];
