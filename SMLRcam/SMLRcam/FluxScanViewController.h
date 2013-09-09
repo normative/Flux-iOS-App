@@ -13,6 +13,7 @@
 #import "FluxClockSlidingControl.h"
 #import "FluxOpenGLViewController.h"
 #import "FluxCameraButton.h"
+#import "FluxRadarView.h"
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
@@ -49,7 +50,8 @@
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;
-
+    
+    __weak IBOutlet FluxRadarView *radarView;
     __weak IBOutlet FluxRotatingCompassButton *compassBtn;
     
     UIPanGestureRecognizer *panGesture;

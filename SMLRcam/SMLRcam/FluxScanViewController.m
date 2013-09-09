@@ -69,6 +69,7 @@
                 break;
             }
     }
+    [radarView updateRadarWithNewMetaData:fluxMetadata];
     [annotationsTableView reloadData];
 }
 
@@ -975,6 +976,8 @@
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
+    
+    [radarView updateRadarWithNewMetaData:fluxMetadata];
     [self restartAVCaptureWithBlur:YES];
 }
 
