@@ -13,7 +13,7 @@
 #import "KTSegmentedButtonControl.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxCameraButton.h"
-#import "FluxRadarView.h"
+#import "FluxCompassView.h"
 
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
@@ -40,7 +40,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;
-    __weak IBOutlet FluxRadarView *radarView;
+    __weak IBOutlet FluxCompassView *radarView;
     
     UITableView*annotationsTableView;
     UIImageView*fakeGalleryView;

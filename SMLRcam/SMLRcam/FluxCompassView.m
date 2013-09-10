@@ -6,25 +6,25 @@
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "FluxRadarView.h"
+#import "FluxCompassView.h"
 
-@interface FluxRadarView()
+@interface FluxCompassView()
 
 - (void)updateRadarImageView;
 - (void)createRadarView;
 
 @end
 
-@implementation FluxRadarView
+@implementation FluxCompassView
 
-#pragma mark - 
+#pragma mark - update methods
 
 // update radarStatusMutableArray according to the newMetaData
 - (void)updateRadarWithNewMetaData:(NSMutableDictionary *)newMetaData
 {
     for (int i = 0; i < 12; i++)
     {
-        [radarStatusMutatbleArray replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
+        [radarStatusArray replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
     }
     
     for (id key in newMetaData)
@@ -37,7 +37,7 @@
         float degree = atan2f(deltaLat, deltaLong) * 180.0f / M_PI;
         
         int position = abs(degree / 30);
-        [radarStatusMutatbleArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
+        [radarStatusArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
     }
     [self updateRadarImageView];
 }
@@ -45,19 +45,14 @@
 // update radar image view according to the radarStatusMutableArray
 - (void)updateRadarImageView
 {
-    NSLog(@"radarStatusMutatbleArray count is %i", radarStatusMutatbleArray.count);
-    for (int i = 0; i<radarStatusMutatbleArray.count; i++)
+    for (int i = 0; i<radarStatusArray.count; i++)
     {
-        UIImage *newRadarImage;
-        NSLog(@"radarStatusMutatbleArray object at indext %i is %i",i, [[radarStatusMutatbleArray objectAtIndex:i] integerValue]);
-        
-        if ([radarStatusMutatbleArray objectAtIndex:i] == [NSNumber numberWithInt:0])
-            newRadarImage = [UIImage imageNamed:@"radarOff.png"];
-        else
-            newRadarImage = [UIImage imageNamed:@"radarOn.png"];
-        
-        UIImageView *radarImageView = [radarImageMutableArray objectAtIndex:i];
-        [radarImageView setImage:newRadarImage];
+        if ([radarStatusArray objectAtIndex:i] == [NSNumber numberWithInt:0]){
+            [[radarImagesArray objectAtIndex:i] setImage:offImg];
+        }
+        else{
+            [[radarImagesArray objectAtIndex:i] setImage:onImg];
+        }
     }
 }
 
@@ -68,20 +63,23 @@
 {
     radarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     
-    radarStatusMutatbleArray = [[NSMutableArray alloc] init];
-    radarImageMutableArray = [[NSMutableArray alloc] init];
+    radarStatusArray = [[NSMutableArray alloc] init];
+    radarImagesArray = [[NSMutableArray alloc] init];
+    
+    offImg = [UIImage imageNamed:@"radarOff"];
+    onImg = [UIImage imageNamed:@"radarOn"];
     
     for (int i = 0; i<12; i++)
     {
-        [radarStatusMutatbleArray addObject:[NSNumber numberWithInt:0]];
-        UIImageView *radarImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"radarOff.png"]];
+        [radarStatusArray addObject:[NSNumber numberWithInt:0]];
+        UIImageView *radarImageView = [[UIImageView alloc] initWithImage:offImg];
         [radarImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         [radarImageView setContentMode:UIViewContentModeScaleAspectFit];
         float rotateDegree = i*30;
         radarImageView.transform = CGAffineTransformMakeRotation(rotateDegree * M_PI/180);
         
         [radarView addSubview:radarImageView];
-        [radarImageMutableArray addObject:radarImageView];
+        [radarImagesArray addObject:radarImageView];
     }
     
     UIImageView *radarHeadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"radarHeading.png"]];
@@ -97,7 +95,7 @@
     radarView.transform = transform;
 }
 
-#pragma mark - selector methods
+#pragma mark - location notification
 
 // heading update from location manager
 - (void)headingUpdated:(NSNotification *)notification
@@ -107,17 +105,6 @@
 }
 
 #pragma mark - uiview lifecycle
-
-//
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self)
-    {
-        [self createRadarView];
-    }
-    return self;
-}
 
 // init with storyboard
 - (id)initWithCoder:(NSCoder *)aDecoder

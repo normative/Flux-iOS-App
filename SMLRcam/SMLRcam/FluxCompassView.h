@@ -11,10 +11,13 @@
 #import "FluxScanImageObject.h"
 #import "FluxLocationServicesSingleton.h"
 
-@interface FluxRadarView : UIView
+@interface FluxCompassView : UIView
 {
-    NSMutableArray *radarStatusMutatbleArray;
-    NSMutableArray* radarImageMutableArray;
+    NSMutableArray *radarStatusArray;
+    NSMutableArray* radarImagesArray;
+    
+    UIImage*offImg;
+    UIImage*onImg;
     
     CLLocationDirection lastSynTrueHeading;
     
