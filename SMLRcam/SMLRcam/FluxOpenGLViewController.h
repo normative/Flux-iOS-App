@@ -8,7 +8,7 @@
 
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
-#import "FluxImageAnnotationViewController.h"
+//#import "FluxScanViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 #import "FluxNetworkServices.h"
@@ -17,12 +17,6 @@
 
 #import "FluxAVCameraSingleton.h"
 
-@class FluxOpenGLViewController;
-@protocol OpenGLViewDelegate <NSObject>
-@optional
-//updated ImageList
-- (void)OpenGLView:(FluxOpenGLViewController*)glView didUpdateImageList:(NSMutableDictionary*)imgList;
-@end
 
 typedef struct{
     GLKVector3 origin;
@@ -78,12 +72,10 @@ typedef struct {
     
     NSLock *_nearbyListLock;
     
-    __weak id <OpenGLViewDelegate> theDelegate;
     __weak IBOutlet UISlider *DistanceSlider;
     __weak IBOutlet UIStepper *PositionStepper;
 }
 
-@property (nonatomic, weak) id <OpenGLViewDelegate> theDelegate;
 @property (strong, nonatomic) EAGLContext *context;
 @property (weak) NSCache *fluxImageCache;
 @property (nonatomic, weak) NSMutableDictionary *fluxMetadata;

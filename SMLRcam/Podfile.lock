@@ -1,7 +1,6 @@
 PODS:
   - AFNetworking (1.3.2)
   - DACircularProgress (2.1.0)
-  - HMSegmentedControl (1.2.0)
   - IDMPhotoBrowser (1.1.2):
     - AFNetworking (~> 1.3.1)
     - DACircularProgress (~> 2.1.0)
@@ -26,14 +25,12 @@ PODS:
   - TransitionKit (1.1.1)
 
 DEPENDENCIES:
-  - HMSegmentedControl (~> 1.2.0)
   - IDMPhotoBrowser
   - RestKit (~> 0.20.0)
 
 SPEC CHECKSUMS:
   AFNetworking: 7f9bcd7c287a75476cd5c61e82fd3380e93e4c54
   DACircularProgress: 8c8f20c8dffdd647fbf570ddecbc2b1b59da5888
-  HMSegmentedControl: 826084e59fce20866aaa23f30ed50677210eb669
   IDMPhotoBrowser: 4090715f4e89fdb1396a7d4012b42853e2ea85a8
   RestKit: 1f181c180105a92f11ec4f6cd7de37625e516d83
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581

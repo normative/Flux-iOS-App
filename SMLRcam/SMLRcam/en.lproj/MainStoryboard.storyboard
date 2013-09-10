@@ -60,17 +60,11 @@
                                 <rect key="frame" x="7" y="5" width="306" height="60"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y5x-Yz-kwG" customClass="FluxRotatingCompassButton">
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QTA-2K-tgO" customClass="FluxRadarView">
                                         <rect key="frame" x="8" y="10" width="40" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <state key="normal" image="compassButton">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="showFakeGallery:" destination="2" eventType="touchUpInside" id="qnl-dC-4oB"/>
-                                        </connections>
-                                    </button>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                    </view>
                                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="headerSeperator" translatesAutoresizingMaskIntoConstraints="NO" id="jUp-qZ-Pmm">
                                         <rect key="frame" x="56" y="0.0" width="3" height="60"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -117,51 +111,6 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="60" id="d2M-tx-f7V"/>
                                     <constraint firstAttribute="width" constant="306" id="sBa-Tb-IIB"/>
-                                </constraints>
-                            </view>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oRa-ot-6jI" userLabel="Camera Controls View">
-                                <rect key="frame" x="0.0" y="508" width="320" height="60"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OND-e7-SI4">
-                                        <rect key="frame" x="227" y="7" width="73" height="33"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="73" id="NVv-57-xWW"/>
-                                            <constraint firstAttribute="height" constant="33" id="tz0-r2-CQn"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <state key="normal" image="useButton">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="approveImageAction:" destination="2" eventType="touchUpInside" id="ldw-DX-tzS"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H00-Rz-zyQ">
-                                        <rect key="frame" x="20" y="7" width="96" height="33"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="33" id="kXM-Ky-WEU"/>
-                                            <constraint firstAttribute="width" constant="96" id="qrN-no-FyT"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <state key="normal" image="retakeButton">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="retakeImageAction:" destination="2" eventType="touchUpInside" id="k4v-Tu-v2Z"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="320" id="3gW-3O-XLq"/>
-                                    <constraint firstAttribute="trailing" secondItem="OND-e7-SI4" secondAttribute="trailing" constant="20" id="BWI-dJ-oDd"/>
-                                    <constraint firstItem="H00-Rz-zyQ" firstAttribute="leading" secondItem="oRa-ot-6jI" secondAttribute="leading" constant="20" id="kXj-g8-c1n"/>
-                                    <constraint firstAttribute="bottom" secondItem="H00-Rz-zyQ" secondAttribute="bottom" constant="20" id="mFH-pG-hlB"/>
-                                    <constraint firstAttribute="height" constant="60" id="nCv-NH-NDZ"/>
-                                    <constraint firstAttribute="bottom" secondItem="OND-e7-SI4" secondAttribute="bottom" constant="20" id="z8o-uS-hr3"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PUb-lB-rvW" userLabel="Drawer Controls View">
@@ -236,14 +185,62 @@
                                     <action selector="cameraButtonAction:" destination="2" eventType="touchUpInside" id="F3K-UJ-Cbf"/>
                                 </connections>
                             </button>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AaZ-gz-ak3" userLabel="Photo Annotation View">
+                                <rect key="frame" x="0.0" y="284" width="320" height="284"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="verticalBlackGradient" translatesAutoresizingMaskIntoConstraints="NO" id="D07-hD-Due">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="284"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    </imageView>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cD1-Yd-7FG" customClass="KTPlaceholderTextView">
+                                        <rect key="frame" x="10" y="112" width="300" height="70"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="twitter" keyboardAppearance="alert"/>
+                                    </textView>
+                                    <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xQx-ES-K6i">
+                                        <rect key="frame" x="175" y="214" width="135" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <state key="normal" title="Save" image="btn-Annotation-save">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="approveImageAction:" destination="2" eventType="touchUpInside" id="Qo9-zH-nbd"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="93E-6p-oWB">
+                                        <rect key="frame" x="10" y="214" width="135" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <state key="normal" title="Discard" image="btn-Annotation-discard">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="retakeImageAction:" destination="2" eventType="touchUpInside" id="C2J-H8-vUI"/>
+                                        </connections>
+                                    </button>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dd8-vl-Nkf" customClass="KTSegmentedButtonControl">
+                                        <rect key="frame" x="10" y="16" width="300" height="73"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" fixedFrame="YES" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="RP7-i5-SqD">
+                                <rect key="frame" x="7" y="63" width="306" height="2"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="progressTintColor" red="0.0" green="0.70588235294117641" blue="0.92156862745098034" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="oRa-ot-6jI" secondAttribute="bottom" id="4if-3J-hfj"/>
                             <constraint firstAttribute="centerX" secondItem="PUb-lB-rvW" secondAttribute="centerX" id="BcB-bh-NRu"/>
                             <constraint firstAttribute="bottom" secondItem="PUb-lB-rvW" secondAttribute="bottom" id="E7e-p0-duH"/>
                             <constraint firstAttribute="bottom" secondItem="c58-0p-wGY" secondAttribute="bottom" constant="20" id="PmY-uh-dtX"/>
-                            <constraint firstAttribute="centerX" secondItem="oRa-ot-6jI" secondAttribute="centerX" id="jyH-ts-FoJ"/>
                             <constraint firstAttribute="centerX" secondItem="c58-0p-wGY" secondAttribute="centerX" id="pO9-Xi-TLM"/>
                             <constraint firstAttribute="centerX" secondItem="jDD-EI-IPQ" secondAttribute="centerX" id="vG1-tv-gwB"/>
                             <constraint firstItem="jDD-EI-IPQ" firstAttribute="top" secondItem="3UQ-h3-q7y" secondAttribute="top" constant="5" id="z97-4q-G1j"/>
@@ -253,13 +250,16 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="CameraButton" destination="c58-0p-wGY" id="lft-Eq-AQi"/>
-                        <outlet property="cameraApproveContainerView" destination="oRa-ot-6jI" id="Et3-vs-gJL"/>
-                        <outlet property="compassBtn" destination="y5x-Yz-kwG" id="nsE-Eu-Hmo"/>
+                        <outlet property="ImageAnnotationTextView" destination="cD1-Yd-7FG" id="w8n-ZW-IQh"/>
+                        <outlet property="categorySegmentedControl" destination="dd8-vl-Nkf" id="pSc-oB-lxD"/>
                         <outlet property="dateRangeLabel" destination="gcr-O9-W42" id="CHd-dY-cVi"/>
                         <outlet property="drawerContainerView" destination="PUb-lB-rvW" id="ryh-HE-cwL"/>
                         <outlet property="headerView" destination="jDD-EI-IPQ" id="ftp-vl-dD5"/>
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
                         <outlet property="locationLabel" destination="uRS-ak-qsJ" id="nEB-8Y-IuR"/>
+                        <outlet property="photoApprovalView" destination="AaZ-gz-ak3" id="wfr-4X-OhQ"/>
+                        <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
+                        <outlet property="radarView" destination="QTA-2K-tgO" id="4hz-Fz-yWD"/>
                         <outlet property="rightDriawerButton" destination="bIP-WR-7T3" id="ruk-5m-2yg"/>
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" id="AGI-r8-OnT"/>
                     </connections>
@@ -498,176 +498,6 @@
             </objects>
             <point key="canvasLocation" x="-327" y="756"/>
         </scene>
-        <!--Flux Image Annotation View Controller-->
-        <scene sceneID="3qH-pR-AJk">
-            <objects>
-                <viewController storyboardIdentifier="FluxImageAnnotationViewController" id="5T1-Nf-tdE" customClass="FluxImageAnnotationViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Wc9-VI-Veh"/>
-                        <viewControllerLayoutGuide type="bottom" id="Dpu-AD-IJp"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="dny-qu-Q3V">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Te-BV-B4d">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="320" id="4CG-dg-BBc"/>
-                                </constraints>
-                            </imageView>
-                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Ss0-wE-S9d">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="2"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </progressView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rpv-Oo-dp7">
-                                <rect key="frame" x="10" y="15" width="33" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="33" id="Fji-Z6-ZW2"/>
-                                    <constraint firstAttribute="width" constant="33" id="g7S-Xy-rfj"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <state key="normal" image="closeButton">
-                                    <color key="titleColor" red="0.19607843137254902" green="0.30980392156862746" blue="0.52156862745098043" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="PopViewController:" destination="5T1-Nf-tdE" eventType="touchUpInside" id="Dpt-Ud-fjq"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QRl-Rt-OHm">
-                                <rect key="frame" x="277" y="15" width="33" height="33"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="33" id="Irk-qd-JoK"/>
-                                    <constraint firstAttribute="width" constant="33" id="cf1-hc-ABG"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <state key="normal" image="approveButton">
-                                    <color key="titleColor" red="0.1960784314" green="0.30980392159999998" blue="0.52156862749999999" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="ConfirmImage:" destination="5T1-Nf-tdE" eventType="touchUpInside" id="R5H-dU-ZZj"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="What do you see here?" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="jNE-zy-tnN">
-                                <rect key="frame" x="20" y="139" width="280" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="280" id="IEi-p1-3mm"/>
-                                    <constraint firstAttribute="height" constant="30" id="m8V-DW-NmR"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9ce-nc-hwb" userLabel="Segmented Control" customClass="HMSegmentedControl">
-                                <rect key="frame" x="10" y="169" width="300" height="60"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="300" id="MJq-fs-mD1"/>
-                                    <constraint firstAttribute="height" constant="60" id="RCp-Qq-dzz"/>
-                                </constraints>
-                            </view>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cD1-Yd-7FG" customClass="KTPlaceholderTextView">
-                                <rect key="frame" x="10" y="249" width="300" height="70"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="300" id="9WP-Uw-b14"/>
-                                    <constraint firstAttribute="height" constant="70" id="wDl-nF-G5l"/>
-                                </constraints>
-                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="twitter" keyboardAppearance="alert"/>
-                                <connections>
-                                    <outlet property="delegate" destination="5T1-Nf-tdE" id="avI-qx-7OC"/>
-                                </connections>
-                            </textView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="563-iW-xYn">
-                                <rect key="frame" x="0.0" y="327" width="320" height="25"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <subviews>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="location coords" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f4P-hO-VzB">
-                                        <rect key="frame" x="44" y="0.0" width="114" height="25"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="18 Dec, 2013 12:30pm" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xfF-UK-JPe">
-                                        <rect key="frame" x="190" y="0.0" width="110" height="25"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" fixedFrame="YES" image="locationIcon" translatesAutoresizingMaskIntoConstraints="NO" id="hsE-qZ-BWR">
-                                        <rect key="frame" x="20" y="4" width="16" height="16"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                    </imageView>
-                                    <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" fixedFrame="YES" image="clockIcon" translatesAutoresizingMaskIntoConstraints="NO" id="nTp-ib-jCw">
-                                        <rect key="frame" x="166" y="5" width="16" height="16"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                    </imageView>
-                                </subviews>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="0.75" colorSpace="calibratedWhite"/>
-                                <color key="tintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="320" id="0nz-Rz-lXn"/>
-                                    <constraint firstAttribute="height" constant="25" id="ZfX-5T-Lgs"/>
-                                </constraints>
-                            </view>
-                        </subviews>
-                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                        <constraints>
-                            <constraint firstItem="Rpv-Oo-dp7" firstAttribute="top" secondItem="dny-qu-Q3V" secondAttribute="top" constant="15" id="4GG-zh-uro"/>
-                            <constraint firstAttribute="centerX" secondItem="9ce-nc-hwb" secondAttribute="centerX" id="CrL-Vd-vtr"/>
-                            <constraint firstItem="5Te-BV-B4d" firstAttribute="top" secondItem="Ss0-wE-S9d" secondAttribute="top" id="JSn-am-Wdx"/>
-                            <constraint firstAttribute="centerX" secondItem="563-iW-xYn" secondAttribute="centerX" id="KfK-hW-Ecf"/>
-                            <constraint firstAttribute="centerX" secondItem="cD1-Yd-7FG" secondAttribute="centerX" id="N0a-mn-Exx"/>
-                            <constraint firstItem="563-iW-xYn" firstAttribute="top" secondItem="cD1-Yd-7FG" secondAttribute="bottom" constant="8" id="Om5-pI-prJ"/>
-                            <constraint firstItem="9ce-nc-hwb" firstAttribute="top" secondItem="jNE-zy-tnN" secondAttribute="bottom" id="PBM-Ny-hDJ"/>
-                            <constraint firstItem="Rpv-Oo-dp7" firstAttribute="leading" secondItem="dny-qu-Q3V" secondAttribute="leading" constant="10" id="YAM-tj-WQp"/>
-                            <constraint firstItem="5Te-BV-B4d" firstAttribute="trailing" secondItem="Ss0-wE-S9d" secondAttribute="trailing" id="a5k-rF-5lK"/>
-                            <constraint firstItem="QRl-Rt-OHm" firstAttribute="top" secondItem="dny-qu-Q3V" secondAttribute="top" constant="15" id="bCn-tr-w5e"/>
-                            <constraint firstItem="cD1-Yd-7FG" firstAttribute="top" secondItem="9ce-nc-hwb" secondAttribute="bottom" constant="20" id="k3n-wd-ve8"/>
-                            <constraint firstItem="5Te-BV-B4d" firstAttribute="leading" secondItem="Ss0-wE-S9d" secondAttribute="leading" id="k6G-eZ-bet"/>
-                            <constraint firstAttribute="trailing" secondItem="QRl-Rt-OHm" secondAttribute="trailing" constant="10" id="lod-u8-7QN"/>
-                            <constraint firstAttribute="bottom" secondItem="5Te-BV-B4d" secondAttribute="bottom" id="mx6-uX-lAc"/>
-                            <constraint firstItem="5Te-BV-B4d" firstAttribute="leading" secondItem="563-iW-xYn" secondAttribute="leading" id="oPJ-c2-CAw"/>
-                            <constraint firstItem="jNE-zy-tnN" firstAttribute="leading" secondItem="dny-qu-Q3V" secondAttribute="leading" constant="20" id="pML-nl-nid"/>
-                            <constraint firstItem="5Te-BV-B4d" firstAttribute="top" secondItem="dny-qu-Q3V" secondAttribute="top" id="t0p-vK-Ods"/>
-                            <constraint firstAttribute="bottom" secondItem="563-iW-xYn" secondAttribute="bottom" constant="216" id="uHY-H6-Aex"/>
-                        </constraints>
-                    </view>
-                    <navigationItem key="navigationItem" id="Ias-Qz-9wl"/>
-                    <nil key="simulatedStatusBarMetrics"/>
-                    <nil key="simulatedTopBarMetrics"/>
-                    <connections>
-                        <outlet property="acceptButton" destination="QRl-Rt-OHm" id="TOY-h7-fc2"/>
-                        <outlet property="annotationTextView" destination="cD1-Yd-7FG" id="Sft-AM-e7Y"/>
-                        <outlet property="backgroundImageView" destination="5Te-BV-B4d" id="VMg-E3-gr0"/>
-                        <outlet property="locationLabel" destination="f4P-hO-VzB" id="zFz-1L-PCp"/>
-                        <outlet property="objectSelectionSegmentedControl" destination="9ce-nc-hwb" id="IoI-ru-PEC"/>
-                        <outlet property="progressView" destination="Ss0-wE-S9d" id="BSd-24-YGv"/>
-                        <outlet property="timestampLabel" destination="xfF-UK-JPe" id="qF0-PO-oJ1"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Yl2-rb-LWP" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="378" y="56"/>
-        </scene>
         <!--Flux Map View Controller-->
         <scene sceneID="JdW-hK-6ai">
             <objects>
@@ -776,11 +606,10 @@
         <image name="ButtonBackground" width="32" height="30"/>
         <image name="LocationHeading" width="41" height="41"/>
         <image name="annottionsButton" width="26" height="25"/>
-        <image name="approveButton" width="30.239999771118164" height="30.239999771118164"/>
+        <image name="btn-Annotation-discard" width="270" height="100"/>
+        <image name="btn-Annotation-save" width="270" height="100"/>
         <image name="camButton" width="80" height="80"/>
         <image name="clockIcon" width="23" height="24"/>
-        <image name="closeButton" width="30.239999771118164" height="30.239999771118164"/>
-        <image name="compassButton" width="100" height="100"/>
         <image name="detailButton" width="25" height="24"/>
         <image name="filterButton" width="80" height="80"/>
         <image name="filter_Events" width="40" height="40"/>
@@ -788,8 +617,7 @@
         <image name="headerSeperator" width="3" height="46"/>
         <image name="locationIcon" width="8.6400003433227539" height="12.479999542236328"/>
         <image name="menuButton" width="80" height="80"/>
-        <image name="retakeButton" width="92" height="33"/>
-        <image name="useButton" width="73" height="33"/>
+        <image name="verticalBlackGradient" width="40" height="41"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>

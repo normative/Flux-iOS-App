@@ -9,10 +9,12 @@
 #import "FluxScanViewController.h"
 
 #import "UIViewController+MMDrawerController.h"
-#import "FluxImageAnnotationViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 
 #import <ImageIO/ImageIO.h>
+
+NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
+NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
 
 @implementation FluxScanViewController
 
@@ -69,7 +71,60 @@
                 break;
             }
     }
+    [radarView updateRadarWithNewMetaData:fluxMetadata];
     [annotationsTableView reloadData];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
+    //subtract a bit for the end wait
+    progressView.progress = bytesSent/size -0.05;
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
+{
+    progressView.progress = 1;
+    
+    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
+    
+    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+    {
+        // FluxScanImageObject exists in the local cache. Replace it with updated object.
+        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+        
+        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
+        {
+            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
+        }
+        else
+        {
+            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
+        }
+    }
+    else
+    {
+        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
+    }
+    
+    [progressView setProgress:1.0];
+    [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
+                                                        message:[e localizedDescription]
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+    [alertView show];
+    
+    
+    [UIView animateWithDuration:0.2f
+                     animations:^{
+                         [progressView setAlpha:0.0];
+                     }
+                     completion:^(BOOL finished){
+                         progressView.progress = 0;
+                     }];
 }
 
 #pragma mark - Motion Methods
@@ -146,6 +201,7 @@
 
 - (IBAction)annotationsButtonAction:(id)sender {
     [fakeGalleryView setAlpha:0.0];
+    [CameraButton setEnabled:YES];
     if ([annotationsTableView isHidden]) {
         if ([fluxMetadata count]>0) {
             [annotationsTableView reloadData];
@@ -318,7 +374,6 @@
     // setup the opengl controller
     // first get an instance from storyboard
     openGLController = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
-    [openGLController setTheDelegate:self];
     
     // then add the glkview as the subview of the parent view
     [self.view insertSubview:openGLController.view belowSubview:headerView];
@@ -352,25 +407,6 @@
     thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
     [thumbView setHidden:YES];
     [self.view addSubview:thumbView];
-    
-    //tap gesture to exit annotationView. This blocks the tableView taps as of now.
-    tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleTapGesture:)];
-    [tapGesture setNumberOfTapsRequired:1];
-    [self.view addGestureRecognizer:tapGesture];
-}
-
-- (void)handleTapGesture:(UITapGestureRecognizer*) sender{
-//    if (![annotationsFeedView popoverIsHidden]) {
-//        
-//        CGPoint touchLoc = [sender locationInView:self.view];
-//        BOOL isWithinAnnotationsView = CGRectContainsPoint(annotationsFeedView.view.frame, touchLoc);
-//        BOOL isWithinCameraControlsView = CGRectContainsPoint(self.drawerContainerView.frame, touchLoc);
-//        isWithinCameraControlsView = NO;
-//        if (!isWithinAnnotationsView && !isWithinCameraControlsView) {
-//            [self annotationsButtonAction:nil];
-//        }
-//    }
-    
 }
 
 
@@ -486,233 +522,8 @@
     previousYCoord = yCoord;
 }
 
-#pragma mark - AV Capture Methods
+#pragma mark - Camera Methods
 
-- (void)setupAVCapture
-{
-    AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
-
-    cameraManager = [FluxAVCameraSingleton sharedCamera];
-    previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
-    [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
-    [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-    CALayer *rootLayer = [self.view layer];
-    [previewLayer setFrame:self.view.bounds];
-    [rootLayer insertSublayer:previewLayer atIndex:0];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(annotationsViewDidPop:)  name:@"AnnotationViewPopped"  object:nil];
-}
-
--(void)pauseAVCapture
-{
-    [cameraManager pauseAVCapture];
-}
-
-//restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
--(void)restartAVCaptureWithBlur:(BOOL)blur
-{
-    //don't add a blur if we haven't captured an image yet.
-   
-    if (capturedImage != nil && blur) {
-        [gridView setAlpha:0.0];
-        [CameraButton setAlpha:0.0];
-        [blurView setImage:[self blurImage:capturedImage]];
-        [blurView setHidden:NO];
-        [UIView animateWithDuration:0.2 animations:^{
-            [blurView setAlpha:1.0];
-        }completion:nil];
-    }
-    dispatch_async(AVCaptureBackgroundQueue, ^{
-        //start AVCapture
-        [cameraManager restartAVCapture];
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            //completion callback
-            if (blur) {
-                [UIView animateWithDuration:0.2 animations:^{
-                    [blurView setAlpha:0.0];
-                    [gridView setAlpha:1.0];
-                    [CameraButton setAlpha:1.0];
-                }completion:^(BOOL finished){
-                    [blurView setHidden:YES];
-                }];
-            }
-        });
-    });
-    
-    
-    
-    
-    
-}
-
-#pragma mark Camera View
-
-- (void)setupCameraView{
-    camMode = [NSNumber numberWithInt:0];
-    [self.cameraApproveContainerView setHidden:YES];
-    
-    //add gridlines
-    gridView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"CameraGridlines.png"]];
-    [gridView setFrame:self.view.bounds];
-    [gridView setHidden:YES];
-    [gridView setAlpha:0.0];
-    [gridView setContentMode:UIViewContentModeScaleAspectFill];
-    [self.view insertSubview:gridView belowSubview:CameraButton];
-    
-    blackView = [[UIView alloc]initWithFrame:self.view.bounds];
-    [blackView setBackgroundColor:[UIColor blackColor]];
-    [blackView setAlpha:0.0];
-    [blackView setHidden:YES];
-    [self.view addSubview:blackView];
-    
-    blurView = [[UIImageView alloc]initWithFrame:self.view.bounds];
-    [blurView setBackgroundColor:[UIColor clearColor]];
-    [blurView setAlpha:0.0];
-    [blurView setHidden:YES];
-    [self.view addSubview:blurView];
-    
-#warning annotationsTableView is here, commented out
-//    annotationsFeedView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxAnnotationsTableViewController"];
-//    [annotationsFeedView.view setFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
-//    [annotationsFeedView.view setHidden:YES];
-//    [annotationsFeedView.view setAlpha:0.0];
-//    [self addChildViewController:annotationsFeedView];
-//    [annotationsFeedView didMoveToParentViewController:self];
-//    [self.view insertSubview:annotationsFeedView.view belowSubview:headerView];
-//    
-//    //fade out the bottom of the feedView
-//    CAGradientLayer* maskLayer = [CAGradientLayer layer];
-//    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
-//    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
-//    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
-//    maskLayer.locations = [NSArray arrayWithObjects:
-//                           [NSNumber numberWithFloat:0.0],
-//                           [NSNumber numberWithFloat:0.0],
-//                           [NSNumber numberWithFloat:0.0],
-//                           [NSNumber numberWithFloat:0.8],
-//                           [NSNumber numberWithFloat:1.0], nil];
-//    maskLayer.bounds = annotationsFeedView.view.layer.bounds;
-//    maskLayer.anchorPoint = CGPointZero;
-//    annotationsFeedView.view.layer.mask = maskLayer;
-}
-
-- (IBAction)cameraButtonAction:(id)sender {
-    //camera is off, open it
-    if ([camMode isEqualToNumber:[NSNumber numberWithInt:0]]) {
-        
-        [self setUIForCamMode:[NSNumber numberWithInt:1]];
-    }
-    else{
-        [self takePicture];
-    }
-    
-    //camView
-}
-
-- (void)setUIForCamMode:(NSNumber*)mode{
-    //going to closed cam
-    if ([mode isEqualToNumber:[NSNumber numberWithInt:0]]) {
-        [self stopDeviceMotion];
-        [self.cameraApproveContainerView setHidden:YES];
-        [headerView setHidden:NO];
-        [self.drawerContainerView setHidden:NO];
-        [CameraButton setHidden:NO];
-        [self restartAVCaptureWithBlur:NO];
-        [openGLController.view setHidden:NO];
-        
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [headerView setAlpha:1.0];
-                             [self.drawerContainerView setAlpha:1.0];
-                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
-                             [gridView setAlpha:0.0];
-                             [openGLController.view setAlpha:1.0];
-                             [[CameraButton getThumbView] setAlpha:0.0];
-                         }
-                         completion:^(BOOL finished){
-                             //stops drawing them
-                             [panGesture setEnabled:YES];
-                             [longPressGesture setEnabled:YES];
-                             [gridView setHidden:YES];
-                             [[CameraButton getThumbView] setHidden:NO];
-                         }];
-        
-        CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
-        bounceAnimation.values = [NSArray arrayWithObjects:
-                                  [NSNumber numberWithFloat:1.0],
-                                  [NSNumber numberWithFloat:0.7],
-                                  [NSNumber numberWithFloat:0.9],
-                                  [NSNumber numberWithFloat:1.0], nil];
-        bounceAnimation.duration = 0.3;
-        [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
-        
-        camMode = [NSNumber numberWithInt:0];
-    }
-    //going to active cam
-    else if ([mode isEqualToNumber:[NSNumber numberWithInt:1]]){
-        [panGesture setEnabled:NO];
-        [longPressGesture setEnabled:NO];
-        [gridView setHidden:NO];
-        [[CameraButton getThumbView] setHidden:NO];
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [headerView setAlpha:0.0];
-                             [self.drawerContainerView setAlpha:0.0];
-                             [gridView setAlpha:1.0];
-                             [openGLController.view setAlpha:0.0];
-                             [[CameraButton getThumbView] setAlpha:1.0];
-                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
-                         }
-                         completion:^(BOOL finished){
-                             //stops drawing them
-                             [headerView setHidden:YES];
-                             [self.drawerContainerView setHidden:YES];
-                             [self startDeviceMotion];
-                             [openGLController.view setHidden:YES];
-                             camMode = [NSNumber numberWithInt:1];
-                         }];
-        
-        CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
-        bounceAnimation.values = [NSArray arrayWithObjects:
-                                  [NSNumber numberWithFloat:1.0],
-                                  [NSNumber numberWithFloat:1.5],
-                                  [NSNumber numberWithFloat:0.8],
-                                  [NSNumber numberWithFloat:1.0], nil];
-        bounceAnimation.duration = 0.3;
-        
-        [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
-    }
-    //going to confirm cam
-    else{
-        [cameraManager pauseAVCapture];
-        
-        [self.cameraApproveContainerView setHidden:NO];
-        [CameraButton setHidden:YES];
-        [gridView setHidden:YES];
-        
-        camMode = [NSNumber numberWithInt:2];
-    }
-    
-}
-
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    if ([camMode isEqualToNumber:[NSNumber numberWithInt:1]] || [camMode isEqualToNumber:[NSNumber numberWithInt:2]]) {
-        UITouch *touch = [touches anyObject];
-        if (![[touch class]isSubclassOfClass:[UIButton class]]) {
-            [self setUIForCamMode:[NSNumber numberWithInt:0]];
-        }
-
-    }
-}
-
-- (void)annotationsViewDidPop:(NSNotification *)notification{
-    if (notification.object != nil) {
-        //theres a new image object here.
-    }
-    [self setUIForCamMode:[NSNumber numberWithInt:0]];
-}
-
-#pragma mark AVCam Methods
 - (void)takePicture{
     
     
@@ -724,7 +535,7 @@
     [UIView animateWithDuration:0.09 animations:^{
         [blackView setAlpha:0.9];
     }completion:^(BOOL finished){
-
+        
     }];
     
     // Collect position and orientation information prior to copying image
@@ -743,7 +554,7 @@
 	[stillImageConnection setVideoOrientation:avcaptureOrientation];
 	[stillImageConnection setVideoScaleAndCropFactor:1.0];
 	[cameraManager.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
-                                                  completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
+                                                                completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
      {
          if (error)
          {
@@ -788,7 +599,7 @@
                                                                         andQX:att.quaternion.x
                                                                         andQY:att.quaternion.y
                                                                         andQZ:att.quaternion.z];
-
+             
 #warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
              // Also set the internal timestamp variable to match the string representation
              [capturedImageObject setTimestamp:startTime];
@@ -808,7 +619,7 @@
 - (AVCaptureVideoOrientation)avOrientationForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
 {
     AVCaptureVideoOrientation result = AVCaptureVideoOrientationPortrait;
-
+    
 	if (deviceOrientation == AVCaptureVideoOrientationPortraitUpsideDown )
     {
 		result = AVCaptureVideoOrientationPortraitUpsideDown;
@@ -824,47 +635,341 @@
 	return result;
 }
 
-
-- (IBAction)approveImageAction:(id)sender
+- (void)setupAVCapture
 {
-    [self pauseAVCapture];
-    [self stopDeviceMotion];
-    
-    FluxImageAnnotationViewController *annotationsView = [[UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil] instantiateViewControllerWithIdentifier:@"FluxImageAnnotationViewController"];
-    
-    NSString *locationString = locationManager.subadministativearea;
-    NSString *sublocality = locationManager.sublocality;
-    if (sublocality.length > 0)
-    {
-        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
-    }
+    AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
 
-    annotationsView.fluxImageCache = self.fluxImageCache;
-    annotationsView.fluxMetadata = self.fluxMetadata;
-    [annotationsView setCapturedImage:capturedImageObject andImage:capturedImage andLocationDescription:locationString];
+    cameraManager = [FluxAVCameraSingleton sharedCamera];
+    previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
+    [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
+    [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+    CALayer *rootLayer = [self.view layer];
+    [previewLayer setFrame:self.view.bounds];
+    [rootLayer insertSublayer:previewLayer atIndex:0];
     
-    annotationsView.view.backgroundColor = [UIColor clearColor];
-    annotationsView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    [self presentViewController:annotationsView animated:YES completion:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(annotationsViewDidPop:)  name:@"AnnotationViewPopped"  object:nil];
+}
+
+-(void)pauseAVCapture
+{
+    [cameraManager pauseAVCapture];
+}
+
+//restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
+-(void)restartAVCaptureWithBlur:(BOOL)blur
+{
+    //don't add a blur if we haven't captured an image yet.
+    if (capturedImage != nil && blur) {
+        [gridView setAlpha:0.0];
+        [CameraButton setAlpha:0.0];
+        [blurView setImage:[self blurImage:capturedImage]];
+        [blurView setHidden:NO];
+        [UIView animateWithDuration:0.2 animations:^{
+            [blurView setAlpha:1.0];
+        }completion:nil];
+    }
+    
+    dispatch_async(AVCaptureBackgroundQueue, ^{
+        //start AVCapture
+        [cameraManager restartAVCapture];
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            //completion callback
+            if (blur && capturedImage) {
+                [UIView animateWithDuration:0.2 animations:^{
+                    [blurView setAlpha:0.0];
+                    [gridView setAlpha:1.0];
+                    [CameraButton setAlpha:1.0];
+                }completion:^(BOOL finished){
+                    [blurView setHidden:YES];
+                    capturedImage = nil;
+                }];
+            }
+        });
+    });
+    
+    
+    
+    
+    
+}
+
+#pragma mark Camera View
+
+- (void)setupCameraView{
+    camMode = [NSNumber numberWithInt:0];
+    
+    //photo annotation view
+    [self.photoApprovalView removeFromSuperview];
+    [self.photoApprovalView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height+self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+    [ImageAnnotationTextView SetPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
+    [self.photoApprovalView setHidden:YES];
+    [ImageAnnotationTextView setTheDelegate:self];
+    [self.view addSubview:self.photoApprovalView];
+    
+    //segmented Control
+    [categorySegmentedControl initWithImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_selected"],[UIImage imageNamed:@"btn-Annotation-place_selected"],[UIImage imageNamed:@"btn-Annotation-thing_selected"],[UIImage imageNamed:@"btn-Annotation-event_selected"], nil] andStandardImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_default"],[UIImage imageNamed:@"btn-Annotation-place_default"],[UIImage imageNamed:@"btn-Annotation-thing_default"],[UIImage imageNamed:@"btn-Annotation-event_default"], nil]];
+    [categorySegmentedControl setDelegate:self];
+    [categorySegmentedControl setSelectedSegmentIndex:0];
+    [capturedImageObject setCategoryID:1];
+    
+    [progressView setAlpha:0.0];
+
+    
+    //add gridlines
+    gridView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"CameraGridlines.png"]];
+    [gridView setFrame:self.view.bounds];
+    [gridView setHidden:YES];
+    [gridView setAlpha:0.0];
+    [gridView setContentMode:UIViewContentModeScaleAspectFill];
+    [self.view insertSubview:gridView belowSubview:CameraButton];
+    
+    blackView = [[UIView alloc]initWithFrame:self.view.bounds];
+    [blackView setBackgroundColor:[UIColor blackColor]];
+    [blackView setAlpha:0.0];
+    [blackView setHidden:YES];
+    [self.view addSubview:blackView];
+    
+    blurView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [blurView setBackgroundColor:[UIColor clearColor]];
+    [blurView setAlpha:0.0];
+    [blurView setHidden:YES];
+    [self.view addSubview:blurView];
+    
+    [CameraButton removeFromSuperview];
+    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view insertSubview:CameraButton aboveSubview:gridView];
+}
+
+- (IBAction)cameraButtonAction:(id)sender {
+    //camera is off, open it
+    if ([camMode isEqualToNumber:[NSNumber numberWithInt:0]]) {
+        
+        [self setUIForCamMode:[NSNumber numberWithInt:1]];
+    }
+    else{
+        [self takePicture];
+    }
+    
+    //camView
+}
+
+- (void)setUIForCamMode:(NSNumber*)mode{
+    //going to closed cam
+    if ([mode isEqualToNumber:[NSNumber numberWithInt:0]]) {
+        [self stopDeviceMotion];
+        [self hidePhotoAnnotationView];
+        [headerView setHidden:NO];
+        [self.drawerContainerView setHidden:NO];
+        [CameraButton setHidden:NO];
+        [self restartAVCaptureWithBlur:YES];
+        [openGLController.view setHidden:NO];
+        
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [headerView setAlpha:1.0];
+                             [self.drawerContainerView setAlpha:1.0];
+                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
+                             [gridView setAlpha:0.0];
+                             [openGLController.view setAlpha:1.0];
+                             [[CameraButton getThumbView] setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished){
+                             //stops drawing them
+                             [panGesture setEnabled:YES];
+                             [longPressGesture setEnabled:YES];
+                             [gridView setHidden:YES];
+                             [[CameraButton getThumbView] setHidden:NO];
+                         }];
+        
+        CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+        bounceAnimation.values = [NSArray arrayWithObjects:
+                                  [NSNumber numberWithFloat:1.0],
+                                  [NSNumber numberWithFloat:0.7],
+                                  [NSNumber numberWithFloat:0.9],
+                                  [NSNumber numberWithFloat:1.0], nil];
+        bounceAnimation.duration = 0.3;
+        [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
+        
+        camMode = [NSNumber numberWithInt:0];
+    }
+    //going to active cam
+    else if ([mode isEqualToNumber:[NSNumber numberWithInt:1]]){
+        [panGesture setEnabled:NO];
+        [longPressGesture setEnabled:NO];
+        [tapGesture setEnabled:YES];
+        [gridView setHidden:NO];
+        [[CameraButton getThumbView] setHidden:NO];
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [headerView setAlpha:0.0];
+                             [self.drawerContainerView setAlpha:0.0];
+                             [gridView setAlpha:1.0];
+                             [openGLController.view setAlpha:0.0];
+                             [[CameraButton getThumbView] setAlpha:1.0];
+                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
+                         }
+                         completion:^(BOOL finished){
+                             //stops drawing them
+                             [headerView setHidden:YES];
+                             [self.drawerContainerView setHidden:YES];
+                             [self startDeviceMotion];
+                             [openGLController.view setHidden:YES];
+                             camMode = [NSNumber numberWithInt:1];
+                         }];
+        
+        CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+        bounceAnimation.values = [NSArray arrayWithObjects:
+                                  [NSNumber numberWithFloat:1.0],
+                                  [NSNumber numberWithFloat:1.5],
+                                  [NSNumber numberWithFloat:0.8],
+                                  [NSNumber numberWithFloat:1.0], nil];
+        bounceAnimation.duration = 0.3;
+        
+        [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
+    }
+    //going to confirm cam
+    else{
+        [cameraManager pauseAVCapture];
+        [self showPhotoAnnotationView];
+        [CameraButton setHidden:YES];
+        [gridView setHidden:YES];
+        
+        camMode = [NSNumber numberWithInt:2];
+    }
+}
+
+- (void)showPhotoAnnotationView{
+    if ([self.photoApprovalView isHidden]) {
+        [self.photoApprovalView setHidden:NO];
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height-self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+                         }];
+    }
+}
+- (void)hidePhotoAnnotationView{
+    if (![self.photoApprovalView isHidden]) {
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                            [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height+self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+                         }
+                         completion:^(BOOL finished){
+                             [self.photoApprovalView setHidden:YES];
+                         }];
+        [ImageAnnotationTextView resignFirstResponder];
+    }
+}
+
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    if ([camMode isEqualToNumber:[NSNumber numberWithInt:1]]) {
+        UITouch *touch = [touches anyObject];
+        if (![[touch class]isSubclassOfClass:[UIButton class]]) {
+            [self setUIForCamMode:[NSNumber numberWithInt:0]];
+        }
+
+    }
+}
+
+- (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
+    [UIView animateWithDuration:0.2f
+                     animations:^{
+                         [self.photoApprovalView setFrame:CGRectMake(0, self.photoApprovalView.frame.origin.y-200, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+                     }];
+}
+
+- (void)SegmentedControlValueDidChange:(KTSegmentedButtonControl *)segmentedControl{
+    [capturedImageObject setCategoryID:(segmentedControl.selectedIndex + 1)];
 }
 
 - (IBAction)retakeImageAction:(id)sender
 {
     [gridView setHidden:NO];
-    [self.cameraApproveContainerView setHidden:YES];
+    [self hidePhotoAnnotationView];
     [CameraButton setHidden:NO];
     camMode = [NSNumber numberWithInt:1];
     [self restartAVCaptureWithBlur:YES];
 }
-//-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-//    UITouch *touch = [[event allTouches] anyObject];
-//    if ([[touch.view class] ) {
-//        <#statements#>
-//    }
-//    if ([[touch.view class] isSubclassOfClass:[UILabel class]]){
-//        
-//    }
-//}
+
+- (IBAction)approveImageAction:(id)sender
+{
+    [capturedImageObject setDescriptionString:ImageAnnotationTextView.text];
+    [self saveImageObject];
+    [ImageAnnotationTextView resetView];
+    [categorySegmentedControl setSelectedSegmentIndex:0];
+    
+    [self setUIForCamMode:[NSNumber numberWithInt:0]];
+
+}
+
+- (void)saveImageObject{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
+    bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
+    
+    // Generate a string image id for local use
+    NSString *localID = [capturedImageObject generateUniqueStringID];
+    [capturedImageObject setLocalID:localID];
+    [capturedImageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", capturedImageObject.localID]];
+    //    [imageObject setImageIDFromDateAndUser];
+    
+    // Set the server-side image id to a negative value until server returns actual
+    [capturedImageObject setImageID:-1];
+    
+    // HACK
+    
+    // spin the image CW by 90deg. prior to dumping into the cache;
+    CGSize size = capturedImage.size;
+    UIGraphicsBeginImageContext(size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    
+    //    CGContextTranslateCTM( context, 0.5f * size.width, 0.5f * size.height ) ;
+    //    //CGContextRotateCTM( context, M_PI_2) ;
+    //    [capturedImage drawInRect:(CGRect){ { -size.width * 0.5f, -size.height * 0.5f }, size } ] ;
+    
+    [capturedImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    
+    UIImage *spunImage = UIGraphicsGetImageFromCurrentImageContext();
+    CGContextRestoreGState(context);
+    UIGraphicsEndImageContext();
+    
+    // END HACK
+    
+    // Add the image and metadata to the local cache
+    [fluxImageCache setObject:spunImage forKey:capturedImageObject.localID];
+    [fluxMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
+    
+    // Post notification for observers prior to upload
+    NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
+    [userInfoDict setObject:capturedImageObject.localID forKey:FluxScanViewDidAcquireNewPictureLocalIDKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
+                                                        object:self userInfo:userInfoDict];
+    
+    // Perform any additional (optional) image save tasks
+    if (savelocally || pushToCloud) {
+        if (savelocally)
+        {
+            UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
+        }
+        if (pushToCloud)
+        {
+            [UIView animateWithDuration:0.5f
+                             animations:^{
+                                 [progressView setAlpha:1.0];
+                             }];
+            progressView.progress = 0;
+            [networkServices uploadImage:capturedImageObject andImage:capturedImage];
+        }
+    }
+}
+
+-(void)hideProgressView{
+    [UIView animateWithDuration:1.2f
+                     animations:^{
+                         [progressView setAlpha:0.0];
+                     }];
+}
 
 #pragma mark Image Capture Helper Methods
 -(UIImage*)blurImage:(UIImage *)img{
@@ -978,6 +1083,8 @@
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
+    
+    [radarView updateRadarWithNewMetaData:fluxMetadata];
     [self restartAVCaptureWithBlur:YES];
 }
 
@@ -988,16 +1095,6 @@
     [self pauseAVCapture];
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    
-    [locationManager endLocating];
-    
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -1006,6 +1103,7 @@
 
 - (void)dealloc
 {
+    [locationManager endLocating];
     locationManager = nil;
 }
 

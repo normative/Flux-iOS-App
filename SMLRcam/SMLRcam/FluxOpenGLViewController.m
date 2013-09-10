@@ -646,11 +646,11 @@ void init(){
 
 #pragma mark - FluxOpenGLViewController
 
+
 @implementation FluxOpenGLViewController
 
 @synthesize fluxImageCache;
 @synthesize fluxMetadata;
-@synthesize theDelegate;
 
 #pragma mark - Location
 
@@ -733,11 +733,6 @@ void init(){
             {
                 [self.nearbyList addObject:curImgObj.localID];
             }
-        }
-        
-        if ([theDelegate respondsToSelector:@selector(OpenGLView:didUpdateImageList:)])
-        {
-            [theDelegate OpenGLView:self didUpdateImageList:fluxMetadata];
         }
     
         [self populateImageData];
@@ -909,7 +904,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:FluxImageAnnotationDidAcquireNewPicture object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:@"FluxScanViewDidAcquireNewPicture" object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -943,7 +938,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     motionManager = nil;
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageAnnotationDidAcquireNewPicture object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"FluxScanViewDidAcquireNewPicture" object:nil];
     
     [self tearDownGL];
     
@@ -992,7 +987,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)didAcquireNewPicture:(NSNotification *)notification
 {
-    NSString* localID = [[notification userInfo] objectForKey:FluxImageAnnotationDidAcquireNewPictureLocalIDKey];
+    NSString* localID = [[notification userInfo] objectForKey:@"FluxScanViewDidAcquireNewPictureLocalIDKey"];
     
     [_nearbyListLock lock];
         if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
