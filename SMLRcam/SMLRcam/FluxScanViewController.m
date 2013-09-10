@@ -168,7 +168,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 //show list of images currently visible.
 - (void)setupAnnotationsTableView{
-    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(0, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width, self.view.frame.size.height-200)];
+    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(7, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width-14, self.view.frame.size.height-200)];
     [annotationsTableView setHidden:YES];
     [annotationsTableView setAlpha:0.0];
     [annotationsTableView setBackgroundColor:[UIColor clearColor]];
@@ -248,13 +248,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     UILabel *label = [[UILabel alloc] init];
-    label.frame = CGRectMake(20, 0, 100, 22);
+    label.frame = CGRectMake(12, 0, 100, 22);
     label.textColor = [UIColor lightGrayColor];
     [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
     label.text = [self tableView:tableView titleForHeaderInSection:section];
     label.backgroundColor = [UIColor clearColor];
     
-    UIView*backgroundView = [[UIView alloc] initWithFrame:CGRectMake(2, 0, 316, 24)];
+    UIView*backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, annotationsTableView.frame.size.width, 24)];
     [backgroundView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
     
     // Create header view and add label as a subview
@@ -701,9 +701,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self.photoApprovalView removeFromSuperview];
     [self.photoApprovalView setTranslatesAutoresizingMaskIntoConstraints:YES];
     [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height+self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
-    [ImageAnnotationTextView SetPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
     [self.photoApprovalView setHidden:YES];
+    [ImageAnnotationTextView SetPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
     [ImageAnnotationTextView setTheDelegate:self];
+    
     [self.view addSubview:self.photoApprovalView];
     
     //segmented Control
@@ -735,9 +736,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [blurView setHidden:YES];
     [self.view addSubview:blurView];
     
-    [CameraButton removeFromSuperview];
-    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.view insertSubview:CameraButton aboveSubview:gridView];
+    [self performSelector:@selector(fixCameraButtonPosition) withObject:nil afterDelay:0.0f];
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
@@ -830,6 +829,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     //going to confirm cam
     else{
         [cameraManager pauseAVCapture];
+        [ImageAnnotationTextView resetView];
         [self showPhotoAnnotationView];
         [CameraButton setHidden:YES];
         [gridView setHidden:YES];
@@ -894,7 +894,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     [capturedImageObject setDescriptionString:ImageAnnotationTextView.text];
     [self saveImageObject];
-    [ImageAnnotationTextView resetView];
     [categorySegmentedControl setSelectedSegmentIndex:0];
     
     [self setUIForCamMode:[NSNumber numberWithInt:0]];
@@ -1083,6 +1082,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [self didUpdateLocation:nil];
     }
     [self restartAVCaptureWithBlur:YES];
+    
+
+    
+}
+
+- (void)fixCameraButtonPosition{
+    [CameraButton removeFromSuperview];
+    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view insertSubview:CameraButton aboveSubview:gridView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

@@ -200,7 +200,7 @@
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     </imageView>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cD1-Yd-7FG" customClass="KTPlaceholderTextView">
-                                        <rect key="frame" x="10" y="112" width="300" height="70"/>
+                                        <rect key="frame" x="10" y="112" width="300" height="86"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -400,7 +400,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rRr-3t-24N" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-709" y="756"/>
+            <point key="canvasLocation" x="-446" y="756"/>
         </scene>
         <!--Flux Right Drawer View Controller-->
         <scene sceneID="elA-Id-XP7">
@@ -502,7 +502,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="-327" y="756"/>
+            <point key="canvasLocation" x="-89" y="756"/>
         </scene>
         <!--Flux Map View Controller-->
         <scene sceneID="JdW-hK-6ai">
@@ -605,7 +605,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="496" y="791"/>
+            <point key="canvasLocation" x="402" y="180"/>
         </scene>
     </scenes>
     <resources>
@@ -615,7 +615,7 @@
         <image name="btn-Annotation-discard" width="270" height="100"/>
         <image name="btn-Annotation-save" width="270" height="100"/>
         <image name="camButton" width="80" height="80"/>
-        <image name="clockIcon" width="40" height="40"/>
+        <image name="clockIcon" width="23" height="24"/>
         <image name="compassButton" width="100" height="100"/>
         <image name="detailButton" width="25" height="24"/>
         <image name="filterButton" width="80" height="80"/>

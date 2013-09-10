@@ -20,6 +20,7 @@
     
     NSString*placeholderString;
     UILabel *placeholderLabel;
+    UILabel*charCount;
     id __unsafe_unretained delegate;
 }
 

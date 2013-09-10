@@ -8,6 +8,13 @@
 
 #import "KTPlaceholderTextView.h"
 
+
+static CGFloat const kDashedBorderWidth     = (2.0f);
+static CGFloat const kDashedPhase           = (0.0f);
+static CGFloat const kDashedLinesLength[]   = {4.0f, 2.0f};
+static size_t const kDashedCount            = (2.0f);
+
+
 @implementation KTPlaceholderTextView
 
 @synthesize theDelegate;
@@ -25,10 +32,31 @@
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isEditing:) name:UITextViewTextDidChangeNotification object:self];
-    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -20, 200, 75)];
+    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -20, self.frame.size.width, 75)];
+    
+    //center it
+    [placeholderLabel setCenter:CGPointMake(self.frame.size.width/2, placeholderLabel.center.y)];
+    [placeholderLabel setTextAlignment:NSTextAlignmentCenter];
+    
+    //font
     [placeholderLabel setFont:self.font];
     [placeholderLabel setBackgroundColor:[UIColor clearColor]];
     [placeholderLabel setTextColor:[UIColor lightGrayColor]];
+    
+    
+    UIImageView*dottedBorder = [[UIImageView alloc]initWithFrame:placeholderLabel.frame];
+    [dottedBorder setImage:[UIImage imageNamed:@""]];
+    [self addSubview:dottedBorder];
+    
+    charCount = [[UILabel alloc]initWithFrame:CGRectMake(self.frame.size.width-30, self.frame.size.height-15, 30, 15)];
+    [charCount setTextAlignment:NSTextAlignmentRight];
+    [charCount setFont:self.font];
+    [charCount setBackgroundColor:[UIColor clearColor]];
+    [charCount setTextColor:[UIColor whiteColor]];
+    [charCount setHidden:YES];
+    [self addSubview:charCount];
+    
+    
     [self setDelegate:self];
 }
 
@@ -47,6 +75,7 @@
 - (void)resetView{
     self.text = @"";
     [placeholderLabel setHidden:NO];
+    [charCount setHidden:YES];
 }
 
 
@@ -55,12 +84,21 @@
 - (void) isEditing:(NSNotification*) notification {
     if (![self.text isEqualToString:[NSString stringWithFormat:@""]]) {
         [placeholderLabel setHidden:YES];
-        if (self.text.length >= 142) {
+        [charCount setHidden:NO];
+        [charCount setText:[NSString stringWithFormat:@"%i",141-self.text.length]];
+        if (self.text.length > 135) {
+            [charCount setTextColor:[UIColor redColor]];
+        }
+        else{
+            [charCount setTextColor:[UIColor whiteColor]];
+        }
+        if (self.text.length >= 141) {
             self.text = [self.text substringToIndex:141];
         }
     }
     else{
         [placeholderLabel setHidden:NO];
+        [charCount setHidden:YES];
     }
 }
 
@@ -70,6 +108,19 @@
     }
     return YES;
 }
+#warning add dotted border here
+//- (void)drawRect:(CGRect)rect
+//{
+//    [super drawRect:rect];
+//    CGContextRef context = UIGraphicsGetCurrentContext();
+//    CGContextSetLineWidth(context, kDashedBorderWidth);
+//    CGContextSetStrokeColorWithColor(context, [UIColor whiteColor].CGColor);
+//    CGContextSetLineDash(context, kDashedPhase, kDashedLinesLength, kDashedCount) ;
+//    CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
+//    CGContextStrokeRect(context, rect);
+//}
+
+
 
 
 @end
