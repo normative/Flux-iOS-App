@@ -189,6 +189,7 @@
 - (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius
 {
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
                                                                                             method:RKRequestMethodAny
                                                                                        pathPattern:@"/images/closest.json"
@@ -196,6 +197,65 @@
                                                                                        statusCodes:statusCodes];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+    
+    [self doRequest:request withResponseDesc:responseDescriptor];
+}
+
+
+- (void)getImagesForLocationFiltered:(CLLocationCoordinate2D)location
+                   andRadius:(float)radius
+                   andMinAlt:(float)altMin
+                   andMaxAlt:(float)altMax
+             andMinTimestamp:(NSDate *)timeMin
+             andMaxTimestamp:(NSDate *)timeMax
+                 andHashTags:(NSString *)hashTags
+                    andUsers:(NSString *)users
+               andCategories:(NSString *)cats;
+
+{
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+
+//    example initialization:
+//    
+//    NSString *hashTags =    @"''";      // escaped-space-delimited (%20) list of hash tags (OR test) eg. "'tag1%20tag2'"
+//    NSString *cats =        @"''";      // escaped-space-delimited (%20) list of categories (OR test) eg. "'place%20thing'"
+//    NSString *users =       @"''";      // escaped-space-delimited (%20) list of user nicknames (OR test) eg. "'steve%20bob'"
+//    float altMin = -10000.0;
+//    float altMax = +10000.0;
+//    NSDate *timeMin = [[NSDate alloc] init];
+//    timeMin = [NSDate dateWithTimeIntervalSince1970:0];   // a long time ago...
+//    NSDate *timeMax = [[NSDate alloc] init];              // now
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
+//    NSString *timestampMin = @"2013-09-09T12:00:00Z";
+//    NSString *timestampMax = @"2013-09-09T16:00:00Z";
+    
+    // ZZZZ
+    
+//    NSLog(@"min: <%@>, max: <%@>", timestampMin, timestampMax);
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist=%@&userlist=%@&catlist=%@",
+                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               location.latitude, location.longitude, radius,
+                                                                               altMin, altMax,
+                                                                               timestampMin, timestampMax,
+                                                                               hashTags, users, cats]]];
+
+    [self doRequest:request withResponseDesc:responseDescriptor];
+    
+}
+
+    
+    
+- (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor
+{
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)

@@ -48,6 +48,20 @@
 //returns an NSDictionary list of images at a given location within a given radius
 - (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius;
 
+//returns an NSDictionary list of images filtered based on provided details
+- (void)getImagesForLocationFiltered:(CLLocationCoordinate2D)location
+                           andRadius:(float)radius
+                           andMinAlt:(float)altMin
+                           andMaxAlt:(float)altMax
+                     andMinTimestamp:(NSDate *)timeMin
+                     andMaxTimestamp:(NSDate *)timeMax
+                         andHashTags:(NSString *)hashTags
+                            andUsers:(NSString *)users
+                       andCategories:(NSString *)cats;
+
+// execute the request
+- (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor;
+
 //test purposes
 - (void)getAllImages;
 

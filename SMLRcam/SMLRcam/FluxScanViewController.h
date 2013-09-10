@@ -13,6 +13,7 @@
 #import "KTSegmentedButtonControl.h"
 #import "FluxClockSlidingControl.h"
 #import "FluxCameraButton.h"
+#import "FluxRadarView.h"
 
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
@@ -39,7 +40,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     __weak IBOutlet UIView *headerView;
     __weak IBOutlet UILabel *locationLabel;
     __weak IBOutlet UILabel *dateRangeLabel;
-    __weak IBOutlet FluxRotatingCompassButton *compassBtn;
+    __weak IBOutlet FluxRadarView *radarView;
+    
     UITableView*annotationsTableView;
     UIImageView*fakeGalleryView;
     
@@ -58,7 +60,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
     __weak IBOutlet KTSegmentedButtonControl *categorySegmentedControl;
     __weak IBOutlet UIProgressView *progressView;
-
+    
     //Network + Motion
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
@@ -76,7 +78,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //openGL
     FluxOpenGLViewController*openGLController;
     
-    UIInterfaceOrientation *changeToOrientation;
+    UIInterfaceOrientation changeToOrientation;
     
     UIImageView* launchView;
 }

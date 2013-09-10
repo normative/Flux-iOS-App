@@ -71,6 +71,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                 break;
             }
     }
+    [radarView updateRadarWithNewMetaData:fluxMetadata];
     [annotationsTableView reloadData];
 }
 
@@ -1081,6 +1082,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [self didUpdateHeading:nil];
         [self didUpdateLocation:nil];
     }
+    
+    [radarView updateRadarWithNewMetaData:fluxMetadata];
     [self restartAVCaptureWithBlur:YES];
     
 
