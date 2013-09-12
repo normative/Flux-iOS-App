@@ -98,9 +98,11 @@
     return self;
 }
 
-//returns the raw image (thumb for now) given an image ID
+//returns the raw image given an image ID
 - (void)getImageForID:(int)imageID
 {
+    NSUUID *uniqueID = [[NSUUID alloc] init];
+    NSLog(@"UUID Request: %@ (imageID = %d)", uniqueID, imageID);
     NSString*url = [NSString stringWithFormat:@"%@images/%i/image?size=oriented",objectManager.baseURL,imageID];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
@@ -108,6 +110,7 @@
                                                                               imageProcessingBlock:nil
                                                                                            success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
     {
+        NSLog(@"UUID Response: %@ (imageID = %d)", uniqueID, imageID);
         if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImage:forImageID:)])
         {
             [delegate NetworkServices:self didreturnImage:image forImageID:imageID];

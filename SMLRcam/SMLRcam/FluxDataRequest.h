@@ -8,6 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FluxDataStore.h"
+#import "FluxNetworkServices.h"
+#import "FluxScanImageObject.h"
+#import "FluxUserObject.h"
+
 @interface FluxDataRequest : NSObject
 
 @end

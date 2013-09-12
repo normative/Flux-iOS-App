@@ -76,6 +76,7 @@
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
 		F240346017E103140088CA2D /* FluxDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345F17E103140088CA2D /* FluxDataRequest.m */; };
+		F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162117E206DC0027BD1F /* FluxDataManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -199,6 +200,8 @@
 		F240345C17E102F50088CA2D /* FluxDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDataStore.m; sourceTree = "<group>"; };
 		F240345E17E103140088CA2D /* FluxDataRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDataRequest.h; sourceTree = "<group>"; };
 		F240345F17E103140088CA2D /* FluxDataRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDataRequest.m; sourceTree = "<group>"; };
+		F245162017E206DC0027BD1F /* FluxDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDataManager.h; sourceTree = "<group>"; };
+		F245162117E206DC0027BD1F /* FluxDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDataManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -394,7 +397,6 @@
 		AA4CE0FD17B43559008D04BE /* Tools */ = {
 			isa = PBXGroup;
 			children = (
-				AA1BCE3D17D0CBA300136EFF /* FluxAVCameraSingleton.h */,
 				AA4CE0FE17B43579008D04BE /* FluxLocationServicesSingleton.h */,
 				AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */,
 				AA4CE10117B52EDF008D04BE /* FluxMotionManagerSingleton.h */,
@@ -467,7 +469,6 @@
 				AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */,
 				17604B811785CA59005CF054 /* FluxScanViewController.h */,
 				17604B821785CA59005CF054 /* FluxScanViewController.m */,
-				AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */,
 			);
 			name = "Scan View";
 			sourceTree = "<group>";
@@ -506,6 +507,8 @@
 			isa = PBXGroup;
 			children = (
 				AA4CE15C17B58320008D04BE /* Network */,
+				F245162017E206DC0027BD1F /* FluxDataManager.h */,
+				F245162117E206DC0027BD1F /* FluxDataManager.m */,
 				F240345E17E103140088CA2D /* FluxDataRequest.h */,
 				F240345F17E103140088CA2D /* FluxDataRequest.m */,
 				F240345B17E102F50088CA2D /* FluxDataStore.h */,
@@ -687,6 +690,7 @@
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */,
+				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
 				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
