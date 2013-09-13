@@ -14,9 +14,10 @@ typedef NSString FluxLocalID;
 typedef int FluxImageID;
 
 enum image_types_enum {
-    thumb = 0,
-    screen_res = 1,
-    full_res = 2,
+    none = 0,
+    thumb = 1,
+    screen_res = 2,
+    full_res = 3,
 };
 
 typedef enum image_types_enum image_type;

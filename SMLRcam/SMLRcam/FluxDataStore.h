@@ -13,6 +13,7 @@
 #import "FluxUserObject.h"
 
 struct image_exist_struct {
+    BOOL none;
     BOOL thumb;
     BOOL screen_res;
     BOOL full_res;

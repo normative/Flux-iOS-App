@@ -163,7 +163,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     // Call callback of requestor
     
     // Clean up request (nothing else to wait for)
-    [currentRequests delete:requestID];
+    [currentRequests removeObjectForKey:requestID];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
@@ -219,8 +219,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         }
         for (id curRequestID in completedRequestIDs)
         {
-            [currentRequests delete:curRequestID];
-            [[downloadQueueReceivers objectForKey:imageObj.localID] delete:curRequestID];
+            [currentRequests removeObjectForKey:curRequestID];
+            [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
         }
     }
 }
@@ -255,9 +255,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     // This is looping, but should only ever delete one item
     for (id curRequestID in requestArray)
     {
-        [currentRequests delete:curRequestID];
+        [currentRequests removeObjectForKey:curRequestID];
     }
-    [uploadQueueReceivers delete:updatedImageObject.localID];
+    [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{

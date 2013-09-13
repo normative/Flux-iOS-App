@@ -66,9 +66,6 @@ typedef NSUUID FluxRequestID;
 // execute the request
 - (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor andRequestID:(FluxRequestID *)requestID;
 
-//test purposes
-- (void)getAllImages;
-
 //uploads an image. All account info is stored within the FluxScanImageObject
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
 
