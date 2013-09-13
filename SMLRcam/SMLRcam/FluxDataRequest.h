@@ -30,12 +30,6 @@ typedef enum request_types_enum request_type;
 
 @interface FluxDataRequest : NSObject
 {
-    request_type requestType;
-    
-    // Dictionary of requested and completed image/metadata downloads, with an image_exist value to store image size
-    NSMutableDictionary *requestedIDs;
-    NSMutableDictionary *completedIDs;
-    
     // Callback for successful request
     
     // Callback for failed request
@@ -44,5 +38,11 @@ typedef enum request_types_enum request_type;
     
     // Callback for lower resolution image retrieved (might want to display temporary image)
 }
+
+@property (nonatomic) request_type requestType;
+
+// Dictionary of requested and completed image/metadata downloads, with an image_exist value to store image size
+@property (nonatomic, strong) NSDictionary *requestedIDs;
+@property (nonatomic, strong) NSMutableDictionary *completedIDs;
 
 @end

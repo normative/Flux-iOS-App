@@ -34,19 +34,19 @@ typedef struct image_exist_struct image_exist;
 {
     NSCache *fluxImageCache;
     NSMutableDictionary *fluxMetadata;
+    NSMutableDictionary *imageIDMapping;
 }
 
-- (void) addImageToStore:(UIImage *)image withImageID:(FluxImageID *)imageID withSize:(image_type)imageType;
+- (void) addImageToStore:(UIImage *)image withImageID:(FluxImageID)imageID withSize:(image_type)imageType;
 - (void) addImageToStore:(UIImage *)image withLocalID:(FluxLocalID *)localID withSize:(image_type)imageType;
 - (void) addMetadataObject:(FluxScanImageObject *)metadata;
-- (image_exist) doesImageExistForImageID:(FluxImageID *)imageID;
+- (image_exist) doesImageExistForImageID:(FluxImageID)imageID;
 - (image_exist) doesImageExistForLocalID:(FluxLocalID *)localID;
-- (UIImage *) getImageWithImageID:(FluxImageID *)imageID withSize:(image_type)imageType;
+- (UIImage *) getImageWithImageID:(FluxImageID)imageID withSize:(image_type)imageType;
 - (UIImage *) getImageWithLocalID:(FluxLocalID *)localID withSize:(image_type)imageType;
-- (FluxScanImageObject *) getMetadataWithImageID:(FluxImageID *)imageID;
+- (FluxScanImageObject *) getMetadataWithImageID:(FluxImageID)imageID;
 - (FluxScanImageObject *) getMetadataWithLocalID:(FluxLocalID *)localID;
-
-//@property (strong) NSCache *fluxImageCache;
-//@property (nonatomic, strong) NSMutableDictionary *fluxMetadata;
+- (void) setImageIDMapping:(FluxImageID)imageID forLocalID:(FluxLocalID *)localID;
+- (NSString *) generateImageCacheKeyWithLocalID:(FluxLocalID *)localID withImageType:(image_type)imageType;
 
 @end
