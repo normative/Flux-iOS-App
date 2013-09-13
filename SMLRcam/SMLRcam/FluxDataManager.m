@@ -101,9 +101,23 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 #pragma mark - Image Queries
 
-- (FluxRequestID *) requestImagesByImageID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
+// Need to add a callback block to arguments
+- (void) requestImageByImageID:(int)imageID withSize:(image_type)imageType
 {
-    return nil;
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setRequestType:image_request];
+    [dataRequest setImageType:imageType];
+    FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
+    if (imageObj != nil)
+    {
+        NSArray *tempArray = [NSArray arrayWithObject:imageObj.localID];
+        [dataRequest setRequestedIDs:tempArray];
+        [self requestImagesByLocalID:dataRequest withSize:imageType];
+    }
+    else
+    {
+        NSLog(@"%s: Requested ImageID %d does not exist!", __func__, imageID);
+    }
 }
 
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
@@ -112,7 +126,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
     [currentRequests setObject:dataRequest forKey:requestID];
     
-    NSString *sizeString = @"orientd";
+    NSString *sizeString = @"oriented";
     if (imageType == thumb)
     {
         sizeString = @"thumb";
