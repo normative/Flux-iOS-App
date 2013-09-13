@@ -89,6 +89,15 @@ withDescriptionString:(NSString*)description
     return [NSString stringWithFormat:@"%@_%d", stringID, self.userID];
 }
 
+- (NSString *) generateImageCacheKeyWithImageType:(image_type)imageType
+{
+    if (self.localID != nil)
+    {
+        return [self.localID stringByAppendingFormat:@"_%d",imageType];
+    }
+    return nil;
+}
+
 - (void)setImageIDFromDateAndUser
 {
     NSString *newImageID = [NSString stringWithFormat:@"%@_%d", self.timestampString, self.userID];

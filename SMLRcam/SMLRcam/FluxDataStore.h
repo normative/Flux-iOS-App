@@ -12,22 +12,12 @@
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
 
-typedef NSString FluxLocalID;
-typedef int FluxImageID;
-
-enum image_types_enum {
-    thumb = 0,
-    screen_res = 1,
-    full_res = 2,
-};
-
 struct image_exist_struct {
     BOOL thumb;
     BOOL screen_res;
     BOOL full_res;
 };
 
-typedef enum image_types_enum image_type;
 typedef struct image_exist_struct image_exist;
 
 @interface FluxDataStore : NSObject
@@ -47,6 +37,5 @@ typedef struct image_exist_struct image_exist;
 - (FluxScanImageObject *) getMetadataWithImageID:(FluxImageID)imageID;
 - (FluxScanImageObject *) getMetadataWithLocalID:(FluxLocalID *)localID;
 - (void) setImageIDMapping:(FluxImageID)imageID forLocalID:(FluxLocalID *)localID;
-- (NSString *) generateImageCacheKeyWithLocalID:(FluxLocalID *)localID withImageType:(image_type)imageType;
 
 @end

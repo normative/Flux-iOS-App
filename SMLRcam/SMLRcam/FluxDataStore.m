@@ -37,9 +37,10 @@
 {
     if ((image != nil) && (localID != nil))
     {
-        if ([fluxMetadata objectForKey:localID] != nil)
+        FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+        if (imageObject != nil)
         {
-            [fluxImageCache setObject:image forKey:[self generateImageCacheKeyWithLocalID:localID withImageType:imageType]];
+            [fluxImageCache setObject:image forKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
         }
         else
         {
@@ -91,9 +92,10 @@
     
     if (localID != nil)
     {
-        imageFormats.thumb = ([fluxImageCache objectForKey:[self generateImageCacheKeyWithLocalID:localID withImageType:thumb]] != nil);
-        imageFormats.screen_res = ([fluxImageCache objectForKey:[self generateImageCacheKeyWithLocalID:localID withImageType:screen_res]] != nil);
-        imageFormats.full_res = ([fluxImageCache objectForKey:[self generateImageCacheKeyWithLocalID:localID withImageType:full_res]] != nil);
+        FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+        imageFormats.thumb = ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]] != nil);
+        imageFormats.screen_res = ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]] != nil);
+        imageFormats.full_res = ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]] != nil);
     }
     return imageFormats;
 }
@@ -118,8 +120,8 @@
 {
     // If key doesn't exist, this will return nil.
     // This means it is either no longer in cache, or didn't exist in the first place
-    
-    return [fluxImageCache objectForKey:[self generateImageCacheKeyWithLocalID:localID withImageType:imageType]];
+    FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+    return [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
 }
 
 - (FluxScanImageObject *) getMetadataWithImageID:(FluxImageID)imageID
@@ -155,15 +157,6 @@
         }
         [imageIDMapping setValue:localID forKey:[NSString stringWithFormat:@"%d",imageID]];
     }
-}
-
-- (NSString *) generateImageCacheKeyWithLocalID:(FluxLocalID *)localID withImageType:(image_type)imageType
-{
-    if (localID != nil)
-    {
-        return [localID stringByAppendingFormat:@"_%d",imageType];
-    }
-    return nil;
 }
 
 @end

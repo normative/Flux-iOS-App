@@ -10,8 +10,18 @@
 #import <MapKit/MapKit.h>
 #import <GLKit/GLKit.h>
 
-@interface FluxScanImageObject : NSObject <MKAnnotation>
+typedef NSString FluxLocalID;
+typedef int FluxImageID;
 
+enum image_types_enum {
+    thumb = 0,
+    screen_res = 1,
+    full_res = 2,
+};
+
+typedef enum image_types_enum image_type;
+
+@interface FluxScanImageObject : NSObject <MKAnnotation>
 
 //location
 @property (nonatomic) float longitude;
@@ -42,8 +52,8 @@
 @property (nonatomic) int categoryID;
 @property (nonatomic) int cameraID;
 @property (nonatomic) int imageID;
-@property (nonatomic) int userID;
-@property (nonatomic) NSString* localID;
+@property (nonatomic) FluxImageID userID;
+@property (nonatomic) FluxLocalID *localID;
 @property (nonatomic) NSString* localThumbID;
 
 - (id)initWithUserID:(int)userID
@@ -63,6 +73,7 @@ withDescriptionString:(NSString*)description
                 andQY:(float)qy
                 andQZ:(float)qz;
 
+- (NSString *) generateImageCacheKeyWithImageType:(image_type)imageType;
 - (NSString *)generateUniqueStringID;
 - (void)setImageIDFromDateAndUser;
 
