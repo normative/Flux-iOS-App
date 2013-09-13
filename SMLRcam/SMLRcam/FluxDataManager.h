@@ -21,7 +21,7 @@ extern NSString* const FluxDataManagerDidUploadImage;
 extern NSString* const FluxDataManagerDidUploadAllImages;
 extern NSString* const FluxDataManagerDidCompleteRequest;
 
-typedef NSUUID FluxRequestID;
+extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 @interface FluxDataManager : NSObject <NetworkServicesDelegate>
 {
@@ -33,9 +33,13 @@ typedef NSUUID FluxRequestID;
     
     // For each FluxLocalID key, stores a NSMutableArray of FluxRequestID's waiting on download to complete
     NSMutableDictionary *downloadQueueReceivers;
+
+    // For each FluxLocalID key, stores a NSMutableArray of FluxRequestID's waiting on upload to complete
+    NSMutableDictionary *uploadQueueReceivers;
 }
 
-- (void) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image;
+- (FluxRequestID *) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image
+                withDataRequest:(FluxDataRequest *)dataRequest;
 
 // Returns the Request ID if request is successful, otherwise nil
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate

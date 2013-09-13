@@ -99,21 +99,18 @@
 }
 
 //returns the raw image given an image ID
-- (void)getImageForID:(int)imageID
+- (void)getImageForID:(int)imageID withStringSize:(NSString *)sizeString andRequestID:(FluxRequestID *)requestID
 {
-    NSUUID *uniqueID = [[NSUUID alloc] init];
-    NSLog(@"UUID Request: %@ (imageID = %d)", uniqueID, imageID);
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?size=oriented",objectManager.baseURL,imageID];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?size=%@",objectManager.baseURL,imageID,sizeString];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
                                                                               imageProcessingBlock:nil
                                                                                            success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
     {
-        NSLog(@"UUID Response: %@ (imageID = %d)", uniqueID, imageID);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImage:forImageID:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImage:forImageID:andRequestID:)])
         {
-            [delegate NetworkServices:self didreturnImage:image forImageID:imageID];
+            [delegate NetworkServices:self didreturnImage:image forImageID:imageID andRequestID:requestID];
         }
     }
                                                                                            failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
@@ -127,33 +124,8 @@
     [operation start];
 }
 
-//returns the thumb image given an imageID
-- (void)getThumbImageForID:(int)imageID
+- (void)getImageMetadataForID:(int)imageID andRequestID:(FluxRequestID *)requestID
 {
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?size=thumb",objectManager.baseURL,imageID];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    
-    AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
-                                                                              imageProcessingBlock:nil
-                                                                                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
-    {
-        if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImage:forImageID:)])
-        {
-            [delegate NetworkServices:self didreturnImage:image forImageID:imageID];
-        }
-    }
-                                                                                           failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
-    {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
-        {
-            [delegate NetworkServices:self didFailWithError:error];
-        }
-    }];
-    [operation start];
-}
-
-- (void)getImageMetadataForID:(int)imageID{
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
                                                                                             method:RKRequestMethodAny
@@ -172,9 +144,9 @@
             FluxScanImageObject *imageObject = [result firstObject];
             [imageObject setLocalID:[imageObject generateUniqueStringID]];
             [imageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", imageObject.localID]];
-            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:andRequestID:)])
             {
-                [delegate NetworkServices:self didreturnImageMetadata:imageObject];
+                [delegate NetworkServices:self didreturnImageMetadata:imageObject andRequestID:requestID];
             }
         }
     }
@@ -189,7 +161,7 @@
     [operation start];
 }
 
-- (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius
+- (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andRequestID:(FluxRequestID *)requestID
 {
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
 
@@ -201,19 +173,20 @@
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
     
-    [self doRequest:request withResponseDesc:responseDescriptor];
+    [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
 }
 
 
 - (void)getImagesForLocationFiltered:(CLLocationCoordinate2D)location
-                   andRadius:(float)radius
-                   andMinAlt:(float)altMin
-                   andMaxAlt:(float)altMax
-             andMinTimestamp:(NSDate *)timeMin
-             andMaxTimestamp:(NSDate *)timeMax
-                 andHashTags:(NSString *)hashTags
-                    andUsers:(NSString *)users
-               andCategories:(NSString *)cats;
+                           andRadius:(float)radius
+                           andMinAlt:(float)altMin
+                           andMaxAlt:(float)altMax
+                     andMinTimestamp:(NSDate *)timeMin
+                     andMaxTimestamp:(NSDate *)timeMax
+                         andHashTags:(NSString *)hashTags
+                            andUsers:(NSString *)users
+                       andCategories:(NSString *)cats
+                        andRequestID:(FluxRequestID *)requestID;
 
 {
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
@@ -251,13 +224,13 @@
                                                                                timestampMin, timestampMax,
                                                                                hashTags, users, cats]]];
 
-    [self doRequest:request withResponseDesc:responseDescriptor];
+    [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
     
 }
 
     
     
-- (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor
+- (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor andRequestID:(FluxRequestID *)requestID
 {
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -271,12 +244,11 @@
             for (FluxScanImageObject*obj in result.array)
             {
                 [obj setLocalID:[obj generateUniqueStringID]];
-                [obj setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", obj.localID]];
                 [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
             }
-            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:andRequestID:)])
             {
-                [delegate NetworkServices:self didreturnImageList: mutableDictionary];
+                [delegate NetworkServices:self didreturnImageList:mutableDictionary andRequestID:requestID];
             }
         }
     }
@@ -318,9 +290,9 @@
                 [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
             }
             
-            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:andRequestID:)])
             {
-                [delegate NetworkServices:self didreturnImageList: mutableDictionary];
+                [delegate NetworkServices:self didreturnImageList: mutableDictionary andRequestID:requestID];
             }
         }
     }
@@ -335,7 +307,7 @@
     [operation start];
 }
 
-- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage;
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
 {
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject
@@ -356,13 +328,9 @@
         if ([result count]>0)
         {
             FluxScanImageObject *imageObject = [result firstObject];
-            [imageObject setLocalID:[imageObject generateUniqueStringID]];
-            [imageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", imageObject.localID]];
-            NSLog(@"Successfully Uploaded Image to account # %i",imageObject.userID);
-         
-            if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
             {
-                [delegate NetworkServices:self didUploadImage:imageObject];
+                [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
             }
         }
     }
@@ -431,9 +399,9 @@
         NSLog(@"Found %i Results",[result count]);
         if ([result count]>0)
         {
-            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:andRequestID:)])
             {
-                [delegate NetworkServices:self didreturnImageMetadata:[result firstObject]];
+                [delegate NetworkServices:self didreturnImageMetadata:[result firstObject] andRequestID:requestID];
             }
         }
     }

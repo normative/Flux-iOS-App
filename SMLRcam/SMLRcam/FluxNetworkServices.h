@@ -11,14 +11,20 @@
 #import "FluxUserObject.h"
 #import <CoreLocation/CoreLocation.h>
 
+typedef NSUUID FluxRequestID;
+
 @class FluxNetworkServices;
 @protocol NetworkServicesDelegate <NSObject>
 @optional
 //images
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage*)image forImageID:(int)imageID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMetadata:(FluxScanImageObject*)imageObject;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary*)imageList;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject*)updatedImageObject;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage*)image forImageID:(int)imageID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMetadata:(FluxScanImageObject*)imageObject
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary*)imageList
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject*)updatedImageObject
+           andRequestID:(FluxRequestID *)requestID;
 
 //users
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject;
@@ -37,16 +43,13 @@
 #pragma mark - image methods
 
 //returns the raw image given an imageID
-- (void)getImageForID:(int)imageID;
-
-//returns the thumb image given an imageID
-- (void)getThumbImageForID:(int)imageID;
+- (void)getImageForID:(int)imageID withStringSize:(NSString *)sizeString andRequestID:(FluxRequestID *)requestID;
 
 //returns an image object given an imageID
-- (void)getImageMetadataForID:(int)imageID;
+- (void)getImageMetadataForID:(int)imageID andRequestID:(FluxRequestID *)requestID;
 
 //returns an NSDictionary list of images at a given location within a given radius
-- (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius;
+- (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andRequestID:(FluxRequestID *)requestID;
 
 //returns an NSDictionary list of images filtered based on provided details
 - (void)getImagesForLocationFiltered:(CLLocationCoordinate2D)location
@@ -57,16 +60,17 @@
                      andMaxTimestamp:(NSDate *)timeMax
                          andHashTags:(NSString *)hashTags
                             andUsers:(NSString *)users
-                       andCategories:(NSString *)cats;
+                       andCategories:(NSString *)cats
+                        andRequestID:(FluxRequestID *)requestID;
 
 // execute the request
-- (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor;
+- (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor andRequestID:(FluxRequestID *)requestID;
 
 //test purposes
 - (void)getAllImages;
 
 //uploads an image. All account info is stored within the FluxScanImageObject
-- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage;
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
 
 #pragma mark  - Users
 

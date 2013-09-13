@@ -14,7 +14,7 @@
 {
     if (self = [super init])
     {
-
+        _completedIDs = [[NSMutableArray alloc] init];
     }
     return self;
 }

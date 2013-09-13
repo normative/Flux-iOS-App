@@ -41,8 +41,10 @@ typedef enum request_types_enum request_type;
 
 @property (nonatomic) request_type requestType;
 
-// Dictionary of requested and completed image/metadata downloads, with an image_exist value to store image size
-@property (nonatomic, strong) NSDictionary *requestedIDs;
-@property (nonatomic, strong) NSMutableDictionary *completedIDs;
+@property (nonatomic) image_type imageType;
+
+// Lists of requested and completed image/metadata downloads
+@property (nonatomic, strong) NSArray *requestedIDs;
+@property (nonatomic, strong) NSMutableArray *completedIDs;
 
 @end
