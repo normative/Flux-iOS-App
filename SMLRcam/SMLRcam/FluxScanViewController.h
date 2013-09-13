@@ -14,7 +14,7 @@
 #import "FluxClockSlidingControl.h"
 #import "FluxCameraButton.h"
 #import "FluxCompassView.h"
-
+#import "FluxDataManager.h"
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
 #import "FluxLocationServicesSingleton.h"

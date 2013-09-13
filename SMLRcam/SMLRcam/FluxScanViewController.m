@@ -55,8 +55,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [networkServices setDelegate:self];
 }
 
-#pragma Networking Delegate Methods
-
 //called by annotationsTableview
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
          didreturnImage:(UIImage *)image
@@ -1070,6 +1068,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [fakeGalleryView setImage:[UIImage imageNamed:@"fakeGallery"]];
     [fakeGalleryView setAlpha:0.0];
     [self.view addSubview:fakeGalleryView];
+    
+    FluxDataManager *tempDataMgr = [[FluxDataManager alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated{

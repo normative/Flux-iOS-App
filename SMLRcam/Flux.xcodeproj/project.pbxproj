@@ -77,6 +77,7 @@
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
 		F240346017E103140088CA2D /* FluxDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345F17E103140088CA2D /* FluxDataRequest.m */; };
 		F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162117E206DC0027BD1F /* FluxDataManager.m */; };
+		F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162417E23FAA0027BD1F /* FluxDataFilter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -202,6 +203,8 @@
 		F240345F17E103140088CA2D /* FluxDataRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDataRequest.m; sourceTree = "<group>"; };
 		F245162017E206DC0027BD1F /* FluxDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDataManager.h; sourceTree = "<group>"; };
 		F245162117E206DC0027BD1F /* FluxDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDataManager.m; sourceTree = "<group>"; };
+		F245162317E23FAA0027BD1F /* FluxDataFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDataFilter.h; sourceTree = "<group>"; };
+		F245162417E23FAA0027BD1F /* FluxDataFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDataFilter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -507,6 +510,8 @@
 			isa = PBXGroup;
 			children = (
 				AA4CE15C17B58320008D04BE /* Network */,
+				F245162317E23FAA0027BD1F /* FluxDataFilter.h */,
+				F245162417E23FAA0027BD1F /* FluxDataFilter.m */,
 				F245162017E206DC0027BD1F /* FluxDataManager.h */,
 				F245162117E206DC0027BD1F /* FluxDataManager.m */,
 				F240345E17E103140088CA2D /* FluxDataRequest.h */,
@@ -677,6 +682,7 @@
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
 				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
+				F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */,
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
 				AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */,
 				17604B771785CA59005CF054 /* FluxAppDelegate.m in Sources */,

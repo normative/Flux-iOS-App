@@ -8,6 +8,12 @@
 
 #import "FluxDataManager.h"
 
+NSString* const FluxDataManagerDidAcquireNewImage = @"FluxDataManagerDidAcquireNewImage";
+NSString* const FluxDataManagerDidDownloadImage = @"FluxDataManagerDidDownloadImage";
+NSString* const FluxDataManagerDidUploadImage = @"FluxDataManagerDidUploadImage";
+NSString* const FluxDataManagerDidUploadAllImages = @"FluxDataManagerDidUploadAllImages";
+NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidCompleteRequest";
+
 @implementation FluxDataManager
 
 - (id)init
@@ -22,11 +28,61 @@
     return self;
 }
 
-#pragma mark - Metadata
+- (void) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image
+{
+    // Add a new image with metadata to both cache objects
 
+    // Begin upload of image to server
+    
+    // Set up global upload progress count (add new image to overall total)
 
-#pragma mark - Images
+    // Notify any observers of new content
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidAcquireNewImage object:self];
+}
 
+#pragma mark - Item List Queries
+
+- (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate
+                                     withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                withDataRequest:(FluxDataRequest *)dataRequest
+{
+    return nil;
+}
+
+- (FluxRequestID *) requestImageListAtLocation:(CLLocationCoordinate2D)coordinate
+                                    withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                               withDataRequest:(FluxDataRequest *)dataRequest
+{
+    return nil;
+}
+
+#pragma mark - Metadata Queries
+
+- (FluxRequestID *) requestMetadataByImageID:(FluxDataRequest *)dataRequest
+{
+    return nil;
+}
+
+- (FluxRequestID *) requestMetadataByLocalID:(FluxDataRequest *)dataRequest
+{
+    return nil;
+}
+
+#pragma mark - Image Queries
+
+- (FluxRequestID *) requestImagesByImageID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
+{
+    return nil;
+}
+
+- (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
+{
+    return nil;
+}
+
+#pragma mark - Request Queries
+
+// General support for managing outstanding requests (i.e. see which images in bulk request are complete)
 
 #pragma mark - Network Services
 
