@@ -8,7 +8,6 @@
 
 #import "FluxRightDrawerViewController.h"
 #import "UIViewController+MMDrawerController.h"
-
 #import "FluxFilterDrawerObject.h"
 
 @interface FluxRightDrawerViewController ()
@@ -17,6 +16,8 @@
 
 @implementation FluxRightDrawerViewController
 
+#pragma mark - init methods
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -24,6 +25,12 @@
         // Custom initialization
     }
     return self;
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    //make network Call
+    [networkServices getTagsForLocation:locationManager.location.coordinate andRadius:25];
+    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
@@ -37,22 +44,31 @@
 
     rightDrawerTableViewArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PlacesFilterObject, PeopleFilterObject, ThingsFilterObject, EventsFilterObject, nil];
     
-//    UIImage *searchFieldImage = [[UIImage imageNamed:@"searchFieldBG"] stretchableImageWithLeftCapWidth:20 topCapHeight:20];
-//    [self.filterSearchBar setSearchFieldBackgroundImage:searchFieldImage forState:UIControlStateNormal];
-    //[self.filterSearchBar setBackgroundImage:searchFieldImage];
-    
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self setupNetworkServices];
+    [self setupLocationManager];
+}
+
+- (void)setupLocationManager
+{
+    locationManager = [FluxLocationServicesSingleton sharedManager];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+#pragma mark - network methods
+
+- (void)setupNetworkServices
+{
+    networkServices = [[FluxNetworkServices alloc]init];
+    [networkServices setDelegate:self];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
+    topTagsArray = tagList;
 }
 
 #pragma mark - Table view data source
@@ -134,18 +150,24 @@
 {
     //if it's the hash section
     if (indexPath.section == 0) {
-        static NSString *CellIdentifier = @"hashcell";
+        static NSString *CellIdentifier = @"hashCell";
         FluxHashtagTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
         if (cell == nil) {
             cell = [[FluxHashtagTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         }
-        
-        UIImageView*bgView = [[UIImageView alloc]initWithFrame:CGRectMake(-35, 0, 320, 156)];
-        [bgView setImage:[UIImage imageNamed:@"dummyTags"]];
-        [bgView setContentMode:UIViewContentModeScaleAspectFit];
-        //[self.tableView setBackgroundColor:[UIColor clearColor]];
-        [cell.contentView insertSubview:bgView atIndex:0];
+        //use this to put a loading activity view in place of the tag list
+//        if (topTagsArray == nil) {
+//            UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(cell.contentView.frame.size.width/2-25, cell.contentView.frame.size.height/2-25, 50, 50)];
+//            [activityView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
+//            [activityView setCenter:cell.contentView.center];
+//            [activityView startAnimating];
+//            [cell.contentView addSubview:activityView];
+//            return cell;
+//        }
+        [cell.tagList setTags:[NSArray arrayWithObjects:@"Hello", @"this", @"is", @"a", @"test", @"of", @"theWaythetextfieldlooks", @"with", @"the", @"worst", @"case", @"being", @"this", @"long", nil]];
+        //[tagList setTags:topTagsArray];
+        [cell.tagList setTagDelegate:self];
         return cell;
     }
     static NSString *CellIdentifier = @"checkCell";
@@ -178,6 +200,8 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+#pragma mark Cell Subview Delegates
+
 //if the checkbox is selected, the callback comes here. In the method below we check which cell it is and mark the corresponding object as active.
 - (void)CheckboxCell:(FluxDrawerCheckboxFilterTableViewCell *)checkCell boxWasChecked:(BOOL)checked{
     for (FluxDrawerCheckboxFilterTableViewCell* cell in [self.tableView visibleCells]) {
@@ -188,6 +212,15 @@
     }
 }
 
+- (void)tagList:(DWTagList *)list selectedTagWithTitle:(NSString *)title{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message"
+                                                    message:[NSString stringWithFormat:@"You tapped tag %@", title]
+                                                   delegate:nil
+                                          cancelButtonTitle:@"Ok"
+                                          otherButtonTitles:nil];
+    [alert show];
+}
+
 
 #pragma mark - UISearchDisplayController Delegate Methods
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar{
@@ -196,6 +229,7 @@
      animated:YES
      completion:^(BOOL finished) {
      }];
+    //[self.tableView reloadData];
     return YES;
 }
 
@@ -205,6 +239,7 @@
      animated:YES
      completion:^(BOOL finished) {
      }];
+    //[self.tableView reloadData];
     return YES;
 }
 

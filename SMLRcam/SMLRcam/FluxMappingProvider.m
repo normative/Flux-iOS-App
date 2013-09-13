@@ -9,8 +9,11 @@
 #import "FluxMappingProvider.h"
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxTagObject.h"
 
 @implementation FluxMappingProvider
+
+#pragma mark - Image Mapping
 
 + (RKObjectMapping *)imageGETMapping {
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxScanImageObject class]];
@@ -47,6 +50,8 @@
     return mapping;
 }
 
+#pragma mark - User Mapping
+
 + (RKObjectMapping *)userGETMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxUserObject class]];
     
@@ -75,6 +80,18 @@
     
     [mapping addAttributeMappingsFromArray:@[@"privacy"]];
     
+    return mapping;
+}
+
+#pragma mark - Tag Mapping
+
++ (RKObjectMapping *)tagGetMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxTagObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"tag":   @"tagTitle",
+                                                  @"image_id":     @"associatedImageID"
+                                                  }];    
     return mapping;
 }
 

@@ -18,4 +18,6 @@
 + (RKObjectMapping *)userGETMapping;
 + (RKObjectMapping *)userPOSTMapping;
 
++ (RKObjectMapping *)tagGetMapping;
+
 @end

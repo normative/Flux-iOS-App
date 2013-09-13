@@ -22,10 +22,12 @@
 
 //users
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject;
-
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError*)e;
+
+//tags
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList;
 @end
 
 @interface FluxNetworkServices : NSObject{
@@ -76,7 +78,12 @@
 //creates a user with the given object
 - (void)createUser:(FluxUserObject*)user;
 
+#pragma mark  - Tags
+- (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius;
 
+#pragma mark  - Other
 - (void)deleteLocations;
+
+
 
 @end
