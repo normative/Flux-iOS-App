@@ -64,15 +64,17 @@
     }
     [fluxMetadata setValue:metadata forKey:metadata.localID];
     
-    if (metadata.imageID >= 0)
+    if ((metadata.imageID >= 0) && ([imageIDMapping objectForKey:[NSString stringWithFormat:@"%d",metadata.imageID]] == nil))
     {
         [self setImageIDMapping:metadata.imageID forLocalID:metadata.localID];
     }
 }
 
-- (image_exist) doesImageExistForImageID:(FluxImageID)imageID
+- (NSArray *) doesImageExistForImageID:(FluxImageID)imageID
 {
-    image_exist imageFormats = {NO, NO, NO};
+    NSArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNumber numberWithBool:NO],
+                                    [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO],
+                                    [NSNumber numberWithBool:NO], nil];
 
     if (imageID >= 0)
     {
@@ -86,18 +88,23 @@
     return imageFormats;
 }
 
-- (image_exist) doesImageExistForLocalID:(FluxLocalID *)localID
+- (NSArray *) doesImageExistForLocalID:(FluxLocalID *)localID
 {
-    image_exist imageFormats = {NO, NO, NO};
+    NSMutableArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNumber numberWithBool:NO],
+                                    [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO],
+                                    [NSNumber numberWithBool:NO], nil];
     
     if (localID != nil)
     {
         FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
-        imageFormats.thumb = ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]] != nil);
-        imageFormats.screen_res = ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]] != nil);
-        imageFormats.full_res = ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]] != nil);
+        imageFormats[thumb] = [NSNumber numberWithBool:
+                               ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]] != nil)];
+        imageFormats[screen_res] = [NSNumber numberWithBool:
+                                ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]] != nil)];
+        imageFormats[full_res] = [NSNumber numberWithBool:
+                                ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]] != nil)];
     }
-    return imageFormats;
+    return [NSArray arrayWithArray:imageFormats];;
 }
 
 - (UIImage *) getImageWithImageID:(FluxImageID)imageID withSize:(image_type)imageType

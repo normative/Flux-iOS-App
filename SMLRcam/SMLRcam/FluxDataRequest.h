@@ -13,15 +13,18 @@
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
 
-enum request_types_enum {
-    time_value_request = 0,
-    nearby_list_request = 1,
-    metadata_request = 2,
-    image_request = 3,
-    data_upload_request = 4,
+enum request_type {
+    no_request_specified = 0,
+    time_value_request = 1,
+    nearby_list_request = 2,
+    metadata_request = 3,
+    image_request = 4,
+    data_upload_request = 5,
 };
 
-typedef enum request_types_enum request_type;
+typedef enum request_type request_type;
+
+typedef void (^ImageReadyBlock)(FluxLocalID *, FluxRequestID *);
 
 // Data request object can store many things (parameters are optional depending on request type).
 // It can store callbacks for success, failure, or for different operations.
@@ -34,8 +37,6 @@ typedef enum request_types_enum request_type;
     
     // Callback for failed request
     
-    // Callback for single image retrieved (either from cache or download)
-    
     // Callback for lower resolution image retrieved (might want to display temporary image)
 }
 
@@ -46,5 +47,10 @@ typedef enum request_types_enum request_type;
 // Lists of requested and completed image/metadata downloads
 @property (nonatomic, strong) NSArray *requestedIDs;
 @property (nonatomic, strong) NSMutableArray *completedIDs;
+
+// Callback for single image retrieved (either from cache or download)
+@property (strong) ImageReadyBlock imageReady;
+
+- (void) whenImageReady:(FluxLocalID *)localID withRequestID:(FluxRequestID *)requestID;
 
 @end

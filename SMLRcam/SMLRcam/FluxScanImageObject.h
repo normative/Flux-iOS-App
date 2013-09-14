@@ -13,14 +13,14 @@
 typedef NSString FluxLocalID;
 typedef int FluxImageID;
 
-enum image_types_enum {
+enum image_type {
     none = 0,
     thumb = 1,
     screen_res = 2,
     full_res = 3,
 };
 
-typedef enum image_types_enum image_type;
+typedef enum image_type image_type;
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 

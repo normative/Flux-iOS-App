@@ -19,4 +19,12 @@
     return self;
 }
 
+- (void) whenImageReady:(FluxLocalID *)localID withRequestID:(FluxRequestID *)requestID
+{
+    if (self.imageReady)
+    {
+        self.imageReady(localID, requestID);
+    }
+}
+
 @end
