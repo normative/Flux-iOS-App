@@ -139,6 +139,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         sizeString = @"thumb";
     }
 
+    BOOL completedRequest = NO;
+
     for (id curLocalID in dataRequest.requestedIDs)
     {
         // First check if image is already in cache
@@ -146,7 +148,17 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         if ([imageExist[imageType] isEqualToNumber:[NSNumber numberWithBool:YES]])
         {
             // If so, we can take immediate action
-//            UIImage *image = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
+            if (![[dataRequest completedIDs] containsObject:curLocalID])
+            {
+                [[dataRequest completedIDs] addObject:curLocalID];
+                if ([dataRequest.completedIDs count] == [dataRequest.requestedIDs count])
+                {
+                    // We have completed the request
+                    completedRequest = YES;
+                }
+            }
+            UIImage *image = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
+            [dataRequest whenImageReady:curLocalID withImage:image withDataRequest:dataRequest];
         }
         // Now check if request has already been made - if so, join list of receivers
         else if ([downloadQueueReceivers objectForKey:curLocalID] != nil)
@@ -162,6 +174,12 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
             [networkServices getImageForID:curImageObj.imageID withStringSize:sizeString andRequestID:requestID];
         }
     }
+    
+    if (completedRequest)
+    {
+        [currentRequests removeObjectForKey:requestID];
+    }
+    
     return requestID;
 }
 
@@ -248,10 +266,16 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                 }
             }
         }
+        
         for (id curRequestID in completedRequestIDs)
         {
             [currentRequests removeObjectForKey:curRequestID];
             [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
+        }
+        
+        if ([[downloadQueueReceivers objectForKey:imageObj.localID] count] == 0)
+        {
+            [downloadQueueReceivers removeObjectForKey:imageObj.localID];
         }
     }
 }
