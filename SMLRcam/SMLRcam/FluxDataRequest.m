@@ -19,11 +19,35 @@
     return self;
 }
 
-- (void) whenImageReady:(FluxLocalID *)localID withRequestID:(FluxRequestID *)requestID
+- (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.imageReady)
     {
-        self.imageReady(localID, requestID);
+        self.imageReady(localID, image, completeDataRequest);
+    }
+}
+
+- (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest
+{
+    if (self.metadataReady)
+    {
+        self.metadataReady(imageObject, completeDataRequest);
+    }
+}
+
+- (void) whenNearbyListReady:(NSMutableDictionary *)nearbyList
+{
+    if (self.nearbyListReady)
+    {
+        self.nearbyListReady(nearbyList);
+    }
+}
+
+- (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest
+{
+    if (self.requestComplete)
+    {
+        self.requestComplete(completeDataRequest);
     }
 }
 

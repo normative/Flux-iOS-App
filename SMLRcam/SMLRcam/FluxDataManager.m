@@ -36,6 +36,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                    withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID =[[FluxRequestID alloc] init];
+    [dataRequest setRequestID:requestID];
     
     // Add a new image with metadata to both cache objects
     [fluxDataStore addMetadataObject:metadata];
@@ -79,6 +80,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID =[[FluxRequestID alloc] init];
+    [dataRequest setRequestID:requestID];
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
@@ -112,9 +114,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     {
         NSArray *tempArray = [NSArray arrayWithObject:imageObj.localID];
         [dataRequest setRequestedIDs:tempArray];
-        [dataRequest setImageReady:^(FluxLocalID *localID, FluxRequestID *requestID)
+        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completeDataRequest)
          {
-             NSLog(@"!!!!!!Yay! We downloaded image %@ with request %@", localID, requestID);
+             NSLog(@"!!!!!!Yay! We downloaded image %@ with request %@", localID, completeDataRequest.requestID);
          }];
         [self requestImagesByLocalID:dataRequest withSize:imageType];
     }
@@ -127,7 +129,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
 {
     FluxRequestID *requestID =[[FluxRequestID alloc] init];
-
+    [dataRequest setRequestID:requestID];
+    
     [currentRequests setObject:dataRequest forKey:requestID];
     
     NSString *sizeString = @"oriented";
@@ -186,6 +189,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
     
     // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenNearbyListReady:imageList];
     
     // Clean up request (nothing else to wait for)
     [currentRequests removeObjectForKey:requestID];
@@ -231,7 +236,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                 (![curRequest.completedIDs containsObject:imageObj.localID]))
             {
                 // Notify and execute callback
-                [curRequest whenImageReady:imageObj.localID withRequestID:curRequestID];
+                [curRequest whenImageReady:imageObj.localID withImage:image withDataRequest:request];
                 
                 // Clean up
                 [curRequest.completedIDs addObject:imageObj.localID];

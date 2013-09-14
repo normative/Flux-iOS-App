@@ -22,9 +22,14 @@ enum request_type {
     data_upload_request = 5,
 };
 
+@class FluxDataRequest;
+
 typedef enum request_type request_type;
 
-typedef void (^ImageReadyBlock)(FluxLocalID *, FluxRequestID *);
+typedef void (^ImageReadyBlock)(FluxLocalID *, UIImage *, FluxDataRequest *);
+typedef void (^MetadataReadyBlock)(FluxScanImageObject *, FluxDataRequest *);
+typedef void (^NearbyListReadyBlock)(NSMutableDictionary *);
+typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 
 // Data request object can store many things (parameters are optional depending on request type).
 // It can store callbacks for success, failure, or for different operations.
@@ -33,15 +38,13 @@ typedef void (^ImageReadyBlock)(FluxLocalID *, FluxRequestID *);
 
 @interface FluxDataRequest : NSObject
 {
-    // Callback for successful request
-    
     // Callback for failed request
     
     // Callback for lower resolution image retrieved (might want to display temporary image)
 }
 
+@property (nonatomic, strong) FluxRequestID *requestID;
 @property (nonatomic) request_type requestType;
-
 @property (nonatomic) image_type imageType;
 
 // Lists of requested and completed image/metadata downloads
@@ -51,6 +54,18 @@ typedef void (^ImageReadyBlock)(FluxLocalID *, FluxRequestID *);
 // Callback for single image retrieved (either from cache or download)
 @property (strong) ImageReadyBlock imageReady;
 
-- (void) whenImageReady:(FluxLocalID *)localID withRequestID:(FluxRequestID *)requestID;
+// Callback for single metadata object retrieved (either from cache or download)
+@property (strong) MetadataReadyBlock metadataReady;
+
+// Callback for list of images retrieved (from server only)
+@property (strong) NearbyListReadyBlock nearbyListReady;
+
+// Callback for successful request
+@property (strong) RequestCompleteBlock requestComplete;
+
+- (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenNearbyListReady:(NSMutableDictionary *)nearbyList;
+- (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 
 @end
