@@ -65,35 +65,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     progressView.progress = bytesSent/size -0.05;
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
-{
-    progressView.progress = 1;
-    
-    NSLog(@"%s: Adding image object %@ to cache.", __func__, updatedImageObject.localID);
-    
-    if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
-    {
-        // FluxScanImageObject exists in the local cache. Replace it with updated object.
-        [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
-        
-        if ([fluxImageCache objectForKey:updatedImageObject.localID] != nil)
-        {
-            NSLog(@"Image with string ID %@ exists in cache.", updatedImageObject.localID);
-        }
-        else
-        {
-            NSLog(@"Image with string ID %@ does not exist in cache.", updatedImageObject.localID);
-        }
-    }
-    else
-    {
-        NSLog(@"Image with string ID %@ does not exist in local cache!", updatedImageObject.localID);
-    }
-    
-    [progressView setProgress:1.0];
-    [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
-}
-
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
                                                         message:[e localizedDescription]
@@ -922,8 +893,30 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     // END HACK
     
+    // Progress bar animation setup
+    [UIView animateWithDuration:0.5f
+                     animations:^{
+                         [progressView setAlpha:1.0];
+                     }];
+    progressView.progress = 0;
+
     // Add the image and metadata to the local cache
-    [fluxImageCache setObject:spunImage forKey:capturedImageObject.localID];
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setRequestType:data_upload_request];
+    [dataRequest setUploadComplete:^(FluxScanImageObject * updatedImageObject, FluxDataRequest *completedDataRequest){
+        progressView.progress = 1;
+        
+        if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+        {
+            // FluxScanImageObject exists in the local cache. Replace it with updated object.
+            [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+        }
+        
+        [progressView setProgress:1.0];
+        [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+    }];
+    
+    [fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
     [fluxMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
     
     // Post notification for observers prior to upload
@@ -933,20 +926,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                         object:self userInfo:userInfoDict];
     
     // Perform any additional (optional) image save tasks
-    if (savelocally || pushToCloud) {
-        if (savelocally)
-        {
-            UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
-        }
-        if (pushToCloud)
-        {
-            [UIView animateWithDuration:0.5f
-                             animations:^{
-                                 [progressView setAlpha:1.0];
-                             }];
-            progressView.progress = 0;
-//            [networkServices uploadImage:capturedImageObject andImage:capturedImage];
-        }
+    if (savelocally)
+    {
+        UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
     }
 }
 

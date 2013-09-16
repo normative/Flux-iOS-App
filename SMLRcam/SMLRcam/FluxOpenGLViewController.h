@@ -100,7 +100,6 @@ typedef struct {
 - (void)didAcquireNewPicture:(NSNotification *)notification;
 - (void)didUpdateLocation:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
-- (void)setupNetworkServices;
 
 //AVCam Methods
 - (void)setupAVCapture;
