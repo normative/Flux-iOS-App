@@ -26,6 +26,8 @@
 #import <CoreMotion/CoreMotion.h>
 #import <dispatch/dispatch.h>
 
+#import "GAITrackedViewController.h"
+
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
 extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
@@ -34,7 +36,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 
 
-@interface FluxScanViewController : UIViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate, KTSegmentedControlDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate, KTSegmentedControlDelegate>{
     
     //headerView
     __weak IBOutlet UIView *headerView;

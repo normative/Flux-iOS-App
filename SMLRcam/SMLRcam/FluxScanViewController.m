@@ -12,6 +12,8 @@
 #import "FluxAnnotationTableViewCell.h"
 
 #import <ImageIO/ImageIO.h>
+#import "GAI.h"
+#import "GAIDictionaryBuilder.h"
 
 NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
 NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
@@ -498,7 +500,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          animations:^{
                              thumbView.transform = CGAffineTransformScale(thumbView.transform, 2.0, 2.0);
                          }];
-        
         return YES;
     }
     return NO;
@@ -526,6 +527,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)takePicture{
     
+    //google analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                          action:@"action"  // Event action (required)
+                                                           label:@"take picture"          // Event label
+                                                           value:nil] build]];    // Event value
     
     __block NSDate *startTime = [NSDate date];
     
@@ -1069,6 +1076,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [fakeGalleryView setImage:[UIImage imageNamed:@"fakeGallery"]];
     [fakeGalleryView setAlpha:0.0];
     [self.view addSubview:fakeGalleryView];
+    
+    self.screenName = @"Scan View";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -1084,9 +1093,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [radarView updateRadarWithNewMetaData:fluxMetadata];
     [self restartAVCaptureWithBlur:YES];
-    
-
-    
 }
 
 - (void)fixCameraButtonPosition{

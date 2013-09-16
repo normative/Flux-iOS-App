@@ -15,6 +15,9 @@
 
 #import <Security/Security.h>
 
+#import "GAI.h"
+#define GATrackingID @"UA-17713937-4"
+
 
 
 @implementation FluxAppDelegate
@@ -83,6 +86,20 @@
         [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Walk Mode"];
         [defaults synchronize];
     }
+    
+    
+    //google analytics
+    // Optional: automatically send uncaught exceptions to Google Analytics.
+    [GAI sharedInstance].trackUncaughtExceptions = YES;
+    
+    // Optional: set Google Analytics dispatch interval to e.g. 20 seconds.
+    [GAI sharedInstance].dispatchInterval = 20;
+    
+    // Optional: set Logger to VERBOSE for debug information.
+    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+    
+    // Initialize tracker.
+    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GATrackingID];
     
     
     
