@@ -44,7 +44,7 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 - (void)ButtonCell:(FluxDrawerButtonTableViewCell *)buttonCell
    buttonWasTapped:(UIButton *)theButton
 {
-    [networkServices deleteLocations];
+//    [networkServices deleteLocations];
 }
 
 #pragma mark - view lifecycle
@@ -62,7 +62,7 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 {
     [super viewDidLoad];
     
-    networkServices = [[FluxNetworkServices alloc] init];
+//    networkServices = [[FluxNetworkServices alloc] init];
     
     leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services",@"Local Network", @"Walk Mode", @"Area Reset", nil];
     

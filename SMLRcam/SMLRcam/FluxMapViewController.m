@@ -76,7 +76,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         
         if ([fluxImageCache objectForKey:annotation.localThumbID] == nil)
         {
-            [networkServiceManager getThumbImageForID:annotation.imageID];
+//            [networkServiceManager getThumbImageForID:annotation.imageID];
         }
     }
 }
@@ -197,7 +197,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
         fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist ||
         [fluxMetadata count] == 0)
     {
-        [networkServiceManager getImagesForLocation:userLocation.location.coordinate andRadius:50];
+//        [networkServiceManager getImagesForLocation:userLocation.location.coordinate andRadius:50];
         
         userLastSynchedLocation.latitude = userLocation.location.coordinate.latitude;
         userLastSynchedLocation.longitude = userLocation.location.coordinate.longitude;
@@ -480,7 +480,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     
     [self setupPinchGesture];
     [self setupLocationManager];
-    [self setupNetworkServiceManager];
+//    [self setupNetworkServiceManager];
     
     [self setupMapView];
     [self setupAnnotationView];

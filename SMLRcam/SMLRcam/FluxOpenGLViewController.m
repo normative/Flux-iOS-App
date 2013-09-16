@@ -669,7 +669,7 @@ void init(){
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:10.0];
+//    [networkServices getImagesForLocation:loc.coordinate andRadius:10.0];
 }
 
 #pragma mark - Motion Manager
@@ -883,7 +883,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self setupLocationManager];
     [self setupMotionManager];
-    [self setupNetworkServices];
+//    [self setupNetworkServices];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     
@@ -1017,7 +1017,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if(([fluxImageCache objectForKey:locationObject.localID] == nil) && (![self.requestList containsObject:localID]))
         {
             NSLog(@"Adding id %@ to request list", localID);
-            [networkServices getImageForID:locationObject.imageID];
+//            [networkServices getImageForID:locationObject.imageID];
             [self.requestList addObject:localID];
         }
         else if ([fluxImageCache objectForKey:locationObject.localID] != nil)
