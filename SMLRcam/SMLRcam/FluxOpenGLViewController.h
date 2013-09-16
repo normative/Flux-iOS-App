@@ -81,7 +81,6 @@ typedef struct {
 @property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
 @property (nonatomic, strong)NSMutableArray *nearbyList;
 @property (nonatomic, strong)NSMutableArray *renderedTextures;
-@property (nonatomic, strong)NSMutableArray *requestList;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;

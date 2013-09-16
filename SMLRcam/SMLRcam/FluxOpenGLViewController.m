@@ -853,7 +853,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         [self.renderedTextures addObject:@""];
     }
-    self.requestList = [[NSMutableArray alloc] init];
     
     _nearbyListLock = [[NSLock alloc] init];
     
@@ -989,37 +988,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
         
-        if(([fluxImageCache objectForKey:locationObject.localID] == nil) && (![self.requestList containsObject:localID]))
-        {
-            NSLog(@"Adding id %@ to request list", localID);
-            FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-            [dataRequest setRequestType:image_request];
-            [dataRequest setRequestedIDs:[NSArray arrayWithObject:locationObject.localID]];
-            [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-                [fluxImageCache setObject:image forKey:localID];
-                [self.requestList removeObject:localID];
-                [self updateImageTextureWithLocalID:localID];
-            }];
-            [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
-
-            [self.requestList addObject:localID];
-        }
-        else if ([fluxImageCache objectForKey:locationObject.localID] != nil)
-        {
-            // We already have it in the cache. Just add the texture immediately.
-            [self updateImageTextureWithLocalID:localID];
-        }
-        else
-        {
-            // This only happens if we have already requested the image but it has not been downloaded yet.
-            // This could happen if a new image is acquired after getting a new list of items to download,
-            // or if the download is slow/stalled. Could eventually put retry logic here.
-            ;
-        }
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setRequestType:image_request];
+        [dataRequest setRequestedIDs:[NSArray arrayWithObject:locationObject.localID]];
+        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+            [self updateImageTextureWithLocalID:localID withImage:image];
+        }];
+        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
     }
 }
 
-- (void) updateImageTextureWithLocalID:(NSString *)localID
+- (void) updateImageTextureWithLocalID:(NSString *)localID withImage:(UIImage *)image
 {
     NSError *error;
     static int i = 0;
@@ -1039,8 +1018,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    UIImage *teximage = [fluxImageCache objectForKey:localID];
-    NSData *imgData = UIImageJPEGRepresentation(teximage,1); // 1 is compression quality
+    NSData *imgData = UIImageJPEGRepresentation(image,1); // 1 is compression quality
     _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
     
     if (error)
