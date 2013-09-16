@@ -55,7 +55,6 @@ typedef enum image_type image_type;
 @property (nonatomic) int imageID;
 @property (nonatomic) FluxImageID userID;
 @property (nonatomic) FluxLocalID *localID;
-@property (nonatomic) NSString* localThumbID;
 
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr

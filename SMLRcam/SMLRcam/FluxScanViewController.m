@@ -863,7 +863,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     // Generate a string image id for local use
     NSString *localID = [capturedImageObject generateUniqueStringID];
     [capturedImageObject setLocalID:localID];
-    [capturedImageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", capturedImageObject.localID]];
     
     // Set the server-side image id to a negative value until server returns actual
     [capturedImageObject setImageID:-1];

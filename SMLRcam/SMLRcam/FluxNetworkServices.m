@@ -143,7 +143,6 @@
         {
             FluxScanImageObject *imageObject = [result firstObject];
             [imageObject setLocalID:[imageObject generateUniqueStringID]];
-            [imageObject setLocalThumbID:[NSString stringWithFormat:@"%@_thumb", imageObject.localID]];
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:andRequestID:)])
             {
                 [delegate NetworkServices:self didreturnImageMetadata:imageObject andRequestID:requestID];
