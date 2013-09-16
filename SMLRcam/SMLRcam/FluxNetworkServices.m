@@ -284,6 +284,8 @@
         if ([result count]>0)
         {
             FluxScanImageObject *imageObject = [result firstObject];
+            [imageObject setLocalID:[imageObject generateUniqueStringID]];
+
             if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
             {
                 [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
@@ -300,16 +302,16 @@
     }];
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
     
-    if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:)])
+    // monitor upload progress
+    if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
     {
         [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
             if (totalBytesExpectedToWrite > 0 && totalBytesExpectedToWrite < NSUIntegerMax) {
-                [delegate NetworkServices:self uploadProgress:(float)totalBytesWritten ofExpectedPacketSize:(float)totalBytesExpectedToWrite];
+                [delegate NetworkServices:self uploadProgress:(long long)totalBytesWritten
+                     ofExpectedPacketSize:(long long)totalBytesExpectedToWrite andRequestID:requestID];
             }
-            NSLog(@"bytesWritten: %d, totalBytesWritten: %lld, totalBytesExpectedToWrite: %lld", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
         }];
     }
-    // monitor upload progress
     
 }
 

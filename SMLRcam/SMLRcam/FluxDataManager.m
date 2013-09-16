@@ -286,9 +286,13 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
-    //subtract a bit for the end wait
-//    progressView.progress = bytesSent/size -0.05;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
+                    ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID
+{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request setCurrentUploadSize:bytesSent];
+    [request setTotalUploadSize:size];
+    [request whenUploadInProgress:[fluxDataStore getMetadataWithLocalID:request.uploadLocalID] withDataRequest:request];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject

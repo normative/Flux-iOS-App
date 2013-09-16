@@ -60,4 +60,12 @@
     }
 }
 
+- (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest
+{
+    if (self.uploadInProgress)
+    {
+        self.uploadInProgress(imageObject, inprogressDataRequest);
+    }
+}
+
 @end

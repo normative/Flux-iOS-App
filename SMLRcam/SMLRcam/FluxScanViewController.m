@@ -60,11 +60,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [annotationsTableView reloadData];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(float)bytesSent ofExpectedPacketSize:(float)size{
-    //subtract a bit for the end wait
-    progressView.progress = bytesSent/size -0.05;
-}
-
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
                                                         message:[e localizedDescription]
@@ -903,17 +898,18 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     // Add the image and metadata to the local cache
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setRequestType:data_upload_request];
-    [dataRequest setUploadComplete:^(FluxScanImageObject * updatedImageObject, FluxDataRequest *completedDataRequest){
-        progressView.progress = 1;
-        
+    [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
         if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
         {
             // FluxScanImageObject exists in the local cache. Replace it with updated object.
             [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
         }
-        
-        [progressView setProgress:1.0];
+        progressView.progress = 1.0;
         [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+    }];
+    [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
+        float currentProgress = (float)(inProgressDataRequest.currentUploadSize)/(float)(inProgressDataRequest.totalUploadSize);
+        progressView.progress = currentProgress - 0.05;
     }];
     
     [fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];

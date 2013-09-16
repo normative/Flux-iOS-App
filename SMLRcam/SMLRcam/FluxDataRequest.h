@@ -30,6 +30,7 @@ typedef void (^ImageReadyBlock)(FluxLocalID *, UIImage *, FluxDataRequest *);
 typedef void (^MetadataReadyBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^NearbyListReadyBlock)(NSMutableDictionary *);
 typedef void (^RequestCompleteBlock)(FluxDataRequest *);
+typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 
 // Data request object can store many things (parameters are optional depending on request type).
@@ -52,6 +53,11 @@ typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 @property (nonatomic, strong) NSArray *requestedIDs;
 @property (nonatomic, strong) NSMutableArray *completedIDs;
 
+// Upload properties
+@property (nonatomic, weak) FluxLocalID *uploadLocalID;
+@property (nonatomic) long long totalUploadSize;
+@property (nonatomic) long long currentUploadSize;
+
 // Callback for single image retrieved (either from cache or download)
 @property (strong) ImageReadyBlock imageReady;
 
@@ -67,10 +73,14 @@ typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 // Callback for successful upload of image + image metadata
 @property (strong) UploadCompleteBlock uploadComplete;
 
+// Callback for periodic updates of upload progress
+@property (strong) UploadInProgressBlock uploadInProgress;
+
 - (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenNearbyListReady:(NSMutableDictionary *)nearbyList;
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 
 @end
