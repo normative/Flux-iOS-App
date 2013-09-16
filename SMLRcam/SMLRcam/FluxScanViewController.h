@@ -109,7 +109,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 //imageCapture
 - (void)setupAVCapture;
-- (void)setupNetworkServices;
 - (void)setupOpenGLView;
 - (void)takePicture;
 - (UIImage*)blurImage:(UIImage*)img;

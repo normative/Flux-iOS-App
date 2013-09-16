@@ -54,15 +54,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
          didreturnImage:(UIImage *)image
              forImageID:(int)imageID
 {
-    for (NSString *currentKey in [fluxMetadata allKeys])
-    {
-        FluxScanImageObject* currentImageObject = [fluxMetadata objectForKey:currentKey];
-            if (currentImageObject.imageID == imageID)
-            {
-                [fluxImageCache setObject:image forKey:currentImageObject.localThumbID];
-                break;
-            }
-    }
+#warning FIXME - Make sure these get called
+// Need to trigger these somehow - probably from OpenGL VC
     [radarView updateRadarWithNewMetaData:fluxMetadata];
     [annotationsTableView reloadData];
 }
@@ -286,13 +279,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     FluxScanImageObject *rowObject = [fluxMetadata objectForKey: objkey];
     
     cell.imageID = rowObject.imageID;
-    if ([fluxImageCache objectForKey:rowObject.localThumbID] == nil)
-    {
-//        [networkServices getThumbImageForID:cell.imageID];
-    }
-    else{
-         [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localThumbID]];
-    }
+    
+# warning Currently extra overhead. Should fix this to get it locally first before requesting.
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setRequestType:image_request];
+    [dataRequest setRequestedIDs:[NSArray arrayWithObject:rowObject.localID]];
+    [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+        [cell.contentImageView setImage:image];
+    }];
+    [fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];
     [cell.timestampLabel setText:[dateFormatter stringFromDate:rowObject.timestamp]];
