@@ -85,7 +85,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     UIImageView* launchView;
 }
 
-@property (strong) NSCache *fluxImageCache;
 @property (nonatomic, strong) NSMutableDictionary *fluxMetadata;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;

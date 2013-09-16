@@ -18,7 +18,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 @implementation FluxScanViewController
 
-@synthesize fluxImageCache;
 @synthesize fluxMetadata;
 @synthesize thumbView;
 
@@ -336,7 +335,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     openGLController.view.frame = self.view.bounds;
     
     openGLController.fluxDataManager = fluxDataManager;
-    openGLController.fluxImageCache = self.fluxImageCache;
     openGLController.fluxMetadata = self.fluxMetadata;
 }
 
@@ -1003,7 +1001,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     fluxDataManager = [[FluxDataManager alloc] init];
 
-    self.fluxImageCache = [[NSCache alloc] init];
     self.fluxMetadata = [[NSMutableDictionary alloc] init];
     
     [self setupAVCapture];
