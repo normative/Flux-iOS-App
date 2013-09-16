@@ -76,7 +76,6 @@ withDescriptionString:(NSString*)description
 
 - (NSString *) generateImageCacheKeyWithImageType:(image_type)imageType;
 - (NSString *)generateUniqueStringID;
-- (void)setImageIDFromDateAndUser;
 
 // MKAnnoation getter methods;
 - (NSString *)title;

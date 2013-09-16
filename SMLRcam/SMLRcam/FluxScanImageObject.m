@@ -15,13 +15,16 @@
 //
 - (NSString*)title
 {
-    return [NSString stringWithFormat:@"location date: %@", self.timestampString];
+    return self.descriptionString;
 }
 
 //
 - (NSString*)subtitle
 {
-    return self.descriptionString;
+    NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
+    [outputDateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    return [outputDateFormat stringFromDate:self.timestamp];
 }
 
 //
@@ -96,16 +99,6 @@ withDescriptionString:(NSString*)description
         return [self.localID stringByAppendingFormat:@"_%d",imageType];
     }
     return nil;
-}
-
-- (void)setImageIDFromDateAndUser
-{
-    NSString *newImageID = [NSString stringWithFormat:@"%@_%d", self.timestampString, self.userID];
-    NSLog(@"ImageID: %@", newImageID);
-
-    // Set to -1 now. App code will rely on localID.
-    // Numeric imageID will be set by the server on upload completion.
-    self.imageID = -1;
 }
 
 @end
