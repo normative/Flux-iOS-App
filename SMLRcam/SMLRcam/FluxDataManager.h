@@ -53,5 +53,6 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestMetadataByLocalID:(FluxDataRequest *)dataRequest;
 - (void) requestImageByImageID:(int)imageID withSize:(image_type)imageType;
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType;
+- (void) completeRequestWithDataRequest:(FluxDataRequest *)dataRequest;
 
 @end

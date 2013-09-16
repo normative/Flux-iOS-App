@@ -177,7 +177,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     if (completedRequest)
     {
-        [currentRequests removeObjectForKey:requestID];
+        [self completeRequestWithDataRequest:dataRequest];
     }
     
     return requestID;
@@ -186,6 +186,13 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Request Queries
 
 // General support for managing outstanding requests (i.e. see which images in bulk request are complete)
+
+- (void) completeRequestWithDataRequest:(FluxDataRequest *)dataRequest
+{
+    FluxRequestID *requestID = dataRequest.requestID;
+    [dataRequest whenRequestComplete:dataRequest];
+    [currentRequests removeObjectForKey:requestID];
+}
 
 #pragma mark - Network Services
 
@@ -211,7 +218,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [request whenNearbyListReady:imageList];
     
     // Clean up request (nothing else to wait for)
-    [currentRequests removeObjectForKey:requestID];
+    [self completeRequestWithDataRequest:request];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
@@ -269,7 +276,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         
         for (id curRequestID in completedRequestIDs)
         {
-            [currentRequests removeObjectForKey:curRequestID];
+            FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+            [self completeRequestWithDataRequest:curRequest];
             [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
         }
         
@@ -305,14 +313,33 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [fluxDataStore addMetadataObject:updatedImageObject];
     
     // If callbacks exist, call them for each receiver
+    for (id curRequestID in requestArray)
+    {
+        FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+        
+        // Notify and execute callback
+        [curRequest whenUploadComplete:updatedImageObject withDataRequest:curRequest];
+    }
     
     // Clear entries from currentRequests and uploadQueueReceivers
     // This is looping, but should only ever delete one item
     for (id curRequestID in requestArray)
     {
-        [currentRequests removeObjectForKey:curRequestID];
+        FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+        [self completeRequestWithDataRequest:curRequest];
+        [[uploadQueueReceivers objectForKey:updatedImageObject.localID] removeObject:curRequestID];
     }
-    [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
+    
+    if ([[uploadQueueReceivers objectForKey:updatedImageObject.localID] count] == 0)
+    {
+        [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
+    }
+    else
+    {
+        NSLog(@"%s: Upload Queue Receiver list not empty following upload of ID %@. Should never happen.",
+              __func__, updatedImageObject.localID);
+    }
+
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{

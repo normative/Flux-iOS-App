@@ -51,4 +51,12 @@
     }
 }
 
+- (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest
+{
+    if (self.uploadComplete)
+    {
+        self.uploadComplete(imageObject, completeDataRequest);
+    }
+}
+
 @end
