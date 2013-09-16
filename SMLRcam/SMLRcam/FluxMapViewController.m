@@ -52,7 +52,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
             for (FluxScanImageObject *curAnnotation in myMapView.annotations)
             {
-                if ([annotation isKindOfClass: [FluxScanImageObject class]])
+                if ([curAnnotation isKindOfClass: [FluxScanImageObject class]])
                 {
                     if (curAnnotation.localID == localID)
                     {
@@ -173,6 +173,9 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 -       (void) mapView:(MKMapView *)mapView
  didUpdateUserLocation:(MKUserLocation *)userLocation
 {
+#warning Need to improve this logic. Will not request updates unless we move. This misses new points.
+// Since this is a delegate of MapView's location updates, the tolerance settings are different.
+// We don't get nearly as many updates, and it only updates if location/heading changes.
     if ((userLastSynchedLocation.latitude == -1 && userLastSynchedLocation.longitude == -1) ||
         fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > minmovedist ||
         fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist)
@@ -253,7 +256,10 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
-    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [myMapView.annotations count]]];
+    int totalAnnotationCount = [myMapView.annotations count];
+    int imageAnnotationCount = totalAnnotationCount > 1 ? totalAnnotationCount - 1 : 0;
+    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%d Moment%@",
+                                     imageAnnotationCount, imageAnnotationCount > 1 ? @"s" : @""]];
 }
 
 #pragma mark - @selector
