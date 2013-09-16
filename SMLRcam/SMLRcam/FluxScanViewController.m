@@ -45,7 +45,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setRequestType:nearby_list_request];
+    [dataRequest setNearbyListReady:^(NSMutableDictionary *nearbyList){
+        NSLog(@"Got list of %d nearby image objects.", [nearbyList count]);
+    }];
+    [fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:25 withFilter:nil withDataRequest:dataRequest];
+    
+    [fluxDataManager requestImageByImageID:29 withSize:full_res];
+//    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
 }
 
 #pragma mark - Network Services
@@ -294,7 +302,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     cell.imageID = rowObject.imageID;
     if ([fluxImageCache objectForKey:rowObject.localThumbID] == nil)
     {
-        [networkServices getThumbImageForID:cell.imageID];
+//        [networkServices getThumbImageForID:cell.imageID];
     }
     else{
          [cell.contentImageView setImage:[fluxImageCache objectForKey:rowObject.localThumbID]];
@@ -956,7 +964,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                  [progressView setAlpha:1.0];
                              }];
             progressView.progress = 0;
-            [networkServices uploadImage:capturedImageObject andImage:capturedImage];
+//            [networkServices uploadImage:capturedImageObject andImage:capturedImage];
         }
     }
 }
@@ -1049,7 +1057,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     locationManager = [FluxLocationServicesSingleton sharedManager];
     [locationManager startLocating];
     
-    [self setupNetworkServices];
+//    [self setupNetworkServices];
     
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
@@ -1069,7 +1077,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [fakeGalleryView setAlpha:0.0];
     [self.view addSubview:fakeGalleryView];
     
-    FluxDataManager *tempDataMgr = [[FluxDataManager alloc] init];
+    fluxDataManager = [[FluxDataManager alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated{

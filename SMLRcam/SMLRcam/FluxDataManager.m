@@ -35,8 +35,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 - (FluxRequestID *) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest
 {
-    FluxRequestID *requestID =[[FluxRequestID alloc] init];
-    [dataRequest setRequestID:requestID];
+    FluxRequestID *requestID = dataRequest.requestID;
     
     // Add a new image with metadata to both cache objects
     [fluxDataStore addMetadataObject:metadata];
@@ -79,8 +78,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                     withRadius:(float)radius withFilter:(FluxDataFilter *)filter
                                withDataRequest:(FluxDataRequest *)dataRequest
 {
-    FluxRequestID *requestID =[[FluxRequestID alloc] init];
-    [dataRequest setRequestID:requestID];
+    FluxRequestID *requestID = dataRequest.requestID;
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
@@ -128,8 +126,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
 {
-    FluxRequestID *requestID =[[FluxRequestID alloc] init];
-    [dataRequest setRequestID:requestID];
+    FluxRequestID *requestID = dataRequest.requestID;
     
     [currentRequests setObject:dataRequest forKey:requestID];
     

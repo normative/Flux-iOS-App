@@ -15,6 +15,7 @@
 #import "FluxCameraButton.h"
 #import "FluxCompassView.h"
 #import "FluxDataManager.h"
+#import "FluxDataRequest.h"
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
 #import "FluxLocationServicesSingleton.h"
@@ -65,6 +66,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
     FluxNetworkServices *networkServices;
+    FluxDataManager *fluxDataManager;
 
     //time scrolling
     UIPanGestureRecognizer *panGesture;

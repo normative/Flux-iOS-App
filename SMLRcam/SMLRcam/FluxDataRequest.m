@@ -15,6 +15,7 @@
     if (self = [super init])
     {
         _completedIDs = [[NSMutableArray alloc] init];
+        _requestID = [[NSUUID alloc] init];
     }
     return self;
 }
