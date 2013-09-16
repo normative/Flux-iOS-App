@@ -44,24 +44,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
-    CLLocation *loc = locationManager.location;
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setRequestType:nearby_list_request];
-    [dataRequest setNearbyListReady:^(NSMutableDictionary *nearbyList){
-        NSLog(@"Got list of %d nearby image objects.", [nearbyList count]);
-    }];
-    [fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:25 withFilter:nil withDataRequest:dataRequest];
-    
-    [fluxDataManager requestImageByImageID:29 withSize:full_res];
-//    [networkServices getImagesForLocation:loc.coordinate andRadius:25];
+//    CLLocation *loc = locationManager.location;
 }
 
 #pragma mark - Network Services
-
-- (void)setupNetworkServices{
-    networkServices = [[FluxNetworkServices alloc]init];
-    [networkServices setDelegate:self];
-}
 
 //called by annotationsTableview
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
@@ -387,6 +373,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [openGLController didMoveToParentViewController:self];
     openGLController.view.frame = self.view.bounds;
     
+    openGLController.fluxDataManager = fluxDataManager;
     openGLController.fluxImageCache = self.fluxImageCache;
     openGLController.fluxMetadata = self.fluxMetadata;
 }

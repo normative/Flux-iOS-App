@@ -669,47 +669,14 @@ void init(){
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
-//    [networkServices getImagesForLocation:loc.coordinate andRadius:10.0];
-}
-
-#pragma mark - Motion Manager
-
-//starts the motion manager and sets an update interval
-- (void)setupMotionManager
-{
-    motionManager = [FluxMotionManagerSingleton sharedManager];
-}
-
-- (void)startDeviceMotion
-{
-    if (motionManager)
-    {
-        [motionManager startDeviceMotion];
-    }
-}
-
-- (void)stopDeviceMotion
-{
-    if (motionManager)
-    {
-        [motionManager stopDeviceMotion];
-    }
-}
-
-#pragma mark - Network Services
-
-- (void)setupNetworkServices
-{
-    networkServices = [[FluxNetworkServices alloc]init];
-    [networkServices setDelegate:self];
-}
-
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
-{
-    NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
-    
-    [_nearbyListLock lock];
-    
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setRequestType:nearby_list_request];
+    [dataRequest setNearbyListReady:^(NSMutableDictionary *imageList){
+        NSLog(@"Got list of %d nearby image objects.", [imageList count]);
+        NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
+        
+        [_nearbyListLock lock];
+        
         // Iterate over the list and clear out anything that is not local-only
         for (id localID in self.nearbyList)
         {
@@ -734,25 +701,34 @@ void init(){
                 [self.nearbyList addObject:curImgObj.localID];
             }
         }
-    
+        
         [self populateImageData];
-    [_nearbyListLock unlock];
+        [_nearbyListLock unlock];
+    }];
+    [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withFilter:nil withDataRequest:dataRequest];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
-{
-    for (id curKey in [fluxMetadata allKeys])
-    {
-        FluxScanImageObject *curImgObj = [fluxMetadata objectForKey:curKey];
-        if (curImgObj.imageID == imageID)
-        {
-            [fluxImageCache setObject:image forKey:curImgObj.localID];
-            
-            [self.requestList removeObject:curImgObj.localID];
-            [self updateImageTextureWithLocalID:curImgObj.localID];
+#pragma mark - Motion Manager
 
-            return;
-        }
+//starts the motion manager and sets an update interval
+- (void)setupMotionManager
+{
+    motionManager = [FluxMotionManagerSingleton sharedManager];
+}
+
+- (void)startDeviceMotion
+{
+    if (motionManager)
+    {
+        [motionManager startDeviceMotion];
+    }
+}
+
+- (void)stopDeviceMotion
+{
+    if (motionManager)
+    {
+        [motionManager stopDeviceMotion];
     }
 }
 
@@ -883,7 +859,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self setupLocationManager];
     [self setupMotionManager];
-//    [self setupNetworkServices];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     
@@ -1017,7 +992,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if(([fluxImageCache objectForKey:locationObject.localID] == nil) && (![self.requestList containsObject:localID]))
         {
             NSLog(@"Adding id %@ to request list", localID);
-//            [networkServices getImageForID:locationObject.imageID];
+            FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+            [dataRequest setRequestType:image_request];
+            [dataRequest setRequestedIDs:[NSArray arrayWithObject:locationObject.localID]];
+            [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                [fluxImageCache setObject:image forKey:localID];
+                [self.requestList removeObject:localID];
+                [self updateImageTextureWithLocalID:localID];
+            }];
+            [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
+
             [self.requestList addObject:localID];
         }
         else if ([fluxImageCache objectForKey:locationObject.localID] != nil)

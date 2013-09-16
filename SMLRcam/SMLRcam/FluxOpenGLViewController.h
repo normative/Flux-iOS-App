@@ -9,9 +9,9 @@
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
 //#import "FluxScanViewController.h"
+#import "FluxDataManager.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
-#import "FluxNetworkServices.h"
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import <AVFoundation/AVFoundation.h>
 
@@ -32,7 +32,7 @@ typedef struct {
     GLKVector3 ecef;
 } sensorPose;
 
-@interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate, NetworkServicesDelegate>{
+@interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
@@ -67,7 +67,6 @@ typedef struct {
     
     FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;
-    FluxNetworkServices * networkServices;
     FluxAVCameraSingleton *cameraManager;
     
     NSLock *_nearbyListLock;
@@ -77,6 +76,7 @@ typedef struct {
 }
 
 @property (strong, nonatomic) EAGLContext *context;
+@property (nonatomic, weak) FluxDataManager *fluxDataManager;
 @property (weak) NSCache *fluxImageCache;
 @property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
 @property (nonatomic, strong)NSMutableArray *nearbyList;
