@@ -24,7 +24,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void) setStatusBarMomentLabel;
 
 - (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture;
-- (void)updateLoadingMessage:(NSTimer *)thisTimer;
 
 - (void) setupPinchGesture;
 - (void) setupNetworkServiceManager;
@@ -41,23 +40,24 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 @synthesize fluxMetadata;
 @synthesize myViewOrientation;
 
-#pragma mark - delegate methods
+#pragma mark - Callbacks
+
+#pragma mark Networking
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
          didreturnImage:(UIImage*)image
              forImageID:(int)imageID
 {
-    for (FluxScanImageObject *annotation in myMapView.annotations)
+    for (FluxScanImageObject *annotation in mapView.annotations)
     {
         if ([annotation isKindOfClass: [FluxScanImageObject class]])
         {
-            NSLog(@"annotation imageID is %i", annotation.imageID);
             if (annotation.imageID == imageID)
             {
                 // This view gets a thumbnail image (since that is all it requested)
                 [fluxImageCache setObject:image forKey:annotation.localThumbID];
                 
-                MKAnnotationView *annotationView = [myMapView viewForAnnotation: annotation];
+                MKAnnotationView *annotationView = [mapView viewForAnnotation: annotation];
                 UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:annotation.localThumbID]];
                 annotationView.leftCalloutAccessoryView = calloutImageView;
                 
@@ -67,6 +67,24 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         }
     }
 }
+
+// call back from the image request
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
+{
+    // Need to update all metadata objects even if they exist (in case they change in the future)
+    for (id curKey in [imageList allKeys])
+    {
+        FluxScanImageObject *locationObject = [imageList objectForKey:curKey];
+        [fluxMetadata setObject:locationObject forKey:locationObject.localID];
+        
+        // add annotation to map
+        [mapView addAnnotation: locationObject];
+    }
+    
+    [self setStatusBarMomentLabel];
+}
+
+#pragma mark MapKit
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
@@ -89,20 +107,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
 }
 
-// only allow pinch gesture recognizer
-- (BOOL)                            gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-   shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    if ([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]])
-    {
-        return YES;
-    }
-    return NO;
-}
-
 //
-- (MKAnnotationView *)mapView:(MKMapView *)mapView
-            viewForAnnotation:(id<MKAnnotation>)annotation
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
     if ([annotation isKindOfClass:[FluxScanImageObject class]])
     {
@@ -165,9 +171,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 }
 
 // show locateMeBtn when user tracking mode changed to not follow
-- (void)            mapView:(MKMapView *)mapView
-  didChangeUserTrackingMode:(MKUserTrackingMode)mode
-                   animated:(BOOL)animated
+- (void) mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
 {
     [UIView transitionWithView:locateMeBtn duration:0.4
                        options:UIViewAnimationOptionTransitionCrossDissolve
@@ -190,8 +194,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 const float minmovedist = 0.00025;     // approx 25m (little more, little less, best around about 43deg lat)
 
 // make a network update call when user has moved a certain distance
--       (void) mapView:(MKMapView *)mapView
- didUpdateUserLocation:(MKUserLocation *)userLocation
+-       (void) mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
 {
     if (fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > minmovedist ||
         fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist ||
@@ -202,31 +205,51 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
         userLastSynchedLocation.latitude = userLocation.location.coordinate.latitude;
         userLastSynchedLocation.longitude = userLocation.location.coordinate.longitude;
     }
+    
+    [self setStatusBarLocationLabel:nil];
+    
 }
 
-// call back from the image request
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
-     didreturnImageList:(NSMutableDictionary *)imageList
+#pragma mark Gesture Recognizers
+
+// only allow pinch gesture recognizer
+- (BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    // Need to update all metadata objects even if they exist (in case they change in the future)
-    for (id curKey in [imageList allKeys])
+    if ([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]])
     {
-        FluxScanImageObject *locationObject = [imageList objectForKey:curKey];
-        [fluxMetadata setObject:locationObject forKey:locationObject.localID];
-        
-        // add annotation to map
-        [myMapView addAnnotation: locationObject];
+        return YES;
     }
-
-    [self setStatusBarMomentLabel];
+    return NO;
 }
+
+// handle pinch gesture call
+- (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture
+{
+    float scale = [self getScale];
+    
+    for (id <MKAnnotation>annotation in mapView.annotations)
+    {
+        if ([annotation isKindOfClass:[MKUserLocation class]])
+        {
+            userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
+            [self setUserHeadingDirection];
+        }
+        else
+        {
+            MKAnnotationView *annotationView = [mapView viewForAnnotation:annotation];
+            annotationView.transform = CGAffineTransformMakeScale(scale, scale);
+        }
+    }
+}
+
+
 
 #pragma mark - getter methods
 
 // get current map zoom level
 - (int)getZoomLevel
 {
-    return 21 - round(log2(myMapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * myMapView.bounds.size.width)));
+    return 21 - round(log2(mapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * mapView.bounds.size.width)));
 }
 
 // return proper scale size for the annotations in the map view
@@ -261,7 +284,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     {
         locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
     }
-    [statusBarCurrentLocalityLbl setText: locationString];
+    [locationLabel setText: locationString];
 }
 
 // set status bar date label
@@ -270,58 +293,16 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
     [dateFormat setDateFormat:@"MMM dd, yyyy"];
     NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
-    [statusBarCurrentDateLbl setText:todayDateString];
+    [dateLabel setText:todayDateString];
 }
 
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
-    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [fluxMetadata count]]];
+    [imageCountLabel setText:[NSString stringWithFormat: @"%i moments", [fluxMetadata count]]];
 }
 
-#pragma mark - @selector
-
-// handle pinch gesture call
-- (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture
-{
-    float scale = [self getScale];
-    
-    for (id <MKAnnotation>annotation in myMapView.annotations)
-    {
-        if ([annotation isKindOfClass:[MKUserLocation class]])
-        {
-            userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
-            [self setUserHeadingDirection];
-        }
-        else
-        {
-            MKAnnotationView *annotationView = [myMapView viewForAnnotation:annotation];
-            annotationView.transform = CGAffineTransformMakeScale(scale, scale);
-        }
-    }
-}
-
-// animating loading message when it is currently unable to update the location label
-- (void)updateLoadingMessage:(NSTimer *)thisTimer
-{
-    if ([statusBarCurrentLocalityLbl.text hasPrefix:@"Loading "])
-    {
-        // if statusBarCurrentLocalityLbl is less than the length of "Loading ...", append a "." at the end of the text
-        if (statusBarCurrentLocalityLbl.text.length < 11)
-        {
-            [statusBarCurrentLocalityLbl setText:[NSString stringWithFormat:@"%@.", statusBarCurrentLocalityLbl.text]];
-        }
-        else
-            [statusBarCurrentLocalityLbl setText:@"Loading "];
-    }
-    else
-    {
-        [thisTimer invalidate];
-        thisTimer = nil;
-    }
-}
-
-#pragma mark - initialize and allocate objects
+#pragma mark - initialize view
 
 // register pinch gesture recognizer callback
 - (void)setupPinchGesture
@@ -357,7 +338,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     for (id key in fluxMetadata)
     {
         FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
-        [myMapView addAnnotation: locationObject];
+        [mapView addAnnotation: locationObject];
     }
     
     activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -367,39 +348,40 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // initialize and allocate memory to the map view object
 - (void) setupMapView
 {
-    [myMapView setMapType:MKMapTypeStandard];
-    [myMapView setDelegate:self];
-    [myMapView setShowsUserLocation:YES];
-    [myMapView setUserTrackingMode:MKUserTrackingModeFollow];
+    [mapView setMapType:MKMapTypeStandard];
+    [mapView setDelegate:self];
+    [mapView setShowsUserLocation:YES];
+    [mapView setUserTrackingMode:MKUserTrackingModeFollow];
     
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(myMapView.userLocation.coordinate, 0.01, 0.01);
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(mapView.userLocation.coordinate, 50, 50);
+    MKCoordinateRegion adjustedRegion = [mapView regionThatFits:viewRegion];
+    [mapView setRegion:adjustedRegion animated:YES];
     
-    [myMapView setRegion:viewRegion animated:YES];
+    //[myMapView setRegion:viewRegion animated:YES];
+    CLLocationCoordinate2D eye = CLLocationCoordinate2DMake(mapView.userLocation.coordinate.latitude-0.01, mapView.userLocation.coordinate.longitude);
+    mapCamera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.userLocation.coordinate fromEyeCoordinate:eye eyeAltitude:1000];
+    if (mapView.pitchEnabled) {
+        [mapView setCamera:mapCamera];
+    }
 }
 
 // setting the status bar content
 - (void) setupStatusBarContent
 {
+    [dateLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateLabel.font.pointSize]];
+    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
+    [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
     // assign text to locality label
     // Check to see if either any location text already exists. Otherwise display loading prompt.
-    NSString *locationString = locationManager.subadministativearea;
-    NSString *sublocality = locationManager.sublocality;
-    if ((sublocality.length > 0) || (locationString.length > 0))
+    if ((locationManager.subadministativearea != nil) || (locationManager.sublocality != nil))
     {
         [self setStatusBarLocationLabel:nil];
     }
-    else
-    {
-        [statusBarCurrentLocalityLbl setText:@"Loading "];
-        [NSTimer scheduledTimerWithTimeInterval: 0.5 target: self selector: @selector(updateLoadingMessage:)
-                                       userInfo: nil repeats: YES];
-    }
+    // assign text to moment label
+    [self setStatusBarMomentLabel];
     
     // assign text to date label
     [self setStatusBarDateLabel];
-    
-    // assign text to moment label
-    [self setStatusBarMomentLabel];
 }
 
 #pragma mark - IBActions
@@ -407,14 +389,14 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // switch user tracking mode to MKUserTrackingModeFollow
 - (IBAction)onLocateMeBtn:(id)sender
 {
-    if ([myMapView userTrackingMode] != MKUserTrackingModeFollow)
+    if ([mapView userTrackingMode] != MKUserTrackingModeFollow)
     {
-        [myMapView setUserTrackingMode:MKUserTrackingModeFollow];
+        [mapView setUserTrackingMode:MKUserTrackingModeFollow];
         [self setUserHeadingDirection];
     }
 }
 
-#pragma mark - rotation and orientations
+#pragma mark - Rotation and Orientation
 
 - (BOOL)shouldAutorotate
 {
@@ -456,6 +438,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 {
     if (self = [super initWithCoder:aDecoder]) {
         ;
+        
     }
     return self;
 }

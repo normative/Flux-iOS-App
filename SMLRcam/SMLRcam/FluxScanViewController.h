@@ -79,6 +79,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     FluxOpenGLViewController*openGLController;
     
     UIInterfaceOrientation changeToOrientation;
+    FluxMapViewController *mapViewController;
     
     UIImageView* launchView;
 }

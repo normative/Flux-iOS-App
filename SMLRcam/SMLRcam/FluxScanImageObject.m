@@ -15,7 +15,7 @@
 //
 - (NSString*)title
 {
-    return [NSString stringWithFormat:@"location date: %@", self.timestampString];
+    return [NSString stringWithFormat:@"%@, %@", self.username, [self.timestamp description]];
 }
 
 //

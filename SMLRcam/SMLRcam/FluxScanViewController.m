@@ -336,11 +336,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     if ([[segue identifier] isEqualToString:@"pushMapModalView"])
     {
-        FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
-        fluxMapViewController.myViewOrientation = changeToOrientation;
+        mapViewController = (FluxMapViewController *)segue.destinationViewController;
+        mapViewController.myViewOrientation = changeToOrientation;
         
-        fluxMapViewController.fluxImageCache = self.fluxImageCache;
-        fluxMapViewController.fluxMetadata = self.fluxMetadata;
+        mapViewController.fluxImageCache = self.fluxImageCache;
+        mapViewController.fluxMetadata = self.fluxMetadata;
     }
 }
 
@@ -1021,7 +1021,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         {
             [annotationsTableView setHidden:YES];
         }
-        
         [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
     }
 }
