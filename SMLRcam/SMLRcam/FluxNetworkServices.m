@@ -138,7 +138,7 @@
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"Found %i Results",[result count]);
+        NSLog(@"%s: Found %i Results",__func__, [result count]);
         if ([result count]>0)
         {
             FluxScanImageObject *imageObject = [result firstObject];
@@ -235,7 +235,7 @@
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"Found %i Results",[result count]);
+        NSLog(@"%s: Found %i Results",__func__,[result count]);
         
         if ([result count] > 0)
         {

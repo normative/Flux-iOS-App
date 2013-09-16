@@ -672,7 +672,6 @@ void init(){
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setRequestType:nearby_list_request];
     [dataRequest setNearbyListReady:^(NSMutableDictionary *imageList){
-        NSLog(@"Got list of %d nearby image objects.", [imageList count]);
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
         [_nearbyListLock lock];
@@ -961,10 +960,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)didAcquireNewPicture:(NSNotification *)notification
 {
-    NSString* localID = [[notification userInfo] objectForKey:@"FluxScanViewDidAcquireNewPictureLocalIDKey"];
+    FluxLocalID *localID = [[notification userInfo] objectForKey:@"FluxScanViewDidAcquireNewPictureLocalIDKey"];
     
     [_nearbyListLock lock];
-        if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
+//        if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
+// There is currently nothing here ensuring that it will still be in the cache.
+        if (localID != nil)
         {
             // We have a new picture ready in the cache.
             // Add the ID to the current list of nearby items, and re-sort and re-prune the list
@@ -976,8 +977,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 -(void) populateImageData
 {
-    NSLog(@"Image dictionary count is %i", [fluxMetadata count]);
-    
     // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
     NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
@@ -1051,7 +1050,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
 {
-    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxMetadata count]);
+//    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxMetadata count]);
     GLKQuaternion quaternion;
     
     FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
@@ -1069,7 +1068,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _imagePose[idx].rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
-    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+//    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
 -(void)updateImageMetaData
