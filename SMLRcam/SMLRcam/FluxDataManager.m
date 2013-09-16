@@ -127,6 +127,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
 {
     FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.imageType = imageType;
     
     [currentRequests setObject:dataRequest forKey:requestID];
     

@@ -9,12 +9,12 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
+#import "FluxDataManager.h"
 #import "FluxLocationServicesSingleton.h"
-#import "FluxNetworkServices.h"
 
 @class FluxScanImageObject;
 
-@interface FluxMapViewController : UIViewController<MKMapViewDelegate, UIGestureRecognizerDelegate, NetworkServicesDelegate>
+@interface FluxMapViewController : UIViewController<MKMapViewDelegate, UIGestureRecognizerDelegate>
 {
     UIActivityIndicatorView *activityIndicator;
     
@@ -42,14 +42,10 @@
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
-    
-    //network service
-    FluxNetworkServices *networkServiceManager;
 }
 
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
-@property (weak) NSCache *fluxImageCache;
-@property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
+@property (nonatomic, weak) FluxDataManager *fluxDataManager;
 
 - (IBAction)onLocateMeBtn:(id)sender;
 

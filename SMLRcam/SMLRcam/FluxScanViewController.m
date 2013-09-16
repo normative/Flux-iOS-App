@@ -345,8 +345,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         FluxMapViewController *fluxMapViewController = (FluxMapViewController *)segue.destinationViewController;
         fluxMapViewController.myViewOrientation = changeToOrientation;
         
-        fluxMapViewController.fluxImageCache = self.fluxImageCache;
-        fluxMapViewController.fluxMetadata = self.fluxMetadata;
+        fluxMapViewController.fluxDataManager = fluxDataManager;
     }
 }
 
@@ -1043,6 +1042,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     [super viewDidLoad];
 
+    fluxDataManager = [[FluxDataManager alloc] init];
+
     self.fluxImageCache = [[NSCache alloc] init];
     self.fluxMetadata = [[NSMutableDictionary alloc] init];
     
@@ -1056,8 +1057,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];
     [locationManager startLocating];
-    
-//    [self setupNetworkServices];
     
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
     [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
@@ -1076,8 +1075,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [fakeGalleryView setImage:[UIImage imageNamed:@"fakeGallery"]];
     [fakeGalleryView setAlpha:0.0];
     [self.view addSubview:fakeGalleryView];
-    
-    fluxDataManager = [[FluxDataManager alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated{

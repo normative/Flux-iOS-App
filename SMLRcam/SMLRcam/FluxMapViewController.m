@@ -27,7 +27,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)updateLoadingMessage:(NSTimer *)thisTimer;
 
 - (void) setupPinchGesture;
-- (void) setupNetworkServiceManager;
 - (void) setupLocationManager;
 - (void) setupAnnotationView;
 - (void) setupMapView;
@@ -37,36 +36,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 @implementation FluxMapViewController
 
-@synthesize fluxImageCache;
-@synthesize fluxMetadata;
 @synthesize myViewOrientation;
 
 #pragma mark - delegate methods
-
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
-         didreturnImage:(UIImage*)image
-             forImageID:(int)imageID
-{
-    for (FluxScanImageObject *annotation in myMapView.annotations)
-    {
-        if ([annotation isKindOfClass: [FluxScanImageObject class]])
-        {
-            NSLog(@"annotation imageID is %i", annotation.imageID);
-            if (annotation.imageID == imageID)
-            {
-                // This view gets a thumbnail image (since that is all it requested)
-                [fluxImageCache setObject:image forKey:annotation.localThumbID];
-                
-                MKAnnotationView *annotationView = [myMapView viewForAnnotation: annotation];
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:annotation.localThumbID]];
-                annotationView.leftCalloutAccessoryView = calloutImageView;
-                
-                [activityIndicator stopAnimating];
-                break;
-            }
-        }
-    }
-}
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
@@ -74,10 +46,27 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
         
-        if ([fluxImageCache objectForKey:annotation.localThumbID] == nil)
-        {
-//            [networkServiceManager getThumbImageForID:annotation.imageID];
-        }
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setRequestType:image_request];
+        [dataRequest setRequestedIDs:[NSArray arrayWithObject:annotation.localID]];
+        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+            for (FluxScanImageObject *curAnnotation in myMapView.annotations)
+            {
+                if ([annotation isKindOfClass: [FluxScanImageObject class]])
+                {
+                    if (curAnnotation.localID == localID)
+                    {
+                        MKAnnotationView *annotationView = [myMapView viewForAnnotation:curAnnotation];
+                        UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:image];
+                        annotationView.leftCalloutAccessoryView = calloutImageView;
+                        
+                        [activityIndicator stopAnimating];
+                        break;
+                    }
+                }
+            }
+        }];
+        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
     }
 }
 
@@ -115,19 +104,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             locationAnnotationView.enabled = YES;
             locationAnnotationView.canShowCallout = YES;
             locationAnnotationView.image = [UIImage imageNamed:@"locationPin.png"];
-            
-            FluxScanImageObject *fluxImageObject = (FluxScanImageObject *)annotation;
-            
-            if ([fluxImageCache objectForKey:fluxImageObject.localThumbID] != nil)
-            {
-                UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:[fluxImageCache objectForKey:fluxImageObject.localThumbID]];
-                locationAnnotationView.leftCalloutAccessoryView = calloutImageView;
-            }
-            else
-            {
-                locationAnnotationView.leftCalloutAccessoryView = activityIndicator;
-                [activityIndicator startAnimating];
-            }
+
+            // Just show the activity indicator for now. Don't both checking cache.
+            // When a user clicks on it, then we can initiate the request.
+            locationAnnotationView.leftCalloutAccessoryView = activityIndicator;
+            [activityIndicator startAnimating];
         }
         else
         {
@@ -156,7 +137,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
             userAnnotationView.annotation = annotation;
         }
         
-        userLastSynchedLocation =  mapView.userLocation.coordinate;
         [self setUserHeadingDirection];
         return userAnnotationView;
     }
@@ -189,36 +169,33 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 const float minmovedist = 0.00025;     // approx 25m (little more, little less, best around about 43deg lat)
 
-// make a network update call when user has moved a certain distance
+// generate request to update image list when user has moved a certain distance
 -       (void) mapView:(MKMapView *)mapView
  didUpdateUserLocation:(MKUserLocation *)userLocation
 {
-    if (fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > minmovedist ||
-        fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist ||
-        [fluxMetadata count] == 0)
+    if ((userLastSynchedLocation.latitude == -1 && userLastSynchedLocation.longitude == -1) ||
+        fabs(userLocation.location.coordinate.latitude - userLastSynchedLocation.latitude) > minmovedist ||
+        fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist)
     {
-//        [networkServiceManager getImagesForLocation:userLocation.location.coordinate andRadius:50];
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setRequestType:nearby_list_request];
+        [dataRequest setNearbyListReady:^(NSMutableDictionary *nearbyList){
+            // Need to update all metadata objects even if they exist (in case they change in the future)
+            for (id curKey in [nearbyList allKeys])
+            {
+                FluxScanImageObject *locationObject = [nearbyList objectForKey:curKey];
+                
+                // add annotation to map
+                [myMapView addAnnotation: locationObject];
+            }
+            [self setStatusBarMomentLabel];
+        }];
+        [self.fluxDataManager requestImageListAtLocation:userLocation.location.coordinate
+                                              withRadius:50 withFilter:nil withDataRequest:dataRequest];
         
         userLastSynchedLocation.latitude = userLocation.location.coordinate.latitude;
         userLastSynchedLocation.longitude = userLocation.location.coordinate.longitude;
     }
-}
-
-// call back from the image request
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
-     didreturnImageList:(NSMutableDictionary *)imageList
-{
-    // Need to update all metadata objects even if they exist (in case they change in the future)
-    for (id curKey in [imageList allKeys])
-    {
-        FluxScanImageObject *locationObject = [imageList objectForKey:curKey];
-        [fluxMetadata setObject:locationObject forKey:locationObject.localID];
-        
-        // add annotation to map
-        [myMapView addAnnotation: locationObject];
-    }
-
-    [self setStatusBarMomentLabel];
 }
 
 #pragma mark - getter methods
@@ -276,7 +253,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
-    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [fluxMetadata count]]];
+    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%i Moment", [myMapView.annotations count]]];
 }
 
 #pragma mark - @selector
@@ -332,13 +309,6 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     [self.view addGestureRecognizer:pinchRecognizer];
 }
 
-// initial and allocate memory to the network service manager
-- (void)setupNetworkServiceManager
-{
-    networkServiceManager = [[FluxNetworkServices alloc] init];
-    [networkServiceManager setDelegate:self];
-}
-
 // initialize and allocate memory to the location manager object and register for nsnotification service
 - (void)setupLocationManager
 {
@@ -354,11 +324,11 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // initialize and allocate memory for annotation view
 - (void) setupAnnotationView
 {
-    for (id key in fluxMetadata)
-    {
-        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
-        [myMapView addAnnotation: locationObject];
-    }
+//    for (id key in fluxMetadata)
+//    {
+//        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
+//        [myMapView addAnnotation: locationObject];
+//    }
     
     activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     activityIndicator.backgroundColor = [UIColor whiteColor];
@@ -480,7 +450,6 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     
     [self setupPinchGesture];
     [self setupLocationManager];
-//    [self setupNetworkServiceManager];
     
     [self setupMapView];
     [self setupAnnotationView];
