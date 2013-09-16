@@ -36,6 +36,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                    withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
+    [dataRequest setUploadLocalID:metadata.localID];
     
     // Add a new image with metadata to both cache objects
     [fluxDataStore addMetadataObject:metadata];
