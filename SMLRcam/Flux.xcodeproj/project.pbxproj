@@ -882,7 +882,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam,
+					SMLRcam,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
@@ -905,7 +905,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam,
+					SMLRcam,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
