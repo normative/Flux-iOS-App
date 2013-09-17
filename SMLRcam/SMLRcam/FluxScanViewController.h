@@ -19,7 +19,6 @@
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
 #import "FluxLocationServicesSingleton.h"
-#import "FluxNetworkServices.h"
 #import "FluxAVCameraSingleton.h"
 
 #import <QuartzCore/QuartzCore.h>
@@ -65,7 +64,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //Network + Motion
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
-    FluxNetworkServices *networkServices;
     FluxDataManager *fluxDataManager;
 
     //time scrolling
@@ -85,7 +83,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     UIImageView* launchView;
 }
 
-@property (nonatomic, strong) NSMutableDictionary *fluxMetadata;
+@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (strong, nonatomic) IBOutlet UIView *drawerContainerView;

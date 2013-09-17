@@ -10,11 +10,9 @@
 #import "FluxDrawerSwitchTableViewCell.h"
 #import "FluxDrawerSegmentedTableViewCell.h"
 #import "FluxDrawerButtonTableViewCell.h"
-#import "FluxNetworkServices.h"
 
 @interface FluxLeftDrawerViewController : UITableViewController<DrawerSwitchTableViewCellDelegate, SegmentedCellDelegate, DrawerButtonTableViewCellDelegate>{
     NSArray *leftDrawerTableViewArray;
-    FluxNetworkServices *networkServices;
 }
 
 - (void)SettingActionForString:(NSString*)string andSetting:(BOOL)setting;

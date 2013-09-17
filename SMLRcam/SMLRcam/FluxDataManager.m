@@ -36,27 +36,35 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                    withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
-    [dataRequest setUploadLocalID:metadata.localID];
     
     // Add a new image with metadata to both cache objects
     [fluxDataStore addMetadataObject:metadata];
     [fluxDataStore addImageToStore:image withLocalID:metadata.localID withSize:full_res];
     
-    [currentRequests setObject:dataRequest forKey:requestID];
-    if ([uploadQueueReceivers objectForKey:metadata.localID] == nil)
-    {
-        [uploadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:metadata.localID];
-    }
-    else
-    {
-        [[uploadQueueReceivers objectForKey:metadata.localID] addObject:requestID];
-    }
-    
-    // Begin upload of image to server
-    [networkServices uploadImage:metadata andImage:image andRequestID:requestID];
-    
-    // Set up global upload progress count (add new image to overall total)
+    // Check if upload is enabled
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
 
+    if (pushToCloud)
+    {
+        [dataRequest setUploadLocalID:metadata.localID];
+
+        [currentRequests setObject:dataRequest forKey:requestID];
+        if ([uploadQueueReceivers objectForKey:metadata.localID] == nil)
+        {
+            [uploadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:metadata.localID];
+        }
+        else
+        {
+            [[uploadQueueReceivers objectForKey:metadata.localID] addObject:requestID];
+        }
+        
+        // Begin upload of image to server
+        [networkServices uploadImage:metadata andImage:image andRequestID:requestID];
+        
+        // Set up global upload progress count (add new image to overall total)
+    }
+    
     // Notify any observers of new content
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:metadata.localID, FluxDataManagerKeyNewImageLocalID, nil];

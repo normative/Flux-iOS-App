@@ -16,12 +16,6 @@
 
 #pragma mark - delegate methods
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
-       didFailWithError:(NSError*)e
-{
-    
-}
-
 //callback made when the switch on the cell is hit
 -(void)SwitchCell:(FluxDrawerSwitchTableViewCell *)switchCell
   switchWasTapped:(UISwitch *)theSwitch
@@ -44,7 +38,6 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 - (void)ButtonCell:(FluxDrawerButtonTableViewCell *)buttonCell
    buttonWasTapped:(UIButton *)theButton
 {
-//    [networkServices deleteLocations];
 }
 
 #pragma mark - view lifecycle
@@ -61,8 +54,6 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-//    networkServices = [[FluxNetworkServices alloc] init];
     
     leftDrawerTableViewArray = [[NSArray alloc]initWithObjects:@"Save Pictures",@"Network Services",@"Local Network", @"Walk Mode", @"Area Reset", nil];
     

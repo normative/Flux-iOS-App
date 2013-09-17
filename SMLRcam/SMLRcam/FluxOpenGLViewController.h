@@ -77,7 +77,7 @@ typedef struct {
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDataManager *fluxDataManager;
-@property (nonatomic, weak) NSMutableDictionary *fluxMetadata;
+@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
 @property (nonatomic, strong)NSMutableArray *nearbyList;
 @property (nonatomic, strong)NSMutableArray *renderedTextures;
 

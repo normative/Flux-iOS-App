@@ -18,7 +18,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 @implementation FluxScanViewController
 
-@synthesize fluxMetadata;
+@synthesize fluxNearbyMetadata;
 @synthesize thumbView;
 
 #pragma mark - Location
@@ -55,7 +55,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
 #warning FIXME - Make sure these get called
 // Need to trigger these somehow - probably from OpenGL VC
-    [radarView updateRadarWithNewMetaData:fluxMetadata];
+    [radarView updateRadarWithNewMetaData:fluxNearbyMetadata];
     [annotationsTableView reloadData];
 }
 
@@ -153,7 +153,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [fakeGalleryView setAlpha:0.0];
     [CameraButton setEnabled:YES];
     if ([annotationsTableView isHidden]) {
-        if ([fluxMetadata count]>0) {
+        if ([fluxNearbyMetadata count]>0) {
             [annotationsTableView reloadData];
             //if there are any rows, scroll to the top of them
             if ([annotationsTableView numberOfRowsInSection:0]>0) {
@@ -220,7 +220,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [fluxMetadata count];
+    return [fluxNearbyMetadata count];
 }
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -240,8 +240,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     [cell initCell];
     
-    NSNumber *objkey = [[fluxMetadata allKeys] objectAtIndex:indexPath.row];
-    FluxScanImageObject *rowObject = [fluxMetadata objectForKey: objkey];
+    NSNumber *objkey = [[fluxNearbyMetadata allKeys] objectAtIndex:indexPath.row];
+    FluxScanImageObject *rowObject = [fluxNearbyMetadata objectForKey: objkey];
     
     cell.imageID = rowObject.imageID;
     
@@ -335,7 +335,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     openGLController.view.frame = self.view.bounds;
     
     openGLController.fluxDataManager = fluxDataManager;
-    openGLController.fluxMetadata = self.fluxMetadata;
+    openGLController.fluxNearbyMetadata = self.fluxNearbyMetadata;
 }
 
 #pragma mark - Gesture Recognizer
@@ -856,7 +856,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)saveImageObject{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
-    bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
     
     // Generate a string image id for local use
     NSString *localID = [capturedImageObject generateUniqueStringID];
@@ -896,10 +895,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setRequestType:data_upload_request];
     [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
-        if ([fluxMetadata objectForKey:updatedImageObject.localID] != nil)
+        if ([fluxNearbyMetadata objectForKey:updatedImageObject.localID] != nil)
         {
             // FluxScanImageObject exists in the local cache. Replace it with updated object.
-            [fluxMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+            [fluxNearbyMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
         }
         progressView.progress = 1.0;
         [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
@@ -910,7 +909,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }];
     
     [fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
-    [fluxMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
+    [fluxNearbyMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
     
     // Post notification for observers prior to upload
     NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
@@ -1001,7 +1000,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     fluxDataManager = [[FluxDataManager alloc] init];
 
-    self.fluxMetadata = [[NSMutableDictionary alloc] init];
+    self.fluxNearbyMetadata = [[NSMutableDictionary alloc] init];
     
     [self setupAVCapture];
     [self setupGestureHandlers];
@@ -1044,7 +1043,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [self didUpdateLocation:nil];
     }
     
-    [radarView updateRadarWithNewMetaData:fluxMetadata];
+    [radarView updateRadarWithNewMetaData:fluxNearbyMetadata];
     [self restartAVCaptureWithBlur:YES];
     
 

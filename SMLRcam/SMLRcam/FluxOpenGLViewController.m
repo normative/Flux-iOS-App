@@ -649,7 +649,7 @@ void init(){
 
 @implementation FluxOpenGLViewController
 
-@synthesize fluxMetadata;
+@synthesize fluxNearbyMetadata;
 
 #pragma mark - Location
 
@@ -678,7 +678,7 @@ void init(){
         // Iterate over the list and clear out anything that is not local-only
         for (id localID in self.nearbyList)
         {
-            FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
+            FluxScanImageObject *locationObject = [fluxNearbyMetadata objectForKey:localID];
             if (locationObject.imageID < 0)
             {
                 [localOnlyObjects addObject:localID];
@@ -693,7 +693,7 @@ void init(){
         for (id curKey in [imageList allKeys])
         {
             FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
-            [fluxMetadata setObject:curImgObj forKey:curImgObj.localID];
+            [fluxNearbyMetadata setObject:curImgObj forKey:curImgObj.localID];
             if (![self.nearbyList containsObject:curImgObj.localID])
             {
                 [self.nearbyList addObject:curImgObj.localID];
@@ -962,7 +962,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     FluxLocalID *localID = [[notification userInfo] objectForKey:@"FluxScanViewDidAcquireNewPictureLocalIDKey"];
     
     [_nearbyListLock lock];
-//        if ((localID != nil) && ([fluxMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
+//        if ((localID != nil) && ([fluxNearbyMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
 // There is currently nothing here ensuring that it will still be in the cache.
         if (localID != nil)
         {
@@ -984,11 +984,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Request images for nearby items
     for (id localID in self.nearbyList)
     {
-        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:localID];
-        
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
         [dataRequest setRequestType:image_request];
-        [dataRequest setRequestedIDs:[NSArray arrayWithObject:locationObject.localID]];
+        [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
         [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
             [self updateImageTextureWithLocalID:localID withImage:image];
         }];
@@ -1049,10 +1047,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
 {
-//    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxMetadata count]);
+//    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
     GLKQuaternion quaternion;
     
-    FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
+    FluxScanImageObject *locationObject = [fluxNearbyMetadata objectForKey:key];
     
     _imagePose[idx].position.x =  locationObject.latitude;
     _imagePose[idx].position.y =  locationObject.longitude;
