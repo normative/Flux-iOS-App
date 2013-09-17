@@ -70,6 +70,7 @@
 		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
 		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
 		AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9CC94917D80858006AF61F /* FluxCameraButton.m */; };
+		AAA265A117E89C6B003AE787 /* FluxTagObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265A017E89C6B003AE787 /* FluxTagObject.m */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */; };
 		AAAC6C1117C65F8800B7EAD1 /* FluxHashtagTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
@@ -173,7 +174,6 @@
 		AA349A2217C3BF4000C72E24 /* FluxOpenGLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxOpenGLViewController.h; sourceTree = "<group>"; };
 		AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxOpenGLViewController.m; sourceTree = "<group>"; };
 		AA349A2D17C5420700C72E24 /* Shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Shaders; sourceTree = "<group>"; };
-		AA45B83217E24E75007C3F38 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
 		AA45B83317E24E75007C3F38 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
 		AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AKKURAT.ttf; sourceTree = "<group>"; };
 		AA47BECB17CBE84300ED9B39 /* AKKURATB.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AKKURATB.ttf; sourceTree = "<group>"; };
@@ -196,6 +196,8 @@
 		AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterDrawerObject.m; sourceTree = "<group>"; };
 		AA9CC94817D80858006AF61F /* FluxCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraButton.h; sourceTree = "<group>"; };
 		AA9CC94917D80858006AF61F /* FluxCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraButton.m; sourceTree = "<group>"; };
+		AAA2659F17E89C6B003AE787 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
+		AAA265A017E89C6B003AE787 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
 		AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxClockSlidingControl.h; sourceTree = "<group>"; };
 		AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxClockSlidingControl.m; sourceTree = "<group>"; };
 		AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxHashtagTableViewCell.h; sourceTree = "<group>"; };
@@ -574,6 +576,8 @@
 				AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */,
 				AAD2DFF317BBFC8200D572A4 /* FluxUserObject.h */,
 				AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */,
+				AAA2659F17E89C6B003AE787 /* FluxTagObject.h */,
+				AAA265A017E89C6B003AE787 /* FluxTagObject.m */,
 			);
 			name = "Data Store";
 			sourceTree = "<group>";
@@ -740,6 +744,7 @@
 				AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */,
 				17604B771785CA59005CF054 /* FluxAppDelegate.m in Sources */,
 				AA0A9D9017E366E100A0B109 /* DWTagList.m in Sources */,
+				AAA265A117E89C6B003AE787 /* FluxTagObject.m in Sources */,
 				AAAC6C1117C65F8800B7EAD1 /* FluxHashtagTableViewCell.m in Sources */,
 				AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */,
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
