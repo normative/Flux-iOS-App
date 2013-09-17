@@ -39,7 +39,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - Callbacks
 
-#pragma mark Networking
+
+#pragma mark MapKit
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
@@ -51,13 +52,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         [dataRequest setRequestType:image_request];
         [dataRequest setRequestedIDs:[NSArray arrayWithObject:annotation.localID]];
         [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-            for (FluxScanImageObject *curAnnotation in myMapView.annotations)
+            for (FluxScanImageObject *curAnnotation in mapView.annotations)
             {
                 if ([curAnnotation isKindOfClass: [FluxScanImageObject class]])
                 {
                     if (curAnnotation.localID == localID)
                     {
-                        MKAnnotationView *annotationView = [myMapView viewForAnnotation:curAnnotation];
+                        MKAnnotationView *annotationView = [mapView viewForAnnotation:curAnnotation];
                         UIImageView *calloutImageView = [[UIImageView alloc] initWithImage:image];
                         annotationView.leftCalloutAccessoryView = calloutImageView;
                         
@@ -156,9 +157,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 const float minmovedist = 0.00025;     // approx 25m (little more, little less, best around about 43deg lat)
 
-// generate request to update image list when user has moved a certain distance
--       (void) mapView:(MKMapView *)mapView
- didUpdateUserLocation:(MKUserLocation *)userLocation
+// make a network update call when user has moved a certain distance
+-       (void) mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
 {
 #warning Need to improve this logic. Will not request updates unless we move. This misses new points.
 // Since this is a delegate of MapView's location updates, the tolerance settings are different.
@@ -176,7 +176,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
                 FluxScanImageObject *locationObject = [nearbyList objectForKey:curKey];
                 
                 // add annotation to map
-                [myMapView addAnnotation: locationObject];
+                [mapView addAnnotation: locationObject];
             }
             [self setStatusBarMomentLabel];
         }];
@@ -191,12 +191,46 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     
 }
 
+#pragma mark Gesture Recognizers
+
+// only allow pinch gesture recognizer
+- (BOOL) gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    if ([gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]])
+    {
+        return YES;
+    }
+    return NO;
+}
+
+// handle pinch gesture call
+- (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture
+{
+    float scale = [self getScale];
+    
+    for (id <MKAnnotation>annotation in fluxMapView.annotations)
+    {
+        if ([annotation isKindOfClass:[MKUserLocation class]])
+        {
+            userAnnotationView.transform = CGAffineTransformMakeScale(scale, scale);
+            [self setUserHeadingDirection];
+        }
+        else
+        {
+            MKAnnotationView *annotationView = [fluxMapView viewForAnnotation:annotation];
+            annotationView.transform = CGAffineTransformMakeScale(scale, scale);
+        }
+    }
+}
+
+
+
 #pragma mark - getter methods
 
 // get current map zoom level
 - (int)getZoomLevel
 {
-    return 21 - round(log2(mapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * mapView.bounds.size.width)));
+    return 21 - round(log2(fluxMapView.region.span.longitudeDelta * MERCATOR_RADIUS * M_PI / (180.0 * fluxMapView.bounds.size.width)));
 }
 
 // return proper scale size for the annotations in the map view
@@ -246,10 +280,9 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
-    int totalAnnotationCount = [myMapView.annotations count];
+    int totalAnnotationCount = [fluxMapView.annotations count];
     int imageAnnotationCount = totalAnnotationCount > 1 ? totalAnnotationCount - 1 : 0;
-    [statusBarCurrentMoment setText:[NSString stringWithFormat: @"%d Moment%@",
-                                     imageAnnotationCount, imageAnnotationCount > 1 ? @"s" : @""]];
+    [imageCountLabel setText:[NSString stringWithFormat: @"%d Moment%@", imageAnnotationCount, imageAnnotationCount > 1 ? @"s" : @""]];
 }
 
 #pragma mark - initialize view
@@ -281,7 +314,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 //    for (id key in fluxMetadata)
 //    {
 //        FluxScanImageObject *locationObject = [fluxMetadata objectForKey:key];
-//        [myMapView addAnnotation: locationObject];
+//        [mapView addAnnotation: locationObject];
 //    }
     
     activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -291,20 +324,20 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // initialize and allocate memory to the map view object
 - (void) setupMapView
 {
-    [mapView setMapType:MKMapTypeStandard];
-    [mapView setDelegate:self];
-    [mapView setShowsUserLocation:YES];
-    [mapView setUserTrackingMode:MKUserTrackingModeFollow];
+    [fluxMapView setMapType:MKMapTypeStandard];
+    [fluxMapView setDelegate:self];
+    [fluxMapView setShowsUserLocation:YES];
+    [fluxMapView setUserTrackingMode:MKUserTrackingModeFollow];
     
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(mapView.userLocation.coordinate, 50, 50);
-    MKCoordinateRegion adjustedRegion = [mapView regionThatFits:viewRegion];
-    [mapView setRegion:adjustedRegion animated:YES];
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(fluxMapView.userLocation.coordinate, 50, 50);
+    MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
+    [fluxMapView setRegion:adjustedRegion animated:YES];
     
-    //[myMapView setRegion:viewRegion animated:YES];
-    CLLocationCoordinate2D eye = CLLocationCoordinate2DMake(mapView.userLocation.coordinate.latitude-0.01, mapView.userLocation.coordinate.longitude);
-    mapCamera = [MKMapCamera cameraLookingAtCenterCoordinate:mapView.userLocation.coordinate fromEyeCoordinate:eye eyeAltitude:1000];
-    if (mapView.pitchEnabled) {
-        [mapView setCamera:mapCamera];
+    //[mapView setRegion:viewRegion animated:YES];
+    CLLocationCoordinate2D eye = CLLocationCoordinate2DMake(fluxMapView.userLocation.coordinate.latitude-0.01, fluxMapView.userLocation.coordinate.longitude);
+    mapCamera = [MKMapCamera cameraLookingAtCenterCoordinate:fluxMapView.userLocation.coordinate fromEyeCoordinate:eye eyeAltitude:1000];
+    if (fluxMapView.pitchEnabled) {
+        [fluxMapView setCamera:mapCamera];
     }
 }
 
@@ -332,9 +365,9 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // switch user tracking mode to MKUserTrackingModeFollow
 - (IBAction)onLocateMeBtn:(id)sender
 {
-    if ([mapView userTrackingMode] != MKUserTrackingModeFollow)
+    if ([fluxMapView userTrackingMode] != MKUserTrackingModeFollow)
     {
-        [mapView setUserTrackingMode:MKUserTrackingModeFollow];
+        [fluxMapView setUserTrackingMode:MKUserTrackingModeFollow];
         [self setUserHeadingDirection];
     }
 }

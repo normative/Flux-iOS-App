@@ -36,7 +36,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 
 
-@interface FluxScanViewController : GAITrackedViewController<NetworkServicesDelegate,AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate, KTSegmentedControlDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate, KTSegmentedControlDelegate>{
     
     //headerView
     __weak IBOutlet UIView *headerView;

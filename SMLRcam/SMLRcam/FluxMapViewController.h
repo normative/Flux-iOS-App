@@ -30,7 +30,7 @@
     MKMapCamera*mapCamera;
     
     // Map View
-    __weak IBOutlet MKMapView *mapView;
+    __weak IBOutlet MKMapView *fluxMapView;
     
     // Status Bar
     __weak IBOutlet UIButton *statusBarExitMapBtn;

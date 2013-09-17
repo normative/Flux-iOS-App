@@ -604,10 +604,10 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <outlet property="dateLabel" destination="91t-QI-bo7" id="Kke-FG-noq"/>
+                        <outlet property="fluxMapView" destination="hT0-9E-Cfm" id="Ee6-sb-9KA"/>
                         <outlet property="imageCountLabel" destination="Imf-Ey-SB3" id="sOt-GM-yDn"/>
                         <outlet property="locateMeBtn" destination="vKt-uU-SfL" id="MUI-m3-gbx"/>
                         <outlet property="locationLabel" destination="JmX-7R-HAO" id="xPf-bq-Pio"/>
-                        <outlet property="mapView" destination="hT0-9E-Cfm" id="uv8-VA-gLj"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
