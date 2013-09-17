@@ -212,6 +212,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
            andRequestID:(FluxRequestID *)requestID
 {
     // Need to update all metadata objects even if they exist (in case they change in the future)
+#warning This may break things in the future when we add difference between full metadata request
+// This will occur when list of metadata only returns critical pieces of metadata object.
+// May be easiest to add an update routine that only overwrites these properties.
     // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
     // when a desired image is loaded (happens after the texture is loaded)
     for (id curKey in [imageList allKeys])
@@ -267,12 +270,13 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
             if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
                 (![curRequest.completedIDs containsObject:imageObj.localID]))
             {
+                // Mark as complete prior to callback
+                [curRequest.completedIDs addObject:imageObj.localID];
+
                 // Notify and execute callback
                 [curRequest whenImageReady:imageObj.localID withImage:image withDataRequest:request];
                 
-                // Clean up
-                [curRequest.completedIDs addObject:imageObj.localID];
-                
+                // Used to clean up in next step
                 if ([curRequest.completedIDs count] == [curRequest.requestedIDs count])
                 {
                     // Request is complete
