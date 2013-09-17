@@ -294,7 +294,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.myViewOrientation = changeToOrientation;
         
-        fluxMapViewController.fluxDataManager = fluxDataManager;
+        mapViewController.fluxDataManager = fluxDataManager;
     }
 }
 
