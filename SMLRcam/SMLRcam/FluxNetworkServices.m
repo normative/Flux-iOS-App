@@ -8,6 +8,7 @@
 
 #import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
+#import "FluxTagObject.h"
 #import "FluxMappingProvider.h"
 #import "FluxLocationServicesSingleton.h"
 
@@ -195,8 +196,8 @@
 //    NSString *hashTags =    @"''";      // escaped-space-delimited (%20) list of hash tags (OR test) eg. "'tag1%20tag2'"
 //    NSString *cats =        @"''";      // escaped-space-delimited (%20) list of categories (OR test) eg. "'place%20thing'"
 //    NSString *users =       @"''";      // escaped-space-delimited (%20) list of user nicknames (OR test) eg. "'steve%20bob'"
-//    float altMin = -10000.0;
-//    float altMax = +10000.0;
+//    float altMin = -10000.0;  //meters
+//    float altMax = +10000.0; //meters
 //    NSDate *timeMin = [[NSDate alloc] init];
 //    timeMin = [NSDate dateWithTimeIntervalSince1970:0];   // a long time ago...
 //    NSDate *timeMax = [[NSDate alloc] init];              // now
@@ -314,6 +315,9 @@
     
 }
 
+
+#pragma mark  - Users
+
 - (void)createUser:(FluxUserObject*)user
 {
     [objectManager postObject:user path:@"/users" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -374,6 +378,48 @@
 }
 
 
+#pragma mark  - Tags
+
+- (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius{
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider tagGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"/tags/closest.json"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Tags",[result count]);
+         
+         if ([result count] > 0)
+         {
+             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:)])
+             {
+                 [delegate NetworkServices:self didReturnTagList:result.array];
+             }
+         }
+     }
+    failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error];
+         }
+     }];
+    [operation start];
+}
+
+#pragma mark  - Other
+
+
+
 - (void)deleteLocations
 {
     //execute the server call to nuke the area.
@@ -392,7 +438,6 @@
 
     NSURLConnection *sConnection = [NSURLConnection connectionWithRequest:request delegate:nil];
     [sConnection start];
- 
 }
 
 @end

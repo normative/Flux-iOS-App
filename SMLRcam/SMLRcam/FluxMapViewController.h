@@ -27,15 +27,17 @@
     MKAnnotationView *userAnnotationView;
     CLLocationCoordinate2D userLastSynchedLocation;
     
+    MKMapCamera*mapCamera;
+    
     // Map View
-    __weak IBOutlet MKMapView *myMapView;
+    __weak IBOutlet MKMapView *mapView;
     
     // Status Bar
     __weak IBOutlet UIButton *statusBarExitMapBtn;
     __weak IBOutlet UIButton *statusBardetailBtn;
-    __weak IBOutlet UILabel *statusBarCurrentDateLbl;
-    __weak IBOutlet UILabel *statusBarCurrentLocalityLbl;
-    __weak IBOutlet UILabel *statusBarCurrentMoment;
+    __weak IBOutlet UILabel *dateLabel;
+    __weak IBOutlet UILabel *locationLabel;
+    __weak IBOutlet UILabel *imageCountLabel;
     
     // button
     __weak IBOutlet UIButton *locateMeBtn;

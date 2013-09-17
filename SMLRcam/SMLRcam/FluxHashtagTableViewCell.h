@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DWTagList.h"
 
-@interface FluxHashtagTableViewCell : UITableViewCell<UITextViewDelegate>
-@property (weak, nonatomic) IBOutlet UITextView *hashTextView;
+@interface FluxHashtagTableViewCell : UITableViewCell<DWTagListDelegate>
+@property (strong, nonatomic) IBOutlet DWTagList *tagList;
 
 @end

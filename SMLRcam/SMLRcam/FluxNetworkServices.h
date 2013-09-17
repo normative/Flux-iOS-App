@@ -33,6 +33,9 @@ typedef NSUUID FluxRequestID;
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError*)e;
+
+//tags
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList;
 @end
 
 @interface FluxNetworkServices : NSObject{
@@ -78,7 +81,12 @@ typedef NSUUID FluxRequestID;
 //creates a user with the given object
 - (void)createUser:(FluxUserObject*)user;
 
+#pragma mark  - Tags
+- (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius;
 
+#pragma mark  - Other
 - (void)deleteLocations;
+
+
 
 @end

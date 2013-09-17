@@ -34,10 +34,6 @@ static size_t const kDashedCount            = (2.0f);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isEditing:) name:UITextViewTextDidChangeNotification object:self];
     placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -20, self.frame.size.width, 75)];
     
-    //center it
-    [placeholderLabel setCenter:CGPointMake(self.frame.size.width/2, placeholderLabel.center.y)];
-    [placeholderLabel setTextAlignment:NSTextAlignmentCenter];
-    
     //font
     [placeholderLabel setFont:self.font];
     [placeholderLabel setBackgroundColor:[UIColor clearColor]];
@@ -55,7 +51,6 @@ static size_t const kDashedCount            = (2.0f);
     [charCount setTextColor:[UIColor whiteColor]];
     [charCount setHidden:YES];
     [self addSubview:charCount];
-    
     
     [self setDelegate:self];
 }

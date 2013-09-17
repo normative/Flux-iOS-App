@@ -10,7 +10,6 @@
 
 @implementation FluxHashtagTableViewCell
 
-@synthesize hashTextView;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -18,10 +17,14 @@
     if (self) {
         // Initialization code
         [self setBackgroundColor:[UIColor clearColor]];
-        [self.hashTextView setDelegate:self];
+        self.tagList = [[DWTagList alloc]init];
+        [self.tagList setAutomaticResize:YES];
+        [self.contentView addSubview:self.tagList];
     }
     return self;
 }
+
+
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
@@ -30,14 +33,9 @@
     // Configure the view for the selected state
 }
 
-- (void)textViewDidBeginEditing:(UITextView *)textView{
-    NSLog(@"Should begin editing");
+- (void)tagList:(DWTagList *)list selectedTagWithTitle:(NSString *)title{
+    
 }
-
--(void)textViewDidChange:(UITextView *)textView{
-    NSLog(@"I'm typing");
-}
-
 
 
 
