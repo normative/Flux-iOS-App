@@ -167,18 +167,37 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
             UIImage *image = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
             [dataRequest whenImageReady:curLocalID withImage:image withDataRequest:dataRequest];
         }
-        // Now check if request has already been made - if so, join list of receivers
-        else if ([downloadQueueReceivers objectForKey:curLocalID] != nil)
-        {
-            [[downloadQueueReceivers objectForKey:curLocalID] addObject:requestID];
-        }
+        // Now check if request has already been made
         else
         {
-            [downloadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:curLocalID];
+            NSMutableArray *downloadRequestsForID = [downloadQueueReceivers objectForKey:curLocalID];
+            BOOL validDownloadInProgress = NO;
+            
+            if (downloadRequestsForID != nil)
+            {
+                for (id curRequestID in downloadRequestsForID)
+                {
+                    FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+                    if (curRequest.imageType == imageType)
+                    {
+                        validDownloadInProgress = YES;
+                        break;
+                    }
+                }
+            }
 
-            // Begin download of image
-            FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
-            [networkServices getImageForID:curImageObj.imageID withStringSize:sizeString andRequestID:requestID];
+            if (validDownloadInProgress)
+            {
+                [[downloadQueueReceivers objectForKey:curLocalID] addObject:requestID];
+            }
+            else
+            {
+                [downloadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:curLocalID];
+                
+                // Begin download of image
+                FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
+                [networkServices getImageForID:curImageObj.imageID withStringSize:sizeString andRequestID:requestID];
+            }
         }
     }
     
@@ -268,7 +287,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         {
             FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
             if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
-                (![curRequest.completedIDs containsObject:imageObj.localID]))
+                (![curRequest.completedIDs containsObject:imageObj.localID]) &&
+                (curRequest.imageType == request.imageType))
             {
                 // Mark as complete prior to callback
                 [curRequest.completedIDs addObject:imageObj.localID];
