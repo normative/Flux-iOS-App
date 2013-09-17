@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "FluxDrawerCheckboxFilterTableViewCell.h"
 #import "FluxHashtagTableViewCell.h"
-#import "FluxNetworkServices.h"
+#import "FluxDataManager.h"
 #import "FluxLocationServicesSingleton.h"
 #import "DWTagList.h"
 
@@ -17,12 +17,11 @@
     
     NSArray *rightDrawerTableViewArray;
     NSArray *topTagsArray;
-    FluxNetworkServices * networkServices;
     FluxLocationServicesSingleton *locationManager;
 }
+@property (nonatomic, weak) FluxDataManager *fluxDataManager;
 @property (weak, nonatomic) IBOutlet UISearchBar *filterSearchBar;
 
-- (void)setupNetworkServices;
 - (void)setupLocationManager;
 
 

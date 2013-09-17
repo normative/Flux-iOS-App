@@ -380,16 +380,16 @@
 
 #pragma mark  - Tags
 
-- (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius{
+- (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID{
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider tagGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/tags/closest.json"
+                                                                                       pathPattern:@"/tags/localbycount.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&maxrows=%i",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius, maxCount]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -399,9 +399,9 @@
          
          if ([result count] > 0)
          {
-             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:)])
+             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList: andRequestID:)])
              {
-                 [delegate NetworkServices:self didReturnTagList:result.array];
+                 [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
              }
          }
      }

@@ -12,6 +12,7 @@
 #import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxTagObject.h"
 
 enum request_type {
     no_request_specified = 0,
@@ -20,6 +21,7 @@ enum request_type {
     metadata_request = 3,
     image_request = 4,
     data_upload_request = 5,
+    tag_request = 6,
 };
 
 @class FluxDataRequest;
@@ -32,6 +34,7 @@ typedef void (^NearbyListReadyBlock)(NSMutableDictionary *);
 typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
+typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
 
 // Data request object can store many things (parameters are optional depending on request type).
 // It can store callbacks for success, failure, or for different operations.
@@ -76,11 +79,15 @@ typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 // Callback for periodic updates of upload progress
 @property (strong) UploadInProgressBlock uploadInProgress;
 
+// Callback for list of tags retrieved
+@property (strong) TagsReadyBlock tagsReady;
+
 - (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenNearbyListReady:(NSMutableDictionary *)nearbyList;
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
+- (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 @end

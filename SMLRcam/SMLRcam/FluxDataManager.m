@@ -108,6 +108,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return nil;
 }
 
+
+
 #pragma mark - Image Queries
 
 // Need to add a callback block to arguments
@@ -205,6 +207,23 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     {
         [self completeRequestWithDataRequest:dataRequest];
     }
+    
+    return requestID;
+}
+
+#pragma mark - Tag Requests
+
+- (FluxRequestID *) requestTagListAtLocation:(CLLocationCoordinate2D)coordinate
+                                  withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                             andMaxCount:(int)maxCount withDataRequest:(FluxDataRequest *)dataRequest{
+    
+    FluxRequestID *requestID = dataRequest.requestID;
+    
+    [dataRequest setRequestType:tag_request];
+    
+    [currentRequests setObject:dataRequest forKey:requestID];
+    
+    [networkServices getTagsForLocation:coordinate andRadius:radius andMaxCount:maxCount andRequestID:requestID];
     
     return requestID;
 }
@@ -375,6 +394,16 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
               __func__, updatedImageObject.localID);
     }
 
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList andRequestID:(NSUUID *)requestID{
+
+    // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenTagsReady:tagList withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{

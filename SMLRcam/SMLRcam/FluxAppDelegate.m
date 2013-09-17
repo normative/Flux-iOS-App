@@ -12,6 +12,7 @@
 #import "FluxLeftDrawerViewController.h"
 #import "FluxRightDrawerViewController.h"
 #import "FluxScanViewController.h"
+#import "FluxDataManager.h"
 
 #import <Security/Security.h>
 
@@ -27,14 +28,17 @@
     
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
                                                              bundle: nil];
-
-    //hide status bar
-    //[[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    
+    FluxDataManager*fluxDataManager = [[FluxDataManager alloc] init];
+    
     
     FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
     FluxRightDrawerViewController * rightSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxRightDrawerViewController"];
     
     FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
+    
+    rightSideDrawerViewController.fluxDataManager = fluxDataManager;
+    scanViewController.fluxDataManager = fluxDataManager;
     
     MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];
     

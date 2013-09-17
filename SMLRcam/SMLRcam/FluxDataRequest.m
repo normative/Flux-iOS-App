@@ -68,4 +68,10 @@
     }
 }
 
+- (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.tagsReady) {
+        self.tagsReady(tagObjects,completeDataRequest);
+    }
+}
+
 @end

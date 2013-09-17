@@ -254,7 +254,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
         [cell.contentImageView setImage:image];
     }];
-    [fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
 
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];
@@ -294,7 +294,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.myViewOrientation = changeToOrientation;
         
-        mapViewController.fluxDataManager = fluxDataManager;
+        mapViewController.fluxDataManager = self.fluxDataManager;
     }
 }
 
@@ -336,7 +336,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [openGLController didMoveToParentViewController:self];
     openGLController.view.frame = self.view.bounds;
     
-    openGLController.fluxDataManager = fluxDataManager;
+    openGLController.fluxDataManager = self.fluxDataManager;
     openGLController.fluxNearbyMetadata = self.fluxNearbyMetadata;
 }
 
@@ -915,7 +915,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         progressView.progress = currentProgress - 0.05;
     }];
     
-    [fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
+    [self.fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
     [fluxNearbyMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
     
     // Post notification for observers prior to upload
@@ -1003,8 +1003,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    fluxDataManager = [[FluxDataManager alloc] init];
 
     self.fluxNearbyMetadata = [[NSMutableDictionary alloc] init];
     

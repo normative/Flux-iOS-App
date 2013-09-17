@@ -29,7 +29,12 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     //make network Call
-    [networkServices getTagsForLocation:locationManager.location.coordinate andRadius:25];
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
+        //do something with array
+        NSLog(@"Returned %i tags to the right Drawer",tagList.count);
+    }];
+    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20 withFilter:nil andMaxCount:20 withDataRequest:request];
     [self.tableView reloadData];
 }
 
@@ -44,7 +49,6 @@
 
     rightDrawerTableViewArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PlacesFilterObject, PeopleFilterObject, ThingsFilterObject, EventsFilterObject, nil];
     
-    [self setupNetworkServices];
     [self setupLocationManager];
 }
 
@@ -61,11 +65,7 @@
 
 #pragma mark - network methods
 
-- (void)setupNetworkServices
-{
-    networkServices = [[FluxNetworkServices alloc]init];
-    [networkServices setDelegate:self];
-}
+
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
     topTagsArray = tagList;

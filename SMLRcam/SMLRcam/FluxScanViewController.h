@@ -66,7 +66,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //Network + Motion
     FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
-    FluxDataManager *fluxDataManager;
 
     //time scrolling
     UIPanGestureRecognizer *panGesture;
@@ -92,6 +91,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) FluxClockSlidingControl*thumbView;
+
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
 
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
