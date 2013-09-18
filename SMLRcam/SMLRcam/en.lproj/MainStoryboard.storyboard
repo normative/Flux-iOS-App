@@ -423,7 +423,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qnt-4w-plr" userLabel="Tag List" customClass="DWTagList">
-                                            <rect key="frame" x="20" y="0.0" width="234" height="156"/>
+                                            <rect key="frame" x="20" y="13" width="234" height="143"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>

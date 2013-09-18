@@ -10,7 +10,7 @@
 
 @interface FluxTagObject : NSObject
 
-@property (nonatomic, weak) NSString*tagText;
+@property (nonatomic, strong) NSString*tagText;
 @property (nonatomic) int count;
 
 @end

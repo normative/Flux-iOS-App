@@ -88,7 +88,10 @@
 + (RKObjectMapping *)tagGetMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxTagObject class]];
     
-    [mapping addAttributeMappingsFromArray:@[@"tagText", @"count"]];
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"tagtext":     @"tagText",
+                                                  @"count":        @"count"
+                                                  }];
     return mapping;
 }
 
