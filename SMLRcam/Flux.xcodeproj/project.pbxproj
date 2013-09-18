@@ -77,7 +77,7 @@
 		AAA265C717EA02F6003AE787 /* TFFeedbackController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265C317EA02F6003AE787 /* TFFeedbackController.m */; };
 		AAA265CD17EA0305003AE787 /* TFFeedbackController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = AAA265CA17EA0305003AE787 /* TFFeedbackController_iPad.xib */; };
 		AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */; };
-		AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */; };
+		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAC6C1117C65F8800B7EAD1 /* FluxHashtagTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
@@ -215,8 +215,8 @@
 		AAA265C317EA02F6003AE787 /* TFFeedbackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFFeedbackController.m; sourceTree = "<group>"; };
 		AAA265CA17EA0305003AE787 /* TFFeedbackController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TFFeedbackController_iPad.xib; sourceTree = "<group>"; };
 		AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TFFeedbackController_iPhone.xib; sourceTree = "<group>"; };
-		AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxClockSlidingControl.h; sourceTree = "<group>"; };
-		AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxClockSlidingControl.m; sourceTree = "<group>"; };
+		AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterControl.h; sourceTree = "<group>"; };
+		AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterControl.m; sourceTree = "<group>"; };
 		AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxHashtagTableViewCell.h; sourceTree = "<group>"; };
 		AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxHashtagTableViewCell.m; sourceTree = "<group>"; };
 		AAB24E4817AAE21E00A9BE59 /* FluxRightDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRightDrawerViewController.h; sourceTree = "<group>"; };
@@ -400,6 +400,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		AA082E9517EA2B8E000B53B0 /* AVCamera */ = {
+			isa = PBXGroup;
+			children = (
+				AA1BCE3D17D0CBA300136EFF /* FluxAVCameraSingleton.h */,
+				AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */,
+			);
+			name = AVCamera;
+			sourceTree = "<group>";
+		};
 		AA0A9D9117E366ED00A0B109 /* DWTagList */ = {
 			isa = PBXGroup;
 			children = (
@@ -507,8 +516,8 @@
 				AA47BEC517CBDA5100ED9B39 /* Fonts */,
 				22DB643717DA2FF3000F4AA7 /* FluxCompassView.h */,
 				22DB643817DA2FF3000F4AA7 /* FluxCompassView.m */,
-				AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */,
-				AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */,
+				AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */,
+				AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */,
 				AA1BCE3A17CD0ADD00136EFF /* FluxMapButton.h */,
 				AA1BCE3B17CD0ADD00136EFF /* FluxMapButton.m */,
 				AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */,
@@ -541,8 +550,7 @@
 				AA134AF817AAB8C700725AB1 /* Drawers */,
 				AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */,
 				AA4CE16A17B921A3008D04BE /* TopView */,
-				AA1BCE3D17D0CBA300136EFF /* FluxAVCameraSingleton.h */,
-				AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */,
+				AA082E9517EA2B8E000B53B0 /* AVCamera */,
 				17604B811785CA59005CF054 /* FluxScanViewController.h */,
 				17604B821785CA59005CF054 /* FluxScanViewController.m */,
 			);
@@ -818,7 +826,7 @@
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
 				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
-				AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */,
+				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
