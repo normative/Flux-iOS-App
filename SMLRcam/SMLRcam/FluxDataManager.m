@@ -115,25 +115,26 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Image Queries
 
 // Need to add a callback block to arguments
-- (void) requestImageByImageID:(int)imageID withSize:(image_type)imageType
+- (void) requestImageByImageID:(int)imageID withSize:(image_type)imageType withDataRequest:(FluxDataRequest *)dataRequest
 {
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     dataRequest.imageType = imageType;
 
     FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
     if (imageObj != nil)
     {
-        NSArray *tempArray = [NSArray arrayWithObject:imageObj.localID];
-        [dataRequest setRequestedIDs:tempArray];
-        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completeDataRequest)
-         {
-             NSLog(@"!!!!!!Yay! We downloaded image %@ with request %@", localID, completeDataRequest.requestID);
-         }];
+        NSArray *requestArray = [NSArray arrayWithObject:imageObj.localID];
+        [dataRequest setRequestedIDs:requestArray];
         [self requestImagesByLocalID:dataRequest withSize:imageType];
     }
     else
     {
         NSLog(@"%s: Requested ImageID %d does not exist!", __func__, imageID);
+        
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:[NSString stringWithFormat:@"Requested ImageID %d does not exist.", imageID] forKey:NSLocalizedDescriptionKey];
+        NSError *e = [NSError errorWithDomain:@"Flux" code:200 userInfo:details];
+        
+        [dataRequest whenErrorOccurred:e withDataRequest:dataRequest];
     }
 }
 
