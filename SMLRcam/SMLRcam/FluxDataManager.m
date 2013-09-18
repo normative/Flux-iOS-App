@@ -36,6 +36,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                    withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = data_upload_request;
     
     // Add a new image with metadata to both cache objects
     [fluxDataStore addMetadataObject:metadata];
@@ -88,6 +89,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = nearby_list_request;
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
@@ -116,8 +118,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 - (void) requestImageByImageID:(int)imageID withSize:(image_type)imageType
 {
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setRequestType:image_request];
-    [dataRequest setImageType:imageType];
+    dataRequest.imageType = imageType;
+
     FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
     if (imageObj != nil)
     {
@@ -138,6 +140,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
 {
     FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = image_request;
     dataRequest.imageType = imageType;
     
     [currentRequests setObject:dataRequest forKey:requestID];
@@ -218,8 +221,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                              andMaxCount:(int)maxCount withDataRequest:(FluxDataRequest *)dataRequest{
     
     FluxRequestID *requestID = dataRequest.requestID;
-    
-    [dataRequest setRequestType:tag_request];
+    dataRequest.requestType = tag_request;
     
     [currentRequests setObject:dataRequest forKey:requestID];
     

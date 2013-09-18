@@ -669,7 +669,6 @@ void init(){
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setRequestType:nearby_list_request];
     [dataRequest setNearbyListReady:^(NSMutableDictionary *imageList){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
@@ -985,7 +984,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (id localID in self.nearbyList)
     {
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setRequestType:image_request];
         [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
         [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
             [self updateImageTextureWithLocalID:localID withImage:image];

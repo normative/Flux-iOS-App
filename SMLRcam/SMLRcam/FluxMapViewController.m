@@ -49,7 +49,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         FluxScanImageObject* annotation = (FluxScanImageObject *)view.annotation;
         
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setRequestType:image_request];
         [dataRequest setRequestedIDs:[NSArray arrayWithObject:annotation.localID]];
         [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
             for (FluxScanImageObject *curAnnotation in mapView.annotations)
@@ -168,7 +167,6 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
         fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist)
     {
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setRequestType:nearby_list_request];
         [dataRequest setNearbyListReady:^(NSMutableDictionary *nearbyList){
             // Need to update all metadata objects even if they exist (in case they change in the future)
             for (id curKey in [nearbyList allKeys])

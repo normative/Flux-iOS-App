@@ -231,7 +231,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
 # warning Currently extra overhead. Should fix this to get it locally first before requesting.
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setRequestType:image_request];
     [dataRequest setRequestedIDs:[NSArray arrayWithObject:rowObject.localID]];
     [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
         [cell.contentImageView setImage:image];
@@ -882,7 +881,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     // Add the image and metadata to the local cache
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setRequestType:data_upload_request];
     [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
         if ([fluxNearbyMetadata objectForKey:updatedImageObject.localID] != nil)
         {
