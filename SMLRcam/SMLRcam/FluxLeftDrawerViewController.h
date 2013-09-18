@@ -11,10 +11,14 @@
 #import "FluxDrawerSegmentedTableViewCell.h"
 #import "FluxDrawerButtonTableViewCell.h"
 
-@interface FluxLeftDrawerViewController : UITableViewController<DrawerSwitchTableViewCellDelegate, SegmentedCellDelegate, DrawerButtonTableViewCellDelegate>{
+#import <MessageUI/MessageUI.h>
+#import <MessageUI/MFMailComposeViewController.h>
+
+@interface FluxLeftDrawerViewController : UITableViewController<DrawerSwitchTableViewCellDelegate, SegmentedCellDelegate, DrawerButtonTableViewCellDelegate, MFMailComposeViewControllerDelegate>{
     NSArray *leftDrawerTableViewArray;
 }
 
+- (IBAction)submitFeedbackAction:(id)sender;
 - (void)SettingActionForString:(NSString*)string andSetting:(BOOL)setting;
 - (NSNumber*)GetSettingForString:(NSString*)string;
 

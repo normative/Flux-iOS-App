@@ -21,8 +21,8 @@
 // IDMPhotoBrowser
 #define COCOAPODS_POD_AVAILABLE_IDMPhotoBrowser
 #define COCOAPODS_VERSION_MAJOR_IDMPhotoBrowser 1
-#define COCOAPODS_VERSION_MINOR_IDMPhotoBrowser 1
-#define COCOAPODS_VERSION_PATCH_IDMPhotoBrowser 2
+#define COCOAPODS_VERSION_MINOR_IDMPhotoBrowser 2
+#define COCOAPODS_VERSION_PATCH_IDMPhotoBrowser 1
 
 // RestKit
 #define COCOAPODS_POD_AVAILABLE_RestKit

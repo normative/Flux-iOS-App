@@ -19,6 +19,9 @@
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
 
+#import "TestFlight.h"
+#define TestFlightAppToken @"ef9c1a90-3dc3-4db5-8fad-867e31b66e8c"
+
 
 
 @implementation FluxAppDelegate
@@ -95,15 +98,15 @@
     //google analytics
     // Optional: automatically send uncaught exceptions to Google Analytics.
     [GAI sharedInstance].trackUncaughtExceptions = YES;
-    
     // Optional: set Google Analytics dispatch interval to e.g. 20 seconds.
     [GAI sharedInstance].dispatchInterval = 20;
-    
     // Optional: set Logger to VERBOSE for debug information.
     [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
-    
     // Initialize tracker.
     id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GATrackingID];
+    
+    //testFlight analytics
+    [TestFlight takeOff:TestFlightAppToken];
     
     
     

@@ -14,9 +14,9 @@
 
 // Debug Logging
 #if 0 // Set to 1 to enable debug logging
-#define IDMLog(x, ...) NSLog(x, ## __VA_ARGS__);
+  #define IDMLog(x, ...) NSLog(x, ## __VA_ARGS__);
 #else
-#define IDMLog(x, ...)
+  #define IDMLog(x, ...)
 #endif
 
 // Delgate
@@ -43,13 +43,22 @@
 
 // Customization
 @property (nonatomic) BOOL useWhiteBackgroundColor;
-
+@property (nonatomic, weak) NSString *leftArrowPath, *leftArrowSelectedPath;
+@property (nonatomic, weak) NSString *rightArrowPath, *rightArrowSelectedPath;
+@property (nonatomic, weak) NSString *doneBackgroundImage;
+//@property (nonatomic) UIColor *circularViewTrackColor, *circularViewProgressColor;
 
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray;
 
 // Init with animation
 - (id)initWithPhotos:(NSArray *)photosArray animatedFromView:(UIView*)view;
+
+// Init with NSURL objects
+- (id)initWithPhotoURLs:(NSArray *)photoURLsArray;
+
+// Init with NSURL objects with animation
+- (id)initWithPhotoURLs:(NSArray *)photoURLsArray animatedFromView:(UIView*)view;
 
 // Reloads the photo browser and refetches data
 - (void)reloadData;

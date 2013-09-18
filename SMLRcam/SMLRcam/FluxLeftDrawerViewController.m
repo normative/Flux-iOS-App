@@ -7,6 +7,8 @@
 //
 
 #import "FluxLeftDrawerViewController.h"
+#import "TestFlight.h"
+#import "TestFlight+OpenFeedback.h"
 
 @interface FluxLeftDrawerViewController ()
 
@@ -172,6 +174,23 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 
 //temporary, ugly, not really extensible code.
 //sets settings based on string
+- (IBAction)submitFeedbackAction:(id)sender {
+//    MFMailComposeViewController *mailViewController = [[MFMailComposeViewController alloc] init];
+//    mailViewController.mailComposeDelegate = self;
+//    [mailViewController setSubject:@"Feedback"];
+//    [mailViewController setMessageBody:@"Your message goes here." isHTML:NO];
+//    [mailViewController setToRecipients:[NSArray arrayWithObject:@"dfe73560a31f1d628cc10f1e614bbe5e_ijkustcefu3dmnzqgq2da@n.testflightapp.com"]];
+//    
+//    [mailViewController setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
+//    [self presentViewController:mailViewController animated:YES completion:nil];
+    [TestFlight openFeedbackView];
+}
+
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+
 - (void)SettingActionForString:(NSString *)string andSetting:(BOOL)setting
 {
     if ([string isEqualToString:@"Save Pictures"]) {

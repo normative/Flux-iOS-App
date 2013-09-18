@@ -70,6 +70,13 @@
 		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
 		AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9CC94917D80858006AF61F /* FluxCameraButton.m */; };
 		AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265A617E89EAE003AE787 /* FluxTagObject.m */; };
+		AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAA265B717EA00E4003AE787 /* libTestFlight.a */; };
+		AAA265BE17EA00E5003AE787 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AAA265B817EA00E4003AE787 /* README.md */; };
+		AAA265BF17EA00E5003AE787 /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = AAA265B917EA00E4003AE787 /* release_notes.md */; };
+		AAA265C617EA02F6003AE787 /* TestFlight+OpenFeedback.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265C117EA02F5003AE787 /* TestFlight+OpenFeedback.m */; };
+		AAA265C717EA02F6003AE787 /* TFFeedbackController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265C317EA02F6003AE787 /* TFFeedbackController.m */; };
+		AAA265CD17EA0305003AE787 /* TFFeedbackController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = AAA265CA17EA0305003AE787 /* TFFeedbackController_iPad.xib */; };
+		AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxClockSlidingControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */; };
 		AAAC6C1117C65F8800B7EAD1 /* FluxHashtagTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */; };
 		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
@@ -196,6 +203,18 @@
 		AA9CC94917D80858006AF61F /* FluxCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraButton.m; sourceTree = "<group>"; };
 		AAA265A517E89EAE003AE787 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
 		AAA265A617E89EAE003AE787 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
+		AAA265B717EA00E4003AE787 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
+		AAA265B817EA00E4003AE787 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
+		AAA265B917EA00E4003AE787 /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
+		AAA265BA17EA00E4003AE787 /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
+		AAA265BB17EA00E4003AE787 /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
+		AAA265BC17EA00E4003AE787 /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
+		AAA265C017EA02F5003AE787 /* TestFlight+OpenFeedback.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+OpenFeedback.h"; sourceTree = "<group>"; };
+		AAA265C117EA02F5003AE787 /* TestFlight+OpenFeedback.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "TestFlight+OpenFeedback.m"; sourceTree = "<group>"; };
+		AAA265C217EA02F6003AE787 /* TFFeedbackController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TFFeedbackController.h; sourceTree = "<group>"; };
+		AAA265C317EA02F6003AE787 /* TFFeedbackController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TFFeedbackController.m; sourceTree = "<group>"; };
+		AAA265CA17EA0305003AE787 /* TFFeedbackController_iPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TFFeedbackController_iPad.xib; sourceTree = "<group>"; };
+		AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TFFeedbackController_iPhone.xib; sourceTree = "<group>"; };
 		AAAC6C0A17C553AF00B7EAD1 /* FluxClockSlidingControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxClockSlidingControl.h; sourceTree = "<group>"; };
 		AAAC6C0B17C553AF00B7EAD1 /* FluxClockSlidingControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxClockSlidingControl.m; sourceTree = "<group>"; };
 		AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxHashtagTableViewCell.h; sourceTree = "<group>"; };
@@ -245,6 +264,7 @@
 				17604B901785CB0C005CF054 /* ImageIO.framework in Frameworks */,
 				17604B9E1785F522005CF054 /* CoreMedia.framework in Frameworks */,
 				17604B6B1785CA59005CF054 /* CoreGraphics.framework in Frameworks */,
+				AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */,
 				17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */,
 				17604B921785CB27005CF054 /* CoreImage.framework in Frameworks */,
 				17604B941785CB35005CF054 /* AVFoundation.framework in Frameworks */,
@@ -338,6 +358,7 @@
 		17604B6D1785CA59005CF054 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				AAA265B517EA00A5003AE787 /* TestFlight SDK */,
 				AA14BB2017E792C0007F6764 /* Google Analytics */,
 				17604B6E1785CA59005CF054 /* Flux-Info.plist */,
 				17604B6F1785CA59005CF054 /* InfoPlist.strings */,
@@ -528,6 +549,41 @@
 			name = "Scan View";
 			sourceTree = "<group>";
 		};
+		AAA265B517EA00A5003AE787 /* TestFlight SDK */ = {
+			isa = PBXGroup;
+			children = (
+				AAA265CF17EA079B003AE787 /* ComposeFeedbackView */,
+				AAA265B617EA00E4003AE787 /* TestFlightSDK2.0.0 */,
+			);
+			name = "TestFlight SDK";
+			sourceTree = "<group>";
+		};
+		AAA265B617EA00E4003AE787 /* TestFlightSDK2.0.0 */ = {
+			isa = PBXGroup;
+			children = (
+				AAA265B717EA00E4003AE787 /* libTestFlight.a */,
+				AAA265B817EA00E4003AE787 /* README.md */,
+				AAA265B917EA00E4003AE787 /* release_notes.md */,
+				AAA265BA17EA00E4003AE787 /* TestFlight+AsyncLogging.h */,
+				AAA265BB17EA00E4003AE787 /* TestFlight+ManualSessions.h */,
+				AAA265BC17EA00E4003AE787 /* TestFlight.h */,
+			);
+			path = TestFlightSDK2.0.0;
+			sourceTree = "<group>";
+		};
+		AAA265CF17EA079B003AE787 /* ComposeFeedbackView */ = {
+			isa = PBXGroup;
+			children = (
+				AAA265CA17EA0305003AE787 /* TFFeedbackController_iPad.xib */,
+				AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */,
+				AAA265C017EA02F5003AE787 /* TestFlight+OpenFeedback.h */,
+				AAA265C117EA02F5003AE787 /* TestFlight+OpenFeedback.m */,
+				AAA265C217EA02F6003AE787 /* TFFeedbackController.h */,
+				AAA265C317EA02F6003AE787 /* TFFeedbackController.m */,
+			);
+			name = ComposeFeedbackView;
+			sourceTree = "<group>";
+		};
 		AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */ = {
 			isa = PBXGroup;
 			children = (
@@ -661,15 +717,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAA265BF17EA00E5003AE787 /* release_notes.md in Resources */,
 				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
+				AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
+				AAA265BE17EA00E5003AE787 /* README.md in Resources */,
+				AAA265CD17EA0305003AE787 /* TFFeedbackController_iPad.xib in Resources */,
 				AA08279E17A6AE030079672A /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -734,6 +794,7 @@
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,
 				AA1BCE3C17CD0ADD00136EFF /* FluxMapButton.m in Sources */,
+				AAA265C617EA02F6003AE787 /* TestFlight+OpenFeedback.m in Sources */,
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
 				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
@@ -761,6 +822,7 @@
 				AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
+				AAA265C717EA02F6003AE787 /* TFFeedbackController.m in Sources */,
 				AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -883,10 +945,12 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					SMLRcam,
+					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam/TestFlightSDK2.0.0,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -906,10 +970,12 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					SMLRcam,
+					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam/TestFlightSDK2.0.0,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
+				VALID_ARCHS = "armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
