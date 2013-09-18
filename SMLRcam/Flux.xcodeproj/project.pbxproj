@@ -945,7 +945,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					SMLRcam,
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam/TestFlightSDK2.0.0,
+					SMLRcam/TestFlightSDK2.0.0,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
@@ -970,7 +970,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					SMLRcam,
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam/TestFlightSDK2.0.0,
+					SMLRcam/TestFlightSDK2.0.0,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
