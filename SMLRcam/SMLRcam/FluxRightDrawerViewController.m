@@ -32,10 +32,16 @@
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
         //do something with array
-        NSLog(@"Returned %i tags to the right Drawer",tagList.count);
+        topTagsArray = tagList;
+        if ([rightDrawerTableViewArray count] == 1) {
+            [rightDrawerTableViewArray insertObject:topTagsArray atIndex:0];
+        }
+        else{
+            [rightDrawerTableViewArray replaceObjectAtIndex:0 withObject:topTagsArray];
+        }
+        [self.tableView reloadData];
     }];
     [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20 withFilter:nil andMaxCount:20 withDataRequest:request];
-    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
@@ -47,7 +53,9 @@
     FluxFilterDrawerObject *ThingsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Things" andtitleImage:[UIImage imageNamed:@"filter_Things.png"] andActive:NO];
     FluxFilterDrawerObject *EventsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Events" andtitleImage:[UIImage imageNamed:@"filter_Events.png"] andActive:NO];
 
-    rightDrawerTableViewArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PlacesFilterObject, PeopleFilterObject, ThingsFilterObject, EventsFilterObject, nil];
+    contextFiltersArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PlacesFilterObject, PeopleFilterObject, ThingsFilterObject, EventsFilterObject, nil];
+    topTagsArray = [[NSMutableArray alloc]init];
+    rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:contextFiltersArray, nil];
     
     [self setupLocationManager];
 }
@@ -76,7 +84,7 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     if (tableView == self.tableView) {
-            return 2;
+        return rightDrawerTableViewArray.count;
     }
     else
         return 1;
@@ -91,6 +99,11 @@
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     if (tableView == self.tableView) {
         if (section == 0) {
+            //if there are no "top tags"
+            if (rightDrawerTableViewArray.count == 1) {
+                return @"Show Only:";
+            }
+            
             return @"Tags Nearby:";
         }
         else{
@@ -121,11 +134,11 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (tableView == self.tableView) {
-        if (section == 0) {
-            return 1;
+        if (rightDrawerTableViewArray.count == 1 || section == 1) {
+            return [[rightDrawerTableViewArray objectAtIndex:section]count];
         }
-        // Return the number of rows in the section.
-        return [rightDrawerTableViewArray count];
+        return 1;
+        
     }
     //its the search tableView
     else
@@ -136,7 +149,14 @@
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (tableView == self.tableView) {
         if (indexPath.section == 0) {
-            return 156.0;
+            //if "top tags" is empty
+            if (rightDrawerTableViewArray.count == 1) {
+                return 44.0;
+            }
+            FluxHashtagTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"hashCell"];
+            [cell.tagList setTags:[rightDrawerTableViewArray objectAtIndex:indexPath.section]];
+            [cell.tagList display];
+            return [cell.tagList fittedSize].height+cell.tagList.frame.origin.x-10;
         }
         else
             return 44.0;
@@ -148,52 +168,61 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //if it's the hash section
-    if (indexPath.section == 0) {
-        static NSString *CellIdentifier = @"hashCell";
-        FluxHashtagTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        
-        if (cell == nil) {
-            cell = [[FluxHashtagTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+    if (tableView == self.tableView) {
+        //if it's the hash section
+        if (rightDrawerTableViewArray.count == 1) {
+            static NSString *CellIdentifier = @"checkCell";
+            FluxDrawerCheckboxFilterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+                        if (cell == nil) {
+                cell = [[FluxDrawerCheckboxFilterTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            }
+            
+            [cell.checkbox setDelegate:cell];
+            [cell setDelegate:self];
+            
+            //set the cell properties to the array elements declared above
+            cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
+            [cell.descriptorIconImageView setImage:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]titleImage]];
+            [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
+            
+            return cell;
         }
-        //use this to put a loading activity view in place of the tag list
-//        if (topTagsArray == nil) {
-//            UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(cell.contentView.frame.size.width/2-25, cell.contentView.frame.size.height/2-25, 50, 50)];
-//            [activityView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhiteLarge];
-//            [activityView setCenter:cell.contentView.center];
-//            [activityView startAnimating];
-//            [cell.contentView addSubview:activityView];
-//            return cell;
-//        }
-        [cell.tagList setTags:[NSArray arrayWithObjects:@"Hello", @"this", @"is", @"a", @"test", @"of", @"theWaythetextfieldlooks", @"with", @"the", @"worst", @"case", @"being", @"this", @"long", nil]];
-        //[tagList setTags:topTagsArray];
-        [cell.tagList setTagDelegate:self];
-        return cell;
+        else{
+            if (indexPath.section == 0) {
+                static NSString *CellIdentifier = @"hashCell";
+                FluxHashtagTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+                
+                if (cell == nil) {
+                    cell = [[FluxHashtagTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+                }
+                //        [cell.tagList setTags:[NSArray arrayWithObjects:@"Hello", @"this", @"is", @"a", @"test", @"of", @"theWaythetextfieldlooks", @"with", @"the", @"worst", @"case", @"being", @"this", @"long", nil]];
+                [cell.tagList setTags:[rightDrawerTableViewArray objectAtIndex:indexPath.section]];
+                [cell.tagList setTagDelegate:self];
+                return cell;
+            }
+            static NSString *CellIdentifier = @"checkCell";
+            
+            //FluxDrawerCheckboxFilterTableViewCell * cell = [[FluxDrawerCheckboxFilterTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier andWithState:NO];
+            
+            FluxDrawerCheckboxFilterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+            
+            if (cell == nil) {
+                cell = [[FluxDrawerCheckboxFilterTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+            }
+            
+            [cell.checkbox setDelegate:cell];
+            [cell setDelegate:self];
+            
+            
+            
+            //set the cell properties to the array elements declared above
+            cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
+            [cell.descriptorIconImageView setImage:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]titleImage]];
+            [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
+            
+            return cell;
+        }
     }
-    static NSString *CellIdentifier = @"checkCell";
-    
-    //FluxDrawerCheckboxFilterTableViewCell * cell = [[FluxDrawerCheckboxFilterTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier andWithState:NO];
-    
-    FluxDrawerCheckboxFilterTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
-    if (cell == nil) {
-        cell = [[FluxDrawerCheckboxFilterTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
-    
-    [cell.checkbox setDelegate:cell];
-    [cell setDelegate:self];
-    
-    
-    
-    //set the cell properties to the array elements declared above
-    cell.descriptorLabel.text = [[rightDrawerTableViewArray objectAtIndex:indexPath.row]title];
-    [cell.descriptorIconImageView setImage:[[rightDrawerTableViewArray objectAtIndex:indexPath.row]titleImage]];
-    
-    [cell setIsActive:[[rightDrawerTableViewArray objectAtIndex:indexPath.row]isChecked]];
-    
-    return cell;
-    
-
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -206,8 +235,8 @@
 - (void)CheckboxCell:(FluxDrawerCheckboxFilterTableViewCell *)checkCell boxWasChecked:(BOOL)checked{
     for (FluxDrawerCheckboxFilterTableViewCell* cell in [self.tableView visibleCells]) {
         if (cell == checkCell) {
-            int index = [self.tableView indexPathForCell:cell].row;
-            [[rightDrawerTableViewArray objectAtIndex:index] setIsActive:checked];
+            NSIndexPath *path = [self.tableView indexPathForCell:cell];
+            [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
 }

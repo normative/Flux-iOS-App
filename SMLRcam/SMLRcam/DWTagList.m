@@ -7,6 +7,7 @@
 
 #import "DWTagList.h"
 #import <QuartzCore/QuartzCore.h>
+#import "FluxTagObject.h"
 
 #define CORNER_RADIUS 0.0f
 #define LABEL_MARGIN_DEFAULT 5.0f
@@ -136,7 +137,7 @@
     
     for (int i = 0;i<textArray.count;i++)
     {
-        NSString * hashText = [@"#" stringByAppendingString:(NSString*)[textArray objectAtIndex:i]];
+        NSString * hashText = [@"#" stringByAppendingString:(NSString*)[[textArray objectAtIndex:i]tagText]];
         DWTagView *tagView;
         if (tagViews.count > 0) {
             tagView = [tagViews lastObject];

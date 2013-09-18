@@ -39,7 +39,10 @@
 
 - (void)setTagBackgroundColor:(UIColor *)color;
 - (void)setTagHighlightColor:(UIColor *)color;
+
+//array parameter is an array of FluxTagObjects
 - (void)setTags:(NSArray *)array;
+
 - (void)display;
 - (CGSize)fittedSize;
 

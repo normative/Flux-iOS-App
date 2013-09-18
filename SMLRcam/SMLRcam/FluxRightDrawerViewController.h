@@ -15,7 +15,8 @@
 
 @interface FluxRightDrawerViewController : UITableViewController<DrawerCheckboxTableViewCellDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, DWTagListDelegate>{
     
-    NSArray *rightDrawerTableViewArray;
+    NSMutableArray *rightDrawerTableViewArray;
+    NSArray *contextFiltersArray;
     NSArray *topTagsArray;
     FluxLocationServicesSingleton *locationManager;
 }
