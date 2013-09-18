@@ -117,9 +117,9 @@
                                                                                            failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
         }
     }];
     [operation start];
@@ -153,9 +153,9 @@
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
         }
     }];
     [operation start];
@@ -255,9 +255,9 @@
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
         }
     }];
     [operation start];
@@ -295,9 +295,9 @@
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:imageUploadDidFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
         {
-            [delegate NetworkServices:self imageUploadDidFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
         }
     }];
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
@@ -336,9 +336,9 @@
                       failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error andRequestID:nil];
         }
     }];
 }
@@ -369,9 +369,9 @@
     failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error];
+            [delegate NetworkServices:self didFailWithError:error andRequestID:nil];
         }
     }];
     [operation start];
@@ -380,7 +380,9 @@
 
 #pragma mark  - Tags
 
-- (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID{
+- (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount
+              andRequestID:(FluxRequestID *)requestID
+{
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider tagGetMapping]
@@ -399,7 +401,7 @@
          
          if ([result count] > 0)
          {
-             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList: andRequestID:)])
+             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
              {
                  [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
              }
@@ -408,9 +410,9 @@
     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
          {
-             [delegate NetworkServices:self didFailWithError:error];
+             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
          }
      }];
     [operation start];

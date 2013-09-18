@@ -35,6 +35,7 @@ typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
+typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 
 // Data request object can store many things (parameters are optional depending on request type).
 // It can store callbacks for success, failure, or for different operations.
@@ -82,6 +83,9 @@ typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
 // Callback for list of tags retrieved
 @property (strong) TagsReadyBlock tagsReady;
 
+// Callback for error occurred
+@property (strong) ErrorBlock errorOccurred;
+
 - (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenNearbyListReady:(NSMutableDictionary *)nearbyList;
@@ -89,5 +93,6 @@ typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenErrorOccurred:(NSError *)e withDataRequest:(FluxDataRequest *)errorDataRequest;
 
 @end

@@ -61,24 +61,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [annotationsTableView reloadData];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
-                                                        message:[e localizedDescription]
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-    [alertView show];
-    
-    
-    [UIView animateWithDuration:0.2f
-                     animations:^{
-                         [progressView setAlpha:0.0];
-                     }
-                     completion:^(BOOL finished){
-                         progressView.progress = 0;
-                     }];
-}
-
 #pragma mark - Motion Methods
 
 //starts the motion manager and sets an update interval
@@ -913,6 +895,22 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
         float currentProgress = (float)(inProgressDataRequest.currentUploadSize)/(float)(inProgressDataRequest.totalUploadSize);
         progressView.progress = currentProgress - 0.05;
+    }];
+    [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[e code]]
+                                                            message:[e localizedDescription]
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+        [alertView show];
+        
+        [UIView animateWithDuration:0.2f
+                         animations:^{
+                             [progressView setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished){
+                             progressView.progress = 0;
+                         }];
     }];
     
     [self.fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];

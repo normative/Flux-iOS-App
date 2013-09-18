@@ -27,15 +27,16 @@ typedef NSUUID FluxRequestID;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
             ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e
+           andRequestID:(FluxRequestID *)requestID;
 
 //users
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject;
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError*)e;
-
 //tags
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
+           andRequestID:(FluxRequestID *)requestID;
+
 @end
 
 @interface FluxNetworkServices : NSObject{

@@ -396,8 +396,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList andRequestID:(NSUUID *)requestID{
-
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList andRequestID:(NSUUID *)requestID
+{
     // Call callback of requestor
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenTagsReady:tagList withDataRequest:request];
@@ -406,22 +406,16 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices imageUploadDidFailWithError:(NSError *)e{
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image upload failed with error %d", (int)[e code]]
-                                                        message:[e localizedDescription]
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-    [alertView show];
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e andRequestID:(NSUUID *)requestID
+{
+    // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenErrorOccurred:e withDataRequest:request];
     
-    
-    [UIView animateWithDuration:0.2f
-                     animations:^{
-//                         [progressView setAlpha:0.0];
-                     }
-                     completion:^(BOOL finished){
-//                         progressView.progress = 0;
-                     }];
+    // Clean up request
+    [self completeRequestWithDataRequest:request];
 }
+
+
 
 @end

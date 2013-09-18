@@ -68,9 +68,19 @@
     }
 }
 
-- (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
-    if (self.tagsReady) {
+- (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
+{
+    if (self.tagsReady)
+    {
         self.tagsReady(tagObjects,completeDataRequest);
+    }
+}
+
+- (void) whenErrorOccurred:(NSError *)e withDataRequest:(FluxDataRequest *)errorDataRequest
+{
+    if (self.errorOccurred)
+    {
+        self.errorOccurred(e, errorDataRequest);
     }
 }
 
