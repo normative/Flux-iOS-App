@@ -78,14 +78,14 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Item List Queries
 
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate
-                                     withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                     withRadius:(float)radius
                                 withDataRequest:(FluxDataRequest *)dataRequest
 {
     return nil;
 }
 
 - (FluxRequestID *) requestImageListAtLocation:(CLLocationCoordinate2D)coordinate
-                                    withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                    withRadius:(float)radius
                                withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
@@ -93,7 +93,25 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
-    [networkServices getImagesForLocation:coordinate andRadius:radius andRequestID:requestID];
+    // Simple case with no filtering
+    if (dataRequest.searchFilter == nil)
+    {
+        [networkServices getImagesForLocation:coordinate andRadius:radius andRequestID:requestID];
+    }
+    else
+    {
+        [networkServices getImagesForLocationFiltered:coordinate
+                                            andRadius:radius
+                                            andMinAlt:dataRequest.searchFilter.altMin
+                                            andMaxAlt:dataRequest.searchFilter.altMax
+                                      andMinTimestamp:dataRequest.searchFilter.timeMin
+                                      andMaxTimestamp:dataRequest.searchFilter.timeMax
+                                          andHashTags:dataRequest.searchFilter.hashTags
+                                             andUsers:dataRequest.searchFilter.users
+                                        andCategories:dataRequest.searchFilter.categories
+                                          andMaxCount:dataRequest.searchFilter.maxReturnItems
+                                         andRequestID:requestID];
+    }
     
     return requestID;
 }
@@ -218,8 +236,10 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Tag Requests
 
 - (FluxRequestID *) requestTagListAtLocation:(CLLocationCoordinate2D)coordinate
-                                  withRadius:(float)radius withFilter:(FluxDataFilter *)filter
-                             andMaxCount:(int)maxCount withDataRequest:(FluxDataRequest *)dataRequest{
+                                  withRadius:(float)radius
+                                 andMaxCount:(int)maxCount
+                             withDataRequest:(FluxDataRequest *)dataRequest
+{
     
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = tag_request;
@@ -264,8 +284,16 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         [fluxDataStore addMetadataObject:curImgObj];
     }
     
-    // Call callback of requestor
+    // Sort list returned, if required
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    if (request.searchFilter.sortDescriptor != nil)
+    {
+        // Parse the NSSortDescriptor for sort instructions
+        // Should we change imageList form a dictionary to an array?
+        // Or add a key with a sorted list to the dictionary?
+    }
+    
+    // Call callback of requestor
     [request whenNearbyListReady:imageList];
     
     // Clean up request (nothing else to wait for)

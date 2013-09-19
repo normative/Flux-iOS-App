@@ -179,7 +179,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
             [self setStatusBarMomentLabel];
         }];
         [self.fluxDataManager requestImageListAtLocation:userLocation.location.coordinate
-                                              withRadius:50 withFilter:nil withDataRequest:dataRequest];
+                                              withRadius:50 withDataRequest:dataRequest];
         
         userLastSynchedLocation.latitude = userLocation.location.coordinate.latitude;
         userLastSynchedLocation.longitude = userLocation.location.coordinate.longitude;

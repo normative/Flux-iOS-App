@@ -66,6 +66,7 @@ typedef NSUUID FluxRequestID;
                          andHashTags:(NSString *)hashTags
                             andUsers:(NSString *)users
                        andCategories:(NSString *)cats
+                         andMaxCount:(int)maxCount
                         andRequestID:(FluxRequestID *)requestID;
 
 // execute the request

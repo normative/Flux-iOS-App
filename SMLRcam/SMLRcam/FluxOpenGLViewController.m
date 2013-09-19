@@ -669,6 +669,7 @@ void init(){
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setSearchFilter:[[FluxDataFilter alloc] init]];
     [dataRequest setNearbyListReady:^(NSMutableDictionary *imageList){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
@@ -702,7 +703,7 @@ void init(){
         [self populateImageData];
         [_nearbyListLock unlock];
     }];
-    [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withFilter:nil withDataRequest:dataRequest];
+    [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withDataRequest:dataRequest];
 }
 
 #pragma mark - Motion Manager

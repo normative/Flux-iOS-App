@@ -41,7 +41,8 @@
         }
         [self.tableView reloadData];
     }];
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20 withFilter:nil andMaxCount:20 withDataRequest:request];
+    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20
+                                       andMaxCount:20 withDataRequest:request];
 }
 
 - (void)viewDidLoad
