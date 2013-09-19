@@ -78,14 +78,14 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Item List Queries
 
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate
-                                     withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                     withRadius:(float)radius
                                 withDataRequest:(FluxDataRequest *)dataRequest
 {
     return nil;
 }
 
 - (FluxRequestID *) requestImageListAtLocation:(CLLocationCoordinate2D)coordinate
-                                    withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                    withRadius:(float)radius
                                withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
@@ -93,7 +93,25 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
-    [networkServices getImagesForLocation:coordinate andRadius:radius andRequestID:requestID];
+    // Simple case with no filtering
+    if (dataRequest.searchFilter == nil)
+    {
+        [networkServices getImagesForLocation:coordinate andRadius:radius andRequestID:requestID];
+    }
+    else
+    {
+        [networkServices getImagesForLocationFiltered:coordinate
+                                            andRadius:radius
+                                            andMinAlt:-1000
+                                            andMaxAlt:1000
+                                      andMinTimestamp:[NSDate dateWithTimeIntervalSince1970:0]
+                                      andMaxTimestamp:[NSDate date]
+                                          andHashTags:@"''"
+                                             andUsers:@"''"
+                                        andCategories:@"''"
+                                          andMaxCount:100
+                                         andRequestID:requestID];
+    }
     
     return requestID;
 }
@@ -218,8 +236,10 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Tag Requests
 
 - (FluxRequestID *) requestTagListAtLocation:(CLLocationCoordinate2D)coordinate
-                                  withRadius:(float)radius withFilter:(FluxDataFilter *)filter
-                             andMaxCount:(int)maxCount withDataRequest:(FluxDataRequest *)dataRequest{
+                                  withRadius:(float)radius
+                                 andMaxCount:(int)maxCount
+                             withDataRequest:(FluxDataRequest *)dataRequest
+{
     
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = tag_request;

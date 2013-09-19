@@ -186,6 +186,7 @@
                          andHashTags:(NSString *)hashTags
                             andUsers:(NSString *)users
                        andCategories:(NSString *)cats
+                         andMaxCount:(int)maxCount
                         andRequestID:(FluxRequestID *)requestID;
 
 {
@@ -208,21 +209,15 @@
     
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
-//    NSString *timestampMin = @"2013-09-09T12:00:00Z";
-//    NSString *timestampMax = @"2013-09-09T16:00:00Z";
-    
-    // ZZZZ
-    
-//    NSLog(@"min: <%@>, max: <%@>", timestampMin, timestampMax);
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist=%@&userlist=%@&catlist=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist=%@&userlist=%@&catlist=%@&maxcount=%d",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, cats]]];
+                                                                               hashTags, users, cats, maxCount]]];
 
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
     

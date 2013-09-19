@@ -16,8 +16,8 @@
     {
         _timeMin = nil;
         _timeMax = nil;
-        _altMin = -1.0;
-        _altMax = -1.0;
+        _altMin = -MAXFLOAT;
+        _altMax = MAXFLOAT;
         _hashTags = @"''";
         _users = @"''";
         _categories = @"''";

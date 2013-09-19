@@ -52,6 +52,7 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 @property (nonatomic, strong) FluxRequestID *requestID;
 @property (nonatomic) request_type requestType;
 @property (nonatomic) image_type imageType;
+@property (nonatomic, strong) FluxDataFilter *searchFilter;
 
 // Lists of requested and completed image/metadata downloads
 @property (nonatomic, strong) NSArray *requestedIDs;

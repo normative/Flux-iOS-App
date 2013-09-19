@@ -43,11 +43,10 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 // Returns the Request ID if request is successful, otherwise nil
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate
-                                    withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                    withRadius:(float)radius
                                     withDataRequest:(FluxDataRequest *)dataRequest;
-//                                        success:(void (^)(NSMutableArray *timeValues, NSMutableArray *timeCount))success;
 - (FluxRequestID *) requestImageListAtLocation:(CLLocationCoordinate2D)coordinate
-                                    withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                    withRadius:(float)radius
                                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestMetadataByImageID:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestMetadataByLocalID:(FluxDataRequest *)dataRequest;
@@ -57,8 +56,8 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (void) completeRequestWithDataRequest:(FluxDataRequest *)dataRequest;
 
 - (FluxRequestID *) requestTagListAtLocation:(CLLocationCoordinate2D)coordinate
-                                    withRadius:(float)radius withFilter:(FluxDataFilter *)filter
+                                  withRadius:(float)radius
                                  andMaxCount:(int)maxCount
-                               withDataRequest:(FluxDataRequest *)dataRequest;
+                             withDataRequest:(FluxDataRequest *)dataRequest;
 
 @end
