@@ -677,8 +677,6 @@ void init(){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
         [_nearbyListLock lock];
-
-        NSMutableArray *previousNearbyKeys = [NSMutableArray arrayWithArray:[fluxNearbyMetadata allKeys]];
         
         // Iterate over the list and clear out anything that is not local-only
         for (id localID in self.nearbyList)
@@ -687,10 +685,13 @@ void init(){
             if (locationObject.imageID < 0)
             {
                 [localOnlyObjects addObject:localID];
-                [previousNearbyKeys removeObject:localID];
             }
         }
         
+        NSMutableArray *previousNearbyKeys = [NSMutableArray arrayWithArray:[fluxNearbyMetadata allKeys]];
+        [previousNearbyKeys removeObjectsInArray:localOnlyObjects];
+        
+        // Remove all objects except for local-only
         [fluxNearbyMetadata removeObjectsForKeys:previousNearbyKeys];
         
         self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
@@ -1036,6 +1037,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _opengltexturesset++;
         
         // Round robin for now
+#warning Instead of round-robin, we should look for textures that are not in nearbyList that are currently in renderedTextures.
+        // This will allow us to phase out things which are loaded, but not close enough to see
         if (i == number_textures) i = 0;
         if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
     }
