@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FluxDataFilter.h"
 #import "FluxDataStore.h"
 #import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"

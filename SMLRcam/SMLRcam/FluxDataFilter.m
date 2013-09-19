@@ -14,8 +14,8 @@
 {
     if (self = [super init])
     {
-        _timeMin = nil;
-        _timeMax = nil;
+        _timeMin = [NSDate dateWithTimeIntervalSince1970:0];
+        _timeMax = [NSDate date];
         _altMin = -MAXFLOAT;
         _altMax = MAXFLOAT;
         _hashTags = @"''";

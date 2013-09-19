@@ -669,6 +669,7 @@ void init(){
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setSearchFilter:[[FluxDataFilter alloc] init]];
     [dataRequest setNearbyListReady:^(NSMutableDictionary *imageList){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         

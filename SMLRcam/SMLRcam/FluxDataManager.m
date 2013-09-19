@@ -102,14 +102,14 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     {
         [networkServices getImagesForLocationFiltered:coordinate
                                             andRadius:radius
-                                            andMinAlt:-1000
-                                            andMaxAlt:1000
-                                      andMinTimestamp:[NSDate dateWithTimeIntervalSince1970:0]
-                                      andMaxTimestamp:[NSDate date]
-                                          andHashTags:@"''"
-                                             andUsers:@"''"
-                                        andCategories:@"''"
-                                          andMaxCount:100
+                                            andMinAlt:dataRequest.searchFilter.altMin
+                                            andMaxAlt:dataRequest.searchFilter.altMax
+                                      andMinTimestamp:dataRequest.searchFilter.timeMin
+                                      andMaxTimestamp:dataRequest.searchFilter.timeMax
+                                          andHashTags:dataRequest.searchFilter.hashTags
+                                             andUsers:dataRequest.searchFilter.users
+                                        andCategories:dataRequest.searchFilter.categories
+                                          andMaxCount:dataRequest.searchFilter.maxReturnItems
                                          andRequestID:requestID];
     }
     
@@ -284,8 +284,16 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         [fluxDataStore addMetadataObject:curImgObj];
     }
     
-    // Call callback of requestor
+    // Sort list returned, if required
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    if (request.searchFilter.sortDescriptor != nil)
+    {
+        // Parse the NSSortDescriptor for sort instructions
+        // Should we change imageList form a dictionary to an array?
+        // Or add a key with a sorted list to the dictionary?
+    }
+    
+    // Call callback of requestor
     [request whenNearbyListReady:imageList];
     
     // Clean up request (nothing else to wait for)
