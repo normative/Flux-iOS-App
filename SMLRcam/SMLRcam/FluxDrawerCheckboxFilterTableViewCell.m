@@ -31,42 +31,33 @@
 }
 
 //callback when the cell was tapped. this will set the cell to active for now.
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [self setIsActive:selected];
-    [super setSelected:selected animated:animated];
-    
-//    [self setIsActive:!active];
-//    active = !active;
-//    
-//    if ([delegate respondsToSelector:@selector(CheckboxCell:boxWasChecked:)]) {
-//        [delegate  CheckboxCell:self boxWasChecked:active];
-//    }
-}
+//- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+//{
+//    [self setIsActive:selected];
+//    [super setSelected:selected animated:animated];
+//}
 
 //for now setting the cell active just makes it bold, checks the checkmark
 -(void)setIsActive:(BOOL)bActive{
     active = bActive;
     if (active) {
-        //[self.descriptorLabel setFont:[UIFont boldSystemFontOfSize:self.descriptorLabel.font.pointSize]];
         [self.descriptorLabel setAlpha:1.0];
         [self.descriptorIconImageView setAlpha:1.0];
     }
     else{
-        //[self.descriptorLabel setFont:[UIFont systemFontOfSize:self.descriptorLabel.font.pointSize]];
         [self.descriptorLabel setAlpha:0.3];
         [self.descriptorIconImageView setAlpha:0.3];
     }
     [self.checkbox setChecked:active];
+    
+    if ([delegate respondsToSelector:@selector(CheckboxCell:boxWasChecked:)]) {
+        [delegate  CheckboxCell:self boxWasChecked:active];
+    }
 }
 
 //the checkbox was tapped
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
     [self setIsActive:checked];
-    
-    if ([delegate respondsToSelector:@selector(CheckboxCell:boxWasChecked:)]) {
-        [delegate  CheckboxCell:self boxWasChecked:checked];
-    }
 }
 
 @end

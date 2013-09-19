@@ -15,6 +15,8 @@
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import <AVFoundation/AVFoundation.h>
 
+#import "FluxRightDrawerViewController.h"
+
 #import "FluxAVCameraSingleton.h"
 
 
@@ -32,7 +34,7 @@ typedef struct {
     GLKVector3 ecef;
 } sensorPose;
 
-@interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
+@interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate, RightDrawerFilterDelegate>{
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
@@ -70,6 +72,8 @@ typedef struct {
     FluxAVCameraSingleton *cameraManager;
     
     NSLock *_nearbyListLock;
+    
+    FluxDataFilter *dataFilter;
     
     __weak IBOutlet UISlider *DistanceSlider;
     __weak IBOutlet UIStepper *PositionStepper;

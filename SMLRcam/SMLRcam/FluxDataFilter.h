@@ -31,4 +31,10 @@
 // Property to indicate maximum number of entries to return
 @property (nonatomic) int maxReturnItems;
 
+- (void)addHashTagToFilter:(NSString*)tag;
+- (void)addCategoryToFilter:(NSString*)category;
+
+- (void)removeHashTagFromFilter:(NSString*)tag;
+- (void)removeCategoryFromFilter:(NSString*)category;
+
 @end

@@ -17,12 +17,12 @@
 
 @interface FluxDrawerCheckboxFilterTableViewCell : UITableViewCell <KTCheckboxButtonDelegate>{
     BOOL active;
-    
     id __unsafe_unretained delegate;
 }
 @property (weak, nonatomic) IBOutlet UIImageView *descriptorIconImageView;
 @property (weak, nonatomic) IBOutlet UILabel *descriptorLabel;
 @property (weak, nonatomic) IBOutlet KTCheckboxButton *checkbox;
+@property (weak, nonatomic) NSString*dbTitle;
 
 @property (unsafe_unretained) id <DrawerCheckboxTableViewCellDelegate> delegate;
 

@@ -667,10 +667,13 @@ void init(){
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
+    [self requestNearbyItems];
+}
+
+#pragma mark - Filtering
+- (void)requestNearbyItems{
     CLLocation *loc = locationManager.location;
-    FluxDataFilter *dataFilter = [[FluxDataFilter alloc] init];
-    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-    dataFilter.maxReturnItems = 10;
+    
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setSearchFilter:dataFilter];
     [dataRequest setNearbyListReady:^(NSArray *imageList){
@@ -695,7 +698,7 @@ void init(){
         [fluxNearbyMetadata removeObjectsForKeys:previousNearbyKeys];
         
         self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
-
+        
         // Need to update all metadata objects even if they exist (in case they change in the future)
         // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
         // when a desired image is loaded (happens after the texture is loaded)
@@ -712,6 +715,12 @@ void init(){
         [_nearbyListLock unlock];
     }];
     [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withDataRequest:dataRequest];
+}
+
+- (void)RightDrawer:(FluxRightDrawerViewController *)rightDrawerController didChangeFilter:(FluxDataFilter *)filter{
+    dataFilter = filter;
+    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+    dataFilter.maxReturnItems = 10;
 }
 
 #pragma mark - Motion Manager
@@ -864,6 +873,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self setupLocationManager];
     [self setupMotionManager];
+    
+    dataFilter = [[FluxDataFilter alloc]init];
+    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+    dataFilter.maxReturnItems = 10;
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     

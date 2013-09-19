@@ -24,12 +24,6 @@
 #define HIGHLIGHTED_BACKGROUND_COLOR [UIColor colorWithRed:0.40 green:0.80 blue:1.00 alpha:0.5]
 #define DEFAULT_AUTOMATIC_RESIZE NO
 
-@interface DWTagList()
-
-- (void)touchedTag:(id)sender;
-
-@end
-
 @implementation DWTagList
 
 @synthesize view, textArray, automaticResize;
@@ -100,14 +94,6 @@
     }
 }
 
-- (void)touchedTag:(id)sender
-{
-    UITapGestureRecognizer *t = (UITapGestureRecognizer *)sender;
-    DWTagView *tagView = (DWTagView *)t.view;
-    if(tagView && self.tagDelegate && [self.tagDelegate respondsToSelector:@selector(tagList:selectedTagWithTitle:)])
-        [self.tagDelegate tagList:self selectedTagWithTitle:tagView.label.text];
-}
-
 - (void)layoutSubviews
 {
     [super layoutSubviews];
@@ -168,22 +154,13 @@
         previousFrame = tagView.frame;
         gotPreviousFrame = YES;
 
-        [tagView setBackgroundColor:[self getBackgroundColor]];
+        [tagView setBackgroundColor:BACKGROUND_COLOR];
         [tagView setAlpha:(1.0-i*0.05)];
-
-        // Davide Cenzi, added gesture recognizer to label
-        UITapGestureRecognizer* gesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(touchedTag:)];
-        // if labelView is not set userInteractionEnabled, you must do so
-        [tagView setUserInteractionEnabled:YES];
-        [tagView addGestureRecognizer:gesture];
         
         [self addSubview:tagView];
 
         if (!_viewOnly) {
-            [tagView.button addTarget:self action:@selector(touchDownInside:) forControlEvents:UIControlEventTouchDown];
             [tagView.button addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
-            [tagView.button addTarget:self action:@selector(touchDragExit:) forControlEvents:UIControlEventTouchDragExit];
-            [tagView.button addTarget:self action:@selector(touchDragInside:) forControlEvents:UIControlEventTouchDragInside];
         }
     }
 
@@ -196,43 +173,38 @@
     return sizeFit;
 }
 
-- (void)touchDownInside:(id)sender
-{
-    UIButton *button = (UIButton*)sender;
-    [[button superview] setBackgroundColor:self.highlightedBackgroundColor];
-}
-
 - (void)touchUpInside:(id)sender
 {
     UIButton *button = (UIButton*)sender;
-    [self performSelector:@selector(setViewBackgroundColor:) withObject:[button superview] afterDelay:0.1];
-    if(button && self.tagDelegate && [self.tagDelegate respondsToSelector:@selector(tagList:selectedTagWithTitle:)])
-        [self.tagDelegate tagList:self selectedTagWithTitle:button.accessibilityLabel];
+    DWTagView *tagView = (DWTagView*)button.superview;
+    if (!tagView.isSelected) {
+        [self setTagBackgroundStateForTagView:tagView andTagstate:tagActive];
+        tagView.isSelected = YES;
+    }
+    else{
+        [self setTagBackgroundStateForTagView:tagView andTagstate:tagInactive];
+        tagView.isSelected = NO;
+    }
+    
+    if(button && self.tagDelegate && [self.tagDelegate respondsToSelector:@selector(tagList:selectedTagWithTitle:andActive:)])
+        [self.tagDelegate tagList:self selectedTagWithTitle:[button.accessibilityLabel substringFromIndex:1] andActive:tagView.isSelected];
 }
 
-- (void)touchDragExit:(id)sender
-{
-    UIButton *button = (UIButton*)sender;
-    [self setViewBackgroundColor:[button superview]];
-}
-
-- (void)touchDragInside:(id)sender
-{
-    UIButton *button = (UIButton*)sender;
-    [self setViewBackgroundColor:[button superview]];
-}
-     
-- (UIColor *)getBackgroundColor
-{
-     if (!lblBackgroundColor) {
-         return BACKGROUND_COLOR;
-     } else {
-         return lblBackgroundColor;
-     }
-}
-
-- (void)setViewBackgroundColor:(UIView*)theView{
-    [theView setBackgroundColor:[self getBackgroundColor]];
+- (void)setTagBackgroundStateForTagView:(UIView*)tagView andTagstate:(tagState)tagState{
+    switch (tagState) {
+        case tagInactive:
+        {
+            [tagView setBackgroundColor:BACKGROUND_COLOR];
+        }
+            break;
+        case tagActive:
+        {
+            [tagView setBackgroundColor:self.highlightedBackgroundColor];
+        }
+        break;
+        default:
+            break;
+    }
 }
 
 - (void)dealloc
@@ -252,8 +224,6 @@
     if (self) {
         _label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
         [_label setTextColor:TEXT_COLOR];
-//        [_label setShadowColor:TEXT_SHADOW_COLOR];
-//        [_label setShadowOffset:TEXT_SHADOW_OFFSET];
         [_label setBackgroundColor:[UIColor clearColor]];
         [_label setTextAlignment:NSTextAlignmentCenter];
         [self addSubview:_label];
@@ -264,9 +234,7 @@
         [self addSubview:_button];
         
         [self.layer setMasksToBounds:YES];
-//        [self.layer setCornerRadius:CORNER_RADIUS];
-//        [self.layer setBorderColor:BORDER_COLOR];
-//        [self.layer setBorderWidth: BORDER_WIDTH];
+        self.isSelected = NO;
     }
     return self;
 }
