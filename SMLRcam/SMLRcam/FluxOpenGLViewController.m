@@ -669,7 +669,7 @@ void init(){
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
     FluxDataFilter *dataFilter = [[FluxDataFilter alloc] init];
-    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
+    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
     dataFilter.maxReturnItems = 10;
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setSearchFilter:dataFilter];
