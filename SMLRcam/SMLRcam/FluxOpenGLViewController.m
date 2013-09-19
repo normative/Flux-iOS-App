@@ -677,6 +677,8 @@ void init(){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
         [_nearbyListLock lock];
+
+        NSMutableArray *previousNearbyKeys = [NSMutableArray arrayWithArray:[fluxNearbyMetadata allKeys]];
         
         // Iterate over the list and clear out anything that is not local-only
         for (id localID in self.nearbyList)
@@ -685,11 +687,14 @@ void init(){
             if (locationObject.imageID < 0)
             {
                 [localOnlyObjects addObject:localID];
+                [previousNearbyKeys removeObject:localID];
             }
         }
         
-        self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
+        [fluxNearbyMetadata removeObjectsForKeys:previousNearbyKeys];
         
+        self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
+
         // Need to update all metadata objects even if they exist (in case they change in the future)
         // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
         // when a desired image is loaded (happens after the texture is loaded)
@@ -979,7 +984,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 -(void) populateImageData
 {
     // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
+//    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
     NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
     
