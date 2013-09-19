@@ -90,7 +90,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
-@property (nonatomic, strong) FluxTimeFilterControl*timeFilterControl;
+@property (nonatomic, strong) IBOutlet FluxTimeFilterControl*timeFilterControl;
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 

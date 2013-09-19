@@ -336,10 +336,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [longPressGesture setNumberOfTouchesRequired:1];
     longPressGesture.minimumPressDuration = 0.5;
     [self.view addGestureRecognizer:longPressGesture];
-    
-    //time control init
-    timeFilterControl = [[FluxTimeFilterControl alloc]initWithFrame:self.view.bounds];
-    [self.view addSubview:timeFilterControl];
 }
 
 

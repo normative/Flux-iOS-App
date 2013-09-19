@@ -85,7 +85,6 @@
 		AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */; };
 		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
 		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
-		AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAED6C9717A2CD92004888FE /* PassthroughView.m */; };
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
 		F240346017E103140088CA2D /* FluxDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345F17E103140088CA2D /* FluxDataRequest.m */; };
@@ -230,8 +229,6 @@
 		AAD2DFF617BD1F9A00D572A4 /* FluxMappingProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMappingProvider.h; sourceTree = "<group>"; };
 		AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMappingProvider.m; sourceTree = "<group>"; };
 		AAD2DFF917BD54BA00D572A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		AAED6C9617A2CD92004888FE /* PassthroughView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassthroughView.h; sourceTree = "<group>"; };
-		AAED6C9717A2CD92004888FE /* PassthroughView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PassthroughView.m; sourceTree = "<group>"; };
 		AAFD390C17DE0B4F006CBC14 /* KTSegmentedButtonControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTSegmentedButtonControl.h; sourceTree = "<group>"; };
 		AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTSegmentedButtonControl.m; sourceTree = "<group>"; };
 		CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
@@ -409,6 +406,15 @@
 			name = AVCamera;
 			sourceTree = "<group>";
 		};
+		AA082E9617EA4160000B53B0 /* TimeFilterControl */ = {
+			isa = PBXGroup;
+			children = (
+				AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */,
+				AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */,
+			);
+			name = TimeFilterControl;
+			sourceTree = "<group>";
+		};
 		AA0A9D9117E366ED00A0B109 /* DWTagList */ = {
 			isa = PBXGroup;
 			children = (
@@ -516,16 +522,13 @@
 				AA47BEC517CBDA5100ED9B39 /* Fonts */,
 				22DB643717DA2FF3000F4AA7 /* FluxCompassView.h */,
 				22DB643817DA2FF3000F4AA7 /* FluxCompassView.m */,
-				AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */,
-				AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */,
+				AA082E9617EA4160000B53B0 /* TimeFilterControl */,
 				AA1BCE3A17CD0ADD00136EFF /* FluxMapButton.h */,
 				AA1BCE3B17CD0ADD00136EFF /* FluxMapButton.m */,
 				AA4CEF6D17A958B000202A74 /* KTPlaceholderTextView.h */,
 				AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */,
 				AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */,
 				AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */,
-				AAED6C9617A2CD92004888FE /* PassthroughView.h */,
-				AAED6C9717A2CD92004888FE /* PassthroughView.m */,
 				AA9CC94817D80858006AF61F /* FluxCameraButton.h */,
 				AA9CC94917D80858006AF61F /* FluxCameraButton.m */,
 				AAFD390C17DE0B4F006CBC14 /* KTSegmentedButtonControl.h */,
@@ -820,7 +823,6 @@
 				173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */,
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
-				AAED6C9817A2CD92004888FE /* PassthroughView.m in Sources */,
 				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
