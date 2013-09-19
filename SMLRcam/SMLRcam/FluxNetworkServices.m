@@ -235,15 +235,15 @@
         
         if ([result count] > 0)
         {
-            NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
+            NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
             for (FluxScanImageObject*obj in result.array)
             {
                 [obj setLocalID:[obj generateUniqueStringID]];
-                [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
+                [mutableArray addObject:obj];
             }
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:andRequestID:)])
             {
-                [delegate NetworkServices:self didreturnImageList:mutableDictionary andRequestID:requestID];
+                [delegate NetworkServices:self didreturnImageList:[NSArray arrayWithArray:mutableArray] andRequestID:requestID];
             }
         }
     }

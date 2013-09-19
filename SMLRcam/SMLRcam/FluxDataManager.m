@@ -269,7 +269,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [networkServices setDelegate:self];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary *)imageList
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSArray *)imageList
            andRequestID:(FluxRequestID *)requestID
 {
     // Need to update all metadata objects even if they exist (in case they change in the future)
@@ -278,9 +278,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 // May be easiest to add an update routine that only overwrites these properties.
     // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
     // when a desired image is loaded (happens after the texture is loaded)
-    for (id curKey in [imageList allKeys])
+    for (FluxScanImageObject *curImgObj in imageList)
     {
-        FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
         [fluxDataStore addMetadataObject:curImgObj];
     }
     
@@ -288,9 +287,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     if (request.searchFilter.sortDescriptor != nil)
     {
-        // Parse the NSSortDescriptor for sort instructions
-        // Should we change imageList form a dictionary to an array?
-        // Or add a key with a sorted list to the dictionary?
+        // Currently assume a single NSSortDescriptor. Possible to add an array of them.
+        imageList = [imageList sortedArrayUsingDescriptors:[NSArray arrayWithObject:request.searchFilter.sortDescriptor]];
     }
     
     // Call callback of requestor

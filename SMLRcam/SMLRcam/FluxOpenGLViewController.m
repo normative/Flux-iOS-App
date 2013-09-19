@@ -668,9 +668,12 @@ void init(){
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     CLLocation *loc = locationManager.location;
+    FluxDataFilter *dataFilter = [[FluxDataFilter alloc] init];
+    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
+    dataFilter.maxReturnItems = 10;
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setSearchFilter:[[FluxDataFilter alloc] init]];
-    [dataRequest setNearbyListReady:^(NSMutableDictionary *imageList){
+    [dataRequest setSearchFilter:dataFilter];
+    [dataRequest setNearbyListReady:^(NSArray *imageList){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
         [_nearbyListLock lock];
@@ -690,9 +693,8 @@ void init(){
         // Need to update all metadata objects even if they exist (in case they change in the future)
         // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
         // when a desired image is loaded (happens after the texture is loaded)
-        for (id curKey in [imageList allKeys])
+        for (FluxScanImageObject *curImgObj in imageList)
         {
-            FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
             [fluxNearbyMetadata setObject:curImgObj forKey:curImgObj.localID];
             if (![self.nearbyList containsObject:curImgObj.localID])
             {

@@ -167,12 +167,10 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
         fabs(userLocation.location.coordinate.longitude - userLastSynchedLocation.longitude) > minmovedist)
     {
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setNearbyListReady:^(NSMutableDictionary *nearbyList){
+        [dataRequest setNearbyListReady:^(NSArray *nearbyList){
             // Need to update all metadata objects even if they exist (in case they change in the future)
-            for (id curKey in [nearbyList allKeys])
+            for (FluxScanImageObject *locationObject in nearbyList)
             {
-                FluxScanImageObject *locationObject = [nearbyList objectForKey:curKey];
-                
                 // add annotation to map
                 [mapView addAnnotation: locationObject];
             }
