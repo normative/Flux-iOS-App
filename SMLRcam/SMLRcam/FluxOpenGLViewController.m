@@ -870,6 +870,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     _nearbyListLock = [[NSLock alloc] init];
+    _renderListLock = [[NSLock alloc] init];
     
     [self setupLocationManager];
     [self setupMotionManager];
@@ -1001,15 +1002,26 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
     NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
-
+    
     // Clear out anything that is no longer rendered
+    [_renderListLock lock];
+
+    NSMutableArray *toDelete = [[NSMutableArray alloc] init];
+    
     for (id localID in self.renderedTextures)
     {
         if ((![localID isEqualToString:@""]) && ![self.nearbyList containsObject:localID])
         {
-            [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
+            [toDelete addObject:localID];
         }
     }
+    
+    for (id localID in toDelete)
+    {
+        [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
+    }
+    
+    [_renderListLock unlock];
 
     // Request images for nearby items
     for (id localID in self.nearbyList)
@@ -1027,11 +1039,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     NSError *error;
     
+    [_renderListLock lock];
+    
     // Check if texture is already being rendered
     if ([self.renderedTextures containsObject:localID])
     {
         // Update the metadata in case it changed
         [self updateImageMetadataKey:localID index:[self.renderedTextures indexOfObject:localID]];
+        [_renderListLock unlock];
         return;
     }
     
@@ -1040,6 +1055,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (i == NSNotFound)
     {
         NSLog(@"%s: Render list is full! Not rendering image with ID %@", __func__, localID);
+        [_renderListLock unlock];
         return;
     }
 
@@ -1063,6 +1079,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _opengltexturesset++;
         if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
     }
+    [_renderListLock unlock];
 }
 
 - (void) deleteImageTextureIdx:(int)i

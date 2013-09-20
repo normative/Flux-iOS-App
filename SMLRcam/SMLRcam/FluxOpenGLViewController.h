@@ -72,6 +72,7 @@ typedef struct {
     FluxAVCameraSingleton *cameraManager;
     
     NSLock *_nearbyListLock;
+    NSLock *_renderListLock;
     
     FluxDataFilter *dataFilter;
     
