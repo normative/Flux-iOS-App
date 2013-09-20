@@ -1001,7 +1001,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
     NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
-    
+
+    // Clear out anything that is no longer rendered
+    for (id localID in self.renderedTextures)
+    {
+        if ((![localID isEqualToString:@""]) && ![self.nearbyList containsObject:localID])
+        {
+            [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
+        }
+    }
+
     // Request images for nearby items
     for (id localID in self.nearbyList)
     {
@@ -1017,7 +1026,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void) updateImageTextureWithLocalID:(NSString *)localID withImage:(UIImage *)image
 {
     NSError *error;
-    static int i = 0;
     
     // Check if texture is already being rendered
     if ([self.renderedTextures containsObject:localID])
@@ -1027,10 +1035,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         return;
     }
     
-    if (_texture[i] != nil)
+    // Find a usable slot to put the texture
+    NSUInteger i = [self.renderedTextures indexOfObject:@""];
+    if (i == NSNotFound)
     {
-        [self deleteImageTextureIdx:i];
+        NSLog(@"%s: Render list is full! Not rendering image with ID %@", __func__, localID);
+        return;
     }
+
+    // Note: This should never actually do anything (since _texture[i] should be nil), but just to be safe...
+    [self deleteImageTextureIdx:i];
     
     // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
@@ -1046,25 +1060,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         NSLog(@"Added Image texture to render list in slot %d", (i));
         self.renderedTextures[i] = localID;
         [self updateImageMetadataKey:localID index:i];
-        i++;
         _opengltexturesset++;
-        
-        // Round robin for now
-#warning Instead of round-robin, we should look for textures that are not in nearbyList that are currently in renderedTextures.
-        // This will allow us to phase out things which are loaded, but not close enough to see
-        if (i == number_textures) i = 0;
         if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
     }
-    
 }
 
 - (void) deleteImageTextureIdx:(int)i
 {
-    GLKTextureInfo *curTexture = _texture[i];
-    GLuint textureName = curTexture.name;
-    glDeleteTextures(1, &textureName);
-    _texture[i] = nil;
-    self.renderedTextures[i] = @"";
+    if (_texture[i] != nil)
+    {
+        GLKTextureInfo *curTexture = _texture[i];
+        GLuint textureName = curTexture.name;
+        glDeleteTextures(1, &textureName);
+        _texture[i] = nil;
+        self.renderedTextures[i] = @"";
+    }
 }
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
