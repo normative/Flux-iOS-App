@@ -86,6 +86,21 @@ typedef NSUUID FluxRequestID;
 #pragma mark  - Tags
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;
 
+
+//tags filtered
+- (void)getTagsForLocationFiltered:(CLLocationCoordinate2D)location
+                         andRadius:(float)radius
+                         andMinAlt:(float)altMin
+                         andMaxAlt:(float)altMax
+                   andMinTimestamp:(NSDate *)timeMin
+                   andMaxTimestamp:(NSDate *)timeMax
+                       andHashTags:(NSString *)hashTags
+                          andUsers:(NSString *)users
+                     andCategories:(NSString *)cats
+                       andMaxCount:(int)maxCount
+                      andRequestID:(FluxRequestID *)requestID;
+
+
 #pragma mark  - Other
 - (void)deleteLocations;
 

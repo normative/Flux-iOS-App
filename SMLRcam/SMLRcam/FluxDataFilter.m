@@ -46,6 +46,21 @@
     return self;
 }
 
+-(id)copyWithZone:(NSZone *)zone
+{
+    // We'll ignore the zone for now
+    FluxDataFilter *copy = [[FluxDataFilter alloc] init];
+    copy.timeMin = [self.timeMin copyWithZone:zone];
+    copy.timeMax = [self.timeMax copyWithZone:zone];
+    copy.altMin = self.altMin;
+    copy.altMax = self.altMax;
+    copy.hashTags = [self.hashTags copyWithZone:zone];
+    copy.users = [self.hashTags copyWithZone:zone];
+    copy.categories = [self.categories copyWithZone:zone];
+    copy.maxReturnItems = self.maxReturnItems;
+    return copy;
+}
+
 - (BOOL)isEqualToFilter:(FluxDataFilter*)filter
 {
     if ([_timeMin isEqualToDate:filter.timeMin] &&

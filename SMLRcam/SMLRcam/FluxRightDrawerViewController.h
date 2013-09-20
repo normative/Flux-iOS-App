@@ -36,6 +36,7 @@
 @property (weak, nonatomic) IBOutlet UISearchBar *filterSearchBar;
 
 - (void)setupLocationManager;
+- (void)sendTagRequest;
 
 
 

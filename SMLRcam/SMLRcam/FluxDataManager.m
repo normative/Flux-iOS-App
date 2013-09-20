@@ -244,9 +244,29 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = tag_request;
     
+    
     [currentRequests setObject:dataRequest forKey:requestID];
     
-    [networkServices getTagsForLocation:coordinate andRadius:radius andMaxCount:maxCount andRequestID:requestID];
+    if (dataRequest.searchFilter == nil)
+    {
+        [networkServices getTagsForLocation:coordinate andRadius:radius andMaxCount:maxCount andRequestID:requestID];
+    }
+    else
+    {
+        [networkServices getTagsForLocationFiltered:coordinate
+                                            andRadius:radius
+                                            andMinAlt:dataRequest.searchFilter.altMin
+                                            andMaxAlt:dataRequest.searchFilter.altMax
+                                      andMinTimestamp:dataRequest.searchFilter.timeMin
+                                      andMaxTimestamp:dataRequest.searchFilter.timeMax
+                                          andHashTags:dataRequest.searchFilter.hashTags
+                                             andUsers:dataRequest.searchFilter.users
+                                        andCategories:dataRequest.searchFilter.categories
+                                          andMaxCount:dataRequest.searchFilter.maxReturnItems
+                                         andRequestID:requestID];
+    }
+    
+    
     
     return requestID;
 }

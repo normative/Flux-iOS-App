@@ -717,10 +717,11 @@ void init(){
     [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withDataRequest:dataRequest];
 }
 
-- (void)RightDrawer:(FluxRightDrawerViewController *)rightDrawerController didChangeFilter:(FluxDataFilter *)filter{
-    dataFilter = filter;
+- (void)didChangeFilter:(NSNotification*)notification{
+    dataFilter = [notification.userInfo objectForKey:@"filter"];
     dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
     dataFilter.maxReturnItems = 10;
+    [self requestNearbyItems];
 }
 
 #pragma mark - Motion Manager
@@ -899,6 +900,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupAVCapture];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:@"FluxScanViewDidAcquireNewPicture" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFilter:) name:@"FluxFilterViewDidChangeFilter" object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated

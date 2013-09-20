@@ -31,31 +31,16 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     //make network Call
-    FluxDataRequest*request = [[FluxDataRequest alloc]init];
-    [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
-        //do something with array
-        topTagsArray = tagList;
-        if ([rightDrawerTableViewArray count] == 1) {
-            [rightDrawerTableViewArray insertObject:topTagsArray atIndex:0];
-        }
-        else{
-            [rightDrawerTableViewArray replaceObjectAtIndex:0 withObject:topTagsArray];
-        }
-        [self.tableView reloadData];
-    }];
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20
-                                       andMaxCount:20 withDataRequest:request];
-    
-    
+    [self sendTagRequest];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     //if the user has changed anything related to the filer, send the delegate method to update the view
     if (![dataFilter isEqualToFilter:previousDataFilter]) {
-        if ([delegate respondsToSelector:@selector(RightDrawer:didChangeFilter:)]) {
-            [delegate RightDrawer:self didChangeFilter:dataFilter];
-        }
-        previousDataFilter = dataFilter;
+        NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                      initWithObjectsAndKeys:dataFilter, @"filter", nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
+        previousDataFilter = [dataFilter copy];
     }
 }
 
@@ -90,7 +75,26 @@
 }
 
 #pragma mark - network methods
-
+- (void)sendTagRequest{
+    if (![self.view isHidden]) {
+        // viewController is visible
+        FluxDataRequest*request = [[FluxDataRequest alloc]init];
+        [request setSearchFilter:dataFilter];
+        [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
+            //do something with array
+            topTagsArray = tagList;
+            if ([rightDrawerTableViewArray count] == 1) {
+                [rightDrawerTableViewArray insertObject:topTagsArray atIndex:0];
+            }
+            else{
+                [rightDrawerTableViewArray replaceObjectAtIndex:0 withObject:topTagsArray];
+            }
+            [self.tableView reloadData];
+        }];
+        [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20
+                                           andMaxCount:20 withDataRequest:request];
+    }
+}
 
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
@@ -265,6 +269,7 @@
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
+    [self sendTagRequest];
 }
 
 - (void)tagList:(DWTagList *)list selectedTagWithTitle:(NSString *)title andActive:(BOOL)active{
@@ -275,6 +280,7 @@
     else{
         [dataFilter removeHashTagFromFilter:title];
     }
+    [self sendTagRequest];
 }
 
 

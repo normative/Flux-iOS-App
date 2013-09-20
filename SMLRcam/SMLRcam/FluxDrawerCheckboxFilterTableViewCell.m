@@ -49,15 +49,15 @@
         [self.descriptorIconImageView setAlpha:0.3];
     }
     [self.checkbox setChecked:active];
-    
-    if ([delegate respondsToSelector:@selector(CheckboxCell:boxWasChecked:)]) {
-        [delegate  CheckboxCell:self boxWasChecked:active];
-    }
 }
 
 //the checkbox was tapped
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
     [self setIsActive:checked];
+    if ([delegate respondsToSelector:@selector(CheckboxCell:boxWasChecked:)]) {
+        [delegate  CheckboxCell:self boxWasChecked:checked];
+    }
+
 }
 
 @end
