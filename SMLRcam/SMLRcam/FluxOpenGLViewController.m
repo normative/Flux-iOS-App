@@ -992,7 +992,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             // We have a new picture ready in the cache.
             // Add the ID to the current list of nearby items, and re-sort and re-prune the list
-            [self.nearbyList addObject:localID];
+            [self.nearbyList insertObject:localID atIndex:0];
             [self populateImageData];
         }
     [_nearbyListLock unlock];
@@ -1003,7 +1003,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
 //    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
     NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
     
     // Clear out anything that is no longer rendered
     [_renderListLock lock];
