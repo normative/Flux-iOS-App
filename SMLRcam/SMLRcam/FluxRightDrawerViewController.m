@@ -45,6 +45,18 @@
     }];
     [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20
                                        andMaxCount:20 withDataRequest:request];
+    
+    
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    //if the user has changed anything related to the filer, send the delegate method to update the view
+    if (![dataFilter isEqualToFilter:previousDataFilter]) {
+        if ([delegate respondsToSelector:@selector(RightDrawer:didChangeFilter:)]) {
+            [delegate RightDrawer:self didChangeFilter:dataFilter];
+        }
+        previousDataFilter = dataFilter;
+    }
 }
 
 - (void)viewDidLoad
@@ -63,10 +75,7 @@
     [self setupLocationManager];
     
     dataFilter = [[FluxDataFilter alloc] init];
-    
-    if ([delegate respondsToSelector:@selector(RightDrawer:didChangeFilter:)]) {
-        [delegate RightDrawer:self didChangeFilter:dataFilter];
-    }
+    previousDataFilter = [[FluxDataFilter alloc] initWithFilter:dataFilter];
 }
 
 - (void)setupLocationManager
@@ -249,11 +258,6 @@
     else{
         [dataFilter removeCategoryFromFilter:checkCell.dbTitle];
     }
-    
-    if ([delegate respondsToSelector:@selector(RightDrawer:didChangeFilter:)]) {
-        [delegate RightDrawer:self didChangeFilter:dataFilter];
-    }
-    
     //update the cell
     for (FluxDrawerCheckboxFilterTableViewCell* cell in [self.tableView visibleCells]) {
         if (cell == checkCell) {
@@ -270,10 +274,6 @@
     }
     else{
         [dataFilter removeHashTagFromFilter:title];
-    }
-    
-    if ([delegate respondsToSelector:@selector(RightDrawer:didChangeFilter:)]) {
-        [delegate RightDrawer:self didChangeFilter:dataFilter];
     }
 }
 

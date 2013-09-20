@@ -37,4 +37,7 @@
 - (void)removeHashTagFromFilter:(NSString*)tag;
 - (void)removeCategoryFromFilter:(NSString*)category;
 
+- (BOOL)isEqualToFilter:(FluxDataFilter*)filter;
+- (id)initWithFilter:(FluxDataFilter*)filter;
+
 @end

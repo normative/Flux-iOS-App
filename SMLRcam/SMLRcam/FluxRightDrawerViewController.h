@@ -27,6 +27,7 @@
     NSArray *topTagsArray;
     FluxLocationServicesSingleton *locationManager;
     FluxDataFilter *dataFilter;
+    FluxDataFilter *previousDataFilter;
     
     __weak id <RightDrawerFilterDelegate> delegate;
 }
