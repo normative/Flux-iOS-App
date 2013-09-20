@@ -879,6 +879,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      }];
     progressView.progress = 0;
 
+    [fluxNearbyMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
+
     // Add the image and metadata to the local cache
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
@@ -912,7 +914,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }];
     
     [self.fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
-    [fluxNearbyMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
     
     // Post notification for observers prior to upload
     NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
