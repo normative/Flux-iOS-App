@@ -79,7 +79,9 @@
     if (![self.view isHidden]) {
         // viewController is visible
         FluxDataRequest*request = [[FluxDataRequest alloc]init];
-        [request setSearchFilter:dataFilter];
+        FluxDataFilter*tmp = dataFilter;
+        [tmp setHashTags:@""];
+        [request setSearchFilter:tmp];
         [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
             //do something with array
             topTagsArray = tagList;
@@ -96,7 +98,6 @@
     }
 }
 
-
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
     topTagsArray = tagList;
 }
@@ -110,9 +111,7 @@
     }
     else
         return 1;
-
 }
-
 
 - (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     return 40.0f;
@@ -165,7 +164,6 @@
     //its the search tableView
     else
         return 0;
-
 }
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -280,7 +278,6 @@
     else{
         [dataFilter removeHashTagFromFilter:title];
     }
-    [self sendTagRequest];
 }
 
 

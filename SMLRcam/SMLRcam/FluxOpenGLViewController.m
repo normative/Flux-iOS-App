@@ -26,7 +26,7 @@ err = glGetError();								\
 }													\
 }
 
-const float MAX_IMAGE_RADIUS = 7.5;
+const float MAX_IMAGE_RADIUS = 15.0;
 
 const int number_textures = 5;
 
