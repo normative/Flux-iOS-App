@@ -235,7 +235,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="progressTintColor" red="0.0" green="0.70588235294117641" blue="0.92156862745098034" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
                             </progressView>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-Ah-RV1" customClass="FluxTimeFilterControl">
+                            <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-Ah-RV1" customClass="FluxTimeFilterControl">
                                 <rect key="frame" x="270" y="73" width="43" height="436"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -641,8 +641,13 @@
         <image name="btn-Annotation-save" width="270" height="100"/>
         <image name="camButton" width="80" height="80"/>
         <image name="clockIcon" width="23" height="24"/>
+        <image name="clockIcon" width="23" height="24"/>
         <image name="filterButton" width="80" height="80"/>
         <image name="headerSeperator" width="3" height="46"/>
+        <image name="headerSeperator" width="3" height="46"/>
+        <image name="headerSeperator" width="3" height="46"/>
+        <image name="headerSeperator" width="3" height="46"/>
+        <image name="locationIcon" width="18" height="26"/>
         <image name="locationIcon" width="18" height="26"/>
         <image name="mapLocatorButton" width="65" height="65"/>
         <image name="menuButton" width="80" height="80"/>
