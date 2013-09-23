@@ -34,8 +34,6 @@
         [quickPanCircleView setHidden:YES];
         quickPanCircleView.transform = CGAffineTransformScale(quickPanCircleView.transform, 0.5, 0.5);
         [self addSubview:quickPanCircleView];
-        
-        [self setBackgroundColor:[UIColor clearColor]];
     }
     return self;
 }

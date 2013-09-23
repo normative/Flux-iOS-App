@@ -321,69 +321,70 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     openGLController.fluxNearbyMetadata = self.fluxNearbyMetadata;
 }
 
+//this section commented out as the circular time slider was removed from the designs (perhaps temporarily)
 #pragma mark - Gesture Recognizer
 - (void)setupGestureHandlers{
-    //pan
-    panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-    [panGesture setMaximumNumberOfTouches:1];
-    [panGesture setDelegate:self];
-    [self.view addGestureRecognizer:panGesture];
-    
-    //longpress
-    longPressGesture = [[UILongPressGestureRecognizer alloc]
-                                               initWithTarget:self
-                                               action:@selector(handleLongPress:)];
-    [longPressGesture setNumberOfTouchesRequired:1];
-    longPressGesture.minimumPressDuration = 0.5;
-    [self.view addGestureRecognizer:longPressGesture];
+//    //pan
+//    panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+//    [panGesture setMaximumNumberOfTouches:1];
+//    [panGesture setDelegate:self];
+//    [self.view addGestureRecognizer:panGesture];
+//    
+//    //longpress
+//    longPressGesture = [[UILongPressGestureRecognizer alloc]
+//                                               initWithTarget:self
+//                                               action:@selector(handleLongPress:)];
+//    [longPressGesture setNumberOfTouchesRequired:1];
+//    longPressGesture.minimumPressDuration = 0.5;
+//    [self.view addGestureRecognizer:longPressGesture];
 }
 
 
-- (void)handleLongPress:(UILongPressGestureRecognizer *) sender{
-    //prevent multiple touches
-    if (![sender isEnabled]) return;
-    
-    if(sender.state == UIGestureRecognizerStateBegan)
-    {
-        [timeFilterControl showQuickPanCircleAtPoint:[sender locationInView:self.view]];
-    }
-    else if(sender.state == UIGestureRecognizerStateChanged)
-    {
-        [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
-    }
-    
-    else if((sender.state == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled))
-    {
-        [timeFilterControl hideQuickPanCircle];
-    }
-    
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
-    return YES;
-}
-
-//called during pan gesture, location is available as well as translation.
-- (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
-
-    [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
-    //close it if the gesture has ended
-    if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
-        [timeFilterControl hideQuickPanCircle];
-    }
-    
-}
-
-//limit to only vertical panning
-- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer {
-    CGPoint translation = [panGestureRecognizer translationInView:self.view];
-    //if its vertical
-    if (fabs(translation.y) > fabs(translation.x)) {
-        [timeFilterControl showQuickPanCircleAtPoint:[panGestureRecognizer locationInView:self.view]];
-        return YES;
-    }
-    return NO;
-}
+//- (void)handleLongPress:(UILongPressGestureRecognizer *) sender{
+//    //prevent multiple touches
+//    if (![sender isEnabled]) return;
+//    
+//    if(sender.state == UIGestureRecognizerStateBegan)
+//    {
+//        [timeFilterControl showQuickPanCircleAtPoint:[sender locationInView:self.view]];
+//    }
+//    else if(sender.state == UIGestureRecognizerStateChanged)
+//    {
+//        [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
+//    }
+//    
+//    else if((sender.state == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled))
+//    {
+//        [timeFilterControl hideQuickPanCircle];
+//    }
+//    
+//}
+//
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+//    return YES;
+//}
+//
+////called during pan gesture, location is available as well as translation.
+//- (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
+//
+//    [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
+//    //close it if the gesture has ended
+//    if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
+//        [timeFilterControl hideQuickPanCircle];
+//    }
+//    
+//}
+//
+////limit to only vertical panning
+//- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer {
+//    CGPoint translation = [panGestureRecognizer translationInView:self.view];
+//    //if its vertical
+//    if (fabs(translation.y) > fabs(translation.x)) {
+//        [timeFilterControl showQuickPanCircleAtPoint:[panGestureRecognizer locationInView:self.view]];
+//        return YES;
+//    }
+//    return NO;
+//}
 
 #pragma mark - Camera Methods
 
