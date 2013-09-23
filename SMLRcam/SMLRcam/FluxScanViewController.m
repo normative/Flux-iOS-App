@@ -21,7 +21,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 @implementation FluxScanViewController
 
 @synthesize fluxNearbyMetadata;
-@synthesize thumbView;
+@synthesize timeFilterControl;
 
 #pragma mark - Location
 
@@ -336,12 +336,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [longPressGesture setNumberOfTouchesRequired:1];
     longPressGesture.minimumPressDuration = 0.5;
     [self.view addGestureRecognizer:longPressGesture];
-    
-    //thumb Circle
-    thumbView = [[FluxClockSlidingControl alloc]initWithFrame:CGRectMake(0, 0, 100, 110)];
-    thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
-    [thumbView setHidden:YES];
-    [self.view addSubview:thumbView];
 }
 
 
@@ -351,42 +345,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if(sender.state == UIGestureRecognizerStateBegan)
     {
-        [thumbView setStartingYCoord:[sender locationInView:self.view].y];
-        [thumbView setHidden:NO];
-        [thumbView setCenter:[sender locationInView:self.view]];
-        //start with today's date
-        [thumbView.timeLabel setText:[thumbDateFormatter stringFromDate:[NSDate date]]];
-        
-        [UIView animateWithDuration:0.2f
-                         animations:^{
-                             //[thumbView setFrame:CGRectMake(thumbView.frame.origin.x, thumbView.frame.origin.y, 98, 98)];
-                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 2.0, 2.0);
-                         }];
-        startXCoord = [sender locationInView:self.view].x;
+        [timeFilterControl showQuickPanCircleAtPoint:[sender locationInView:self.view]];
     }
     else if(sender.state == UIGestureRecognizerStateChanged)
     {
-        NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
-        [thumbView setCenter:[sender locationInView:self.view]];
-        [self setThumbViewDate:[sender locationInView:self.view].y];
-        
-        if (abs(startXCoord - [sender locationInView:self.view].x) > 75) {
-            //we've gone too far to the right, kill it
-        }
+        [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
     }
     
     else if((sender.state == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled))
     {
-        if ([thumbView isHidden]) {
-            return;
-        }
-        [UIView animateWithDuration:0.05f
-                         animations:^{
-                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
-                         }
-                         completion:^(BOOL finished){
-                             [thumbView setHidden:YES];
-                         }];
+        [timeFilterControl hideQuickPanCircle];
     }
     
 }
@@ -398,62 +366,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 //called during pan gesture, location is available as well as translation.
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
 
-    NSLog(@"Gesture location: %f, %f",[sender locationInView:self.view].x,[sender locationInView:self.view].y);
-    [self setThumbViewDate:[sender locationInView:self.view].y];
-    
-    [thumbView setCenter:[sender locationInView:self.view]];
+    [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
     //close it if the gesture has ended
     if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
-        [UIView animateWithDuration:0.05f
-                         animations:^{
-                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 0.5, 0.5);
-                         }
-                         completion:^(BOOL finished){
-                             [thumbView setHidden:YES];
-                         }];
+        [timeFilterControl hideQuickPanCircle];
     }
     
 }
 
 //limit to only vertical panning
 - (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer {
-    if (thumbView.frame.size.width>70) {
-        return NO;
-    }
     CGPoint translation = [panGestureRecognizer translationInView:self.view];
     //if its vertical
     if (fabs(translation.y) > fabs(translation.x)) {
-        [thumbView setStartingYCoord:[panGestureRecognizer locationInView:self.view].y];
-        [thumbView setHidden:NO];
-        [thumbView setCenter:[panGestureRecognizer locationInView:self.view]];
-        //start with today's date
-        [thumbView.timeLabel setText:[thumbDateFormatter stringFromDate:[NSDate date]]];
-        
-        [UIView animateWithDuration:0.2f
-                         animations:^{
-                             thumbView.transform = CGAffineTransformScale(thumbView.transform, 2.0, 2.0);
-                         }];
+        [timeFilterControl showQuickPanCircleAtPoint:[panGestureRecognizer locationInView:self.view]];
         return YES;
     }
     return NO;
-}
-
-- (void)setThumbViewDate:(float)yCoord{
-    
-    //if adding
-    if (previousYCoord>yCoord) {
-        NSDate *now = [NSDate date];
-        int daysToAdd = roundf(yCoord);
-        NSDate *newDate = [now dateByAddingTimeInterval:60*60*24*daysToAdd];
-        [thumbView changeTimeString:[thumbDateFormatter stringFromDate:newDate]adding:YES];
-    }
-    else{
-        NSDate *now = [NSDate date];
-        int daysToSubtract = roundf(yCoord)*-1;
-        NSDate *newDate = [now dateByAddingTimeInterval:60*60*24*daysToSubtract];
-        [thumbView changeTimeString:[thumbDateFormatter stringFromDate:newDate]adding:NO];
-    }
-    previousYCoord = yCoord;
 }
 
 #pragma mark - Camera Methods

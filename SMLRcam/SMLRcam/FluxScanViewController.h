@@ -11,7 +11,7 @@
 #import "MMDrawerBarButtonItem.h"
 #import "KTPlaceholderTextView.h"
 #import "KTSegmentedButtonControl.h"
-#import "FluxClockSlidingControl.h"
+#import "FluxTimeFilterControl.h"
 #import "FluxCameraButton.h"
 #import "FluxCompassView.h"
 #import "FluxDataManager.h"
@@ -90,7 +90,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
-@property (nonatomic, strong) FluxClockSlidingControl*thumbView;
+@property (nonatomic, strong) IBOutlet FluxTimeFilterControl*timeFilterControl;
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 
@@ -130,6 +130,5 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (void)setupGestureHandlers;
 - (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
 - (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
-- (void)setThumbViewDate:(float)yCoord;
 
 @end
