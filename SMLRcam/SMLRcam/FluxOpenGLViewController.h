@@ -70,6 +70,9 @@ typedef struct {
     FluxAVCameraSingleton *cameraManager;
     
     NSLock *_nearbyListLock;
+    NSLock *_renderListLock;
+    
+    FluxDataFilter *dataFilter;
     
     __weak IBOutlet UISlider *DistanceSlider;
     __weak IBOutlet UIStepper *PositionStepper;
@@ -99,6 +102,8 @@ typedef struct {
 - (void)didAcquireNewPicture:(NSNotification *)notification;
 - (void)didUpdateLocation:(NSNotification *)notification;
 - (void)didUpdateHeading:(NSNotification *)notification;
+
+- (void)didChangeFilter:(NSNotification*)notification;
 
 //AVCam Methods
 - (void)setupAVCapture;

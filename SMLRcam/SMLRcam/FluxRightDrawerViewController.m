@@ -16,6 +16,8 @@
 
 @implementation FluxRightDrawerViewController
 
+@synthesize delegate;
+
 #pragma mark - init methods
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -29,36 +31,36 @@
 
 - (void)viewWillAppear:(BOOL)animated{
     //make network Call
-    FluxDataRequest*request = [[FluxDataRequest alloc]init];
-    [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
-        //do something with array
-        topTagsArray = tagList;
-        if ([rightDrawerTableViewArray count] == 1) {
-            [rightDrawerTableViewArray insertObject:topTagsArray atIndex:0];
-        }
-        else{
-            [rightDrawerTableViewArray replaceObjectAtIndex:0 withObject:topTagsArray];
-        }
-        [self.tableView reloadData];
-    }];
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20
-                                       andMaxCount:20 withDataRequest:request];
+    [self sendTagRequest];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    //if the user has changed anything related to the filer, send the delegate method to update the view
+    if (![dataFilter isEqualToFilter:previousDataFilter]) {
+        NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                      initWithObjectsAndKeys:dataFilter, @"filter", nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
+        previousDataFilter = [dataFilter copy];
+    }
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    FluxFilterDrawerObject *MyNetworkFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Network" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:YES];
-    FluxFilterDrawerObject *PlacesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Places" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:NO];
-    FluxFilterDrawerObject *PeopleFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:NO];
-    FluxFilterDrawerObject *ThingsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Things" andtitleImage:[UIImage imageNamed:@"filter_Things.png"] andActive:NO];
-    FluxFilterDrawerObject *EventsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Events" andtitleImage:[UIImage imageNamed:@"filter_Events.png"] andActive:NO];
+    FluxFilterDrawerObject *MyNetworkFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Network" andDBTitle:@"1" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:YES];
+    FluxFilterDrawerObject *PlacesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Places" andDBTitle:@"place" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:YES];
+    FluxFilterDrawerObject *PeopleFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People" andDBTitle:@"person" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:YES];
+    FluxFilterDrawerObject *ThingsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Things" andDBTitle:@"thing" andtitleImage:[UIImage imageNamed:@"filter_Things.png"] andActive:YES];
+    FluxFilterDrawerObject *EventsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Events" andDBTitle:@"event" andtitleImage:[UIImage imageNamed:@"filter_Events.png"] andActive:YES];
 
-    contextFiltersArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PlacesFilterObject, PeopleFilterObject, ThingsFilterObject, EventsFilterObject, nil];
+    contextFiltersArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PeopleFilterObject, PlacesFilterObject, ThingsFilterObject, EventsFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
     rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:contextFiltersArray, nil];
     
     [self setupLocationManager];
+    
+    dataFilter = [[FluxDataFilter alloc] init];
+    previousDataFilter = [[FluxDataFilter alloc] initWithFilter:dataFilter];
 }
 
 - (void)setupLocationManager
@@ -73,8 +75,28 @@
 }
 
 #pragma mark - network methods
-
-
+- (void)sendTagRequest{
+    if (![self.view isHidden]) {
+        // viewController is visible
+        FluxDataRequest*request = [[FluxDataRequest alloc]init];
+        FluxDataFilter*tmp = dataFilter;
+        [tmp setHashTags:@""];
+        [request setSearchFilter:tmp];
+        [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
+            //do something with array
+            topTagsArray = tagList;
+            if ([rightDrawerTableViewArray count] == 1) {
+                [rightDrawerTableViewArray insertObject:topTagsArray atIndex:0];
+            }
+            else{
+                [rightDrawerTableViewArray replaceObjectAtIndex:0 withObject:topTagsArray];
+            }
+            [self.tableView reloadData];
+        }];
+        [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20
+                                           andMaxCount:20 withDataRequest:request];
+    }
+}
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
     topTagsArray = tagList;
@@ -89,9 +111,7 @@
     }
     else
         return 1;
-
 }
-
 
 - (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     return 40.0f;
@@ -144,7 +164,6 @@
     //its the search tableView
     else
         return 0;
-
 }
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -182,6 +201,7 @@
             [cell setDelegate:self];
             
             //set the cell properties to the array elements declared above
+            [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
             [cell.descriptorIconImageView setImage:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]titleImage]];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
@@ -217,10 +237,10 @@
             
             
             //set the cell properties to the array elements declared above
+            [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
             [cell.descriptorIconImageView setImage:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]titleImage]];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
-            
             return cell;
         }
     }
@@ -234,21 +254,30 @@
 
 //if the checkbox is selected, the callback comes here. In the method below we check which cell it is and mark the corresponding object as active.
 - (void)CheckboxCell:(FluxDrawerCheckboxFilterTableViewCell *)checkCell boxWasChecked:(BOOL)checked{
+    if (checked) {
+        [dataFilter addCategoryToFilter:checkCell.dbTitle];
+    }
+    else{
+        [dataFilter removeCategoryFromFilter:checkCell.dbTitle];
+    }
+    //update the cell
     for (FluxDrawerCheckboxFilterTableViewCell* cell in [self.tableView visibleCells]) {
         if (cell == checkCell) {
             NSIndexPath *path = [self.tableView indexPathForCell:cell];
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
+    [self sendTagRequest];
 }
 
-- (void)tagList:(DWTagList *)list selectedTagWithTitle:(NSString *)title{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message"
-                                                    message:[NSString stringWithFormat:@"You tapped tag %@", title]
-                                                   delegate:nil
-                                          cancelButtonTitle:@"Ok"
-                                          otherButtonTitles:nil];
-    [alert show];
+- (void)tagList:(DWTagList *)list selectedTagWithTitle:(NSString *)title andActive:(BOOL)active{
+    
+    if (active) {
+        [dataFilter addHashTagToFilter:title];
+    }
+    else{
+        [dataFilter removeHashTagFromFilter:title];
+    }
 }
 
 

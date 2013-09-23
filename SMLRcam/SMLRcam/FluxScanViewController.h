@@ -21,6 +21,7 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxAVCameraSingleton.h"
 
+
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMotion/CoreMotion.h>

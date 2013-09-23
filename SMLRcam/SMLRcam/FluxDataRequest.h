@@ -31,7 +31,7 @@ typedef enum request_type request_type;
 
 typedef void (^ImageReadyBlock)(FluxLocalID *, UIImage *, FluxDataRequest *);
 typedef void (^MetadataReadyBlock)(FluxScanImageObject *, FluxDataRequest *);
-typedef void (^NearbyListReadyBlock)(NSMutableDictionary *);
+typedef void (^NearbyListReadyBlock)(NSArray *);
 typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
@@ -90,7 +90,7 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 
 - (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
-- (void) whenNearbyListReady:(NSMutableDictionary *)nearbyList;
+- (void) whenNearbyListReady:(NSArray *)nearbyList;
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;

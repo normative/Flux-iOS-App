@@ -36,7 +36,7 @@
     }
 }
 
-- (void) whenNearbyListReady:(NSMutableDictionary *)nearbyList
+- (void) whenNearbyListReady:(NSArray *)nearbyList
 {
     if (self.nearbyListReady)
     {

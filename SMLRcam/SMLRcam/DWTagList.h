@@ -12,9 +12,16 @@
 @protocol DWTagListDelegate <NSObject>
 @optional
 
-- (void)tagList:(DWTagList*)list selectedTagWithTitle:(NSString*)title;
+- (void)tagList:(DWTagList*)list selectedTagWithTitle:(NSString*)title andActive:(BOOL)active;
 
 @end
+
+enum tagState {
+    tagInactive = 0,
+    tagActive = 1
+};
+
+typedef enum tagState tagState;
 
 @interface DWTagList : UIScrollView
 {
@@ -37,8 +44,7 @@
 @property (nonatomic, assign) CGFloat verticalPadding;
 @property (nonatomic, assign) CGFloat minimumWidth;
 
-- (void)setTagBackgroundColor:(UIColor *)color;
-- (void)setTagHighlightColor:(UIColor *)color;
+- (void)setTagBackgroundStateForTagView:(UIView*)tagView andTagstate:(tagState)tagState;
 
 //array parameter is an array of FluxTagObjects
 - (void)setTags:(NSArray *)array;
@@ -52,6 +58,7 @@
 
 @property (nonatomic, strong) UIButton      *button;
 @property (nonatomic, strong) UILabel       *label;
+@property (nonatomic) BOOL isSelected;
 
 - (void)updateWithString:(NSString*)text font:(UIFont*)font constrainedToWidth:(CGFloat)maxWidth padding:(CGSize)padding minimumWidth:(CGFloat)minimumWidth;
 - (void)setLabelText:(NSString*)text;

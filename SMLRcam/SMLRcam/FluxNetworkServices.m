@@ -212,7 +212,7 @@
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist=%@&userlist=%@&catlist=%@&maxcount=%d",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
@@ -235,15 +235,15 @@
         
         if ([result count] > 0)
         {
-            NSMutableDictionary *mutableDictionary = [[NSMutableDictionary alloc] init];
+            NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
             for (FluxScanImageObject*obj in result.array)
             {
                 [obj setLocalID:[obj generateUniqueStringID]];
-                [mutableDictionary setObject:obj forKey:[NSNumber numberWithInt:obj.imageID]];
+                [mutableArray addObject:obj];
             }
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:andRequestID:)])
             {
-                [delegate NetworkServices:self didreturnImageList:mutableDictionary andRequestID:requestID];
+                [delegate NetworkServices:self didreturnImageList:[NSArray arrayWithArray:mutableArray] andRequestID:requestID];
             }
         }
     }
@@ -412,6 +412,69 @@
      }];
     [operation start];
 }
+
+- (void)getTagsForLocationFiltered:(CLLocationCoordinate2D)location
+                         andRadius:(float)radius
+                         andMinAlt:(float)altMin
+                         andMaxAlt:(float)altMax
+                   andMinTimestamp:(NSDate *)timeMin
+                   andMaxTimestamp:(NSDate *)timeMax
+                       andHashTags:(NSString *)hashTags
+                          andUsers:(NSString *)users
+                     andCategories:(NSString *)cats
+                       andMaxCount:(int)maxCount
+                      andRequestID:(FluxRequestID *)requestID;
+{
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider tagGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"/tags/localbycountfiltered.json"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d",
+                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               location.latitude, location.longitude, radius,
+                                                                               altMin, altMax,
+                                                                               timestampMin, timestampMax,
+                                                                               hashTags, users, cats, maxCount]]];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Tags",[result count]);
+         
+         if ([result count] > 0)
+         {
+             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
+             {
+                 [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
+             }
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
+
+
+
 
 #pragma mark  - Other
 

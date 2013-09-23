@@ -13,13 +13,14 @@
 }
 
 @property (nonatomic, weak) NSString *title;
+@property (nonatomic, weak) NSString *dbTitle;
 @property (nonatomic, weak) UIImage *titleImage;
 @property (nonatomic)BOOL isChecked;
 
 
 
 
-- (id)initWithTitle:(NSString*)atitle andtitleImage:(UIImage*)atitleImage andActive:(BOOL)bActive;
+- (id)initWithTitle:(NSString*)atitle andDBTitle:(NSString*)dbtitle andtitleImage:(UIImage*)atitleImage andActive:(BOOL)bActive;
 
 - (void)setIsActive:(BOOL)active;
 

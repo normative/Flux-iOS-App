@@ -12,6 +12,13 @@
 #import "FluxDataManager.h"
 #import "FluxLocationServicesSingleton.h"
 #import "DWTagList.h"
+#import "FluxDataFilter.h"
+
+@class FluxRightDrawerViewController;
+@protocol RightDrawerFilterDelegate <NSObject>
+@optional
+- (void)RightDrawer:(FluxRightDrawerViewController*)rightDrawerController didChangeFilter:(FluxDataFilter*)filter;
+@end
 
 @interface FluxRightDrawerViewController : UITableViewController<DrawerCheckboxTableViewCellDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, DWTagListDelegate>{
     
@@ -19,11 +26,17 @@
     NSArray *contextFiltersArray;
     NSArray *topTagsArray;
     FluxLocationServicesSingleton *locationManager;
+    FluxDataFilter *dataFilter;
+    FluxDataFilter *previousDataFilter;
+    
+    __weak id <RightDrawerFilterDelegate> delegate;
 }
+@property (nonatomic, weak) id <RightDrawerFilterDelegate> delegate;
 @property (nonatomic, weak) FluxDataManager *fluxDataManager;
 @property (weak, nonatomic) IBOutlet UISearchBar *filterSearchBar;
 
 - (void)setupLocationManager;
+- (void)sendTagRequest;
 
 
 

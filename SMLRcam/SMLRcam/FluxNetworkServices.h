@@ -17,13 +17,13 @@ typedef NSUUID FluxRequestID;
 @protocol NetworkServicesDelegate <NSObject>
 @optional
 //images
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage*)image forImageID:(int)imageID
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImage:(UIImage *)image forImageID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMetadata:(FluxScanImageObject*)imageObject
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMetadata:(FluxScanImageObject *)imageObject
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSMutableDictionary*)imageList
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSArray *)imageList
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject*)updatedImageObject
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUploadImage:(FluxScanImageObject *)updatedImageObject
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
             ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID;
@@ -85,6 +85,21 @@ typedef NSUUID FluxRequestID;
 
 #pragma mark  - Tags
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;
+
+
+//tags filtered
+- (void)getTagsForLocationFiltered:(CLLocationCoordinate2D)location
+                         andRadius:(float)radius
+                         andMinAlt:(float)altMin
+                         andMaxAlt:(float)altMax
+                   andMinTimestamp:(NSDate *)timeMin
+                   andMaxTimestamp:(NSDate *)timeMax
+                       andHashTags:(NSString *)hashTags
+                          andUsers:(NSString *)users
+                     andCategories:(NSString *)cats
+                       andMaxCount:(int)maxCount
+                      andRequestID:(FluxRequestID *)requestID;
+
 
 #pragma mark  - Other
 - (void)deleteLocations;

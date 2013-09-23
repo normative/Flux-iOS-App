@@ -285,6 +285,10 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     }];
 }
 
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
+    return YES;
+}
+
 
 @end
 

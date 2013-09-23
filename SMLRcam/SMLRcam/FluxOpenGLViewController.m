@@ -26,7 +26,7 @@ err = glGetError();								\
 }													\
 }
 
-const float MAX_IMAGE_RADIUS = 7.5;
+const float MAX_IMAGE_RADIUS = 15.0;
 
 const int number_textures = 5;
 
@@ -667,10 +667,16 @@ void init(){
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
+    [self requestNearbyItems];
+}
+
+#pragma mark - Filtering
+- (void)requestNearbyItems{
     CLLocation *loc = locationManager.location;
+    
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setSearchFilter:[[FluxDataFilter alloc] init]];
-    [dataRequest setNearbyListReady:^(NSMutableDictionary *imageList){
+    [dataRequest setSearchFilter:dataFilter];
+    [dataRequest setNearbyListReady:^(NSArray *imageList){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
         [_nearbyListLock lock];
@@ -685,14 +691,19 @@ void init(){
             }
         }
         
+        NSMutableArray *previousNearbyKeys = [NSMutableArray arrayWithArray:[fluxNearbyMetadata allKeys]];
+        [previousNearbyKeys removeObjectsInArray:localOnlyObjects];
+        
+        // Remove all objects except for local-only
+        [fluxNearbyMetadata removeObjectsForKeys:previousNearbyKeys];
+        
         self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
         
         // Need to update all metadata objects even if they exist (in case they change in the future)
         // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
         // when a desired image is loaded (happens after the texture is loaded)
-        for (id curKey in [imageList allKeys])
+        for (FluxScanImageObject *curImgObj in imageList)
         {
-            FluxScanImageObject *curImgObj = [imageList objectForKey:curKey];
             [fluxNearbyMetadata setObject:curImgObj forKey:curImgObj.localID];
             if (![self.nearbyList containsObject:curImgObj.localID])
             {
@@ -704,6 +715,13 @@ void init(){
         [_nearbyListLock unlock];
     }];
     [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withDataRequest:dataRequest];
+}
+
+- (void)didChangeFilter:(NSNotification*)notification{
+    dataFilter = [notification.userInfo objectForKey:@"filter"];
+    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+    dataFilter.maxReturnItems = 10;
+    [self requestNearbyItems];
 }
 
 #pragma mark - Motion Manager
@@ -853,9 +871,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     _nearbyListLock = [[NSLock alloc] init];
+    _renderListLock = [[NSLock alloc] init];
     
     [self setupLocationManager];
     [self setupMotionManager];
+    
+    dataFilter = [[FluxDataFilter alloc]init];
+    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+    dataFilter.maxReturnItems = 10;
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     
@@ -877,6 +900,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupAVCapture];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:@"FluxScanViewDidAcquireNewPicture" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFilter:) name:@"FluxFilterViewDidChangeFilter" object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -968,7 +992,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             // We have a new picture ready in the cache.
             // Add the ID to the current list of nearby items, and re-sort and re-prune the list
-            [self.nearbyList addObject:localID];
+            [self.nearbyList insertObject:localID atIndex:0];
             [self populateImageData];
         }
     [_nearbyListLock unlock];
@@ -977,10 +1001,30 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 -(void) populateImageData
 {
     // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
+//    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
     NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange([self.nearbyList count]-rangeLen, rangeLen)]];
+    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
     
+    // Clear out anything that is no longer rendered
+    [_renderListLock lock];
+
+    NSMutableArray *toDelete = [[NSMutableArray alloc] init];
+    
+    for (id localID in self.renderedTextures)
+    {
+        if ((![localID isEqualToString:@""]) && ![self.nearbyList containsObject:localID])
+        {
+            [toDelete addObject:localID];
+        }
+    }
+    
+    for (id localID in toDelete)
+    {
+        [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
+    }
+    
+    [_renderListLock unlock];
+
     // Request images for nearby items
     for (id localID in self.nearbyList)
     {
@@ -996,20 +1040,29 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void) updateImageTextureWithLocalID:(NSString *)localID withImage:(UIImage *)image
 {
     NSError *error;
-    static int i = 0;
+    
+    [_renderListLock lock];
     
     // Check if texture is already being rendered
     if ([self.renderedTextures containsObject:localID])
     {
         // Update the metadata in case it changed
         [self updateImageMetadataKey:localID index:[self.renderedTextures indexOfObject:localID]];
+        [_renderListLock unlock];
         return;
     }
     
-    if (_texture[i] != nil)
+    // Find a usable slot to put the texture
+    NSUInteger i = [self.renderedTextures indexOfObject:@""];
+    if (i == NSNotFound)
     {
-        [self deleteImageTextureIdx:i];
+        NSLog(@"%s: Render list is full! Not rendering image with ID %@", __func__, localID);
+        [_renderListLock unlock];
+        return;
     }
+
+    // Note: This should never actually do anything (since _texture[i] should be nil), but just to be safe...
+    [self deleteImageTextureIdx:i];
     
     // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
@@ -1025,23 +1078,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         NSLog(@"Added Image texture to render list in slot %d", (i));
         self.renderedTextures[i] = localID;
         [self updateImageMetadataKey:localID index:i];
-        i++;
         _opengltexturesset++;
-        
-        // Round robin for now
-        if (i == number_textures) i = 0;
         if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
     }
-    
+    [_renderListLock unlock];
 }
 
 - (void) deleteImageTextureIdx:(int)i
 {
-    GLKTextureInfo *curTexture = _texture[i];
-    GLuint textureName = curTexture.name;
-    glDeleteTextures(1, &textureName);
-    _texture[i] = nil;
-    self.renderedTextures[i] = @"";
+    if (_texture[i] != nil)
+    {
+        GLKTextureInfo *curTexture = _texture[i];
+        GLuint textureName = curTexture.name;
+        glDeleteTextures(1, &textureName);
+        _texture[i] = nil;
+        self.renderedTextures[i] = @"";
+    }
 }
 
 -(void) updateImageMetadataKey:(id)key index:(int)idx
