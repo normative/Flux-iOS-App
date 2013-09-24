@@ -73,9 +73,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     UILongPressGestureRecognizer *longPressGesture;
     UITapGestureRecognizer *tapGesture;
     NSDateFormatter *dateFormatter;
-    NSDateFormatter *thumbDateFormatter;
-    float previousYCoord;
-    float startXCoord;
     
     //openGL
     FluxOpenGLViewController*openGLController;
@@ -128,8 +125,9 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (void)setupAnnotationsTableView;
 
 //timeScrolling
+- (void)setupTimeFilterControl;
 - (void)setupGestureHandlers;
-- (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
-- (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
+//- (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
+//- (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
 
 @end

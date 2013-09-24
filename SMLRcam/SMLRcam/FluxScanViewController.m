@@ -10,6 +10,7 @@
 
 #import "UIViewController+MMDrawerController.h"
 #import "FluxAnnotationTableViewCell.h"
+#import "FluxTimeFilterControl.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -322,7 +323,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 //this section commented out as the circular time slider was removed from the designs (perhaps temporarily)
-#pragma mark - Gesture Recognizer
+#pragma mark - Time Filtering
+- (void)setupTimeFilterControl{
+    
+}
+
 - (void)setupGestureHandlers{
 //    //pan
 //    panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
@@ -951,8 +956,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [dateFormatter setDateFormat:@"MMMM d, YYYY"];
     [dateRangeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
     
-    thumbDateFormatter  = [[NSDateFormatter alloc] init];
-    [thumbDateFormatter setDateFormat:@"MMM d, YYYY"];
     
     fakeGalleryView = [[UIImageView alloc]initWithFrame:CGRectMake(7, 70, 306, 161)];
     [fakeGalleryView setContentMode:UIViewContentModeScaleAspectFit];

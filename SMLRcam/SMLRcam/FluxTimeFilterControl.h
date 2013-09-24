@@ -8,14 +8,23 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FluxTimeFilterControl : UIView{
+#import "FluxDataManager.h"
+
+@interface FluxTimeFilterControl : UIView<UIGestureRecognizerDelegate>{
     UIImageView *quickPanCircleView;
 }
 
 @property (nonatomic)float startingYCoord;
+@property (nonatomic, weak) FluxDataManager *fluxDataManager;
 
+
+//quick pan circle view
+- (void)enableQuickPanCircle;
 - (void)showQuickPanCircleAtPoint:(CGPoint)point;
 - (void)hideQuickPanCircle;
 - (void)quickPanDidSlideToPoint:(CGPoint)point;
 
+//swipe time gesture
+- (void)handleSwipeUpGesture:(UISwipeGestureRecognizer*)sender;
+- (void)handleSwipeDownGesture:(UISwipeGestureRecognizer*)sender;
 @end
