@@ -9,9 +9,16 @@
 #import <Foundation/Foundation.h>
 
 #import "FluxDataManager.h"
+#import "FluxLocationServicesSingleton.h"
 
-@interface FluxDisplayManager : NSObject
+extern NSString* const FluxDisplayManagerDidUpdateDisplayList;
+extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
+extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
+@interface FluxDisplayManager : NSObject{
+    FluxLocationServicesSingleton *locationManager;
+}
+@property (nonatomic)CLLocationCoordinate2D locationsCoordinate;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 
 @end

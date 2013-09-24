@@ -236,7 +236,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
         [cell.contentImageView setImage:image];
     }];
-    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+    [self.fluxDisplayManager.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
 
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];

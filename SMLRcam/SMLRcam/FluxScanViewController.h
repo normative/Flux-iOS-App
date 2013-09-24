@@ -20,6 +20,7 @@
 #include "FluxOpenGLViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxAVCameraSingleton.h"
+#import "FluxDisplayManager.h"
 
 
 #import <QuartzCore/QuartzCore.h>
@@ -90,7 +91,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) IBOutlet FluxTimeFilterControl*timeFilterControl;
 
-@property (nonatomic, strong) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
