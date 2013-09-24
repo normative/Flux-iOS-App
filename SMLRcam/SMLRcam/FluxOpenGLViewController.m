@@ -651,78 +651,42 @@ void init(){
 
 @synthesize fluxNearbyMetadata;
 
-#pragma mark - Location
+#pragma mark - Display Manager Notifications
 
-//allocates the location object and sets some parameters
-- (void)setupLocationManager
-{
-    // Create the manager object
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-}
-
-- (void)didUpdateHeading:(NSNotification *)notification{
-    //    CLLocationDirection heading = locationManager.heading;
-    //    CMAttitude *att = motionManager.attitude;
-    //    NSLog(@"Attitude: %f, %f, %f", att.pitch, att.yaw, att.roll);
-}
-
-- (void)didUpdateLocation:(NSNotification *)notification{
-    [self requestNearbyItems];
-}
-
-#pragma mark - Filtering
-- (void)requestNearbyItems{
-    CLLocation *loc = locationManager.location;
+- (void)didUpdateImageList:(NSNotification *)notification{
+    // Clear out anything that is no longer rendered
+    self.fluxNearbyMetadata = self.fluxDisplayManager.fluxNearbyMetadata;
     
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setSearchFilter:dataFilter];
-    [dataRequest setNearbyListReady:^(NSArray *imageList){
-        NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
-        
-        [_nearbyListLock lock];
-        
-        // Iterate over the list and clear out anything that is not local-only
-        for (id localID in self.nearbyList)
+    [_renderListLock lock];
+
+    NSMutableArray *toDelete = [[NSMutableArray alloc] init];
+
+    for (id localID in self.renderedTextures)
+    {
+        if ((![localID isEqualToString:@""]) && ![self.nearbyList containsObject:localID])
         {
-            FluxScanImageObject *locationObject = [fluxNearbyMetadata objectForKey:localID];
-            if (locationObject.imageID < 0)
-            {
-                [localOnlyObjects addObject:localID];
-            }
+            [toDelete addObject:localID];
         }
-        
-        NSMutableArray *previousNearbyKeys = [NSMutableArray arrayWithArray:[fluxNearbyMetadata allKeys]];
-        [previousNearbyKeys removeObjectsInArray:localOnlyObjects];
-        
-        // Remove all objects except for local-only
-        [fluxNearbyMetadata removeObjectsForKeys:previousNearbyKeys];
-        
-        self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
-        
-        // Need to update all metadata objects even if they exist (in case they change in the future)
-        // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
-        // when a desired image is loaded (happens after the texture is loaded)
-        for (FluxScanImageObject *curImgObj in imageList)
-        {
-            [fluxNearbyMetadata setObject:curImgObj forKey:curImgObj.localID];
-            if (![self.nearbyList containsObject:curImgObj.localID])
-            {
-                [self.nearbyList addObject:curImgObj.localID];
-            }
-        }
-        
-        [self populateImageData];
-        [_nearbyListLock unlock];
-    }];
-    [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withDataRequest:dataRequest];
+    }
+
+    for (id localID in toDelete)
+    {
+        [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
+    }
+    
+    [_renderListLock unlock];
 }
 
-- (void)didChangeFilter:(NSNotification*)notification{
-    dataFilter = [notification.userInfo objectForKey:@"filter"];
-    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-    dataFilter.maxReturnItems = 10;
-    [self requestNearbyItems];
+- (void)updateImageTexture:(NSNotification *)notification{
+    if ([[notification userInfo]allKeys].count == 0) {
+        return;
+    }
+    NSString *localID = [[[notification userInfo]allKeys]objectAtIndex:0];
+    [self updateImageTextureWithLocalID:localID withImage:[[notification userInfo]objectForKey:localID]];
 }
+
+
+
 
 #pragma mark - Motion Manager
 
@@ -861,6 +825,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)viewDidLoad
 {
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageTexture:) name:FluxDisplayManagerDidUpdateImageTexture object:nil];
+    
     [super viewDidLoad];
     _opengltexturesset = 0;
     self.nearbyList = [[NSMutableArray alloc] init];
@@ -873,12 +841,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _nearbyListLock = [[NSLock alloc] init];
     _renderListLock = [[NSLock alloc] init];
     
-    [self setupLocationManager];
     [self setupMotionManager];
-    
-    dataFilter = [[FluxDataFilter alloc]init];
-    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-    dataFilter.maxReturnItems = 10;
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     
@@ -899,22 +862,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:@"FluxScanViewDidAcquireNewPicture" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFilter:) name:@"FluxFilterViewDidChangeFilter" object:nil];
+    
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-        // Call these immediately since location is not always updated frequently (use current value)
-        [self didUpdateHeading:nil];
-        [self didUpdateLocation:nil];
-    }
+    // Call these immediately since location is not always updated frequently (use current value)
     
     [self startDeviceMotion];
 }
@@ -922,9 +877,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     
     [self stopDeviceMotion];
     //[self pauseAVCapture];
@@ -980,63 +932,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 
 #pragma mark - OpenGL Texture & Metadata Manipulation
-
-- (void)didAcquireNewPicture:(NSNotification *)notification
-{
-    FluxLocalID *localID = [[notification userInfo] objectForKey:@"FluxScanViewDidAcquireNewPictureLocalIDKey"];
-    
-    [_nearbyListLock lock];
-//        if ((localID != nil) && ([fluxNearbyMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
-// There is currently nothing here ensuring that it will still be in the cache.
-        if (localID != nil)
-        {
-            // We have a new picture ready in the cache.
-            // Add the ID to the current list of nearby items, and re-sort and re-prune the list
-            [self.nearbyList insertObject:localID atIndex:0];
-            [self populateImageData];
-        }
-    [_nearbyListLock unlock];
-}
-
--(void) populateImageData
-{
-    // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
-//    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
-    NSUInteger rangeLen = ([self.nearbyList count] >= number_textures ? number_textures : [self.nearbyList count]);
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
-    
-    // Clear out anything that is no longer rendered
-    [_renderListLock lock];
-
-    NSMutableArray *toDelete = [[NSMutableArray alloc] init];
-    
-    for (id localID in self.renderedTextures)
-    {
-        if ((![localID isEqualToString:@""]) && ![self.nearbyList containsObject:localID])
-        {
-            [toDelete addObject:localID];
-        }
-    }
-    
-    for (id localID in toDelete)
-    {
-        [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
-    }
-    
-    [_renderListLock unlock];
-
-    // Request images for nearby items
-    for (id localID in self.nearbyList)
-    {
-        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
-        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-            [self updateImageTextureWithLocalID:localID withImage:image];
-        }];
-        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
-    }
-}
-
 - (void) updateImageTextureWithLocalID:(NSString *)localID withImage:(UIImage *)image
 {
     NSError *error;
@@ -1131,7 +1026,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         _validMetaData[i] =0;
         _validMetaData[i] = (computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage) *
-                             locationManager.notMoving);
+                             self.fluxDisplayManager.locationManager.notMoving);
         
       
         
@@ -1275,9 +1170,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
     
-    _userPose.position.x =locationManager.location.coordinate.latitude;
-    _userPose.position.y =locationManager.location.coordinate.longitude;
-    _userPose.position.z =locationManager.location.altitude;
+    _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+    _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
+    _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
     
     GLKVector3 planeNormal;
     float distance = _projectionDistance;

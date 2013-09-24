@@ -95,8 +95,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 
 - (void)didUpdatePlacemark:(NSNotification *)notification;
-- (void)didUpdateHeading:(NSNotification *)notification;
-- (void)didUpdateLocation:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;

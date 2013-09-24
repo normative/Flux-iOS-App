@@ -12,6 +12,7 @@
 #import "FluxLeftDrawerViewController.h"
 #import "FluxRightDrawerViewController.h"
 #import "FluxScanViewController.h"
+#import "FluxDisplayManager.h"
 #import "FluxDataManager.h"
 
 #import <Security/Security.h>
@@ -32,7 +33,7 @@
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
                                                              bundle: nil];
     
-    FluxDataManager*fluxDataManager = [[FluxDataManager alloc] init];
+    FluxDisplayManager*fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
     
     FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
@@ -40,8 +41,8 @@
     
     FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
     
-    rightSideDrawerViewController.fluxDataManager = fluxDataManager;
-    scanViewController.fluxDataManager = fluxDataManager;
+    rightSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
+    scanViewController.fluxDisplayManager = fluxDisplayManager;
     
     MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];
     

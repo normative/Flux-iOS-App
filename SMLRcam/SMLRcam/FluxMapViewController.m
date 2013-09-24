@@ -67,7 +67,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
                 }
             }
         }];
-        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+        [self.fluxDisplayManager.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
     }
 }
 
@@ -176,7 +176,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
             }
             [self setStatusBarMomentLabel];
         }];
-        [self.fluxDataManager requestImageListAtLocation:userLocation.location.coordinate
+        [self.fluxDisplayManager.fluxDataManager requestImageListAtLocation:userLocation.location.coordinate
                                               withRadius:50 withDataRequest:dataRequest];
         
         userLastSynchedLocation.latitude = userLocation.location.coordinate.latitude;

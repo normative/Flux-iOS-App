@@ -7,18 +7,29 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <GLKit/GLKit.h>
 
 #import "FluxDataManager.h"
 #import "FluxLocationServicesSingleton.h"
 
 extern NSString* const FluxDisplayManagerDidUpdateDisplayList;
-extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
-extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
+extern NSString* const FluxDisplayManagerDidUpdateOpenGLDisplayList;
+extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
 
+
+//this class interacts directly with location + data managers, and determines what images the app should display.
 @interface FluxDisplayManager : NSObject{
-    FluxLocationServicesSingleton *locationManager;
+    FluxDataFilter *dataFilter;
+    
+    NSLock *_nearbyListLock;
+    NSLock *_renderListLock;
+    
+    NSMutableArray *renderedTextures;
 }
-@property (nonatomic)CLLocationCoordinate2D locationsCoordinate;
+@property (nonatomic)CLLocation* location;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) FluxLocationServicesSingleton *locationManager;
+@property (nonatomic, strong) NSMutableArray *nearbyList;
+@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 
 @end

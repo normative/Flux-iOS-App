@@ -38,17 +38,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [locationLabel setText: locationString];
 }
 
-- (void)didUpdateHeading:(NSNotification *)notification{
-//    CLLocationDirection heading = locationManager.heading;
-//    if (locationManager.location != nil) {
-//        ;
-//    }
-}
-
-- (void)didUpdateLocation:(NSNotification *)notification{
-//    CLLocation *loc = locationManager.location;
-}
-
 #pragma mark - Network Services
 
 //called by annotationsTableview
@@ -276,7 +265,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.myViewOrientation = changeToOrientation;
         
-        mapViewController.fluxDataManager = self.fluxDataManager;
+        mapViewController.fluxDisplayManager = self.fluxDisplayManager;
     }
 }
 
@@ -318,7 +307,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [openGLController didMoveToParentViewController:self];
     openGLController.view.frame = self.view.bounds;
     
-    openGLController.fluxDataManager = self.fluxDataManager;
+    openGLController.fluxDisplayManager = self.fluxDisplayManager;
     openGLController.fluxNearbyMetadata = self.fluxNearbyMetadata;
 }
 
@@ -848,7 +837,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          }];
     }];
     
-    [self.fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
+    [self.fluxDisplayManager.fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
     
     // Post notification for observers prior to upload
     NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
@@ -972,11 +961,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
         [self didUpdatePlacemark:nil];
-        [self didUpdateHeading:nil];
-        [self didUpdateLocation:nil];
     }
     
     [radarView updateRadarWithNewMetaData:fluxNearbyMetadata];
@@ -991,8 +976,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)viewWillDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     [self pauseAVCapture];
 }
 

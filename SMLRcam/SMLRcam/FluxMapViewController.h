@@ -10,6 +10,7 @@
 #import <MapKit/MapKit.h>
 
 #import "FluxDataManager.h"
+#import "FluxDisplayManager.h"
 #import "FluxLocationServicesSingleton.h"
 
 @class FluxScanImageObject;
@@ -47,7 +48,7 @@
 }
 
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
-@property (nonatomic, weak) FluxDataManager *fluxDataManager;
+@property (nonatomic, weak) FluxDisplayManager * fluxDisplayManager;
 
 - (IBAction)onLocateMeBtn:(id)sender;
 

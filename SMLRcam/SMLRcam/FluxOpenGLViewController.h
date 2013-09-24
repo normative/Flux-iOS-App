@@ -10,7 +10,7 @@
 #import "ImageViewerImageUtil.h"
 //#import "FluxScanViewController.h"
 #import "FluxDataManager.h"
-#import "FluxLocationServicesSingleton.h"
+#import "FluxDisplayManager.h"
 #import "FluxMotionManagerSingleton.h"
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import <AVFoundation/AVFoundation.h>
@@ -65,21 +65,18 @@ typedef struct {
     NSString *_sessionPreset;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
-    FluxLocationServicesSingleton *locationManager;
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
     NSLock *_nearbyListLock;
     NSLock *_renderListLock;
     
-    FluxDataFilter *dataFilter;
-    
     __weak IBOutlet UISlider *DistanceSlider;
     __weak IBOutlet UIStepper *PositionStepper;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
-@property (nonatomic, weak) FluxDataManager *fluxDataManager;
+@property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
 @property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
 @property (nonatomic, strong)NSMutableArray *nearbyList;
 @property (nonatomic, strong)NSMutableArray *renderedTextures;
@@ -95,18 +92,15 @@ typedef struct {
 - (BOOL)linkProgram:(GLuint)prog;
 - (BOOL)validateProgram:(GLuint)prog;
 
-- (void)setupLocationManager;
 - (void)setupMotionManager;
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
-- (void)didAcquireNewPicture:(NSNotification *)notification;
-- (void)didUpdateLocation:(NSNotification *)notification;
-- (void)didUpdateHeading:(NSNotification *)notification;
-
-- (void)didChangeFilter:(NSNotification*)notification;
 
 //AVCam Methods
 - (void)setupAVCapture;
+
+- (void)didUpdateImageList:(NSNotification *)notification;
+- (void)updateImageTexture:(NSNotification *)notification;
 
 - (IBAction)onDistanceSliderValueChanged:(id)sender;
 - (IBAction)onPositionStepperValueChanged:(id)sender;
