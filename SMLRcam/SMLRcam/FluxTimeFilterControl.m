@@ -91,7 +91,10 @@
                      }];
 }
 
-#pragma mark - Gesture recognizer
+#pragma mark - Gesture recognizers
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    NSLog(@"touched timeView");
+}
 - (void)handleSwipeUpGesture:(UISwipeGestureRecognizer *)sender{
     //swiped up
     NSLog(@"Swiped up in timeView");

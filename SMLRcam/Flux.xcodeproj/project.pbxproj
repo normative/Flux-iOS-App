@@ -42,12 +42,13 @@
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0A9D9017E366E100A0B109 /* DWTagList.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0A9D8F17E366E100A0B109 /* DWTagList.m */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
+		AA1183B017F327760078FCCF /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA1183AF17F327760078FCCF /* libGoogleAnalyticsServices.a */; };
+		AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA1183B117F329490078FCCF /* AdSupport.framework */; };
 		AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFB17AAD09500725AB1 /* MMDrawerBarButtonItem.m */; };
 		AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFD17AAD09500725AB1 /* MMDrawerController.m */; };
 		AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFF17AAD09500725AB1 /* MMDrawerVisualState.m */; };
 		AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */; };
 		AA134B0E17AAD17200725AB1 /* FluxLeftDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */; };
-		AA14BB2817E79308007F6764 /* libGoogleAnalytics_debug.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2717E79308007F6764 /* libGoogleAnalytics_debug.a */; };
 		AA14BB2A17E797BB007F6764 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */; };
 		AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2B17E797C2007F6764 /* CoreData.framework */; };
 		AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2D17E79938007F6764 /* libz.dylib */; };
@@ -153,6 +154,14 @@
 		AA0A9D8E17E366E100A0B109 /* DWTagList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DWTagList.h; sourceTree = "<group>"; };
 		AA0A9D8F17E366E100A0B109 /* DWTagList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DWTagList.m; sourceTree = "<group>"; };
 		AA0BE05017A6B84800E41947 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		AA1183A617F323750078FCCF /* GAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
+		AA1183A717F323750078FCCF /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
+		AA1183A817F323750078FCCF /* GAIFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
+		AA1183A917F323750078FCCF /* GAILogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAILogger.h; sourceTree = "<group>"; };
+		AA1183AA17F323750078FCCF /* GAITrackedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITrackedViewController.h; sourceTree = "<group>"; };
+		AA1183AB17F323750078FCCF /* GAITracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
+		AA1183AF17F327760078FCCF /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
+		AA1183B117F329490078FCCF /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		AA134AFA17AAD09500725AB1 /* MMDrawerBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerBarButtonItem.h; sourceTree = "<group>"; };
 		AA134AFB17AAD09500725AB1 /* MMDrawerBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMDrawerBarButtonItem.m; sourceTree = "<group>"; };
 		AA134AFC17AAD09500725AB1 /* MMDrawerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerController.h; sourceTree = "<group>"; };
@@ -163,13 +172,6 @@
 		AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MMDrawerController.m"; sourceTree = "<group>"; };
 		AA134B0C17AAD17200725AB1 /* FluxLeftDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLeftDrawerViewController.h; sourceTree = "<group>"; };
 		AA134B0D17AAD17200725AB1 /* FluxLeftDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerViewController.m; sourceTree = "<group>"; };
-		AA14BB2117E79308007F6764 /* GAI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
-		AA14BB2217E79308007F6764 /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
-		AA14BB2317E79308007F6764 /* GAIFields.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
-		AA14BB2417E79308007F6764 /* GAILogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAILogger.h; sourceTree = "<group>"; };
-		AA14BB2517E79308007F6764 /* GAITrackedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITrackedViewController.h; sourceTree = "<group>"; };
-		AA14BB2617E79308007F6764 /* GAITracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
-		AA14BB2717E79308007F6764 /* libGoogleAnalytics_debug.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalytics_debug.a; sourceTree = "<group>"; };
 		AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		AA14BB2B17E797C2007F6764 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		AA14BB2D17E79938007F6764 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -263,6 +265,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */,
 				AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */,
 				AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */,
 				AA14BB2A17E797BB007F6764 /* SystemConfiguration.framework in Frameworks */,
@@ -282,7 +285,7 @@
 				17604B941785CB35005CF054 /* AVFoundation.framework in Frameworks */,
 				17604B991785F4CA005CF054 /* CoreVideo.framework in Frameworks */,
 				17604B671785CA59005CF054 /* UIKit.framework in Frameworks */,
-				AA14BB2817E79308007F6764 /* libGoogleAnalytics_debug.a in Frameworks */,
+				AA1183B017F327760078FCCF /* libGoogleAnalyticsServices.a in Frameworks */,
 				17604B691785CA59005CF054 /* Foundation.framework in Frameworks */,
 				91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */,
 			);
@@ -324,6 +327,7 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AA1183B117F329490078FCCF /* AdSupport.framework */,
 				AA14BB2D17E79938007F6764 /* libz.dylib */,
 				AA14BB2B17E797C2007F6764 /* CoreData.framework */,
 				AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */,
@@ -474,13 +478,13 @@
 		AA14BB2017E792C0007F6764 /* Google Analytics */ = {
 			isa = PBXGroup;
 			children = (
-				AA14BB2117E79308007F6764 /* GAI.h */,
-				AA14BB2217E79308007F6764 /* GAIDictionaryBuilder.h */,
-				AA14BB2317E79308007F6764 /* GAIFields.h */,
-				AA14BB2417E79308007F6764 /* GAILogger.h */,
-				AA14BB2517E79308007F6764 /* GAITrackedViewController.h */,
-				AA14BB2617E79308007F6764 /* GAITracker.h */,
-				AA14BB2717E79308007F6764 /* libGoogleAnalytics_debug.a */,
+				AA1183A617F323750078FCCF /* GAI.h */,
+				AA1183A717F323750078FCCF /* GAIDictionaryBuilder.h */,
+				AA1183A817F323750078FCCF /* GAIFields.h */,
+				AA1183A917F323750078FCCF /* GAILogger.h */,
+				AA1183AA17F323750078FCCF /* GAITrackedViewController.h */,
+				AA1183AB17F323750078FCCF /* GAITracker.h */,
+				AA1183AF17F327760078FCCF /* libGoogleAnalyticsServices.a */,
 			);
 			name = "Google Analytics";
 			sourceTree = "<group>";
@@ -986,7 +990,9 @@
 					"$(inherited)",
 					SMLRcam,
 					SMLRcam/TestFlightSDK2.0.0,
+					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam,
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1011,6 +1017,7 @@
 					"$(inherited)",
 					SMLRcam,
 					SMLRcam/TestFlightSDK2.0.0,
+					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
