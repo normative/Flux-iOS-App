@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FluxDataManager.h"
 #import "FluxDrawerSwitchTableViewCell.h"
 #import "FluxDrawerSegmentedTableViewCell.h"
 #import "FluxDrawerButtonTableViewCell.h"
@@ -17,6 +18,8 @@
 @interface FluxLeftDrawerViewController : UITableViewController<DrawerSwitchTableViewCellDelegate, SegmentedCellDelegate, DrawerButtonTableViewCellDelegate, MFMailComposeViewControllerDelegate>{
     NSArray *leftDrawerTableViewArray;
 }
+
+@property (nonatomic, weak) FluxDataManager *fluxDataManager;
 
 - (IBAction)submitFeedbackAction:(id)sender;
 - (void)SettingActionForString:(NSString*)string andSetting:(BOOL)setting;

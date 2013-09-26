@@ -60,4 +60,6 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                                  andMaxCount:(int)maxCount
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
+- (void)deleteLocations;
+
 @end

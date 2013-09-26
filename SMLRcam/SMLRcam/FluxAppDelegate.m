@@ -42,6 +42,7 @@
     FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
     
     rightSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
+    leftSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
     scanViewController.fluxDisplayManager = fluxDisplayManager;
     
     MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];

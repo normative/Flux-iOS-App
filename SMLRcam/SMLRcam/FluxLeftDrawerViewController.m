@@ -40,6 +40,7 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 - (void)ButtonCell:(FluxDrawerButtonTableViewCell *)buttonCell
    buttonWasTapped:(UIButton *)theButton
 {
+    [self.fluxDataManager deleteLocations];
 }
 
 #pragma mark - view lifecycle

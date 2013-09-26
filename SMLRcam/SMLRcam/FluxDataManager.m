@@ -466,5 +466,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 }
 
 
+- (void)deleteLocations
+{
+    [networkServices deleteLocations];
+}
 
 @end
