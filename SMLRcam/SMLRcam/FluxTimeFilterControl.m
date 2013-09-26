@@ -24,13 +24,36 @@
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
+        UIImageView *bgView = [[UIImageView alloc]initWithFrame:self.bounds];
+        [bgView setImage:[UIImage imageNamed:@"timebar_outline"]];
+        //[self addSubview:bgView];
+        
         UISwipeGestureRecognizer *swipeUpRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeUpGesture:)];
         [swipeUpRecognizer setDirection:(UISwipeGestureRecognizerDirectionUp)];
-        [self addGestureRecognizer:swipeUpRecognizer];
+        //[self addGestureRecognizer:swipeUpRecognizer];
         
         UISwipeGestureRecognizer *swipeDownRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeDownGesture:)];
         [swipeDownRecognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
-        [self addGestureRecognizer:swipeDownRecognizer];
+        //[self addGestureRecognizer:swipeDownRecognizer];
+        
+        sliderSelectionView = [[UIImageView alloc]initWithFrame:CGRectMake(0, self.frame.size.height-20, self.frame.size.width, 20)];
+        [sliderSelectionView setImage:[UIImage imageNamed:@"timebar_control"]];
+        //[self addSubview:sliderSelectionView];
+        
+        timeSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.height, self.frame.size.width)];
+        timeSlider.transform=CGAffineTransformMakeRotation(M_PI/2);
+        [timeSlider setFrame:CGRectMake(0, 0, timeSlider.frame.size.width, timeSlider.frame.size.height)];
+        [timeSlider setTintColor:[UIColor colorWithWhite:0.72 alpha:1.0]];
+        [timeSlider addTarget:self action:@selector(timerDidSlide:) forControlEvents:UIControlEventValueChanged];
+        [timeSlider setValue:1.0];
+        [self addSubview:timeSlider];
+        
+        UILabel *nowLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, self.frame.size.height+5, self.frame.size.width, 8)];
+        [nowLabel setText:@"Now"];
+        [nowLabel setFont:[UIFont fontWithName:@"Akkurat" size:13.0]];
+        nowLabel.textAlignment = NSTextAlignmentCenter;
+        [nowLabel setTextColor:[UIColor whiteColor]];
+        [self addSubview:nowLabel];
     }
     return self;
 }
@@ -91,10 +114,29 @@
                      }];
 }
 
-#pragma mark - Gesture recognizers
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    NSLog(@"touched timeView");
+- (void)timerDidSlide:(id)sender{
+    if (self.fluxDisplayManager) {
+        [self.fluxDisplayManager timeBracketDidChange:timeSlider.value];
+    }
 }
+
+#pragma mark - Gesture recognizers
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+//    NSLog(@"touched timeView");
+//    UITouch *touch = [[event allTouches] anyObject];
+//    CGPoint touchLocation = [touch locationInView:self];
+//    [sliderSelectionView setCenter:CGPointMake(sliderSelectionView.center.x, touchLocation.y)];
+//}
+//
+//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
+//    UITouch *touch = [[event allTouches] anyObject];
+//    CGPoint touchLocation = [touch locationInView:self];
+//    CGPoint moveMaxLocation = CGPointMake(touchLocation.x, touchLocation.y-sliderSelectionView.frame.size.height/2);
+//    CGPoint moveMinLocation = CGPointMake(touchLocation.x, touchLocation.y+sliderSelectionView.frame.size.height/2);
+//    if (CGRectContainsPoint(self.bounds, moveMaxLocation) && CGRectContainsPoint(self.bounds, moveMinLocation)) {
+//        [sliderSelectionView setCenter:CGPointMake(sliderSelectionView.center.x, touchLocation.y)];
+//    }
+//}
 - (void)handleSwipeUpGesture:(UISwipeGestureRecognizer *)sender{
     //swiped up
     NSLog(@"Swiped up in timeView");

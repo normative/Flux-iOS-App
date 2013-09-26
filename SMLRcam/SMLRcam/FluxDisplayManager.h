@@ -25,11 +25,15 @@ extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
     NSLock *_renderListLock;
     
     NSMutableArray *renderedTextures;
+    
+    int oldTimeBracket;
 }
 @property (nonatomic)CLLocation* location;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxLocationServicesSingleton *locationManager;
 @property (nonatomic, strong) NSMutableArray *nearbyList;
 @property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
+
+- (void)timeBracketDidChange:(float)value;
 
 @end
