@@ -314,7 +314,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 //this section commented out as the circular time slider was removed from the designs (perhaps temporarily)
 #pragma mark - Time Filtering
 - (void)setupTimeFilterControl{
-    
+    timeFilterControl.fluxDisplayManager = self.fluxDisplayManager;
 }
 
 - (void)setupGestureHandlers{
@@ -933,6 +933,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupMotionManager];
     [self setupOpenGLView];
     [self setupAnnotationsTableView];
+    [self setupTimeFilterControl];
 
     // Start the location manager service which will continue for the life of the app
     locationManager = [FluxLocationServicesSingleton sharedManager];

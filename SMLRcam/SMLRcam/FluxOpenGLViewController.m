@@ -654,8 +654,8 @@ void init(){
 #pragma mark - Display Manager Notifications
 
 - (void)didUpdateImageList:(NSNotification *)notification{
-    // Clear out anything that is no longer rendered
-    self.fluxNearbyMetadata = self.fluxDisplayManager.fluxNearbyMetadata;
+    self.fluxNearbyMetadata = [notification.userInfo objectForKey:@"fluxNearbyMetadata"];
+    self.nearbyList = [notification.userInfo objectForKey:@"nearbyList"];
     
     [_renderListLock lock];
 

@@ -8,6 +8,8 @@
 
 #import "FluxDisplayManager.h"
 
+#import "FluxScanImageObject.h"
+
 const int number_OpenGL_Textures = 5;
 
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
@@ -77,6 +79,45 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     [self requestNearbyItems];
 }
 
+- (void)timeBracketDidChange:(float)value{
+    int bracket = ((5*(self.nearbyList.count * value))/self.nearbyList.count)+1;
+    
+    if (bracket != oldTimeBracket) {
+        NSRange range = NSMakeRange((bracket*0.1)*self.nearbyList.count, ((bracket+1)*0.1)*self.nearbyList.count);
+        
+        if (range.length+range.location > self.nearbyList.count) {
+            return;
+        }
+        NSArray *tmp = [self.nearbyList subarrayWithRange:range];
+        NSArray* timeBracketArray = [[tmp reverseObjectEnumerator] allObjects];
+        NSMutableDictionary*timeBracketNearbyMetadata = [[NSMutableDictionary alloc]init];
+        for (int i = 0; i<timeBracketArray.count; i++) {
+            [timeBracketNearbyMetadata setObject:[self.fluxNearbyMetadata objectForKey:[timeBracketArray objectAtIndex:i]] forKey:[timeBracketArray objectAtIndex:i]];
+        }
+        
+        NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                      initWithObjectsAndKeys:timeBracketArray, @"nearbyList",timeBracketNearbyMetadata, @"fluxNearbyMetadata" , nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
+                                                            object:self userInfo:userInfoDict];
+        
+        // Request images for nearby items
+        for (id localID in timeBracketArray)
+        {
+            FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+            [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
+            [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                //update image texture
+                NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                              initWithObjectsAndKeys:image, localID, nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                    object:self userInfo:userInfoDict];
+            }];
+            [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
+        }
+        bracket = oldTimeBracket;
+    }
+}
+
 #pragma mark Image Capture
 
 - (void)didAcquireNewPicture:(NSNotification *)notification
@@ -107,6 +148,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         
         [_nearbyListLock lock];
         
+#warning This is where we re-add local-only content that won't be returned in new requests yet
         // Iterate over the list and clear out anything that is not local-only
         for (id localID in self.nearbyList)
         {
@@ -136,7 +178,6 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
                 [self.nearbyList addObject:curImgObj.localID];
             }
         }
-        
         [self populateImageData];
         [_nearbyListLock unlock];
     }];
@@ -152,8 +193,10 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     NSUInteger rangeLen = ([self.nearbyList count] >= number_OpenGL_Textures ? number_OpenGL_Textures : [self.nearbyList count]);
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
     
+    NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                  initWithObjectsAndKeys:self.nearbyList, @"nearbyList",self.fluxNearbyMetadata, @"fluxNearbyMetadata" , nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
-                                                        object:self userInfo:nil];
+                                                        object:self userInfo:userInfoDict];
 
     // Request images for nearby items
     for (id localID in self.nearbyList)
