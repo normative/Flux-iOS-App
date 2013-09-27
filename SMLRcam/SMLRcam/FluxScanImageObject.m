@@ -44,17 +44,17 @@
          andCameraID:(int)camID
        andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
-         andlatitude:(float)latitude
-        andlongitude:(float)longitude
-         andaltitude:(float)altitude
-          andHeading:(float)heading
-              andYaw:(float)yaw
-            andPitch:(float)pitch
-             andRoll:(float)roll
-               andQW:(float)qw
-               andQX:(float)qx
-               andQY:(float)qy
-               andQZ:(float)qz;
+         andlatitude:(double)latitude
+        andlongitude:(double)longitude
+         andaltitude:(double)altitude
+          andHeading:(double)heading
+              andYaw:(double)yaw
+            andPitch:(double)pitch
+             andRoll:(double)roll
+               andQW:(double)qw
+               andQX:(double)qx
+               andQY:(double)qy
+               andQZ:(double)qz;
 {
     self = [super init];
     if (self)

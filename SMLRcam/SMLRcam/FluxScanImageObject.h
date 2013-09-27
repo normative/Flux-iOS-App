@@ -25,21 +25,21 @@ typedef enum image_type image_type;
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
 //location
-@property (nonatomic) float longitude;
-@property (nonatomic) float latitude;
-@property (nonatomic) float altitude;
+@property (nonatomic) double longitude;
+@property (nonatomic) double latitude;
+@property (nonatomic) double altitude;
 
 //orientation (euler angles)
-@property (nonatomic) float yaw;
-@property (nonatomic) float pitch;
-@property (nonatomic) float roll;
-@property (nonatomic) float heading;
+@property (nonatomic) double yaw;
+@property (nonatomic) double pitch;
+@property (nonatomic) double roll;
+@property (nonatomic) double heading;
 
 // orientation (quaternions)
-@property (nonatomic) float qw;
-@property (nonatomic) float qx;
-@property (nonatomic) float qy;
-@property (nonatomic) float qz;
+@property (nonatomic) double qw;
+@property (nonatomic) double qx;
+@property (nonatomic) double qy;
+@property (nonatomic) double qz;
 
 //other
 @property (nonatomic, strong) NSString* timestampString;
@@ -61,17 +61,17 @@ typedef enum image_type image_type;
         andCameraID:(int)camID
       andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
-          andlatitude:(float)latitude
-         andlongitude:(float)longitude
-          andaltitude:(float)altitude
-           andHeading:(float)heading
-               andYaw:(float)yaw
-             andPitch:(float)pitch
-              andRoll:(float)roll
-                andQW:(float)qw
-                andQX:(float)qx
-                andQY:(float)qy
-                andQZ:(float)qz;
+          andlatitude:(double)latitude
+         andlongitude:(double)longitude
+          andaltitude:(double)altitude
+           andHeading:(double)heading
+               andYaw:(double)yaw
+             andPitch:(double)pitch
+              andRoll:(double)roll
+                andQW:(double)qw
+                andQX:(double)qx
+                andQY:(double)qy
+                andQZ:(double)qz;
 
 - (NSString *) generateImageCacheKeyWithImageType:(image_type)imageType;
 - (NSString *)generateUniqueStringID;
