@@ -26,7 +26,10 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [self.locationManager startLocating];
         
         self.fluxDataManager = [[FluxDataManager alloc] init];
+        
         self.fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
+        
+        dataFilter = [[FluxDataFilter alloc]init];
         
         renderedTextures = [[NSMutableArray alloc]init];
         
@@ -36,17 +39,9 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFilter:) name:@"FluxFilterViewDidChangeFilter" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:@"FluxScanViewDidAcquireNewPicture" object:nil];
-        
-        [self setDataFilter];
     }
     
     return self;
-}
-
-- (void)setDataFilter{
-    if (!dataFilter) {
-        dataFilter = [[FluxDataFilter alloc]init];
-    }
 }
 
 #pragma mark - Notifications
@@ -73,7 +68,6 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
 
 - (void)didChangeFilter:(NSNotification*)notification{
     dataFilter = [notification.userInfo objectForKey:@"filter"];
-    [self setDataFilter];
     [self requestNearbyItems];
 }
 
