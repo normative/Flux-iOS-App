@@ -925,7 +925,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     [super viewDidLoad];
 
-    self.fluxNearbyMetadata = [[NSMutableDictionary alloc] init];
+    self.fluxNearbyMetadata = self.fluxDisplayManager.fluxNearbyMetadata;
     
     [self setupAVCapture];
     [self setupGestureHandlers];
