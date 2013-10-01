@@ -41,8 +41,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:@"FluxScanViewDidAcquireNewPicture" object:nil];
         
         timeSliderRange = NSMakeRange(0,5);
-        
-        [self setDataFilter];
+        oldTimeBracket = MAXFLOAT;
     }
     
     return self;
@@ -78,22 +77,30 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
 - (void)timeBracketDidChange:(float)value{
     
     //splits the images into bracketss
-    int numOfBrackets = ceilf(self.nearbyList.count/5);
+    int numOfBrackets = ceilf(self.nearbyList.count/(float)number_OpenGL_Textures);
     
     //find out what bracket the slider value is in
-    int bracket = ((numOfBrackets*(self.nearbyList.count * value))/self.nearbyList.count)+1;
+    int bracket = value*numOfBrackets;
+    if (bracket == numOfBrackets) {
+        return;
+    }
     
     //if the bracket is a new one
     if (bracket != oldTimeBracket) {
+        int lowBucketIndex = (bracket*number_OpenGL_Textures);
+        int length = 5;
+        if (((bracket+1)*number_OpenGL_Textures) > self.nearbyList.count-1) {
+            length = (self.nearbyList.count-lowBucketIndex-1);
+        }
         
         //find out what images are within that bracket
-        timeSliderRange = NSMakeRange((bracket*0.1)*self.nearbyList.count, ((bracket+1)*0.1)*self.nearbyList.count);
+        timeSliderRange = NSMakeRange(lowBucketIndex,length);
         
-        //make sure the range is within the bounds of the images array
+        //make sure the range is within the bounds of the images array **should** never happen
         if (timeSliderRange.length+timeSliderRange.location > self.nearbyList.count) {
             return;
         }
-        bracket = oldTimeBracket;
+        oldTimeBracket = bracket;
         [self calculateTimeAdjustedImageList];
     }
 
@@ -204,31 +211,31 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
 
 #pragma mark - OpenGL Texture & Metadata Manipulation
 
--(void) populateImageData
-{
-    // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
-    //    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
-    NSUInteger rangeLen = ([self.nearbyList count] >= number_OpenGL_Textures ? number_OpenGL_Textures : [self.nearbyList count]);
-    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
-    
-    NSDictionary *userInfoDict = @{@"nearbyList" : self.nearbyList, @"fluxNearbyMetadata" : self.fluxNearbyMetadata};
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
-                                                        object:self userInfo:userInfoDict];
-
-    // Request images for nearby items
-    for (id localID in self.nearbyList)
-    {
-        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
-        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-            //update image texture
-            NSDictionary *userInfoDict = @{localID : image};
-            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                object:self userInfo:userInfoDict];
-        }];
-        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
-    }
-}
+//-(void) populateImageData
+//{
+//    // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
+//    //    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
+//    NSUInteger rangeLen = ([self.nearbyList count] >= number_OpenGL_Textures ? number_OpenGL_Textures : [self.nearbyList count]);
+//    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
+//    
+//    NSDictionary *userInfoDict = @{@"nearbyList" : self.nearbyList, @"fluxNearbyMetadata" : self.fluxNearbyMetadata};
+//    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
+//                                                        object:self userInfo:userInfoDict];
+//
+//    // Request images for nearby items
+//    for (id localID in self.nearbyList)
+//    {
+//        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+//        [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
+//        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+//            //update image texture
+//            NSDictionary *userInfoDict = @{localID : image};
+//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+//                                                                object:self userInfo:userInfoDict];
+//        }];
+//        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
+//    }
+//}
 
 
 

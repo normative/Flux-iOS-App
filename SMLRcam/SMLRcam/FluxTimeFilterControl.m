@@ -41,11 +41,11 @@
         //[self addSubview:sliderSelectionView];
         
         timeSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.height, self.frame.size.width)];
-        timeSlider.transform=CGAffineTransformMakeRotation(M_PI/2);
+        timeSlider.transform=CGAffineTransformMakeRotation(-M_PI/2);
         [timeSlider setFrame:CGRectMake(0, 0, timeSlider.frame.size.width, timeSlider.frame.size.height)];
         [timeSlider setTintColor:[UIColor colorWithWhite:0.72 alpha:1.0]];
         [timeSlider addTarget:self action:@selector(timerDidSlide:) forControlEvents:UIControlEventValueChanged];
-        [timeSlider setValue:1.0];
+        [timeSlider setValue:0.0];
         [self addSubview:timeSlider];
         
         UILabel *nowLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, self.frame.size.height+5, self.frame.size.width, 8)];
