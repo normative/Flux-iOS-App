@@ -163,7 +163,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
-    NSString *sizeString = @"oriented";
+    NSString *sizeString = @"thumb";
     if (imageType == thumb)
     {
         sizeString = @"thumb";
