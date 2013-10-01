@@ -27,6 +27,7 @@ extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
     NSMutableArray *renderedTextures;
     
     int oldTimeBracket;
+    NSRange timeSliderRange;
 }
 @property (nonatomic)CLLocation* location;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
@@ -35,5 +36,6 @@ extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
 @property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 
 - (void)timeBracketDidChange:(float)value;
+
 
 @end
