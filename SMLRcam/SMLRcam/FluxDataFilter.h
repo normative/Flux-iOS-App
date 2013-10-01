@@ -25,9 +25,6 @@
 @property (nonatomic, strong) NSString *users;
 @property (nonatomic, strong) NSString *categories;
 
-// Also need properties to specify sorting order (and sort index)
-@property (nonatomic, strong) NSSortDescriptor *sortDescriptor;
-
 - (void)addHashTagToFilter:(NSString*)tag;
 - (void)addCategoryToFilter:(NSString*)category;
 

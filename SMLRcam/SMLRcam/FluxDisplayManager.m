@@ -47,7 +47,6 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     if (!dataFilter) {
         dataFilter = [[FluxDataFilter alloc]init];
     }
-    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
 }
 
 #pragma mark - Notifications
@@ -141,8 +140,11 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     CLLocation *loc = self.locationManager.location;
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setMaxReturnItems:10];
-    [dataRequest setSearchFilter:dataFilter];
+    
+    dataRequest.maxReturnItems = 10;
+    dataRequest.searchFilter = dataFilter;
+    dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+    
     [dataRequest setNearbyListReady:^(NSArray *imageList){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         

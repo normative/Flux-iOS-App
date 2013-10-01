@@ -305,10 +305,10 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     // Sort list returned, if required
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    if (request.searchFilter.sortDescriptor != nil)
+    if (request.sortDescriptor != nil)
     {
         // Currently assume a single NSSortDescriptor. Possible to add an array of them.
-        imageList = [imageList sortedArrayUsingDescriptors:[NSArray arrayWithObject:request.searchFilter.sortDescriptor]];
+        imageList = [imageList sortedArrayUsingDescriptors:[NSArray arrayWithObject:request.sortDescriptor]];
     }
     
     // Call callback of requestor
