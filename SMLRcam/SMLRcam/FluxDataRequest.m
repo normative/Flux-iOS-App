@@ -16,6 +16,7 @@
     {
         _completedIDs = [[NSMutableArray alloc] init];
         _requestID = [[NSUUID alloc] init];
+        _maxReturnItems = INT_MAX;
     }
     return self;
 }

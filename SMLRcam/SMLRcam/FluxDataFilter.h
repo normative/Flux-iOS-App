@@ -28,9 +28,6 @@
 // Also need properties to specify sorting order (and sort index)
 @property (nonatomic, strong) NSSortDescriptor *sortDescriptor;
 
-// Property to indicate maximum number of entries to return
-@property (nonatomic) int maxReturnItems;
-
 - (void)addHashTagToFilter:(NSString*)tag;
 - (void)addCategoryToFilter:(NSString*)category;
 

@@ -55,6 +55,9 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 @property (nonatomic) image_type imageType;
 @property (nonatomic, strong) FluxDataFilter *searchFilter;
 
+// Property to indicate maximum number of entries to return
+@property (nonatomic) int maxReturnItems;
+
 // Lists of requested and completed image/metadata downloads
 @property (nonatomic, strong) NSArray *requestedIDs;
 @property (nonatomic, strong) NSMutableArray *completedIDs;

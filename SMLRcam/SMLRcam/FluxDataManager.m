@@ -109,7 +109,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
                                         andCategories:dataRequest.searchFilter.categories
-                                          andMaxCount:dataRequest.searchFilter.maxReturnItems
+                                          andMaxCount:dataRequest.maxReturnItems
                                          andRequestID:requestID];
     }
     
@@ -262,7 +262,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
                                         andCategories:dataRequest.searchFilter.categories
-                                          andMaxCount:dataRequest.searchFilter.maxReturnItems
+                                          andMaxCount:maxCount
                                          andRequestID:requestID];
     }
     
