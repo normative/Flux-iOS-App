@@ -67,8 +67,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
     
     // Notify any observers of new content
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:metadata.localID, FluxDataManagerKeyNewImageLocalID, nil];
+    NSDictionary *userInfoDict = @{FluxDataManagerKeyNewImageLocalID : metadata.localID};
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidAcquireNewImage
                                                         object:self userInfo:userInfoDict];
     
@@ -109,7 +108,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
                                         andCategories:dataRequest.searchFilter.categories
-                                          andMaxCount:dataRequest.searchFilter.maxReturnItems
+                                          andMaxCount:dataRequest.maxReturnItems
                                          andRequestID:requestID];
     }
     
@@ -133,7 +132,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Image Queries
 
 // Need to add a callback block to arguments
-- (void) requestImageByImageID:(int)imageID withSize:(image_type)imageType withDataRequest:(FluxDataRequest *)dataRequest
+- (void) requestImageByImageID:(int)imageID withSize:(FluxImageType)imageType withDataRequest:(FluxDataRequest *)dataRequest
 {
     dataRequest.imageType = imageType;
 
@@ -156,7 +155,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
 }
 
-- (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
+- (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(FluxImageType)imageType
 {
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = image_request;
@@ -262,7 +261,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
                                         andCategories:dataRequest.searchFilter.categories
-                                          andMaxCount:dataRequest.searchFilter.maxReturnItems
+                                          andMaxCount:maxCount
                                          andRequestID:requestID];
     }
     
@@ -305,10 +304,10 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     // Sort list returned, if required
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    if (request.searchFilter.sortDescriptor != nil)
+    if (request.sortDescriptor != nil)
     {
         // Currently assume a single NSSortDescriptor. Possible to add an array of them.
-        imageList = [imageList sortedArrayUsingDescriptors:[NSArray arrayWithObject:request.searchFilter.sortDescriptor]];
+        imageList = [imageList sortedArrayUsingDescriptors:[NSArray arrayWithObject:request.sortDescriptor]];
     }
     
     // Call callback of requestor

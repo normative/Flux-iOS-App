@@ -990,7 +990,6 @@
 					"$(inherited)",
 					SMLRcam,
 					SMLRcam/TestFlightSDK2.0.0,
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = Flux;
@@ -1017,7 +1016,6 @@
 					"$(inherited)",
 					SMLRcam,
 					SMLRcam/TestFlightSDK2.0.0,
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam/SMLRcam,
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";

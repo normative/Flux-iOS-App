@@ -15,7 +15,7 @@
 #import "FluxUserObject.h"
 #import "FluxTagObject.h"
 
-enum request_type {
+typedef enum FluxDataRequestType : NSUInteger {
     no_request_specified = 0,
     time_value_request = 1,
     nearby_list_request = 2,
@@ -23,11 +23,9 @@ enum request_type {
     image_request = 4,
     data_upload_request = 5,
     tag_request = 6,
-};
+} FluxDataRequestType;
 
 @class FluxDataRequest;
-
-typedef enum request_type request_type;
 
 typedef void (^ImageReadyBlock)(FluxLocalID *, UIImage *, FluxDataRequest *);
 typedef void (^MetadataReadyBlock)(FluxScanImageObject *, FluxDataRequest *);
@@ -51,9 +49,15 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 }
 
 @property (nonatomic, strong) FluxRequestID *requestID;
-@property (nonatomic) request_type requestType;
-@property (nonatomic) image_type imageType;
+@property (nonatomic) FluxDataRequestType requestType;
+@property (nonatomic) FluxImageType imageType;
 @property (nonatomic, strong) FluxDataFilter *searchFilter;
+
+// Also need properties to specify sorting order (and sort index)
+@property (nonatomic, strong) NSSortDescriptor *sortDescriptor;
+
+// Property to indicate maximum number of entries to return
+@property (nonatomic) int maxReturnItems;
 
 // Lists of requested and completed image/metadata downloads
 @property (nonatomic, strong) NSArray *requestedIDs;

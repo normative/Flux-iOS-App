@@ -21,9 +21,6 @@
         _hashTags = @"";
         _users = @"";
         _categories = @"1%20person%20place%20thing%20event";
-        
-        _maxReturnItems = INT_MAX;
-        
     }
     return self;
 }
@@ -39,9 +36,6 @@
         _hashTags = filter.hashTags;
         _users = filter.users;
         _categories = filter.categories;
-        
-        _maxReturnItems = filter.maxReturnItems;
-        
     }
     return self;
 }
@@ -57,7 +51,6 @@
     copy.hashTags = [self.hashTags copyWithZone:zone];
     copy.users = [self.hashTags copyWithZone:zone];
     copy.categories = [self.categories copyWithZone:zone];
-    copy.maxReturnItems = self.maxReturnItems;
     return copy;
 }
 
@@ -69,8 +62,7 @@
         _altMax == filter.altMax &&
         [_hashTags isEqualToString:filter.hashTags] &&
         [_users isEqualToString:filter.users] &&
-        [_categories isEqualToString:filter.categories] &&
-        _maxReturnItems == filter.maxReturnItems
+        [_categories isEqualToString:filter.categories]
         ) {
         return YES;
     }

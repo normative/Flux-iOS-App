@@ -21,7 +21,7 @@
     return self;
 }
 
-- (void) addImageToStore:(UIImage *)image withImageID:(FluxImageID)imageID withSize:(image_type)imageType
+- (void) addImageToStore:(UIImage *)image withImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType
 {
     if ((image != nil) && (imageID >= 0))
     {
@@ -33,7 +33,7 @@
     }
 }
 
-- (void) addImageToStore:(UIImage *)image withLocalID:(FluxLocalID *)localID withSize:(image_type)imageType
+- (void) addImageToStore:(UIImage *)image withLocalID:(FluxLocalID *)localID withSize:(FluxImageType)imageType
 {
     if ((image != nil) && (localID != nil))
     {
@@ -107,7 +107,7 @@
     return [NSArray arrayWithArray:imageFormats];;
 }
 
-- (UIImage *) getImageWithImageID:(FluxImageID)imageID withSize:(image_type)imageType
+- (UIImage *) getImageWithImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType
 {
     if (imageID >= 0)
     {
@@ -123,7 +123,7 @@
     }
 }
 
-- (UIImage *) getImageWithLocalID:(FluxLocalID *)localID withSize:(image_type)imageType
+- (UIImage *) getImageWithLocalID:(FluxLocalID *)localID withSize:(FluxImageType)imageType
 {
     // If key doesn't exist, this will return nil.
     // This means it is either no longer in cache, or didn't exist in the first place

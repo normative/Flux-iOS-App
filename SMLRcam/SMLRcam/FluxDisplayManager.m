@@ -26,7 +26,10 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [self.locationManager startLocating];
         
         self.fluxDataManager = [[FluxDataManager alloc] init];
+        
         self.fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
+        
+        dataFilter = [[FluxDataFilter alloc]init];
         
         renderedTextures = [[NSMutableArray alloc]init];
         
@@ -43,14 +46,6 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     }
     
     return self;
-}
-
-- (void)setDataFilter{
-    if (!dataFilter) {
-        dataFilter = [[FluxDataFilter alloc]init];
-    }
-    dataFilter.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-    dataFilter.maxReturnItems = 10;
 }
 
 #pragma mark - Notifications
@@ -77,7 +72,6 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
 
 - (void)didChangeFilter:(NSNotification*)notification{
     dataFilter = [notification.userInfo objectForKey:@"filter"];
-    [self setDataFilter];
     [self requestNearbyItems];
 }
 
@@ -162,7 +156,11 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     CLLocation *loc = self.locationManager.location;
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setSearchFilter:dataFilter];
+    
+    dataRequest.maxReturnItems = 10;
+    dataRequest.searchFilter = dataFilter;
+    dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+    
     [dataRequest setNearbyListReady:^(NSArray *imageList){
         NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
         
@@ -213,8 +211,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     NSUInteger rangeLen = ([self.nearbyList count] >= number_OpenGL_Textures ? number_OpenGL_Textures : [self.nearbyList count]);
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
     
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:self.nearbyList, @"nearbyList",self.fluxNearbyMetadata, @"fluxNearbyMetadata" , nil];
+    NSDictionary *userInfoDict = @{@"nearbyList" : self.nearbyList, @"fluxNearbyMetadata" : self.fluxNearbyMetadata};
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
                                                         object:self userInfo:userInfoDict];
 
@@ -225,8 +222,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
         [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
             //update image texture
-            NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                          initWithObjectsAndKeys:image, localID, nil];
+            NSDictionary *userInfoDict = @{localID : image};
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                 object:self userInfo:userInfoDict];
         }];
