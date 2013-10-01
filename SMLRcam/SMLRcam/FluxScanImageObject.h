@@ -13,14 +13,12 @@
 typedef NSString FluxLocalID;
 typedef int FluxImageID;
 
-enum image_type {
+typedef enum FluxImageType : NSUInteger {
     none = 0,
     thumb = 1,
     screen_res = 2,
     full_res = 3,
-};
-
-typedef enum image_type image_type;
+} FluxImageType;
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
@@ -73,7 +71,7 @@ withDescriptionString:(NSString*)description
                 andQY:(double)qy
                 andQZ:(double)qz;
 
-- (NSString *) generateImageCacheKeyWithImageType:(image_type)imageType;
+- (NSString *) generateImageCacheKeyWithImageType:(FluxImageType)imageType;
 - (NSString *)generateUniqueStringID;
 
 // MKAnnoation getter methods;

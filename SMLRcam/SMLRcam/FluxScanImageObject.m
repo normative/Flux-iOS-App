@@ -91,7 +91,7 @@ withDescriptionString:(NSString*)description
     return [NSString stringWithFormat:@"%@_%d", stringID, self.userID];
 }
 
-- (NSString *) generateImageCacheKeyWithImageType:(image_type)imageType
+- (NSString *) generateImageCacheKeyWithImageType:(FluxImageType)imageType
 {
     if (self.localID != nil)
     {

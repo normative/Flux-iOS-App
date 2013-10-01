@@ -133,7 +133,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 #pragma mark - Image Queries
 
 // Need to add a callback block to arguments
-- (void) requestImageByImageID:(int)imageID withSize:(image_type)imageType withDataRequest:(FluxDataRequest *)dataRequest
+- (void) requestImageByImageID:(int)imageID withSize:(FluxImageType)imageType withDataRequest:(FluxDataRequest *)dataRequest
 {
     dataRequest.imageType = imageType;
 
@@ -156,7 +156,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
 }
 
-- (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(image_type)imageType
+- (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(FluxImageType)imageType
 {
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = image_request;
