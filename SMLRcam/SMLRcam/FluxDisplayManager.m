@@ -87,8 +87,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
             [timeBracketNearbyMetadata setObject:[self.fluxNearbyMetadata objectForKey:[timeBracketArray objectAtIndex:i]] forKey:[timeBracketArray objectAtIndex:i]];
         }
         
-        NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                      initWithObjectsAndKeys:timeBracketArray, @"nearbyList",timeBracketNearbyMetadata, @"fluxNearbyMetadata" , nil];
+        NSDictionary *userInfoDict = @{@"fluxNearbyMetadata" : timeBracketNearbyMetadata, @"nearbyList" : timeBracketArray};
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
                                                             object:self userInfo:userInfoDict];
         
@@ -99,8 +98,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
             [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
             [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                 //update image texture
-                NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                              initWithObjectsAndKeys:image, localID, nil];
+                NSDictionary *userInfoDict = @{localID : image};
                 [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                     object:self userInfo:userInfoDict];
             }];
@@ -189,8 +187,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     NSUInteger rangeLen = ([self.nearbyList count] >= number_OpenGL_Textures ? number_OpenGL_Textures : [self.nearbyList count]);
     self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
     
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:self.nearbyList, @"nearbyList",self.fluxNearbyMetadata, @"fluxNearbyMetadata" , nil];
+    NSDictionary *userInfoDict = @{@"nearbyList" : self.nearbyList, @"fluxNearbyMetadata" : self.fluxNearbyMetadata};
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
                                                         object:self userInfo:userInfoDict];
 
@@ -201,8 +198,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
         [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
             //update image texture
-            NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                          initWithObjectsAndKeys:image, localID, nil];
+            NSDictionary *userInfoDict = @{localID : image};
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                 object:self userInfo:userInfoDict];
         }];

@@ -37,8 +37,7 @@
 - (void)viewWillDisappear:(BOOL)animated{
     //if the user has changed anything related to the filer, send the delegate method to update the view
     if (![dataFilter isEqualToFilter:previousDataFilter]) {
-        NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                      initWithObjectsAndKeys:dataFilter, @"filter", nil];
+        NSDictionary *userInfoDict = @{@"filter" : dataFilter};
         [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
         previousDataFilter = [dataFilter copy];
     }

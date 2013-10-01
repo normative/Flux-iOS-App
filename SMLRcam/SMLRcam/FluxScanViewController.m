@@ -840,8 +840,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self.fluxDisplayManager.fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
     
     // Post notification for observers prior to upload
-    NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc] init];
-    [userInfoDict setObject:capturedImageObject.localID forKey:FluxScanViewDidAcquireNewPictureLocalIDKey];
+    NSDictionary *userInfoDict = @{FluxScanViewDidAcquireNewPictureLocalIDKey : capturedImageObject.localID};
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
                                                         object:self userInfo:userInfoDict];
     

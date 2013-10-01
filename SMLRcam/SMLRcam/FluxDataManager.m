@@ -67,8 +67,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
     
     // Notify any observers of new content
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:metadata.localID, FluxDataManagerKeyNewImageLocalID, nil];
+    NSDictionary *userInfoDict = @{FluxDataManagerKeyNewImageLocalID : metadata.localID};
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidAcquireNewImage
                                                         object:self userInfo:userInfoDict];
     
