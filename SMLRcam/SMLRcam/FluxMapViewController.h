@@ -33,13 +33,6 @@
     // Map View
     __weak IBOutlet MKMapView *fluxMapView;
     
-    // Status Bar
-    __weak IBOutlet UIButton *statusBarExitMapBtn;
-    __weak IBOutlet UIButton *statusBardetailBtn;
-    __weak IBOutlet UILabel *dateLabel;
-    __weak IBOutlet UILabel *locationLabel;
-    __weak IBOutlet UILabel *imageCountLabel;
-    
     // button
     __weak IBOutlet UIButton *locateMeBtn;
     
@@ -51,5 +44,6 @@
 @property (nonatomic, weak) FluxDisplayManager * fluxDisplayManager;
 
 - (IBAction)onLocateMeBtn:(id)sender;
+- (IBAction)closeButtonAction:(id)sender;
 
 @end

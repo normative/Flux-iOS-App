@@ -13,7 +13,7 @@
 #import "KTSegmentedButtonControl.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxCameraButton.h"
-#import "FluxCompassView.h"
+#import "FluxCompassButton.h"
 #import "FluxDataManager.h"
 #import "FluxDataRequest.h"
 #import "FluxMapViewController.h"
@@ -42,12 +42,9 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     //headerView
     __weak IBOutlet UIView *headerView;
-    __weak IBOutlet UILabel *locationLabel;
-    __weak IBOutlet UILabel *dateRangeLabel;
-    __weak IBOutlet FluxCompassView *radarView;
+    __weak IBOutlet FluxCompassButton *radarButton;
     
     UITableView*annotationsTableView;
-    UIImageView*fakeGalleryView;
     
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -78,7 +75,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //openGL
     FluxOpenGLViewController*openGLController;
     
-    UIInterfaceOrientation changeToOrientation;
     FluxMapViewController *mapViewController;
     
     UIImageView* launchView;
@@ -102,7 +98,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
 - (IBAction)retakeImageAction:(id)sender;
-- (IBAction)showFakeGallery:(id)sender;
 
 
 //imageCapture
@@ -126,7 +121,5 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //timeScrolling
 - (void)setupTimeFilterControl;
 - (void)setupGestureHandlers;
-//- (void)handlePanGesture:(UIPanGestureRecognizer *) sender;
-//- (void)handleLongPress:(UILongPressGestureRecognizer *) sender;
 
 @end

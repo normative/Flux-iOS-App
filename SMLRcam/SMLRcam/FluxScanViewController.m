@@ -24,20 +24,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 @synthesize fluxNearbyMetadata;
 @synthesize timeFilterControl;
 
-#pragma mark - Location
-
--(void)didUpdatePlacemark:(NSNotification *)notification
-{
-    NSString *locationString = locationManager.subadministativearea;
-    NSString *sublocality = locationManager.sublocality;
-    
-    if (sublocality.length > 0)
-    {
-        locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
-    }
-    [locationLabel setText: locationString];
-}
-
 #pragma mark - Network Services
 
 //called by annotationsTableview
@@ -47,7 +33,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
 #warning FIXME - Make sure these get called
 // Need to trigger these somehow - probably from OpenGL VC
-    [radarView updateRadarWithNewMetaData:fluxNearbyMetadata];
+    [radarButton updateRadarWithNewMetaData:fluxNearbyMetadata];
     [annotationsTableView reloadData];
 }
 
@@ -124,7 +110,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 
 - (IBAction)annotationsButtonAction:(id)sender {
-    [fakeGalleryView setAlpha:0.0];
     [CameraButton setEnabled:YES];
     if ([annotationsTableView isHidden]) {
         if ([fluxNearbyMetadata count]>0) {
@@ -262,34 +247,17 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 # pragma mark - Map View Transition
+- (void)presentMapView{
+    [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
+}
+
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([[segue identifier] isEqualToString:@"pushMapModalView"])
     {
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
-        mapViewController.myViewOrientation = changeToOrientation;
-        
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
     }
-}
-
-- (IBAction)showFakeGallery:(id)sender {
-    [annotationsTableView setAlpha:0.0];
-    if (fakeGalleryView.alpha == 0.0) {
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [fakeGalleryView setAlpha:1.0];
-                         }];
-        [CameraButton setEnabled:NO];
-    }
-    else{
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [fakeGalleryView setAlpha:0.0];
-                         }];
-        [CameraButton setEnabled:YES];
-    }
-
 }
 
 #pragma mark - OpenGLView
@@ -606,6 +574,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self.view addSubview:blurView];
     
     [self performSelector:@selector(fixCameraButtonPosition) withObject:nil afterDelay:0.0f];
+    [radarButton addTarget:self action:@selector(presentMapView) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
@@ -889,39 +858,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     return blurredImage;
 }
 
-
-
-#pragma mark - orientation and rotation
-// Presenting mapview if current view is switching
-- (BOOL) shouldAutorotate
-{
-    return YES;
-}
-
-- (NSUInteger) supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
-}
-
-- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation))
-    {
-        changeToOrientation = toInterfaceOrientation;
-        
-        if (![annotationsTableView isHidden])
-        {
-            [annotationsTableView setHidden:YES];
-        }
-        [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
-    }
-}
-
-- (UIInterfaceOrientation) preferredInterfaceOrientationForPresentation
-{
-    return changeToOrientation ? changeToOrientation : UIInterfaceOrientationPortraitUpsideDown;
-}
-
 #pragma mark - view lifecycle
 
 - (void)viewDidLoad
@@ -942,33 +878,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     locationManager = [FluxLocationServicesSingleton sharedManager];
     [locationManager startLocating];
     
-    [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
-    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateRangeLabel.font.pointSize]];
-    //temporarily set the date range label to today's date
-    dateFormatter  = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"MMMM d, YYYY"];
-    [dateRangeLabel setText:[dateFormatter stringFromDate:[NSDate date]]];
-    
-    
-    fakeGalleryView = [[UIImageView alloc]initWithFrame:CGRectMake(7, 70, 306, 161)];
-    [fakeGalleryView setContentMode:UIViewContentModeScaleAspectFit];
-    //[fakeGalleryView setClipsToBounds:YES];
-    [fakeGalleryView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
-    [fakeGalleryView setImage:[UIImage imageNamed:@"fakeGallery"]];
-    [fakeGalleryView setAlpha:0.0];
-    [self.view addSubview:fakeGalleryView];
-    
     self.screenName = @"Scan View";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    if (locationManager != nil)
-    {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-        [self didUpdatePlacemark:nil];
-    }
-    
-    [radarView updateRadarWithNewMetaData:fluxNearbyMetadata];
+    [radarButton updateRadarWithNewMetaData:fluxNearbyMetadata];
     [self restartAVCaptureWithBlur:YES];
 }
 

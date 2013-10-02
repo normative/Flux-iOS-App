@@ -11,7 +11,7 @@
 #import "FluxScanImageObject.h"
 #import "FluxLocationServicesSingleton.h"
 
-@interface FluxCompassView : UIView
+@interface FluxCompassButton : UIButton
 {
     NSMutableArray *radarStatusArray;
     NSMutableArray* radarImagesArray;
@@ -27,6 +27,5 @@
 }
 
 - (void)updateRadarWithNewMetaData:(NSMutableDictionary*)newMetaData;
-//- (void)updateRadarWithNewHeading:(CLHeading *)newHeading;
 
 @end

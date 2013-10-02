@@ -6,16 +6,16 @@
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "FluxCompassView.h"
+#import "FluxCompassButton.h"
 
-@interface FluxCompassView()
+@interface FluxCompassButton()
 
 - (void)updateRadarImageView;
 - (void)createRadarView;
 
 @end
 
-@implementation FluxCompassView
+@implementation FluxCompassButton
 
 #pragma mark - update methods
 
@@ -86,6 +86,14 @@
     [radarHeadingImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     [radarHeadingImageView setContentMode:UIViewContentModeScaleAspectFit];
     
+    radarHeadingImageView.userInteractionEnabled = NO;
+    radarHeadingImageView.exclusiveTouch = NO;
+    
+    radarView.userInteractionEnabled = NO;
+    radarView.exclusiveTouch = NO;
+    
+    
+    
     [self addSubview:radarView];
     [self addSubview:radarHeadingImageView];
     [self bringSubviewToFront:radarHeadingImageView];
@@ -121,7 +129,6 @@
             [self headingUpdated:nil];
         }
     }
-    
     return self;
 }
 

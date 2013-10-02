@@ -261,24 +261,24 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     {
         locationString = [NSString stringWithFormat:@"%@, %@", sublocality, locationString];
     }
-    [locationLabel setText: locationString];
+    //[locationLabel setText: locationString];
 }
 
 // set status bar date label
-- (void)setStatusBarDateLabel
-{
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
-    [dateFormat setDateFormat:@"MMM dd, yyyy"];
-    NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
-    [dateLabel setText:todayDateString];
-}
+//- (void)setStatusBarDateLabel
+//{
+//    NSDateFormatter *dateFormat = [[NSDateFormatter alloc]init];
+//    [dateFormat setDateFormat:@"MMM dd, yyyy"];
+//    NSString *todayDateString = [dateFormat stringFromDate:[NSDate date]];
+//    [dateLabel setText:todayDateString];
+//}
 
 // set status bar moment label
 - (void)setStatusBarMomentLabel
 {
     int totalAnnotationCount = [fluxMapView.annotations count];
     int imageAnnotationCount = totalAnnotationCount > 1 ? totalAnnotationCount - 1 : 0;
-    [imageCountLabel setText:[NSString stringWithFormat: @"%d Moment%@", imageAnnotationCount, imageAnnotationCount > 1 ? @"s" : @""]];
+//    [imageCountLabel setText:[NSString stringWithFormat: @"%d Moment%@", imageAnnotationCount, imageAnnotationCount > 1 ? @"s" : @""]];
 }
 
 #pragma mark - initialize view
@@ -340,9 +340,6 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
 // setting the status bar content
 - (void) setupStatusBarContent
 {
-    [dateLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateLabel.font.pointSize]];
-    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
-    [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
     // assign text to locality label
     // Check to see if either any location text already exists. Otherwise display loading prompt.
     if ((locationManager.subadministativearea != nil) || (locationManager.sublocality != nil))
@@ -353,7 +350,7 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     [self setStatusBarMomentLabel];
     
     // assign text to date label
-    [self setStatusBarDateLabel];
+//    [self setStatusBarDateLabel];
 }
 
 #pragma mark - IBActions
@@ -368,40 +365,16 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     }
 }
 
-#pragma mark - Rotation and Orientation
-
-- (BOOL)shouldAutorotate
-{
-    return YES;
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskAll;
-}
-
-- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
-{
-    return myViewOrientation ? myViewOrientation : UIInterfaceOrientationLandscapeRight;
-}
-
-- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-    if (UIInterfaceOrientationIsPortrait(toInterfaceOrientation))
-    {
-        [self dismissViewControllerAnimated:YES completion:^(void)
-        {
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-            
-            [self.view removeGestureRecognizer:pinchRecognizer];
-            
-            [EAGLContext setCurrentContext:nil];
-            
-            activityIndicator = nil;
-        }];
-        
-    }
+- (IBAction)closeButtonAction:(id)sender{
+    [self dismissViewControllerAnimated:YES completion:^(void)
+     {
+         [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+         [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+         
+         [self.view removeGestureRecognizer:pinchRecognizer];
+         
+         [EAGLContext setCurrentContext:nil];
+     }];
 }
 
 #pragma mark - view lifecycle
