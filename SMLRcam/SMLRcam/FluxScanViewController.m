@@ -214,6 +214,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     [cell initCell];
     
+    //hack to prevent crashes
+    if (indexPath.row > fluxNearbyMetadata.count-1) {
+        return cell;
+    }
     NSNumber *objkey = [[fluxNearbyMetadata allKeys] objectAtIndex:indexPath.row];
     FluxScanImageObject *rowObject = [fluxNearbyMetadata objectForKey: objkey];
     

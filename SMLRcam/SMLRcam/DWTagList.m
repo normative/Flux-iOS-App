@@ -61,9 +61,10 @@
     return self;
 }
 
-- (void)setTags:(NSArray *)array
+- (void)setTags:(NSArray *)array andSelectedArray:(NSArray *)selectedArr
 {
     textArray = [[NSArray alloc] initWithArray:array];
+    selectedArray =  [[NSArray alloc] initWithArray:selectedArr];
     sizeFit = CGSizeZero;
     if (automaticResize) {
         [self display];
@@ -161,6 +162,12 @@
 
         if (!_viewOnly) {
             [tagView.button addTarget:self action:@selector(touchUpInside:) forControlEvents:UIControlEventTouchUpInside];
+        }
+        if (selectedArray.count>0) {
+            if ([selectedArray containsObject:[textArray objectAtIndex:i]]) {
+                [self setTagBackgroundStateForTagView:tagView andTagstate:tagActive];
+                tagView.isSelected = YES;
+            }
         }
     }
 

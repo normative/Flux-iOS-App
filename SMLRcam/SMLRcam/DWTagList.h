@@ -27,6 +27,7 @@ typedef enum tagState tagState;
 {
     UIView *view;
     NSArray *textArray;
+    NSArray *selectedArray;
     CGSize sizeFit;
     UIColor *lblBackgroundColor;
 }
@@ -47,7 +48,7 @@ typedef enum tagState tagState;
 - (void)setTagBackgroundStateForTagView:(UIView*)tagView andTagstate:(tagState)tagState;
 
 //array parameter is an array of FluxTagObjects
-- (void)setTags:(NSArray *)array;
+- (void)setTags:(NSArray *)array andSelectedArray:(NSArray*)selectedArr;
 
 - (void)display;
 - (CGSize)fittedSize;

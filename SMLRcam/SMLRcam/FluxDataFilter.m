@@ -49,7 +49,7 @@
     copy.altMin = self.altMin;
     copy.altMax = self.altMax;
     copy.hashTags = [self.hashTags copyWithZone:zone];
-    copy.users = [self.hashTags copyWithZone:zone];
+    copy.users = [self.users copyWithZone:zone];
     copy.categories = [self.categories copyWithZone:zone];
     return copy;
 }

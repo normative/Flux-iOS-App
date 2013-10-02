@@ -54,6 +54,7 @@
 
     contextFiltersArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PeopleFilterObject, PlacesFilterObject, ThingsFilterObject, EventsFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
+    selectedTags = [[NSMutableArray alloc]init];
     rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:contextFiltersArray, nil];
     
     [self setupLocationManager];
@@ -78,7 +79,7 @@
     if (![self.view isHidden]) {
         // viewController is visible
         FluxDataRequest*request = [[FluxDataRequest alloc]init];
-        FluxDataFilter*tmp = dataFilter;
+        FluxDataFilter*tmp = [[FluxDataFilter alloc] initWithFilter:dataFilter];
         [tmp setHashTags:@""];
         [request setSearchFilter:tmp];
         [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
@@ -89,6 +90,17 @@
             }
             else{
                 [rightDrawerTableViewArray replaceObjectAtIndex:0 withObject:topTagsArray];
+                if ([selectedTags count]>0) {
+                    for (NSString*str in selectedTags)
+                    {
+                        FluxTagObject*tmp = [[FluxTagObject alloc]init];
+                        [tmp setTagText:str];
+                        if (![topTagsArray containsObject:tmp]) {
+                            [selectedTags removeObject:str];
+                        }
+                    }
+                    
+                }
             }
             [self.tableView reloadData];
         }];
@@ -173,7 +185,7 @@
                 return 44.0;
             }
             FluxHashtagTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"hashCell"];
-            [cell.tagList setTags:[rightDrawerTableViewArray objectAtIndex:indexPath.section]];
+            [cell.tagList setTags:[rightDrawerTableViewArray objectAtIndex:indexPath.section]andSelectedArray:nil];
             [cell.tagList display];
             return [cell.tagList fittedSize].height+cell.tagList.frame.origin.x-10;
         }
@@ -215,8 +227,7 @@
                 if (cell == nil) {
                     cell = [[FluxHashtagTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
                 }
-                //        [cell.tagList setTags:[NSArray arrayWithObjects:@"Hello", @"this", @"is", @"a", @"test", @"of", @"theWaythetextfieldlooks", @"with", @"the", @"worst", @"case", @"being", @"this", @"long", nil]];
-                [cell.tagList setTags:[rightDrawerTableViewArray objectAtIndex:indexPath.section]];
+                [cell.tagList setTags:[rightDrawerTableViewArray objectAtIndex:indexPath.section]andSelectedArray:selectedTags];
                 [cell.tagList setTagDelegate:self];
                 return cell;
             }
@@ -270,12 +281,13 @@
 }
 
 - (void)tagList:(DWTagList *)list selectedTagWithTitle:(NSString *)title andActive:(BOOL)active{
-    
     if (active) {
         [dataFilter addHashTagToFilter:title];
+        [selectedTags addObject:title];
     }
     else{
         [dataFilter removeHashTagFromFilter:title];
+        [selectedTags removeObject:title];
     }
 }
 

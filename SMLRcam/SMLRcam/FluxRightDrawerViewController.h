@@ -25,7 +25,9 @@
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *contextFiltersArray;
     NSArray *topTagsArray;
+    NSMutableArray *selectedTags;
     FluxLocationServicesSingleton *locationManager;
+    
     FluxDataFilter *dataFilter;
     FluxDataFilter *previousDataFilter;
     
