@@ -19,9 +19,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (float) getScale;
 
 - (void) setUserHeadingDirection;
-- (void) setStatusBarLocationLabel:(NSNotification *)notification;
-- (void) setStatusBarDateLabel;
-- (void) setStatusBarMomentLabel;
 
 - (void)handlePinchGesture:(UIPinchGestureRecognizer *)gesture;
 

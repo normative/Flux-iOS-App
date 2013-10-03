@@ -1489,18 +1489,4 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return YES;
 }
 
-#pragma mark - Debugging UI Elements
-
-- (IBAction)onDistanceSliderValueChanged:(id)sender
-{
-    UISlider *slider = (UISlider *) sender;
-    NSLog(@"Slider Value: %f", slider.value);
-}
-
-- (IBAction)onPositionStepperValueChanged:(id)sender
-{
-    UIStepper *stepper = (UIStepper *) sender;
-    NSLog(@"Stepper Value: %f", stepper.value);
-}
-
 @end

@@ -66,8 +66,8 @@
     radarStatusArray = [[NSMutableArray alloc] init];
     radarImagesArray = [[NSMutableArray alloc] init];
     
-    offImg = [UIImage imageNamed:@"radarOff"];
-    onImg = [UIImage imageNamed:@"radarOn"];
+    offImg = [UIImage imageNamed:@"radarSegmentOff"];
+    onImg = [UIImage imageNamed:@"radarSegmentOn"];
     
     for (int i = 0; i<12; i++)
     {
@@ -82,7 +82,7 @@
         [radarImagesArray addObject:radarImageView];
     }
     
-    UIImageView *radarHeadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"radarHeading.png"]];
+    UIImageView *radarHeadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"radarButtonCenter"]];
     [radarHeadingImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
     [radarHeadingImageView setContentMode:UIViewContentModeScaleAspectFit];
     

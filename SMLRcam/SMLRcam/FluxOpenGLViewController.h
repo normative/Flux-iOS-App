@@ -70,9 +70,6 @@ typedef struct {
     
     NSLock *_nearbyListLock;
     NSLock *_renderListLock;
-    
-    __weak IBOutlet UISlider *DistanceSlider;
-    __weak IBOutlet UIStepper *PositionStepper;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -101,9 +98,6 @@ typedef struct {
 
 - (void)didUpdateImageList:(NSNotification *)notification;
 - (void)updateImageTexture:(NSNotification *)notification;
-
-- (IBAction)onDistanceSliderValueChanged:(id)sender;
-- (IBAction)onPositionStepperValueChanged:(id)sender;
 
 
 @end
