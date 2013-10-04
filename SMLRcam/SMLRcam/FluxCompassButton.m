@@ -120,7 +120,7 @@
     if (self = [super initWithCoder:aDecoder])
     {
         [self setBackgroundColor:[UIColor clearColor]];
-        [self createRadarView];
+        [self createRadarView];        
         
         locationManager = [FluxLocationServicesSingleton sharedManager];
         if (locationManager != nil)

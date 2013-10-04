@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 
 #import "MMDrawerBarButtonItem.h"
-#import "KTPlaceholderTextView.h"
-#import "KTSegmentedButtonControl.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxCameraButton.h"
 #import "FluxCompassButton.h"
@@ -18,6 +16,8 @@
 #import "FluxDataRequest.h"
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
+#import "FluxImageAnnotationViewController.h"
+#import "FluxFiltersTableViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "FluxAVCameraSingleton.h"
 #import "FluxDisplayManager.h"
@@ -37,11 +37,10 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @class FluxRotatingCompassButton;
 
 
-
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, KTPlaceholderTextViewDelegate, KTSegmentedControlDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, FiltersTableViewDelegate>{
     
     //headerView
-    __weak IBOutlet UIView *headerView;
+    __weak IBOutlet UIView *ScanUIContainerView;
     __weak IBOutlet FluxCompassButton *radarButton;
     
     UITableView*annotationsTableView;
@@ -52,14 +51,15 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     dispatch_queue_t AVCaptureBackgroundQueue;
     FluxAVCameraSingleton *cameraManager;
     UIImageView *gridView;
-    NSNumber* camMode; //0 = off, 1 = on, 2 = confirm
+    BOOL imageCaptureIsActive;
     FluxScanImageObject *capturedImageObject;
     UIImage *capturedImage;
     UIView *blackView;
     UIImageView*blurView;
     __strong IBOutlet FluxCameraButton *CameraButton;
-    __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
-    __weak IBOutlet KTSegmentedButtonControl *categorySegmentedControl;
+    IBOutlet UIButton *filterButton;
+    IBOutlet UILabel *locationLabel;
+
     __weak IBOutlet UIProgressView *progressView;
     
     //Network + Motion
@@ -67,15 +67,13 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     CMMotionManager *motionManager;
 
     //time scrolling
-    UIPanGestureRecognizer *panGesture;
-    UILongPressGestureRecognizer *longPressGesture;
-    UITapGestureRecognizer *tapGesture;
     NSDateFormatter *dateFormatter;
     
     //openGL
     FluxOpenGLViewController*openGLController;
     
     FluxMapViewController *mapViewController;
+    FluxImageAnnotationViewController*imageAnnotationViewController;
     
     UIImageView* launchView;
 }
@@ -83,7 +81,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
-@property (strong, nonatomic) IBOutlet UIView *drawerContainerView;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) IBOutlet FluxTimeFilterControl*timeFilterControl;
 
@@ -98,6 +95,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
 - (IBAction)retakeImageAction:(id)sender;
+- (IBAction)filterButtonAction:(id)sender;
 
 
 //imageCapture
@@ -111,9 +109,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 
 - (void)setupCameraView;
-- (void)setUIForCamMode:(NSNumber*)mode;
-- (void)showPhotoAnnotationView;
-- (void)hidePhotoAnnotationView;
 
 
 - (void)setupAnnotationsTableView;

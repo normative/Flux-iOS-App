@@ -24,6 +24,7 @@
     FluxLocationServicesSingleton* locationManager;
     
     UIView *radarView;
+    UIView*selectionView;
 }
 
 - (void)updateRadarWithNewMetaData:(NSMutableDictionary*)newMetaData;

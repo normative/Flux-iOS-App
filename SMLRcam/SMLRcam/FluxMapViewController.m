@@ -8,6 +8,10 @@
 
 #import "FluxMapViewController.h"
 
+#import "GAI.h"
+#import "GAIDictionaryBuilder.h"
+#import "GAIFields.h"
+
 #define MERCATOR_RADIUS 85445659.44705395
 
 NSString* const locationAnnotationIdentifer = @"locationAnnotation";
@@ -409,6 +413,15 @@ const float minmovedist = 0.00025;     // approx 25m (little more, little less, 
     [self setupMapView];
     [self setupAnnotationView];
     [self setupStatusBarContent];
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker set:kGAIScreenName
+           value:@"Map View"];
+    
+    // manual screen tracking
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
 }
 
 - (void)didReceiveMemoryWarning

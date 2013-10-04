@@ -37,6 +37,38 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [annotationsTableView reloadData];
 }
 
+- (void)didUpdateImageList:(NSNotification *)notification{
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",fluxNearbyMetadata.count] forState:UIControlStateNormal];
+    if (fluxNearbyMetadata.count<=5) {
+        if (![timeFilterControl isHidden]) {
+            [UIView animateWithDuration:0.2f
+                             animations:^{
+                                 [timeFilterControl setAlpha:0.0];
+                             }
+                             completion:^(BOOL finished){
+                                 [timeFilterControl setHidden:YES];
+                             }];
+        }
+    }
+    else{
+        if ([timeFilterControl isHidden]) {
+            [timeFilterControl setHidden:NO];
+            [UIView animateWithDuration:0.2f
+                             animations:^{
+                                 [timeFilterControl setAlpha:1.0];
+                             }
+                             completion:nil];
+        }
+    }
+}
+
+#pragma mark - Location Manager
+
+-(void)didUpdatePlacemark:(NSNotification *)notification
+{
+    [locationLabel setText:[NSString stringWithFormat:@"%@",locationManager.subadministativearea]];
+}
+
 #pragma mark - Motion Methods
 
 //starts the motion manager and sets an update interval
@@ -79,7 +111,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 //show list of images currently visible.
 - (void)setupAnnotationsTableView{
-    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(7, headerView.frame.origin.y+headerView.frame.size.height+4, self.view.frame.size.width-14, self.view.frame.size.height-200)];
+    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(7, 80, self.view.frame.size.width-14, self.view.frame.size.height-200)];
     [annotationsTableView setHidden:YES];
     [annotationsTableView setAlpha:0.0];
     [annotationsTableView setBackgroundColor:[UIColor clearColor]];
@@ -125,9 +157,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                  [annotationsTableView setAlpha:1.0];
                              }
                              completion:nil];
-        
-        [panGesture setEnabled:NO];
-        [longPressGesture setEnabled:NO];
         [CameraButton setUserInteractionEnabled:NO];
     }
     else{
@@ -137,8 +166,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          }
                          completion:^(BOOL finished){
                              [annotationsTableView setHidden:YES];
-                             [panGesture setEnabled:YES];
-                             [longPressGesture setEnabled:YES];
                              [CameraButton setUserInteractionEnabled:YES];
                          }];
     }
@@ -246,18 +273,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [CATransaction commit];
 }
 
-# pragma mark - Map View Transition
+# pragma mark - View Transitions
 - (void)presentMapView{
     [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
 }
 
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([[segue identifier] isEqualToString:@"pushMapModalView"])
-    {
-        mapViewController = (FluxMapViewController *)segue.destinationViewController;
-        mapViewController.fluxDisplayManager = self.fluxDisplayManager;
-    }
+- (void)pushImageAnnotationView{
+    [self performSegueWithIdentifier:@"pushAnnotationModalView" sender:self];
+}
+- (IBAction)filterButtonAction:(id)sender {
+    [self performSegueWithIdentifier:@"pushFilterView" sender:self];
 }
 
 #pragma mark - OpenGLView
@@ -273,7 +298,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     openGLController = [myStoryboard instantiateViewControllerWithIdentifier:@"openGLViewController"];
     
     // then add the glkview as the subview of the parent view
-    [self.view insertSubview:openGLController.view belowSubview:headerView];
+    [self.view insertSubview:openGLController.view belowSubview:ScanUIContainerView];
     // add the glkViewController as the child of self
     [self addChildViewController:openGLController];
     [openGLController didMoveToParentViewController:self];
@@ -441,12 +466,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
              [capturedImageObject setTimestamp:startTime];
              
              //UI Updates
-             [self setUIForCamMode:[NSNumber numberWithInt:2]];
              [UIView animateWithDuration:0.09 animations:^{
                  [blackView setAlpha:0.0];
              } completion:^(BOOL finished) {
                  [blackView setHidden:YES];
              }];
+             
+             
          }
      }];
 }
@@ -532,24 +558,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 #pragma mark Camera View
 
 - (void)setupCameraView{
-    camMode = [NSNumber numberWithInt:0];
-    
     //photo annotation view
-    [self.photoApprovalView removeFromSuperview];
-    [self.photoApprovalView setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height+self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
-    [self.photoApprovalView setHidden:YES];
-    [ImageAnnotationTextView SetPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
-    [ImageAnnotationTextView setTheDelegate:self];
-    
-    [self.view addSubview:self.photoApprovalView];
-    
-    //segmented Control
-    [categorySegmentedControl initWithImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_selected"],[UIImage imageNamed:@"btn-Annotation-place_selected"],[UIImage imageNamed:@"btn-Annotation-thing_selected"],[UIImage imageNamed:@"btn-Annotation-event_selected"], nil] andStandardImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_default"],[UIImage imageNamed:@"btn-Annotation-place_default"],[UIImage imageNamed:@"btn-Annotation-thing_default"],[UIImage imageNamed:@"btn-Annotation-event_default"], nil]];
-    [categorySegmentedControl setDelegate:self];
-    [categorySegmentedControl setSelectedSegmentIndex:0];
     [capturedImageObject setCategoryID:1];
-    
     [progressView setAlpha:0.0];
 
     
@@ -577,166 +587,97 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [radarButton addTarget:self action:@selector(presentMapView) forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void)fixCameraButtonPosition{
+    [CameraButton removeFromSuperview];
+    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view insertSubview:CameraButton aboveSubview:gridView];
+}
+
 - (IBAction)cameraButtonAction:(id)sender {
-    //camera is off, open it
-    if ([camMode isEqualToNumber:[NSNumber numberWithInt:0]]) {
-        
-        [self setUIForCamMode:[NSNumber numberWithInt:1]];
+    if (!imageCaptureIsActive) {
+        [self activateImageCapture];
     }
     else{
         [self takePicture];
     }
-    
-    //camView
 }
 
-- (void)setUIForCamMode:(NSNumber*)mode{
-    //going to closed cam
-    if ([mode isEqualToNumber:[NSNumber numberWithInt:0]]) {
-        [self stopDeviceMotion];
-        [self hidePhotoAnnotationView];
-        [headerView setHidden:NO];
-        [self.drawerContainerView setHidden:NO];
-        [CameraButton setHidden:NO];
-        [self restartAVCaptureWithBlur:YES];
-        [openGLController.view setHidden:NO];
-        
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [headerView setAlpha:1.0];
-                             [self.drawerContainerView setAlpha:1.0];
-                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
-                             [gridView setAlpha:0.0];
-                             [openGLController.view setAlpha:1.0];
-                             [[CameraButton getThumbView] setAlpha:0.0];
-                         }
-                         completion:^(BOOL finished){
-                             //stops drawing them
-                             [panGesture setEnabled:YES];
-                             [longPressGesture setEnabled:YES];
-                             [gridView setHidden:YES];
-                             [[CameraButton getThumbView] setHidden:NO];
-                         }];
-        
-        CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
-        bounceAnimation.values = [NSArray arrayWithObjects:
-                                  [NSNumber numberWithFloat:1.0],
-                                  [NSNumber numberWithFloat:0.7],
-                                  [NSNumber numberWithFloat:0.9],
-                                  [NSNumber numberWithFloat:1.0], nil];
-        bounceAnimation.duration = 0.3;
-        [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
-        
-        camMode = [NSNumber numberWithInt:0];
-    }
-    //going to active cam
-    else if ([mode isEqualToNumber:[NSNumber numberWithInt:1]]){
-        [panGesture setEnabled:NO];
-        [longPressGesture setEnabled:NO];
-        [tapGesture setEnabled:YES];
-        [gridView setHidden:NO];
-        [[CameraButton getThumbView] setHidden:NO];
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [headerView setAlpha:0.0];
-                             [self.drawerContainerView setAlpha:0.0];
-                             [gridView setAlpha:1.0];
-                             [openGLController.view setAlpha:0.0];
-                             [[CameraButton getThumbView] setAlpha:1.0];
-                             [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
-                         }
-                         completion:^(BOOL finished){
-                             //stops drawing them
-                             [headerView setHidden:YES];
-                             [self.drawerContainerView setHidden:YES];
-                             [self startDeviceMotion];
-                             [openGLController.view setHidden:YES];
-                             camMode = [NSNumber numberWithInt:1];
-                         }];
-        
-        CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
-        bounceAnimation.values = [NSArray arrayWithObjects:
-                                  [NSNumber numberWithFloat:1.0],
-                                  [NSNumber numberWithFloat:1.5],
-                                  [NSNumber numberWithFloat:0.8],
-                                  [NSNumber numberWithFloat:1.0], nil];
-        bounceAnimation.duration = 0.3;
-        
-        [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
-    }
-    //going to confirm cam
-    else{
-        [cameraManager pauseAVCapture];
-        [ImageAnnotationTextView resetView];
-        [self showPhotoAnnotationView];
-        [CameraButton setHidden:YES];
-        [gridView setHidden:YES];
-        
-        camMode = [NSNumber numberWithInt:2];
-    }
-}
-
-- (void)showPhotoAnnotationView{
-    if ([self.photoApprovalView isHidden]) {
-        [self.photoApprovalView setHidden:NO];
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height-self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
-                         }];
-    }
-}
-- (void)hidePhotoAnnotationView{
-    if (![self.photoApprovalView isHidden]) {
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                            [self.photoApprovalView setFrame:CGRectMake(0, self.view.frame.size.height+self.photoApprovalView.frame.size.height, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
-                         }
-                         completion:^(BOOL finished){
-                             [self.photoApprovalView setHidden:YES];
-                         }];
-        [ImageAnnotationTextView resignFirstResponder];
-    }
-}
-
--(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    if ([camMode isEqualToNumber:[NSNumber numberWithInt:1]]) {
-        UITouch *touch = [touches anyObject];
-        if (![[touch class]isSubclassOfClass:[UIButton class]]) {
-            [self setUIForCamMode:[NSNumber numberWithInt:0]];
-        }
-
-    }
-}
-
-- (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
-    [UIView animateWithDuration:0.2f
+- (void)activateImageCapture{
+    [gridView setHidden:NO];
+    [[CameraButton getThumbView] setHidden:NO];
+    [UIView animateWithDuration:0.3f
                      animations:^{
-                         [self.photoApprovalView setFrame:CGRectMake(0, self.photoApprovalView.frame.origin.y-200, self.photoApprovalView.frame.size.width, self.photoApprovalView.frame.size.height)];
+                         [ScanUIContainerView setAlpha:0.0];
+                         [gridView setAlpha:1.0];
+                         [openGLController.view setAlpha:0.0];
+                         [[CameraButton getThumbView] setAlpha:1.0];
+                         [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
+                     }
+                     completion:^(BOOL finished){
+                         //stops drawing them
+                         [ScanUIContainerView setHidden:YES];
+                         [self startDeviceMotion];
+                         [openGLController.view setHidden:YES];
+                         imageCaptureIsActive = YES;
                      }];
+    
+    CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    bounceAnimation.values = [NSArray arrayWithObjects:
+                              [NSNumber numberWithFloat:1.0],
+                              [NSNumber numberWithFloat:1.5],
+                              [NSNumber numberWithFloat:0.8],
+                              [NSNumber numberWithFloat:1.0], nil];
+    bounceAnimation.duration = 0.3;
+    
+    [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
 }
 
-- (void)SegmentedControlValueDidChange:(KTSegmentedButtonControl *)segmentedControl{
-    [capturedImageObject setCategoryID:(segmentedControl.selectedIndex + 1)];
+- (void)deactivateImageCapture{
+    [self stopDeviceMotion];
+    [ScanUIContainerView setHidden:NO];
+    [self restartAVCaptureWithBlur:YES];
+    [openGLController.view setHidden:NO];
+    
+    [UIView animateWithDuration:0.3f
+                     animations:^{
+                         [ScanUIContainerView setAlpha:1.0];
+                         [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
+                         [gridView setAlpha:0.0];
+                         [openGLController.view setAlpha:1.0];
+                         [[CameraButton getThumbView] setAlpha:0.0];
+                     }
+                     completion:^(BOOL finished){
+                         //stops drawing them
+                         [gridView setHidden:YES];
+                         [[CameraButton getThumbView] setHidden:NO];
+                     }];
+    
+    CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+    bounceAnimation.values = [NSArray arrayWithObjects:
+                              [NSNumber numberWithFloat:1.0],
+                              [NSNumber numberWithFloat:0.7],
+                              [NSNumber numberWithFloat:0.9],
+                              [NSNumber numberWithFloat:1.0], nil];
+    bounceAnimation.duration = 0.3;
+    [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
+    
+    imageCaptureIsActive = NO;
 }
+
+
+
+
 
 - (IBAction)retakeImageAction:(id)sender
 {
     [gridView setHidden:NO];
-    [self hidePhotoAnnotationView];
     [CameraButton setHidden:NO];
-    camMode = [NSNumber numberWithInt:1];
     [self restartAVCaptureWithBlur:YES];
 }
 
-- (IBAction)approveImageAction:(id)sender
-{
-    [capturedImageObject setDescriptionString:ImageAnnotationTextView.text];
-    [self saveImageObject];
-    [categorySegmentedControl setSelectedSegmentIndex:0];
-    
-    [self setUIForCamMode:[NSNumber numberWithInt:0]];
 
-}
+
+
 
 - (void)saveImageObject{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -863,8 +804,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.fluxNearbyMetadata = self.fluxDisplayManager.fluxNearbyMetadata;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
+    [timeFilterControl setHidden:YES];
+    [timeFilterControl setAlpha:0.0];
     
     [self setupAVCapture];
     [self setupGestureHandlers];
@@ -886,10 +832,31 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self restartAVCaptureWithBlur:YES];
 }
 
-- (void)fixCameraButtonPosition{
-    [CameraButton removeFromSuperview];
-    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.view insertSubview:CameraButton aboveSubview:gridView];
+- (void)FiltersTableViewDidPop:(FluxFiltersTableViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+    [self animationPopFrontScaleUp];
+}
+
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"pushMapModalView"])
+    {
+        mapViewController = (FluxMapViewController *)segue.destinationViewController;
+        mapViewController.fluxDisplayManager = self.fluxDisplayManager;
+    }
+    else if ([[segue identifier] isEqualToString:@"pushAnnotationModalView"]){
+        imageAnnotationViewController = (FluxImageAnnotationViewController*)segue.destinationViewController;
+    }
+    else if ([[segue identifier] isEqualToString:@"pushFilterView"]){
+        //set the delegate of the navControllers top view (our filters View)
+        UINavigationController*tmp = segue.destinationViewController;
+        FluxFiltersTableViewController* filtersVC = (FluxFiltersTableViewController*)tmp.topViewController;
+        [filtersVC setDelegate:self];
+        filtersVC.fluxDataManager = 
+        
+        [(FluxFiltersTableViewController*)tmp.topViewController]
+        [self animationPushBackScaleDown];
+    }
+            [self pauseAVCapture];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -908,6 +875,59 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [locationManager endLocating];
     locationManager = nil;
 }
+
+#pragma mark - View Transition Animations
+/*
+ UIViewController+HCPushBackAnimation is licensed under MIT License Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+#define HC_DEFINE_TO_SCALE (CATransform3DMakeScale(0.95, 0.95, 0.95))
+#define HC_DEFINE_TO_OPACITY (0.4f)
+
+
+-(void) animationPushBackScaleDown {
+	CABasicAnimation* scaleDown = [CABasicAnimation animationWithKeyPath:@"transform"];
+	scaleDown.toValue = [NSValue valueWithCATransform3D:HC_DEFINE_TO_SCALE];
+	scaleDown.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+	scaleDown.removedOnCompletion = YES;
+	
+	CABasicAnimation* opacity = [CABasicAnimation animationWithKeyPath:@"opacity"];
+	opacity.fromValue = [NSNumber numberWithFloat:1.0f];
+	opacity.toValue = [NSNumber numberWithFloat:HC_DEFINE_TO_OPACITY];
+	opacity.removedOnCompletion = YES;
+	
+	CAAnimationGroup* group = [CAAnimationGroup animation];
+	group.duration = 0.4;
+	group.animations = [NSArray arrayWithObjects:scaleDown, opacity, nil];
+	
+	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
+	[view.layer addAnimation:group forKey:nil];
+}
+
+-(void) animationPopFrontScaleUp {
+	CABasicAnimation* scaleUp = [CABasicAnimation animationWithKeyPath:@"transform"];
+	scaleUp.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+	scaleUp.fromValue = [NSValue valueWithCATransform3D:HC_DEFINE_TO_SCALE];
+	scaleUp.removedOnCompletion = YES;
+	
+	CABasicAnimation* opacity = [CABasicAnimation animationWithKeyPath:@"opacity"];
+	opacity.fromValue = [NSNumber numberWithFloat:HC_DEFINE_TO_OPACITY];
+	opacity.toValue = [NSNumber numberWithFloat:1.0f];
+	opacity.removedOnCompletion = YES;
+	
+	CAAnimationGroup* group = [CAAnimationGroup animation];
+	group.duration = 0.43;
+	group.animations = [NSArray arrayWithObjects:scaleUp, opacity, nil];
+	
+	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
+	[view.layer addAnimation:group forKey:nil];
+}
+
+
 
 @end
 
