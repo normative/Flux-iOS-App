@@ -139,6 +139,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         [locationMeasurements removeObjectAtIndex:0];
     }
     
+/*
     const double weight_time = 0.5;
     const double weight_accuracy = 0.5;
     
@@ -154,7 +155,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     NSNumber *max_accuracy = [locationMeasurements valueForKeyPath:@"@max.horizontalAccuracy"];
     //NSLog(@"Min/max times: %@ - %@", [dateFormat stringFromDate:min_date], [dateFormat stringFromDate:max_date]);
     //NSLog(@"Min/max accuracy: %f - %f", [min_accuracy doubleValue], [max_accuracy doubleValue]);
-    
+
     for (int i = 0; i < [locationMeasurements count]; i++) {
         temp_location = [locationMeasurements objectAtIndex:i];
         double time_component = ([max_date timeIntervalSinceDate:min_date] > 0) ?
@@ -192,7 +193,9 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(corrected_lat, corrected_long);
 //    self.location = [[CLLocation alloc] initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
 //
-#warning Currently disabling location services singleton mods
+*/
+#warning Currently disabling location services filtering mods
+    
     self.location = newLocation;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];

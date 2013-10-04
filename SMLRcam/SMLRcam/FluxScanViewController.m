@@ -466,7 +466,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                                         andQW:att.quaternion.w
                                                                         andQX:att.quaternion.x
                                                                         andQY:att.quaternion.y
-                                                                        andQZ:att.quaternion.z];
+                                                                        andQZ:att.quaternion.z
+                                                             andHorizAccuracy:location.horizontalAccuracy
+                                                              andVertAccuracy:location.verticalAccuracy];
              
 #warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
              // Also set the internal timestamp variable to match the string representation

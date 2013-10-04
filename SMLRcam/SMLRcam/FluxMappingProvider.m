@@ -36,7 +36,7 @@
 + (RKObjectMapping *)imagePOSTMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addAttributeMappingsFromDictionary:@{
-                                                         @"imageID":   @"id",
+//                                                         @"imageID":   @"id",
                                                          @"categoryID":     @"category_id",
                                                          @"timestampString":        @"time_stamp",
                                                          @"descriptionString":   @"description",
@@ -45,7 +45,7 @@
                                                          }];
 
     
-    [mapping addAttributeMappingsFromArray:@[@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz"]];
+    [mapping addAttributeMappingsFromArray:@[@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz", @"horiz_accuracy", @"vert_accuracy"]];
     
     return mapping;
 }

@@ -39,6 +39,11 @@ typedef enum FluxImageType : NSUInteger {
 @property (nonatomic) double qy;
 @property (nonatomic) double qz;
 
+// position accuracy and confidence levels
+@property (nonatomic) double horiz_accuracy;
+@property (nonatomic) double vert_accuracy;
+@property (nonatomic) double location_confidence;
+
 //other
 @property (nonatomic, strong) NSString* timestampString;
 @property (nonatomic, strong) NSDate* timestamp;
@@ -69,7 +74,9 @@ withDescriptionString:(NSString*)description
                 andQW:(double)qw
                 andQX:(double)qx
                 andQY:(double)qy
-                andQZ:(double)qz;
+                andQZ:(double)qz
+     andHorizAccuracy:(double)horiz_accuracy
+      andVertAccuracy:(double)vert_accuracy;
 
 - (NSString *) generateImageCacheKeyWithImageType:(FluxImageType)imageType;
 - (NSString *)generateUniqueStringID;
