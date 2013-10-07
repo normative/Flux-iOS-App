@@ -8,7 +8,7 @@
 
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
-//#import "FluxScanViewController.h"
+#import "FluxImageCaptureViewController.h"
 #import "FluxDataManager.h"
 #import "FluxDisplayManager.h"
 #import "FluxMotionManagerSingleton.h"
@@ -77,6 +77,7 @@ typedef struct {
 @property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
 @property (nonatomic, strong)NSMutableArray *nearbyList;
 @property (nonatomic, strong)NSMutableArray *renderedTextures;
+@property (nonatomic, strong)FluxImageCaptureViewController*imageCaptureViewController;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
@@ -95,6 +96,8 @@ typedef struct {
 
 //AVCam Methods
 - (void)setupAVCapture;
+//image capture methods
+- (void)setImageCaptureHidden:(BOOL)hidden;
 
 - (void)didUpdateImageList:(NSNotification *)notification;
 - (void)updateImageTexture:(NSNotification *)notification;

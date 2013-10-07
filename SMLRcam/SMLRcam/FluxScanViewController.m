@@ -282,7 +282,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self performSegueWithIdentifier:@"pushAnnotationModalView" sender:self];
 }
 - (IBAction)filterButtonAction:(id)sender {
-    [self performSegueWithIdentifier:@"pushFilterView" sender:self];
+    //[self performSegueWithIdentifier:@"pushFiltersView" sender:self];
 }
 
 #pragma mark - OpenGLView
@@ -301,7 +301,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self.view insertSubview:openGLController.view belowSubview:ScanUIContainerView];
     // add the glkViewController as the child of self
     [self addChildViewController:openGLController];
-    [openGLController didMoveToParentViewController:self];
+    //[openGLController didMoveToParentViewController:self];
     openGLController.view.frame = self.view.bounds;
     
     openGLController.fluxDisplayManager = self.fluxDisplayManager;
@@ -377,205 +377,56 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 //    return NO;
 //}
 
-#pragma mark - Camera Methods
 
-- (void)takePicture{
-    
-    //google analytics
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
-                                                          action:@"action"  // Event action (required)
-                                                           label:@"take picture"          // Event label
-                                                           value:nil] build]];    // Event value
-    
-    __block NSDate *startTime = [NSDate date];
-    
-    
-    //black Animation
-    [blackView setHidden:NO];
-    [UIView animateWithDuration:0.09 animations:^{
-        [blackView setAlpha:0.9];
-    }completion:^(BOOL finished){
-        
-    }];
-    
-    // Collect position and orientation information prior to copying image
-    CLLocation *location = locationManager.location;
-    CMAttitude *att = motionManager.deviceMotion.attitude;
-    CLLocationDirection heading = locationManager.heading;
-    
-    __block NSDate *endTime = [NSDate date];
-    __block NSTimeInterval executionTime = [endTime timeIntervalSinceDate:startTime];
-    NSLog(@"Execution Time (1): %f", executionTime);
-    
-    // Find out the current orientation and tell the still image output.
-	AVCaptureConnection *stillImageConnection = [cameraManager.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
-	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
-	AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
-	[stillImageConnection setVideoOrientation:avcaptureOrientation];
-	[stillImageConnection setVideoScaleAndCropFactor:1.0];
-	[cameraManager.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
-                                                                completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
-     {
-         if (error)
-         {
-             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Capture Failed"]
-                                                                 message:[error localizedDescription]
-                                                                delegate:nil
-                                                       cancelButtonTitle:@"Dismiss"
-                                                       otherButtonTitles:nil];
-             [alertView show];
-         }
-         else
-         {
-             endTime = [NSDate date];
-             executionTime = [endTime timeIntervalSinceDate:startTime];
-             NSLog(@"Execution Time (2): %f", executionTime);
-             
-             NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
-             capturedImage = [UIImage imageWithData:jpeg];
-             
-             NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
-             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-             outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-             NSString *dateString = [outDateFormat stringFromDate:startTime];
-             
-             int userID = 1;
-             int cameraID = 1;
-             int categoryID = 1;
-             
-             capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
-                                                            atTimestampString:dateString
-                                                                  andCameraID:cameraID
-                                                                andCategoryID:categoryID
-                                                        withDescriptionString:@""
-                                                                  andlatitude:location.coordinate.latitude
-                                                                 andlongitude:location.coordinate.longitude
-                                                                  andaltitude:location.altitude
-                                                                   andHeading:heading
-                                                                       andYaw:att.yaw
-                                                                     andPitch:att.pitch
-                                                                      andRoll:att.roll
-                                                                        andQW:att.quaternion.w
-                                                                        andQX:att.quaternion.x
-                                                                        andQY:att.quaternion.y
-                                                                        andQZ:att.quaternion.z];
-             
-#warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
-             // Also set the internal timestamp variable to match the string representation
-             [capturedImageObject setTimestamp:startTime];
-             
-             //UI Updates
-             [UIView animateWithDuration:0.09 animations:^{
-                 [blackView setAlpha:0.0];
-             } completion:^(BOOL finished) {
-                 [blackView setHidden:YES];
-             }];
-             
-             
-         }
-     }];
-}
 
-// utility routing used during image capture to set up capture orientation
-- (AVCaptureVideoOrientation)avOrientationForDeviceOrientation:(UIDeviceOrientation)deviceOrientation
-{
-    AVCaptureVideoOrientation result = AVCaptureVideoOrientationPortrait;
-    
-	if (deviceOrientation == AVCaptureVideoOrientationPortraitUpsideDown )
-    {
-		result = AVCaptureVideoOrientationPortraitUpsideDown;
-    }
-	else if (deviceOrientation == AVCaptureVideoOrientationLandscapeLeft )
-    {
-		result = AVCaptureVideoOrientationLandscapeRight;
-    }
-	else if ( deviceOrientation == UIDeviceOrientationLandscapeRight )
-    {
-		result = AVCaptureVideoOrientationLandscapeLeft;
-    }
-	return result;
-}
 
-- (void)setupAVCapture
-{
-    AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
 
-    cameraManager = [FluxAVCameraSingleton sharedCamera];
-    previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
-    [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
-    [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-    CALayer *rootLayer = [self.view layer];
-    [previewLayer setFrame:self.view.bounds];
-    [rootLayer insertSublayer:previewLayer atIndex:0];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(annotationsViewDidPop:)  name:@"AnnotationViewPopped"  object:nil];
-}
 
--(void)pauseAVCapture
-{
-    [cameraManager pauseAVCapture];
-}
+//
+//-(void)pauseAVCapture
+//{
+//    [cameraManager pauseAVCapture];
+//}
 
 //restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
--(void)restartAVCaptureWithBlur:(BOOL)blur
-{
-    //don't add a blur if we haven't captured an image yet.
-    if (capturedImage != nil && blur) {
-        [gridView setAlpha:0.0];
-        [CameraButton setAlpha:0.0];
-        [blurView setImage:[self blurImage:capturedImage]];
-        [blurView setHidden:NO];
-        [UIView animateWithDuration:0.2 animations:^{
-            [blurView setAlpha:1.0];
-        }completion:nil];
-    }
-    
-    dispatch_async(AVCaptureBackgroundQueue, ^{
-        //start AVCapture
-        [cameraManager restartAVCapture];
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            //completion callback
-            if (blur && capturedImage) {
-                [UIView animateWithDuration:0.2 animations:^{
-                    [blurView setAlpha:0.0];
-                    [gridView setAlpha:1.0];
-                    [CameraButton setAlpha:1.0];
-                }completion:^(BOOL finished){
-                    [blurView setHidden:YES];
-                    capturedImage = nil;
-                }];
-            }
-        });
-    });
-    
-    
-    
-    
-    
-}
+//-(void)restartAVCaptureWithBlur:(BOOL)blur
+//{
+//    //don't add a blur if we haven't captured an image yet.
+//    if (capturedImage != nil && blur) {
+//        [CameraButton setAlpha:0.0];
+//        [blurView setImage:[self blurImage:capturedImage]];
+//        [blurView setHidden:NO];
+//        [UIView animateWithDuration:0.2 animations:^{
+//            [blurView setAlpha:1.0];
+//        }completion:nil];
+//    }
+//    
+//    dispatch_async(AVCaptureBackgroundQueue, ^{
+//        //start AVCapture
+//        [cameraManager restartAVCapture];
+//        dispatch_sync(dispatch_get_main_queue(), ^{
+//            //completion callback
+//            if (blur && capturedImage) {
+//                [UIView animateWithDuration:0.2 animations:^{
+//                    [blurView setAlpha:0.0];
+//                    [CameraButton setAlpha:1.0];
+//                }completion:^(BOOL finished){
+//                    [blurView setHidden:YES];
+//                    capturedImage = nil;
+//                }];
+//            }
+//        });
+//    });
+//}
 
 #pragma mark Camera View
 
 - (void)setupCameraView{
-    //photo annotation view
-    [capturedImageObject setCategoryID:1];
+    
     [progressView setAlpha:0.0];
 
     
-    //add gridlines
-    gridView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"CameraGridlines.png"]];
-    [gridView setFrame:self.view.bounds];
-    [gridView setHidden:YES];
-    [gridView setAlpha:0.0];
-    [gridView setContentMode:UIViewContentModeScaleAspectFill];
-    [self.view insertSubview:gridView belowSubview:CameraButton];
     
-    blackView = [[UIView alloc]initWithFrame:self.view.bounds];
-    [blackView setBackgroundColor:[UIColor blackColor]];
-    [blackView setAlpha:0.0];
-    [blackView setHidden:YES];
-    [self.view addSubview:blackView];
     
     blurView = [[UIImageView alloc]initWithFrame:self.view.bounds];
     [blurView setBackgroundColor:[UIColor clearColor]];
@@ -590,26 +441,24 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)fixCameraButtonPosition{
     [CameraButton removeFromSuperview];
     [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.view insertSubview:CameraButton aboveSubview:gridView];
+    [self.view insertSubview:CameraButton aboveSubview:ScanUIContainerView];
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
     if (!imageCaptureIsActive) {
+        [openGLController setImageCaptureHidden:NO];
         [self activateImageCapture];
     }
     else{
-        [self takePicture];
+        [openGLController.imageCaptureViewController takePicture];
     }
 }
 
 - (void)activateImageCapture{
-    [gridView setHidden:NO];
     [[CameraButton getThumbView] setHidden:NO];
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [ScanUIContainerView setAlpha:0.0];
-                         [gridView setAlpha:1.0];
-                         [openGLController.view setAlpha:0.0];
                          [[CameraButton getThumbView] setAlpha:1.0];
                          [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
                      }
@@ -617,7 +466,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          //stops drawing them
                          [ScanUIContainerView setHidden:YES];
                          [self startDeviceMotion];
-                         [openGLController.view setHidden:YES];
                          imageCaptureIsActive = YES;
                      }];
     
@@ -635,20 +483,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)deactivateImageCapture{
     [self stopDeviceMotion];
     [ScanUIContainerView setHidden:NO];
-    [self restartAVCaptureWithBlur:YES];
-    [openGLController.view setHidden:NO];
     
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [ScanUIContainerView setAlpha:1.0];
                          [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
-                         [gridView setAlpha:0.0];
-                         [openGLController.view setAlpha:1.0];
                          [[CameraButton getThumbView] setAlpha:0.0];
                      }
                      completion:^(BOOL finished){
                          //stops drawing them
-                         [gridView setHidden:YES];
                          [[CameraButton getThumbView] setHidden:NO];
                      }];
     
@@ -665,12 +508,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 
-
-
-
 - (IBAction)retakeImageAction:(id)sender
 {
-    [gridView setHidden:NO];
     [CameraButton setHidden:NO];
     [self restartAVCaptureWithBlur:YES];
 }
@@ -765,12 +604,18 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
 }
 
+- (void)imageCaptureDidPop:(NSNotification *)notification{
+    [self deactivateImageCapture];
+}
+
 -(void)hideProgressView{
     [UIView animateWithDuration:1.2f
                      animations:^{
                          [progressView setAlpha:0.0];
                      }];
 }
+
+
 
 #pragma mark Image Capture Helper Methods
 -(UIImage*)blurImage:(UIImage *)img{
@@ -808,11 +653,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     self.fluxNearbyMetadata = self.fluxDisplayManager.fluxNearbyMetadata;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
     [timeFilterControl setHidden:YES];
     [timeFilterControl setAlpha:0.0];
     
-    [self setupAVCapture];
     [self setupGestureHandlers];
     [self setupCameraView];
     [self setupMotionManager];
@@ -824,16 +669,25 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     locationManager = [FluxLocationServicesSingleton sharedManager];
     [locationManager startLocating];
     
+    currentDataFilter = [[FluxDataFilter alloc] init];
+    
     self.screenName = @"Scan View";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [radarButton updateRadarWithNewMetaData:fluxNearbyMetadata];
-    [self restartAVCaptureWithBlur:YES];
+    //[self restartAVCaptureWithBlur:YES];
 }
 
 - (void)FiltersTableViewDidPop:(FluxFiltersTableViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
     [self animationPopFrontScaleUp];
+    
+    if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
+        NSDictionary *userInfoDict = @{@"filter" : dataFilter};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
+        currentDataFilter = [dataFilter copy];
+    }
+    
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -846,22 +700,19 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     else if ([[segue identifier] isEqualToString:@"pushAnnotationModalView"]){
         imageAnnotationViewController = (FluxImageAnnotationViewController*)segue.destinationViewController;
     }
-    else if ([[segue identifier] isEqualToString:@"pushFilterView"]){
+    else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
         //set the delegate of the navControllers top view (our filters View)
         UINavigationController*tmp = segue.destinationViewController;
         FluxFiltersTableViewController* filtersVC = (FluxFiltersTableViewController*)tmp.topViewController;
         [filtersVC setDelegate:self];
-        filtersVC.fluxDataManager = 
+        [filtersVC prepareViewWithFilter:currentDataFilter];
         
-        [(FluxFiltersTableViewController*)tmp.topViewController]
         [self animationPushBackScaleDown];
     }
-            [self pauseAVCapture];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
-    [self pauseAVCapture];
 }
 
 - (void)didReceiveMemoryWarning

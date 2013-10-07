@@ -97,5 +97,13 @@
     _categories = [_categories stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%%20%@",category] withString:@""];
 }
 
+- (BOOL)containsCategory:(NSString*)category{
+    if ([_categories rangeOfString:category].location == NSNotFound) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
 
 @end

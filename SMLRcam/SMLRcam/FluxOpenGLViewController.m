@@ -712,6 +712,29 @@ void init(){
     }
 }
 
+- (void)setupCameraView{
+    
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+    // setup the opengl controller
+    // first get an instance from storyboard
+    self.imageCaptureViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"imageCaptureViewController"];
+    
+    // then add the glkview as the subview of the parent view
+    [self.view addSubview:self.imageCaptureViewController.view];
+    // add the glkViewController as the child of self
+    [self addChildViewController:self.imageCaptureViewController];
+    [self.imageCaptureViewController didMoveToParentViewController:self];
+    self.imageCaptureViewController.view.frame = self.view.bounds;
+}
+
+- (void)setImageCaptureHidden:(BOOL)hidden{
+    [self.imageCaptureViewController setHidden:hidden];
+}
+
+- (void)imageCaptureDidPop:(NSNotification *)notification{
+}
+
 #pragma mark - AV Capture
 - (void)cleanUpTextures
 {
@@ -828,6 +851,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageTexture:) name:FluxDisplayManagerDidUpdateImageTexture object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     
     [super viewDidLoad];
     _opengltexturesset = 0;
@@ -861,6 +885,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self setupGL];
     [self setupAVCapture];
+    [self setupCameraView];
     
     
     

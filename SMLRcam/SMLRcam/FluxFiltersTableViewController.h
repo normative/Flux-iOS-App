@@ -43,4 +43,6 @@
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)doneButtonAction:(id)sender;
 
+- (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter;
+
 @end

@@ -34,4 +34,6 @@
 - (BOOL)isEqualToFilter:(FluxDataFilter*)filter;
 - (id)initWithFilter:(FluxDataFilter*)filter;
 
+- (BOOL)containsCategory:(NSString*)category;
+
 @end

@@ -37,17 +37,16 @@
     
     
     FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
-    FluxRightDrawerViewController * rightSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxRightDrawerViewController"];
+    //FluxRightDrawerViewController * rightSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxRightDrawerViewController"];
     
     FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
     
     leftSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
     scanViewController.fluxDisplayManager = fluxDisplayManager;
     
-    MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController rightDrawerViewController:rightSideDrawerViewController];
+    MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController];
     
     [drawerController setMaximumLeftDrawerWidth:256.0];
-    [drawerController setMaximumRightDrawerWidth:256.0];
     [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.

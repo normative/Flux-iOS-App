@@ -21,6 +21,8 @@
 
 @synthesize delegate;
 
+
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -34,22 +36,11 @@
 {
     [super viewDidLoad];
     
-    [super viewDidLoad];
-    FluxFilterDrawerObject *MyNetworkFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Network" andDBTitle:@"1" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:YES];
-    FluxFilterDrawerObject *PlacesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Places" andDBTitle:@"place" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:YES];
-    FluxFilterDrawerObject *PeopleFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People" andDBTitle:@"person" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:YES];
-    FluxFilterDrawerObject *ThingsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Things" andDBTitle:@"thing" andtitleImage:[UIImage imageNamed:@"filter_Things.png"] andActive:YES];
-    FluxFilterDrawerObject *EventsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Events" andDBTitle:@"event" andtitleImage:[UIImage imageNamed:@"filter_Events.png"] andActive:YES];
-    
-    contextFiltersArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PeopleFilterObject, PlacesFilterObject, ThingsFilterObject, EventsFilterObject, nil];
-    topTagsArray = [[NSMutableArray alloc]init];
-    selectedTags = [[NSMutableArray alloc]init];
-    rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:contextFiltersArray, nil];
-    
     [self setupLocationManager];
     
-    dataFilter = [[FluxDataFilter alloc] init];
-    previousDataFilter = [[FluxDataFilter alloc] initWithFilter:dataFilter];
+    if (dataFilter == nil) {
+        dataFilter = [[FluxDataFilter alloc] init];
+    }
 }
 
 
@@ -67,14 +58,24 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     if ([delegate respondsToSelector:@selector(FiltersTableViewDidPop:andChangeFilter:)]) {
-        [delegate FiltersTableViewDidPop:self andChangeFilter:nil];
+        [delegate FiltersTableViewDidPop:self andChangeFilter:dataFilter];
     }
+}
+
+- (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter{
+    FluxFilterDrawerObject *MyNetworkFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Network" andDBTitle:@"1" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"1"]];
+    FluxFilterDrawerObject *PlacesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Places" andDBTitle:@"place" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"place"]];
+    FluxFilterDrawerObject *PeopleFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People" andDBTitle:@"person" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"person"]];
+    FluxFilterDrawerObject *ThingsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Things" andDBTitle:@"thing" andtitleImage:[UIImage imageNamed:@"filter_Things.png"] andActive:[theDataFilter containsCategory:@"thing"]];
+    FluxFilterDrawerObject *EventsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Events" andDBTitle:@"event" andtitleImage:[UIImage imageNamed:@"filter_Events.png"] andActive:[theDataFilter containsCategory:@"event"]];
     
-    if (![dataFilter isEqualToFilter:previousDataFilter]) {
-        NSDictionary *userInfoDict = @{@"filter" : dataFilter};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
-        previousDataFilter = [dataFilter copy];
-    }
+    contextFiltersArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PeopleFilterObject, PlacesFilterObject, ThingsFilterObject, EventsFilterObject, nil];
+    topTagsArray = [[NSMutableArray alloc]init];
+    selectedTags = [[NSMutableArray alloc]init];
+    rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:contextFiltersArray, nil];
+    
+    dataFilter = [theDataFilter copy];
+    [self.tableView reloadData];
 }
 
 - (void)didReceiveMemoryWarning
@@ -149,10 +150,10 @@
                 return @"Show Only:";
             }
             
-            return @"Tags Nearby:";
+            return @"Tags Nearby";
         }
         else{
-            return @"Show Only:";
+            return @"Show";
         }
     }
     else

@@ -17,9 +17,10 @@
 #import "FluxMapViewController.h"
 #include "FluxOpenGLViewController.h"
 #import "FluxImageAnnotationViewController.h"
+#import "FluxImageCaptureViewController.h"
 #import "FluxFiltersTableViewController.h"
 #import "FluxLocationServicesSingleton.h"
-#import "FluxAVCameraSingleton.h"
+
 #import "FluxDisplayManager.h"
 
 
@@ -45,16 +46,13 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     UITableView*annotationsTableView;
     
-    //Camera
-    AVCaptureVideoPreviewLayer *previewLayer;
-    AVCaptureDevice *device;
-    dispatch_queue_t AVCaptureBackgroundQueue;
-    FluxAVCameraSingleton *cameraManager;
-    UIImageView *gridView;
+
+
+    
     BOOL imageCaptureIsActive;
     FluxScanImageObject *capturedImageObject;
+    
     UIImage *capturedImage;
-    UIView *blackView;
     UIImageView*blurView;
     __strong IBOutlet FluxCameraButton *CameraButton;
     IBOutlet UIButton *filterButton;
@@ -71,9 +69,13 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     //openGL
     FluxOpenGLViewController*openGLController;
-    
+    //map
     FluxMapViewController *mapViewController;
+
+    
     FluxImageAnnotationViewController*imageAnnotationViewController;
+    
+    FluxDataFilter *currentDataFilter;
     
     UIImageView* launchView;
 }
