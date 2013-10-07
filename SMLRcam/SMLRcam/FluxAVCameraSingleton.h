@@ -12,7 +12,6 @@
 @protocol FluxCameraDelegate;
 
 @interface FluxAVCameraSingleton : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>{
-    AVCaptureDevice *device;
     id <FluxCameraDelegate> delegate;
     int _dataPreview;
     CMBufferQueueRef previewBufferQueue;
@@ -23,6 +22,7 @@
 @property (nonatomic, strong)AVCaptureSession *session;
 @property (nonatomic, strong)dispatch_queue_t videoDataOutputQueue;
 @property (nonatomic, strong)AVCaptureStillImageOutput *stillImageOutput;
+@property (nonatomic, strong)AVCaptureDevice *device;
 @property (readwrite, assign) id <FluxCameraDelegate> delegate;
 -(void)pauseAVCapture;
 - (void)restartAVCapture;

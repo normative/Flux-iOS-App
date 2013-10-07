@@ -720,7 +720,7 @@ void init(){
     // first get an instance from storyboard
     self.imageCaptureViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"imageCaptureViewController"];
     
-    // then add the glkview as the subview of the parent view
+    // then add the imageCaptureView as the subview of the parent view
     [self.view addSubview:self.imageCaptureViewController.view];
     // add the glkViewController as the child of self
     [self addChildViewController:self.imageCaptureViewController];
@@ -791,6 +791,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [touches anyObject];
+    NSError*error;
+    [cameraManager.device lockForConfiguration:&error];
+    [cameraManager.device setFocusPointOfInterest:[touch locationInView:self.view]];
 }
 
 - (void)setupAVCapture

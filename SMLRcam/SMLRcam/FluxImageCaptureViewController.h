@@ -27,6 +27,8 @@ extern NSString* const FluxImageCaptureDidPop;
     UIImageView *gridView;
     UIImage *capturedImage;
     UIView *blackView;
+    IBOutlet UIView *imageCaptureSquareView;
+    IBOutlet UILabel *imageCountLabel;
     
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -38,7 +40,6 @@ extern NSString* const FluxImageCaptureDidPop;
     CMMotionManager *motionManager;
     FluxAVCameraSingleton *cameraManager;
     NSMutableArray *capturedImageObjects;
-    FluxScanImageObject*capturedImageObject;
     
 }
 @property (strong, nonatomic) IBOutlet UIButton *closeButton;

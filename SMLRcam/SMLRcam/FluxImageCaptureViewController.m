@@ -39,15 +39,21 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
     [gridView setContentMode:UIViewContentModeScaleAspectFill];
     [self.view addSubview:gridView];
     
-    blackView = [[UIView alloc]initWithFrame:self.view.bounds];
+    blackView = [[UIView alloc]initWithFrame:imageCaptureSquareView.frame];
     [blackView setBackgroundColor:[UIColor blackColor]];
     [blackView setAlpha:0.0];
     [blackView setHidden:YES];
     [self.view addSubview:blackView];
     
+    CALayer *borders = [CALayer layer];
+    borders.frame = CGRectMake(-10, 0, imageCaptureSquareView.frame.size.width+20, imageCaptureSquareView.frame.size.height);
+    [borders setBorderColor:[UIColor blackColor].CGColor];
+    [borders setBorderWidth:2.0];
+    [imageCaptureSquareView.layer addSublayer:borders];
+    
     capturedImageObjects = [[NSMutableArray alloc]init];
     
-    //[self setupAVCapture];
+    [self setupAVCapture];
     
     self.screenName = @"Image Capture View";
     
@@ -84,6 +90,8 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
 
 - (IBAction)closeButtonAction:(id)sender {
     [self setHidden:YES];
+    [capturedImageObjects removeAllObjects];
+    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
@@ -172,7 +180,7 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
              int cameraID = 1;
              int categoryID = 1;
              
-             capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
+                 FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
                                                             atTimestampString:dateString
                                                                   andCameraID:cameraID
                                                                 andCategoryID:categoryID
@@ -192,6 +200,8 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
 #warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
              // Also set the internal timestamp variable to match the string representation
              [capturedImageObject setTimestamp:startTime];
+             [capturedImageObjects addObject:capturedImageObject];
+             [self incrementCountLabel];
              
              //UI Updates
              [UIView animateWithDuration:0.09 animations:^{
@@ -223,6 +233,16 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
 		result = AVCaptureVideoOrientationLandscapeLeft;
     }
 	return result;
+}
+
+- (void)incrementCountLabel{
+    CGPoint center = imageCountLabel.center;
+    imageCountLabel.transform = CGAffineTransformMakeScale(1.5, 1.5);
+    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
+    [UIView animateWithDuration:0.3 animations:^{
+        imageCountLabel.transform = CGAffineTransformMakeScale(1, 1);
+        [imageCountLabel setCenter:center];
+    } completion:nil];
 }
 
 @end

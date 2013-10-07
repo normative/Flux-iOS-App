@@ -30,17 +30,17 @@
         [self.session setSessionPreset:AVCaptureSessionPresetHigh]; // full resolution photo...
         
         // Select a video device, make an input
-        device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+        self.device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
         
         //set autofocus
-        BOOL locked = [device lockForConfiguration:nil];
+        BOOL locked = [self.device lockForConfiguration:nil];
         if (locked)
         {
-            device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
-            [device unlockForConfiguration];
+            self.device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
+            [self.device unlockForConfiguration];
         }
         
-        AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+        AVCaptureDeviceInput *deviceInput = [AVCaptureDeviceInput deviceInputWithDevice:self.device error:&error];
         
         if (error == nil)
         {
