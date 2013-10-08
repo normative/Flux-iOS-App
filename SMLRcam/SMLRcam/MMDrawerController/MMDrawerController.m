@@ -563,6 +563,11 @@ static CAKeyframeAnimation * bounceKeyFrameAnimationForDistanceOnView(CGFloat di
 	[self.view setBackgroundColor:[UIColor blackColor]];
 
 	[self setupGestureRecognizers];
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
+-(UIStatusBarStyle)preferredStatusBarStyle{
+    return UIStatusBarStyleLightContent;
 }
 
 -(void)viewWillAppear:(BOOL)animated{
