@@ -74,6 +74,13 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return requestID;
 }
 
+- (void) addCameraDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image{
+    [fluxDataStore addMetadataObject:metadata];
+    [fluxDataStore addImageToStore:image withLocalID:metadata.localID withSize:full_res];
+}
+
+
+
 #pragma mark - Item List Queries
 
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate

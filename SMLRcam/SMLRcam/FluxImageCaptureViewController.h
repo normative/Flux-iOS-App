@@ -15,6 +15,7 @@
 #import <ImageIO/ImageIO.h>
 #import "FluxLocationServicesSingleton.h"
 #import "FluxAVCameraSingleton.h"
+#import "FluxDisplayManager.h"
 #import "FluxScanImageObject.h"
 
 #import "GAITrackedViewController.h"
@@ -22,6 +23,7 @@
 #import "GAIDictionaryBuilder.h"
 
 extern NSString* const FluxImageCaptureDidPop;
+extern NSString* const FluxImageCaptureDidCaptureImage;
 
 @interface FluxImageCaptureViewController : GAITrackedViewController{
     UIImageView *gridView;
@@ -29,6 +31,7 @@ extern NSString* const FluxImageCaptureDidPop;
     UIView *blackView;
     IBOutlet UIView *imageCaptureSquareView;
     IBOutlet UILabel *imageCountLabel;
+    IBOutlet UIButton *approveButton;
     
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -44,7 +47,14 @@ extern NSString* const FluxImageCaptureDidPop;
 }
 @property (strong, nonatomic) IBOutlet UIButton *closeButton;
 
+@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
+@property (nonatomic, weak) NSMutableArray *nearbyList;
+
+@property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
+
+
 - (IBAction)closeButtonAction:(id)sender;
+- (IBAction)approveImageAction:(id)sender;
 
 
 

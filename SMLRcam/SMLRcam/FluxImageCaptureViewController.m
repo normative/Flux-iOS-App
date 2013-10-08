@@ -7,8 +7,11 @@
 //
 
 #import "FluxImageCaptureViewController.h"
+#import "FluxOpenGLViewController.h"
+
 
 NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
+NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureImage";
 
 @interface FluxImageCaptureViewController ()
 
@@ -92,10 +95,15 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
     [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
     [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
+                                                        object:self userInfo:nil];
+}
+
+- (IBAction)approveImageAction:(id)sender {
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
-                                                        object:self userInfo:nil];
+                                                        object:self userInfo:userInfoDict];
 }
 
 
@@ -110,9 +118,9 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
     previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
     [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
     [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-//    CALayer *rootLayer = [self.view layer];
-    [previewLayer setFrame:imageCaptureSquareView.frame];
-//    [rootLayer insertSublayer:previewLayer atIndex:0];
+    CALayer *rootLayer = [self.view layer];
+    [previewLayer setFrame:self.view.bounds];
+    [rootLayer insertSublayer:previewLayer atIndex:0];
 }
 
 - (void)takePicture{
@@ -180,7 +188,9 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
              int cameraID = 1;
              int categoryID = 1;
              
-                 FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
+
+             
+            FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
                                                             atTimestampString:dateString
                                                                   andCameraID:cameraID
                                                                 andCategoryID:categoryID
@@ -200,7 +210,8 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
 #warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
              // Also set the internal timestamp variable to match the string representation
              [capturedImageObject setTimestamp:startTime];
-             [capturedImageObjects addObject:capturedImageObject];
+             
+             [self saveImageObject:capturedImageObject];
              [self incrementCountLabel];
              
              //UI Updates
@@ -209,10 +220,60 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
              } completion:^(BOOL finished) {
                  [blackView setHidden:YES];
              }];
-             
-             
+             [approveButton setHidden:NO];
          }
      }];
+}
+
+- (void)saveImageObject:(FluxScanImageObject*)newImageObject{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
+    
+    // Generate a string image id for local use
+    NSString *localID = [newImageObject generateUniqueStringID];
+    [newImageObject setLocalID:localID];
+    
+    // Set the server-side image id to a negative value until server returns actual
+    [newImageObject setImageID:-1];
+    
+    // HACK
+    
+    // spin the image CW by 90deg. prior to dumping into the cache;
+    CGSize size = capturedImage.size;
+    UIGraphicsBeginImageContext(size);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSaveGState(context);
+    
+    //    CGContextTranslateCTM( context, 0.5f * size.width, 0.5f * size.height ) ;
+    //    //CGContextRotateCTM( context, M_PI_2) ;
+    //    [capturedImage drawInRect:(CGRect){ { -size.width * 0.5f, -size.height * 0.5f }, size } ] ;
+    
+    [capturedImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    
+    UIImage *spunImage = UIGraphicsGetImageFromCurrentImageContext();
+    CGContextRestoreGState(context);
+    UIGraphicsEndImageContext();
+    
+    
+    // END HACK
+    if ([capturedImageObjects count]==0) {
+        [previewLayer removeFromSuperlayer];
+        [[(FluxOpenGLViewController*)self.parentViewController fluxNearbyMetadata]removeAllObjects];
+        [[(FluxOpenGLViewController*)self.parentViewController nearbyList]removeAllObjects];
+        
+        [[(FluxOpenGLViewController*)self.parentViewController fluxNearbyMetadata] setObject:newImageObject forKey:newImageObject.localID];
+        [[(FluxOpenGLViewController*)self.parentViewController nearbyList] insertObject:localID atIndex:0];
+        
+        [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:spunImage];
+    }
+
+    [capturedImageObjects addObject:newImageObject];
+    
+    NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                  initWithObjectsAndKeys:localID, @"localID", spunImage, @"image", nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidCaptureImage
+                                                        object:self userInfo:userInfoDict];
+
 }
 
 // utility routing used during image capture to set up capture orientation

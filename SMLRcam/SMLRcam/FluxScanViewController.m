@@ -21,7 +21,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 @implementation FluxScanViewController
 
-@synthesize fluxNearbyMetadata;
 @synthesize timeFilterControl;
 
 #pragma mark - Network Services
@@ -33,13 +32,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
 #warning FIXME - Make sure these get called
 // Need to trigger these somehow - probably from OpenGL VC
-    [radarButton updateRadarWithNewMetaData:fluxNearbyMetadata];
+    [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
     [annotationsTableView reloadData];
 }
 
 - (void)didUpdateImageList:(NSNotification *)notification{
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",fluxNearbyMetadata.count] forState:UIControlStateNormal];
-    if (fluxNearbyMetadata.count<=5) {
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
+    if (self.fluxDisplayManager.fluxNearbyMetadata.count<=5) {
         if (![timeFilterControl isHidden]) {
             [UIView animateWithDuration:0.2f
                              animations:^{
@@ -109,169 +108,169 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 #pragma mark - Annotations Feed Methods
 
-//show list of images currently visible.
-- (void)setupAnnotationsTableView{
-    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(7, 80, self.view.frame.size.width-14, self.view.frame.size.height-200)];
-    [annotationsTableView setHidden:YES];
-    [annotationsTableView setAlpha:0.0];
-    [annotationsTableView setBackgroundColor:[UIColor clearColor]];
-    [annotationsTableView setSeparatorColor:[UIColor clearColor]];
-    [annotationsTableView setAllowsSelection:NO];
-    [annotationsTableView setDelegate:self];
-    [annotationsTableView setDataSource:self];
-    
-    [annotationsTableView registerNib:[UINib nibWithNibName:@"FluxAnnotationTableViewCell" bundle:nil] forCellReuseIdentifier:@"annotationsFeedCell"];
-    
-    //fade out the bottom of the feedView
-    CAGradientLayer* maskLayer = [CAGradientLayer layer];
-    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
-    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
-    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
-    maskLayer.locations = [NSArray arrayWithObjects:
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.8],
-                           [NSNumber numberWithFloat:1.0], nil];
-    maskLayer.bounds = annotationsTableView.layer.bounds;
-    maskLayer.anchorPoint = CGPointZero;
-    annotationsTableView.layer.mask = maskLayer;
-
-    [self.view addSubview:annotationsTableView];
-}
-
-
-- (IBAction)annotationsButtonAction:(id)sender {
-    [CameraButton setEnabled:YES];
-    if ([annotationsTableView isHidden]) {
-        if ([fluxNearbyMetadata count]>0) {
-            [annotationsTableView reloadData];
-            //if there are any rows, scroll to the top of them
-            if ([annotationsTableView numberOfRowsInSection:0]>0) {
-                            [annotationsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-            }
-        }
-            [annotationsTableView setHidden:NO];
-            [UIView animateWithDuration:0.3f
-                             animations:^{
-                                 [annotationsTableView setAlpha:1.0];
-                             }
-                             completion:nil];
-        [CameraButton setUserInteractionEnabled:NO];
-    }
-    else{
-        [UIView animateWithDuration:0.3f
-                         animations:^{
-                             [annotationsTableView setAlpha:0.0];
-                         }
-                         completion:^(BOOL finished){
-                             [annotationsTableView setHidden:YES];
-                             [CameraButton setUserInteractionEnabled:YES];
-                         }];
-    }
-}
-
-
-#pragma mark TableView Methods
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    // Return the number of sections.
-    return 1;
-}
-
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    return @"Tags Nearby";
-}
-
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UILabel *label = [[UILabel alloc] init];
-    label.frame = CGRectMake(12, 0, 100, 22);
-    label.textColor = [UIColor lightGrayColor];
-    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
-    label.text = [self tableView:tableView titleForHeaderInSection:section];
-    label.backgroundColor = [UIColor clearColor];
-    
-    UIView*backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, annotationsTableView.frame.size.width, 24)];
-    [backgroundView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
-    
-    // Create header view and add label as a subview
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 22)];
-    [view setBackgroundColor:[UIColor clearColor]];
-    [view addSubview:backgroundView];
-    [view addSubview:label];
-    
-    return view;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // Return the number of rows in the section.
-    return [fluxNearbyMetadata count];
-}
-
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
-    return cell.frame.size.height;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"annotationsFeedCell";
-    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    if (cell == nil)
-    {
-        cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                                  reuseIdentifier:CellIdentifier];
-    }
-    [cell initCell];
-    
-    //hack to prevent crashes
-    if (indexPath.row > fluxNearbyMetadata.count-1) {
-        return cell;
-    }
-    NSNumber *objkey = [[fluxNearbyMetadata allKeys] objectAtIndex:indexPath.row];
-    FluxScanImageObject *rowObject = [fluxNearbyMetadata objectForKey: objkey];
-    
-    cell.imageID = rowObject.imageID;
-    
-# warning Currently extra overhead. Should fix this to get it locally first before requesting.
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setRequestedIDs:[NSArray arrayWithObject:rowObject.localID]];
-    [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-        [cell.contentImageView setImage:image];
-    }];
-    [self.fluxDisplayManager.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
-
-    cell.descriptionLabel.text = rowObject.descriptionString;
-    cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];
-    [cell.timestampLabel setText:[dateFormatter stringFromDate:rowObject.timestamp]];
-    [cell setCategory:rowObject.categoryID];
-    
-    return cell;
-}
-
-//remove all but selected cell - not called right now
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    //    NSMutableArray *cellIndicesToBeDeleted = [[NSMutableArray alloc] init];
-    //    for (int i = 0; i < [tableView numberOfRowsInSection:0]; i++) {
-    //        if (i != indexPath.row) {
-    //            NSIndexPath *p = [NSIndexPath indexPathForRow:i inSection:1];
-    //            [cellIndicesToBeDeleted addObject:p];
-    //        }
-    //    }
-    //    [tableView deleteRowsAtIndexPaths:cellIndicesToBeDeleted
-    //                     withRowAnimation:UITableViewRowAnimationFade];
-    //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    annotationsTableView.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
-    [CATransaction commit];
-}
+////show list of images currently visible.
+//- (void)setupAnnotationsTableView{
+//    annotationsTableView = [[UITableView alloc]initWithFrame:CGRectMake(7, 80, self.view.frame.size.width-14, self.view.frame.size.height-200)];
+//    [annotationsTableView setHidden:YES];
+//    [annotationsTableView setAlpha:0.0];
+//    [annotationsTableView setBackgroundColor:[UIColor clearColor]];
+//    [annotationsTableView setSeparatorColor:[UIColor clearColor]];
+//    [annotationsTableView setAllowsSelection:NO];
+//    [annotationsTableView setDelegate:self];
+//    [annotationsTableView setDataSource:self];
+//    
+//    [annotationsTableView registerNib:[UINib nibWithNibName:@"FluxAnnotationTableViewCell" bundle:nil] forCellReuseIdentifier:@"annotationsFeedCell"];
+//    
+//    //fade out the bottom of the feedView
+//    CAGradientLayer* maskLayer = [CAGradientLayer layer];
+//    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
+//    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
+//    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
+//    maskLayer.locations = [NSArray arrayWithObjects:
+//                           [NSNumber numberWithFloat:0.0],
+//                           [NSNumber numberWithFloat:0.0],
+//                           [NSNumber numberWithFloat:0.0],
+//                           [NSNumber numberWithFloat:0.8],
+//                           [NSNumber numberWithFloat:1.0], nil];
+//    maskLayer.bounds = annotationsTableView.layer.bounds;
+//    maskLayer.anchorPoint = CGPointZero;
+//    annotationsTableView.layer.mask = maskLayer;
+//
+//    [self.view addSubview:annotationsTableView];
+//}
+//
+//
+//- (IBAction)annotationsButtonAction:(id)sender {
+//    [CameraButton setEnabled:YES];
+//    if ([annotationsTableView isHidden]) {
+//        if ([fluxNearbyMetadata count]>0) {
+//            [annotationsTableView reloadData];
+//            //if there are any rows, scroll to the top of them
+//            if ([annotationsTableView numberOfRowsInSection:0]>0) {
+//                            [annotationsTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+//            }
+//        }
+//            [annotationsTableView setHidden:NO];
+//            [UIView animateWithDuration:0.3f
+//                             animations:^{
+//                                 [annotationsTableView setAlpha:1.0];
+//                             }
+//                             completion:nil];
+//        [CameraButton setUserInteractionEnabled:NO];
+//    }
+//    else{
+//        [UIView animateWithDuration:0.3f
+//                         animations:^{
+//                             [annotationsTableView setAlpha:0.0];
+//                         }
+//                         completion:^(BOOL finished){
+//                             [annotationsTableView setHidden:YES];
+//                             [CameraButton setUserInteractionEnabled:YES];
+//                         }];
+//    }
+//}
+//
+//
+//#pragma mark TableView Methods
+//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+//{
+//    // Return the number of sections.
+//    return 1;
+//}
+//
+//- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+//    return @"Tags Nearby";
+//}
+//
+//- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+//    UILabel *label = [[UILabel alloc] init];
+//    label.frame = CGRectMake(12, 0, 100, 22);
+//    label.textColor = [UIColor lightGrayColor];
+//    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+//    label.text = [self tableView:tableView titleForHeaderInSection:section];
+//    label.backgroundColor = [UIColor clearColor];
+//    
+//    UIView*backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, annotationsTableView.frame.size.width, 24)];
+//    [backgroundView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.65]];
+//    
+//    // Create header view and add label as a subview
+//    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 22)];
+//    [view setBackgroundColor:[UIColor clearColor]];
+//    [view addSubview:backgroundView];
+//    [view addSubview:label];
+//    
+//    return view;
+//}
+//
+//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+//{
+//    // Return the number of rows in the section.
+//    return [fluxNearbyMetadata count];
+//}
+//
+//- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+//    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
+//    return cell.frame.size.height;
+//}
+//
+//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    static NSString *CellIdentifier = @"annotationsFeedCell";
+//    FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+//    
+//    if (cell == nil)
+//    {
+//        cell = [[FluxAnnotationTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+//                                                  reuseIdentifier:CellIdentifier];
+//    }
+//    [cell initCell];
+//    
+//    //hack to prevent crashes
+//    if (indexPath.row > fluxNearbyMetadata.count-1) {
+//        return cell;
+//    }
+//    NSNumber *objkey = [[fluxNearbyMetadata allKeys] objectAtIndex:indexPath.row];
+//    FluxScanImageObject *rowObject = [fluxNearbyMetadata objectForKey: objkey];
+//    
+//    cell.imageID = rowObject.imageID;
+//    
+//# warning Currently extra overhead. Should fix this to get it locally first before requesting.
+//    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+//    [dataRequest setRequestedIDs:[NSArray arrayWithObject:rowObject.localID]];
+//    [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+//        [cell.contentImageView setImage:image];
+//    }];
+//    [self.fluxDisplayManager.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+//
+//    cell.descriptionLabel.text = rowObject.descriptionString;
+//    cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];
+//    [cell.timestampLabel setText:[dateFormatter stringFromDate:rowObject.timestamp]];
+//    [cell setCategory:rowObject.categoryID];
+//    
+//    return cell;
+//}
+//
+////remove all but selected cell - not called right now
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+//    //    NSMutableArray *cellIndicesToBeDeleted = [[NSMutableArray alloc] init];
+//    //    for (int i = 0; i < [tableView numberOfRowsInSection:0]; i++) {
+//    //        if (i != indexPath.row) {
+//    //            NSIndexPath *p = [NSIndexPath indexPathForRow:i inSection:1];
+//    //            [cellIndicesToBeDeleted addObject:p];
+//    //        }
+//    //    }
+//    //    [tableView deleteRowsAtIndexPaths:cellIndicesToBeDeleted
+//    //                     withRowAnimation:UITableViewRowAnimationFade];
+//    //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+//}
+//
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+//{
+//    [CATransaction begin];
+//    [CATransaction setDisableActions:YES];
+//    annotationsTableView.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
+//    [CATransaction commit];
+//}
 
 # pragma mark - View Transitions
 - (void)presentMapView{
@@ -305,7 +304,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     openGLController.view.frame = self.view.bounds;
     
     openGLController.fluxDisplayManager = self.fluxDisplayManager;
-    openGLController.fluxNearbyMetadata = self.fluxNearbyMetadata;
 }
 
 //this section commented out as the circular time slider was removed from the designs (perhaps temporarily)
@@ -507,104 +505,52 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     imageCaptureIsActive = NO;
 }
 
-
-- (IBAction)retakeImageAction:(id)sender
-{
-    [CameraButton setHidden:NO];
-    [self restartAVCaptureWithBlur:YES];
-}
-
-
-
-
-
-- (void)saveImageObject{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
-    
-    // Generate a string image id for local use
-    NSString *localID = [capturedImageObject generateUniqueStringID];
-    [capturedImageObject setLocalID:localID];
-    
-    // Set the server-side image id to a negative value until server returns actual
-    [capturedImageObject setImageID:-1];
-    
-    // HACK
-    
-    // spin the image CW by 90deg. prior to dumping into the cache;
-    CGSize size = capturedImage.size;
-    UIGraphicsBeginImageContext(size);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextSaveGState(context);
-    
-    //    CGContextTranslateCTM( context, 0.5f * size.width, 0.5f * size.height ) ;
-    //    //CGContextRotateCTM( context, M_PI_2) ;
-    //    [capturedImage drawInRect:(CGRect){ { -size.width * 0.5f, -size.height * 0.5f }, size } ] ;
-    
-    [capturedImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
-    
-    UIImage *spunImage = UIGraphicsGetImageFromCurrentImageContext();
-    CGContextRestoreGState(context);
-    UIGraphicsEndImageContext();
-    
-    // END HACK
-    
-    // Progress bar animation setup
-    [UIView animateWithDuration:0.5f
-                     animations:^{
-                         [progressView setAlpha:1.0];
-                     }];
-    progressView.progress = 0;
-
-    [fluxNearbyMetadata setObject:capturedImageObject forKey:capturedImageObject.localID];
-
-    // Add the image and metadata to the local cache
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
-        if ([fluxNearbyMetadata objectForKey:updatedImageObject.localID] != nil)
-        {
-            // FluxScanImageObject exists in the local cache. Replace it with updated object.
-            [fluxNearbyMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
-        }
-        progressView.progress = 1.0;
-        [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
-    }];
-    [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
-        float currentProgress = (float)(inProgressDataRequest.currentUploadSize)/(float)(inProgressDataRequest.totalUploadSize);
-        progressView.progress = currentProgress - 0.05;
-    }];
-    [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[e code]]
-                                                            message:[e localizedDescription]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-        [alertView show];
-        
-        [UIView animateWithDuration:0.2f
-                         animations:^{
-                             [progressView setAlpha:0.0];
-                         }
-                         completion:^(BOOL finished){
-                             progressView.progress = 0;
-                         }];
-    }];
-    
-    [self.fluxDisplayManager.fluxDataManager addDataToStore:capturedImageObject withImage:spunImage withDataRequest:dataRequest];
-    
-    // Post notification for observers prior to upload
-    NSDictionary *userInfoDict = @{FluxScanViewDidAcquireNewPictureLocalIDKey : capturedImageObject.localID};
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
-                                                        object:self userInfo:userInfoDict];
-    
-    // Perform any additional (optional) image save tasks
-    if (savelocally)
-    {
-        UIImageWriteToSavedPhotosAlbum(capturedImage , nil, nil, nil);
-    }
-}
-
 - (void)imageCaptureDidPop:(NSNotification *)notification{
+    if ([notification userInfo]) {
+        [notification.userInfo objectForKey:@"capturedImageObjects"];
+        NSArray*arr = [notification.userInfo objectForKey:@"capturedImageObjects"];
+        for (FluxScanImageObject*imageObject in arr)
+        {
+            // Add the image and metadata to the local cache
+            FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+            [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
+                if ([self.fluxDisplayManager.fluxNearbyMetadata objectForKey:updatedImageObject.localID] != nil)
+                {
+                    // FluxScanImageObject exists in the local cache. Replace it with updated object.
+                    [self.fluxDisplayManager.fluxNearbyMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+                }
+                progressView.progress = 1.0;
+                [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+            }];
+            [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
+                float currentProgress = (float)(inProgressDataRequest.currentUploadSize)/(float)(inProgressDataRequest.totalUploadSize);
+                progressView.progress = currentProgress - 0.05;
+            }];
+            [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[e code]]
+                                                                    message:[e localizedDescription]
+                                                                   delegate:nil
+                                                          cancelButtonTitle:@"OK"
+                                                          otherButtonTitles:nil];
+                [alertView show];
+                
+                [UIView animateWithDuration:0.2f
+                                 animations:^{
+                                     [progressView setAlpha:0.0];
+                                 }
+                                 completion:^(BOOL finished){
+                                     progressView.progress = 0;
+                                 }];
+            }];
+            
+            // Post notification for observers prior to upload
+            NSDictionary *userInfoDict = @{FluxScanViewDidAcquireNewPictureLocalIDKey : capturedImageObject.localID};
+            [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
+                                                                object:self userInfo:userInfoDict];
+        }
+        
+
+    }
     [self deactivateImageCapture];
 }
 
@@ -650,7 +596,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     [super viewDidLoad];
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    self.fluxNearbyMetadata = self.fluxDisplayManager.fluxNearbyMetadata;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
@@ -662,7 +607,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupCameraView];
     [self setupMotionManager];
     [self setupOpenGLView];
-    [self setupAnnotationsTableView];
     [self setupTimeFilterControl];
 
     // Start the location manager service which will continue for the life of the app
@@ -675,7 +619,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    [radarButton updateRadarWithNewMetaData:fluxNearbyMetadata];
+    [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
     //[self restartAVCaptureWithBlur:YES];
 }
 

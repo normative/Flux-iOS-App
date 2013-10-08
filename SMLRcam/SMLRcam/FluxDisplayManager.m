@@ -117,6 +117,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [timeBracketNearbyMetadata setObject:[self.fluxNearbyMetadata objectForKey:[timeBracketArray objectAtIndex:i]] forKey:[timeBracketArray objectAtIndex:i]];
     }
     
+    
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:timeBracketArray, @"nearbyList",timeBracketNearbyMetadata, @"fluxNearbyMetadata" , nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList

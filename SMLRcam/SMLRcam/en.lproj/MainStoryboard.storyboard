@@ -36,12 +36,54 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ub8-Wh-KFw">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ub8-Wh-KFw" userLabel="Bottom Container">
                                 <rect key="frame" x="0.0" y="444" width="320" height="124"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <subviews>
+                                    <view alpha="0.5" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="eDg-GB-Ts2" userLabel="bottom half alpha">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="124"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mt2-5Z-isg">
+                                        <rect key="frame" x="30" y="42" width="40" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="xp8-wn-phz"/>
+                                            <constraint firstAttribute="width" constant="40" id="zSX-B4-3Dz"/>
+                                        </constraints>
+                                        <state key="normal" image="closeCamButton">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="closeButtonAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="kfN-t1-Lxa"/>
+                                        </connections>
+                                    </button>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cif-Zm-36F">
+                                        <rect key="frame" x="240" y="42" width="40" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="40" id="GWL-jj-ShT"/>
+                                            <constraint firstAttribute="height" constant="40" id="UtT-mk-Mle"/>
+                                        </constraints>
+                                        <state key="normal" image="ConfirmCamButton">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="approveImageAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="ZJm-XU-V9E"/>
+                                            <action selector="closeButtonAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="he4-oA-nBZ"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="cif-Zm-36F" secondAttribute="trailing" constant="40" id="Lfu-fx-XrK"/>
+                                    <constraint firstAttribute="centerY" secondItem="cif-Zm-36F" secondAttribute="centerY" id="cwv-P2-p0W"/>
+                                    <constraint firstItem="Mt2-5Z-isg" firstAttribute="leading" secondItem="ub8-Wh-KFw" secondAttribute="leading" constant="30" id="ruU-DC-eTY"/>
+                                    <constraint firstAttribute="centerY" secondItem="Mt2-5Z-isg" secondAttribute="centerY" id="uVD-Bs-U74"/>
+                                </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UPP-yk-7fe">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UPP-yk-7fe" userLabel="Square View">
                                 <rect key="frame" x="0.0" y="124" width="320" height="320"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -50,16 +92,16 @@
                                     <constraint firstAttribute="height" constant="320" id="rot-jg-wqq"/>
                                 </constraints>
                             </view>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3hP-Qn-vbY">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3hP-Qn-vbY" userLabel="Top Container View">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="124"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <view alpha="0.5" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oSo-E0-ENY">
+                                    <view alpha="0.5" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oSo-E0-ENY" userLabel="Top half alpha View">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="124"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EdT-lt-UEH">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EdT-lt-UEH" userLabel="label BG">
                                         <rect key="frame" x="20" y="42" width="40" height="40"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" red="0.0" green="0.70588235290000001" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -89,25 +131,10 @@
                                     <constraint firstAttribute="centerY" secondItem="EdT-lt-UEH" secondAttribute="centerY" id="w5L-PO-fvr"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mt2-5Z-isg">
-                                <rect key="frame" x="30" y="488" width="40" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="40" id="xp8-wn-phz"/>
-                                    <constraint firstAttribute="width" constant="40" id="zSX-B4-3Dz"/>
-                                </constraints>
-                                <state key="normal" image="closeCamButton">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="closeButtonAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="kfN-t1-Lxa"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="ub8-Wh-KFw" firstAttribute="leading" secondItem="UPP-yk-7fe" secondAttribute="leading" id="40V-pf-h0M"/>
-                            <constraint firstItem="Mt2-5Z-isg" firstAttribute="leading" secondItem="UJr-Cz-UbX" secondAttribute="leading" constant="30" id="48g-a3-z4Q"/>
                             <constraint firstItem="ub8-Wh-KFw" firstAttribute="top" secondItem="UPP-yk-7fe" secondAttribute="bottom" id="9Nz-y8-7b5"/>
                             <constraint firstItem="3hP-Qn-vbY" firstAttribute="leading" secondItem="UPP-yk-7fe" secondAttribute="leading" id="Ccu-Bt-F7W"/>
                             <constraint firstItem="UPP-yk-7fe" firstAttribute="top" secondItem="3hP-Qn-vbY" secondAttribute="bottom" id="H8z-mm-d9c"/>
@@ -117,11 +144,11 @@
                             <constraint firstAttribute="centerX" secondItem="UPP-yk-7fe" secondAttribute="centerX" id="moI-Ct-I9d"/>
                             <constraint firstItem="ub8-Wh-KFw" firstAttribute="trailing" secondItem="UPP-yk-7fe" secondAttribute="trailing" id="t8g-Yl-Ccf"/>
                             <constraint firstAttribute="bottom" secondItem="ub8-Wh-KFw" secondAttribute="bottom" id="tYF-z4-ofv"/>
-                            <constraint firstAttribute="bottom" secondItem="Mt2-5Z-isg" secondAttribute="bottom" constant="40" id="z5Z-zO-ol2"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
+                        <outlet property="approveButton" destination="cif-Zm-36F" id="Wh0-ko-rAJ"/>
                         <outlet property="closeButton" destination="Mt2-5Z-isg" id="cpk-p9-jCi"/>
                         <outlet property="imageCaptureSquareView" destination="UPP-yk-7fe" id="KNp-oS-9oV"/>
                         <outlet property="imageCountLabel" destination="Zi1-Yb-u00" id="8ro-SH-FxI"/>
@@ -749,6 +776,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="ConfirmCamButton" width="100" height="101"/>
         <image name="btn-Annotation-discard" width="270" height="100"/>
         <image name="btn-Annotation-save" width="270" height="100"/>
         <image name="camButton" width="80" height="80"/>

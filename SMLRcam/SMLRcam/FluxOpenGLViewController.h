@@ -70,11 +70,13 @@ typedef struct {
     
     NSLock *_nearbyListLock;
     NSLock *_renderListLock;
+    
+    BOOL camIsOn;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
-@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
+@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 @property (nonatomic, strong)NSMutableArray *nearbyList;
 @property (nonatomic, strong)NSMutableArray *renderedTextures;
 @property (nonatomic, strong)FluxImageCaptureViewController*imageCaptureViewController;

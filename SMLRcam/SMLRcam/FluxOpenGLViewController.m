@@ -7,6 +7,7 @@
 //
 
 #import "FluxOpenGLViewController.h"
+#import "FluxScanViewController.h"
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
 
@@ -649,18 +650,34 @@ void init(){
 
 @implementation FluxOpenGLViewController
 
-@synthesize fluxNearbyMetadata;
-
 #pragma mark - Display Manager Notifications
 
 - (void)didUpdateImageList:(NSNotification *)notification{
-    self.fluxNearbyMetadata = [notification.userInfo objectForKey:@"fluxNearbyMetadata"];
+    if (camIsOn) {
+        return;
+    }
+    self.fluxNearbyMetadata = [[notification.userInfo objectForKey:@"fluxNearbyMetadata"]mutableCopy];
     self.nearbyList = [notification.userInfo objectForKey:@"nearbyList"];
     
+    [self trimRenderList];
+}
+
+- (void)updateImageTexture:(NSNotification *)notification{
+    if (camIsOn) {
+        return;
+    }
+    if ([[notification userInfo]allKeys].count == 0) {
+        return;
+    }
+    NSString *localID = [[[notification userInfo]allKeys]objectAtIndex:0];
+    [self updateImageTextureWithLocalID:localID withImage:[[notification userInfo]objectForKey:localID]];
+}
+
+- (void)trimRenderList{
     [_renderListLock lock];
-
+    
     NSMutableArray *toDelete = [[NSMutableArray alloc] init];
-
+    
     for (id localID in self.renderedTextures)
     {
         if ((![localID isEqualToString:@""]) && ![self.nearbyList containsObject:localID])
@@ -668,21 +685,13 @@ void init(){
             [toDelete addObject:localID];
         }
     }
-
+    
     for (id localID in toDelete)
     {
         [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
     }
     
     [_renderListLock unlock];
-}
-
-- (void)updateImageTexture:(NSNotification *)notification{
-    if ([[notification userInfo]allKeys].count == 0) {
-        return;
-    }
-    NSString *localID = [[[notification userInfo]allKeys]objectAtIndex:0];
-    [self updateImageTextureWithLocalID:localID withImage:[[notification userInfo]objectForKey:localID]];
 }
 
 
@@ -712,6 +721,8 @@ void init(){
     }
 }
 
+#pragma mark - Image Capture
+
 - (void)setupCameraView{
     
     UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
@@ -720,19 +731,33 @@ void init(){
     // first get an instance from storyboard
     self.imageCaptureViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"imageCaptureViewController"];
     
+    self.imageCaptureViewController.fluxNearbyMetadata = self.fluxNearbyMetadata;
+    self.imageCaptureViewController.nearbyList = self.nearbyList;
+    
     // then add the imageCaptureView as the subview of the parent view
     [self.view addSubview:self.imageCaptureViewController.view];
     // add the glkViewController as the child of self
     [self addChildViewController:self.imageCaptureViewController];
     [self.imageCaptureViewController didMoveToParentViewController:self];
     self.imageCaptureViewController.view.frame = self.view.bounds;
+    camIsOn = NO;
 }
 
 - (void)setImageCaptureHidden:(BOOL)hidden{
     [self.imageCaptureViewController setHidden:hidden];
+    camIsOn = !hidden;
+    if (!hidden) {
+        self.imageCaptureViewController.fluxDisplayManager = [(FluxScanViewController*)self.parentViewController fluxDisplayManager];
+    }
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
+    camIsOn = NO;
+}
+
+- (void)imageCaptureDidCapture:(NSNotification *)notification{
+    [self trimRenderList];
+    [self updateImageTextureWithLocalID:[notification.userInfo objectForKey:@"localID"] withImage:[notification.userInfo objectForKey:@"image"]];
 }
 
 #pragma mark - AV Capture
@@ -810,44 +835,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         NSLog(@"Error at CVOpenGLESTextureCacheCreate %d", err);
         return;
     }
-    //
-    //    //-- Setup Capture Session.
-    //    _session = [[AVCaptureSession alloc] init];
-    //    [_session beginConfiguration];
-    //
-    //    //-- Set preset session size.
-    //    [_session setSessionPreset:_sessionPreset];
-    //
-    //    //-- Creata a video device and input from that Device.  Add the input to the capture session.
-    //    AVCaptureDevice * videoDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-    //    if(videoDevice == nil)
-    //        assert(0);
-    //
-    //    //-- Add the device to the session.
-    //    NSError *error;
-    //    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:videoDevice error:&error];
-    //    if(error)
-    //        assert(0);
-    //
-    //    [_session addInput:input];
-    //
-    //    //-- Create the output for the capture session.
-    //    AVCaptureVideoDataOutput * dataOutput = [[AVCaptureVideoDataOutput alloc] init];
-    //    [dataOutput setAlwaysDiscardsLateVideoFrames:YES]; // Probably want to set this to NO when recording
-    //
-    
-    //
-    //    // Set dispatch to be on the main thread so OpenGL can do things with the data
-    
-    //
-    //    [_session addOutput:dataOutput];
-    //    [_session commitConfiguration];
-    //
-    //    [_session startRunning];
     cameraManager = [FluxAVCameraSingleton sharedCamera];
     [cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
-    //[cameraManager setSampleBufferDelegate:self forViewController:self];
-    
 }
 
 
@@ -855,10 +844,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)viewDidLoad
 {
-    
+    self.fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageTexture:) name:FluxDisplayManagerDidUpdateImageTexture object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     
     [super viewDidLoad];
     _opengltexturesset = 0;
@@ -1028,7 +1018,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
     GLKQuaternion quaternion;
     
-    FluxScanImageObject *locationObject = [fluxNearbyMetadata objectForKey:key];
+    FluxScanImageObject *locationObject = [self.fluxNearbyMetadata objectForKey:key];
     
     _imagePose[idx].position.x =  locationObject.latitude;
     _imagePose[idx].position.y =  locationObject.longitude;

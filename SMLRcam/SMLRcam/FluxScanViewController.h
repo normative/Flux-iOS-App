@@ -38,7 +38,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @class FluxRotatingCompassButton;
 
 
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, UITableViewDataSource, UITableViewDelegate, FiltersTableViewDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, FiltersTableViewDelegate>{
     
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;
@@ -79,8 +79,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     UIImageView* launchView;
 }
-
-@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
@@ -93,27 +91,15 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)showRightDrawer:(id)sender;
-- (IBAction)annotationsButtonAction:(id)sender;
 - (IBAction)cameraButtonAction:(id)sender;
-- (IBAction)approveImageAction:(id)sender;
-- (IBAction)retakeImageAction:(id)sender;
 - (IBAction)filterButtonAction:(id)sender;
 
 
 //imageCapture
-- (void)setupAVCapture;
 - (void)setupOpenGLView;
-- (void)takePicture;
+
 - (UIImage*)blurImage:(UIImage*)img;
--(void)restartAVCaptureWithBlur:(BOOL)blur;
--(void)pauseAVCapture;
-- (void)saveImageObject;
-
-
 - (void)setupCameraView;
-
-
-- (void)setupAnnotationsTableView;
 
 //timeScrolling
 - (void)setupTimeFilterControl;
