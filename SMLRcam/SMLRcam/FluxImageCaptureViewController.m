@@ -110,9 +110,9 @@ NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
     previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
     [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
     [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-    CALayer *rootLayer = [self.view layer];
-    [previewLayer setFrame:self.view.bounds];
-    [rootLayer insertSublayer:previewLayer atIndex:0];
+//    CALayer *rootLayer = [self.view layer];
+    [previewLayer setFrame:imageCaptureSquareView.frame];
+//    [rootLayer insertSublayer:previewLayer atIndex:0];
 }
 
 - (void)takePicture{
