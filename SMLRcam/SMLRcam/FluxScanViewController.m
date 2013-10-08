@@ -507,10 +507,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
     if ([notification userInfo]) {
-        [notification.userInfo objectForKey:@"capturedImageObjects"];
-        NSArray*arr = [notification.userInfo objectForKey:@"capturedImageObjects"];
-        for (FluxScanImageObject*imageObject in arr)
-        {
+        NSArray*objectsArr = [notification.userInfo objectForKey:@"capturedImageObjects"];
+        NSArray*imagesArr = [notification.userInfo objectForKey:@"capturedImages"];
+        
+        for (int i = 0; i<objectsArr.count; i++) {
             // Add the image and metadata to the local cache
             FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
             [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
@@ -547,6 +547,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             NSDictionary *userInfoDict = @{FluxScanViewDidAcquireNewPictureLocalIDKey : capturedImageObject.localID};
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
                                                                 object:self userInfo:userInfoDict];
+            
+            [self.fluxDisplayManager.fluxDataManager addDataToStore:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
         }
         
 

@@ -43,6 +43,7 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
     CMMotionManager *motionManager;
     FluxAVCameraSingleton *cameraManager;
     NSMutableArray *capturedImageObjects;
+    NSMutableArray *capturedImages;
     
 }
 @property (strong, nonatomic) IBOutlet UIButton *closeButton;

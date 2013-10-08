@@ -55,6 +55,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     [imageCaptureSquareView.layer addSublayer:borders];
     
     capturedImageObjects = [[NSMutableArray alloc]init];
+    capturedImages = [[NSMutableArray alloc]init];
     
     [self setupAVCapture];
     
@@ -94,6 +95,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 - (IBAction)closeButtonAction:(id)sender {
     [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
+    [capturedImages removeAllObjects];
     [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
                                                         object:self userInfo:nil];
@@ -101,9 +103,12 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 
 - (IBAction)approveImageAction:(id)sender {
     NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", nil];
+                                  initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", capturedImages, @"capturedImages", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
                                                         object:self userInfo:userInfoDict];
+    [capturedImageObjects removeAllObjects];
+    [capturedImages removeAllObjects];
+    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
 }
 
 
@@ -268,6 +273,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     }
 
     [capturedImageObjects addObject:newImageObject];
+    [capturedImages addObject:spunImage];
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:localID, @"localID", spunImage, @"image", nil];
