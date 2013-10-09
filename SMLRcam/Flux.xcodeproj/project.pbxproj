@@ -585,6 +585,12 @@
 			children = (
 				AA650F0917FDFF0F00424223 /* FluxFiltersTableViewController.h */,
 				AA650F0A17FDFF0F00424223 /* FluxFiltersTableViewController.m */,
+				AA70841217B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.h */,
+				AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */,
+				AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */,
+				AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */,
+				AA70841817B2D9FF005D4F9F /* FluxFilterDrawerObject.h */,
+				AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */,
 			);
 			name = Filters;
 			sourceTree = "<group>";
@@ -668,12 +674,6 @@
 			children = (
 				AAB24E4817AAE21E00A9BE59 /* FluxRightDrawerViewController.h */,
 				AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */,
-				AA70841217B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.h */,
-				AA70841317B2B93D005D4F9F /* FluxDrawerCheckboxFilterTableViewCell.m */,
-				AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */,
-				AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */,
-				AA70841817B2D9FF005D4F9F /* FluxFilterDrawerObject.h */,
-				AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */,
 			);
 			name = "Right Drawer";
 			sourceTree = "<group>";

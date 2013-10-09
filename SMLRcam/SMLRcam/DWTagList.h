@@ -57,6 +57,7 @@ typedef enum tagState tagState;
 
 @interface DWTagView : UIView
 
+@property (nonatomic, strong) UIView        *backgroundView;
 @property (nonatomic, strong) UIButton      *button;
 @property (nonatomic, strong) UILabel       *label;
 @property (nonatomic) BOOL isSelected;

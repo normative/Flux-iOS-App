@@ -661,6 +661,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         UINavigationController*tmp = segue.destinationViewController;
         FluxFiltersTableViewController* filtersVC = (FluxFiltersTableViewController*)tmp.topViewController;
         [filtersVC setDelegate:self];
+        [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         [filtersVC prepareViewWithFilter:currentDataFilter];
         
         [self animationPushBackScaleDown];

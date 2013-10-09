@@ -12,13 +12,13 @@
 #define CORNER_RADIUS 0.0f
 #define LABEL_MARGIN_DEFAULT 5.0f
 #define BOTTOM_MARGIN_DEFAULT 5.0f
-#define FONT_SIZE_DEFAULT 13.0f
+#define FONT_SIZE_DEFAULT 16.0f
 #define HORIZONTAL_PADDING_DEFAULT 7.0f
-#define VERTICAL_PADDING_DEFAULT 3.0f
+#define VERTICAL_PADDING_DEFAULT 10.0f
 #define BACKGROUND_COLOR [UIColor colorWithRed:0.0 green:182/255.0 blue:235/255.0 alpha:1.00]
-#define TEXT_COLOR [UIColor whiteColor]
+#define TEXT_COLOR [UIColor colorWithWhite:0.9 alpha:1.0]
 #define TEXT_SHADOW_COLOR [UIColor whiteColor]
-#define TEXT_SHADOW_OFFSET CGSizeMake(0.0f, 1.0f)
+#define TEXT_SHADOW_OFFSET CGSizeMake(0.0f, 0.0f)
 #define BORDER_COLOR [UIColor lightGrayColor].CGColor
 #define BORDER_WIDTH 1.0f
 #define HIGHLIGHTED_BACKGROUND_COLOR [UIColor colorWithRed:0.40 green:0.80 blue:1.00 alpha:0.5]
@@ -155,8 +155,8 @@
         previousFrame = tagView.frame;
         gotPreviousFrame = YES;
 
-        [tagView setBackgroundColor:BACKGROUND_COLOR];
-        [tagView setAlpha:(1.0-i*0.05)];
+        [tagView.backgroundView setBackgroundColor:BACKGROUND_COLOR];
+        [tagView.backgroundView setAlpha:(1.0-i*0.05)];
         
         [self addSubview:tagView];
 
@@ -172,7 +172,7 @@
     }
 
     sizeFit = CGSizeMake(self.frame.size.width, previousFrame.origin.y + previousFrame.size.height + self.bottomMargin + 1.0f);
-    self.contentSize = sizeFit;
+    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, sizeFit.height);
 }
 
 - (CGSize)fittedSize
@@ -229,6 +229,12 @@
 - (id)init {
     self = [super init];
     if (self) {
+        
+        [self setBackgroundColor:[UIColor clearColor]];
+        _backgroundView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
+        [self addSubview:_backgroundView];
+        
+        
         _label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
         [_label setTextColor:TEXT_COLOR];
         [_label setBackgroundColor:[UIColor clearColor]];
@@ -254,6 +260,7 @@
     textSize.height += padding.height*2;
 
     self.frame = CGRectMake(0, 0, textSize.width+padding.width*2, textSize.height);
+    self.backgroundView.frame = self.bounds;
     _label.frame = CGRectMake(padding.width, 0, MIN(textSize.width, self.frame.size.width), textSize.height);
     _label.font = font;
     _label.text = text;

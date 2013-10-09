@@ -71,7 +71,13 @@
     
     contextFiltersArray = [[NSArray alloc]initWithObjects:MyNetworkFilterObject, PeopleFilterObject, PlacesFilterObject, ThingsFilterObject, EventsFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
-    selectedTags = [[NSMutableArray alloc]init];
+    if ([theDataFilter.hashTags isEqualToString:@""]) {
+        selectedTags = [[NSMutableArray alloc]init];
+    }
+    else{
+        selectedTags = [[theDataFilter.hashTags componentsSeparatedByString:@"%20"]mutableCopy];
+    }
+
     rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:contextFiltersArray, nil];
     
     dataFilter = [theDataFilter copy];
@@ -139,7 +145,7 @@
 }
 
 - (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 40.0f;
+    return 45.0f;
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
@@ -147,7 +153,7 @@
         if (section == 0) {
             //if there are no "top tags"
             if (rightDrawerTableViewArray.count == 1) {
-                return @"Show Only:";
+                return @"Show";
             }
             
             return @"Tags Nearby";
@@ -161,17 +167,21 @@
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    // Create header view and add label as a subview
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, -3, 320, 43)];
+    [view setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.7]];
+    
     // Create label with section title
     UILabel *label = [[UILabel alloc] init];
-    label.frame = CGRectMake(20, 20, 100, 23);
-    label.textColor = [UIColor lightGrayColor];
-    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+    label.frame = CGRectMake(20, 10, 150, 30);
+    label.textColor = [UIColor whiteColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat" size:18]];
     label.text = [self tableView:tableView titleForHeaderInSection:section];
     label.backgroundColor = [UIColor clearColor];
     
-    // Create header view and add label as a subview
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 100)];
-    [view setBackgroundColor:[UIColor clearColor]];
+//    UIToolbar *fakeToolbar = [[UIToolbar alloc]initWithFrame:view.frame];
+//    [fakeToolbar setTintColor:[UIColor blackColor]];
+//    [view addSubview:fakeToolbar];
     [view addSubview:label];
     
     return view;
@@ -244,6 +254,7 @@
                 }
                 [cell.tagList setTags:[rightDrawerTableViewArray objectAtIndex:indexPath.section]andSelectedArray:selectedTags];
                 [cell.tagList setTagDelegate:self];
+                //[cell.tagList setFrame:CGRectMake(cell.tagList.frame.origin.x, cell.tagList.frame.origin.y, cell.tagList.frame.size.width, [cell.tagList fittedSize].height)];
                 return cell;
             }
             static NSString *CellIdentifier = @"checkCell";
