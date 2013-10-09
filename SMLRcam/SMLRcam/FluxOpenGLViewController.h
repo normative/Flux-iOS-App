@@ -72,6 +72,7 @@ typedef struct {
     NSLock *_renderListLock;
     
     BOOL camIsOn;
+    BOOL imageCaptured;
 }
 
 @property (strong, nonatomic) EAGLContext *context;
@@ -99,7 +100,7 @@ typedef struct {
 //AVCam Methods
 - (void)setupAVCapture;
 //image capture methods
-- (void)setImageCaptureHidden:(BOOL)hidden;
+- (void)showImageCapture;
 - (UIImage*)snapshot:(UIView*)eaglview;
 
 - (void)didUpdateImageList:(NSNotification *)notification;

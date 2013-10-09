@@ -80,6 +80,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
                              [self.view setAlpha:1.0];
                          }
                          completion:nil];
+        [[self.view layer] insertSublayer:previewLayer atIndex:0];
     }
     else{
         [UIView animateWithDuration:0.3f
@@ -115,6 +116,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", capturedImages, @"capturedImages", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
                                                         object:self userInfo:userInfoDict];
+    [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
     [capturedImages removeAllObjects];
     [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
@@ -142,14 +144,11 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 - (void)setupAVCapture
 {
     AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
-
     cameraManager = [FluxAVCameraSingleton sharedCamera];
     previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
     [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
     [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-    CALayer *rootLayer = [self.view layer];
     [previewLayer setFrame:self.view.bounds];
-    [rootLayer insertSublayer:previewLayer atIndex:0];
 }
 
 - (void)takePicture{
@@ -174,7 +173,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     
     // Collect position and orientation information prior to copying image
     CLLocation *location = locationManager.location;
-    CMAttitude *att = motionManager.deviceMotion.attitude;
+    CMAttitude *att = motionManager.attitude;
     CLLocationDirection heading = locationManager.heading;
     
     __block NSDate *endTime = [NSDate date];

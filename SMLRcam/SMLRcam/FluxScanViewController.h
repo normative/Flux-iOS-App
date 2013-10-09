@@ -73,6 +73,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     FluxMapViewController *mapViewController;
     
     int uploadsCompleted;
+    int totalUploads;
     
     FluxDataFilter *currentDataFilter;
     

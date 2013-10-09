@@ -741,21 +741,26 @@ void init(){
     [self.imageCaptureViewController didMoveToParentViewController:self];
     self.imageCaptureViewController.view.frame = self.view.bounds;
     camIsOn = NO;
+    imageCaptured = NO;
 }
 
-- (void)setImageCaptureHidden:(BOOL)hidden{
-    [self.imageCaptureViewController setHidden:hidden];
-    camIsOn = !hidden;
-    if (!hidden) {
-        self.imageCaptureViewController.fluxDisplayManager = [(FluxScanViewController*)self.parentViewController fluxDisplayManager];
-    }
+- (void)showImageCapture{
+    [self.imageCaptureViewController setHidden:NO];
+    camIsOn = YES;
+    self.imageCaptureViewController.fluxDisplayManager = [(FluxScanViewController*)self.parentViewController fluxDisplayManager];
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
+    if (imageCaptured) {
+        [self.nearbyList removeAllObjects];
+        [self trimRenderList];
+        imageCaptured = NO;
+    }
     camIsOn = NO;
 }
 
 - (void)imageCaptureDidCapture:(NSNotification *)notification{
+    imageCaptured = YES;
     [self trimRenderList];
     [self updateImageTextureWithLocalID:[notification.userInfo objectForKey:@"localID"] withImage:[notification.userInfo objectForKey:@"image"]];
 }
@@ -899,8 +904,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    //[self stopDeviceMotion];
+    [self stopDeviceMotion];
 }
 
 - (void)dealloc

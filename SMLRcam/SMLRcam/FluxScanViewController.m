@@ -444,7 +444,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (IBAction)cameraButtonAction:(id)sender {
     if (!imageCaptureIsActive) {
-        [openGLController setImageCaptureHidden:NO];
+        [openGLController showImageCapture];
         [self activateImageCapture];
     }
     else{
@@ -513,10 +513,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [UIView animateWithDuration:0.1f
                          animations:^{
                              [progressView setAlpha:1.0];
+                             [progressView setProgress:0.0];
                          }
                          completion:nil];
         
         uploadsCompleted = 0;
+        totalUploads = objectsArr.count;
         
         for (int i = 0; i<objectsArr.count; i++) {
             // Add the image and metadata to the local cache
@@ -528,9 +530,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                     [self.fluxDisplayManager.fluxNearbyMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
                 }
                 uploadsCompleted++;
-                progressView.progress = uploadsCompleted/objectsArr.count;
+                progressView.progress = uploadsCompleted/totalUploads;
                 
-                if (uploadsCompleted == objectsArr.count) {
+                if (progressView.progress == 1) {
                     [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
                 }
             }];

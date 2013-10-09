@@ -165,7 +165,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     
-    dataRequest.maxReturnItems = 10;
+    dataRequest.maxReturnItems = 50;
     dataRequest.searchFilter = dataFilter;
     dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
     

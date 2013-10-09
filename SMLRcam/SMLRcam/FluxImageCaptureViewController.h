@@ -10,7 +10,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CoreMotion/CoreMotion.h>
+#import "FluxMotionManagerSingleton.h"
 #import <dispatch/dispatch.h>
 #import <ImageIO/ImageIO.h>
 #import "FluxLocationServicesSingleton.h"
@@ -41,7 +41,7 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
     
     
     FluxLocationServicesSingleton *locationManager;
-    CMMotionManager *motionManager;
+    FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     NSMutableArray *capturedImageObjects;
     NSMutableArray *capturedImages;
