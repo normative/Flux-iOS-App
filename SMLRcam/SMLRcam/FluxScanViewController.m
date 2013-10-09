@@ -510,6 +510,14 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         NSArray*objectsArr = [notification.userInfo objectForKey:@"capturedImageObjects"];
         NSArray*imagesArr = [notification.userInfo objectForKey:@"capturedImages"];
         
+        [UIView animateWithDuration:0.1f
+                         animations:^{
+                             [progressView setAlpha:1.0];
+                         }
+                         completion:nil];
+        
+        uploadsCompleted = 0;
+        
         for (int i = 0; i<objectsArr.count; i++) {
             // Add the image and metadata to the local cache
             FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
@@ -519,15 +527,18 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                     // FluxScanImageObject exists in the local cache. Replace it with updated object.
                     [self.fluxDisplayManager.fluxNearbyMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
                 }
-                progressView.progress = 1.0;
-                [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+                uploadsCompleted++;
+                progressView.progress = uploadsCompleted/objectsArr.count;
+                
+                if (uploadsCompleted == objectsArr.count) {
+                    [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+                }
             }];
             [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
-                float currentProgress = (float)(inProgressDataRequest.currentUploadSize)/(float)(inProgressDataRequest.totalUploadSize);
-                progressView.progress = currentProgress - 0.05;
+                
             }];
             [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Failed with error %d", (int)[e code]]
+                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]]
                                                                     message:[e localizedDescription]
                                                                    delegate:nil
                                                           cancelButtonTitle:@"OK"
@@ -544,9 +555,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             }];
             
             // Post notification for observers prior to upload
-            NSDictionary *userInfoDict = @{FluxScanViewDidAcquireNewPictureLocalIDKey : capturedImageObject.localID};
-            [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
-                                                                object:self userInfo:userInfoDict];
+//            NSDictionary *userInfoDict = @{FluxScanViewDidAcquireNewPictureLocalIDKey : capturedImageObject.localID};
+//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
+//                                                                object:self userInfo:userInfoDict];
             
             [self.fluxDisplayManager.fluxDataManager addDataToStore:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
         }
@@ -642,9 +653,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     {
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
-    }
-    else if ([[segue identifier] isEqualToString:@"pushAnnotationModalView"]){
-        imageAnnotationViewController = (FluxImageAnnotationViewController*)segue.destinationViewController;
     }
     else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
         //set the delegate of the navControllers top view (our filters View)

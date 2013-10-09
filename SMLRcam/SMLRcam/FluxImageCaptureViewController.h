@@ -17,6 +17,7 @@
 #import "FluxAVCameraSingleton.h"
 #import "FluxDisplayManager.h"
 #import "FluxScanImageObject.h"
+#import "FluxImageAnnotationViewController.h"
 
 #import "GAITrackedViewController.h"
 #import "GAI.h"
@@ -25,7 +26,7 @@
 extern NSString* const FluxImageCaptureDidPop;
 extern NSString* const FluxImageCaptureDidCaptureImage;
 
-@interface FluxImageCaptureViewController : GAITrackedViewController{
+@interface FluxImageCaptureViewController : GAITrackedViewController<ImageAnnotationDelegate>{
     UIImageView *gridView;
     UIImage *capturedImage;
     UIView *blackView;

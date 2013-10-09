@@ -14,6 +14,8 @@
 
 @implementation FluxImageAnnotationViewController
 
+@synthesize delegate;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -35,6 +37,12 @@
     [categorySegmentedControl setSelectedSegmentIndex:0];
     
 	// Do any additional setup after loading the view.
+}
+
+- (void)setBGImage:(UIImage*)image{
+    UIImageView*bgImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [bgImageView setImage:image];
+    [self.view insertSubview:bgImageView belowSubview:photoAnnotationContainerView];
 }
 
 - (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
@@ -61,4 +69,18 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)cancelButtonAction:(id)sender {
+    if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:)]) {
+        [delegate ImageAnnotationViewDidPop:self];
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)saveButtonAction:(id)sender {
+    if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithAnnotation:)]) {
+        NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation", [NSNumber numberWithInt:categorySegmentedControl.selectedIndex], @"category", nil];
+        [delegate ImageAnnotationViewDidPop:self andApproveWithAnnotation:dict];
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 @end

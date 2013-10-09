@@ -71,9 +71,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     FluxOpenGLViewController*openGLController;
     //map
     FluxMapViewController *mapViewController;
-
     
-    FluxImageAnnotationViewController*imageAnnotationViewController;
+    int uploadsCompleted;
     
     FluxDataFilter *currentDataFilter;
     

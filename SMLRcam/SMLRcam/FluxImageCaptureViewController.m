@@ -61,7 +61,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     
     self.screenName = @"Image Capture View";
     
-    
+    motionManager = [FluxMotionManagerSingleton sharedManager];
     locationManager = [FluxLocationServicesSingleton sharedManager];
 	// Do any additional setup after loading the view.
 }
@@ -101,7 +101,16 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
                                                         object:self userInfo:nil];
 }
 
-- (IBAction)approveImageAction:(id)sender {
+- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController{
+    [self closeButtonAction:nil];
+}
+
+- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithAnnotation:(NSDictionary *)annotations{
+    for (FluxScanImageObject*imgObject in capturedImageObjects)
+    {
+        [imgObject setCategoryID:[[annotations objectForKey:@"category"]integerValue]+1];
+        [imgObject setDescriptionString:[annotations objectForKey:@"annotation"]];
+    }
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", capturedImages, @"capturedImages", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
@@ -109,6 +118,21 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     [capturedImageObjects removeAllObjects];
     [capturedImages removeAllObjects];
     [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
+}
+
+- (IBAction)approveImageAction:(id)sender {
+
+    
+    
+
+}
+
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    FluxImageAnnotationViewController *tmp = (FluxImageAnnotationViewController*)segue.destinationViewController;
+    UIImage*bgImage = [(FluxOpenGLViewController*)self.parentViewController snapshot:self.parentViewController.view];
+    [tmp setBGImage:bgImage];
+    [tmp setDelegate:self];
 }
 
 

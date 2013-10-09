@@ -71,7 +71,7 @@
                                         </state>
                                         <connections>
                                             <action selector="approveImageAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="ZJm-XU-V9E"/>
-                                            <action selector="closeButtonAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="he4-oA-nBZ"/>
+                                            <segue destination="3Ea-LQ-5Wp" kind="modal" id="Dby-wP-TJp"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -194,6 +194,7 @@
                                         </state>
                                         <connections>
                                             <action selector="approveImageAction:" destination="2" eventType="touchUpInside" id="Qo9-zH-nbd"/>
+                                            <action selector="saveButtonAction:" destination="3Ea-LQ-5Wp" eventType="touchUpInside" id="6gN-WM-z8A"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleAspectFit" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="93E-6p-oWB">
@@ -204,6 +205,7 @@
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
+                                            <action selector="cancelButtonAction:" destination="3Ea-LQ-5Wp" eventType="touchUpInside" id="nqM-kc-HGE"/>
                                             <action selector="retakeImageAction:" destination="2" eventType="touchUpInside" id="C2J-H8-vUI"/>
                                         </connections>
                                     </button>
@@ -220,7 +222,7 @@
                                 </constraints>
                             </view>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="AaZ-gz-ak3" secondAttribute="bottom" id="RXy-go-5Gi"/>
                             <constraint firstItem="AaZ-gz-ak3" firstAttribute="leading" secondItem="EFp-eH-9nS" secondAttribute="leading" id="ifG-YG-vDy"/>
@@ -406,7 +408,6 @@
                         <outlet property="radarButton" destination="QTA-2K-tgO" id="fZZ-Fu-W7o"/>
                         <outlet property="timeFilterControl" destination="eJn-Ah-RV1" id="gjN-J8-fpz"/>
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="flipHorizontal" id="AGI-r8-OnT"/>
-                        <segue destination="3Ea-LQ-5Wp" kind="modal" identifier="pushAnnotationModalView" modalTransitionStyle="coverVertical" id="B1l-Ze-Ffg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>

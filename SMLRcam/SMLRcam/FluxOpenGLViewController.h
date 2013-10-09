@@ -100,6 +100,7 @@ typedef struct {
 - (void)setupAVCapture;
 //image capture methods
 - (void)setImageCaptureHidden:(BOOL)hidden;
+- (UIImage*)snapshot:(UIView*)eaglview;
 
 - (void)didUpdateImageList:(NSNotification *)notification;
 - (void)updateImageTexture:(NSNotification *)notification;
