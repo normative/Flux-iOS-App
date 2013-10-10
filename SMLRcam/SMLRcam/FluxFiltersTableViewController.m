@@ -118,8 +118,8 @@
         }
         [self.tableView reloadData];
     }];
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:20
-                                       andMaxCount:30 withDataRequest:request];
+    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:15
+                                       andMaxCount:20 withDataRequest:request];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
