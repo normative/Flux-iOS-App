@@ -23,19 +23,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 @synthesize timeFilterControl;
 
-#pragma mark - Network Services
-
-//called by annotationsTableview
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
-         didreturnImage:(UIImage *)image
-             forImageID:(int)imageID
-{
-#warning FIXME - Make sure these get called
-// Need to trigger these somehow - probably from OpenGL VC
-    [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
-    [annotationsTableView reloadData];
-}
-
 - (void)didUpdateImageList:(NSNotification *)notification{
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
     if (self.fluxDisplayManager.fluxNearbyMetadata.count<=5) {
@@ -59,6 +46,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                              completion:nil];
         }
     }
+    [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
 }
 
 #pragma mark - Location Manager
@@ -634,7 +622,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
+    //[radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
     //[self restartAVCaptureWithBlur:YES];
 }
 

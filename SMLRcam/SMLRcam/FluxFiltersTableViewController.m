@@ -56,12 +56,6 @@
     [self sendTagRequest];
 }
 
-- (void)viewWillDisappear:(BOOL)animated{
-    if ([delegate respondsToSelector:@selector(FiltersTableViewDidPop:andChangeFilter:)]) {
-        [delegate FiltersTableViewDidPop:self andChangeFilter:dataFilter];
-    }
-}
-
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter{
     FluxFilterDrawerObject *MyNetworkFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Network" andDBTitle:@"1" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"1"]];
     FluxFilterDrawerObject *PlacesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Places" andDBTitle:@"place" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"place"]];
@@ -345,6 +339,9 @@
 }
 
 - (IBAction)doneButtonAction:(id)sender {
+    if ([delegate respondsToSelector:@selector(FiltersTableViewDidPop:andChangeFilter:)]) {
+        [delegate FiltersTableViewDidPop:self andChangeFilter:dataFilter];
+    }
     [self dismissViewControllerAnimated:YES completion:nil];
 
 }

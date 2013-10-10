@@ -45,8 +45,6 @@ typedef enum tagState tagState;
 @property (nonatomic, assign) CGFloat verticalPadding;
 @property (nonatomic, assign) CGFloat minimumWidth;
 
-- (void)setTagBackgroundStateForTagView:(UIView*)tagView andTagstate:(tagState)tagState;
-
 //array parameter is an array of FluxTagObjects
 - (void)setTags:(NSArray *)array andSelectedArray:(NSArray*)selectedArr;
 

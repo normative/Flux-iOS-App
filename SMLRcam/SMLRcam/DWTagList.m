@@ -197,16 +197,16 @@
         [self.tagDelegate tagList:self selectedTagWithTitle:[button.accessibilityLabel substringFromIndex:1] andActive:tagView.isSelected];
 }
 
-- (void)setTagBackgroundStateForTagView:(UIView*)tagView andTagstate:(tagState)tagState{
+- (void)setTagBackgroundStateForTagView:(DWTagView*)tagView andTagstate:(tagState)tagState{
     switch (tagState) {
         case tagInactive:
         {
-            [tagView setBackgroundColor:BACKGROUND_COLOR];
+            [tagView.backgroundView setBackgroundColor:BACKGROUND_COLOR];
         }
             break;
         case tagActive:
         {
-            [tagView setBackgroundColor:self.highlightedBackgroundColor];
+            [tagView.backgroundView setBackgroundColor:self.highlightedBackgroundColor];
         }
         break;
         default:

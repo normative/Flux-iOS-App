@@ -90,11 +90,17 @@
     }
 }
 
+//removes the tag from the current hashtage list. Does this 3 times for each placement of the "%20" to ensure after deletion the string is always readable
 - (void)removeHashTagFromFilter:(NSString*)tag{
     _hashTags = [_hashTags stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%%20%@",tag] withString:@""];
+    _hashTags = [_hashTags stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@%%20",tag] withString:@""];
+    _hashTags = [_hashTags stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@",tag] withString:@""];
 }
+//removes the category from the current hashtage list. Does this 3 times for each placement of the "%20" to ensure after deletion the string is always readable
 - (void)removeCategoryFromFilter:(NSString*)category{
     _categories = [_categories stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%%20%@",category] withString:@""];
+    _categories = [_categories stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@%%20",category] withString:@""];
+    _categories = [_categories stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@",category] withString:@""];
 }
 
 - (BOOL)containsCategory:(NSString*)category{
