@@ -257,7 +257,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-Ah-RV1" customClass="FluxTimeFilterControl">
-                                        <rect key="frame" x="249" y="105" width="45" height="389"/>
+                                        <rect key="frame" x="249" y="105" width="45" height="438"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </view>
@@ -345,7 +345,7 @@
                                     <constraint firstItem="3GP-IY-jjF" firstAttribute="top" secondItem="RP7-i5-SqD" secondAttribute="bottom" constant="29" id="54U-8h-Vr0"/>
                                     <constraint firstItem="eJn-Ah-RV1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="249" id="6K6-Lf-rRW"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="leading" secondItem="WoV-XC-xK1" secondAttribute="leading" id="B9N-0G-BXv"/>
-                                    <constraint firstAttribute="bottom" secondItem="eJn-Ah-RV1" secondAttribute="bottom" constant="54" id="CPt-RC-xQK"/>
+                                    <constraint firstAttribute="bottom" secondItem="eJn-Ah-RV1" secondAttribute="bottom" constant="5" id="CPt-RC-xQK"/>
                                     <constraint firstItem="3GP-IY-jjF" firstAttribute="leading" secondItem="QTA-2K-tgO" secondAttribute="trailing" constant="8" symbolic="YES" id="FPg-vw-M6e"/>
                                     <constraint firstItem="DOx-wz-4Oh" firstAttribute="top" secondItem="RP7-i5-SqD" secondAttribute="bottom" constant="26" id="GSA-bW-s4F"/>
                                     <constraint firstItem="DOx-wz-4Oh" firstAttribute="leading" secondItem="QTA-2K-tgO" secondAttribute="trailing" constant="36" id="LdK-4A-34Y"/>

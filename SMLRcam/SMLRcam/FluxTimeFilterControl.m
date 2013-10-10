@@ -43,7 +43,8 @@
         timeSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.height, self.frame.size.width)];
         timeSlider.transform=CGAffineTransformMakeRotation(-M_PI/2);
         [timeSlider setFrame:CGRectMake(0, 0, timeSlider.frame.size.width, timeSlider.frame.size.height)];
-        [timeSlider setTintColor:[UIColor colorWithWhite:0.72 alpha:1.0]];
+        [timeSlider setMinimumTrackTintColor:[UIColor colorWithWhite:1.0 alpha:0.3]];
+        [timeSlider setMaximumTrackTintColor:[UIColor colorWithWhite:1.0 alpha:0.3]];
         [timeSlider addTarget:self action:@selector(timerDidSlide:) forControlEvents:UIControlEventValueChanged];
         [timeSlider setValue:0.0];
         [self addSubview:timeSlider];
