@@ -22,7 +22,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p12-6b-dHX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-461" y="-647"/>
+            <point key="canvasLocation" x="205" y="-723"/>
         </scene>
         <!--Flux Image Capture View Controller-->
         <scene sceneID="FvW-Vk-fmx">
@@ -156,7 +156,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bsn-pr-Bkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-89" y="-647"/>
+            <point key="canvasLocation" x="577" y="-723"/>
         </scene>
         <!--Flux Image Annotation View Controller-->
         <scene sceneID="6UP-IL-q9p">
@@ -238,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZCn-wf-ERU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="539" y="-951"/>
+            <point key="canvasLocation" x="1205" y="-1027"/>
         </scene>
         <!--Scan View Controller-->
         <scene sceneID="5">
@@ -417,7 +417,7 @@
                     </connections>
                 </pinchGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-272" y="56"/>
+            <point key="canvasLocation" x="394" y="-20"/>
         </scene>
         <!--Flux Left Drawer View Controller - Settings-->
         <scene sceneID="WPV-4t-AMh">
@@ -554,7 +554,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rRr-3t-24N" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-739" y="56"/>
+            <point key="canvasLocation" x="-73" y="-20"/>
         </scene>
         <!--Flux Map View Controller-->
         <scene sceneID="JdW-hK-6ai">
@@ -614,7 +614,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="539" y="384"/>
+            <point key="canvasLocation" x="1205" y="308"/>
         </scene>
         <!--Flux Filters Table View Controller - Filters-->
         <scene sceneID="kZi-pp-LJH">
@@ -757,7 +757,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="1065" y="-292"/>
+            <point key="canvasLocation" x="1731" y="-368"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="0be-hL-b2f">
@@ -776,7 +776,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JAb-Db-5ob" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="539" y="-292"/>
+            <point key="canvasLocation" x="1205" y="-368"/>
         </scene>
     </scenes>
     <resources>

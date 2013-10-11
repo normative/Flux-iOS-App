@@ -959,8 +959,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 #pragma mark - OpenGL Texture & Metadata Manipulation
 - (void) updateImageTextureWithLocalID:(NSString *)localID withImage:(UIImage *)image
 {
-    NSError *error;
-    
     [_renderListLock lock];
     
     // Check if texture is already being rendered
@@ -976,13 +974,43 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     NSUInteger i = [self.renderedTextures indexOfObject:@""];
     if (i == NSNotFound)
     {
-        NSLog(@"%s: Render list is full! Not rendering image with ID %@", __func__, localID);
-        [_renderListLock unlock];
-        return;
+        if (camIsOn) {
+            i = 0;
+            //if the camera is on, order the list and pop the oldest one, so that the most recent 5 pics are up
+            [self.renderedTextures sortUsingComparator:^NSComparisonResult(id a, id b) {
+                
+                static NSDateFormatter *dateFormatter = nil;
+                
+                if (!dateFormatter) {
+                    dateFormatter = [[NSDateFormatter alloc] init];
+                    dateFormatter.dateFormat = @"yyyyMMddHHmmss";
+                }
+                
+                NSString *date1String = (NSString*)a;
+                NSString *date2String = (NSString*)b;
+                
+                date1String = [date1String substringToIndex:date1String.length-2];
+                date2String = [date2String substringToIndex:date2String.length-2];
+                
+                NSDate *date1 = [dateFormatter dateFromString:date1String];
+                NSDate *date2 = [dateFormatter dateFromString:date2String];
+                
+                return [date1 compare:date2];
+            }];
+            [self deleteImageTextureIdx:i];
+        }
+        else{
+            NSLog(@"%s: Render list is full! Not rendering image with ID %@", __func__, localID);
+            [_renderListLock unlock];
+            return;
+        }
     }
-
+    
     // Note: This should never actually do anything (since _texture[i] should be nil), but just to be safe...
     [self deleteImageTextureIdx:i];
+    
+    NSError *error;
+
     
     // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];

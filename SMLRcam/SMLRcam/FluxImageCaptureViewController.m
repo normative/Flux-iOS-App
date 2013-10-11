@@ -288,12 +288,11 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
         [previewLayer removeFromSuperlayer];
         [[(FluxOpenGLViewController*)self.parentViewController fluxNearbyMetadata]removeAllObjects];
         [[(FluxOpenGLViewController*)self.parentViewController nearbyList]removeAllObjects];
-        
-        [[(FluxOpenGLViewController*)self.parentViewController fluxNearbyMetadata] setObject:newImageObject forKey:newImageObject.localID];
-        [[(FluxOpenGLViewController*)self.parentViewController nearbyList] insertObject:localID atIndex:0];
-        
-        [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:spunImage];
     }
+    
+    [[(FluxOpenGLViewController*)self.parentViewController fluxNearbyMetadata] setObject:newImageObject forKey:newImageObject.localID];
+    [[(FluxOpenGLViewController*)self.parentViewController nearbyList] insertObject:localID atIndex:0];
+    [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:spunImage];
 
     [capturedImageObjects addObject:newImageObject];
     [capturedImages addObject:spunImage];
