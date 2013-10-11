@@ -22,7 +22,7 @@
 - (NSString*)subtitle
 {
     NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
-    [outputDateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    [outputDateFormat setDateFormat:@"yyyy-MM-dd"];
     
     return [outputDateFormat stringFromDate:self.timestamp];
 }

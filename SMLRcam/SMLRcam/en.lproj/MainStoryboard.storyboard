@@ -238,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZCn-wf-ERU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1205" y="-1027"/>
+            <point key="canvasLocation" x="1359" y="-1019"/>
         </scene>
         <!--Scan View Controller-->
         <scene sceneID="5">
@@ -568,13 +568,16 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="hT0-9E-Cfm">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="hT0-9E-Cfm" customClass="MIMapView">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <gestureRecognizers/>
+                                <connections>
+                                    <outlet property="delegate" destination="YQi-AC-BdW" id="Enu-U9-q0v"/>
+                                </connections>
                             </mapView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ka0-3T-Kej">
-                                <rect key="frame" x="250" y="38" width="50" height="50"/>
+                                <rect key="frame" x="244" y="38" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="50" id="5sM-0T-opg"/>
@@ -586,20 +589,6 @@
                                 <connections>
                                     <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="GR1-gI-MkE"/>
                                     <segue destination="pTJ-mb-BZI" kind="modal" id="efy-IJ-znR"/>
-                                </connections>
-                            </button>
-                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vKt-uU-SfL">
-                                <rect key="frame" x="268" y="516" width="32" height="32"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="32" id="TYA-Yf-v08"/>
-                                    <constraint firstAttribute="height" constant="32" id="tJx-PN-Jsz"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" size="button"/>
-                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <state key="normal" image="mapLocatorButton"/>
-                                <connections>
-                                    <action selector="onLocateMeBtn:" destination="YQi-AC-BdW" eventType="touchUpInside" id="URB-Jq-VSm"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBs-aE-2LI">
@@ -620,10 +609,8 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="gBs-aE-2LI" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="33" id="IS8-1X-OZk"/>
-                            <constraint firstAttribute="bottom" secondItem="vKt-uU-SfL" secondAttribute="bottom" constant="20" id="XdF-L2-GMe"/>
                             <constraint firstItem="gBs-aE-2LI" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" constant="23" id="byb-31-h9b"/>
-                            <constraint firstAttribute="trailing" secondItem="vKt-uU-SfL" secondAttribute="trailing" constant="20" id="dBP-77-rw0"/>
-                            <constraint firstAttribute="trailing" secondItem="ka0-3T-Kej" secondAttribute="trailing" constant="20" id="isb-lm-PQ1"/>
+                            <constraint firstAttribute="trailing" secondItem="ka0-3T-Kej" secondAttribute="trailing" constant="26" id="isb-lm-PQ1"/>
                             <constraint firstItem="ka0-3T-Kej" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="38" id="rh3-Oz-45y"/>
                         </constraints>
                     </view>
@@ -631,8 +618,8 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
+                        <outlet property="filterButton" destination="ka0-3T-Kej" id="dqF-6O-9NS"/>
                         <outlet property="fluxMapView" destination="hT0-9E-Cfm" id="Ee6-sb-9KA"/>
-                        <outlet property="locateMeBtn" destination="vKt-uU-SfL" id="MUI-m3-gbx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -780,7 +767,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="1731" y="-368"/>
+            <point key="canvasLocation" x="1885" y="-360"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="0be-hL-b2f">
@@ -799,7 +786,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JAb-Db-5ob" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1205" y="-368"/>
+            <point key="canvasLocation" x="1359" y="-360"/>
         </scene>
     </scenes>
     <resources>
@@ -810,7 +797,6 @@
         <image name="closeCamButton" width="100" height="101"/>
         <image name="compassButton" width="121" height="120"/>
         <image name="filterButton" width="100" height="100"/>
-        <image name="mapLocatorButton" width="65" height="65"/>
         <image name="menuButton" width="80" height="80"/>
         <image name="verticalBlackGradient" width="40" height="41"/>
     </resources>

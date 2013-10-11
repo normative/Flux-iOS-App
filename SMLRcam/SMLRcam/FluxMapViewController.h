@@ -8,14 +8,19 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "MapIndex.h"
 
 #import "FluxDataManager.h"
 #import "FluxDisplayManager.h"
 #import "FluxLocationServicesSingleton.h"
 
+#import "GAITrackedViewController.h"
+#import "GAI.h"
+#import "GAIDictionaryBuilder.h"
+
 @class FluxScanImageObject;
 
-@interface FluxMapViewController : UIViewController<MKMapViewDelegate, UIGestureRecognizerDelegate>
+@interface FluxMapViewController : GAITrackedViewController<MKMapViewDelegate, UIGestureRecognizerDelegate>
 {    
     //
     UIPinchGestureRecognizer *pinchRecognizer;
@@ -28,19 +33,17 @@
     MKMapCamera*mapCamera;
     
     // Map View
-    __weak IBOutlet MKMapView *fluxMapView;
-    
-    // button
-    __weak IBOutlet UIButton *locateMeBtn;
+    __weak IBOutlet MIMapView *fluxMapView;
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
+    
+    IBOutlet UIButton *filterButton;
 }
 
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
 @property (nonatomic, weak) FluxDisplayManager * fluxDisplayManager;
 
-- (IBAction)onLocateMeBtn:(id)sender;
 - (IBAction)closeButtonAction:(id)sender;
 
 @end
