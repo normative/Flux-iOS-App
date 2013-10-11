@@ -19,7 +19,7 @@
 //#define externServerURL @"http://54.221.222.71/"
 #define productionServerURL @"http://54.221.254.230/"
 #define testServerURL @"http://54.221.222.71/"
-//#define localServerURL @"http://192.168.0.41:3001/"
+//#define productionServerURL @"http://192.168.2.18:3001/"
 
 @implementation FluxNetworkServices
 
@@ -260,6 +260,8 @@
 
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
 {
+    NSLog(@"Uploading image with positional accuracy: %f, %f", theImageObject.horiz_accuracy, theImageObject.vert_accuracy);
+    
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject
                                                                                             method:RKRequestMethodPOST

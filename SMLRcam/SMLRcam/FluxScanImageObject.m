@@ -54,7 +54,9 @@ withDescriptionString:(NSString*)description
                andQW:(double)qw
                andQX:(double)qx
                andQY:(double)qy
-               andQZ:(double)qz;
+               andQZ:(double)qz
+    andHorizAccuracy:(double)horiz_accuracy
+     andVertAccuracy:(double)vert_accuracy;
 {
     self = [super init];
     if (self)
@@ -75,6 +77,8 @@ withDescriptionString:(NSString*)description
         self.qx = qx;
         self.qy = qy;
         self.qz = qz;
+        self.horiz_accuracy = horiz_accuracy;
+        self.vert_accuracy = vert_accuracy;
         self.localID = [self generateUniqueStringID];
     }
     
