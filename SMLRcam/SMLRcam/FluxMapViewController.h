@@ -16,16 +16,13 @@
 @class FluxScanImageObject;
 
 @interface FluxMapViewController : UIViewController<MKMapViewDelegate, UIGestureRecognizerDelegate>
-{
-    UIActivityIndicatorView *activityIndicator;
-    
+{    
     //
     UIPinchGestureRecognizer *pinchRecognizer;
     
     // Currnet View Orientation Direction
     UIInterfaceOrientation myViewOrientation;
     
-    MKAnnotationView *userAnnotationView;
     CLLocationCoordinate2D userLastSynchedLocation;
     
     MKMapCamera*mapCamera;

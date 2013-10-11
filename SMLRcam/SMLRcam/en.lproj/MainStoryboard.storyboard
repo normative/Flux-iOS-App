@@ -573,6 +573,21 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <gestureRecognizers/>
                             </mapView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ka0-3T-Kej">
+                                <rect key="frame" x="250" y="38" width="50" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="5sM-0T-opg"/>
+                                    <constraint firstAttribute="height" constant="50" id="hVh-P5-2PQ"/>
+                                </constraints>
+                                <state key="normal" title="0" backgroundImage="filterButton">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="GR1-gI-MkE"/>
+                                    <segue destination="pTJ-mb-BZI" kind="modal" id="efy-IJ-znR"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vKt-uU-SfL">
                                 <rect key="frame" x="268" y="516" width="32" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -587,9 +602,13 @@
                                     <action selector="onLocateMeBtn:" destination="YQi-AC-BdW" eventType="touchUpInside" id="URB-Jq-VSm"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleAspectFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBs-aE-2LI">
+                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBs-aE-2LI">
                                 <rect key="frame" x="23" y="33" width="60" height="60"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="60" id="6hO-w2-RDP"/>
+                                    <constraint firstAttribute="width" constant="60" id="f7L-Gn-cTO"/>
+                                </constraints>
                                 <state key="normal" image="compassButton">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
@@ -600,8 +619,12 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="gBs-aE-2LI" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="33" id="IS8-1X-OZk"/>
                             <constraint firstAttribute="bottom" secondItem="vKt-uU-SfL" secondAttribute="bottom" constant="20" id="XdF-L2-GMe"/>
+                            <constraint firstItem="gBs-aE-2LI" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" constant="23" id="byb-31-h9b"/>
                             <constraint firstAttribute="trailing" secondItem="vKt-uU-SfL" secondAttribute="trailing" constant="20" id="dBP-77-rw0"/>
+                            <constraint firstAttribute="trailing" secondItem="ka0-3T-Kej" secondAttribute="trailing" constant="20" id="isb-lm-PQ1"/>
+                            <constraint firstItem="ka0-3T-Kej" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="38" id="rh3-Oz-45y"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
@@ -614,7 +637,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1205" y="308"/>
+            <point key="canvasLocation" x="861" y="326"/>
         </scene>
         <!--Flux Filters Table View Controller - Filters-->
         <scene sceneID="kZi-pp-LJH">
@@ -796,4 +819,7 @@
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <inferredMetricsTieBreakers>
+        <segue reference="efy-IJ-znR"/>
+    </inferredMetricsTieBreakers>
 </document>
