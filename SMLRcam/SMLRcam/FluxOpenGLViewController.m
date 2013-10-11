@@ -1030,6 +1030,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
     }
     [_renderListLock unlock];
+    
+    [(FluxScanViewController*)self.parentViewController setCameraButtonEnabled:YES];
 }
 
 - (void) deleteImageTextureIdx:(int)i

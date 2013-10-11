@@ -8,6 +8,7 @@
 
 #import "FluxImageCaptureViewController.h"
 #import "FluxOpenGLViewController.h"
+#import "FluxScanViewController.h"
 
 
 NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
@@ -153,6 +154,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 
 - (void)takePicture{
     
+    [(FluxScanViewController*)self.parentViewController.parentViewController setCameraButtonEnabled:NO];
     //google analytics
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
     [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)

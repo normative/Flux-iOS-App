@@ -565,6 +565,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      }];
 }
 
+- (void)setCameraButtonEnabled:(BOOL)enabled{
+    CameraButton.enabled = enabled;
+}
+
 
 
 #pragma mark Image Capture Helper Methods
