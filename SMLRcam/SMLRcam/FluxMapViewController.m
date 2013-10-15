@@ -31,7 +31,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 #pragma mark - Callbacks
 
 
-#pragma mark MapKit
+#pragma mark MapKit Delegate
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
@@ -39,8 +39,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 	if ([annotation class] == [MIAnnotation class])
 	{
         
-	}
+    }
 }
+
+
 
 - (void)setupLocationManager
 {
@@ -51,9 +53,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void) setupMapView
 {
     [fluxMapView setShowsUserLocation:YES];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 50, 50);
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 1050, 1050);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
+    [fluxMapView setTheUserLocation:locationManager.location];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^
                    {

@@ -34,6 +34,8 @@
 
 #import "MIAnnotation+Package.h"
 
+#import <MapKit/MapKit.h>
+
 static inline MIChangeType MIChangeTypeFromNSComparisonResult(NSComparisonResult result)
 {
     switch (result)
@@ -112,6 +114,11 @@ typedef void (^_MIMapViewChange)(void);
 	}
 
 	return self;
+}
+
+-(void)setTheUserLocation:(CLLocation *)theUserLocation{
+    MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:theUserLocation.coordinate radius:500];
+    [self addOverlay:myCircle];
 }
 
 #pragma mark - Message Forwarding
@@ -413,6 +420,14 @@ typedef void (^_MIMapViewChange)(void);
 		MKPinAnnotationColorRed];
 
 	return view;
+}
+
+- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay{
+    MKCircleView *circleView = [[MKCircleView alloc] initWithCircle:(MKCircle *)overlay];
+    circleView.fillColor = [UIColor colorWithWhite:1.0 alpha:0.45];
+    circleView.lineWidth = 2.0;
+    circleView.strokeColor = [UIColor colorWithRed:0.0 green:182.0/255 blue:235.0/255 alpha:1.0];
+    return circleView;
 }
 
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated

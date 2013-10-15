@@ -54,6 +54,7 @@
 - (void)setNeedsUpdateVisibleState;
 
 @property (nonatomic, strong) MITransitionFactory *transitionFactory;
+@property (nonatomic) CLLocation *theUserLocation;
 
 #pragma mark - Map Modifying
 
