@@ -24,6 +24,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 @synthesize timeFilterControl;
 
 - (void)didUpdateImageList:(NSNotification *)notification{
+
+
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
     if (self.fluxDisplayManager.fluxNearbyMetadata.count<=5) {
         if (![timeFilterControl isHidden]) {
@@ -47,7 +49,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         }
     }
     [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
-    [annotationsTableView reloadData];
 }
 
 #pragma mark - Location Manager

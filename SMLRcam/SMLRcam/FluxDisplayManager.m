@@ -107,6 +107,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
 }
 
 - (void)calculateTimeAdjustedImageList{
+    
     if (timeSliderRange.location +timeSliderRange.length >= self.nearbyList.count) {
         timeSliderRange = NSMakeRange(0,MIN(5, self.nearbyList.count));
     }
@@ -117,11 +118,16 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [timeBracketNearbyMetadata setObject:[self.fluxNearbyMetadata objectForKey:[timeBracketArray objectAtIndex:i]] forKey:[timeBracketArray objectAtIndex:i]];
     }
     
+
+    
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:timeBracketArray, @"nearbyList",timeBracketNearbyMetadata, @"fluxNearbyMetadata" , nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
                                                         object:self userInfo:userInfoDict];
+    NSDate *methodStart = [NSDate date];
+    
+    
     
     // Request images for nearby items
     for (id localID in timeBracketArray)
@@ -137,6 +143,11 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         }];
         [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
     }
+    NSDate *methodFinish = [NSDate date];
+    NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
+    NSLog(@"executionTime = %f", executionTime);
+
+
 }
 
 #pragma mark Image Capture

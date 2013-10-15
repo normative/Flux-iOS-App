@@ -103,10 +103,13 @@
     // Optional: set Logger to VERBOSE for debug information.
     [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelNone];
     // Initialize tracker.
-    id<GAITracker> tracker = [[GAI sharedInstance] trackerWithTrackingId:GATrackingID];
+    [[GAI sharedInstance] trackerWithTrackingId:GATrackingID];
     
     //testFlight analytics
     [TestFlight takeOff:TestFlightAppToken];
+    
+    //RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
+    RKLogConfigureByName("*", RKLogLevelOff);
     
     
     

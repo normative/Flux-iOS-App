@@ -663,6 +663,7 @@ void init(){
 }
 
 - (void)updateImageTexture:(NSNotification *)notification{
+
     if (camIsOn) {
         return;
     }
@@ -671,6 +672,7 @@ void init(){
     }
     NSString *localID = [[[notification userInfo]allKeys]objectAtIndex:0];
     [self updateImageTextureWithLocalID:localID withImage:[[notification userInfo]objectForKey:localID]];
+
 }
 
 - (void)trimRenderList{
@@ -1023,7 +1025,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     else
     {
-        NSLog(@"Added Image texture to render list in slot %d", (i));
+        //NSLog(@"Added Image texture to render list in slot %d", (i));
         self.renderedTextures[i] = localID;
         [self updateImageMetadataKey:localID index:i];
         _opengltexturesset++;
