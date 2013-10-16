@@ -10,7 +10,6 @@
 
 #import "MMDrawerController.h"
 #import "FluxLeftDrawerViewController.h"
-#import "FluxRightDrawerViewController.h"
 #import "FluxScanViewController.h"
 #import "FluxDisplayManager.h"
 #import "FluxDataManager.h"
@@ -37,7 +36,6 @@
     
     
     FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
-    //FluxRightDrawerViewController * rightSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxRightDrawerViewController"];
     
     FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
     
@@ -116,7 +114,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     [self.window setRootViewController:drawerController];
     // Override point for customization after application launch.
-    self.window.backgroundColor = [UIColor whiteColor];
+    self.window.backgroundColor = [UIColor blackColor];
     [self.window makeKeyAndVisible];
     return YES;
     

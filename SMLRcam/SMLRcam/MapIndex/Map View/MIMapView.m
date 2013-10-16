@@ -192,7 +192,8 @@ typedef void (^_MIMapViewChange)(void);
     if ([self isLocked]) return;
 
     [MIMapView cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateVisibleState) object:nil];
-    [self performSelector:@selector(updateVisibleState) withObject:nil afterDelay:0.0];
+    [self updateVisibleState];
+    //[self performSelector:@selector(updateVisibleState) withObject:nil afterDelay:0.0];
 }
 
 - (MKMapRect)updateAnnotationsRect

@@ -41,6 +41,12 @@
     if (dataFilter == nil) {
         dataFilter = [[FluxDataFilter alloc] init];
     }
+    
+    CGRect frame = self.tableView.bounds;
+    frame.origin.y = -frame.size.height;
+    UIView* blackView = [[UIView alloc] initWithFrame:frame];
+    blackView.backgroundColor = [UIColor blackColor];
+    [self.tableView addSubview:blackView];
 }
 
 
@@ -163,7 +169,7 @@
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
     // Create header view and add label as a subview
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, -3, 320, 43)];
-    [view setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.7]];
+    [view setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.8]];
     
     // Create label with section title
     UILabel *label = [[UILabel alloc] init];
@@ -335,6 +341,9 @@
 #pragma mark - UI Actions
 
 - (IBAction)cancelButtonAction:(id)sender {
+    if ([delegate respondsToSelector:@selector(FiltersTableViewDidPop:andChangeFilter:)]) {
+        [delegate FiltersTableViewDidPop:self andChangeFilter:nil];
+    }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -13,6 +13,7 @@
 #import "FluxDataManager.h"
 #import "FluxDisplayManager.h"
 #import "FluxLocationServicesSingleton.h"
+#import "FluxFiltersTableViewController.h"
 
 #import "GAITrackedViewController.h"
 #import "GAI.h"
@@ -20,17 +21,9 @@
 
 @class FluxScanImageObject;
 
-@interface FluxMapViewController : GAITrackedViewController<MKMapViewDelegate, UIGestureRecognizerDelegate>
-{    
-    //
-    UIPinchGestureRecognizer *pinchRecognizer;
-    
-    // Currnet View Orientation Direction
-    UIInterfaceOrientation myViewOrientation;
-    
+@interface FluxMapViewController : GAITrackedViewController<MKMapViewDelegate, UIGestureRecognizerDelegate, FiltersTableViewDelegate>
+{
     CLLocationCoordinate2D userLastSynchedLocation;
-    
-    MKMapCamera*mapCamera;
     
     // Map View
     __weak IBOutlet MIMapView *fluxMapView;
@@ -39,6 +32,9 @@
     FluxLocationServicesSingleton *locationManager;
     
     IBOutlet UIButton *filterButton;
+    FluxDataFilter *currentDataFilter;
+    
+    UIView*transitionFadeView;
 }
 
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;

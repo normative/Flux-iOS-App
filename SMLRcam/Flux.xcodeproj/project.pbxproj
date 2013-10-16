@@ -98,7 +98,6 @@
 		AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAC6C1117C65F8800B7EAD1 /* FluxHashtagTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */; };
-		AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
 		AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF017BBBD0500D572A4 /* FluxNetworkServices.m */; };
 		AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */; };
@@ -282,8 +281,6 @@
 		AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterControl.m; sourceTree = "<group>"; };
 		AAAC6C0F17C65F8800B7EAD1 /* FluxHashtagTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxHashtagTableViewCell.h; sourceTree = "<group>"; };
 		AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxHashtagTableViewCell.m; sourceTree = "<group>"; };
-		AAB24E4817AAE21E00A9BE59 /* FluxRightDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRightDrawerViewController.h; sourceTree = "<group>"; };
-		AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRightDrawerViewController.m; sourceTree = "<group>"; };
 		AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSwitchTableViewCell.h; sourceTree = "<group>"; };
 		AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSwitchTableViewCell.m; sourceTree = "<group>"; };
 		AAD2DFEF17BBBD0500D572A4 /* FluxNetworkServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxNetworkServices.h; sourceTree = "<group>"; };
@@ -513,7 +510,6 @@
 			isa = PBXGroup;
 			children = (
 				AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */,
-				AAAC6C0E17C65F3E00B7EAD1 /* Right Drawer */,
 			);
 			name = Drawers;
 			sourceTree = "<group>";
@@ -804,15 +800,6 @@
 			name = "Left Drawer";
 			sourceTree = "<group>";
 		};
-		AAAC6C0E17C65F3E00B7EAD1 /* Right Drawer */ = {
-			isa = PBXGroup;
-			children = (
-				AAB24E4817AAE21E00A9BE59 /* FluxRightDrawerViewController.h */,
-				AAB24E4917AAE21E00A9BE59 /* FluxRightDrawerViewController.m */,
-			);
-			name = "Right Drawer";
-			sourceTree = "<group>";
-		};
 		F240346117E1037F0088CA2D /* Data Store */ = {
 			isa = PBXGroup;
 			children = (
@@ -1041,7 +1028,6 @@
 				AA55534817F0D10C0098C45C /* FluxTimeObject.m in Sources */,
 				AA55534517F0CE340098C45C /* FluxTimeSegment.m in Sources */,
 				AAA265C717EA02F6003AE787 /* TFFeedbackController.m in Sources */,
-				AAB24E4A17AAE21E00A9BE59 /* FluxRightDrawerViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

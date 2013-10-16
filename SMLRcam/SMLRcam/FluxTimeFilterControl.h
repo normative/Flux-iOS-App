@@ -13,6 +13,7 @@
 @interface FluxTimeFilterControl : UIView<UIGestureRecognizerDelegate>{
     UIImageView *quickPanCircleView;
     
+    
     UIImageView *sliderSelectionView;
     UISlider *timeSlider;
 }

@@ -12,13 +12,12 @@
 
 #pragma mark - getter methods
 
-//
+
 - (NSString*)title
 {
-    return self.descriptionString;
+    return @"1 image";
 }
 
-//
 - (NSString*)subtitle
 {
     NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
@@ -27,7 +26,6 @@
     return [outputDateFormat stringFromDate:self.timestamp];
 }
 
-//
 - (CLLocationCoordinate2D)coordinate
 {
     CLLocationCoordinate2D theCoordinate;

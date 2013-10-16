@@ -125,9 +125,6 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
                                   initWithObjectsAndKeys:timeBracketArray, @"nearbyList",timeBracketNearbyMetadata, @"fluxNearbyMetadata" , nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
                                                         object:self userInfo:userInfoDict];
-    NSDate *methodStart = [NSDate date];
-    
-    
     
     // Request images for nearby items
     for (id localID in timeBracketArray)
@@ -143,11 +140,6 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         }];
         [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
     }
-    NSDate *methodFinish = [NSDate date];
-    NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:methodStart];
-    NSLog(@"executionTime = %f", executionTime);
-
-
 }
 
 #pragma mark Image Capture

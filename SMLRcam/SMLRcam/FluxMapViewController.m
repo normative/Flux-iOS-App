@@ -29,7 +29,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 @synthesize myViewOrientation;
 
 #pragma mark - Callbacks
-
+- (void)FiltersTableViewDidPop:(FluxFiltersTableViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+    [self animationPopFrontScaleUp];
+    
+    if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
+        currentDataFilter = [dataFilter copy];
+    }
+}
 
 #pragma mark MapKit Delegate
 
@@ -38,7 +44,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 	MIAnnotation *annotation = (MIAnnotation *)view.annotation;
 	if ([annotation class] == [MIAnnotation class])
 	{
-        
+        NSLog(@"It's an annotation class");
+    }
+    else{
+        NSLog(@"It's Not");
     }
 }
 
@@ -72,6 +81,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - IBActions
 
+//mapKit uses openGL, this clears the context for our openGlView
 - (IBAction)closeButtonAction:(id)sender{
     [self dismissViewControllerAnimated:YES completion:^(void)
      {
@@ -87,8 +97,81 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupLocationManager];
     [self setupMapView];
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
+    
+    currentDataFilter = [[FluxDataFilter alloc] init];
+    transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
+    [transitionFadeView setBackgroundColor:[UIColor blackColor]];
+    [transitionFadeView setAlpha:0.0];
+    [transitionFadeView setHidden:YES];
+    [self.view addSubview:transitionFadeView];
     
     self.screenName = @"Map View";
+}
+
+#pragma mark Transitions
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    //set the delegate of the navControllers top view (our filters View)
+    UINavigationController*tmp = segue.destinationViewController;
+    FluxFiltersTableViewController* filtersVC = (FluxFiltersTableViewController*)tmp.topViewController;
+    [filtersVC setDelegate:self];
+    [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
+    [filtersVC prepareViewWithFilter:currentDataFilter];
+    
+    [self animationPushBackScaleDown];
+}
+
+#pragma mark Transition Animations
+
+#define HC_DEFINE_TO_SCALE (CATransform3DMakeScale(0.95, 0.95, 0.95))
+#define HC_DEFINE_TO_OPACITY (0.4f)
+
+
+-(void) animationPushBackScaleDown {
+	CABasicAnimation* scaleDown = [CABasicAnimation animationWithKeyPath:@"transform"];
+	scaleDown.toValue = [NSValue valueWithCATransform3D:HC_DEFINE_TO_SCALE];
+	scaleDown.fromValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+	scaleDown.removedOnCompletion = YES;
+	
+	CABasicAnimation* opacity = [CABasicAnimation animationWithKeyPath:@"opacity"];
+	opacity.fromValue = [NSNumber numberWithFloat:1.0f];
+	opacity.toValue = [NSNumber numberWithFloat:HC_DEFINE_TO_OPACITY];
+	opacity.removedOnCompletion = YES;
+	
+	CAAnimationGroup* group = [CAAnimationGroup animation];
+	group.duration = 0.4;
+	group.animations = [NSArray arrayWithObjects:scaleDown, opacity, nil];
+	
+	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
+	[view.layer addAnimation:group forKey:nil];
+    
+    [transitionFadeView setHidden:NO];
+    [UIView animateWithDuration:0.5 animations:^{
+        [transitionFadeView setAlpha:1.0];
+    }completion:nil];
+}
+
+-(void) animationPopFrontScaleUp {
+    [transitionFadeView setAlpha:0.0];
+    [transitionFadeView setHidden:YES];
+    
+	CABasicAnimation* scaleUp = [CABasicAnimation animationWithKeyPath:@"transform"];
+	scaleUp.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
+	scaleUp.fromValue = [NSValue valueWithCATransform3D:HC_DEFINE_TO_SCALE];
+	scaleUp.removedOnCompletion = YES;
+	
+	CABasicAnimation* opacity = [CABasicAnimation animationWithKeyPath:@"opacity"];
+	opacity.fromValue = [NSNumber numberWithFloat:HC_DEFINE_TO_OPACITY];
+	opacity.toValue = [NSNumber numberWithFloat:1.0f];
+	opacity.removedOnCompletion = YES;
+	
+	CAAnimationGroup* group = [CAAnimationGroup animation];
+	group.duration = 0.43;
+	group.animations = [NSArray arrayWithObjects:scaleUp, opacity, nil];
+	
+	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
+	[view.layer addAnimation:group forKey:nil];
 }
 
 @end

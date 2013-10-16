@@ -257,7 +257,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eJn-Ah-RV1" customClass="FluxTimeFilterControl">
-                                        <rect key="frame" x="249" y="105" width="45" height="438"/>
+                                        <rect key="frame" x="247" y="129" width="45" height="393"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </view>
@@ -343,26 +343,26 @@
                                     <constraint firstItem="RP7-i5-SqD" firstAttribute="trailing" secondItem="VeC-Hk-pfe" secondAttribute="trailing" id="0Pw-f8-U8a"/>
                                     <constraint firstItem="VeC-Hk-pfe" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="3eF-9R-uhp"/>
                                     <constraint firstItem="3GP-IY-jjF" firstAttribute="top" secondItem="RP7-i5-SqD" secondAttribute="bottom" constant="29" id="54U-8h-Vr0"/>
-                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="249" id="6K6-Lf-rRW"/>
+                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="247" id="6K6-Lf-rRW"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="leading" secondItem="WoV-XC-xK1" secondAttribute="leading" id="B9N-0G-BXv"/>
-                                    <constraint firstAttribute="bottom" secondItem="eJn-Ah-RV1" secondAttribute="bottom" constant="5" id="CPt-RC-xQK"/>
+                                    <constraint firstAttribute="bottom" secondItem="eJn-Ah-RV1" secondAttribute="bottom" constant="26" id="CPt-RC-xQK"/>
                                     <constraint firstItem="3GP-IY-jjF" firstAttribute="leading" secondItem="QTA-2K-tgO" secondAttribute="trailing" constant="8" symbolic="YES" id="FPg-vw-M6e"/>
                                     <constraint firstItem="DOx-wz-4Oh" firstAttribute="top" secondItem="RP7-i5-SqD" secondAttribute="bottom" constant="26" id="GSA-bW-s4F"/>
                                     <constraint firstItem="DOx-wz-4Oh" firstAttribute="leading" secondItem="QTA-2K-tgO" secondAttribute="trailing" constant="36" id="LdK-4A-34Y"/>
-                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="105" id="Qk1-Pt-cuA"/>
+                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="129" id="Qk1-Pt-cuA"/>
                                     <constraint firstItem="bo9-BI-7cK" firstAttribute="centerY" secondItem="QTA-2K-tgO" secondAttribute="centerY" id="VyB-bK-vi0"/>
                                     <constraint firstItem="bo9-BI-7cK" firstAttribute="top" secondItem="RP7-i5-SqD" secondAttribute="bottom" constant="15" id="XdY-Ge-eYH"/>
-                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="trailing" secondItem="bo9-BI-7cK" secondAttribute="trailing" id="Xvm-RC-ore"/>
+                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="trailing" secondItem="bo9-BI-7cK" secondAttribute="trailing" constant="-2" id="Xvm-RC-ore"/>
                                     <constraint firstItem="bo9-BI-7cK" firstAttribute="leading" secondItem="3GP-IY-jjF" secondAttribute="trailing" constant="8" symbolic="YES" id="a5r-Bo-hPk"/>
                                     <constraint firstItem="RP7-i5-SqD" firstAttribute="leading" secondItem="VeC-Hk-pfe" secondAttribute="leading" id="d4I-F6-Xky"/>
-                                    <constraint firstAttribute="trailing" secondItem="eJn-Ah-RV1" secondAttribute="trailing" constant="26" id="dNv-wv-9ZG"/>
+                                    <constraint firstAttribute="trailing" secondItem="eJn-Ah-RV1" secondAttribute="trailing" constant="28" id="dNv-wv-9ZG"/>
                                     <constraint firstAttribute="bottom" secondItem="WoV-XC-xK1" secondAttribute="bottom" id="dWh-hz-Nfh"/>
                                     <constraint firstAttribute="width" constant="320" id="fhw-AM-un3"/>
                                     <constraint firstItem="VeC-Hk-pfe" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="luv-uV-e6x"/>
                                     <constraint firstItem="DOx-wz-4Oh" firstAttribute="centerX" secondItem="3GP-IY-jjF" secondAttribute="centerX" id="nA7-1j-uGi"/>
                                     <constraint firstItem="RP7-i5-SqD" firstAttribute="top" secondItem="VeC-Hk-pfe" secondAttribute="bottom" id="scT-CP-18E"/>
                                     <constraint firstItem="WoV-XC-xK1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="20" id="uBr-ww-aL1"/>
-                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="top" secondItem="bo9-BI-7cK" secondAttribute="bottom" constant="18" id="v7a-QF-YHA"/>
+                                    <constraint firstItem="eJn-Ah-RV1" firstAttribute="top" secondItem="bo9-BI-7cK" secondAttribute="bottom" constant="42" id="v7a-QF-YHA"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="top" secondItem="RP7-i5-SqD" secondAttribute="bottom" constant="10" id="wA7-6q-BLp"/>
                                 </constraints>
                             </view>
@@ -636,7 +636,7 @@
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="separatorColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" barStyle="black" id="HJ4-Zn-oBa">
+                        <searchBar key="tableHeaderView" contentMode="redraw" barStyle="black" searchBarStyle="prominent" id="HJ4-Zn-oBa">
                             <rect key="frame" x="0.0" y="64" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
@@ -749,7 +749,6 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <connections>
                         <outlet property="filterSearchBar" destination="HJ4-Zn-oBa" id="CGt-8Z-hh8"/>
@@ -806,6 +805,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="efy-IJ-znR"/>
+        <segue reference="UDo-bv-NqA"/>
     </inferredMetricsTieBreakers>
 </document>
