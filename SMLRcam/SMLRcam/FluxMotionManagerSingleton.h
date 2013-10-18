@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
 
+#import "FluxPedometer.h"
+
 @interface FluxMotionManagerSingleton : NSObject {
     CMMotionManager * motionManager;
     NSTimer *motionUpdateTimer;
+    FluxPedometer *pedometer;
 }
 
 @property (nonatomic) CMAttitude* attitude;
