@@ -19,14 +19,14 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxScanImageObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":   @"imageID",
-                                                  @"category_id":     @"categoryID",
-                                                  @"time_stamp":        @"timestamp",
+                                                  @"id":            @"imageID",
+                                                  @"category_id":   @"categoryID",
+                                                  @"time_stamp":    @"timestamp",
                                                   @"description":   @"descriptionString",
-                                                  @"user_id":   @"userID",
-                                                  @"camera_id":   @"cameraID",
-                                                  @"user":  @"username"
-                                                  }];
+                                                  @"user_id":       @"userID",
+                                                  @"camera_id":     @"cameraID",
+                                                  @"user":          @"username"
+                                                 }];
     
     [mapping addAttributeMappingsFromArray:@[@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz"]];
     
@@ -35,14 +35,15 @@
 
 + (RKObjectMapping *)imagePOSTMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
     [mapping addAttributeMappingsFromDictionary:@{
-                                                         @"imageID":   @"id",
-                                                         @"categoryID":     @"category_id",
-                                                         @"timestampString":        @"time_stamp",
-                                                         @"descriptionString":   @"description",
-                                                         @"cameraID":     @"camera_id",
-                                                         @"userID":     @"user_id"
-                                                         }];
+                                                  @"imageID":            @"id",
+                                                  @"categoryID":         @"category_id",
+                                                  @"timestampString":    @"time_stamp",
+                                                  @"descriptionString":  @"description",
+                                                  @"cameraID":           @"camera_id",
+                                                  @"userID":             @"user_id"
+                                                 }];
 
     
     [mapping addAttributeMappingsFromArray:@[@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz"]];
@@ -56,12 +57,12 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxUserObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":   @"userID",
+                                                  @"id":            @"userID",
                                                   @"firstname":     @"firstName",
-                                                  @"lastname":        @"lastName",
-                                                  @"nickname":   @"userName",
-                                                  @"created_at":        @"dateCreated"
-                                                  }];
+                                                  @"lastname":      @"lastName",
+                                                  @"nickname":      @"userName",
+                                                  @"created_at":    @"dateCreated"
+                                                 }];
     
     [mapping addAttributeMappingsFromArray:@[@"privacy"]];
     
@@ -71,12 +72,12 @@
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                         @"firstName":     @"firstname",
-                                                         @"lastName":        @"lastname",
-                                                         @"userName":   @"nickname",
-                                                         @"dateCreated":        @"created_at",
-                                                         @"userID":   @"id"
-                                                         }];
+                                                  @"firstName":     @"firstname",
+                                                  @"lastName":      @"lastname",
+                                                  @"userName":      @"nickname",
+                                                  @"dateCreated":   @"created_at",
+                                                  @"userID":        @"id"
+                                                 }];
     
     [mapping addAttributeMappingsFromArray:@[@"privacy"]];
     
@@ -89,9 +90,9 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxTagObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"tagtext":     @"tagText",
-                                                  @"count":        @"count"
-                                                  }];
+                                                  @"tagtext":   @"tagText",
+                                                  @"count":     @"count"
+                                                 }];
     return mapping;
 }
 
