@@ -7,12 +7,11 @@
 //
 
 #import "FluxMapViewController.h"
+#import "ProgressHUD.h"
 
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
 #import "GAIFields.h"
-
-#define MERCATOR_RADIUS 85445659.44705395
 
 NSString* const locationAnnotationIdentifer = @"locationAnnotation";
 NSString* const userAnnotationIdentifer = @"userAnnotation";
@@ -34,7 +33,31 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
         currentDataFilter = [dataFilter copy];
+        [self.fluxDisplayManager requestMapPinsForFilter:currentDataFilter];
     }
+}
+
+- (void)didUpdateMapPins:(NSNotification*)notification{
+    if (self.fluxDisplayManager.fluxMapContentMetadata) {
+        [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxMapContentMetadata.count] forState:UIControlStateNormal];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^
+       {
+           if (self.fluxDisplayManager.fluxMapContentMetadata) {
+               
+               dispatch_async(dispatch_get_main_queue(), ^
+                              {
+                                  [fluxMapView addAnnotations:self.fluxDisplayManager.fluxMapContentMetadata];
+                                  //clear it.
+                                  [self.fluxDisplayManager setFluxMapContentMetadata:nil];
+                              });
+           }
+       });
+    }
+}
+
+- (void)didFailToUpdatePins:(NSNotification*)notification{
+    NSString*str = [[notification userInfo]objectForKey:@"errorString"];
+    [ProgressHUD showError:str];
 }
 
 #pragma mark MapKit Delegate
@@ -67,15 +90,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [fluxMapView setRegion:adjustedRegion animated:YES];
     [fluxMapView setTheUserLocation:locationManager.location];
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^
-                   {
-                       if (self.fluxDisplayManager.fluxNearbyMetadata) {
-                           dispatch_async(dispatch_get_main_queue(), ^
-                              {
-                                  [fluxMapView addAnnotations:[self.fluxDisplayManager.fluxNearbyMetadata allValues]];
-                              });
-                       }
-                   });
+    if (currentDataFilter == nil) {
+        currentDataFilter = [[FluxDataFilter alloc] init];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
+    [self.fluxDisplayManager mapViewWillDisplay];
 }
 
 
@@ -97,7 +118,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupLocationManager];
     [self setupMapView];
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
     
     currentDataFilter = [[FluxDataFilter alloc] init];
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
@@ -118,8 +138,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
     [filtersVC prepareViewWithFilter:currentDataFilter];
-    
     [self animationPushBackScaleDown];
+        [filtersVC setRadius:500.0];
 }
 
 #pragma mark Transition Animations

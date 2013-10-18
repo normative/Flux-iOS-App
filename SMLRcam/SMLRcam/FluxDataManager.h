@@ -63,6 +63,10 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                                  andMaxCount:(int)maxCount
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
+- (FluxRequestID *) requestMapImageListAtLocation:(CLLocationCoordinate2D)coordinate
+                                    withRadius:(float)radius
+                               withDataRequest:(FluxDataRequest *)dataRequest;
+
 - (void)deleteLocations;
 
 @end

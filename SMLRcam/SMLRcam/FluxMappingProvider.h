@@ -20,4 +20,6 @@
 
 + (RKObjectMapping *)tagGetMapping;
 
++ (RKObjectMapping *)mapImageGetMapping;
+
 @end

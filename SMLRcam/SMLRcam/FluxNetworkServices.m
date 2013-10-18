@@ -474,6 +474,63 @@
     [operation start];
 }
 
+#pragma mark - MapView
+
+//returns an NSDictionary list of images for mapView filtered based on provided details
+- (void)getMapImagesForLocationFiltered:(CLLocationCoordinate2D)location
+                              andRadius:(float)radius
+                              andMinAlt:(float)altMin
+                              andMaxAlt:(float)altMax
+                        andMinTimestamp:(NSDate *)timeMin
+                        andMaxTimestamp:(NSDate *)timeMax
+                            andHashTags:(NSString *)hashTags
+                               andUsers:(NSString *)users
+                          andCategories:(NSString *)cats
+                            andMaxCount:(int)maxCount
+                           andRequestID:(FluxRequestID *)requestID{
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d",
+                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               location.latitude, location.longitude, radius,
+                                                                               altMin, altMax,
+                                                                               timestampMin, timestampMax,
+                                                                               hashTags, users, cats, maxCount]]];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Map Images",[result count]);
+         
+         if ([result count] > 0)
+         {
+             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnMapList:andRequestID:)])
+             {
+                 [delegate NetworkServices:self didReturnMapList:result.array andRequestID:requestID];
+             }
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
 
 
 

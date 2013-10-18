@@ -99,6 +99,9 @@
 		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAC6C1117C65F8800B7EAD1 /* FluxHashtagTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
+		AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */; };
+		AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */; };
+		AAC1BF0B1811AF67001D3C01 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BF091811AF67001D3C01 /* ProgressHUD.m */; };
 		AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF017BBBD0500D572A4 /* FluxNetworkServices.m */; };
 		AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */; };
 		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
@@ -283,6 +286,11 @@
 		AAAC6C1017C65F8800B7EAD1 /* FluxHashtagTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxHashtagTableViewCell.m; sourceTree = "<group>"; };
 		AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSwitchTableViewCell.h; sourceTree = "<group>"; };
 		AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSwitchTableViewCell.m; sourceTree = "<group>"; };
+		AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapImageObject.h; sourceTree = "<group>"; };
+		AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMapImageObject.m; sourceTree = "<group>"; };
+		AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ProgressHUD.bundle; sourceTree = "<group>"; };
+		AAC1BF081811AF67001D3C01 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
+		AAC1BF091811AF67001D3C01 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
 		AAD2DFEF17BBBD0500D572A4 /* FluxNetworkServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxNetworkServices.h; sourceTree = "<group>"; };
 		AAD2DFF017BBBD0500D572A4 /* FluxNetworkServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxNetworkServices.m; sourceTree = "<group>"; };
 		AAD2DFF317BBFC8200D572A4 /* FluxUserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxUserObject.h; sourceTree = "<group>"; };
@@ -635,6 +643,7 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
+				AAC1BF061811AF67001D3C01 /* ProgressHUD */,
 				AA984EE718088923007F33B1 /* MapIndex */,
 				AA0A9D9117E366ED00A0B109 /* DWTagList */,
 				AA134AF917AAD09500725AB1 /* MMDrawerController */,
@@ -800,6 +809,16 @@
 			name = "Left Drawer";
 			sourceTree = "<group>";
 		};
+		AAC1BF061811AF67001D3C01 /* ProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */,
+				AAC1BF081811AF67001D3C01 /* ProgressHUD.h */,
+				AAC1BF091811AF67001D3C01 /* ProgressHUD.m */,
+			);
+			path = ProgressHUD;
+			sourceTree = "<group>";
+		};
 		F240346117E1037F0088CA2D /* Data Store */ = {
 			isa = PBXGroup;
 			children = (
@@ -820,6 +839,8 @@
 				AAA265A617E89EAE003AE787 /* FluxTagObject.m */,
 				AAD2DFF317BBFC8200D572A4 /* FluxUserObject.h */,
 				AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */,
+				AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */,
+				AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */,
 			);
 			name = "Data Store";
 			sourceTree = "<group>";
@@ -913,6 +934,7 @@
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */,
+				AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
@@ -1012,7 +1034,9 @@
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
 				AA984F0E18088923007F33B1 /* MKAnnotationView+MIExtension.m in Sources */,
 				173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */,
+				AAC1BF0B1811AF67001D3C01 /* ProgressHUD.m in Sources */,
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
+				AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA984F0F18088923007F33B1 /* MIPointList.m in Sources */,

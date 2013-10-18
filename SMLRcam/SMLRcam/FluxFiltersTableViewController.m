@@ -41,6 +41,7 @@
     if (dataFilter == nil) {
         dataFilter = [[FluxDataFilter alloc] init];
     }
+    self.radius = 15;
     
     CGRect frame = self.tableView.bounds;
     frame.origin.y = -frame.size.height;
@@ -124,7 +125,7 @@
         }
         [self.tableView reloadData];
     }];
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:15
+    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:self.radius
                                        andMaxCount:20 withDataRequest:request];
 }
 

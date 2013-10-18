@@ -418,7 +418,7 @@ typedef void (^_MIMapViewChange)(void);
 	[(MKPinAnnotationView *)view setPinColor:
 		[annotation class] == [MIAnnotation class] ?
 		MKPinAnnotationColorGreen :
-		MKPinAnnotationColorRed];
+		MKPinAnnotationColorGreen];
 
 	return view;
 }
