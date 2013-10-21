@@ -25,7 +25,7 @@ typedef enum _walkdir {
 } walkDir;
 
 @interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
-    BOOL isPaused;
+//    BOOL isPaused;
 //    CMMotionManager *motionManager;
 //    NSTimer* motionUpdateTimer;
     

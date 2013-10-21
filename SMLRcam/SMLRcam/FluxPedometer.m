@@ -47,7 +47,7 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
     
 //    [self setupLogging];
 
-    isPaused = NO;
+//    isPaused = NO;
     
 	// Do any additional setup after loading the view, typically from a nib.
     
@@ -100,7 +100,7 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
 
 - (void)processMotion:(CMDeviceMotion *)devMotion
 {
-    if (!isPaused)
+//    if (!isPaused)
     {
         // do the filtering prior to drawing...
         double currsample = 0.0;
@@ -130,17 +130,6 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
         currsample = lpf[2][samplecount];
         
         sum[0] = sum[1] = sum[2] = 0.0;
-//        // average of deltas beween last BLOCK_SIZE_AVG adjacent lpf pairs
-//        for (int x = 0; x < BLOCK_SIZE_AVG; x++)
-//        {
-//            int idx1 = ((samplecount - x - 1) + MAXSAMPLES) % MAXSAMPLES;
-//            int idx2 = ((samplecount - x) + MAXSAMPLES) % MAXSAMPLES;
-//            sum[0] = sum[0] + (lpf[0][idx2] - lpf[0][idx1]);
-//            sum[2] = sum[2] + (lpf[2][idx2] - lpf[2][idx1]);
-//        }
-//        
-//        delta[0][samplecount] = sum[0] / (double)(BLOCK_SIZE_AVG);
-//        delta[2][samplecount] = sum[2] / (double)(BLOCK_SIZE_AVG);
         
         // unaveraged delta of current raw vertical accel value with previous value
         int lastsampleidx = (samplecount - 1 + MAXSAMPLES) % MAXSAMPLES;
@@ -296,8 +285,6 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
         else
             slopeDir = 0.0;
         
-        //        slopeDir = (peakFound ? vertAccelTrend * -2.0 : 0.0);
-        
         NSString *logStr = [NSString stringWithFormat:@"%f, %f, %f, %f, %f, %f, %d, %d, %f, %f\n",
                             samples[0][samplecount],
                             samples[1][samplecount],
@@ -319,30 +306,6 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
 }
 
 #pragma mark - step count logic
-
-//- (BOOL)didTakeFirstStep:(CMAcceleration)currentAcceleration{
-//    if (currentAcceleration.z > ACCEL_Z_THRESHOLD) {
-//        return YES;
-//    }
-//    return NO;
-//}
-
-
-//- (BOOL)didBreakThresholdForAcceleration:(CMAcceleration)currentAcceleration
-//{
-//    if (currentAcceleration.y < ACCEL_VERT_LOW_THRESHOLD)
-//    {
-//        return YES;
-//    }
-//    return NO;
-//}
-//
-//- (BOOL)didReturnToNormalConditionsForAcceleration:(CMAcceleration)currentAcceleration{
-//    if (currentAcceleration.y > ACCEL_VERT_RETURN_THRESHOLD) {
-//        return YES;
-//    }
-//    return NO;
-//}
 
 - (bool)didTakeStep
 {
@@ -373,8 +336,6 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
             break;
     }
     
-    [self turnAccelOn];
-    
     walkingTimer = [NSTimer scheduledTimerWithTimeInterval:MAX_STRIDE_TIME
                                                     target:self
                                                   selector:@selector(turnWalkingOff)
@@ -383,19 +344,6 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
     return true;
 }
 
-- (void)turnAccelOn{
-//    [self.countLabel setText:[NSString stringWithFormat:@"%i",stepCount]];
-//    //    [self.walkLight setBackgroundColor:[UIColor greenColor]];
-//    [self.walkingLight setBackgroundColor:[UIColor greenColor]];
-}
-
-//- (void)turnAccelOff{
-//    NSLog(@"Cancelled");
-//    [self turnWalkingOff];
-//    [self.walkingLight setBackgroundColor:[UIColor redColor]];
-//    [self.walkLight setBackgroundColor:[UIColor redColor]];
-//}
-
 - (void)turnWalkingOn:(bool)movingForward
 {
     isWalking = YES;
@@ -403,12 +351,10 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
     if (movingForward)
     {
         walkingDirection = FORWARDS;
-//        [self.walkLight setBackgroundColor:[UIColor greenColor]];
     }
     else
     {
         walkingDirection = BACKWARDS;
-//        [self.walkLight setBackgroundColor:[UIColor blueColor]];
     }
 }
 
@@ -422,14 +368,7 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
     }
     
     NSLog(@"Cancelled");
-    
-//    [self.walkLight setBackgroundColor:[UIColor redColor]];
-//    //    stepCount = 0;
-//    [self.countLabel setText:[NSString stringWithFormat:@"%i",stepCount]];
-//    [self.firstStepLight setBackgroundColor:[UIColor redColor]];
-//    [self.walkingLight setBackgroundColor:[UIColor redColor]];
 }
-
 
 #pragma mark - Logging
 
