@@ -23,6 +23,7 @@ typedef enum FluxDataRequestType : NSUInteger {
     image_request = 4,
     data_upload_request = 5,
     tag_request = 6,
+    wide_Area_list_request = 7,
 } FluxDataRequestType;
 
 @class FluxDataRequest;
@@ -30,6 +31,7 @@ typedef enum FluxDataRequestType : NSUInteger {
 typedef void (^ImageReadyBlock)(FluxLocalID *, UIImage *, FluxDataRequest *);
 typedef void (^MetadataReadyBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^NearbyListReadyBlock)(NSArray *);
+typedef void (^WideAreaListReadyBlock)(NSArray *);
 typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
@@ -77,6 +79,9 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 // Callback for list of images retrieved (from server only)
 @property (strong) NearbyListReadyBlock nearbyListReady;
 
+// Callback for map View array of images returned
+@property (strong) WideAreaListReadyBlock wideAreaListReady;
+
 // Callback for successful completion of entire request
 @property (strong) RequestCompleteBlock requestComplete;
 
@@ -95,6 +100,7 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 - (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenNearbyListReady:(NSArray *)nearbyList;
+- (void) whenWideAreaListReady:(NSArray *)wideList;
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;

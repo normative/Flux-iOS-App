@@ -15,6 +15,10 @@ const int number_OpenGL_Textures = 5;
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateOpenGLDisplayList = @"FluxDisplayManagerDidUpdateOpenGLDisplayList";
 NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDidUpdateImageTexture";
+NSString* const FluxDisplayManagerDidUpdateMapPinList = @"FluxDisplayManagerDidUpdateMapPinList";
+NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManagerDidFailToUpdateMapPinList";
+
+
 
 @implementation FluxDisplayManager
 
@@ -28,6 +32,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         self.fluxDataManager = [[FluxDataManager alloc] init];
         
         self.fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
+        self.fluxMapContentMetadata = [[NSArray alloc]init];
         
         dataFilter = [[FluxDataFilter alloc]init];
         
@@ -211,6 +216,52 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
         [_nearbyListLock unlock];
     }];
     [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withDataRequest:dataRequest];
+}
+
+#pragma mark MapView image Request
+
+- (void)mapViewWillDisplay{
+    //if we have items already, check if it's worth pulling again
+    if (self.fluxMapContentMetadata && previousMapViewLocation) {
+        if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50) {
+            [self requestMapPinsForFilter:nil];
+        }
+    }
+    else{
+        [self requestMapPinsForFilter:nil];
+    }
+}
+
+- (void)requestMapPinsForFilter:(FluxDataFilter*)mapDataFilter{
+    
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    
+    dataRequest.maxReturnItems = 30000;
+    if (mapDataFilter) {
+        dataRequest.searchFilter = mapDataFilter;
+    }
+    else{
+        dataRequest.searchFilter = dataFilter;        
+    }
+
+    
+    dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+    
+    
+    [dataRequest setWideAreaListReady:^(NSArray *imageList){
+        self.fluxMapContentMetadata = imageList;
+        previousMapViewLocation = self.locationManager.location;
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateMapPinList
+                                                            object:self userInfo:nil];
+    }];
+    [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+        NSString*errorString = @"Unknown network error occured";
+        NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                      initWithObjectsAndKeys:errorString, @"errorString" , nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidFailToUpdateMapPinList
+                                                            object:self userInfo:userInfoDict];
+    }];
+    [self.fluxDataManager requestMapImageListAtLocation:previousMapViewLocation.coordinate withRadius:500.0 withDataRequest:dataRequest];
 }
 
 #pragma mark - OpenGL Texture & Metadata Manipulation

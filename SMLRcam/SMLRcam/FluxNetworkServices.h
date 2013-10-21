@@ -30,6 +30,10 @@ typedef NSUUID FluxRequestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e
            andRequestID:(FluxRequestID *)requestID;
 
+//maps
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray*)imageList
+           andRequestID:(FluxRequestID *)requestID;
+
 //users
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject;
 
@@ -58,6 +62,19 @@ typedef NSUUID FluxRequestID;
 
 //returns an NSDictionary list of images filtered based on provided details
 - (void)getImagesForLocationFiltered:(CLLocationCoordinate2D)location
+                           andRadius:(float)radius
+                           andMinAlt:(float)altMin
+                           andMaxAlt:(float)altMax
+                     andMinTimestamp:(NSDate *)timeMin
+                     andMaxTimestamp:(NSDate *)timeMax
+                         andHashTags:(NSString *)hashTags
+                            andUsers:(NSString *)users
+                       andCategories:(NSString *)cats
+                         andMaxCount:(int)maxCount
+                        andRequestID:(FluxRequestID *)requestID;
+
+//returns an NSDictionary list of images for mapView filtered based on provided details
+- (void)getMapImagesForLocationFiltered:(CLLocationCoordinate2D)location
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
                            andMaxAlt:(float)altMax

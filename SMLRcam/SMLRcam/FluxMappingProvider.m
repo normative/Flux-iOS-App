@@ -10,6 +10,7 @@
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
 #import "FluxTagObject.h"
+#import "FluxMapImageObject.h"
 
 @implementation FluxMappingProvider
 
@@ -92,6 +93,19 @@
                                                   @"tagtext":     @"tagText",
                                                   @"count":        @"count"
                                                   }];
+    return mapping;
+}
+
+#pragma mark - Map Image Mapping
+
++ (RKObjectMapping *)mapImageGetMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxMapImageObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"id":   @"imageID"}];
+    
+    [mapping addAttributeMappingsFromArray:@[@"longitude", @"latitude"]];
+    
     return mapping;
 }
 

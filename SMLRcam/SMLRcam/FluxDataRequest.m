@@ -45,6 +45,13 @@
     }
 }
 
+- (void) whenWideAreaListReady:(NSArray *)wideList{
+    if (self.wideAreaListReady)
+    {
+        self.wideAreaListReady(wideList);
+    }
+}
+
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest
 {
     if (self.requestComplete)

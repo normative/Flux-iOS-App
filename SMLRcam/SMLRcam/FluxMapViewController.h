@@ -33,6 +33,7 @@
     
     IBOutlet UIButton *filterButton;
     FluxDataFilter *currentDataFilter;
+    FluxDataFilter *previousDataFilter;
     
     UIView*transitionFadeView;
 }

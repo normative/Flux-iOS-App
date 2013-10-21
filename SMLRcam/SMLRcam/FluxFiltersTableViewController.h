@@ -39,6 +39,7 @@
 @property (nonatomic, weak) id <FiltersTableViewDelegate> delegate;
 @property (nonatomic, weak) FluxDataManager *fluxDataManager;
 @property (weak, nonatomic) IBOutlet UISearchBar *filterSearchBar;
+@property (nonatomic)int radius;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)doneButtonAction:(id)sender;

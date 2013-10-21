@@ -122,6 +122,32 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return requestID;
 }
 
+#pragma mark MapView List
+
+- (FluxRequestID *) requestMapImageListAtLocation:(CLLocationCoordinate2D)coordinate
+                                       withRadius:(float)radius
+                                  withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = wide_Area_list_request;
+    
+    [currentRequests setObject:dataRequest forKey:requestID];
+    
+    // Simple case with no filtering
+    [networkServices getMapImagesForLocationFiltered:coordinate
+                                        andRadius:radius
+                                        andMinAlt:dataRequest.searchFilter.altMin
+                                        andMaxAlt:dataRequest.searchFilter.altMax
+                                  andMinTimestamp:dataRequest.searchFilter.timeMin
+                                  andMaxTimestamp:dataRequest.searchFilter.timeMax
+                                      andHashTags:dataRequest.searchFilter.hashTags
+                                         andUsers:dataRequest.searchFilter.users
+                                    andCategories:dataRequest.searchFilter.categories
+                                      andMaxCount:dataRequest.maxReturnItems
+                                     andRequestID:requestID];
+    
+    return requestID;
+}
+
 #pragma mark - Metadata Queries
 
 - (FluxRequestID *) requestMetadataByImageID:(FluxDataRequest *)dataRequest
@@ -449,6 +475,16 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
               __func__, updatedImageObject.localID);
     }
 
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray *)imageList andRequestID:(NSUUID *)requestID
+{
+    // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenWideAreaListReady:imageList];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList andRequestID:(NSUUID *)requestID
