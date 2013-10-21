@@ -866,7 +866,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self.renderedTextures addObject:@""];
     }
     
-    _nearbyListLock = [[NSLock alloc] init];
+//    _nearbyListLock = [[NSLock alloc] init];
     _renderListLock = [[NSLock alloc] init];
     
     [self setupMotionManager];
@@ -1040,11 +1040,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     if (_texture[i] != nil)
     {
+        [_renderListLock lock];
         GLKTextureInfo *curTexture = _texture[i];
         GLuint textureName = curTexture.name;
         glDeleteTextures(1, &textureName);
         _texture[i] = nil;
         self.renderedTextures[i] = @"";
+        [_renderListLock unlock];
     }
 }
 
