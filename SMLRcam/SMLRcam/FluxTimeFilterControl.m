@@ -112,26 +112,31 @@
         [self didStopScrolling];
         return;
     }
-    if (self.fluxDisplayManager) {
-        [self.fluxDisplayManager timeBracketDidChange:(scrollView.contentOffset.y/scrollView.contentSize.height)];
-    }
+    
+    //it it's within bounds of the scrollView
     if ((scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height) || scrollView.contentOffset.y <= 0) {
         //if it's off the top, rotate it to the top of the scroller
         if (scrollView.contentOffset.y <= 0) {
-            circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0.0));
+            //circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0.0));
         }
         //else, move it to the bottom of the scroller
         else{
-            circularScrollerView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(290.0));
+            
         }
-        NSLog(@"Bounce Territory, not rotating");
+        NSLog(@"Bounce Territory");
     }
     else{
-        float numberOfDegrees = (scrollView.contentOffset.y/scrollView.contentSize.height)*320;
-        circularScrollerView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(numberOfDegrees));
-        float angleToMove = DEGREES_TO_RADIANS(((oldScrollPos-scrollView.contentOffset.y)/(scrollView.contentSize.height))*300);
-        timeGaugeClockView.transform = CGAffineTransformRotate(timeGaugeClockView.transform, angleToMove*17);
+        if (self.fluxDisplayManager) {
+            [self.fluxDisplayManager timeBracketDidChange:(scrollView.contentOffset.y/scrollView.contentSize.height)];
+        }
     }
+    
+    int numberOfDegrees = -(scrollView.contentOffset.y/scrollView.contentSize.height)*320;
+    circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
+    
+    float angleToMove = DEGREES_TO_RADIANS(((oldScrollPos-scrollView.contentOffset.y)/(scrollView.contentSize.height))*300);
+    timeGaugeClockView.transform = CGAffineTransformRotate(timeGaugeClockView.transform, angleToMove*17);
+
     
     oldScrollPos = scrollView.contentOffset.y;
 }
