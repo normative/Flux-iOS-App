@@ -31,12 +31,11 @@
     {
         FluxScanImageObject *imageObject = [newMetaData objectForKey:key];
         
-        float deltaLat = imageObject.coordinate.latitude - locationManager.location.coordinate.latitude;
-        float deltaLong = imageObject.coordinate.longitude - locationManager.location.coordinate.longitude;
+        //float deltaLat = imageObject.coordinate.latitude - locationManager.location.coordinate.latitude;
+        //float deltaLong = imageObject.coordinate.longitude - locationManager.location.coordinate.longitude;
+        //float degree = atan2f(deltaLat, deltaLong) * 180.0f / M_PI;
         
-        float degree = atan2f(deltaLat, deltaLong) * 180.0f / M_PI;
-        
-        int position = abs(degree / 30);
+        int position = abs(imageObject.heading / 30);
         [radarStatusArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
     }
     [self updateRadarImageView];

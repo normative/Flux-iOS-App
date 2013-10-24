@@ -675,7 +675,8 @@ void init(){
 
 }
 
-- (void)trimRenderList{
+- (void)trimRenderList
+{
     [_renderListLock lock];
     
     NSMutableArray *toDelete = [[NSMutableArray alloc] init];
@@ -890,9 +891,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
-    
-    
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1040,13 +1038,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     if (_texture[i] != nil)
     {
-        [_renderListLock lock];
         GLKTextureInfo *curTexture = _texture[i];
         GLuint textureName = curTexture.name;
         glDeleteTextures(1, &textureName);
         _texture[i] = nil;
         self.renderedTextures[i] = @"";
-        [_renderListLock unlock];
     }
 }
 
