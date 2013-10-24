@@ -35,10 +35,13 @@ NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
         
         self.fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
         self.fluxMapContentMetadata = [[NSArray alloc]init];
+
+        _nearbyListLock = [[NSLock alloc] init];
+//        _renderListLock = [[NSLock alloc] init];
         
         dataFilter = [[FluxDataFilter alloc]init];
         
-        renderedTextures = [[NSMutableArray alloc]init];
+//        renderedTextures = [[NSMutableArray alloc]init];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -140,13 +143,20 @@ NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
     {
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
         [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
-        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+        dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
             //update image texture
             NSDictionary *userInfoDict = [[NSDictionary alloc]
                                           initWithObjectsAndKeys:image, localID, nil];
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                 object:self userInfo:userInfoDict];
-        }];
+        };
+//        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+//            //update image texture
+//            NSDictionary *userInfoDict = [[NSDictionary alloc]
+//                                          initWithObjectsAndKeys:image, localID, nil];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+//                                                                object:self userInfo:userInfoDict];
+//        }];
         [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
     }
 }

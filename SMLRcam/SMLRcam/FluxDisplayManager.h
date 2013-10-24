@@ -26,9 +26,9 @@ extern NSString* const FluxOpenGLShouldRender;
     FluxDataFilter *dataFilter;
     
     NSLock *_nearbyListLock;
-    NSLock *_renderListLock;
+//    NSLock *_renderListLock;
     
-    NSMutableArray *renderedTextures;
+//    NSMutableArray *renderedTextures;
     
     int oldTimeBracket;
     NSRange timeSliderRange;

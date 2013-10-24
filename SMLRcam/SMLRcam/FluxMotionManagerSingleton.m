@@ -30,6 +30,8 @@
             return nil;
         }
         
+        pedometer = [[FluxPedometer alloc] init];
+        
         // Tell CoreMotion to show the compass calibration HUD when required to provide true north-referenced attitude
         //ths is the ugly figure 8 on the screen. We might scrap this doen the road.
         motionManager.showsDeviceMovementDisplay = YES;
@@ -55,9 +57,16 @@
     }
 }
 
-- (void)UpdateDeviceMotion:(NSTimer*)timer{
-    if ((motionManager) && ([motionManager isDeviceMotionActive])) {
+- (void)UpdateDeviceMotion:(NSTimer*)timer
+{
+    if ((motionManager) && ([motionManager isDeviceMotionActive]))
+    {
         self.attitude = motionManager.deviceMotion.attitude;
+        
+        if (pedometer != nil)
+        {
+            [pedometer processMotion:motionManager.deviceMotion];
+        }
     }
     
 }

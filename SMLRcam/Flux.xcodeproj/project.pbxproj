@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		171510191811BF7F006727EB /* FluxPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 171510181811BF7F006727EB /* FluxPedometer.m */; };
 		173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */; };
 		17604B671785CA59005CF054 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B661785CA59005CF054 /* UIKit.framework */; };
 		17604B691785CA59005CF054 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B681785CA59005CF054 /* Foundation.framework */; };
@@ -121,6 +122,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		171510171811BF7F006727EB /* FluxPedometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPedometer.h; sourceTree = "<group>"; };
+		171510181811BF7F006727EB /* FluxPedometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPedometer.m; sourceTree = "<group>"; };
 		173BF3E017D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerButtonTableViewCell.h; sourceTree = "<group>"; };
 		173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerButtonTableViewCell.m; sourceTree = "<group>"; };
 		17604B631785CA59005CF054 /* Flux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flux.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -565,6 +568,8 @@
 				AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */,
 				AA4CE10117B52EDF008D04BE /* FluxMotionManagerSingleton.h */,
 				AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */,
+				171510171811BF7F006727EB /* FluxPedometer.h */,
+				171510181811BF7F006727EB /* FluxPedometer.m */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -982,6 +987,7 @@
 				AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */,
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
+				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersTableViewController.m in Sources */,
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,

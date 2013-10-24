@@ -675,7 +675,8 @@ void init(){
 
 }
 
-- (void)trimRenderList{
+- (void)trimRenderList
+{
     [_renderListLock lock];
     
     NSMutableArray *toDelete = [[NSMutableArray alloc] init];
@@ -867,7 +868,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self.renderedTextures addObject:@""];
     }
     
-    _nearbyListLock = [[NSLock alloc] init];
+//    _nearbyListLock = [[NSLock alloc] init];
     _renderListLock = [[NSLock alloc] init];
     
     [self setupMotionManager];
@@ -891,9 +892,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
-    
-    
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated

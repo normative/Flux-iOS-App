@@ -68,7 +68,7 @@ typedef struct {
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
-    NSLock *_nearbyListLock;
+//    NSLock *_nearbyListLock;
     NSLock *_renderListLock;
     
     BOOL camIsOn;
