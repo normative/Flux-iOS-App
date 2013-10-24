@@ -1,20 +1,29 @@
 //
-//  FluxTimeTickButton.m
+//  FluxTimeFilterScrollView.m
 //  Flux
 //
-//  Created by Kei Turner on 2013-09-23.
+//  Created by Kei Turner on 2013-10-21.
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "FluxTimeTickButton.h"
+#import "FluxTimeFilterScrollView.h"
 
-@implementation FluxTimeTickButton
+@implementation FluxTimeFilterScrollView
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        //custom init
+
     }
     return self;
 }

@@ -106,5 +106,7 @@ typedef struct {
 - (void)didUpdateImageList:(NSNotification *)notification;
 - (void)updateImageTexture:(NSNotification *)notification;
 
+- (void)render;
+
 
 @end

@@ -27,27 +27,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
-    if (self.fluxDisplayManager.fluxNearbyMetadata.count<=5) {
-        if (![timeFilterControl isHidden]) {
-            [UIView animateWithDuration:0.2f
-                             animations:^{
-                                 [timeFilterControl setAlpha:0.0];
-                             }
-                             completion:^(BOOL finished){
-                                 [timeFilterControl setHidden:YES];
-                             }];
-        }
-    }
-    else{
-        if ([timeFilterControl isHidden]) {
-            [timeFilterControl setHidden:NO];
-            [UIView animateWithDuration:0.2f
-                             animations:^{
-                                 [timeFilterControl setAlpha:1.0];
-                             }
-                             completion:nil];
-        }
-    }
+    [timeFilterControl setViewForContentCount:self.fluxDisplayManager.fluxNearbyMetadata.count];
     [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
 }
 
@@ -55,7 +35,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 -(void)didUpdatePlacemark:(NSNotification *)notification
 {
-    [locationLabel setText:[NSString stringWithFormat:@"%@",locationManager.subadministativearea]];
 }
 
 #pragma mark - Motion Methods
@@ -254,13 +233,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    annotationsTableView.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
-    [CATransaction commit];
-}
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+//{
+//    [CATransaction begin];
+//    [CATransaction setDisableActions:YES];
+//    annotationsTableView.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
+//    [CATransaction commit];
+//}
 
 # pragma mark - View Transitions
 - (void)presentMapView{
@@ -300,6 +279,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 #pragma mark - Time Filtering
 - (void)setupTimeFilterControl{
     timeFilterControl.fluxDisplayManager = self.fluxDisplayManager;
+    [timeFilterControl setScrollIndicatorCenter:CGPointMake(self.view.center.x, radarButton.center.y)];
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
+    
 }
 
 - (void)setupGestureHandlers{
@@ -608,9 +596,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
-    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
-    [timeFilterControl setHidden:YES];
-    [timeFilterControl setAlpha:0.0];
+    //[timeFilterControl setHidden:YES];
+    //[timeFilterControl setAlpha:0.0];
     
     [self setupGestureHandlers];
     [self setupCameraView];

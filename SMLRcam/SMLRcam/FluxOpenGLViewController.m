@@ -856,6 +856,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageTexture:) name:FluxDisplayManagerDidUpdateImageTexture object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
     
     [super viewDidLoad];
     _opengltexturesset = 0;
@@ -936,8 +937,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         self.context = nil;
     }
-    
-    // Dispose of any resources that can be recreated.
 }
 
 
@@ -1269,6 +1268,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 
 #pragma mark - GLKView and GLKViewController delegate methods
+
+- (void)render{
+    [self update];
+    [self glkView:(GLKView*)self.view drawInRect:self.view.bounds];
+    [(GLKView*)self.view display];
+}
 
 - (void)update
 {

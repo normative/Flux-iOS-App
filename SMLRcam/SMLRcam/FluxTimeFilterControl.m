@@ -8,9 +8,9 @@
 
 #import "FluxTimeFilterControl.h"
 
-@implementation FluxTimeFilterControl
+#define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
 
-@synthesize startingYCoord;
+@implementation FluxTimeFilterControl
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -24,179 +24,127 @@
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        UIImageView *bgView = [[UIImageView alloc]initWithFrame:self.bounds];
-        [bgView setImage:[UIImage imageNamed:@"timebar_outline"]];
-        //[self addSubview:bgView];
+        clockContainerView = [[UIView alloc]initWithFrame:CGRectMake(0, 45, 60, 60)];
+        [clockContainerView setCenter:CGPointMake(self.center.x, clockContainerView.center.y)];
         
-        UISwipeGestureRecognizer *swipeUpRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeUpGesture:)];
-        [swipeUpRecognizer setDirection:(UISwipeGestureRecognizerDirectionUp)];
-        //[self addGestureRecognizer:swipeUpRecognizer];
+        timeGaugeImageView = [[UIImageView alloc]initWithFrame:clockContainerView.bounds];
+        [timeGaugeImageView setImage:[UIImage imageNamed:@"timeControlBG"]];
+        [clockContainerView addSubview:timeGaugeImageView];
         
-        UISwipeGestureRecognizer *swipeDownRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeDownGesture:)];
-        [swipeDownRecognizer setDirection:(UISwipeGestureRecognizerDirectionDown)];
-        //[self addGestureRecognizer:swipeDownRecognizer];
+        timeGaugeClockView = [[UIImageView alloc]initWithFrame:clockContainerView.bounds];
+        [timeGaugeClockView setImage:[UIImage imageNamed:@"timeControlClock"]];
+        [clockContainerView addSubview:timeGaugeClockView];
         
-        sliderSelectionView = [[UIImageView alloc]initWithFrame:CGRectMake(0, self.frame.size.height/2, self.frame.size.width, 20)];
-        [sliderSelectionView setImage:[UIImage imageNamed:@"timebar_control"]];
-        //[self addSubview:sliderSelectionView];
+        UIView*rotatedView = [[UIView alloc]initWithFrame:clockContainerView.bounds];
+        rotatedView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(90));
         
-//        timePickerView = [[UIPickerView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 216)];
-//        [timePickerView setShowsSelectionIndicator:YES];
-////        timePickerView.transform = CGAffineTransformMakeScale(1.0, 2.0);
-//        //[timePickerView setFrame:CGRectMake(0, 0, self.frame.size.width, timePickerView.frame.size.height*2)];
-//        //[timePickerView setCenter:CGPointMake(timePickerView.center.x, self.center.y)];
-//        [self addSubview:timePickerView];
-//        timePickerView.delegate = self;
-//        timePickerView.dataSource = self;
+        circularScrollerView = [[UIView alloc]initWithFrame:clockContainerView.bounds];
+        [rotatedView addSubview:circularScrollerView];
         
-        timeSlider = [[UISlider alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.height, self.frame.size.width)];
-        timeSlider.transform=CGAffineTransformMakeRotation(-M_PI/2);
-        [timeSlider setFrame:CGRectMake(0, 0, timeSlider.frame.size.width, timeSlider.frame.size.height)];
-        [timeSlider setMinimumTrackTintColor:[UIColor colorWithWhite:1.0 alpha:0.3]];
-        [timeSlider setMaximumTrackTintColor:[UIColor colorWithWhite:1.0 alpha:0.3]];
-        [timeSlider setThumbTintColor:[UIColor colorWithWhite:1.0 alpha:0.8]];
-        [timeSlider addTarget:self action:@selector(timerDidSlide:) forControlEvents:UIControlEventValueChanged];
-        [timeSlider setValue:0.0];
-        [self addSubview:timeSlider];
+        [clockContainerView addSubview:rotatedView];
         
-        UILabel *nowLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, self.frame.size.height+5, self.frame.size.width, 8)];
-        [nowLabel setText:@"Now"];
-        [nowLabel setFont:[UIFont fontWithName:@"Akkurat" size:13.0]];
-        nowLabel.textAlignment = NSTextAlignmentCenter;
-        [nowLabel setTextColor:[UIColor whiteColor]];
-        [self addSubview:nowLabel];
+        [self addSubview:clockContainerView];
+        
+        self.timeScrollView = [[FluxTimeFilterScrollView alloc]initWithFrame:self.bounds];
+        [self.timeScrollView setDelegate:self];
+        [self.timeScrollView setShowsVerticalScrollIndicator:NO];
+        [self addSubview:self.timeScrollView];
+        
+        oldScrollPos =  0;
     }
     return self;
 }
 
-#pragma mark - Quick Pan Circle View
-
-- (void)enableQuickPanCircle{
-    if (!quickPanCircleView) {
-        quickPanCircleView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 15, 100, 100)];
-        [quickPanCircleView setImage:[UIImage imageNamed:@"thumbCircle.png"]];
-        [quickPanCircleView setHidden:YES];
-        quickPanCircleView.transform = CGAffineTransformScale(quickPanCircleView.transform, 0.5, 0.5);
-        [self addSubview:quickPanCircleView];
-    }
+- (void)setScrollIndicatorCenter:(CGPoint)centre{
+    [clockContainerView setCenter:CGPointMake(centre.x, centre.y-self.frame.origin.y)];
 }
 
-- (void)showQuickPanCircleAtPoint:(CGPoint)point{
-    if (!quickPanCircleView) {
-        return;
-    }
-    if (![quickPanCircleView isHidden]) {
-        return;
-    }
-    [quickPanCircleView setHidden:NO];
-    [quickPanCircleView setCenter:point];
-    //start with today's date
+-(void)setViewForContentCount:(int)count{
+    float height = [[UIScreen mainScreen] bounds].size.height;
+    float heightPerCell = height/5;
+    self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell*count);
     
-    [UIView animateWithDuration:0.2f
-                     animations:^{
-                         quickPanCircleView.transform = CGAffineTransformScale(quickPanCircleView.transform, 2.0, 2.0);
-                     }];
-    startingYCoord = point.y;
+    // Set up the shape of the circle
+    int radius = 28;
+    circleLayer = [CAShapeLayer layer];
+
+    CGFloat circleStartAngle = 340;
+    CGFloat circleEndAngle = circleStartAngle-(320*(self.timeScrollView.bounds.size.height / self.timeScrollView.contentSize.height));
+//    NSLog(@"Start angle: 340, End angle:%f",circleEndAngle);
+    
+    circleStartAngle = DEGREES_TO_RADIANS(circleStartAngle);
+    circleEndAngle = DEGREES_TO_RADIANS(circleEndAngle);
+    
+    // Make a circular shape
+    circleLayer.path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(0,0)
+                                                 radius:radius
+                                             startAngle:circleStartAngle
+                                               endAngle:circleEndAngle
+                                                   clockwise:NO].CGPath;
+    
+    // Center the shape in performanceCircleView
+    circleLayer.position = CGPointMake(CGRectGetMidX(timeGaugeImageView.frame),
+                                  CGRectGetMidY(timeGaugeImageView.frame));
+    
+    // Configure the apperence of the circle
+    circleLayer.fillColor = [UIColor clearColor].CGColor;
+    circleLayer.strokeColor = [UIColor whiteColor].CGColor;
+    circleLayer.lineWidth = 2;
+    
+    // Add to parent layer
+    if ([circularScrollerView.layer sublayers].count == 0) {
+        [circularScrollerView.layer insertSublayer:circleLayer atIndex:0];
+    }
+    else{
+        [circularScrollerView.layer replaceSublayer:[[circularScrollerView.layer sublayers]objectAtIndex:0] with:circleLayer];
+#warning when a new imageList is downloaded and the image count changes, a loading screen should appear, then the scrollView should go back to 0.
+        //[self.timeScrollView setContentOffset:CGPointMake(0.0, 0.0)];
+    }
 }
 
-- (void)quickPanDidSlideToPoint:(CGPoint)point{
-    if (!quickPanCircleView) {
-        return;
-    }
-    [quickPanCircleView setCenter:point];
+#pragma mark - UIScrollView delegate
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
 }
 
-- (void)hideQuickPanCircle{
-    if (!quickPanCircleView) {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    
+    if (self.fluxDisplayManager.fluxNearbyMetadata.count <6) {
+        [self didStopScrolling];
         return;
     }
-    //if it's not normal size, don't shrink it again
-    if (quickPanCircleView.transform.a != 1 || quickPanCircleView.transform.d != 1) {
-        return;
-    }
-
-    [UIView animateWithDuration:0.1f
-                     animations:^{
-                         quickPanCircleView.transform = CGAffineTransformScale(quickPanCircleView.transform, 0.1, 0.1);
-                     }
-                     completion:^(BOOL finished){
-                         [quickPanCircleView setHidden:YES];
-                         quickPanCircleView.transform = CGAffineTransformScale(quickPanCircleView.transform, 5.0, 5.0);
-                     }];
-}
-
-- (void)timerDidSlide:(id)sender{
     if (self.fluxDisplayManager) {
-        [self.fluxDisplayManager timeBracketDidChange:timeSlider.value];
+        [self.fluxDisplayManager timeBracketDidChange:(scrollView.contentOffset.y/scrollView.contentSize.height)];
     }
+    if ((scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height) || scrollView.contentOffset.y <= 0) {
+        //if it's off the top, rotate it to the top of the scroller
+        if (scrollView.contentOffset.y <= 0) {
+            circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0.0));
+        }
+        //else, move it to the bottom of the scroller
+        else{
+            circularScrollerView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(290.0));
+        }
+        NSLog(@"Bounce Territory, not rotating");
+    }
+    else{
+        float numberOfDegrees = (scrollView.contentOffset.y/scrollView.contentSize.height)*320;
+        circularScrollerView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(numberOfDegrees));
+        float angleToMove = DEGREES_TO_RADIANS(((oldScrollPos-scrollView.contentOffset.y)/(scrollView.contentSize.height))*300);
+        timeGaugeClockView.transform = CGAffineTransformRotate(timeGaugeClockView.transform, angleToMove*17);
+    }
+    
+    oldScrollPos = scrollView.contentOffset.y;
 }
 
-#pragma mark - Picker Delegate
-
-//- (void)pickerView:(UIPickerView *)pickerView didSelectRow: (NSInteger)row inComponent:(NSInteger)component {
-//    // Handle the selection
-//}
-//
-//// tell the picker how many rows are available for a given component
-//- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-//    NSUInteger numRows = 50;
-//    
-//    return numRows;
-//}
-//
-//// tell the picker how many components it will have
-//- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
-//    return 1;
-//}
-//
-//// tell the picker the title for a given component
-//- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-//    NSString *title = @"-";
-////    title = [@"" stringByAppendingFormat:@"%d",row];
-//    
-//    return title;
-//}
-//
-//- (UIView*)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view{
-//    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 44)]; // your frame, so picker gets "colored"
-//    label.backgroundColor = [UIColor clearColor];
-//    label.textColor = [UIColor whiteColor];
-//    label.font = [UIFont systemFontOfSize:25];
-//    label.text = @"-";
-//    
-//    return label;
-//}
-//
-//// tell the picker the width of each row for a given component
-//- (CGFloat)pickerView:(UIPickerView *)pickerView widthForComponent:(NSInteger)component {
-//    return self.frame.size.width;
-//}
-
-#pragma mark - Gesture recognizers
-//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-//    NSLog(@"touched timeView");
-//    UITouch *touch = [[event allTouches] anyObject];
-//    CGPoint touchLocation = [touch locationInView:self];
-//    [sliderSelectionView setCenter:CGPointMake(sliderSelectionView.center.x, touchLocation.y)];
-//}
-//
-//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event{
-//    UITouch *touch = [[event allTouches] anyObject];
-//    CGPoint touchLocation = [touch locationInView:self];
-//    CGPoint moveMaxLocation = CGPointMake(touchLocation.x, touchLocation.y-sliderSelectionView.frame.size.height/2);
-//    CGPoint moveMinLocation = CGPointMake(touchLocation.x, touchLocation.y+sliderSelectionView.frame.size.height/2);
-//    if (CGRectContainsPoint(self.bounds, moveMaxLocation) && CGRectContainsPoint(self.bounds, moveMinLocation)) {
-//        [sliderSelectionView setCenter:CGPointMake(sliderSelectionView.center.x, touchLocation.y)];
-//    }
-//}
-- (void)handleSwipeUpGesture:(UISwipeGestureRecognizer *)sender{
-    //swiped up
-    NSLog(@"Swiped up in timeView");
+- (void)didStopScrolling{
 }
 
-- (void)handleSwipeDownGesture:(UISwipeGestureRecognizer*)sender{
-    //swiped down
-    NSLog(@"Swiped down in timeView");
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    oldScrollPos = scrollView.contentOffset.y;
 }
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
+}
+
 
 @end

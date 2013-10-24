@@ -18,6 +18,8 @@ extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
 extern NSString* const FluxDisplayManagerDidUpdateMapPinList;
 extern NSString* const FluxDisplayManagerDidFailToUpdateMapPinList;
 
+extern NSString* const FluxOpenGLShouldRender;
+
 
 //this class interacts directly with location + data managers, and determines what images the app should display.
 @interface FluxDisplayManager : NSObject{

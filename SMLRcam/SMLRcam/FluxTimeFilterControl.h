@@ -7,29 +7,25 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FluxTimeFilterScrollView.h"
 
 #import "FluxDisplayManager.h"
 
-@interface FluxTimeFilterControl : UIView<UIGestureRecognizerDelegate>{
-    UIImageView *quickPanCircleView;
+@interface FluxTimeFilterControl : UIView<UIScrollViewDelegate>{
+    UIView*clockContainerView;
+    UIImageView*timeGaugeImageView;
+    UIImageView*timeGaugeClockView;
+    UIView *circularScrollerView;
+    CAShapeLayer *circleLayer;
     
-    
-    UIImageView *sliderSelectionView;
-    UISlider *timeSlider;
+    float oldScrollPos;
 }
-
-@property (nonatomic)float startingYCoord;
+@property (nonatomic, strong)FluxTimeFilterScrollView*timeScrollView;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
 
 
-//quick pan circle view
-- (void)enableQuickPanCircle;
-- (void)showQuickPanCircleAtPoint:(CGPoint)point;
-- (void)hideQuickPanCircle;
-- (void)quickPanDidSlideToPoint:(CGPoint)point;
+-(void)setViewForContentCount:(int)count;
+- (void)setScrollIndicatorCenter:(CGPoint)centre;
 
-//swipe time gesture
-- (void)timerDidSlide:(id)sender;
-- (void)handleSwipeUpGesture:(UISwipeGestureRecognizer*)sender;
-- (void)handleSwipeDownGesture:(UISwipeGestureRecognizer*)sender;
+
 @end
