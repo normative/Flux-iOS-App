@@ -11,7 +11,8 @@
 
 #import "FluxDisplayManager.h"
 
-@interface FluxTimeFilterControl : UIView<UIScrollViewDelegate>{
+
+@interface FluxTimeFilterControl : UIView<UIScrollViewDelegate, TimeFilterScrollViewTapDelegate>{
     UIView*clockContainerView;
     UIImageView*timeGaugeImageView;
     UIImageView*timeGaugeClockView;
@@ -20,6 +21,7 @@
     
     float oldScrollPos;
 }
+
 @property (nonatomic, strong)FluxTimeFilterScrollView*timeScrollView;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
 

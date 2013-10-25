@@ -10,6 +10,8 @@
 
 @implementation FluxTimeFilterScrollView
 
+@synthesize tapDelegate;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -26,6 +28,29 @@
 
     }
     return self;
+}
+
+- (BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view{
+    CGPoint point = [[touches anyObject]locationInView:self.superview];
+    if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:didTapAtPoint:)]) {
+        [tapDelegate timeFilterScrollView:self didTapAtPoint:point];
+    }
+    return YES;
+}
+
+-(BOOL)touchesShouldCancelInContentView:(UIView *)view{
+    NSLog(@"Cancelled scrollView tap");
+    return YES;
+}
+
+- (void)setContentSize:(CGSize)contentSize{
+    [super setContentSize:contentSize];
+    if (!subview) {
+        subview = [[UIView alloc]initWithFrame:CGRectMake(0, 0, contentSize.width, contentSize.height)];
+        [self addSubview:subview];
+    }
+    else
+        [subview setFrame:CGRectMake(0, 0, contentSize.width, contentSize.height)];
 }
 
 /*

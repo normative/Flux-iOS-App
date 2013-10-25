@@ -20,7 +20,6 @@
 #import "FluxImageCaptureViewController.h"
 #import "FluxFiltersTableViewController.h"
 #import "FluxLocationServicesSingleton.h"
-#import "FluxTimeFilterScrollView.h"
 
 #import "FluxDisplayManager.h"
 
@@ -39,7 +38,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @class FluxRotatingCompassButton;
 
 
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, UIGestureRecognizerDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate>{
     
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;
@@ -104,6 +103,4 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 //timeScrolling
 - (void)setupTimeFilterControl;
-- (void)setupGestureHandlers;
-
 @end

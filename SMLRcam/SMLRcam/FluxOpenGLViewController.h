@@ -108,5 +108,8 @@ typedef struct {
 
 - (void)render;
 
+//image tap
+- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
+
 
 @end

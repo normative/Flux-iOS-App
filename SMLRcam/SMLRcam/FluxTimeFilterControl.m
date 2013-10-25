@@ -47,6 +47,7 @@
         
         self.timeScrollView = [[FluxTimeFilterScrollView alloc]initWithFrame:self.bounds];
         [self.timeScrollView setDelegate:self];
+        [self.timeScrollView setTapDelegate:self];
         [self.timeScrollView setShowsVerticalScrollIndicator:NO];
         [self addSubview:self.timeScrollView];
         
@@ -123,7 +124,6 @@
         else{
             
         }
-        NSLog(@"Bounce Territory");
     }
     else{
         if (self.fluxDisplayManager) {

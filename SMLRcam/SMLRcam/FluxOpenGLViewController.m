@@ -768,6 +768,12 @@ void init(){
     [self updateImageTextureWithLocalID:[notification.userInfo objectForKey:@"localID"] withImage:[notification.userInfo objectForKey:@"image"]];
 }
 
+#pragma mark - Image Tapping
+- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point{
+    FluxScanImageObject*touchedObject = [self.fluxNearbyMetadata objectForKey:[self.renderedTextures objectAtIndex:0]];
+    return touchedObject;
+}
+
 #pragma mark - AV Capture
 - (void)cleanUpTextures
 {

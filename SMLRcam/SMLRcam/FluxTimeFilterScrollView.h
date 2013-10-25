@@ -8,8 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class FluxTimeFilterScrollView;
+@protocol TimeFilterScrollViewTapDelegate <NSObject>
+@optional
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point;
+@end
+
 @interface FluxTimeFilterScrollView : UIScrollView{
-    
+    UIView*subview;
+    __weak id <TimeFilterScrollViewTapDelegate> tapDelegate;
 }
+@property (nonatomic, weak) id <TimeFilterScrollViewTapDelegate> tapDelegate;
 
 @end
