@@ -275,7 +275,7 @@ NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidFailToUpdateMapPinList
                                                             object:self userInfo:userInfoDict];
     }];
-    [self.fluxDataManager requestMapImageListAtLocation:previousMapViewLocation.coordinate withRadius:500.0 withDataRequest:dataRequest];
+    [self.fluxDataManager requestMapImageListAtLocation:self.locationManager.location.coordinate withRadius:500.0 withDataRequest:dataRequest];
 }
 
 #pragma mark - OpenGL Texture & Metadata Manipulation

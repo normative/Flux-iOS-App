@@ -46,6 +46,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
                
                dispatch_async(dispatch_get_main_queue(), ^
                               {
+                                  [fluxMapView removeAnnotations:fluxMapView.annotations];
                                   [fluxMapView addAnnotations:self.fluxDisplayManager.fluxMapContentMetadata];
                                   //clear it.
                                   [self.fluxDisplayManager setFluxMapContentMetadata:nil];
