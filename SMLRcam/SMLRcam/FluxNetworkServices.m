@@ -14,7 +14,7 @@
 
 
 
-
+NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 //serverURL
 //#define externServerURL @"http://54.221.222.71/"
 #define productionServerURL @"http://54.221.254.230/"

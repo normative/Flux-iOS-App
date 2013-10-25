@@ -11,6 +11,7 @@
 #import "UIViewController+MMDrawerController.h"
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
+#import "FluxBrowserPhoto.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -263,7 +264,24 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     NSLog(@"Point Tapped at :%f, %f",point.x, point.y);
     FluxScanImageObject*tappedImageObject = [openGLController imageTappedAtPoint:point];
+    
+    FluxBrowserPhoto *photo = [[FluxBrowserPhoto alloc] initWithImageObject:tappedImageObject];
+    NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
+    
+    if (!photoViewerPlacementView) {
+        photoViewerPlacementView = [[UIView alloc]init];
+    }
+    [ScanUIContainerView addSubview:photoViewerPlacementView];
+    [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
+    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
+    [browser setDelegate:self];
+    [self presentViewController:browser animated:YES completion:nil];
 }
+
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
+    [photoViewerPlacementView removeFromSuperview];
+}
+
 
 #pragma mark Camera View
 

@@ -61,6 +61,19 @@
 }
 
 -(void)setViewForContentCount:(int)count{
+    if (count < 6) {
+        [UIView animateWithDuration:0.3 animations:^{
+            [self setAlpha:0.0];
+        }];
+        return;
+    }
+    else{
+        if (self.alpha < 1) {
+            [UIView animateWithDuration:0.3 animations:^{
+                [self setAlpha:1.0];
+            }];
+        }
+    }
     float height = [[UIScreen mainScreen] bounds].size.height;
     float heightPerCell = height/5;
     self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell*count);

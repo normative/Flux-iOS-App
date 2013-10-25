@@ -1,4 +1,4 @@
-# IDMPhotoBrowser
+# IDMPhotoBrowser ![](http://cocoapod-badges.herokuapp.com/v/IDMPhotoBrowser/badge.png) ![](http://cocoapod-badges.herokuapp.com/p/IDMPhotoBrowser/badge.png)
 
 IDMPhotoBrowser is a new implementation based on [MWPhotoBrowser](https://github.com/mwaterfall/MWPhotoBrowser).
 
@@ -45,7 +45,7 @@ First create a photos array containing IDMPhoto objects:
     [NSURL URLWithString:@"http://farm4.static.flickr.com/3590/3329114220_5fbc5bc92b_b.jpg"]];
     
     // Create an array to store IDMPhoto objects
-    NSMutableArray *photos = [[NSMutableArray alloc] init];
+    NSMutableArray *photos = [NSMutableArray new];
     
     for (NSURL *url in photosURL) {
         IDMPhoto *photo = [IDMPhoto photoWithURL:url];
@@ -79,7 +79,7 @@ Toolbar setup example:
     browser.displayCounterLabel = YES;
 ```
 
-If you want to use custom actions, set the actionButtonTitles array with the titles for the actionSheet. Then, implement the photoBrowser:didDismissActionSheetWithButtonIndex: method, from the IDMPhotoBrowser delegate
+If you want to use custom actions, set the actionButtonTitles array with the titles for the actionSheet. Then, implement the photoBrowser:didDismissActionSheetWithButtonIndex:photoIndex: method, from the IDMPhotoBrowser delegate
 
 ``` objective-c    
     browser.actionButtonTitles = @[@"Option 1", @"Option 2", @"Option 3", @"Option 4"];

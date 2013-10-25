@@ -13,6 +13,8 @@
 
 typedef NSUUID FluxRequestID;
 
+extern NSString* const FluxProductionServerURL;
+
 @class FluxNetworkServices;
 @protocol NetworkServicesDelegate <NSObject>
 @optional

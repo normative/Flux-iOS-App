@@ -40,6 +40,7 @@
 		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
 		22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB643817DA2FF3000F4AA7 /* FluxCompassButton.m */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
+		AA06FE6B181AEC3400D87658 /* FluxBrowserPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0A9D9017E366E100A0B109 /* DWTagList.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0A9D8F17E366E100A0B109 /* DWTagList.m */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -165,6 +166,8 @@
 		22DB643717DA2FF3000F4AA7 /* FluxCompassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCompassButton.h; sourceTree = "<group>"; };
 		22DB643817DA2FF3000F4AA7 /* FluxCompassButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCompassButton.m; sourceTree = "<group>"; };
 		896221BE17CFCB2900EC9A44 /* FluxMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMath.h; sourceTree = "<group>"; };
+		AA06FE69181AEC3400D87658 /* FluxBrowserPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxBrowserPhoto.h; sourceTree = "<group>"; };
+		AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxBrowserPhoto.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		AA0A9D8E17E366E100A0B109 /* DWTagList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DWTagList.h; sourceTree = "<group>"; };
 		AA0A9D8F17E366E100A0B109 /* DWTagList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DWTagList.m; sourceTree = "<group>"; };
@@ -462,6 +465,15 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		AA06FE68181AEBF900D87658 /* ImageViewer */ = {
+			isa = PBXGroup;
+			children = (
+				AA06FE69181AEC3400D87658 /* FluxBrowserPhoto.h */,
+				AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */,
+			);
+			name = ImageViewer;
+			sourceTree = "<group>";
+		};
 		AA082E9517EA2B8E000B53B0 /* AVCamera */ = {
 			isa = PBXGroup;
 			children = (
@@ -633,6 +645,7 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
+				AA06FE68181AEBF900D87658 /* ImageViewer */,
 				AAC1BF061811AF67001D3C01 /* ProgressHUD */,
 				AA984EE718088923007F33B1 /* MapIndex */,
 				AA0A9D9117E366ED00A0B109 /* DWTagList */,
@@ -991,6 +1004,7 @@
 				AA650F0B17FDFF0F00424223 /* FluxFiltersTableViewController.m in Sources */,
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
+				AA06FE6B181AEC3400D87658 /* FluxBrowserPhoto.m in Sources */,
 				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,

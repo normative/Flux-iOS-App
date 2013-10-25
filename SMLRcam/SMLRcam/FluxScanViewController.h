@@ -20,6 +20,7 @@
 #import "FluxImageCaptureViewController.h"
 #import "FluxFiltersTableViewController.h"
 #import "FluxLocationServicesSingleton.h"
+#import "IDMPhotoBrowser.h"
 
 #import "FluxDisplayManager.h"
 
@@ -38,7 +39,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @class FluxRotatingCompassButton;
 
 
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate>{
     
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;
@@ -46,6 +47,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     UITableView*annotationsTableView;
     
+    
+    UIView *photoViewerPlacementView;
 
 
     
@@ -75,8 +78,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int totalUploads;
     
     FluxDataFilter *currentDataFilter;
-    
-    UIImageView* launchView;
 }
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
