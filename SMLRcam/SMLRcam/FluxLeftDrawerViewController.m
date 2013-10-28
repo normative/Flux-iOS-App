@@ -45,6 +45,10 @@ segmentedControlWasTapped:(UISegmentedControl *)segmented
 
 #pragma mark - view lifecycle
 
+- (void)setupDataManager:(FluxDataManager *)dataManager{
+    self.fluxDataManager = dataManager;
+}
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];

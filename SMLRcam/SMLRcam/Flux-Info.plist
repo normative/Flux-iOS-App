@@ -35,6 +35,8 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
+	<key>UIMainStoryboardFile</key>
+	<string>MainStoryboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>

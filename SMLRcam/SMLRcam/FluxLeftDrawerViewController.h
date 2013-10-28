@@ -19,10 +19,12 @@
     NSArray *leftDrawerTableViewArray;
 }
 
-@property (nonatomic, weak) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
 
 - (IBAction)submitFeedbackAction:(id)sender;
 - (void)SettingActionForString:(NSString*)string andSetting:(BOOL)setting;
 - (NSNumber*)GetSettingForString:(NSString*)string;
+
+- (void)setupDataManager:(FluxDataManager*)dataManager;
 
 @end

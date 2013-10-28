@@ -9,6 +9,7 @@
 #import "FluxScanViewController.h"
 
 #import "UIViewController+MMDrawerController.h"
+#import "FluxLeftDrawerViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxBrowserPhoto.h"
@@ -227,6 +228,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)pushImageAnnotationView{
     [self performSegueWithIdentifier:@"pushAnnotationModalView" sender:self];
 }
+
 - (IBAction)filterButtonAction:(id)sender {
     //[self performSegueWithIdentifier:@"pushFiltersView" sender:self];
 }
@@ -477,6 +479,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
+    ((FluxLeftDrawerViewController*)self.mm_drawerController.leftDrawerViewController).fluxDataManager = self.fluxDisplayManager.fluxDataManager;
+    
+    
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
@@ -493,6 +500,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [locationManager startLocating];
     
     currentDataFilter = [[FluxDataFilter alloc] init];
+    
     
     self.screenName = @"Scan View";
 }

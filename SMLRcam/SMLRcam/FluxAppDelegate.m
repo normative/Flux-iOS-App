@@ -7,13 +7,6 @@
 //
 
 #import "FluxAppDelegate.h"
-
-#import "MMDrawerController.h"
-#import "FluxLeftDrawerViewController.h"
-#import "FluxScanViewController.h"
-#import "FluxDisplayManager.h"
-#import "FluxDataManager.h"
-
 #import <Security/Security.h>
 
 #import "GAI.h"
@@ -26,26 +19,7 @@
 
 @implementation FluxAppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    
-    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
-                                                             bundle: nil];
-    
-    FluxDisplayManager*fluxDisplayManager = [[FluxDisplayManager alloc]init];
-    
-    
-    FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
-    
-    FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
-    
-    leftSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
-    scanViewController.fluxDisplayManager = fluxDisplayManager;
-    
-    MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController];
-    
-    [drawerController setMaximumLeftDrawerWidth:256.0];
-    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
     //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
@@ -62,7 +36,7 @@
 //     }];
     
     
-    [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
+
     
     //set settings defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -111,11 +85,11 @@
     
     
     
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [self.window setRootViewController:drawerController];
-    // Override point for customization after application launch.
-    self.window.backgroundColor = [UIColor blackColor];
-    [self.window makeKeyAndVisible];
+//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    //[self.window setRootViewController:mainStoryboard.i];
+//    // Override point for customization after application launch.
+//    self.window.backgroundColor = [UIColor blackColor];
+//    [self.window makeKeyAndVisible];
     return YES;
     
 
