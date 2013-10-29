@@ -16,7 +16,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *areaResetBtn;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *connectServerSegmentedControl;
 
-@property (nonatomic, weak) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
 
 - (IBAction)changeSaveLocallySwitch:(id)sender;
 - (IBAction)onAreaResetBtn:(id)sender;

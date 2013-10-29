@@ -23,7 +23,7 @@
 @property (weak, nonatomic) IBOutlet UIView *copyrightView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLbl;
 
-@property (nonatomic, weak) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
 
 - (IBAction)onSendFeedBackBtn:(id)sender;
 
