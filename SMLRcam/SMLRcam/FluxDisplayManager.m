@@ -18,6 +18,8 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
 NSString* const FluxDisplayManagerDidUpdateMapPinList = @"FluxDisplayManagerDidUpdateMapPinList";
 NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManagerDidFailToUpdateMapPinList";
 
+NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
+
 
 
 @implementation FluxDisplayManager
@@ -82,8 +84,10 @@ NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManag
     [self requestNearbyItems];
 }
 
+#pragma mark - Time
+
 - (void)timeBracketDidChange:(float)value{
-    
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self];
     //splits the images into bracketss
     int numOfBrackets = ceilf(self.nearbyList.count/(float)number_OpenGL_Textures);
     
@@ -271,7 +275,7 @@ NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManag
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidFailToUpdateMapPinList
                                                             object:self userInfo:userInfoDict];
     }];
-    [self.fluxDataManager requestMapImageListAtLocation:previousMapViewLocation.coordinate withRadius:500.0 withDataRequest:dataRequest];
+    [self.fluxDataManager requestMapImageListAtLocation:self.locationManager.location.coordinate withRadius:500.0 withDataRequest:dataRequest];
 }
 
 #pragma mark - OpenGL Texture & Metadata Manipulation

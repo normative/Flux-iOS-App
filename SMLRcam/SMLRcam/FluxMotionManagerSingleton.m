@@ -46,6 +46,7 @@
         [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
         
         motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:motionUpdateTimer forMode:NSRunLoopCommonModes];
     }
 }
 
@@ -67,6 +68,7 @@
             [pedometer processMotion:motionManager.deviceMotion];
         }
     }
+    
 }
 
 @end

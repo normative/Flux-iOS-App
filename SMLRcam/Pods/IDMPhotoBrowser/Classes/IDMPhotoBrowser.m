@@ -54,7 +54,6 @@
     
     // Appearance
     UIStatusBarStyle _previousStatusBarStyle;
-    UIBarButtonItem *_previousViewControllerBackButton;
     
     // Present
     UIView *_senderViewForAnimation;
@@ -65,13 +64,13 @@
     BOOL _viewIsActive; // active as in it's in the view heirarchy
     BOOL _autoHide;
     BOOL _useDefaultActions;
+    NSInteger _initalPageIndex;
     
     CGRect _resizableImageViewFrame;
     //UIImage *_backgroundScreenshot;
 }
 
 // Private Properties
-@property (nonatomic, strong) UIBarButtonItem *previousViewControllerBackButton;
 @property (nonatomic, strong) UIActionSheet *actionsSheet;
 
 // Private Methods
@@ -121,18 +120,12 @@
 
 @end
 
-// Handle depreciations and supress hide warnings
-@interface UIApplication (DepreciationWarningSuppresion)
-- (void)setStatusBarHidden:(BOOL)hidden animated:(BOOL)animated;
-@end
-
 // IDMPhotoBrowser
 @implementation IDMPhotoBrowser
 
 // Properties
-@synthesize displayToolbar = _displayToolbar, displayActionButton = _displayActionButton, displayCounterLabel = _displayCounterLabel, useWhiteBackgroundColor = _useWhiteBackgroundColor, doneBackgroundImage = _doneBackgroundImage, leftArrowPath = _leftArrowPath, rightArrowPath = _rightArrowPath, leftArrowSelectedPath = _leftArrowSelectedPath, rightArrowSelectedPath = _rightArrowSelectedPath;
-@synthesize previousViewControllerBackButton = _previousViewControllerBackButton;
-//@synthesize circularViewTrackColor = _circularViewTrackColor, circularViewProgressColor = _circularViewProgressColor;
+@synthesize displayDoneButton = _displayDoneButton, displayToolbar = _displayToolbar, displayActionButton = _displayActionButton, displayCounterLabel = _displayCounterLabel, useWhiteBackgroundColor = _useWhiteBackgroundColor, doneBackgroundImage = _doneBackgroundImage;
+@synthesize leftArrowImage = _leftArrowImage, rightArrowImage = _rightArrowImage, leftArrowSelectedImage = _leftArrowSelectedImage, rightArrowSelectedImage = _rightArrowSelectedImage;
 @synthesize actionsSheet = _actionsSheet, displayArrowButton = _displayArrowButton, actionButtonTitles = _actionButtonTitles;
 @synthesize delegate = _delegate;
 
@@ -148,21 +141,25 @@
 		_performingLayout = NO; // Reset on view did appear
 		_rotating = NO;
         _viewIsActive = NO;
-        _visiblePages = [[NSMutableSet alloc] init];
-        _recycledPages = [[NSMutableSet alloc] init];
-        _newPhotos = [[NSMutableArray alloc] init];
+        _visiblePages = [NSMutableSet new];
+        _recycledPages = [NSMutableSet new];
+        _newPhotos = [NSMutableArray new];
 
         _displayToolbar = YES;
         _autoHide = YES;
         _useDefaultActions = YES;
-
+        _displayDoneButton = YES;
         _displayActionButton = YES;
         _displayArrowButton = YES;
         _displayCounterLabel = NO;
         _useWhiteBackgroundColor = NO;
-        
-        _leftArrowPath = _rightArrowPath = _leftArrowSelectedPath = _rightArrowSelectedPath = @"";
-        _doneBackgroundImage = @"";
+        _leftArrowImage = _rightArrowImage = _leftArrowSelectedImage = _rightArrowSelectedImage = nil;
+        _doneBackgroundImage = nil;
+        _backgroundScaleFactor = 1.0;
+        _animationDuration = 0.28;
+        _senderViewForAnimation = nil;
+        _scaleImage = nil;
+        _initalPageIndex = 0;
         
         UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
         rootViewController.modalPresentationStyle = UIModalPresentationCurrentContext;
@@ -189,8 +186,7 @@
 {
     if ((self = [self init])) {
 		_newPhotos = [[NSMutableArray alloc] initWithArray:photosArray];
-        
-        [self performAnimationWithView:view];
+        _senderViewForAnimation = view;
 	}
 	return self;
 }
@@ -206,9 +202,8 @@
 - (id)initWithPhotoURLs:(NSArray *)photoURLsArray animatedFromView:(UIView*)view {
     if ((self = [self init])) {
         NSArray *photosArray = [IDMPhoto photosWithURLs:photoURLsArray];
-		_newPhotos = [[NSMutableArray alloc] initWithArray:photosArray];
-        
-        [self performAnimationWithView:view];
+		_newPhotos = [[NSMutableArray alloc] initWithArray:photosArray];        
+        _senderViewForAnimation = view;
 	}
 	return self;
 }
@@ -231,14 +226,14 @@
     [super didReceiveMemoryWarning];
 }
 
-#pragma mark - PanGesture
+#pragma mark - Pan Gesture
 
-- (void)move:(id)sender
+- (void)panGestureRecognized:(id)sender
 {
     // Initial Setup
     IDMZoomingScrollView *scrollView = [self pageDisplayedAtIndex:_currentPageIndex];
-    //IDMTapDetectingImageView *moveImageView = scrollView.photoImageView;
-
+    //IDMTapDetectingImageView *scrollView.photoImageView = scrollView.photoImageView;
+    
     static float firstX, firstY;
     float viewHeight = scrollView.frame.size.height;
     float viewHalfHeight = viewHeight/2;
@@ -252,14 +247,20 @@
         
         firstX = [scrollView center].x;
         firstY = [scrollView center].y;
+        
+        _senderViewForAnimation.hidden = NO;
+        
+        if (_currentPageIndex == _initalPageIndex)
+            _senderViewForAnimation.hidden = YES;
+        else
+            _senderViewForAnimation.hidden = NO;
     }
     
     translatedPoint = CGPointMake(firstX, firstY+translatedPoint.y);
     [scrollView setCenter:translatedPoint];
     
     float newY = scrollView.center.y - viewHalfHeight;
-    float newAlpha = 1 - abs(newY)/viewHeight;
-    //float newAlpha = abs(newY)/viewHeight * 1.8;
+    float newAlpha = 1 - abs(newY)/viewHeight; //abs(newY)/viewHeight * 1.8;
     
     self.view.opaque = YES;
     
@@ -273,7 +274,12 @@
     if ([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded)
     {
         if(scrollView.center.y > viewHalfHeight+40 || scrollView.center.y < viewHalfHeight-40) // Automatic Dismiss View
-        {            
+        {
+            if (_senderViewForAnimation != nil  && _currentPageIndex == _initalPageIndex) {
+                [self performCloseAnimationWithScrollView:scrollView];
+                return;
+            }
+            
             CGFloat finalX = firstX, finalY;
             
             CGFloat windowsHeigt = [[[[UIApplication sharedApplication] delegate] window] frame].size.height;
@@ -320,144 +326,31 @@
     }
 }
 
-#pragma mark - View Loading
+#pragma mark - View General
 
-- (void)viewDidLoad
-{
-    // Setup animation
-    self.view.alpha = 0;
+- (void)setSenderViewForAnimation:(UIView*)senderView{
     
-    if(!_senderViewForAnimation) // Default animation (withoung zooming-in)
-    {
-        if(SYSTEM_VERSION_LESS_THAN(@"7"))
-            [UIView animateWithDuration:0.28 animations:^{ self.view.alpha = 1; }];
-        else
-            [UIView animateWithDuration:0.0 animations:^{ } completion:^(BOOL finished) {
-                [UIView animateWithDuration:0.28 animations:^{ self.view.alpha = 1; }];
-            }];
-    }
+    CGAffineTransform original = [[[UIApplication sharedApplication].delegate window] rootViewController].view.transform;
     
-    // View
-	self.view.backgroundColor = [UIColor colorWithWhite:(_useWhiteBackgroundColor ? 1 : 0) alpha:1];
+    [[[[UIApplication sharedApplication].delegate window] rootViewController].view setTransform:CGAffineTransformIdentity];
+    _senderViewForAnimation.hidden = NO;
     
-	// Setup paging scrolling view
-	CGRect pagingScrollViewFrame = [self frameForPagingScrollView];
-	_pagingScrollView = [[UIScrollView alloc] initWithFrame:pagingScrollViewFrame];
-	_pagingScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	_pagingScrollView.pagingEnabled = YES;
-	_pagingScrollView.delegate = self;
-	_pagingScrollView.showsHorizontalScrollIndicator = NO;
-	_pagingScrollView.showsVerticalScrollIndicator = NO;
-	_pagingScrollView.backgroundColor = [UIColor clearColor];
-    _pagingScrollView.contentSize = [self contentSizeForPagingScrollView];
-	[self.view addSubview:_pagingScrollView];
+    _senderViewForAnimation = senderView;
+    _resizableImageViewFrame = [_senderViewForAnimation.superview convertRect:_senderViewForAnimation.frame toView:nil];
     
-    // Toolbar
-    _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:self.interfaceOrientation]];
-    _toolbar.backgroundColor = [UIColor clearColor];
-    _toolbar.clipsToBounds = YES;
-    _toolbar.translucent = YES;
-    [_toolbar setBackgroundImage:[UIImage new]
-              forToolbarPosition:UIToolbarPositionAny
-                      barMetrics:UIBarMetricsDefault];
+    _senderViewForAnimation.hidden = YES;
+    [[[[UIApplication sharedApplication].delegate window] rootViewController].view setTransform:original];
     
-    // Close Button
-    _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    
-    if([_doneBackgroundImage isEqualToString:@""])
-    {
-        _doneButton.layer.cornerRadius = 3.0f;
-        _doneButton.layer.borderColor = [UIColor colorWithWhite:0.9 alpha:0.9].CGColor;
-        _doneButton.layer.borderWidth = 1.0f;
-        [_doneButton setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:0.5]];
-    }
-    else
-    {
-        [_doneButton setBackgroundImage:[UIImage imageNamed:_doneBackgroundImage] forState:UIControlStateNormal];
-    }
-    
-    if(_useWhiteBackgroundColor)
-    {
-        [_doneButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        [_doneButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
-        
-    }
-    else
-    {
-        [_doneButton setTitleColor:[UIColor colorWithWhite:0.9 alpha:0.9] forState:UIControlStateNormal];
-        [_doneButton setTitleColor:[UIColor colorWithWhite:0.9 alpha:0.9] forState:UIControlStateHighlighted];
-        
-    }
-    
-    [_doneButton setTitle:NSLocalizedString(@"Done", nil) forState:UIControlStateNormal];
-    [_doneButton.titleLabel setFont:[UIFont boldSystemFontOfSize:11.0f]];
-    _doneButton.frame = [self frameForDoneButtonAtOrientation:self.interfaceOrientation]; //CGRectMake(screenWidth - 55 - 20, 30, 55, 26);
-    _doneButton.alpha = 1;
-    [_doneButton addTarget:self action:@selector(doneButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    
-    NSString *leftButtonImageName = ([_leftArrowPath isEqualToString:@""]) ?
-    @"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowLeft.png" : _leftArrowPath;
-    NSString *rightButtonImageName = ([_rightArrowPath isEqualToString:@""]) ?
-    @"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowRight.png" : _rightArrowPath;
-    
-    NSString *leftButtonSelectedImageName = ([_leftArrowSelectedPath isEqualToString:@""]) ?
-    @"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowLeft_selected.png" : _leftArrowSelectedPath;
-    NSString *rightButtonSelectedImageName = ([_rightArrowSelectedPath isEqualToString:@""]) ?
-    @"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowRight_selected.png" : _rightArrowSelectedPath;
-    
-    _previousButton = [[UIBarButtonItem alloc] initWithCustomView:[self customButton:leftButtonImageName imageSelected:leftButtonSelectedImageName action:@selector(gotoPreviousPage)]];
-    _nextButton = [[UIBarButtonItem alloc] initWithCustomView:[self customButton:rightButtonImageName imageSelected:rightButtonSelectedImageName action:@selector(gotoNextPage)]];
-    
-    _counterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 95, 40)];
-    _counterLabel.textAlignment = UITextAlignmentCenter;
-    _counterLabel.backgroundColor = [UIColor clearColor];
-    _counterLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
-    
-    if(_useWhiteBackgroundColor)
-    {
-        _counterLabel.textColor = [UIColor blackColor];
-    }
-    else
-    {
-        _counterLabel.textColor = [UIColor whiteColor];
-        _counterLabel.shadowColor = [UIColor darkTextColor];
-        _counterLabel.shadowOffset = CGSizeMake(0, 1);
-    }
-    
-    _counterButton = [[UIBarButtonItem alloc] initWithCustomView:_counterLabel];
-    
-    _actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                  target:self
-                                                                  action:@selector(actionButtonPressed:)];
-    
-    _useDefaultActions = _actionButtonTitles ? NO : YES;
-
-    if(_useDefaultActions)
-        _actionButtonTitles = [[NSMutableArray alloc] initWithArray:@[NSLocalizedString(@"Save", @"Save"), @"Email"]];
-    
-    // Gesture
-    _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(move:)];
-    [_panGesture setMinimumNumberOfTouches:1];
-    [_panGesture setMaximumNumberOfTouches:1];
-    
-    // Update
-    [self reloadData];
-    
-	// Super
-    [super viewDidLoad];
 }
 
-- (UIButton*)customButton:(NSString*)imagePath imageSelected:(NSString*)imageSelected action:(SEL)action
+- (UIButton*)customButton:(UIImage*)image imageSelected:(UIImage*)selectedImage action:(SEL)action
 {
     UIButton* nextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage* imgbtn = [UIImage imageNamed:imagePath];
-    UIImage* imgbtnSelected = [UIImage imageNamed:imageSelected];
-    [nextButton setBackgroundImage:imgbtn forState:UIControlStateNormal];
-    [nextButton setBackgroundImage:imgbtnSelected forState:UIControlStateDisabled];
+    [nextButton setBackgroundImage:image forState:UIControlStateNormal];
+    [nextButton setBackgroundImage:selectedImage forState:UIControlStateDisabled];
     [nextButton addTarget:self action:action forControlEvents:UIControlEventTouchUpInside];
     [nextButton setContentMode:UIViewContentModeCenter];
-    [nextButton setFrame:CGRectMake(0,0, imgbtn.size.width, imgbtn.size.height)];
-    
+    [nextButton setFrame:CGRectMake(0,0, image.size.width, image.size.height)];
     return nextButton;
 }
 
@@ -482,7 +375,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     } else if (orientation == UIImageOrientationLeft) {
         CGContextRotateCTM (context, radians(-90));
     } else if (orientation == UIImageOrientationDown) {
-        // NOTHING
+        // notinhg
     } else if (orientation == UIImageOrientationUp) {
         CGContextRotateCTM (context, radians(90));
     }
@@ -492,42 +385,96 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     return UIGraphicsGetImageFromCurrentImageContext();
 }
 
-- (void)performAnimationWithView:(UIView*)senderView
+/*- (UIImage*)takeScreenshot
 {
-    _senderViewForAnimation = senderView;
+    UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
+    UIGraphicsBeginImageContext(window.bounds.size);
+    [window.layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
+}*/
+
+- (void)performAnimation
+{
+    UIImage *imageFromView = _scaleImage ? _scaleImage : [self getImageFromView:_senderViewForAnimation];
     
-    UIImage *imageFromView = [self getImageFromView:senderView];
+    _resizableImageViewFrame = [_senderViewForAnimation.superview convertRect:_senderViewForAnimation.frame toView:nil];
     
-    /*CGRect resizableImageViewFrame = [senderView convertRect:senderView.superview.bounds toView:[[[UIApplication sharedApplication] delegate] window]];
-    resizableImageViewFrame.size.height = senderView.frame.size.height;
-    resizableImageViewFrame.size.width = senderView.frame.size.width;*/
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenBound.size.width;
+    CGFloat screenHeight = screenBound.size.height;
     
-    _resizableImageViewFrame = [senderView.superview convertRect:senderView.frame toView:nil];
-    
-    /*if(UIInterfaceOrientationIsLandscape(self.interfaceOrientation))
-    {
-        imageFromView = [self rotateImage:imageFromView orientation:UIImageOrientationRight];
-     
-        CGFloat temp = newFrame.origin.x;
-        newFrame.origin.x = newFrame.origin.y;
-        newFrame.origin.y = temp;
-    }*/
+    UIView *fadeView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight)];
+    fadeView.backgroundColor = [UIColor clearColor];
+    [[[UIApplication sharedApplication].delegate window] addSubview:fadeView];
     
     UIImageView *resizableImageView = [[UIImageView alloc] initWithImage:imageFromView];
     resizableImageView.frame = _resizableImageViewFrame;
-    resizableImageView.contentMode = UIViewContentModeScaleAspectFit;
-    resizableImageView.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
+    resizableImageView.clipsToBounds = YES;
+    resizableImageView.contentMode = UIViewContentModeScaleAspectFill;
+    resizableImageView.backgroundColor = [UIColor colorWithWhite:(_useWhiteBackgroundColor) ? 1 : 0 alpha:1];
     [[[UIApplication sharedApplication].delegate window] addSubview:resizableImageView];
-    
-    [UIView animateWithDuration:0.28 animations:^{
-        CGRect screenBound = [[UIScreen mainScreen] bounds];
-        CGFloat screenWidth = screenBound.size.width;
-        CGFloat screenHeight = screenBound.size.height;
+    _senderViewForAnimation.hidden = YES;
+
+    [UIView animateWithDuration:_animationDuration animations:^{
+        CGAffineTransform zoom = CGAffineTransformScale(CGAffineTransformIdentity, _backgroundScaleFactor
+                                                        , _backgroundScaleFactor);
+        fadeView.backgroundColor = [UIColor blackColor];
         
-        resizableImageView.frame = CGRectMake(0, 0, screenWidth, screenHeight);
+        [[[[UIApplication sharedApplication].delegate window] rootViewController].view setTransform:zoom];
+
+        float scaleFactor =  (imageFromView ? imageFromView.size.width : screenWidth) / screenWidth;
+        
+        resizableImageView.frame = CGRectMake(0, (screenHeight/2)-((imageFromView.size.height / scaleFactor)/2), screenWidth, imageFromView.size.height / scaleFactor);
     } completion:^(BOOL finished) {
         self.view.alpha = 1;
+        resizableImageView.backgroundColor = [UIColor colorWithWhite:(_useWhiteBackgroundColor) ? 1 : 0 alpha:1];
+        [fadeView removeFromSuperview];
         [resizableImageView removeFromSuperview];
+    }];
+}
+
+- (void)performCloseAnimationWithScrollView:(IDMZoomingScrollView*)scrollView
+{
+    float fadeAlpha = 1 - abs(scrollView.frame.origin.y)/scrollView.frame.size.height;
+    
+    UIImage *imageFromView = [scrollView.photo underlyingImage];
+
+    CGRect screenBound = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenBound.size.width;
+    CGFloat screenHeight = screenBound.size.height;
+    
+    float scaleFactor = imageFromView.size.width / screenWidth;
+    
+    UIView *fadeView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight)];
+    fadeView.backgroundColor = [UIColor blackColor];
+    fadeView.alpha = fadeAlpha;
+    [[[UIApplication sharedApplication].delegate window] addSubview:fadeView];
+    
+    UIImageView *resizableImageView = [[UIImageView alloc] initWithImage:imageFromView];
+    resizableImageView.frame = CGRectMake(0, (screenHeight/2)-((imageFromView.size.height / scaleFactor)/2)+scrollView.frame.origin.y, screenWidth, imageFromView.size.height / scaleFactor);
+    resizableImageView.contentMode = UIViewContentModeScaleAspectFill;
+    resizableImageView.backgroundColor = [UIColor clearColor];
+    resizableImageView.clipsToBounds = YES;
+    [[[UIApplication sharedApplication].delegate window] addSubview:resizableImageView];
+    self.view.hidden = YES;
+    
+    [UIView animateWithDuration:_animationDuration animations:^{
+        [[[[UIApplication sharedApplication].delegate window] rootViewController].view setTransform:CGAffineTransformIdentity];
+        
+        resizableImageView.layer.frame = _resizableImageViewFrame;
+        fadeView.alpha = 0;
+        self.view.backgroundColor = [UIColor clearColor];
+    } completion:^(BOOL finished) {
+        _senderViewForAnimation.hidden = NO;
+        _senderViewForAnimation = nil;
+        _scaleImage = nil;
+        
+        [fadeView removeFromSuperview];
+        [resizableImageView removeFromSuperview];
+        
+        [self doneButtonPressed:nil];
     }];
 }
 
@@ -548,13 +495,15 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     }
     
     // Close button
-    [self.view addSubview:_doneButton];
+    if(_displayDoneButton) [self.view addSubview:_doneButton];
     
     // Toolbar items & navigation
-    UIBarButtonItem *fixedLeftSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
+    UIBarButtonItem *fixedLeftSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                    target:self action:nil];
     fixedLeftSpace.width = 32; // To balance action button
-    UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
-    NSMutableArray *items = [[NSMutableArray alloc] init];
+    UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                                               target:self action:nil];
+    NSMutableArray *items = [NSMutableArray new];
     
     if (_displayActionButton)
         [items addObject:fixedLeftSpace];
@@ -585,38 +534,140 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
     [self tilePages];
     _performingLayout = NO;
     
-    //[self.view.subviews[0] addGestureRecognizer:_panGesture];
     [self.view addGestureRecognizer:_panGesture];
 }
 
-// Release any retained subviews of the main view.
-- (void)viewDidUnload {
-	_currentPageIndex = 0;
-    _pagingScrollView = nil;
-    _visiblePages = nil;
-    _recycledPages = nil;
-    _toolbar = nil;
-    _doneButton = nil;
-    _previousButton = nil;
-    _nextButton = nil;
+#pragma mark - View Lifecycle
+
+- (void)viewDidLoad
+{
+    // Setup animation
+    self.view.alpha = 0;
     
-    [super viewDidUnload];
+    [self performAnimation];
+    
+    /*if(!_senderViewForAnimation) // Default presentation (withoung animation)
+    {
+        //PB-TODO : test
+        
+        if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7")) // ios 7 or greater
+            [UIView animateWithDuration:0.0 animations:^{ } completion:^(BOOL finished) {
+                [UIView animateWithDuration:_animationDuration animations:^{ self.view.alpha = 1; }];
+            }];
+        else // ios 6 or less
+            [UIView animateWithDuration:_animationDuration animations:^{ self.view.alpha = 1; }];
+    }*/
+    
+    // View
+	self.view.backgroundColor = [UIColor colorWithWhite:(_useWhiteBackgroundColor ? 1 : 0) alpha:1];
+    
+	// Setup paging scrolling view
+	CGRect pagingScrollViewFrame = [self frameForPagingScrollView];
+	_pagingScrollView = [[UIScrollView alloc] initWithFrame:pagingScrollViewFrame];
+	_pagingScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	_pagingScrollView.pagingEnabled = YES;
+	_pagingScrollView.delegate = self;
+	_pagingScrollView.showsHorizontalScrollIndicator = NO;
+	_pagingScrollView.showsVerticalScrollIndicator = NO;
+	_pagingScrollView.backgroundColor = [UIColor clearColor];
+    _pagingScrollView.contentSize = [self contentSizeForPagingScrollView];
+	[self.view addSubview:_pagingScrollView];
+    
+    // Toolbar
+    _toolbar = [[UIToolbar alloc] initWithFrame:[self frameForToolbarAtOrientation:self.interfaceOrientation]];
+    _toolbar.backgroundColor = [UIColor clearColor];
+    _toolbar.clipsToBounds = YES;
+    _toolbar.translucent = YES;
+    [_toolbar setBackgroundImage:[UIImage new]
+              forToolbarPosition:UIToolbarPositionAny
+                      barMetrics:UIBarMetricsDefault];
+    
+    // Close Button
+    _doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    if(_doneBackgroundImage == nil)
+    {
+        _doneButton.layer.cornerRadius = 3.0f;
+        _doneButton.layer.borderColor = [UIColor colorWithWhite:0.9 alpha:0.9].CGColor;
+        _doneButton.layer.borderWidth = 1.0f;
+        [_doneButton setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:0.5]];
+    }
+    else
+    {
+        [_doneButton setBackgroundImage:_doneBackgroundImage forState:UIControlStateNormal];
+    }
+    
+    [_doneButton setTitleColor:[UIColor colorWithWhite:0.9 alpha:0.9] forState:UIControlStateNormal|UIControlStateHighlighted];
+    [_doneButton setTitle:NSLocalizedString(@"Done", nil) forState:UIControlStateNormal];
+    [_doneButton.titleLabel setFont:[UIFont boldSystemFontOfSize:11.0f]];
+    [_doneButton setFrame:[self frameForDoneButtonAtOrientation:self.interfaceOrientation]];
+    [_doneButton setAlpha:1.0f];
+    [_doneButton addTarget:self action:@selector(doneButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UIImage *leftButtonImage = (_leftArrowImage == nil) ?
+    [UIImage imageNamed:@"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowLeft.png"] : _leftArrowImage;
+    
+    UIImage *rightButtonImage = (_rightArrowImage == nil) ?
+    [UIImage imageNamed:@"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowRight.png"] : _rightArrowImage;
+    
+    UIImage *leftButtonSelectedImage = (_leftArrowSelectedImage == nil) ?
+    [UIImage imageNamed:@"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowLeftSelected.png"] : _leftArrowSelectedImage;
+    
+    UIImage *rightButtonSelectedImage = (_rightArrowSelectedImage == nil) ?
+    [UIImage imageNamed:@"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowRightSelected.png"] : _rightArrowSelectedImage;
+    
+    // Arrows
+    _previousButton = [[UIBarButtonItem alloc] initWithCustomView:[self customButton:leftButtonImage
+                                                                       imageSelected:leftButtonSelectedImage
+                                                                              action:@selector(gotoPreviousPage)]];
+    
+    _nextButton = [[UIBarButtonItem alloc] initWithCustomView:[self customButton:rightButtonImage
+                                                                   imageSelected:rightButtonSelectedImage
+                                                                          action:@selector(gotoNextPage)]];
+    
+    // Counter Label
+    _counterLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 95, 40)];
+    _counterLabel.textAlignment = UITextAlignmentCenter;
+    _counterLabel.backgroundColor = [UIColor clearColor];
+    _counterLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:18];
+    
+    if(_useWhiteBackgroundColor)
+    {
+        _counterLabel.textColor = [UIColor blackColor];
+    }
+    else
+    {
+        _counterLabel.textColor = [UIColor whiteColor];
+        _counterLabel.shadowColor = [UIColor darkTextColor];
+        _counterLabel.shadowOffset = CGSizeMake(0, 1);
+    }
+    
+    // Counter Button
+    _counterButton = [[UIBarButtonItem alloc] initWithCustomView:_counterLabel];
+    
+    // Action Button
+    _actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                  target:self
+                                                                  action:@selector(actionButtonPressed:)];
+    
+    _useDefaultActions = _actionButtonTitles ? NO : YES;
+    
+    if(_useDefaultActions)
+        _actionButtonTitles = [[NSMutableArray alloc] initWithArray:@[NSLocalizedString(@"Save", @"Save"), @"Email"]];
+    
+    // Gesture
+    _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
+    [_panGesture setMinimumNumberOfTouches:1];
+    [_panGesture setMaximumNumberOfTouches:1];
+    
+    // Update
+    [self reloadData];
+    
+	// Super
+    [super viewDidLoad];
 }
 
-#pragma mark - Appearance
-
-- (UIImage*)takeScreenshot
-{
-    UIWindow *window = [[[UIApplication sharedApplication] delegate] window];
-    UIGraphicsBeginImageContext(window.bounds.size);
-    [window.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     //_backgroundScreenshot = [self takeScreenshot];
     
     // Super
@@ -651,6 +702,20 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     _viewIsActive = YES;
+}
+
+// Release any retained subviews of the main view.
+- (void)viewDidUnload {
+	_currentPageIndex = 0;
+    _pagingScrollView = nil;
+    _visiblePages = nil;
+    _recycledPages = nil;
+    _toolbar = nil;
+    _doneButton = nil;
+    _previousButton = nil;
+    _nextButton = nil;
+    
+    [super viewDidUnload];
 }
 
 #pragma mark - Layout
@@ -939,6 +1004,9 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         // photo loaded so load ajacent now
         [self loadAdjacentPhotosIfNecessary:currentPhoto];
     }
+    if ([_delegate respondsToSelector:@selector(photoBrowser:didShowPhotoAtIndex:)]) {
+        [_delegate photoBrowser:self didShowPhotoAtIndex:index];
+    }
 }
 
 #pragma mark - Frame Calculations
@@ -1083,7 +1151,6 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	
 	// Update timer to give more time
 	[self hideControlsAfterDelay];
-	
 }
 
 - (void)gotoPreviousPage { [self jumpToPageAtIndex:_currentPageIndex-1]; }
@@ -1099,10 +1166,14 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 	// Status bar and nav bar positioning
     if (self.wantsFullScreenLayout) {
         // Status Bar
-        if ([UIApplication instancesRespondToSelector:@selector(setStatusBarHidden:withAnimation:)]) {
+        if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+            // iOS 7
+            //[self prefersStatusBarHidden];
+            [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
             [[UIApplication sharedApplication] setStatusBarHidden:hidden
-                                                    withAnimation:animated ? UIStatusBarAnimationFade : UIStatusBarAnimationNone];
+                                                    withAnimation:(animated ? UIStatusBarAnimationFade : UIStatusBarAnimationNone)];
         } else {
+            // iOS 6
             [[UIApplication sharedApplication] setStatusBarHidden:hidden
                                                     withAnimation:(animated ? UIStatusBarAnimationFade : UIStatusBarAnimationNone)];
         }
@@ -1160,6 +1231,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 - (void)setInitialPageIndex:(NSUInteger)index {
     // Validate
     if (index >= [self numberOfPhotos]) index = [self numberOfPhotos]-1;
+    _initalPageIndex = index;
     _currentPageIndex = index;
 	if ([self isViewLoaded]) {
         [self jumpToPageAtIndex:index];
@@ -1169,16 +1241,30 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
 
 #pragma mark - Buttons
 
-- (void)doneButtonPressed:(id)sender {
+- (void)doneButtonPressed:(id)sender
+{
     // Status Bar
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    if ([self respondsToSelector:@selector(setNeedsStatusBarAppearanceUpdate)]) {
+        // iOS 7
+        //[self prefersStatusBarHidden];
+        [self performSelector:@selector(setNeedsStatusBarAppearanceUpdate)];
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    } else {
+        // iOS 6
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    }
     
     // Gesture
     [[[[UIApplication sharedApplication] delegate] window] removeGestureRecognizer:_panGesture];
     
     _autoHide = NO;
     
-    [self dismissViewControllerAnimated:YES completion:^{
+    if (_senderViewForAnimation && _currentPageIndex == _initalPageIndex) {
+        IDMZoomingScrollView *scrollView = [self pageDisplayedAtIndex:_currentPageIndex];
+        [self performCloseAnimationWithScrollView:scrollView];
+    }
+    
+    [self dismissViewControllerAnimated:[sender isKindOfClass:[UIButton class]] completion:^{
         if ([_delegate respondsToSelector:@selector(photoBrowser:didDismissAtPageIndex:)])
             [_delegate photoBrowser:self didDismissAtPageIndex:_currentPageIndex];
         
@@ -1199,7 +1285,7 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
             [self setControlsHidden:NO animated:YES permanent:YES];
             
             // Action sheet
-            self.actionsSheet = [[UIActionSheet alloc] init];
+            self.actionsSheet = [UIActionSheet new];
             self.actionsSheet.delegate = self;
             for(NSString *action in _actionButtonTitles) {
                 [self.actionsSheet addButtonWithTitle:action];
@@ -1227,16 +1313,16 @@ static inline double radians (double degrees) {return degrees * M_PI/180;}
         if (buttonIndex != actionSheet.cancelButtonIndex) {
             if(_useDefaultActions)
             {
-                if(buttonIndex == 0)
-                    [self savePhoto];
-                else if(buttonIndex == 1)
-                    [self emailPhoto];
+                if(buttonIndex == 0) {
+                    [self savePhoto]; return;
+                } else if(buttonIndex == 1) {
+                    [self emailPhoto];  return;
+                }
             }
             else
             {
-                
-                if ([_delegate respondsToSelector:@selector(photoBrowser:didDismissActionSheetWithButtonIndex:)])
-                    [_delegate photoBrowser:self didDismissActionSheetWithButtonIndex:buttonIndex];
+                if ([_delegate respondsToSelector:@selector(photoBrowser:didDismissActionSheetWithButtonIndex:photoIndex:)])
+                    [_delegate photoBrowser:self didDismissActionSheetWithButtonIndex:buttonIndex photoIndex:_currentPageIndex];
             }
         }
     }

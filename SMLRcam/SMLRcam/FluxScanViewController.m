@@ -9,8 +9,10 @@
 #import "FluxScanViewController.h"
 
 #import "UIViewController+MMDrawerController.h"
+#import "FluxLeftDrawerViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
+#import "FluxBrowserPhoto.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -27,27 +29,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
-    if (self.fluxDisplayManager.fluxNearbyMetadata.count<=5) {
-        if (![timeFilterControl isHidden]) {
-            [UIView animateWithDuration:0.2f
-                             animations:^{
-                                 [timeFilterControl setAlpha:0.0];
-                             }
-                             completion:^(BOOL finished){
-                                 [timeFilterControl setHidden:YES];
-                             }];
-        }
-    }
-    else{
-        if ([timeFilterControl isHidden]) {
-            [timeFilterControl setHidden:NO];
-            [UIView animateWithDuration:0.2f
-                             animations:^{
-                                 [timeFilterControl setAlpha:1.0];
-                             }
-                             completion:nil];
-        }
-    }
+    [timeFilterControl setViewForContentCount:self.fluxDisplayManager.fluxNearbyMetadata.count];
     [radarButton updateRadarWithNewMetaData:self.fluxDisplayManager.fluxNearbyMetadata];
 }
 
@@ -55,7 +37,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 -(void)didUpdatePlacemark:(NSNotification *)notification
 {
-    [locationLabel setText:[NSString stringWithFormat:@"%@",locationManager.subadministativearea]];
 }
 
 #pragma mark - Motion Methods
@@ -110,21 +91,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [annotationsTableView setDataSource:self];
     
     [annotationsTableView registerNib:[UINib nibWithNibName:@"FluxAnnotationTableViewCell" bundle:nil] forCellReuseIdentifier:@"annotationsFeedCell"];
-    
-    //fade out the bottom of the feedView
-    CAGradientLayer* maskLayer = [CAGradientLayer layer];
-    NSObject*   transparent = (NSObject*) [[UIColor clearColor] CGColor];
-    NSObject*   opaque = (NSObject*) [[UIColor blackColor] CGColor];
-    [maskLayer setColors: [NSArray arrayWithObjects: opaque, opaque,opaque,opaque,transparent, nil]];
-    maskLayer.locations = [NSArray arrayWithObjects:
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.0],
-                           [NSNumber numberWithFloat:0.8],
-                           [NSNumber numberWithFloat:1.0], nil];
-    maskLayer.bounds = annotationsTableView.layer.bounds;
-    maskLayer.anchorPoint = CGPointZero;
-    annotationsTableView.layer.mask = maskLayer;
 
     [self.view addSubview:annotationsTableView];
 }
@@ -254,14 +220,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    annotationsTableView.layer.mask.position = CGPointMake(0, scrollView.contentOffset.y);
-    [CATransaction commit];
-}
-
 # pragma mark - View Transitions
 - (void)presentMapView{
     [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
@@ -270,6 +228,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)pushImageAnnotationView{
     [self performSegueWithIdentifier:@"pushAnnotationModalView" sender:self];
 }
+
 - (IBAction)filterButtonAction:(id)sender {
     //[self performSegueWithIdentifier:@"pushFiltersView" sender:self];
 }
@@ -300,121 +259,37 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 #pragma mark - Time Filtering
 - (void)setupTimeFilterControl{
     timeFilterControl.fluxDisplayManager = self.fluxDisplayManager;
+    [timeFilterControl setScrollIndicatorCenter:CGPointMake(self.view.center.x, radarButton.center.y)];
+    [timeFilterControl.timeScrollView setTapDelegate:self];
 }
 
-- (void)setupGestureHandlers{
-//    //pan
-//    panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-//    [panGesture setMaximumNumberOfTouches:1];
-//    [panGesture setDelegate:self];
-//    [self.view addGestureRecognizer:panGesture];
-//    
-//    //longpress
-//    longPressGesture = [[UILongPressGestureRecognizer alloc]
-//                                               initWithTarget:self
-//                                               action:@selector(handleLongPress:)];
-//    [longPressGesture setNumberOfTouchesRequired:1];
-//    longPressGesture.minimumPressDuration = 0.5;
-//    [self.view addGestureRecognizer:longPressGesture];
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
+    NSLog(@"Point Tapped at :%f, %f",point.x, point.y);
+    FluxScanImageObject*tappedImageObject = [openGLController imageTappedAtPoint:point];
+    
+    FluxBrowserPhoto *photo = [[FluxBrowserPhoto alloc] initWithImageObject:tappedImageObject];
+    NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
+    
+    if (!photoViewerPlacementView) {
+        photoViewerPlacementView = [[UIView alloc]init];
+    }
+    [ScanUIContainerView addSubview:photoViewerPlacementView];
+    [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
+    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
+    [browser setDelegate:self];
+    [self presentViewController:browser animated:YES completion:nil];
 }
 
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
+    [photoViewerPlacementView removeFromSuperview];
+}
 
-//- (void)handleLongPress:(UILongPressGestureRecognizer *) sender{
-//    //prevent multiple touches
-//    if (![sender isEnabled]) return;
-//    
-//    if(sender.state == UIGestureRecognizerStateBegan)
-//    {
-//        [timeFilterControl showQuickPanCircleAtPoint:[sender locationInView:self.view]];
-//    }
-//    else if(sender.state == UIGestureRecognizerStateChanged)
-//    {
-//        [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
-//    }
-//    
-//    else if((sender.state == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled))
-//    {
-//        [timeFilterControl hideQuickPanCircle];
-//    }
-//    
-//}
-//
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
-//    return YES;
-//}
-//
-////called during pan gesture, location is available as well as translation.
-//- (void)handlePanGesture:(UIPanGestureRecognizer *)sender{
-//
-//    [timeFilterControl quickPanDidSlideToPoint:[sender locationInView:self.view]];
-//    //close it if the gesture has ended
-//    if (([sender state] == UIGestureRecognizerStateEnded) || ([sender state] == UIGestureRecognizerStateCancelled)) {
-//        [timeFilterControl hideQuickPanCircle];
-//    }
-//    
-//}
-//
-////limit to only vertical panning
-//- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)panGestureRecognizer {
-//    CGPoint translation = [panGestureRecognizer translationInView:self.view];
-//    //if its vertical
-//    if (fabs(translation.y) > fabs(translation.x)) {
-//        [timeFilterControl showQuickPanCircleAtPoint:[panGestureRecognizer locationInView:self.view]];
-//        return YES;
-//    }
-//    return NO;
-//}
-
-
-
-
-
-
-//
-//-(void)pauseAVCapture
-//{
-//    [cameraManager pauseAVCapture];
-//}
-
-//restarts the capture session. The actual restart is an async call, with the UI adding a blur for the wait.
-//-(void)restartAVCaptureWithBlur:(BOOL)blur
-//{
-//    //don't add a blur if we haven't captured an image yet.
-//    if (capturedImage != nil && blur) {
-//        [CameraButton setAlpha:0.0];
-//        [blurView setImage:[self blurImage:capturedImage]];
-//        [blurView setHidden:NO];
-//        [UIView animateWithDuration:0.2 animations:^{
-//            [blurView setAlpha:1.0];
-//        }completion:nil];
-//    }
-//    
-//    dispatch_async(AVCaptureBackgroundQueue, ^{
-//        //start AVCapture
-//        [cameraManager restartAVCapture];
-//        dispatch_sync(dispatch_get_main_queue(), ^{
-//            //completion callback
-//            if (blur && capturedImage) {
-//                [UIView animateWithDuration:0.2 animations:^{
-//                    [blurView setAlpha:0.0];
-//                    [CameraButton setAlpha:1.0];
-//                }completion:^(BOOL finished){
-//                    [blurView setHidden:YES];
-//                    capturedImage = nil;
-//                }];
-//            }
-//        });
-//    });
-//}
 
 #pragma mark Camera View
 
 - (void)setupCameraView{
     
     [progressView setAlpha:0.0];
-
-    
-    
     
     blurView = [[UIImageView alloc]initWithFrame:self.view.bounds];
     [blurView setBackgroundColor:[UIColor clearColor]];
@@ -604,15 +479,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
+    ((FluxLeftDrawerViewController*)self.mm_drawerController.leftDrawerViewController).fluxDataManager = self.fluxDisplayManager.fluxDataManager;
+    
+    
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
-    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
-    [timeFilterControl setHidden:YES];
-    [timeFilterControl setAlpha:0.0];
     
-    [self setupGestureHandlers];
     [self setupCameraView];
     [self setupMotionManager];
     [self setupOpenGLView];
@@ -624,6 +500,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [locationManager startLocating];
     
     currentDataFilter = [[FluxDataFilter alloc] init];
+    
     
     self.screenName = @"Scan View";
 }

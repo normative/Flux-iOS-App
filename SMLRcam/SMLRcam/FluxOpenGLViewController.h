@@ -106,5 +106,10 @@ typedef struct {
 - (void)didUpdateImageList:(NSNotification *)notification;
 - (void)updateImageTexture:(NSNotification *)notification;
 
+- (void)render;
+
+//image tap
+- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
+
 
 @end
