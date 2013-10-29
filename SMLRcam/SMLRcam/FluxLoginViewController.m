@@ -31,7 +31,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    [self performSelector:@selector(fadeOutLogin) withObject:self afterDelay:0.2];
+    [self performSelector:@selector(fadeOutLogin) withObject:self afterDelay:0.0];
 }
 
 - (void)didReceiveMemoryWarning

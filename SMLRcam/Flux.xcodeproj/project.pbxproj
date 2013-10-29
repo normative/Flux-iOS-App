@@ -811,6 +811,8 @@
 		AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */ = {
 			isa = PBXGroup;
 			children = (
+				22335E40181ACC610098F205 /* FluxLeftDrawerViewController.h */,
+				22335E41181ACC610098F205 /* FluxLeftDrawerViewController.m */,
 				AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */,
 				AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */,
 				AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */,
@@ -819,6 +821,8 @@
 				173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */,
 				AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */,
 				AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */,
+				22335E43181B07380098F205 /* FluxLeftDrawerSettingsViewController.h */,
+				22335E44181B07380098F205 /* FluxLeftDrawerSettingsViewController.m */,
 			);
 			name = "Left Drawer";
 			sourceTree = "<group>";
