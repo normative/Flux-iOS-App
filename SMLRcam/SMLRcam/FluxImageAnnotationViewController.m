@@ -56,13 +56,6 @@
     //[capturedImageObject setCategoryID:(segmentedControl.selectedIndex + 1)];
 }
 
-- (IBAction)approveImageAction:(id)sender
-{
-    //[capturedImageObject setDescriptionString:ImageAnnotationTextView.text];
-    [self dismissViewControllerAnimated:YES completion:nil];
-    
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];

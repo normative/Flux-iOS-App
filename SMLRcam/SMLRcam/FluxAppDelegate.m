@@ -8,8 +8,9 @@
 
 #import "FluxAppDelegate.h"
 
-#import "MMDrawerController.h"
+//#import "FluxLeftDrawerViewControllerOld.h"
 #import "FluxLeftDrawerViewController.h"
+#import "FluxLeftDrawerSettingsViewController.h"
 #import "FluxScanViewController.h"
 #import "FluxDisplayManager.h"
 #import "FluxDataManager.h"
@@ -34,18 +35,34 @@
     
     FluxDisplayManager*fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
+    FluxLeftDrawerViewController *leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
+    leftSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
     
-    FluxLeftDrawerViewController * leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
+    UINavigationController *leftDrawerNavigationController = [[UINavigationController alloc] initWithRootViewController:leftSideDrawerViewController];
+    if ([leftDrawerNavigationController.navigationBar respondsToSelector:@selector(setBackgroundColor:)])
+    {
+        [leftDrawerNavigationController.navigationBar setBarTintColor:[UIColor blackColor]];
+        leftDrawerNavigationController.navigationBar.translucent = NO;
+    }
     
     FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
-    
-    leftSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
     scanViewController.fluxDisplayManager = fluxDisplayManager;
     
-    MMDrawerController * drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController];
+    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftDrawerNavigationController];
     
-    [drawerController setMaximumLeftDrawerWidth:256.0];
-    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
+    [self.drawerController setMaximumLeftDrawerWidth:256.0];
+    [self.drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
+    [self.drawerController setCloseDrawerGestureModeMask: (MMCloseDrawerGestureModeBezelPanningCenterView | MMCloseDrawerGestureModeTapCenterView | MMCloseDrawerGestureModeBezelPanningCenterView)];
+    
+    [self.drawerController setGestureCompletionBlock:^(MMDrawerController *drawerController, UIGestureRecognizer *gesture) {
+
+        if (([drawerController.leftDrawerViewController class] == NSClassFromString(@"UINavigationController"))&&
+                 (drawerController.openSide != MMDrawerSideLeft))
+        {
+            UINavigationController *navController = (UINavigationController *)drawerController.leftDrawerViewController;
+            [navController popToRootViewControllerAnimated:YES];
+        }
+    }];
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
     //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
@@ -60,9 +77,6 @@
 //         }
 //         return shouldRecognizeTouch;
 //     }];
-    
-    
-    [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
     
     //set settings defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -112,13 +126,11 @@
     
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [self.window setRootViewController:drawerController];
+    [self.window setRootViewController:self.drawerController];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor blackColor];
     [self.window makeKeyAndVisible];
     return YES;
-    
-
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application
