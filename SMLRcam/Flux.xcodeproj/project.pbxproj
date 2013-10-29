@@ -42,6 +42,7 @@
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA06FE6B181AEC3400D87658 /* FluxBrowserPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */; };
 		AA06FE6F181EBBC000D87658 /* FluxLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE6E181EBBC000D87658 /* FluxLoginViewController.m */; };
+		AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0A9D9017E366E100A0B109 /* DWTagList.m in Sources */ = {isa = PBXBuildFile; fileRef = AA0A9D8F17E366E100A0B109 /* DWTagList.m */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -171,6 +172,8 @@
 		AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxBrowserPhoto.m; sourceTree = "<group>"; };
 		AA06FE6D181EBBC000D87658 /* FluxLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLoginViewController.h; sourceTree = "<group>"; };
 		AA06FE6E181EBBC000D87658 /* FluxLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLoginViewController.m; sourceTree = "<group>"; };
+		AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfilePhotosViewController.h; sourceTree = "<group>"; };
+		AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfilePhotosViewController.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		AA0A9D8E17E366E100A0B109 /* DWTagList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DWTagList.h; sourceTree = "<group>"; };
 		AA0A9D8F17E366E100A0B109 /* DWTagList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DWTagList.m; sourceTree = "<group>"; };
@@ -416,6 +419,7 @@
 				AA4CEF6C17A9586F00202A74 /* Custom UI Elements */,
 				F240346117E1037F0088CA2D /* Data Store */,
 				2204371717B925380017EA93 /* Map Views */,
+				AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */,
 				AA85AD7117A999A9003EBC89 /* Scan View */,
 				17604B6D1785CA59005CF054 /* Supporting Files */,
 				AA4CE0FD17B43559008D04BE /* Tools */,
@@ -525,14 +529,6 @@
 				AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */,
 			);
 			name = "Image Capture";
-			sourceTree = "<group>";
-		};
-		AA134AF817AAB8C700725AB1 /* Drawers */ = {
-			isa = PBXGroup;
-			children = (
-				AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */,
-			);
-			name = Drawers;
 			sourceTree = "<group>";
 		};
 		AA134AF917AAD09500725AB1 /* MMDrawerController */ = {
@@ -673,7 +669,6 @@
 				AA650F0817FDFEF400424223 /* Filters */,
 				AA082E9517EA2B8E000B53B0 /* AVCamera */,
 				AA1183FE17FDB9430078FCCF /* Image Capture */,
-				AA134AF817AAB8C700725AB1 /* Drawers */,
 				AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */,
 				AA4CE16A17B921A3008D04BE /* TopView */,
 				17604B811785CA59005CF054 /* FluxScanViewController.h */,
@@ -821,6 +816,8 @@
 				AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */,
 				173BF3E017D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.h */,
 				173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */,
+				AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */,
+				AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */,
 			);
 			name = "Left Drawer";
 			sourceTree = "<group>";
@@ -1015,6 +1012,7 @@
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersTableViewController.m in Sources */,
+				AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */,
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
 				AA06FE6B181AEC3400D87658 /* FluxBrowserPhoto.m in Sources */,
