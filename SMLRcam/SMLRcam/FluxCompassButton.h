@@ -26,7 +26,6 @@
     UIView *radarView;
     UIView*selectionView;
 }
-
-- (void)updateRadarWithNewMetaData:(NSMutableDictionary*)newMetaData;
+- (void)updateImageList:(NSNotification*)notification;
 
 @end

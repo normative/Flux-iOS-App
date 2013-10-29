@@ -7,6 +7,7 @@
 //
 
 #import "FluxCompassButton.h"
+#import "FluxDisplayManager.h"
 
 @interface FluxCompassButton()
 
@@ -20,16 +21,17 @@
 #pragma mark - update methods
 
 // update radarStatusMutableArray according to the newMetaData
-- (void)updateRadarWithNewMetaData:(NSMutableDictionary *)newMetaData
-{
+- (void)updateImageList:(NSNotification*)notification{
+    NSMutableDictionary*newMetadata = [[notification.userInfo objectForKey:@"fluxNearbyMetadata"]mutableCopy];
+    
     for (int i = 0; i < 12; i++)
     {
         [radarStatusArray replaceObjectAtIndex:i withObject:[NSNumber numberWithInt:0]];
     }
     
-    for (id key in newMetaData)
+    for (id key in newMetadata)
     {
-        FluxScanImageObject *imageObject = [newMetaData objectForKey:key];
+        FluxScanImageObject *imageObject = [newMetadata objectForKey:key];
         
         //float deltaLat = imageObject.coordinate.latitude - locationManager.location.coordinate.latitude;
         //float deltaLong = imageObject.coordinate.longitude - locationManager.location.coordinate.longitude;
@@ -125,6 +127,7 @@
         if (locationManager != nil)
         {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
             [self headingUpdated:nil];
         }
     }

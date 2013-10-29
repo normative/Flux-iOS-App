@@ -108,6 +108,7 @@
     switch (indexPath.row)
     {
         case 0:
+            [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 1:
             break;
