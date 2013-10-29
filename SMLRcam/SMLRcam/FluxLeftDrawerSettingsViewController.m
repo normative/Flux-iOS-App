@@ -8,8 +8,6 @@
 
 #import "FluxLeftDrawerSettingsViewController.h"
 
-#import "FluxAppDelegate.h"
-
 @interface FluxLeftDrawerSettingsViewController ()
 
 @end
@@ -25,12 +23,9 @@
     return self;
 }
 
-- (void)viewDidAppear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-    [super viewDidAppear:animated];
-    
-    FluxAppDelegate *appDelegate = (FluxAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.drawerController setMaximumLeftDrawerWidth:320 animated:YES completion:nil];
+    [self.drawerController setMaximumLeftDrawerWidth:320 animated:YES completion:nil];
 }
 
 - (void)viewDidLoad
@@ -38,7 +33,8 @@
     [super viewDidLoad];
     
     [self.navigationController setNavigationBarHidden:NO animated:YES];
-    
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -85,29 +81,6 @@
             break;
     }
     return cell;
-}
-
-- (NSString*)   tableView:(UITableView *)tableView
-  titleForHeaderInSection:(NSInteger)section
-{
-    return @"Settings";
-}
-
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    // Create label with section title
-    UILabel *label = [[UILabel alloc] initWithFrame: CGRectMake(10, 0, 100, 23)];
-    label.textColor = [UIColor whiteColor];
-    [label setFont:[UIFont fontWithName:@"Akkurat" size:14]];
-    label.text = [self tableView:tableView titleForHeaderInSection:section];
-    label.backgroundColor = [UIColor clearColor];
-    
-    // Create header view and add label as a subview
-    UIView *view = [[UIView alloc] init];
-    [view setBackgroundColor:[UIColor darkGrayColor]];
-    [view addSubview:label];
-    
-    return view;
 }
 
 /*

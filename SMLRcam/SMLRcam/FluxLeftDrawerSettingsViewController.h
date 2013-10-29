@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "FluxDataManager.h"
+#import "MMDrawerController.h"
 
 @interface FluxLeftDrawerSettingsViewController : UITableViewController
 
@@ -17,6 +18,7 @@
 @property (weak, nonatomic) IBOutlet UISegmentedControl *connectServerSegmentedControl;
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) MMDrawerController *drawerController;
 
 - (IBAction)changeSaveLocallySwitch:(id)sender;
 - (IBAction)onAreaResetBtn:(id)sender;

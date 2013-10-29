@@ -12,6 +12,7 @@
 #import <MessageUI/MFMailComposeViewController.h>
 
 #import "FluxDataManager.h"
+#import "MMDrawerController.h"
 
 @interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate>
 
@@ -24,6 +25,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *versionLbl;
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) MMDrawerController *drawerController;
 
 - (IBAction)onSendFeedBackBtn:(id)sender;
 

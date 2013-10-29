@@ -41,7 +41,8 @@
 }
 
 
-- (void)fadeOutLogin{
+- (void)fadeOutLogin
+{
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
                                                              bundle: nil];
     
@@ -57,8 +58,8 @@
     scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
     
     drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftDrawerNavigationController];
+    leftSideDrawerViewController.drawerController = drawerController;
     
-    [drawerController setMaximumLeftDrawerWidth:256.0];
     [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
     [drawerController setCloseDrawerGestureModeMask: (MMCloseDrawerGestureModeBezelPanningCenterView | MMCloseDrawerGestureModeTapCenterView | MMCloseDrawerGestureModeBezelPanningCenterView)];
     

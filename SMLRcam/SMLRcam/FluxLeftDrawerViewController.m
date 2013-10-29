@@ -10,8 +10,6 @@
 #import "TestFlight.h"
 #import "TestFlight+OpenFeedback.h"
 
-#import "FluxAppDelegate.h"
-
 #import "FluxLeftDrawerSettingsViewController.h"
 
 @interface FluxLeftDrawerViewController ()
@@ -32,10 +30,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
 
-    FluxAppDelegate *appDelegate = (FluxAppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.drawerController setMaximumLeftDrawerWidth:256.0 animated:NO completion:nil];
+    [self.drawerController setMaximumLeftDrawerWidth:256.0 animated:YES completion:nil];
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
 }
 
 - (void)viewDidLoad
@@ -199,6 +196,7 @@
     {
         FluxLeftDrawerSettingsViewController* leftDrawerSettingsViewController = (FluxLeftDrawerSettingsViewController*)segue.destinationViewController;
         leftDrawerSettingsViewController.fluxDataManager = self.fluxDataManager;
+        leftDrawerSettingsViewController.drawerController = self.drawerController;
     }
 }
 
