@@ -27,42 +27,9 @@
 
 @implementation FluxAppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
     
-    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
-                                                             bundle: nil];
     
-    FluxDisplayManager*fluxDisplayManager = [[FluxDisplayManager alloc]init];
-    
-    FluxLeftDrawerViewController *leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
-    leftSideDrawerViewController.fluxDataManager = fluxDisplayManager.fluxDataManager;
-    
-    UINavigationController *leftDrawerNavigationController = [[UINavigationController alloc] initWithRootViewController:leftSideDrawerViewController];
-    if ([leftDrawerNavigationController.navigationBar respondsToSelector:@selector(setBackgroundColor:)])
-    {
-        [leftDrawerNavigationController.navigationBar setBarTintColor:[UIColor blackColor]];
-        leftDrawerNavigationController.navigationBar.translucent = NO;
-    }
-    
-    FluxScanViewController * scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
-    scanViewController.fluxDisplayManager = fluxDisplayManager;
-    
-    self.drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftDrawerNavigationController];
-    
-    [self.drawerController setMaximumLeftDrawerWidth:256.0];
-    [self.drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
-    [self.drawerController setCloseDrawerGestureModeMask: (MMCloseDrawerGestureModeBezelPanningCenterView | MMCloseDrawerGestureModeTapCenterView | MMCloseDrawerGestureModeBezelPanningCenterView)];
-    
-    [self.drawerController setGestureCompletionBlock:^(MMDrawerController *drawerController, UIGestureRecognizer *gesture) {
-
-        if (([drawerController.leftDrawerViewController class] == NSClassFromString(@"UINavigationController"))&&
-                 (drawerController.openSide != MMDrawerSideLeft))
-        {
-            UINavigationController *navController = (UINavigationController *)drawerController.leftDrawerViewController;
-            [navController popToRootViewControllerAnimated:YES];
-        }
-    }];
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
     //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
@@ -77,6 +44,9 @@
 //         }
 //         return shouldRecognizeTouch;
 //     }];
+    
+    
+
     
     //set settings defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -125,11 +95,11 @@
     
     
     
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [self.window setRootViewController:self.drawerController];
-    // Override point for customization after application launch.
-    self.window.backgroundColor = [UIColor blackColor];
-    [self.window makeKeyAndVisible];
+//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//    //[self.window setRootViewController:mainStoryboard.i];
+//    // Override point for customization after application launch.
+//    self.window.backgroundColor = [UIColor blackColor];
+//    [self.window makeKeyAndVisible];
     return YES;
 }
 							

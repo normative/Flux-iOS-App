@@ -47,16 +47,32 @@
     
     
     leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
+    UINavigationController *leftDrawerNavigationController = [[UINavigationController alloc] initWithRootViewController:leftSideDrawerViewController];
+    if ([leftDrawerNavigationController.navigationBar respondsToSelector:@selector(setBackgroundColor:)])
+    {
+        [leftDrawerNavigationController.navigationBar setBarTintColor:[UIColor blackColor]];
+        leftDrawerNavigationController.navigationBar.translucent = NO;
+    }
     
     scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
     
-    drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftSideDrawerViewController];
+    drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftDrawerNavigationController];
     
     [drawerController setMaximumLeftDrawerWidth:256.0];
     [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
-    [drawerController setCloseDrawerGestureModeMask:MMCloseDrawerGestureModeAll];
+    [drawerController setCloseDrawerGestureModeMask: (MMCloseDrawerGestureModeBezelPanningCenterView | MMCloseDrawerGestureModeTapCenterView | MMCloseDrawerGestureModeBezelPanningCenterView)];
     
-    [self performSegueWithIdentifier:@"presentScanView" sender:self];
+    [drawerController setGestureCompletionBlock:^(MMDrawerController *theDrawerController, UIGestureRecognizer *gesture) {
+        
+        if (([theDrawerController.leftDrawerViewController class] == NSClassFromString(@"UINavigationController"))&&
+            (theDrawerController.openSide != MMDrawerSideLeft))
+        {
+            UINavigationController *navController = (UINavigationController *)theDrawerController.leftDrawerViewController;
+            [navController popToRootViewControllerAnimated:YES];
+        }
+    }];
+    [drawerController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
+    [self presentViewController:drawerController animated:YES completion:nil];
 }
 
 @end

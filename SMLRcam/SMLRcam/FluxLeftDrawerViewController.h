@@ -28,6 +28,4 @@
 - (IBAction)onSendFeedBackBtn:(id)sender;
 
 
-- (void)setupDataManager:(FluxDataManager*)dataManager;
-
 @end
