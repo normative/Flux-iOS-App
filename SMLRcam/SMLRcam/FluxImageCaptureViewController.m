@@ -107,11 +107,22 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     [self closeButtonAction:nil];
 }
 
-- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithAnnotation:(NSDictionary *)annotations{
-    for (FluxScanImageObject*imgObject in capturedImageObjects)
+- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithAnnotation:(NSDictionary *)annotations
+{
+    for (int i = 0; i < [capturedImageObjects count]; i++)
     {
+        FluxScanImageObject *imgObject = [capturedImageObjects objectAtIndex:i];
+        UIImage *img = [capturedImages objectAtIndex:i];
+        
         [imgObject setCategoryID:[[annotations objectForKey:@"category"]integerValue]+1];
         [imgObject setDescriptionString:[annotations objectForKey:@"annotation"]];
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
+        if (savelocally)
+        {
+            UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil);
+        }
     }
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", capturedImages, @"capturedImages", nil];
@@ -123,10 +134,8 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
 }
 
-- (IBAction)approveImageAction:(id)sender {
-
-    
-    
+- (IBAction)approveImageAction:(id)sender
+{        
 
 }
 
@@ -257,10 +266,8 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
      }];
 }
 
-- (void)saveImageObject:(FluxScanImageObject*)newImageObject{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    bool savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
-    
+- (void)saveImageObject:(FluxScanImageObject*)newImageObject
+{
     // Generate a string image id for local use
     NSString *localID = [newImageObject generateUniqueStringID];
     [newImageObject setLocalID:localID];

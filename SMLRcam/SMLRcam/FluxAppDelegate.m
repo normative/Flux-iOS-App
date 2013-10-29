@@ -7,6 +7,14 @@
 //
 
 #import "FluxAppDelegate.h"
+
+//#import "FluxLeftDrawerViewControllerOld.h"
+#import "FluxLeftDrawerViewController.h"
+#import "FluxLeftDrawerSettingsViewController.h"
+#import "FluxScanViewController.h"
+#import "FluxDisplayManager.h"
+#import "FluxDataManager.h"
+
 #import <Security/Security.h>
 
 #import "GAI.h"
@@ -20,6 +28,8 @@
 @implementation FluxAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
+    
+    
     
     //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
     //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
@@ -91,8 +101,6 @@
 //    self.window.backgroundColor = [UIColor blackColor];
 //    [self.window makeKeyAndVisible];
     return YES;
-    
-
 }
 							
 - (void)applicationWillResignActive:(UIApplication *)application
