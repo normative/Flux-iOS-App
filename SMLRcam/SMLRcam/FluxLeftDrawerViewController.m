@@ -9,8 +9,9 @@
 #import "FluxLeftDrawerViewController.h"
 #import "TestFlight.h"
 #import "TestFlight+OpenFeedback.h"
+#import "UIViewController+MMDrawerController.h"
 
-#import "FluxLeftDrawerSettingsViewController.h"
+#import "FluxSettingsViewController.h"
 
 @interface FluxLeftDrawerViewController ()
 
@@ -32,18 +33,22 @@
     [super viewWillAppear:animated];
 
     [self.drawerController setMaximumLeftDrawerWidth:256.0 animated:YES completion:nil];
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [self.tableView setContentSize:CGSizeMake(self.tableView.contentSize.width, self.tableView.contentSize.height+75)];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    CGRect frame = CGRectMake(0,161, 256, 100);
-    UIView *copyRightView = [[UIView alloc]initWithFrame:frame];
-    [copyRightView setBackgroundColor:[UIColor redColor]];
-    [self.view addSubview:copyRightView];
-    [self.view sendSubviewToBack:copyRightView];
+//    CGRect frame = CGRectMake(0,161, 256, 100);
+//    UIView *copyRightView = [[UIView alloc]initWithFrame:frame];
+//    [copyRightView setBackgroundColor:[UIColor redColor]];
+//    [self.view addSubview:copyRightView];
+//    [self.view sendSubviewToBack:copyRightView];
+
     
     // Set Profile Image on Imageview
     [self.profileImageView setImage:[UIImage imageNamed:@"profileImage"]];
@@ -65,7 +70,24 @@
     
     NSString *versionString = [NSString stringWithFormat:@"Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
     [self.versionLbl setText:versionString];
+    
+    [self.navigationController.navigationBar setTranslucent:YES];
+    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:31.0/255.0 green:33/255.0 blue:36.0/255.0 alpha:1.0]];
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
+    [self setTitle:@"Flux"];
+    
+    [self.view needsUpdateConstraints];
 }
+//
+//- (CGSize)preferredContentSize
+//{
+//    [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x, self.tableView.frame.origin.y, self.tableView.frame.size.width, self.tableView.frame.size.height +150)];
+//    // Force the table view to calculate its height
+//    [self.tableView layoutIfNeeded];
+//    return self.tableView.contentSize;
+//}
 
 - (void)didReceiveMemoryWarning
 {
@@ -120,6 +142,7 @@
             break;
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self.mm_drawerController setMaximumLeftDrawerWidth:320 animated:YES completion:nil];
 }
 
 /*
@@ -195,9 +218,8 @@
 {
     if ([[segue identifier] isEqualToString:@"pushSettingsSegue"])
     {
-        FluxLeftDrawerSettingsViewController* leftDrawerSettingsViewController = (FluxLeftDrawerSettingsViewController*)segue.destinationViewController;
+        FluxSettingsViewController* leftDrawerSettingsViewController = (FluxSettingsViewController*)segue.destinationViewController;
         leftDrawerSettingsViewController.fluxDataManager = self.fluxDataManager;
-        leftDrawerSettingsViewController.drawerController = self.drawerController;
     }
 }
 
@@ -208,23 +230,23 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    NSLog(@"%f", scrollView.contentOffset.y);
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-    CGSize tableViewScrollSize = self.tableView.contentSize;
-    
-    if ((scrollView.contentOffset.y >= 100) && (tableViewScrollSize.height == 620))
-    {
-        self.tableView.contentSize = CGSizeMake(tableViewScrollSize.width, 150 + tableViewScrollSize.height);
-    }
-    else if ((scrollView.contentOffset.y < 100) && (tableViewScrollSize.height > 620))
-    {
-        self.tableView.contentSize = CGSizeMake(tableViewScrollSize.width, 620);
-    }
-}
+//- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+//{
+//    NSLog(@"%f", scrollView.contentOffset.y);
+//}
+//
+//- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+//{
+//    CGSize tableViewScrollSize = self.tableView.contentSize;
+//    
+//    if ((scrollView.contentOffset.y >= 100) && (tableViewScrollSize.height == self.view.bounds.size.height))
+//    {
+//        self.tableView.contentSize = CGSizeMake(tableViewScrollSize.width, 150 + tableViewScrollSize.height);
+//    }
+//    else if ((scrollView.contentOffset.y < 100) && (tableViewScrollSize.height > self.view.bounds.size.height))
+//    {
+//        self.tableView.contentSize = CGSizeMake(tableViewScrollSize.width, self.view.bounds.size.height);
+//    }
+//}
 
 @end

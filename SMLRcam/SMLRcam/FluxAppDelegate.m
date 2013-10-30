@@ -8,13 +8,6 @@
 
 #import "FluxAppDelegate.h"
 
-//#import "FluxLeftDrawerViewControllerOld.h"
-#import "FluxLeftDrawerViewController.h"
-#import "FluxLeftDrawerSettingsViewController.h"
-#import "FluxScanViewController.h"
-#import "FluxDisplayManager.h"
-#import "FluxDataManager.h"
-
 #import <Security/Security.h>
 
 #import "GAI.h"
@@ -28,24 +21,6 @@
 @implementation FluxAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
-    
-    
-    
-    //sets the custom gesture handler to the left drawer button. In order to do both buttons, you have to set it to open under 1 view.
-    //possible ways to accomplish: have a view the size of the screen bounds, set the gesture handler here to those touch points. Then in that view's class, override the - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event method (maybe), or have the entire bottom of the scan view be this fake view.
-//    [drawerController setGestureShouldRecognizeTouchBlock:^BOOL(MMDrawerController *drawerController, UIGestureRecognizer *gesture, UITouch *touch) {
-//         BOOL shouldRecognizeTouch = NO;
-//         if(drawerController.openSide == MMDrawerSideNone &&
-//            [gesture isKindOfClass:[UIPanGestureRecognizer class]]){
-//             UIView * customView = scanViewController.view;
-//             customView.frame = CGRectMake(0, scanViewController., scanViewController.view.frame.size.width, <#CGFloat height#>) scanViewController.view.frame.origin;
-//             CGPoint location = [touch locationInView:customView];
-//             shouldRecognizeTouch = (CGRectContainsPoint(customView.bounds, location));
-//         }
-//         return shouldRecognizeTouch;
-//     }];
-    
-    
 
     
     //set settings defaults
@@ -93,13 +68,6 @@
     //RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
     RKLogConfigureByName("*", RKLogLevelOff);
     
-    
-    
-//    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-//    //[self.window setRootViewController:mainStoryboard.i];
-//    // Override point for customization after application launch.
-//    self.window.backgroundColor = [UIColor blackColor];
-//    [self.window makeKeyAndVisible];
     return YES;
 }
 							

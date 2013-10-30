@@ -37,7 +37,7 @@
 		220FE06F17BEACAD00A7E379 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B661785CA59005CF054 /* UIKit.framework */; };
 		220FE07517BEACAD00A7E379 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 220FE07317BEACAD00A7E379 /* InfoPlist.strings */; };
 		22335E42181ACC610098F205 /* FluxLeftDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22335E41181ACC610098F205 /* FluxLeftDrawerViewController.m */; };
-		22335E45181B07380098F205 /* FluxLeftDrawerSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22335E44181B07380098F205 /* FluxLeftDrawerSettingsViewController.m */; };
+		22335E45181B07380098F205 /* FluxSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22335E44181B07380098F205 /* FluxSettingsViewController.m */; };
 		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
 		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
 		22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB643817DA2FF3000F4AA7 /* FluxCompassButton.m */; };
@@ -166,8 +166,8 @@
 		220FE07817BEACAD00A7E379 /* Flux Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Flux Tests-Prefix.pch"; sourceTree = "<group>"; };
 		22335E40181ACC610098F205 /* FluxLeftDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLeftDrawerViewController.h; sourceTree = "<group>"; };
 		22335E41181ACC610098F205 /* FluxLeftDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerViewController.m; sourceTree = "<group>"; };
-		22335E43181B07380098F205 /* FluxLeftDrawerSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLeftDrawerSettingsViewController.h; sourceTree = "<group>"; };
-		22335E44181B07380098F205 /* FluxLeftDrawerSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerSettingsViewController.m; sourceTree = "<group>"; };
+		22335E43181B07380098F205 /* FluxSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSettingsViewController.h; sourceTree = "<group>"; };
+		22335E44181B07380098F205 /* FluxSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSettingsViewController.m; sourceTree = "<group>"; };
 		22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_LocationServiceSingleton_Test.m; sourceTree = "<group>"; };
 		22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Flux_MotionManagerSingleton.m; sourceTree = "<group>"; };
 		22DB643717DA2FF3000F4AA7 /* FluxCompassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCompassButton.h; sourceTree = "<group>"; };
@@ -821,8 +821,8 @@
 				173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */,
 				AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */,
 				AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */,
-				22335E43181B07380098F205 /* FluxLeftDrawerSettingsViewController.h */,
-				22335E44181B07380098F205 /* FluxLeftDrawerSettingsViewController.m */,
+				22335E43181B07380098F205 /* FluxSettingsViewController.h */,
+				22335E44181B07380098F205 /* FluxSettingsViewController.m */,
 			);
 			name = "Left Drawer";
 			sourceTree = "<group>";
@@ -1039,7 +1039,7 @@
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
 				F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */,
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
-				22335E45181B07380098F205 /* FluxLeftDrawerSettingsViewController.m in Sources */,
+				22335E45181B07380098F205 /* FluxSettingsViewController.m in Sources */,
 				AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */,
 				17604B771785CA59005CF054 /* FluxAppDelegate.m in Sources */,
 				AA0A9D9017E366E100A0B109 /* DWTagList.m in Sources */,
