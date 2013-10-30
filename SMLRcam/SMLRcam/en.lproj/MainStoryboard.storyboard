@@ -22,7 +22,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p12-6b-dHX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="396" y="-729"/>
+            <point key="canvasLocation" x="270" y="-993"/>
         </scene>
         <!--Flux Image Capture View Controller-->
         <scene sceneID="FvW-Vk-fmx">
@@ -156,7 +156,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bsn-pr-Bkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="768" y="-729"/>
+            <point key="canvasLocation" x="766" y="-993"/>
         </scene>
         <!--Flux Image Annotation View Controller-->
         <scene sceneID="6UP-IL-q9p">
@@ -238,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZCn-wf-ERU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2411" y="-1019"/>
+            <point key="canvasLocation" x="1327" y="-993"/>
         </scene>
         <!--Flux Left Drawer View Controller-->
         <scene sceneID="tKx-Sl-qpc">
@@ -441,7 +441,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E2w-Yv-OWW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-161" y="1403"/>
+            <point key="canvasLocation" x="270" y="1523"/>
         </scene>
         <!--Flux Settings View Controller-->
         <scene sceneID="vSP-Wt-pez">
@@ -570,7 +570,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="S7W-FE-kCN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="579" y="1119"/>
+            <point key="canvasLocation" x="766" y="1199"/>
         </scene>
         <!--Scan View Controller-->
         <scene sceneID="5">
@@ -725,7 +725,7 @@
                         <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
                         <outlet property="radarButton" destination="QTA-2K-tgO" id="fZZ-Fu-W7o"/>
                         <outlet property="timeFilterControl" destination="sxZ-KT-aF5" id="wAK-zm-eyj"/>
-                        <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="flipHorizontal" id="AGI-r8-OnT"/>
+                        <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="crossDissolve" id="AGI-r8-OnT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -735,7 +735,7 @@
                     </connections>
                 </pinchGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="394" y="-20"/>
+            <point key="canvasLocation" x="270" y="-20"/>
         </scene>
         <!--Flux Login View Controller-->
         <scene sceneID="I2a-QQ-LOO">
@@ -846,9 +846,9 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t8M-tD-94Q" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="861" y="326"/>
+            <point key="canvasLocation" x="766" y="394"/>
         </scene>
-        <!--Flux Filters Table View Controller - Filters-->
+        <!--Flux Filters Table View Controller - Filter-->
         <scene sceneID="kZi-pp-LJH">
             <objects>
                 <tableViewController storyboardIdentifier="FilterViewController" id="9v5-O1-ii7" customClass="FluxFiltersTableViewController" sceneMemberID="viewController">
@@ -957,7 +957,7 @@
                             <outlet property="delegate" destination="9v5-O1-ii7" id="Bls-wB-Jvw"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Filters" id="BrG-rM-e4y">
+                    <navigationItem key="navigationItem" title="Filter" id="BrG-rM-e4y">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="pbN-EL-raQ">
                             <color key="tintColor" red="0.0" green="0.71372549019607845" blue="0.92156862745098034" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
@@ -971,7 +971,6 @@
                             </connections>
                         </barButtonItem>
                     </navigationItem>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
                     <connections>
                         <outlet property="filterSearchBar" destination="HJ4-Zn-oBa" id="CGt-8Z-hh8"/>
                         <outlet property="searchDisplayController" destination="Aqx-nV-adc" id="XLQ-md-UNi"/>
@@ -988,7 +987,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="2937" y="-360"/>
+            <point key="canvasLocation" x="1853" y="-200"/>
         </scene>
         <!--Flux Profile Photos View Controller - Your Photos-->
         <scene sceneID="PoS-IU-SUS">
@@ -1031,15 +1030,16 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ijg-Ri-Urg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="579" y="1790"/>
+            <point key="canvasLocation" x="766" y="1870"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="0be-hL-b2f">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="pTJ-mb-BZI" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="Q82-FC-c9s">
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Q82-FC-c9s">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1050,7 +1050,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JAb-Db-5ob" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2411" y="-360"/>
+            <point key="canvasLocation" x="1327" y="-200"/>
         </scene>
     </scenes>
     <resources>

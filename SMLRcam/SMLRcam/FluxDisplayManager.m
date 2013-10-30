@@ -121,6 +121,7 @@ double getAbsAngle(double angle, double heading)
 // value is % of displayListCount and reps the top of the list.  List is fixed size of X
 - (void)timeBracketDidChange:(float)value
 {
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
     // TODO: these notifications may come thick and fast (especially when using momentum) so we may want to limit them
     //          track the "latest" (order of call, not value) value in a "pending" variable
     //          only allow through when > min time has elapsed from last adjustment calc
@@ -133,7 +134,6 @@ double getAbsAngle(double angle, double heading)
     _timeRangeMinIndex = (self.nearbyList.count * value);
 //    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
     [self calculateTimeAdjustedImageList];
-    
 }
 
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
