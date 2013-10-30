@@ -16,21 +16,24 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import "FluxAVCameraSingleton.h"
+#import "FluxOpenGLCommon.h"
+#import "FluxTextureToImageMapElement.h"
+#import "FluxImageRenderElement.h"
 
-
-typedef struct{
-    GLKVector3 origin;
-    GLKVector3 at;
-    GLKVector3 up;
-} viewParameters;
-
-typedef struct {
-    
-    GLKMatrix4 rotationMatrix;
-    GLKVector3 rotation_ypr;
-    GLKVector3 position;
-    GLKVector3 ecef;
-} sensorPose;
+//
+//typedef struct{
+//    GLKVector3 origin;
+//    GLKVector3 at;
+//    GLKVector3 up;
+//} viewParameters;
+//
+//typedef struct {
+//    
+//    GLKMatrix4 rotationMatrix;
+//    GLKVector3 rotation_ypr;
+//    GLKVector3 position;
+//    GLKVector3 ecef;
+//} sensorPose;
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;
@@ -46,14 +49,14 @@ typedef struct {
     GLuint _vertexBuffer;
     GLKTextureInfo* _texture[8];
     
-    int _opengltexturesset;
+//    int _opengltexturesset;
     
     GLuint _positionVBO;
     GLuint _texcoordVBO;
     GLuint _indexVBO;
     
     sensorPose _userPose;
-    sensorPose _imagePose[8];
+//    sensorPose _imagePose[8];
     
     demoImage *demoimage;
     
@@ -69,18 +72,26 @@ typedef struct {
     FluxAVCameraSingleton *cameraManager;
     
 //    NSLock *_nearbyListLock;
-    NSLock *_renderListLock;
+//    NSLock *_renderListLock;
     
     BOOL camIsOn;
     BOOL imageCaptured;
+    
+    int _displayListHasChanged;
+    
+    
 }
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
-@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
-@property (nonatomic, strong)NSMutableArray *nearbyList;
-@property (nonatomic, strong)NSMutableArray *renderedTextures;
+//	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
+//@property (nonatomic, strong)NSMutableArray *nearbyList;
+//@property (nonatomic, strong)NSMutableArray *renderedTextures;
 @property (nonatomic, strong)FluxImageCaptureViewController*imageCaptureViewController;
+
+@property (nonatomic, strong)NSMutableArray *renderList;
+@property (nonatomic, strong)NSMutableArray *textureMap;
+
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
@@ -104,9 +115,10 @@ typedef struct {
 - (UIImage*)snapshot:(UIView*)eaglview;
 
 - (void)didUpdateImageList:(NSNotification *)notification;
-- (void)updateImageTexture:(NSNotification *)notification;
+//- (void)updateImageTexture:(NSNotification *)notification;
 
 - (void)render;
+-(void) updateImageMetadataForElement:(FluxImageRenderElement*)element;
 
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;

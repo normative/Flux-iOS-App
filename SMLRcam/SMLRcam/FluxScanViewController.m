@@ -25,10 +25,14 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 @synthesize timeFilterControl;
 
-- (void)didUpdateImageList:(NSNotification *)notification{
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxNearbyMetadata.count] forState:UIControlStateNormal];
-    [timeFilterControl setViewForContentCount:self.fluxDisplayManager.fluxNearbyMetadata.count];
+- (void)didUpdateNearbyImageList:(NSNotification *)notification{
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.nearbyListCount] forState:UIControlStateNormal];
+    [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
 }
+
+//- (void)didUpdateDisplayImageList:(NSNotification *)notification
+//{
+//}
 
 #pragma mark - Location Manager
 
@@ -96,7 +100,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (IBAction)annotationsButtonAction:(id)sender {
     [CameraButton setEnabled:YES];
     if ([annotationsTableView isHidden]) {
-        if ([self.fluxDisplayManager.fluxNearbyMetadata count]>0) {
+        if (self.fluxDisplayManager.nearbyListCount > 0) {
             [annotationsTableView reloadData];
             //if there are any rows, scroll to the top of them
             if ([annotationsTableView numberOfRowsInSection:0]>0) {
@@ -158,7 +162,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [self.fluxDisplayManager.fluxNearbyMetadata count];
+    return self.fluxDisplayManager.nearbyListCount;
 }
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -179,11 +183,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [cell initCell];
     
     //hack to prevent crashes
-    if (indexPath.row > self.fluxDisplayManager.fluxNearbyMetadata.count-1) {
+    if (indexPath.row > self.fluxDisplayManager.nearbyListCount-1) {
         return cell;
     }
-    NSNumber *objkey = [[self.fluxDisplayManager.fluxNearbyMetadata allKeys] objectAtIndex:indexPath.row];
-    FluxScanImageObject *rowObject = [self.fluxDisplayManager.fluxNearbyMetadata objectForKey: objkey];
+//    NSNumber *objkey = [self.fluxDisplayManager.nearbyList objectAtIndex:indexPath.row];
+    FluxImageRenderElement *ire = [self.fluxDisplayManager.nearbyList objectAtIndex:indexPath.row];
+    FluxScanImageObject *rowObject = ire.imageMetadata;
     
     cell.imageID = rowObject.imageID;
     
@@ -261,7 +266,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
-    NSLog(@"Point Tapped at :%f, %f",point.x, point.y);
+//    NSLog(@"Point Tapped at :%f, %f",point.x, point.y);
     FluxScanImageObject*tappedImageObject = [openGLController imageTappedAtPoint:point];
     
     FluxBrowserPhoto *photo = [[FluxBrowserPhoto alloc] initWithImageObject:tappedImageObject];
@@ -386,10 +391,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             // Add the image and metadata to the local cache
             FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
             [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
-                if ([self.fluxDisplayManager.fluxNearbyMetadata objectForKey:updatedImageObject.localID] != nil)
+                FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:updatedImageObject.localID];
+                if (ire != nil)
                 {
                     // FluxScanImageObject exists in the local cache. Replace it with updated object.
-                    [self.fluxDisplayManager.fluxNearbyMetadata setObject:updatedImageObject forKey:updatedImageObject.localID];
+                    ire.imageMetadata = updatedImageObject;
                 }
                 uploadsCompleted++;
                 progressView.progress = uploadsCompleted/totalUploads;
@@ -417,12 +423,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                      progressView.progress = 0;
                                  }];
             }];
-            
-            // Post notification for observers prior to upload
-//            NSDictionary *userInfoDict = @{FluxScanViewDidAcquireNewPictureLocalIDKey : capturedImageObject.localID};
-//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxScanViewDidAcquireNewPicture
-//                                                                object:self userInfo:userInfoDict];
-            
+                        
             [self.fluxDisplayManager.fluxDataManager addDataToStore:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
         }
         
@@ -482,7 +483,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateDisplayImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     

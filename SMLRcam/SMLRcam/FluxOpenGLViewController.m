@@ -543,11 +543,11 @@ void compute_new_intersectionZ()
     GLKVector4 _ray = GLKMatrix4MultiplyVector4(rotationMat, _z_ray);
     GLKVector3 _v = GLKVector3Make(_ray.x, _ray.y, _ray.z);
     
-    NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
+//    NSLog(@"_ray.x = %f, _ray.y = %f, _ray.z = %f", _v.x, _v.y, _v.z);
     //float angle_with_y_deg =  180.0/PI* atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
-    float angle_with_y_rad =atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
-    // fprintf(stderr,"angle_with_y_deg = %.5f \n", angle_with_y_deg);
-    NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
+//    float angle_with_y_rad =atan2(sqrt((_v.x*_v.x+_v.z*_v.z)),_v.y);
+    //fprintf(stderr,"angle_with_y_deg = %.5f \n", angle_with_y_deg);
+//    NSLog(@"angle with y in degrees is %f", angle_with_y_rad* 180.0/3.142);
     
     //normal plane
     /*
@@ -588,9 +588,9 @@ void compute_new_intersectionZ()
     //eye_up = GLKVector3Make(0.0, 0.0, 1.0);
     eye_at = centrevec;
     eye_up = upvec;
-    NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
-    NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
-    NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
+//    NSLog(@"eye_at: %f %f %f", eye_at.x, eye_at.y, eye_at.z);
+//    NSLog(@"eye_origin: %f %f %f", eye_origin.x, eye_origin.y, eye_origin.z);
+//    NSLog(@"eye_up: %f, %f %f", eye_up.x, eye_up.y, eye_up.z);
     
 }
 
@@ -652,52 +652,17 @@ void init(){
 
 #pragma mark - Display Manager Notifications
 
-- (void)didUpdateImageList:(NSNotification *)notification{
-    if (camIsOn) {
-        return;
-    }
-    self.fluxNearbyMetadata = [[notification.userInfo objectForKey:@"fluxNearbyMetadata"]mutableCopy];
-    self.nearbyList = [notification.userInfo objectForKey:@"nearbyList"];
+- (void)didUpdateImageList:(NSNotification *)notification
+{
+    // simply indicate a change has happened - set dirty flag to true to trigger processing of rendering image list in GL loop
+
+    _displayListHasChanged++;
     
-    [self trimRenderList];
 }
 
 - (void)updateImageTexture:(NSNotification *)notification{
-
-    if (camIsOn) {
-        return;
-    }
-    if ([[notification userInfo]allKeys].count == 0) {
-        return;
-    }
-    NSString *localID = [[[notification userInfo]allKeys]objectAtIndex:0];
-    [self updateImageTextureWithLocalID:localID withImage:[[notification userInfo]objectForKey:localID]];
-
+    _displayListHasChanged++;
 }
-
-- (void)trimRenderList
-{
-    [_renderListLock lock];
-    
-    NSMutableArray *toDelete = [[NSMutableArray alloc] init];
-    
-    for (id localID in self.renderedTextures)
-    {
-        if ((![localID isEqualToString:@""]) && ![self.nearbyList containsObject:localID])
-        {
-            [toDelete addObject:localID];
-        }
-    }
-    
-    for (id localID in toDelete)
-    {
-        [self deleteImageTextureIdx:[self.renderedTextures indexOfObject:localID]];
-    }
-    
-    [_renderListLock unlock];
-}
-
-
 
 
 #pragma mark - Motion Manager
@@ -734,9 +699,6 @@ void init(){
     // first get an instance from storyboard
     self.imageCaptureViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"imageCaptureViewController"];
     
-    self.imageCaptureViewController.fluxNearbyMetadata = self.fluxNearbyMetadata;
-    self.imageCaptureViewController.nearbyList = self.nearbyList;
-    
     // then add the imageCaptureView as the subview of the parent view
     [self.view addSubview:self.imageCaptureViewController.view];
     // add the glkViewController as the child of self
@@ -745,32 +707,44 @@ void init(){
     self.imageCaptureViewController.view.frame = self.view.bounds;
     camIsOn = NO;
     imageCaptured = NO;
+    _displayListHasChanged = 0;
 }
 
 - (void)showImageCapture{
     [self.imageCaptureViewController setHidden:NO];
     camIsOn = YES;
     self.imageCaptureViewController.fluxDisplayManager = [(FluxScanViewController*)self.parentViewController fluxDisplayManager];
+    
+    // TS: need to call back into fluxDisplayManager to switch to image capture mode - could be a notification send (FluxImageCaptureDidPush)
+    // really should be called from ImageCaptureViewController but no really obvious place to put it.
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
+                                                        object:self userInfo:nil];
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
-    if (imageCaptured) {
-        [self.nearbyList removeAllObjects];
-        [self trimRenderList];
-        imageCaptured = NO;
-    }
+    // need to clean out the textures...
+    [self.renderList removeAllObjects];
+    imageCaptured = NO;
     camIsOn = NO;
 }
 
 - (void)imageCaptureDidCapture:(NSNotification *)notification{
     imageCaptured = YES;
-    [self trimRenderList];
-    [self updateImageTextureWithLocalID:[notification.userInfo objectForKey:@"localID"] withImage:[notification.userInfo objectForKey:@"image"]];
+    [(FluxScanViewController*)self.parentViewController setCameraButtonEnabled:YES];
 }
 
 #pragma mark - Image Tapping
-- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point{
-    FluxScanImageObject*touchedObject = [self.fluxNearbyMetadata objectForKey:[self.renderedTextures objectAtIndex:0]];
+
+- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point
+{
+    FluxScanImageObject *touchedObject = nil;
+    
+//    FluxImageRenderElement *ire = [self.renderList objectAtIndex:0];
+//    if (ire != nil)
+//    {
+//        touchedObject = ire.imageMetadata;
+//    }
+
     return touchedObject;
 }
 
@@ -858,25 +832,25 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)viewDidLoad
 {
-    self.fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateOpenGLDisplayList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageTexture:) name:FluxDisplayManagerDidUpdateImageTexture object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
     
     [super viewDidLoad];
-    _opengltexturesset = 0;
-    self.nearbyList = [[NSMutableArray alloc] init];
-    self.renderedTextures = [[NSMutableArray alloc] initWithCapacity:number_textures];
+    _displayListHasChanged = 0;
+
+    self.renderList = [[NSMutableArray alloc] initWithCapacity:number_textures];
+    
+    self.textureMap = [[NSMutableArray alloc] initWithCapacity:number_textures];
     for (int i = 0; i < number_textures; i++)
     {
-        [self.renderedTextures addObject:@""];
+        FluxTextureToImageMapElement *ime = [[FluxTextureToImageMapElement alloc] init];
+        ime.textureIndex = i;
+        [self.textureMap addObject:ime];
     }
-    
-//    _nearbyListLock = [[NSLock alloc] init];
-    _renderListLock = [[NSLock alloc] init];
-    
+
     [self setupMotionManager];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -917,8 +891,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)dealloc
 {
     motionManager = nil;
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"FluxScanViewDidAcquireNewPicture" object:nil];
     
     [self tearDownGL];
     
@@ -962,82 +934,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 
 #pragma mark - OpenGL Texture & Metadata Manipulation
-- (void) updateImageTextureWithLocalID:(NSString *)localID withImage:(UIImage *)image
-{
-    [_renderListLock lock];
-    
-    // Check if texture is already being rendered
-    if ([self.renderedTextures containsObject:localID])
-    {
-        // Update the metadata in case it changed
-        [self updateImageMetadataKey:localID index:[self.renderedTextures indexOfObject:localID]];
-        [_renderListLock unlock];
-        return;
-    }
-    
-    // Find a usable slot to put the texture
-    NSUInteger i = [self.renderedTextures indexOfObject:@""];
-    if (i == NSNotFound)
-    {
-        if (camIsOn) {
-            i = 0;
-            //if the camera is on, order the list and pop the oldest one, so that the most recent 5 pics are up
-            [self.renderedTextures sortUsingComparator:^NSComparisonResult(id a, id b) {
-                
-                static NSDateFormatter *dateFormatter = nil;
-                
-                if (!dateFormatter) {
-                    dateFormatter = [[NSDateFormatter alloc] init];
-                    dateFormatter.dateFormat = @"yyyyMMddHHmmss";
-                }
-                
-                NSString *date1String = (NSString*)a;
-                NSString *date2String = (NSString*)b;
-                
-                date1String = [date1String substringToIndex:date1String.length-2];
-                date2String = [date2String substringToIndex:date2String.length-2];
-                
-                NSDate *date1 = [dateFormatter dateFromString:date1String];
-                NSDate *date2 = [dateFormatter dateFromString:date2String];
-                
-                return [date1 compare:date2];
-            }];
-            [self deleteImageTextureIdx:i];
-        }
-        else{
-            NSLog(@"%s: Render list is full! Not rendering image with ID %@", __func__, localID);
-            [_renderListLock unlock];
-            return;
-        }
-    }
-    
-    // Note: This should never actually do anything (since _texture[i] should be nil), but just to be safe...
-    [self deleteImageTextureIdx:i];
-    
-    NSError *error;
-
-    
-    // Load the new texture
-    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    NSData *imgData = UIImageJPEGRepresentation(image,1); // 1 is compression quality
-    _texture[i] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
-    
-    if (error)
-    {
-        NSLog(@"Image texture error %@", error);
-    }
-    else
-    {
-        //NSLog(@"Added Image texture to render list in slot %d", (i));
-        self.renderedTextures[i] = localID;
-        [self updateImageMetadataKey:localID index:i];
-        _opengltexturesset++;
-        if (_opengltexturesset >= number_textures) _opengltexturesset = number_textures;
-    }
-    [_renderListLock unlock];
-    
-    [(FluxScanViewController*)self.parentViewController setCameraButtonEnabled:YES];
-}
 
 - (void) deleteImageTextureIdx:(int)i
 {
@@ -1047,31 +943,29 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         GLuint textureName = curTexture.name;
         glDeleteTextures(1, &textureName);
         _texture[i] = nil;
-        self.renderedTextures[i] = @"";
     }
 }
 
--(void) updateImageMetadataKey:(id)key index:(int)idx
+-(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
 {
-//    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
+    //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
     GLKQuaternion quaternion;
     
-    FluxScanImageObject *locationObject = [self.fluxNearbyMetadata objectForKey:key];
+    FluxScanImageObject *locationObject = element.imageMetadata;
     
-    _imagePose[idx].position.x =  locationObject.latitude;
-    _imagePose[idx].position.y =  locationObject.longitude;
-    _imagePose[idx].position.z =  locationObject.altitude;
+    element.imagePose->position.x =  locationObject.latitude;
+    element.imagePose->position.y =  locationObject.longitude;
+    element.imagePose->position.z =  locationObject.altitude;
     
     quaternion.x = locationObject.qx;
     quaternion.y = locationObject.qy;
     quaternion.z = locationObject.qz;
     quaternion.w = locationObject.qw;
     
-    //_imagePose[idx].rotationMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
     GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
-    _imagePose[idx].rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
-//    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+    element.imagePose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
+    //    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
 -(void)updateImageMetaData
@@ -1080,22 +974,28 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
     float distance = _projectionDistance;
-    int i;
     
-    for(i =0; i < 5; i++)
+    for (FluxImageRenderElement *ire in self.renderList)
     {
-        _validMetaData[i] =0;
-        _validMetaData[i] = (computeProjectionParametersImage(&_imagePose[i], &planeNormal, distance, _userPose, &vpimage) *
-                             self.fluxDisplayManager.locationManager.notMoving);
+        if (ire.textureMapElement != nil)
+        {
+            int idx = ire.textureMapElement.textureIndex;
         
-      
-        
-        tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
-                                           vpimage.at.x, vpimage.at.y, vpimage.at.z,
-                                           vpimage.up.x, vpimage.up.y, vpimage.up.z);
-        tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
-        
-        _tBiasMVP[i] = GLKMatrix4Multiply(biasMatrix,tMVP);
+            _validMetaData[idx] = 0;
+            _validMetaData[idx] = (computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage) *
+                                 self.fluxDisplayManager.locationManager.notMoving);
+            
+            tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
+                                               vpimage.at.x, vpimage.at.y, vpimage.at.z,
+                                               vpimage.up.x, vpimage.up.y, vpimage.up.z);
+            tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
+            
+            _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
+        }
+        else
+        {
+            // TS: should generate an error here - should never get here...
+        }
     }
 }
 
@@ -1142,24 +1042,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     
-    NSError *error;
-    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    
-    
     /*
+     NSError *error;
+     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+     
      _texture[7] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"background" ofType:@"png"] options:options error:&error];
      if (error) NSLog(@"Image texture error %@", error);
-     
      
      glActiveTexture(GL_TEXTURE7);
      glBindTexture(_texture[7].target, _texture[7].name);
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-     
-     */
-    
-    
-    
+    */
     
     [self setupBuffers];
 }
@@ -1270,6 +1164,145 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return image;
 }
 
+#pragma mark - render image texture and metadata selection and loading methods 
+
+- (NSError *)loadTexture:(int)tIndex withImage:(UIImage *)image
+{
+    
+    // load the actual texture
+    [self deleteImageTextureIdx:tIndex];
+    
+    NSError *error;
+    
+    // Load the new texture
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+    NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
+    _texture[tIndex] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
+    
+    if (error)
+    {
+        _texture[tIndex] = nil;
+        NSLog(@"Error loading Image texture (error: %@)", error);
+    }
+
+    return error;
+}
+
+- (void)updateTextures
+{
+    // textureList is array of textureToImageMapElement
+    // using the mapping, find if the image is already loaded into a texture
+    // spin through texture mapping and mark each as "unused",
+    for (FluxTextureToImageMapElement *tel in self.textureMap)
+    {
+        tel.used = false;
+    }
+    
+    // spin through renderlist, find associated texture mapping (by LocalID) and mark mapping as "used"
+    for (FluxImageRenderElement *ire in self.renderList)
+    {
+        if (ire.textureMapElement != nil)
+        {
+            if (ire.textureMapElement.localID == ire.localID)
+            {
+                ire.textureMapElement.used = true;
+            }
+            else
+            {
+                // not a match - clear it out
+                ire.textureMapElement = nil;
+            }
+        }
+    }
+    
+    // spin through renderlist, find associated texture mapping
+    //      if not found, find "unused"
+    for (FluxImageRenderElement *ire in self.renderList)
+    {
+        int textureIndex = -1;
+        bool justLoaded = false;
+        if (ire.textureMapElement == nil)
+        {
+            // find a new texture and load it up...
+            for (FluxTextureToImageMapElement *tel in self.textureMap)
+            {
+                if (tel.used == false)
+                {
+                    // found one - set it up...
+                    textureIndex = tel.textureIndex;
+
+                    NSError *error = [self loadTexture:textureIndex withImage:ire.image];
+
+                    if (error)
+                    {
+                        textureIndex = -1;
+                    }
+                    else
+                    {
+                        ire.textureMapElement = tel;
+                        tel.used = true;
+                        tel.localID = ire.localID;
+                        tel.imageType = none;
+                        tel.imageType = ire.imageType;
+                        justLoaded = true;
+//                        NSLog(@"Added Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                    }
+                    break;
+                }
+            }
+        }
+        else
+        {
+            textureIndex = ire.textureMapElement.textureIndex;
+//            NSLog(@"Recycling texture in slot %d for key %@", textureIndex, ire.localID);
+        }
+
+        if (textureIndex >= 0)
+        {
+            if (ire.textureMapElement.imageType < ire.imageType)
+            {
+                // new one is bigger - load it up... if need to load up...
+            }
+//          if (!loadedOneHiRes and HiRes image available)
+//              load hires texture into associated texture
+//              loadedOneHiRes = true
+//          recalc associated xform (tbiasMVP) - taken care of in UpdateMetadata()
+            
+        }
+    }
+//    NSLog(@"Done texture loading");
+}
+
+- (void)fixRenderList
+{
+    [self.fluxDisplayManager lockDisplayList];
+    
+        int oldDisplayListHasChanged = _displayListHasChanged;
+
+        // there may be other things to do besides transfer data so that is why it isn't just incorporated into sortRenderList
+        [self.renderList removeAllObjects];
+
+        int maxDisplayCount = self.fluxDisplayManager.displayListCount;
+        maxDisplayCount = MIN(maxDisplayCount, number_textures);
+        if (maxDisplayCount > 0)
+        {
+            [self.fluxDisplayManager lockDisplayList];
+            [self.renderList addObjectsFromArray:[self.fluxDisplayManager.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
+            [self.fluxDisplayManager unlockDisplayList];
+        }
+
+        _displayListHasChanged -= MIN(_displayListHasChanged, oldDisplayListHasChanged);    // make sure it doesn't go (-ve)
+    
+    [self.fluxDisplayManager unlockDisplayList];
+
+    if ([self.renderList count ] > 0)
+    {
+        [self.fluxDisplayManager sortRenderList:self.renderList];
+    }
+    
+    [self updateTextures];
+}
+
 
 #pragma mark - GLKView and GLKViewController delegate methods
 
@@ -1281,6 +1314,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)update
 {
+    if (_displayListHasChanged > 0)
+    {
+        [self fixRenderList];
+    }
+    
     CMAttitude *att = motionManager.attitude;
     
 //    _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
@@ -1344,9 +1382,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     //    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
     //    GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(1.0f, 0.0f, 0.0f);
     
-    _imagePose[7].position.x =0.0;
-    _imagePose[7].position.y =0.0;
-    _imagePose[7].position.z =0.0;
+//    _imagePose[7].position.x =0.0;
+//    _imagePose[7].position.y =0.0;
+//    _imagePose[7].position.z =0.0;
     
     tViewMatrix = viewMatrix;
     
@@ -1394,29 +1432,43 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     // then spin through the images...
-    if(_opengltexturesset >= 1)
+    NSEnumerator *revEnumerator = [self.renderList reverseObjectEnumerator];
+    for (FluxImageRenderElement *ire in revEnumerator)
     {
-        for(int i = 0; i < _opengltexturesset; i++)
+        int i = ire.textureMapElement.textureIndex;
+        if ((_texture[i] != nil) && (_validMetaData[i]==1))
         {
-#warning fix this to only bind on texture change
-            if ((_texture[i] != nil) && (_validMetaData[i]==1))
+//          NSLog(@"rendering texture %d, id %@, timestamp %@", i, ire.localID, ire.timestamp);
+            glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(_texture[i].target, _texture[i].name);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
+        }
+        else
+        {
+            glActiveTexture(GL_TEXTURE0 + i);
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],0);
+        }
+    }
+    
+    for (int i = 0; i < number_textures; i++)
+    {
+        FluxTextureToImageMapElement *tim = _textureMap[i];
+        if (tim)
+        {
+            if (!tim.used)
             {
-                          //  NSLog(@"rendering texture%d", i);
-                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
-                glActiveTexture(GL_TEXTURE0 + i);
-                glBindTexture(_texture[i].target, _texture[i].name);
-                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
-            }
-            else
-            {
-                glActiveTexture(GL_TEXTURE0 + i);
+//              NSLog(@"un-rendering texture %d", i);
+                glActiveTexture(GL_TEXTURE0 + tim.textureIndex);
                 glBindTexture(GL_TEXTURE_2D, 0);
-                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],0);
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0 + tim.textureIndex],0);
             }
         }
     }
+
     /*
      glActiveTexture(GL_TEXTURE7);
      glBindTexture(_texture[7].target, _texture[7].name);
@@ -1445,10 +1497,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLint maxvertextureunits;
     
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxtextureunits);
-    NSLog(@"Maximum texture image units = %d",maxtextureunits);
+//    NSLog(@"Maximum texture image units = %d",maxtextureunits);
     
     glGetIntegerv(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS, &maxvertextureunits);
-    NSLog(@"Maximum vertex texture image unit = %d",maxvertextureunits);
+//    NSLog(@"Maximum vertex texture image unit = %d",maxvertextureunits);
     
 }
 

@@ -197,6 +197,16 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 */
 #warning Currently disabling location services filtering mods
     
+//#warning Overriding location with fixed value
+//    // HACK
+//    // force location value to eliminate GPS from equation...
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // burlington office
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // normative office
+//    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.325796, -79.813148);   // ??
+//    newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:newLocation.altitude
+//                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+//                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    
     self.location = newLocation;
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];

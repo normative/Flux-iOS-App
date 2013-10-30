@@ -12,6 +12,7 @@
 
 
 NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
+NSString* const FluxImageCaptureDidPush = @"FluxImageCaptureDidPush";
 NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureImage";
 
 @interface FluxImageCaptureViewController ()
@@ -293,23 +294,20 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     CGContextRestoreGState(context);
     UIGraphicsEndImageContext();
     
-    
     // END HACK
-    if ([capturedImageObjects count]==0) {
+
+    if ([capturedImageObjects count]==0)
+    {
         [previewLayer removeFromSuperlayer];
-        [[(FluxOpenGLViewController*)self.parentViewController fluxNearbyMetadata]removeAllObjects];
-        [[(FluxOpenGLViewController*)self.parentViewController nearbyList]removeAllObjects];
     }
-    
-    [[(FluxOpenGLViewController*)self.parentViewController fluxNearbyMetadata] setObject:newImageObject forKey:newImageObject.localID];
-    [[(FluxOpenGLViewController*)self.parentViewController nearbyList] insertObject:localID atIndex:0];
+
     [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:spunImage];
 
     [capturedImageObjects addObject:newImageObject];
     [capturedImages addObject:spunImage];
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:localID, @"localID", spunImage, @"image", nil];
+                                  initWithObjectsAndKeys:localID, @"localID", spunImage, @"image", newImageObject, @"imageObject", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidCaptureImage
                                                         object:self userInfo:userInfoDict];
 

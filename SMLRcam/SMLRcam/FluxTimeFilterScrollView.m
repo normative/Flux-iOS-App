@@ -31,10 +31,12 @@
 }
 
 - (BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view{
-    CGPoint point = [[touches anyObject]locationInView:self.superview];
-    if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:didTapAtPoint:)]) {
-        [tapDelegate timeFilterScrollView:self didTapAtPoint:point];
-    }
+    
+#warning Be sure to re-enable this code to allow tap-based image selection to function.
+//    CGPoint point = [[touches anyObject]locationInView:self.superview];
+//    if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:didTapAtPoint:)]) {
+//        [tapDelegate timeFilterScrollView:self didTapAtPoint:point];
+//    }
     return YES;
 }
 
