@@ -367,7 +367,7 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
         walkingTimer = nil;
     }
     
-    NSLog(@"Cancelled");
+//    NSLog(@"Cancelled");
 }
 
 #pragma mark - Logging

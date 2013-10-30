@@ -24,6 +24,7 @@
 #import "GAIDictionaryBuilder.h"
 
 extern NSString* const FluxImageCaptureDidPop;
+extern NSString* const FluxImageCaptureDidPush;
 extern NSString* const FluxImageCaptureDidCaptureImage;
 
 @interface FluxImageCaptureViewController : GAITrackedViewController<ImageAnnotationDelegate>{
@@ -49,8 +50,9 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
 }
 @property (strong, nonatomic) IBOutlet UIButton *closeButton;
 
-@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
-@property (nonatomic, weak) NSMutableArray *nearbyList;
+// TS: no longer needed - should get list(s) from DisplayManager directly
+//@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
+//@property (nonatomic, weak) NSMutableArray *nearbyList;
 
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 

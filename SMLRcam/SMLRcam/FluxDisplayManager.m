@@ -7,20 +7,21 @@
 //
 
 #import "FluxDisplayManager.h"
-
 #import "FluxScanImageObject.h"
+#import "FluxImageCaptureViewController.h"
 
 const int number_OpenGL_Textures = 5;
+const int maxDisplayListCount   = 10;
 
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
-NSString* const FluxDisplayManagerDidUpdateOpenGLDisplayList = @"FluxDisplayManagerDidUpdateOpenGLDisplayList";
+NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
 NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDidUpdateImageTexture";
 NSString* const FluxDisplayManagerDidUpdateMapPinList = @"FluxDisplayManagerDidUpdateMapPinList";
 NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManagerDidFailToUpdateMapPinList";
 
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
-
+const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image requesting
 
 @implementation FluxDisplayManager
 
@@ -28,34 +29,57 @@ NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
     self = [super init];
     if (self)
     {
-        self.locationManager = [FluxLocationServicesSingleton sharedManager];
+        _locationManager = [FluxLocationServicesSingleton sharedManager];
         [self.locationManager startLocating];
         
-        self.fluxDataManager = [[FluxDataManager alloc] init];
+        _fluxDataManager = [[FluxDataManager alloc] init];
         
-        self.fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
-        self.fluxMapContentMetadata = [[NSArray alloc]init];
+        _fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
+        
+        _fluxMapContentMetadata = [[NSArray alloc]init];
+        
+        _nearbyListLock = [[NSRecursiveLock alloc] init];
+        _nearbyScanList = [[NSMutableArray alloc]init];
+        _nearbyCamList = [[NSMutableArray alloc]init];
 
-        _nearbyListLock = [[NSLock alloc] init];
-//        _renderListLock = [[NSLock alloc] init];
-        
+        _displayListLock = [[NSRecursiveLock alloc] init];
+        _displayScanList = [[NSMutableArray alloc]init];
+        _displayCamList = [[NSMutableArray alloc]init];
+
         dataFilter = [[FluxDataFilter alloc]init];
         
-//        renderedTextures = [[NSMutableArray alloc]init];
+        currHeading = 0.0;  // due North until told otherwise...
+        
+        _isTimeScrubbing = false;
+        _isScanMode = true;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
         
+        // not using constants for this notification name because of conflicting header load ordering
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeFilter:) name:@"FluxFilterViewDidChangeFilter" object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didAcquireNewPicture:) name:@"FluxScanViewDidAcquireNewPicture" object:nil];
         
-        timeSliderRange = NSMakeRange(0,5);
-        oldTimeBracket = MAXFLOAT;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartCameraMode:) name:FluxImageCaptureDidPush object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
     }
     
     return self;
 }
+
+double getAbsAngle(double angle, double heading)
+{
+    double h1 = fmod((angle + 360.0), 360.0);
+    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
+    if (h1 > 180.0)
+    {
+        h1 = 360.0 - h1;
+    }
+    
+    return h1;
+}
+
 
 #pragma mark - Notifications
 
@@ -67,13 +91,20 @@ NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 }
 
 - (void)didUpdateHeading:(NSNotification *)notification{
-    //    CLLocationDirection heading = locationManager.heading;
-    //    if (locationManager.location != nil) {
-    //        ;
-    //    }
+    // first normalize to (0 <= heading < 360.0)
+    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
+    [self calculateTimeAdjustedImageList];
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
+    // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
+//    // HACK - with fixed positioning, only need the first, then can ignore
+//    static bool haveFirst = false;
+//
+//    if (haveFirst)
+//        return;
+//    
+//    haveFirst = true;
     [self requestNearbyItems];
 }
 
@@ -86,153 +117,382 @@ NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
 #pragma mark - Time
 
-- (void)timeBracketDidChange:(float)value{
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self];
-    //splits the images into bracketss
-    int numOfBrackets = ceilf(self.nearbyList.count/(float)number_OpenGL_Textures);
-    
-    //find out what bracket the slider value is in
-    int bracket = value*numOfBrackets;
-    if (bracket == numOfBrackets) {
-        return;
-    }
-    
-    //if the bracket is a new one
-    if (bracket != oldTimeBracket) {
-        int lowBucketIndex = (bracket*number_OpenGL_Textures);
-        int length = 5;
-        if (((bracket+1)*number_OpenGL_Textures) > self.nearbyList.count-1) {
-            length = (self.nearbyList.count-lowBucketIndex-1);
-        }
-        
-        //find out what images are within that bracket
-        timeSliderRange = NSMakeRange(lowBucketIndex,length);
-        
-        //make sure the range is within the bounds of the images array **should** never happen
-        if (timeSliderRange.length+timeSliderRange.location > self.nearbyList.count) {
-            return;
-        }
-        oldTimeBracket = bracket;
-        [self calculateTimeAdjustedImageList];
-    }
-
-}
-
-- (void)calculateTimeAdjustedImageList{
-    
-    if (timeSliderRange.location +timeSliderRange.length >= self.nearbyList.count) {
-        timeSliderRange = NSMakeRange(0,MIN(5, self.nearbyList.count));
-    }
-    NSArray *tmp = [self.nearbyList subarrayWithRange:timeSliderRange];
-    NSArray* timeBracketArray = [[tmp reverseObjectEnumerator] allObjects];
-    NSMutableDictionary*timeBracketNearbyMetadata = [[NSMutableDictionary alloc]init];
-    for (int i = 0; i<timeBracketArray.count; i++) {
-        [timeBracketNearbyMetadata setObject:[self.fluxNearbyMetadata objectForKey:[timeBracketArray objectAtIndex:i]] forKey:[timeBracketArray objectAtIndex:i]];
-    }
-    
-
-    
-    
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:timeBracketArray, @"nearbyList",timeBracketNearbyMetadata, @"fluxNearbyMetadata" , nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
-                                                        object:self userInfo:userInfoDict];
-    
-    // Request images for nearby items
-    for (id localID in timeBracketArray)
-    {
-        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
-        dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-            //update image texture
-            NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                          initWithObjectsAndKeys:image, localID, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                object:self userInfo:userInfoDict];
-        };
-//        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-//            //update image texture
-//            NSDictionary *userInfoDict = [[NSDictionary alloc]
-//                                          initWithObjectsAndKeys:image, localID, nil];
-//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-//                                                                object:self userInfo:userInfoDict];
-//        }];
-        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
-    }
-}
-
-#pragma mark Image Capture
-
-- (void)didAcquireNewPicture:(NSNotification *)notification
+// determine sub-set of time-sorted image entries to copy into display list
+// value is % of displayListCount and reps the top of the list.  List is fixed size of X
+- (void)timeBracketDidChange:(float)value
 {
-    FluxLocalID *localID = [[notification userInfo] objectForKey:@"FluxScanViewDidAcquireNewPictureLocalIDKey"];
+    // TODO: these notifications may come thick and fast (especially when using momentum) so we may want to limit them
+    //          track the "latest" (order of call, not value) value in a "pending" variable
+    //          only allow through when > min time has elapsed from last adjustment calc
+    //              calc timeRangeMaxIndex based on pending variable
+    //          need to call from "animation is done" notification as well to ensure we process the last value
+
+    if (!_isScanMode)
+        return;
     
+    _timeRangeMinIndex = (self.nearbyList.count * value);
+//    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
+    [self calculateTimeAdjustedImageList];
+    
+}
+
+-(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
+{
+    //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
+    GLKQuaternion quaternion;
+    
+    FluxScanImageObject *locationObject = element.imageMetadata;
+    
+    element.imagePose->position.x =  locationObject.latitude;
+    element.imagePose->position.y =  locationObject.longitude;
+    element.imagePose->position.z =  locationObject.altitude;
+    
+    quaternion.x = locationObject.qx;
+    quaternion.y = locationObject.qy;
+    quaternion.z = locationObject.qz;
+    quaternion.w = locationObject.qw;
+    
+    GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
+    element.imagePose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
+    //    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+}
+
+- (void)calculateTimeAdjustedImageList
+{
+    static bool inCalcTimeAdjImageList = false;
+    double localCurrHeading;
+
+    if (inCalcTimeAdjImageList)
+        return;
+  
+    [_displayListLock lock];
     [_nearbyListLock lock];
-    //        if ((localID != nil) && ([fluxNearbyMetadata objectForKey:localID] != nil) && ([fluxImageCache objectForKey:localID] != nil))
-    // There is currently nothing here ensuring that it will still be in the cache.
-    if (localID != nil)
     {
-        // We have a new picture ready in the cache.
-        // Add the ID to the current list of nearby items, and re-sort and re-prune the list
-        [self.nearbyList insertObject:localID atIndex:0];
-        [self calculateTimeAdjustedImageList];
+        inCalcTimeAdjImageList = true;
+        localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
+        
+        // generate the displayList...
+        
+        // clear the displayList
+        [self.displayList removeAllObjects];
+        
+        // extract X images from nearbyList where timestamp <= time from slider (timeRangeMaxIndex)
+        for (int idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < self.nearbyList.count)); idx++)
+        {
+            FluxImageRenderElement *ire = [self.nearbyList objectAtIndex:(_timeRangeMinIndex + idx)];
+            if (ire.image == nil)
+            {
+                // check to see if we have the imagery in the cache..
+                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest];
+                if (image != nil)
+                {
+                    ire.image = image;
+                }
+                else if (_isScanMode)
+                {
+                    // request it if it isn't there...
+                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                    [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
+                    dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                        // assign image into ire.image...
+                        ire.image = image;
+                        ire.imageType = thumb;
+                        [self updateImageMetadataForElement:ire];
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                            object:self userInfo:nil];
+                    };
+                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+                }
+            }
+            
+            if (ire.image != nil)
+            {
+                //  calc imagePose (via openglvc call) & add to displayList
+                [self updateImageMetadataForElement:ire];
+                [self.displayList addObject:ire];
+            }
+        }
+        
+        // sort by abs(heading delta with current) asc
+        [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
+            // get heading deltas relative to current...
+            
+            double h1 = floor(getAbsAngle(obj1.imageMetadata.heading, localCurrHeading) / 5.0);
+            double h2 = floor(getAbsAngle(obj2.imageMetadata.heading, localCurrHeading) / 5.0);
+
+            if (h1 != h2)
+            {
+                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
+            }
+            else
+            {
+                return ([obj2.timestamp compare:obj1.timestamp]);   // sort descending timestamp
+            }
+        }];
+        
+        inCalcTimeAdjImageList = false;
     }
     [_nearbyListLock unlock];
+    [_displayListLock unlock];
+    
+//    NSLog(@"Nearby Sort:");
+//    int i = 0;
+//    for (FluxImageRenderElement *ire in self.nearbyList)
+//    {
+//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
+//    }
+//    
+//    NSLog(@"Display Sort: localCurrHeading: %f", localCurrHeading);
+//    i = 0;
+//    for (FluxImageRenderElement *ire in self.displayList)
+//    {
+//        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
+//        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
+//    }
+    
+    NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                  initWithObjectsAndKeys:self.displayList, @"displayList" , nil];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateDisplayList
+                                                        object:self userInfo:userInfoDict];
+    
 }
 
-#pragma mark - Global Image Request
+#pragma mark - Image Capture
 
-- (void)requestNearbyItems{
-    CLLocation *loc = self.locationManager.location;
+- (void)didStartCameraMode:(NSNotification *)notification
+{
+    [_displayListLock lock];
+    {
+        if (_isScanMode)
+        {
+            _timeRangeMinIndexScan = _timeRangeMinIndex;
+            _timeRangeMinIndex = 0;
+            _isScanMode = false;
+            [self requestNearbyItems];
+        }
+    }
+    [_displayListLock unlock];
+}
+
+- (void)didStopCameraMode:(NSNotification *)notification
+{
+    // TS: TODO: need to flesh this out to do whatever is necessary to stop camera capture mode from the list management perspective
+    [_displayListLock lock];
+    {
+        if (!_isScanMode)
+        {
+            _timeRangeMinIndex = _timeRangeMinIndexScan;
+            _isScanMode = true;
+            
+            // not sure if need to copy images out of notification into nearby list but will see...
+            NSMutableArray *capturedImageObjects = [[notification userInfo] objectForKey:@"capturedImageObjects"];
+            
+            if (capturedImageObjects)
+            {
+                [_nearbyListLock lock];
+                for (FluxScanImageObject*imgObject in capturedImageObjects)
+                {
+                    // find the objects by key in the master meta list and add to nearbylist
+                    FluxImageRenderElement *ire = [_fluxNearbyMetadata objectForKey:imgObject.localID];
+                    if (ire)
+                    {
+                        [_nearbyScanList insertObject:ire atIndex:0];
+                    }
+                }
+                [_nearbyListLock unlock];
+            }
+            else
+            {
+                NSLog(@"Apparently capturedImageObjects is not defined");
+            }
+            
+            if ((!capturedImageObjects) && (capturedImageObjects.count <= 0))
+            {
+                // Remove locals from fluxNearbyMetadata based on keys in _nearbyCamList
+                for (FluxImageRenderElement *ire in _nearbyCamList)
+                {
+                    [_fluxNearbyMetadata removeObjectForKey:ire.localID];
+                }
+            }
+          
+            // clear out camera imagery
+            [_nearbyCamList removeAllObjects];
+            [_displayCamList removeAllObjects];
+            
+            [self requestNearbyItems];
+        }
+    }
+    [_displayListLock unlock];
+}
+
+- (void)didCaptureNewImage:(NSNotification *)notification
+{
+    FluxScanImageObject *newImageObject = [[notification userInfo] objectForKey:@"imageObject"];
+    UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
+    FluxImageRenderElement *ire = [[FluxImageRenderElement alloc]initWithImageObject:newImageObject];
+    ire.image = newImage;
+    ire.imageType = full_res;
+    ire.localCaptureTime = ire.timestamp;
+    [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
+    [_nearbyCamList addObject:ire];
+    [self requestNearbyItems];
+}
+
+#pragma mark - Requests
+#pragma mark Global Image Request
+
+- (FluxImageRenderElement *)getRenderElementForKey:(FluxLocalID *)localID
+{
+    return [_fluxNearbyMetadata objectForKey:localID];
+}
+
+- (void)requestNearbyItems
+{
+    // make request
     
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    
-    dataRequest.maxReturnItems = 50;
-    dataRequest.searchFilter = dataFilter;
-    dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-    
-    [dataRequest setNearbyListReady:^(NSArray *imageList){
-        NSMutableArray *localOnlyObjects = [[NSMutableArray alloc] init];
+    if (_isScanMode)
+    {
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
         
+        dataRequest.maxReturnItems = 100;
+        dataRequest.searchFilter = dataFilter;
+        dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
+        
+        [dataRequest setNearbyListReady:^(NSArray *imageList)
+        {
+            // process request using nearbyList:
+            //  copy local-only objects (imageid < 0) into localList
+            NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];
+            
+            [_nearbyListLock lock];
+            {
+                // Iterate over the list and clear out anything that is not local-only
+                for (FluxImageRenderElement *ire in self.nearbyList)
+                {
+                    if (ire.imageMetadata.imageID < 0)
+                    {
+                        [localOnlyObjects setObject:ire forKey:ire.localID];
+                    }
+                }
+                
+                //  clean nearbyList (empty)
+                [self.nearbyList removeAllObjects];
+
+                //  for each item in response
+                for (FluxScanImageObject *curImgObj in imageList)
+                {
+                    // check the local list first
+                    FluxImageRenderElement *localImgRenderObj = [localOnlyObjects objectForKey:curImgObj.localID];
+                    FluxImageRenderElement *curImgRenderObj = [_fluxNearbyMetadata objectForKey:curImgObj.localID];
+                    if (localImgRenderObj == nil)
+                    {
+                        // then check in nearbyMeta
+                        if (curImgRenderObj == nil)
+                        {
+                            // still not found so add new entry
+                            curImgRenderObj = [[FluxImageRenderElement alloc]initWithImageObject:curImgObj];
+                            [_fluxNearbyMetadata setObject:curImgRenderObj forKey:curImgObj.localID];
+                        }
+                    }
+                    else
+                    {
+                        // check against nearbyMeta entry (if exists)
+                        if (curImgRenderObj != nil)
+                        {
+                            // in both lists - make sure things are transferred properly
+                            curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
+                            curImgRenderObj.textureMapElement = localImgRenderObj.textureMapElement;
+                            curImgRenderObj.image = localImgRenderObj.image;
+                            curImgRenderObj.imageType = localImgRenderObj.imageType;
+
+                        }
+                        else
+                        {
+                            curImgRenderObj = localImgRenderObj;
+                        }
+                        
+                        // remove from localobjectsonly list so isn't processed again below
+                        [localOnlyObjects removeObjectForKey:curImgObj.localID];
+                        localImgRenderObj = nil;
+                    }
+                    
+                    if (curImgRenderObj != nil)
+                    {
+                        // update lastrefd time, metadata, set dirty
+                        curImgRenderObj.lastReferenced = [[NSDate alloc]init];
+                        curImgRenderObj.imageMetadata = curImgObj;
+                    }
+                    
+                    // copy to nearbyList
+                    [self.nearbyList addObject:curImgRenderObj];
+                }
+                
+                //  for each remaining item in localOnlyObjects list
+                for (FluxImageRenderElement *localRender in [localOnlyObjects allValues])
+                {
+                    // find in nearbyList
+                    FluxImageRenderElement *curImgRenderObj = [_fluxNearbyMetadata objectForKey:localRender.localID];
+                    if (curImgRenderObj == nil)
+                    {
+                        // if not found then an error - local images should always be in the metadata list
+                        NSLog(@"FluxDisplayManager requestNearbyItems local image not found in metadata list");
+                    }
+                    else
+                    {
+                        // copy to nearbyList
+                        [self.nearbyList addObject:curImgRenderObj];
+
+                        // update anything else that needs to be here...
+                        curImgRenderObj.lastReferenced = [[NSDate alloc]init];
+                    }
+                }
+            
+                //  sort nearbyList by localCaptureTime then by timestamp desc (localCaptureTime bubbles recently taken local imagery to the top
+                NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: [NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],
+                                                                            [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
+                                                                            nil];
+                
+                [self.nearbyList sortUsingDescriptors:sortDescriptors];
+
+                [self calculateTimeAdjustedImageList];
+            }
+            [_nearbyListLock unlock];
+
+            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
+                                                                object:self userInfo:nil];
+
+        }];
+        
+       CLLocation *loc = self.locationManager.location;
+       [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:scanImageRequestRadius withDataRequest:dataRequest];
+
+    }
+    else
+    {
         [_nearbyListLock lock];
-        
-#warning This is where we re-add local-only content that won't be returned in new requests yet
-        // Iterate over the list and clear out anything that is not local-only
-        for (id localID in self.nearbyList)
         {
-            FluxScanImageObject *locationObject = [self.fluxNearbyMetadata objectForKey:localID];
-            if (locationObject.imageID < 0)
-            {
-                [localOnlyObjects addObject:localID];
-            }
+            // camera mode - just sort and notify
+            //  sort nearbyList by localCaptureTime then by timestamp desc (localCaptureTime bubbles recently taken local imagery to the top
+            NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: [NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],
+                                        [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
+                                        nil];
+            
+            [self.nearbyList sortUsingDescriptors:sortDescriptors];
+            
+            [self calculateTimeAdjustedImageList];
         }
-        
-        NSMutableArray *previousNearbyKeys = [NSMutableArray arrayWithArray:[self.fluxNearbyMetadata allKeys]];
-        [previousNearbyKeys removeObjectsInArray:localOnlyObjects];
-        
-        // Remove all objects except for local-only
-        [self.fluxNearbyMetadata removeObjectsForKeys:previousNearbyKeys];
-        
-        self.nearbyList = [NSMutableArray arrayWithArray:localOnlyObjects];
-        
-        // Need to update all metadata objects even if they exist (in case they change in the future)
-        // Note that this dictionary will be up to date, but metadata will need to be re-copied from this dictionary
-        // when a desired image is loaded (happens after the texture is loaded)
-        for (FluxScanImageObject *curImgObj in imageList)
-        {
-            [self.fluxNearbyMetadata setObject:curImgObj forKey:curImgObj.localID];
-            if (![self.nearbyList containsObject:curImgObj.localID])
-            {
-                [self.nearbyList addObject:curImgObj.localID];
-            }
-        }
-        [self calculateTimeAdjustedImageList];
         [_nearbyListLock unlock];
-    }];
-    [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:10.0 withDataRequest:dataRequest];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
+                                                            object:self userInfo:nil];
+
+    }
 }
 
-#pragma mark MapView image Request
+#pragma mark MapView Image Request
 
 - (void)mapViewWillDisplay{
     //if we have items already, check if it's worth pulling again
@@ -278,36 +538,64 @@ NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
     [self.fluxDataManager requestMapImageListAtLocation:self.locationManager.location.coordinate withRadius:500.0 withDataRequest:dataRequest];
 }
 
-#pragma mark - OpenGL Texture & Metadata Manipulation
+#pragma mark - List Management Support
 
-//-(void) populateImageData
-//{
-//    // Sort and cap the list of nearby images. Shows the most recent textures returned for a location.
-//    //    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList sortedArrayUsingSelector:@selector(compare:)]];
-//    NSUInteger rangeLen = ([self.nearbyList count] >= number_OpenGL_Textures ? number_OpenGL_Textures : [self.nearbyList count]);
-//    self.nearbyList = [NSMutableArray arrayWithArray:[self.nearbyList subarrayWithRange:NSMakeRange(0, rangeLen)]];
-//    
-//    NSDictionary *userInfoDict = @{@"nearbyList" : self.nearbyList, @"fluxNearbyMetadata" : self.fluxNearbyMetadata};
-//    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateOpenGLDisplayList
-//                                                        object:self userInfo:userInfoDict];
-//
-//    // Request images for nearby items
-//    for (id localID in self.nearbyList)
+- (NSMutableArray *)displayList
+{
+    if (_isScanMode)
+        return _displayScanList;
+    else
+        return _displayCamList;
+}
+
+- (NSMutableArray *)nearbyList
+{
+    if (_isScanMode)
+        return _nearbyScanList;
+    else
+        return _nearbyCamList;
+}
+
+- (int)displayListCount
+{
+    return [self.displayList count];
+}
+
+- (int)nearbyListCount
+{
+    return [self.nearbyList count];
+}
+
+- (void)lockDisplayList
+{
+    // lock the display list
+    [_displayListLock lock];
+}
+
+- (void)unlockDisplayList
+{
+    // unlock the display list
+    [_displayListLock unlock];
+}
+
+- (void)sortRenderList:(NSMutableArray *)renderList
+{
+//    NSLog(@"Renderlist Count: %d", renderList.count);
+    // TODO: sort the provided list
+    // based on sorting, current state, availability etc. determine which image resolution to load, fetch it from cache and set renderList[idx].image accordingly
+
+    NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: /*[NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],*/
+                                [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
+                                nil];
+    
+    [renderList sortUsingDescriptors:sortDescriptors];
+
+//    NSLog(@"Render Sort:");
+//    int i = 0;
+//    for (FluxImageRenderElement *ire in self.displayList)
 //    {
-//        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-//        [dataRequest setRequestedIDs:[NSArray arrayWithObject:localID]];
-//        [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-//            //update image texture
-//            NSDictionary *userInfoDict = @{localID : image};
-//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-//                                                                object:self userInfo:userInfoDict];
-//        }];
-//        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
+//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
 //    }
-//}
-
-
-
-
+}
 
 @end

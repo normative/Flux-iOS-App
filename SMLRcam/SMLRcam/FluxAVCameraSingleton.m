@@ -119,35 +119,26 @@
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
-	//if (!_dataPreview) {
-    //    return;
-   // }
-    
-    //CMFormatDescriptionRef formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer);
-    
-	
-		
-		
-		
-	
-        
-		CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-		
-		
-		
-		// Enqueue it for preview.  This is a shallow queue, so if image processing is taking too long,
-		// we'll drop this frame for preview (this keeps preview latency low).
-		OSStatus err = CMBufferQueueEnqueue(previewBufferQueue, sampleBuffer);
-		if ( !err ) {
-			dispatch_async(dispatch_get_main_queue(), ^{
-				CMSampleBufferRef sbuf = (CMSampleBufferRef)CMBufferQueueDequeueAndRetain(previewBufferQueue);
-				if (sbuf) {
-					CVImageBufferRef pixBuf = CMSampleBufferGetImageBuffer(sbuf);
-					[self.delegate pixelBufferReadyForDisplay:pixBuf];
-					CFRelease(sbuf);
-				}
-			});
-		
+//    if (!_dataPreview) {
+//       return;
+//    }
+//
+//    CMFormatDescriptionRef formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer);
+//
+//    CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
+
+    // Enqueue it for preview.  This is a shallow queue, so if image processing is taking too long,
+    // we'll drop this frame for preview (this keeps preview latency low).
+    OSStatus err = CMBufferQueueEnqueue(previewBufferQueue, sampleBuffer);
+    if ( !err ) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CMSampleBufferRef sbuf = (CMSampleBufferRef)CMBufferQueueDequeueAndRetain(previewBufferQueue);
+            if (sbuf) {
+                CVImageBufferRef pixBuf = CMSampleBufferGetImageBuffer(sbuf);
+                [self.delegate pixelBufferReadyForDisplay:pixBuf];
+                CFRelease(sbuf);
+            }
+        });
 	}
 }
 

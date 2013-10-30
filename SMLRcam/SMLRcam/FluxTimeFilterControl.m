@@ -122,7 +122,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
-    if (self.fluxDisplayManager.fluxNearbyMetadata.count <6) {
+    if (self.fluxDisplayManager.nearbyListCount < 6) {
         [self didStopScrolling];
         return;
     }

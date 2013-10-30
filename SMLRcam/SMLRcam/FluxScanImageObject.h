@@ -14,10 +14,12 @@ typedef NSString FluxLocalID;
 typedef int FluxImageID;
 
 typedef enum FluxImageType : NSUInteger {
+    lowest = 0,
     none = 0,
     thumb = 1,
     screen_res = 2,
     full_res = 3,
+    highest = 4     // keep this at highest allowable resultion + 1
 } FluxImageType;
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>

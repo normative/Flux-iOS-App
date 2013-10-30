@@ -188,6 +188,44 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
 }
 
+
+- (NSArray *) checkForImagesByLocalID:(FluxLocalID *)localID
+{
+    return [fluxDataStore doesImageExistForLocalID:localID];
+}
+
+- (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType
+{
+    UIImage *ret = nil;
+    FluxImageType itype;
+    
+    switch (imageType) {
+        case lowest:
+            //  find lowest image res...
+            itype = lowest + 1;
+            while ((ret == nil) && (itype < highest))
+            {
+                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype++];
+            }
+            break;
+        case highest:
+            //  find lowest highest res...
+            itype = highest - 1;
+            while ((ret == nil) && (itype > lowest))
+            {
+                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype--];
+            }
+            break;
+        default:
+            // everything else - just return what is asked...
+            ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
+            break;
+    }
+
+    return ret;
+}
+
+
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(FluxImageType)imageType
 {
     FluxRequestID *requestID = dataRequest.requestID;
