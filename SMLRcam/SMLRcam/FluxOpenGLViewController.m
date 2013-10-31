@@ -1433,6 +1433,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // then spin through the images...
     NSEnumerator *revEnumerator = [self.renderList reverseObjectEnumerator];
+    int c = 0;
     for (FluxImageRenderElement *ire in revEnumerator)
     {
         int i = ire.textureMapElement.textureIndex;
@@ -1440,7 +1441,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
 //          NSLog(@"rendering texture %d, id %@, timestamp %@", i, ire.localID, ire.timestamp);
             glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
-            glActiveTexture(GL_TEXTURE0 + i);
+            glActiveTexture(GL_TEXTURE0 + c);
             glBindTexture(_texture[i].target, _texture[i].name);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -1448,10 +1449,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         else
         {
-            glActiveTexture(GL_TEXTURE0 + i);
+            glActiveTexture(GL_TEXTURE0 + c);
             glBindTexture(GL_TEXTURE_2D, 0);
             glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],0);
         }
+        c++;
     }
     
     for (int i = 0; i < number_textures; i++)
