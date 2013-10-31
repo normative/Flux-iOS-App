@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Denis Delorme on 9/4/13.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxDrawerButtonTableViewCell.h"

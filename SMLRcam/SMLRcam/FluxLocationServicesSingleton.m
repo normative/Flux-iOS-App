@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Kei Turner on 2013-08-08.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxLocationServicesSingleton.h"
@@ -200,8 +200,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 //#warning Overriding location with fixed value
 //    // HACK
 //    // force location value to eliminate GPS from equation...
-////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // burlington office
-////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // normative office
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // Burlington office
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // Normative office
 //    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.325796, -79.813148);   // ??
 //    newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:newLocation.altitude
 //                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy

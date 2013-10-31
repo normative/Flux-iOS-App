@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Kei Turner on 2013-10-07.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxImageCaptureViewController.h"
@@ -154,7 +154,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 
 - (void)setupAVCapture
 {
-    AVCaptureBackgroundQueue = dispatch_queue_create("com.normative.flux.bgqueue", NULL);
+    AVCaptureBackgroundQueue = dispatch_queue_create("is.smlr.flux.bgqueue", NULL);
     cameraManager = [FluxAVCameraSingleton sharedCamera];
     previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
     [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];

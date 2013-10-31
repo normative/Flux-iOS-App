@@ -3,7 +3,7 @@
 //  SMLRcam
 //
 //  Created by Kei Turner on 7/4/13.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxScanViewController.h"
