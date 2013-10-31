@@ -63,6 +63,9 @@ enum
     UNIFORM_RENDER_ENABLE6,
     UNIFORM_RENDER_ENABLE7,
     
+    UNIFORM_CROP_TOPIMAGE,
+    UNIFORM_CROP_BOTTOMIMAGE,
+    
     NUM_UNIFORMS
 };
 
@@ -121,6 +124,10 @@ int   iPhone5_ypixels = 3264;
 int   iPhone5_xpixels = 2448;
 float iPhone5_focalLength = 0.0041; //4.10 mm
 
+//square images
+int iPhone5_topcrop;
+int iPhone5_bottomcrop;
+
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
 
@@ -174,6 +181,10 @@ void init_camera_model()
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
     camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     
+    
+    //Assume symmetric cropping for now
+    iPhone5_bottomcrop = (iPhone5_ypixels - iPhone5_xpixels)/2;
+    iPhone5_topcrop = iPhone5_bottomcrop;
 }
 
 #define PI 3.1415926535898
