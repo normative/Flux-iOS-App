@@ -13,6 +13,9 @@
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
 
+const int maxRequestCountQuart = 2;
+const int maxRequestCountThumb = 5;
+
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
 NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDidUpdateImageTexture";
@@ -22,6 +25,8 @@ NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManag
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
 const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image requesting
+
+
 
 @implementation FluxDisplayManager
 
@@ -50,8 +55,13 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         
         currHeading = 0.0;  // due North until told otherwise...
         
-        _isTimeScrubbing = false;
+        _isScrubAnimating = false;
         _isScanMode = true;
+        
+        _imageRequestCountThumb = 0;
+        _imageRequestCountQuart = 0;
+
+        _imageRequestCountLock = [[NSLock alloc]init];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -184,7 +194,7 @@ double getAbsAngle(double angle, double heading)
             if (ire.image == nil)
             {
                 // check to see if we have the imagery in the cache..
-                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest];
+                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res];
                 if (image != nil)
                 {
                     ire.image = image;
@@ -237,20 +247,20 @@ double getAbsAngle(double angle, double heading)
     [_nearbyListLock unlock];
     [_displayListLock unlock];
     
-//    NSLog(@"Nearby Sort:");
-//    int i = 0;
-//    for (FluxImageRenderElement *ire in self.nearbyList)
-//    {
-//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
-//    }
-//    
-//    NSLog(@"Display Sort: localCurrHeading: %f", localCurrHeading);
-//    i = 0;
-//    for (FluxImageRenderElement *ire in self.displayList)
-//    {
-//        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-//        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
-//    }
+    NSLog(@"Nearby Sort:");
+    int i = 0;
+    for (FluxImageRenderElement *ire in self.nearbyList)
+    {
+        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
+    }
+    
+    NSLog(@"Display Sort: localCurrHeading: %f", localCurrHeading);
+    i = 0;
+    for (FluxImageRenderElement *ire in self.displayList)
+    {
+        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
+        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
+    }
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:self.displayList, @"displayList" , nil];
@@ -578,6 +588,23 @@ double getAbsAngle(double angle, double heading)
     [_displayListLock unlock];
 }
 
+
+- (NSMutableArray *)selectRenderElementsInto:(NSMutableArray *)renderList ToMaxCount:(integer_t)maxCount
+{
+    [renderList removeAllObjects];
+    
+    int maxDisplayCount = self.displayListCount;
+    maxDisplayCount = MIN(maxDisplayCount, maxCount);
+    if (maxDisplayCount > 0)
+    {
+        [self lockDisplayList];
+        [renderList addObjectsFromArray:[self.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
+        [self unlockDisplayList];
+    }
+    
+    return renderList;
+}
+
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
 //    NSLog(@"Renderlist Count: %d", renderList.count);
@@ -589,13 +616,58 @@ double getAbsAngle(double angle, double heading)
                                 nil];
     
     [renderList sortUsingDescriptors:sortDescriptors];
-
-//    NSLog(@"Render Sort:");
-//    int i = 0;
-//    for (FluxImageRenderElement *ire in self.displayList)
+    
+//    if (!_isScrubAnimating)
 //    {
-//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
+//        if (_imageRequestCountQuart < maxRequestCountQuart)
+//        {
+//            // look to see if can trigger load of higher resolution
+//            for (FluxImageRenderElement *ire in renderList)
+//            {
+//                if (ire.imageFetchType = none)
+//                {
+//                    // fetch the quart for this element
+//                    ire.imageFetchType = thumb;
+//
+//                    [_imageRequestCountLock lock];
+//                    _imageRequestCountQuart++;
+//                    [_imageRequestCountLock unlock];
+//                    
+//                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+//                    [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
+//                    dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+//                        // assign image into ire.image...
+//                        ire.imageFetchType = none;
+//                        
+//                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+//                                                                            object:self userInfo:nil];
+//                        [_imageRequestCountLock lock];
+//                        _imageRequestCountQuart--;
+//                        [_imageRequestCountLock unlock];
+//                    };
+//                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:quarterhd];
+//                    
+//                    // only request one at a time
+//                    break;
+//                }
+//            }
+//        }
 //    }
+//    else
+//    {
+//        // only load thumbs if loading required
+//        for (FluxImageRenderElement *ire in renderList)
+//        {
+//            ire.imageType = thumb;
+//        }
+//    }
+
+    NSLog(@"Render Sort:");
+    int i = 0;
+    for (FluxImageRenderElement *ire in self.displayList)
+    {
+        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
+    }
 }
 
 @end

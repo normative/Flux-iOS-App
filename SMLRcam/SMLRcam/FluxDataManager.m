@@ -200,18 +200,18 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     FluxImageType itype;
     
     switch (imageType) {
-        case lowest:
+        case lowest_res:
             //  find lowest image res...
-            itype = lowest + 1;
-            while ((ret == nil) && (itype < highest))
+            itype = lowest_res + 1;
+            while ((ret == nil) && (itype < highest_res))
             {
                 ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype++];
             }
             break;
-        case highest:
+        case highest_res:
             //  find lowest highest res...
-            itype = highest - 1;
-            while ((ret == nil) && (itype > lowest))
+            itype = highest_res - 1;
+            while ((ret == nil) && (itype > lowest_res))
             {
                 ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype--];
             }
@@ -234,10 +234,26 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
-    NSString *sizeString = @"thumb";
-    if (imageType == thumb)
-    {
-        sizeString = @"thumb";
+    NSString *sizeString;
+    switch (imageType) {
+        case lowest_res:
+            imageType = thumb;
+        case thumb:
+            sizeString = @"thumb";
+            break;
+        case quarterhd:
+            sizeString = @"quarterhd";
+            break;
+        case screen_res:
+        case highest_res:
+            imageType = full_res;
+        case full_res:
+            sizeString = @"oriented";
+            break;
+        default:
+            imageType = thumb;
+            sizeString = @"thumb";
+            break;
     }
 
     BOOL completedRequest = NO;
@@ -246,7 +262,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     {
         // First check if image is already in cache
         NSArray *imageExist = [fluxDataStore doesImageExistForLocalID:curLocalID];
-        if ([imageExist[imageType] isEqualToNumber:[NSNumber numberWithBool:YES]])
+        if (imageExist[imageType] != [NSNull null])
         {
             // If so, we can take immediate action
             if (![[dataRequest completedIDs] containsObject:curLocalID])
@@ -258,7 +274,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                     completedRequest = YES;
                 }
             }
-            UIImage *image = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
+            UIImage *image = imageExist[imageType];
             [dataRequest whenImageReady:curLocalID withImage:image withDataRequest:dataRequest];
         }
         // Now check if request has already been made

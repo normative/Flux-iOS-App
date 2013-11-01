@@ -46,8 +46,12 @@ extern NSString* const FluxOpenGLShouldRender;
     
     float currHeading;
     
-    bool _isTimeScrubbing;
+    bool _isScrubAnimating;
     bool _isScanMode;
+    
+    int _imageRequestCountThumb;
+    int _imageRequestCountQuart;
+    NSLock *_imageRequestCountLock;
     
 }
 
@@ -71,5 +75,7 @@ extern NSString* const FluxOpenGLShouldRender;
 - (void)sortRenderList:(NSMutableArray *)renderList;
 
 - (FluxImageRenderElement *)getRenderElementForKey:(FluxLocalID *)localID;
+
+- (NSMutableArray *)selectRenderElementsInto:(NSMutableArray *)renderList ToMaxCount:(integer_t)maxCount;
 
 @end

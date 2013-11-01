@@ -1257,7 +1257,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //            NSLog(@"Recycling texture in slot %d for key %@", textureIndex, ire.localID);
         }
 
-        if (textureIndex >= 0)
+        if ((textureIndex >= 0) && !justLoaded)
         {
             if (ire.textureMapElement.imageType < ire.imageType)
             {
@@ -1279,6 +1279,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
         int oldDisplayListHasChanged = _displayListHasChanged;
 
+        self.renderList = [self.fluxDisplayManager selectRenderElementsInto:self.renderList ToMaxCount:number_textures];
+    
         // there may be other things to do besides transfer data so that is why it isn't just incorporated into sortRenderList
         [self.renderList removeAllObjects];
 
