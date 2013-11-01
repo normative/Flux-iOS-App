@@ -1,14 +1,14 @@
 //
-//  FluxDrawerCheckboxFilterTableViewCell.m
+//  FluxSocialFilterCell.m
 //  Flux
 //
-//  Created by Kei Turner on 2013-08-07.
+//  Created by Kei Turner on 11/1/2013.
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "FluxDrawerCheckboxFilterTableViewCell.h"
+#import "FluxSocialFilterCell.h"
 
-@implementation FluxDrawerCheckboxFilterTableViewCell
+@implementation FluxSocialFilterCell
 
 @synthesize delegate;
 
@@ -26,38 +26,24 @@
         [self setBackgroundColor:[UIColor clearColor]];
         [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
         [self.descriptorLabel setTextColor:[UIColor whiteColor]];
+        [self.checkbox setDelegate:self];
     }
     return self;
 }
 
-//callback when the cell was tapped. this will set the cell to active for now.
-//- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-//{
-//    [self setIsActive:selected];
-//    [super setSelected:selected animated:animated];
-//}
-
 //for now setting the cell active just makes it bold, checks the checkmark
 -(void)setIsActive:(BOOL)bActive{
     active = bActive;
-    if (active) {
-        [self.descriptorLabel setAlpha:1.0];
-        [self.descriptorIconImageView setAlpha:1.0];
-    }
-    else{
-        [self.descriptorLabel setAlpha:0.3];
-        [self.descriptorIconImageView setAlpha:0.3];
-    }
     [self.checkbox setChecked:active];
 }
 
 //the checkbox was tapped
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
     [self setIsActive:checked];
-    if ([delegate respondsToSelector:@selector(CheckboxCell:boxWasChecked:)]) {
-        [delegate  CheckboxCell:self boxWasChecked:checked];
+    if ([delegate respondsToSelector:@selector(SocialCell:boxWasChecked:)]) {
+        [delegate SocialCell:self boxWasChecked:checked];
     }
-
+    
 }
 
 @end

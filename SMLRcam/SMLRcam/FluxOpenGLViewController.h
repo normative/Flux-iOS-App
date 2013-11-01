@@ -113,6 +113,7 @@
 //image capture methods
 - (void)showImageCapture;
 - (UIImage*)snapshot:(UIView*)eaglview;
+-(UIImage*)takeScreenCap;
 
 - (void)didUpdateImageList:(NSNotification *)notification;
 //- (void)updateImageTexture:(NSNotification *)notification;

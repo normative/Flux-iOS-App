@@ -28,7 +28,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 @synthesize myViewOrientation;
 
 #pragma mark - Callbacks
-- (void)FiltersTableViewDidPop:(FluxFiltersTableViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
     [self animationPopFrontScaleUp];
     
     if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
@@ -135,7 +135,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 {
     //set the delegate of the navControllers top view (our filters View)
     UINavigationController*tmp = segue.destinationViewController;
-    FluxFiltersTableViewController* filtersVC = (FluxFiltersTableViewController*)tmp.topViewController;
+    FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
     [filtersVC prepareViewWithFilter:currentDataFilter];

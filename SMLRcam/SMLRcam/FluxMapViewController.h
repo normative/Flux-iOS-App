@@ -13,7 +13,7 @@
 #import "FluxDataManager.h"
 #import "FluxDisplayManager.h"
 #import "FluxLocationServicesSingleton.h"
-#import "FluxFiltersTableViewController.h"
+#import "FluxFiltersViewController.h"
 
 #import "GAITrackedViewController.h"
 #import "GAI.h"

@@ -18,7 +18,7 @@
 #include "FluxOpenGLViewController.h"
 #import "FluxImageAnnotationViewController.h"
 #import "FluxImageCaptureViewController.h"
-#import "FluxFiltersTableViewController.h"
+#import "FluxFiltersViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "IDMPhotoBrowser.h"
 
@@ -61,6 +61,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     IBOutlet UIButton *filterButton;
 
     __weak IBOutlet UIProgressView *progressView;
+    IBOutlet UIView *statusBarView;
     
     //Network + Motion
     FluxLocationServicesSingleton *locationManager;
