@@ -28,4 +28,8 @@
     return (NSUInteger)self;
 }
 
+- (void)setIsActive:(BOOL)active{
+    self.isChecked = active;
+}
+
 @end
