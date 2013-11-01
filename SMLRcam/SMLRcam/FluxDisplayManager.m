@@ -207,7 +207,7 @@ double getAbsAngle(double angle, double heading)
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.image = image;
-                        ire.imageType = thumb;
+                        ire.imageFetchType = none;
                         [self updateImageMetadataForElement:ire];
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
@@ -247,20 +247,20 @@ double getAbsAngle(double angle, double heading)
     [_nearbyListLock unlock];
     [_displayListLock unlock];
     
-    NSLog(@"Nearby Sort:");
-    int i = 0;
-    for (FluxImageRenderElement *ire in self.nearbyList)
-    {
-        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
-    }
-    
-    NSLog(@"Display Sort: localCurrHeading: %f", localCurrHeading);
-    i = 0;
-    for (FluxImageRenderElement *ire in self.displayList)
-    {
-        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
-    }
+//    NSLog(@"Nearby Sort:");
+//    int i = 0;
+//    for (FluxImageRenderElement *ire in self.nearbyList)
+//    {
+//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
+//    }
+//    
+//    NSLog(@"Display Sort: localCurrHeading: %f", localCurrHeading);
+//    i = 0;
+//    for (FluxImageRenderElement *ire in self.displayList)
+//    {
+//        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
+//        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
+//    }
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:self.displayList, @"displayList" , nil];
@@ -289,7 +289,6 @@ double getAbsAngle(double angle, double heading)
 
 - (void)didStopCameraMode:(NSNotification *)notification
 {
-    // TS: TODO: need to flesh this out to do whatever is necessary to stop camera capture mode from the list management perspective
     [_displayListLock lock];
     {
         if (!_isScanMode)
@@ -617,57 +616,58 @@ double getAbsAngle(double angle, double heading)
     
     [renderList sortUsingDescriptors:sortDescriptors];
     
-//    if (!_isScrubAnimating)
-//    {
-//        if (_imageRequestCountQuart < maxRequestCountQuart)
-//        {
-//            // look to see if can trigger load of higher resolution
-//            for (FluxImageRenderElement *ire in renderList)
-//            {
-//                if (ire.imageFetchType = none)
-//                {
-//                    // fetch the quart for this element
-//                    ire.imageFetchType = thumb;
-//
-//                    [_imageRequestCountLock lock];
-//                    _imageRequestCountQuart++;
-//                    [_imageRequestCountLock unlock];
-//                    
-//                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-//                    [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
-//                    dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-//                        // assign image into ire.image...
-//                        ire.imageFetchType = none;
-//                        
-//                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-//                                                                            object:self userInfo:nil];
-//                        [_imageRequestCountLock lock];
-//                        _imageRequestCountQuart--;
-//                        [_imageRequestCountLock unlock];
-//                    };
-//                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:quarterhd];
-//                    
-//                    // only request one at a time
-//                    break;
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        // only load thumbs if loading required
-//        for (FluxImageRenderElement *ire in renderList)
-//        {
-//            ire.imageType = thumb;
-//        }
-//    }
-
-    NSLog(@"Render Sort:");
-    int i = 0;
-    for (FluxImageRenderElement *ire in self.displayList)
+    if (!_isScrubAnimating)
     {
-        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
+        if (_imageRequestCountQuart < maxRequestCountQuart)
+        {
+            // look to see if can trigger load of higher resolution
+            for (FluxImageRenderElement *ire in renderList)
+            {
+                if (ire.imageFetchType == none)
+                {
+                    // fetch the quart for this element
+                    ire.imageFetchType = quarterhd;
+
+                    [_imageRequestCountLock lock];
+                    _imageRequestCountQuart++;
+                    [_imageRequestCountLock unlock];
+                    
+                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                    [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
+                    dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                        // assign image into ire.image...
+//                        ire.imageFetchType = none;
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                            object:self userInfo:nil];
+                        [_imageRequestCountLock lock];
+                        _imageRequestCountQuart--;
+                        [_imageRequestCountLock unlock];
+                    };
+                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:quarterhd];
+                    
+                    // only request one at a time
+                    break;
+                }
+            }
+        }
     }
+    else
+    {
+        // only load thumbs if loading required
+        for (FluxImageRenderElement *ire in renderList)
+        {
+            ire.imageFetchType = thumb;
+        }
+    }
+
+//    NSLog(@"Render Sort:");
+//    int i = 0;
+//    for (FluxImageRenderElement *ire in renderList)
+//    {
+//        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
+//        NSLog(@"render: i=%d, key=%@, headRaw=%f, timestamp=%@, fetchtype=%d, loadtype=%d", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp, ire.imageFetchType, lt);
+//    }
 }
 
 @end

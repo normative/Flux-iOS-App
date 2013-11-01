@@ -1215,6 +1215,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
     }
     
+    bool loadedOneHiRes = false;
     // spin through renderlist, find associated texture mapping
     //      if not found, find "unused"
     for (FluxImageRenderElement *ire in self.renderList)
@@ -1230,8 +1231,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 {
                     // found one - set it up...
                     textureIndex = tel.textureIndex;
+                    
+                    // not found so always load lowest resolution (thumb typically)
+                    UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res];
 
-                    NSError *error = [self loadTexture:textureIndex withImage:ire.image];
+//                    NSError *error = [self loadTexture:textureIndex withImage:ire.image];
+                    NSError *error = [self loadTexture:textureIndex withImage:image];
 
                     if (error)
                     {
@@ -1239,11 +1244,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     }
                     else
                     {
+                        if (tel.localID != nil)
+                        {
+                            // break link from old ire to tel - need to search and update it.
+                            FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+                            if (tire != nil)
+                            {
+                                tire.textureMapElement = nil;
+                            }
+                        }
+                        
                         ire.textureMapElement = tel;
                         tel.used = true;
                         tel.localID = ire.localID;
-                        tel.imageType = none;
-                        tel.imageType = ire.imageType;
+                        tel.imageType = lowest_res;
                         justLoaded = true;
 //                        NSLog(@"Added Image texture in slot %d for key %@", (textureIndex),ire.localID);
                     }
@@ -1257,17 +1271,31 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //            NSLog(@"Recycling texture in slot %d for key %@", textureIndex, ire.localID);
         }
 
-        if ((textureIndex >= 0) && !justLoaded)
+        if ((textureIndex >= 0) && (!justLoaded) && (!loadedOneHiRes))
         {
-            if (ire.textureMapElement.imageType < ire.imageType)
+            if (ire.textureMapElement.imageType < ire.imageFetchType)
             {
                 // new one is bigger - load it up... if need to load up...
+                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageFetchType];
+
+                if (image != nil)
+                {
+                    NSError *error = [self loadTexture:textureIndex withImage:image];
+                    
+                    if (error)
+                    {
+                        textureIndex = -1;
+                    }
+                    else
+                    {
+                        FluxTextureToImageMapElement *tel = ire.textureMapElement;
+                        tel.imageType = ire.imageFetchType;
+                        ire.image = image;
+                        loadedOneHiRes = true;
+//                        NSLog(@"Updated Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                    }
+                }
             }
-//          if (!loadedOneHiRes and HiRes image available)
-//              load hires texture into associated texture
-//              loadedOneHiRes = true
-//          recalc associated xform (tbiasMVP) - taken care of in UpdateMetadata()
-            
         }
     }
 //    NSLog(@"Done texture loading");
@@ -1281,17 +1309,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
         self.renderList = [self.fluxDisplayManager selectRenderElementsInto:self.renderList ToMaxCount:number_textures];
     
-        // there may be other things to do besides transfer data so that is why it isn't just incorporated into sortRenderList
-        [self.renderList removeAllObjects];
-
-        int maxDisplayCount = self.fluxDisplayManager.displayListCount;
-        maxDisplayCount = MIN(maxDisplayCount, number_textures);
-        if (maxDisplayCount > 0)
-        {
-            [self.fluxDisplayManager lockDisplayList];
-            [self.renderList addObjectsFromArray:[self.fluxDisplayManager.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
-            [self.fluxDisplayManager unlockDisplayList];
-        }
+//        // there may be other things to do besides transfer data so that is why it isn't just incorporated into sortRenderList
+//        [self.renderList removeAllObjects];
+//
+//        int maxDisplayCount = self.fluxDisplayManager.displayListCount;
+//        maxDisplayCount = MIN(maxDisplayCount, number_textures);
+//        if (maxDisplayCount > 0)
+//        {
+//            [self.fluxDisplayManager lockDisplayList];
+//            [self.renderList addObjectsFromArray:[self.fluxDisplayManager.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
+//            [self.fluxDisplayManager unlockDisplayList];
+//        }
 
         _displayListHasChanged -= MIN(_displayListHasChanged, oldDisplayListHasChanged);    // make sure it doesn't go (-ve)
     

@@ -23,6 +23,7 @@
         _image = nil;
         _dirty = true;
         _imageType = none;
+        _imageFetchType = none;
         _imagePose = malloc(sizeof(sensorPose));
     }
     
