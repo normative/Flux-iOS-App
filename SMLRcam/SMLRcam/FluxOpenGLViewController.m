@@ -63,6 +63,9 @@ enum
     UNIFORM_RENDER_ENABLE6,
     UNIFORM_RENDER_ENABLE7,
     
+    UNIFORM_CROP_TOPIMAGE,
+    UNIFORM_CROP_BOTTOMIMAGE,
+    
     NUM_UNIFORMS
 };
 
@@ -121,6 +124,10 @@ int   iPhone5_ypixels = 3264;
 int   iPhone5_xpixels = 2448;
 float iPhone5_focalLength = 0.0041; //4.10 mm
 
+//square images
+int iPhone5_topcrop;
+int iPhone5_bottomcrop;
+
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
 
@@ -174,6 +181,10 @@ void init_camera_model()
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
     camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     
+    
+    //Assume symmetric cropping for now
+    iPhone5_bottomcrop = (iPhone5_ypixels - iPhone5_xpixels)/2;
+    iPhone5_topcrop = iPhone5_bottomcrop;
 }
 
 #define PI 3.1415926535898
@@ -825,6 +836,49 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     cameraManager = [FluxAVCameraSingleton sharedCamera];
     [cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+}
+
+#pragma mark ScreenShot
+-(UIImage*)takeScreenCap
+{
+    int s = 1;
+    UIScreen* screen = [ UIScreen mainScreen ];
+    if ( [ screen respondsToSelector:@selector(scale) ] )
+        s = (int) [ screen scale ];
+    
+    const int w = self.view.frame.size.width;
+    const int h = self.view.frame.size.height;
+    const NSInteger myDataLength = w * h * 4 * s * s;
+    // allocate array and read pixels into it.
+    GLubyte *buffer = (GLubyte *) malloc(myDataLength);
+    glReadPixels(0, 0, w*s, h*s, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    // gl renders "upside down" so swap top to bottom into new array.
+    // there's gotta be a better way, but this works.
+    GLubyte *buffer2 = (GLubyte *) malloc(myDataLength);
+    for(int y = 0; y < h*s; y++)
+    {
+        memcpy( buffer2 + (h*s - 1 - y) * w * 4 * s, buffer + (y * 4 * w * s), w * 4 * s );
+    }
+    free(buffer); // work with the flipped buffer, so get rid of the original one.
+    
+    // make data provider with data.
+    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, buffer2, myDataLength, NULL);
+    // prep the ingredients
+    int bitsPerComponent = 8;
+    int bitsPerPixel = 32;
+    int bytesPerRow = 4 * w * s;
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+    CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
+    // make the cgimage
+    CGImageRef imageRef = CGImageCreate(w*s, h*s, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+    // then make the uiimage from that
+    UIImage *myImage = [ UIImage imageWithCGImage:imageRef scale:s orientation:UIImageOrientationUp];
+    CGImageRelease( imageRef );
+    CGDataProviderRelease(provider);
+    CGColorSpaceRelease(colorSpaceRef);
+    free(buffer2);
+    return myImage;
 }
 
 

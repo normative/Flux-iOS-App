@@ -12,5 +12,8 @@
 
 @property (nonatomic, strong) NSString*tagText;
 @property (nonatomic) int count;
+@property (nonatomic) BOOL isChecked;
+
+- (void)setIsActive:(BOOL)active;
 
 @end

@@ -51,6 +51,13 @@
         [defaults synchronize];
     }
     
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat" size:17.0],
+                                                           }];
+    
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{
+                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat" size:17.0],
+                                                           } forState:UIControlStateNormal];
     
     //google analytics
     // Optional: automatically send uncaught exceptions to Google Analytics.

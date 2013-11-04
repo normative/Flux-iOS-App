@@ -61,19 +61,8 @@
 }
 
 -(void)setViewForContentCount:(int)count{
-//    if (count < 6) {
-//        [UIView animateWithDuration:0.3 animations:^{
-//            [self setAlpha:0.0];
-//        }];
-//        return;
-//    }
-//    else{
-//        if (self.alpha < 1) {
-//            [UIView animateWithDuration:0.3 animations:^{
-//                [self setAlpha:1.0];
-//            }];
-//        }
-//    }
+    
+    
     float height = [[UIScreen mainScreen] bounds].size.height;
     float heightPerCell = height/5;
     self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell*count);
@@ -81,13 +70,22 @@
     // Set up the shape of the circle
     int radius = 28;
     circleLayer = [CAShapeLayer layer];
-
-    CGFloat circleStartAngle = 340;
-    CGFloat circleEndAngle = circleStartAngle-(320*(self.timeScrollView.bounds.size.height / self.timeScrollView.contentSize.height));
-//    NSLog(@"Start angle: 340, End angle:%f",circleEndAngle);
     
+    CGFloat circleStartAngle;
+    CGFloat circleEndAngle;
+    
+    if (count < 6) {
+        circleStartAngle = 340;
+        circleEndAngle = 20;
+    }
+    else{
+        circleStartAngle = 340;
+        circleEndAngle = circleStartAngle-(320*(self.timeScrollView.bounds.size.height / self.timeScrollView.contentSize.height));
+    }
+
     circleStartAngle = DEGREES_TO_RADIANS(circleStartAngle);
     circleEndAngle = DEGREES_TO_RADIANS(circleEndAngle);
+
     
     // Make a circular shape
     circleLayer.path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(0,0)
@@ -125,24 +123,9 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
-    if (self.fluxDisplayManager.nearbyListCount < 6) {
-        [self didStopScrolling];
-        return;
-    }
-    
-    //it it's within bounds of the scrollView
-    if ((scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height) || scrollView.contentOffset.y <= 0) {
-        //if it's off the top, rotate it to the top of the scroller
-        if (scrollView.contentOffset.y <= 0) {
-            //circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0.0));
-        }
-        //else, move it to the bottom of the scroller
-        else{
-            
-        }
-    }
-    else{
-        if (self.fluxDisplayManager) {
+    //if it's outside the bounds of the scrollView
+    if ((scrollView.contentOffset.y < scrollView.contentSize.height - scrollView.frame.size.height) && scrollView.contentOffset.y > 0) {
+        if (self.fluxDisplayManager && self.fluxDisplayManager.nearbyListCount > 5) {
             [self.fluxDisplayManager timeBracketDidChange:(scrollView.contentOffset.y/scrollView.contentSize.height)];
         }
     }
@@ -157,17 +140,11 @@
     oldScrollPos = scrollView.contentOffset.y;
 }
 
-- (void)didStopScrolling{
-}
-
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     oldScrollPos = scrollView.contentOffset.y;
     if (self.fluxDisplayManager) {
         [self.fluxDisplayManager timeBracketDidEndScrolling];
     }
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate{
 }
 
 
