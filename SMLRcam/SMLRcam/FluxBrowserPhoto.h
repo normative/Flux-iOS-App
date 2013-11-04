@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Kei Turner on 10/25/2013.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "IDMPhoto.h"

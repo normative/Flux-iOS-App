@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Kei Turner on 2013-09-23.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxDisplayManager.h"

@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Kei Turner on 2013-10-21.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxTimeFilterScrollView.h"
@@ -31,12 +31,12 @@
 }
 
 - (BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view{
-    
+    return NO;
 #warning Be sure to re-enable this code to allow tap-based image selection to function.
-//    CGPoint point = [[touches anyObject]locationInView:self.superview];
-//    if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:didTapAtPoint:)]) {
-//        [tapDelegate timeFilterScrollView:self didTapAtPoint:point];
-//    }
+    CGPoint point = [[touches anyObject]locationInView:self.superview];
+    if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:didTapAtPoint:)]) {
+        [tapDelegate timeFilterScrollView:self didTapAtPoint:point];
+    }
     return YES;
 }
 

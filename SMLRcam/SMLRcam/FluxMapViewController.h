@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Jacky So on 2013-08-12.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -13,7 +13,7 @@
 #import "FluxDataManager.h"
 #import "FluxDisplayManager.h"
 #import "FluxLocationServicesSingleton.h"
-#import "FluxFiltersTableViewController.h"
+#import "FluxFiltersViewController.h"
 
 #import "GAITrackedViewController.h"
 #import "GAI.h"

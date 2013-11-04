@@ -3,7 +3,7 @@
 //  SMLRcam
 //
 //  Created by Kei Turner on 7/4/13.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxScanViewController.h"
@@ -71,11 +71,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
     [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
-}
-
-// Right Drawer
-- (IBAction)showRightDrawer:(id)sender {
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideRight animated:YES completion:nil];
 }
 
 #pragma mark - Annotations Feed Methods
@@ -232,7 +227,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (IBAction)filterButtonAction:(id)sender {
-    //[self performSegueWithIdentifier:@"pushFiltersView" sender:self];
 }
 
 #pragma mark - OpenGLView
@@ -504,7 +498,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     self.screenName = @"Scan View";
 }
 
-- (void)FiltersTableViewDidPop:(FluxFiltersTableViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
     [self animationPopFrontScaleUp];
     
     if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
@@ -524,11 +518,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
         //set the delegate of the navControllers top view (our filters View)
-        UINavigationController*tmp = segue.destinationViewController;
-        FluxFiltersTableViewController* filtersVC = (FluxFiltersTableViewController*)tmp.topViewController;
+        FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [filtersVC setDelegate:self];
         [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         [filtersVC prepareViewWithFilter:currentDataFilter];
+        
+        UIImage*capture = [openGLController takeScreenCap];
+        [filtersVC setBackgroundView:capture];
         
         [self animationPushBackScaleDown];
     }
@@ -582,9 +578,14 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	
 	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
 	[view.layer addAnimation:group forKey:nil];
+    
+    [UIView animateWithDuration:0.2f animations:^{
+        [statusBarView setAlpha:0.0];
+    } completion:nil];
 }
 
 -(void) animationPopFrontScaleUp {
+    [statusBarView setAlpha:1.0];
 	CABasicAnimation* scaleUp = [CABasicAnimation animationWithKeyPath:@"transform"];
 	scaleUp.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
 	scaleUp.fromValue = [NSValue valueWithCATransform3D:HC_DEFINE_TO_SCALE];

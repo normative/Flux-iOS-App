@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Denis Delorme on 10/27/13.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxImageRenderElement.h"

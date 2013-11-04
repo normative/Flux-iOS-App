@@ -838,6 +838,49 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 }
 
+#pragma mark ScreenShot
+-(UIImage*)takeScreenCap
+{
+    int s = 1;
+    UIScreen* screen = [ UIScreen mainScreen ];
+    if ( [ screen respondsToSelector:@selector(scale) ] )
+        s = (int) [ screen scale ];
+    
+    const int w = self.view.frame.size.width;
+    const int h = self.view.frame.size.height;
+    const NSInteger myDataLength = w * h * 4 * s * s;
+    // allocate array and read pixels into it.
+    GLubyte *buffer = (GLubyte *) malloc(myDataLength);
+    glReadPixels(0, 0, w*s, h*s, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    // gl renders "upside down" so swap top to bottom into new array.
+    // there's gotta be a better way, but this works.
+    GLubyte *buffer2 = (GLubyte *) malloc(myDataLength);
+    for(int y = 0; y < h*s; y++)
+    {
+        memcpy( buffer2 + (h*s - 1 - y) * w * 4 * s, buffer + (y * 4 * w * s), w * 4 * s );
+    }
+    free(buffer); // work with the flipped buffer, so get rid of the original one.
+    
+    // make data provider with data.
+    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, buffer2, myDataLength, NULL);
+    // prep the ingredients
+    int bitsPerComponent = 8;
+    int bitsPerPixel = 32;
+    int bytesPerRow = 4 * w * s;
+    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+    CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
+    // make the cgimage
+    CGImageRef imageRef = CGImageCreate(w*s, h*s, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+    // then make the uiimage from that
+    UIImage *myImage = [ UIImage imageWithCGImage:imageRef scale:s orientation:UIImageOrientationUp];
+    CGImageRelease( imageRef );
+    CGDataProviderRelease(provider);
+    CGColorSpaceRelease(colorSpaceRef);
+    free(buffer2);
+    return myImage;
+}
+
 
 #pragma mark - View Lifecycle
 
@@ -1444,6 +1487,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // then spin through the images...
     NSEnumerator *revEnumerator = [self.renderList reverseObjectEnumerator];
+    int c = 0;
     for (FluxImageRenderElement *ire in revEnumerator)
     {
         int i = ire.textureMapElement.textureIndex;
@@ -1451,7 +1495,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
 //          NSLog(@"rendering texture %d, id %@, timestamp %@", i, ire.localID, ire.timestamp);
             glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
-            glActiveTexture(GL_TEXTURE0 + i);
+            glActiveTexture(GL_TEXTURE0 + c);
             glBindTexture(_texture[i].target, _texture[i].name);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -1459,10 +1503,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         else
         {
-            glActiveTexture(GL_TEXTURE0 + i);
+            glActiveTexture(GL_TEXTURE0 + c);
             glBindTexture(GL_TEXTURE_2D, 0);
             glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],0);
         }
+        c++;
     }
     
     for (int i = 0; i < number_textures; i++)

@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Kei Turner on 2013-08-08.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxLocationServicesSingleton.h"
@@ -139,69 +139,15 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     {
         [locationMeasurements removeObjectAtIndex:0];
     }
-    
-/*
-    const double weight_time = 0.5;
-    const double weight_accuracy = 0.5;
-    
-    double corrected_lat = 0.0;
-    double corrected_long = 0.0;
-    
-    NSMutableArray *weights = [[NSMutableArray alloc] initWithCapacity:[locationMeasurements count]];
-    CLLocation *temp_location;
-    
-    NSDate *min_date = [locationMeasurements valueForKeyPath:@"@min.timestamp"];
-    NSDate *max_date = [locationMeasurements valueForKeyPath:@"@max.timestamp"];
-    NSNumber *min_accuracy = [locationMeasurements valueForKeyPath:@"@min.horizontalAccuracy"];
-    NSNumber *max_accuracy = [locationMeasurements valueForKeyPath:@"@max.horizontalAccuracy"];
-    //NSLog(@"Min/max times: %@ - %@", [dateFormat stringFromDate:min_date], [dateFormat stringFromDate:max_date]);
-    //NSLog(@"Min/max accuracy: %f - %f", [min_accuracy doubleValue], [max_accuracy doubleValue]);
-
-    for (int i = 0; i < [locationMeasurements count]; i++) {
-        temp_location = [locationMeasurements objectAtIndex:i];
-        double time_component = ([max_date timeIntervalSinceDate:min_date] > 0) ?
-        ([temp_location.timestamp timeIntervalSinceDate:min_date] /
-         [max_date timeIntervalSinceDate:min_date])
-        : 1.0;
-        double accuracy_component = (([max_accuracy doubleValue] - [min_accuracy doubleValue]) > 0) ?
-        (1.0 - ((temp_location.horizontalAccuracy - [min_accuracy doubleValue]) /
-                ([max_accuracy doubleValue] - [min_accuracy doubleValue])))
-        : 1.0;
-        
-        double final_weight = (weight_time*time_component) + (weight_accuracy*accuracy_component);
-        
-        //NSLog(@"%f, %f, %f, %f, %f", time_component, accuracy_component, final_weight,
-        //      temp_location.coordinate.latitude, temp_location.coordinate.longitude);
-        weights[i] = [NSNumber numberWithDouble:final_weight];
-        
-        corrected_lat += final_weight * temp_location.coordinate.latitude;
-        corrected_long += final_weight * temp_location.coordinate.longitude;
-    }
-    
-    NSNumber *weight_sum = [weights valueForKeyPath:@"@sum.self"];
-    if ([weight_sum doubleValue] <= 0.0)
-    {
-        // we should never get here based on the above logic
-        NSLog(@"Zero or negative value for weight factor (%@)", weight_sum);
-        return;
-    }
-    
-    corrected_lat /= [weight_sum doubleValue];
-    corrected_long /= [weight_sum doubleValue];
-    
-    // Update the public location information for consumption
-    temp_location = [locationMeasurements lastObject];
-    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(corrected_lat, corrected_long);
-//    self.location = [[CLLocation alloc] initWithCoordinate:coord altitude:temp_location.altitude horizontalAccuracy:temp_location.horizontalAccuracy verticalAccuracy:temp_location.verticalAccuracy course:temp_location.course speed:temp_location.speed timestamp:temp_location.timestamp];
-//
-*/
-#warning Currently disabling location services filtering mods
+   
+    // TODO: add in code here to "correct" the current location based on whatever (Kalman, etc.)
+    //  Update newLocation and procede
     
 //#warning Overriding location with fixed value
 //    // HACK
 //    // force location value to eliminate GPS from equation...
-////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // burlington office
-////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // normative office
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // Burlington office
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // Normative office
 //    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.325796, -79.813148);   // ??
 //    newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:newLocation.altitude
 //                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy

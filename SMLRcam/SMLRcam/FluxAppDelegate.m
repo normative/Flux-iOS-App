@@ -3,7 +3,7 @@
 //  SMLRcam
 //
 //  Created by Kei Turner on 7/4/13.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxAppDelegate.h"
@@ -51,6 +51,13 @@
         [defaults synchronize];
     }
     
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat" size:17.0],
+                                                           }];
+    
+    [[UIBarButtonItem appearance] setTitleTextAttributes:@{
+                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat" size:17.0],
+                                                           } forState:UIControlStateNormal];
     
     //google analytics
     // Optional: automatically send uncaught exceptions to Google Analytics.

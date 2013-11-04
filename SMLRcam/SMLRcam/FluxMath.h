@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Arjun Chopra on 8/29/13.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #ifndef Flux_FluxMath_h

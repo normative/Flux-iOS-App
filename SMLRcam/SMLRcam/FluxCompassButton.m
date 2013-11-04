@@ -3,7 +3,7 @@
 //  Flux
 //
 //  Created by Jacky So on 2013-09-06.
-//  Copyright (c) 2013 Normative. All rights reserved.
+//  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
 #import "FluxCompassButton.h"
