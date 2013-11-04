@@ -322,7 +322,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
             if ([result count]>0)
             {
                 FluxUserObject*temp = [result firstObject];
-                NSLog(@"Successfuly Created userObject %i with details: %@ %@: %@",temp.userID,temp.firstName, temp.lastName,temp.userName);
+                NSLog(@"Successfuly Created userObject %i with details: %@: %@",temp.userID,temp.name,temp.username);
 
                 if ([delegate respondsToSelector:@selector(NetworkServices:didCreateUser:)])
                 {

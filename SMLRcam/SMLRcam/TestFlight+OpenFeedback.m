@@ -10,14 +10,13 @@
 
 @implementation TestFlight (OpenFeedback)
 
-+ (void)openFeedbackView {
++ (void)openFeedbackViewFromView:(UIViewController *)presentingVC {
     TFFeedbackController *feedbackController = [[TFFeedbackController alloc] initWithNibName:[TFFeedbackController nibFileName]
                                                                                       bundle:nil];
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
     
-    UIViewController *rootViewController = window.rootViewController;
-    
-    [rootViewController presentViewController:feedbackController animated:YES completion:nil];
+    [presentingVC presentViewController:feedbackController animated:YES completion:^{
+        
+    }];
 }
 
 @end

@@ -28,7 +28,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [ImageAnnotationTextView SetPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
+    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
     [ImageAnnotationTextView setTheDelegate:self];
     
     //segmented Control

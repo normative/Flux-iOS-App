@@ -57,7 +57,7 @@ static size_t const kDashedCount            = (2.0f);
 
 #pragma mark - setters
 
-- (void)SetPlaceholderText:(NSString*)thePlaceholder{
+- (void)setPlaceholderText:(NSString*)thePlaceholder{
     placeholderString = thePlaceholder;
     [placeholderLabel setText: placeholderString];
     [self addSubview:placeholderLabel];

@@ -31,54 +31,33 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    [self.navigationController setNavigationBarHidden:YES];
     [self.drawerController setMaximumLeftDrawerWidth:256.0 animated:YES completion:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
-    [self.tableView setContentSize:CGSizeMake(self.tableView.contentSize.width, self.tableView.contentSize.height+75)];
+    [self.tableView setContentSize:CGSizeMake(self.tableView.contentSize.width, self.tableView.contentSize.height+25)];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-//    CGRect frame = CGRectMake(0,161, 256, 100);
-//    UIView *copyRightView = [[UIView alloc]initWithFrame:frame];
-//    [copyRightView setBackgroundColor:[UIColor redColor]];
-//    [self.view addSubview:copyRightView];
-//    [self.view sendSubviewToBack:copyRightView];
-
-    
-    // Set Profile Image on Imageview
-    [self.profileImageView setImage:[UIImage imageNamed:@"profileImage"]];
-    
-    // Set Username on label
-    NSString *username = @"@Dan_Fielding";
-    [self.profileUsernameLbl setText:username];
-    
-    // Set Number of Post on label
-    [self.profileNumberOfPostLbl setFont:[UIFont fontWithName:@"Akkurat" size:12]];
-    [self.profileNumberOfPostLbl setText:[NSString stringWithFormat:@"%i Posts", 150]];
-    
-    // Set Member since date on label
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd/MM/yy"];
-    NSString *dateInString = [dateFormatter stringFromDate:[NSDate date]];
-    [self.profileJoinedDateLbl setFont:[UIFont fontWithName:@"Akkurat" size:12]];
-    [self.profileJoinedDateLbl setText:[NSString stringWithFormat:@"Member since %@", dateInString]];
-    
     NSString *versionString = [NSString stringWithFormat:@"Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
     [self.versionLbl setText:versionString];
-    
-    [self.navigationController.navigationBar setTranslucent:YES];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:31.0/255.0 green:33/255.0 blue:36.0/255.0 alpha:1.0]];
-    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
-    [self setTitle:@"Flux"];
-    
-    [self.view needsUpdateConstraints];
+
+//    [self.navigationController.navigationBar setTranslucent:YES];
+//    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:31.0/255.0 green:33/255.0 blue:36.0/255.0 alpha:1.0]];
+//    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
+//    [self.navigationController setNavigationBarHidden:NO animated:YES];
+//    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
+//    [self setTitle:@"Flux"];
+//    
+//    [self.view needsUpdateConstraints];
 }
 //
 //- (CGSize)preferredContentSize
@@ -104,21 +83,53 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 3;
+    return 5;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.row>0) {
+        return 44.0;
+    }
+    return 94.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryNone;
+    static NSString *cellIdentifier = @"standardCell";
+    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+    }
+    [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
+    [cell.textLabel setTextColor:[UIColor whiteColor]];
+    
+    //NSString *currentValue = [shareValues objectAtIndex:[indexPath row]];
+    //[[cell textLabel]setText:currentValue];
+    //return cell;
 
     switch (indexPath.row)
     {
         case 0:
+            {
+                NSString *cellIdentifier = @"profileCell";
+                UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+                if (!cell) {
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+                }
+                return cell;
+            }
             break;
         case 1:
+            [cell.textLabel setText:@"Photos"];
             break;
         case 2:
+            [cell.textLabel setText:@"Following"];
+            break;
+        case 3:
+            [cell.textLabel setText:@"Followers"];
+            break;
+        case 4:
+            [cell.textLabel setText:@"Settings"];
             break;
     }
     return cell;
@@ -130,11 +141,18 @@
     switch (indexPath.row)
     {
         case 0:
-            [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
+            //[self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 1:
+            [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
+            //[self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            break;
+        case 3:
+            //[self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            break;
+        case 4:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
             break;
             
@@ -200,15 +218,8 @@
 
 - (IBAction)onSendFeedBackBtn:(id)sender
 {
-    //    MFMailComposeViewController *mailViewController = [[MFMailComposeViewController alloc] init];
-    //    mailViewController.mailComposeDelegate = self;
-    //    [mailViewController setSubject:@"Feedback"];
-    //    [mailViewController setMessageBody:@"Your message goes here." isHTML:NO];
-    //    [mailViewController setToRecipients:[NSArray arrayWithObject:@"dfe73560a31f1d628cc10f1e614bbe5e_ijkustcefu3dmnzqgq2da@n.testflightapp.com"]];
-    //
-    //    [mailViewController setModalTransitionStyle:UIModalTransitionStyleCoverVertical];
-    //    [self presentViewController:mailViewController animated:YES completion:nil];
-    [TestFlight openFeedbackView];
+    [TestFlight openFeedbackViewFromView:self];
+    [self.tableView setContentSize:CGSizeMake(self.tableView.contentSize.width, self.tableView.contentSize.height+25)];
 }
 
 #pragma mark - delegate
@@ -221,13 +232,6 @@
         FluxSettingsViewController* leftDrawerSettingsViewController = (FluxSettingsViewController*)segue.destinationViewController;
         leftDrawerSettingsViewController.fluxDataManager = self.fluxDataManager;
     }
-}
-
-- (void)mailComposeController:(MFMailComposeViewController *)controller
-          didFinishWithResult:(MFMailComposeResult)result
-                        error:(NSError *)error
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 //- (void)scrollViewDidScroll:(UIScrollView *)scrollView

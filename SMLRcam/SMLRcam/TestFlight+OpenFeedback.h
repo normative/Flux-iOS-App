@@ -11,6 +11,6 @@
 
 @interface TestFlight (OpenFeedback)
 
-+ (void)openFeedbackView;
++ (void)openFeedbackViewFromView:(UIViewController*) presentingVC;
 
 @end

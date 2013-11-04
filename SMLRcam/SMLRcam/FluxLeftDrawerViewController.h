@@ -16,11 +16,6 @@
 
 @interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate>
 
-@property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
-@property (weak, nonatomic) IBOutlet UILabel *profileUsernameLbl;
-@property (weak, nonatomic) IBOutlet UILabel *profileNumberOfPostLbl;
-@property (weak, nonatomic) IBOutlet UILabel *profileJoinedDateLbl;
-
 @property (weak, nonatomic) IBOutlet UIView *copyrightView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLbl;
 

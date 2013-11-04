@@ -52,7 +52,7 @@
     }
     
     [[UINavigationBar appearance] setTitleTextAttributes:@{
-                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat" size:17.0],
+                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat-Bold" size:17.0],
                                                            }];
     
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{

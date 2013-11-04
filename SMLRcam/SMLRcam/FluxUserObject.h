@@ -10,11 +10,11 @@
 
 @interface FluxUserObject : NSObject
 
-@property (nonatomic, weak) NSString*dateCreated;
-@property (nonatomic, weak) NSString*firstName;
-@property (nonatomic, weak) NSString*lastName;
-@property (nonatomic, weak) NSString*userName;
 @property (nonatomic) int userID;
-@property (nonatomic) BOOL privacy;
+@property (nonatomic, weak) NSString*name;
+@property (nonatomic, weak) NSString*username;
+@property (nonatomic, weak) NSString*password;
+@property (nonatomic, weak) NSString*email;
+@property (nonatomic, weak) UIImage*profilePic;
 
 @end

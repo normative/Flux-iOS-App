@@ -27,7 +27,7 @@
 @property (unsafe_unretained) id <KTPlaceholderTextViewDelegate> theDelegate;
 
 - (void)setPlaceholderColor:(UIColor*)color;
-- (void)SetPlaceholderText:(NSString*)thePlaceholder;
+- (void)setPlaceholderText:(NSString*)thePlaceholder;
 - (void)resetView;
 
 @end
