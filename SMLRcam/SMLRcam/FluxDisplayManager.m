@@ -146,6 +146,19 @@ double getAbsAngle(double angle, double heading)
     [self calculateTimeAdjustedImageList];
 }
 
+- (void)timeBracketWillBeginScrolling
+{
+    NSLog(@"DisplayManager start scrolling");
+//    _isScrubAnimating = true;
+}
+
+- (void)timeBracketDidEndScrolling
+{
+    NSLog(@"DisplayManager end scrolling");
+//    _isScrubAnimating = false;
+    
+}
+
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
 {
     //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
@@ -194,19 +207,23 @@ double getAbsAngle(double angle, double heading)
             if (ire.image == nil)
             {
                 // check to see if we have the imagery in the cache..
-                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res];
+                FluxImageType rtype = none;
+                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
                 if (image != nil)
                 {
                     ire.image = image;
+                    ire.imageType = rtype;
                 }
                 else if (_isScanMode)
                 {
                     // request it if it isn't there...
+                    ire.imageFetchType = thumb;
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
                     [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.image = image;
+                        ire.imageType = thumb;
                         ire.imageFetchType = none;
                         [self updateImageMetadataForElement:ire];
                         
@@ -594,12 +611,37 @@ double getAbsAngle(double angle, double heading)
     
     int maxDisplayCount = self.displayListCount;
     maxDisplayCount = MIN(maxDisplayCount, maxCount);
-    if (maxDisplayCount > 0)
+
+    [self lockDisplayList];
+    double localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
+
+    int count = 0;
+    if (count < maxDisplayCount)
     {
-        [self lockDisplayList];
-        [renderList addObjectsFromArray:[self.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
-        [self unlockDisplayList];
+        for (FluxImageRenderElement *ire in self.displayList)
+        {
+//        for (int idx = 0; idx < maxDisplayCount; idx++)
+//        {
+            double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
+            if (h1 < 90.0)
+            {
+                [renderList addObject:ire];
+                count++;
+                if (count >= maxDisplayCount)
+                {
+                    break;
+                }
+            }
+        }
     }
+    [self unlockDisplayList];
+
+//    if (maxDisplayCount > 0)
+//    {
+//        [self lockDisplayList];
+//        [renderList addObjectsFromArray:[self.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
+//        [self unlockDisplayList];
+//    }
     
     return renderList;
 }
@@ -623,7 +665,7 @@ double getAbsAngle(double angle, double heading)
             // look to see if can trigger load of higher resolution
             for (FluxImageRenderElement *ire in renderList)
             {
-                if (ire.imageFetchType == none)
+                if ((ire.imageFetchType == none) && (ire.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
                 {
                     // fetch the quart for this element
                     ire.imageFetchType = quarterhd;
@@ -636,7 +678,8 @@ double getAbsAngle(double angle, double heading)
                     [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
-//                        ire.imageFetchType = none;
+                        ire.imageFetchType = none;
+                        ire.imageType = quarterhd;
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                             object:self userInfo:nil];
@@ -657,7 +700,7 @@ double getAbsAngle(double angle, double heading)
         // only load thumbs if loading required
         for (FluxImageRenderElement *ire in renderList)
         {
-            ire.imageFetchType = thumb;
+            ire.imageType = thumb;
         }
     }
 

@@ -194,10 +194,12 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return [fluxDataStore doesImageExistForLocalID:localID];
 }
 
-- (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType
+- (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType
 {
     UIImage *ret = nil;
     FluxImageType itype;
+
+    *returnType = none;
     
     switch (imageType) {
         case lowest_res:
@@ -205,7 +207,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
             itype = lowest_res + 1;
             while ((ret == nil) && (itype < highest_res))
             {
-                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype++];
+                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype];
+                *returnType = itype++;
             }
             break;
         case highest_res:
@@ -213,12 +216,14 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
             itype = highest_res - 1;
             while ((ret == nil) && (itype > lowest_res))
             {
-                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype--];
+                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype];
+                *returnType = itype--;
             }
             break;
         default:
             // everything else - just return what is asked...
             ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
+            *returnType = imageType;
             break;
     }
 

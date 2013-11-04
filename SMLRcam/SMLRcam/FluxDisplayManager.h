@@ -78,4 +78,7 @@ extern NSString* const FluxOpenGLShouldRender;
 
 - (NSMutableArray *)selectRenderElementsInto:(NSMutableArray *)renderList ToMaxCount:(integer_t)maxCount;
 
+- (void)timeBracketWillBeginScrolling;
+- (void)timeBracketDidEndScrolling;
+
 @end

@@ -1233,7 +1233,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     textureIndex = tel.textureIndex;
                     
                     // not found so always load lowest resolution (thumb typically)
-                    UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res];
+                    FluxImageType rtype = none;
+                    UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
 
 //                    NSError *error = [self loadTexture:textureIndex withImage:ire.image];
                     NSError *error = [self loadTexture:textureIndex withImage:image];
@@ -1257,9 +1258,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         ire.textureMapElement = tel;
                         tel.used = true;
                         tel.localID = ire.localID;
-                        tel.imageType = lowest_res;
+                        tel.imageType = rtype;
                         justLoaded = true;
-//                        NSLog(@"Added Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                        NSLog(@"Loaded Image texture in slot %d for key %@", (textureIndex),ire.localID);
                     }
                     break;
                 }
@@ -1268,15 +1269,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         else
         {
             textureIndex = ire.textureMapElement.textureIndex;
-//            NSLog(@"Recycling texture in slot %d for key %@", textureIndex, ire.localID);
+//            NSLog(@"Recycling texture in slot %d for key %@, size: %d", textureIndex, ire.localID, ire.imageType);
         }
 
         if ((textureIndex >= 0) && (!justLoaded) && (!loadedOneHiRes))
         {
-            if (ire.textureMapElement.imageType < ire.imageFetchType)
+            if (ire.textureMapElement.imageType < ire.imageType)
             {
                 // new one is bigger - load it up... if need to load up...
-                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageFetchType];
+                FluxImageType rtype = none;
+                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageType returnSize:&rtype];
 
                 if (image != nil)
                 {
@@ -1285,19 +1287,40 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     if (error)
                     {
                         textureIndex = -1;
+                        NSLog(@"Failed to load texture %d for ID %@", rtype, ire.localID);
                     }
                     else
                     {
                         FluxTextureToImageMapElement *tel = ire.textureMapElement;
-                        tel.imageType = ire.imageFetchType;
+                        tel.imageType = rtype;
+                        ire.imageType = rtype;
                         ire.image = image;
                         loadedOneHiRes = true;
-//                        NSLog(@"Updated Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                        NSLog(@"Updated Image texture in slot %d for key %@", (textureIndex),ire.localID);
                     }
                 }
             }
         }
     }
+    
+    
+    for (FluxTextureToImageMapElement *tel in self.textureMap)
+    {
+        if ((!tel.used) && (tel.localID != nil))
+        {
+            // break link from old ire to tel - need to search and update it.
+            FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+            if (tire != nil)
+            {
+                tire.textureMapElement = nil;
+            }
+            tel.localID = nil;
+            tel.imageType = none;
+            _texture[tel.textureIndex] = nil;
+        }
+    }
+    
+
 //    NSLog(@"Done texture loading");
 }
 
@@ -1439,11 +1462,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
-    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
+//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX7], 1, 0, _tBiasMVP[7].m);
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[6].m);
     //glActiveTexture(GL_TEXTURE0);
@@ -1467,9 +1490,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (FluxImageRenderElement *ire in revEnumerator)
     {
         int i = ire.textureMapElement.textureIndex;
+        glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
+
         if ((_texture[i] != nil) && (_validMetaData[i]==1))
         {
-//          NSLog(@"rendering texture %d, id %@, timestamp %@", i, ire.localID, ire.timestamp);
+//            NSLog(@"binding texture %d, id %@, timestamp %@ to gltexture %d", i, ire.localID, ire.timestamp, c);
+
             glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
             glActiveTexture(GL_TEXTURE0 + c);
             glBindTexture(_texture[i].target, _texture[i].name);
@@ -1481,7 +1507,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             glActiveTexture(GL_TEXTURE0 + c);
             glBindTexture(GL_TEXTURE_2D, 0);
-            glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],0);
+            glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],0);
         }
         c++;
     }
@@ -1493,10 +1519,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             if (!tim.used)
             {
+                glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
 //              NSLog(@"un-rendering texture %d", i);
-                glActiveTexture(GL_TEXTURE0 + tim.textureIndex);
+                glActiveTexture(GL_TEXTURE0 + c);
                 glBindTexture(GL_TEXTURE_2D, 0);
-                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0 + tim.textureIndex],0);
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0 + c],0);
+                c++;
             }
         }
     }
