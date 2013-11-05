@@ -92,6 +92,7 @@
 @property (nonatomic, strong)NSMutableArray *renderList;
 @property (nonatomic, strong)NSMutableArray *textureMap;
 
+@property (weak, nonatomic) IBOutlet UILabel *Pedometer;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
