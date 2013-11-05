@@ -72,10 +72,10 @@
 
 - (NSArray *) doesImageExistForImageID:(FluxImageID)imageID
 {
-    NSArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNumber numberWithBool:NO],
-                                    [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO],
-                                    [NSNumber numberWithBool:NO], nil];
-
+    NSArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null],
+                                                             [NSNull null], [NSNull null], [NSNull null],
+                                                             nil];
+    
     if (imageID >= 0)
     {
         // Note this currently only supports the case where an image has been uploaded to the server.
@@ -90,20 +90,47 @@
 
 - (NSArray *) doesImageExistForLocalID:(FluxLocalID *)localID
 {
-    NSMutableArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNumber numberWithBool:NO],
-                                    [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO],
-                                    [NSNumber numberWithBool:NO], nil];
+    NSMutableArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null],
+                                                                    [NSNull null], [NSNull null], [NSNull null],
+                                                                    nil];
     
     if (localID != nil)
     {
         FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
-        imageFormats[thumb] = [NSNumber numberWithBool:
-                               ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]] != nil)];
-        imageFormats[screen_res] = [NSNumber numberWithBool:
-                                ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]] != nil)];
-        imageFormats[full_res] = [NSNumber numberWithBool:
-                                ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]] != nil)];
+//        imageFormats[thumb] = [NSNumber numberWithBool:
+//                               ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]] != nil)];
+//        imageFormats[screen_res] = [NSNumber numberWithBool:
+//                                    ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]] != nil)];
+//        imageFormats[full_res] = [NSNumber numberWithBool:
+//                                  ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]] != nil)];
+        
+        // No point searching for them for existence then searching for them again - might as well store the pointers.
+        id img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]];
+        imageFormats[thumb] = (img != nil) ? img : [NSNull null];
+        img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:quarterhd]];
+        imageFormats[quarterhd] = (img != nil) ? img : [NSNull null];
+        img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]];
+        imageFormats[screen_res] = (img != nil) ? img : [NSNull null];
+        img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]];
+        imageFormats[full_res] = (img != nil) ? img : [NSNull null];
+        imageFormats[screen_res] = imageFormats[full_res];
+        
+        bool foundLowest = false;
+        for (int i = (lowest_res + 1); (i < highest_res); i++)
+        {
+            if (imageFormats[i] != [NSNull null])
+            {
+                if (!foundLowest)
+                {
+                    foundLowest = true;
+                    imageFormats[lowest_res] = imageFormats[i];
+                }
+                
+                imageFormats[highest_res] = imageFormats[i];
+            }
+        }
     }
+    
     return [NSArray arrayWithArray:imageFormats];;
 }
 

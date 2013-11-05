@@ -69,7 +69,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 - (NSArray *) checkForImagesByLocalID:(FluxLocalID *)localID;
 
-- (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType;
+- (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
 
 - (void)deleteLocations;
 

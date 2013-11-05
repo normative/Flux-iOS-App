@@ -25,6 +25,7 @@
 @property (nonatomic)           bool dirty;
 @property (nonatomic, weak)     UIImage *image;
 @property (nonatomic)           FluxImageType imageType;
+@property (nonatomic)           FluxImageType imageFetchType;
 @property (nonatomic)           sensorPose *imagePose;
 //@property (nonatomic)           textureIndex;
 

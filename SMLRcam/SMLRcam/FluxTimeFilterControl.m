@@ -116,6 +116,9 @@
 
 #pragma mark - UIScrollView delegate
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    if (self.fluxDisplayManager) {
+        [self.fluxDisplayManager timeBracketWillBeginScrolling];
+    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
@@ -139,6 +142,9 @@
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
     oldScrollPos = scrollView.contentOffset.y;
+    if (self.fluxDisplayManager) {
+        [self.fluxDisplayManager timeBracketDidEndScrolling];
+    }
 }
 
 

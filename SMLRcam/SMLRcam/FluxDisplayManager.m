@@ -13,6 +13,9 @@
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
 
+const int maxRequestCountQuart = 2;
+const int maxRequestCountThumb = 5;
+
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
 NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDidUpdateImageTexture";
@@ -22,6 +25,8 @@ NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManag
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
 const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image requesting
+
+
 
 @implementation FluxDisplayManager
 
@@ -50,8 +55,13 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         
         currHeading = 0.0;  // due North until told otherwise...
         
-        _isTimeScrubbing = false;
+        _isScrubAnimating = false;
         _isScanMode = true;
+        
+        _imageRequestCountThumb = 0;
+        _imageRequestCountQuart = 0;
+
+        _imageRequestCountLock = [[NSLock alloc]init];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -136,6 +146,19 @@ double getAbsAngle(double angle, double heading)
     [self calculateTimeAdjustedImageList];
 }
 
+- (void)timeBracketWillBeginScrolling
+{
+    NSLog(@"DisplayManager start scrolling");
+//    _isScrubAnimating = true;
+}
+
+- (void)timeBracketDidEndScrolling
+{
+    NSLog(@"DisplayManager end scrolling");
+//    _isScrubAnimating = false;
+    
+}
+
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
 {
     //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
@@ -184,20 +207,24 @@ double getAbsAngle(double angle, double heading)
             if (ire.image == nil)
             {
                 // check to see if we have the imagery in the cache..
-                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest];
+                FluxImageType rtype = none;
+                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
                 if (image != nil)
                 {
                     ire.image = image;
+                    ire.imageType = rtype;
                 }
                 else if (_isScanMode)
                 {
                     // request it if it isn't there...
+                    ire.imageFetchType = thumb;
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
                     [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.image = image;
                         ire.imageType = thumb;
+                        ire.imageFetchType = none;
                         [self updateImageMetadataForElement:ire];
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
@@ -279,7 +306,6 @@ double getAbsAngle(double angle, double heading)
 
 - (void)didStopCameraMode:(NSNotification *)notification
 {
-    // TS: TODO: need to flesh this out to do whatever is necessary to stop camera capture mode from the list management perspective
     [_displayListLock lock];
     {
         if (!_isScanMode)
@@ -578,6 +604,48 @@ double getAbsAngle(double angle, double heading)
     [_displayListLock unlock];
 }
 
+
+- (NSMutableArray *)selectRenderElementsInto:(NSMutableArray *)renderList ToMaxCount:(integer_t)maxCount
+{
+    [renderList removeAllObjects];
+    
+    int maxDisplayCount = self.displayListCount;
+    maxDisplayCount = MIN(maxDisplayCount, maxCount);
+
+    [self lockDisplayList];
+    double localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
+
+    int count = 0;
+    if (count < maxDisplayCount)
+    {
+        for (FluxImageRenderElement *ire in self.displayList)
+        {
+//        for (int idx = 0; idx < maxDisplayCount; idx++)
+//        {
+            double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
+            if (h1 < 90.0)
+            {
+                [renderList addObject:ire];
+                count++;
+                if (count >= maxDisplayCount)
+                {
+                    break;
+                }
+            }
+        }
+    }
+    [self unlockDisplayList];
+
+//    if (maxDisplayCount > 0)
+//    {
+//        [self lockDisplayList];
+//        [renderList addObjectsFromArray:[self.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
+//        [self unlockDisplayList];
+//    }
+    
+    return renderList;
+}
+
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
 //    NSLog(@"Renderlist Count: %d", renderList.count);
@@ -589,12 +657,59 @@ double getAbsAngle(double angle, double heading)
                                 nil];
     
     [renderList sortUsingDescriptors:sortDescriptors];
+    
+    if (!_isScrubAnimating)
+    {
+        if (_imageRequestCountQuart < maxRequestCountQuart)
+        {
+            // look to see if can trigger load of higher resolution
+            for (FluxImageRenderElement *ire in renderList)
+            {
+                if ((ire.imageFetchType == none) && (ire.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
+                {
+                    // fetch the quart for this element
+                    ire.imageFetchType = quarterhd;
+
+                    [_imageRequestCountLock lock];
+                    _imageRequestCountQuart++;
+                    [_imageRequestCountLock unlock];
+                    
+                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                    [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
+                    dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                        // assign image into ire.image...
+                        ire.imageFetchType = none;
+                        ire.imageType = quarterhd;
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                            object:self userInfo:nil];
+                        [_imageRequestCountLock lock];
+                        _imageRequestCountQuart--;
+                        [_imageRequestCountLock unlock];
+                    };
+                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:quarterhd];
+                    
+                    // only request one at a time
+                    break;
+                }
+            }
+        }
+    }
+    else
+    {
+        // only load thumbs if loading required
+        for (FluxImageRenderElement *ire in renderList)
+        {
+            ire.imageType = thumb;
+        }
+    }
 
 //    NSLog(@"Render Sort:");
 //    int i = 0;
-//    for (FluxImageRenderElement *ire in self.displayList)
+//    for (FluxImageRenderElement *ire in renderList)
 //    {
-//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
+//        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
+//        NSLog(@"render: i=%d, key=%@, headRaw=%f, timestamp=%@, fetchtype=%d, loadtype=%d", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp, ire.imageFetchType, lt);
 //    }
 }
 
