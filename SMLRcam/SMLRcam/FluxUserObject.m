@@ -10,4 +10,18 @@
 
 @implementation FluxUserObject
 
+- (id)initWithName:(NSString*)theName andUsername:(NSString *)theUsername andPassword:(NSString *)thePassword andEmail:(NSString *)theEmail andProfilePic:(UIImage *)theProfilePic{
+    self = [super init];
+    if (self)
+    {
+        self.name = theName;
+        self.username = theUsername;
+        self.password = thePassword;
+        self.email = theEmail;
+        self.profilePic = theProfilePic;
+    }
+    
+    return self;
+}
+
 @end

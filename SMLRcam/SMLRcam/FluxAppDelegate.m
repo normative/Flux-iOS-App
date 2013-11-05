@@ -72,8 +72,8 @@
     //testFlight analytics
     [TestFlight takeOff:TestFlightAppToken];
     
-    //RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
-    RKLogConfigureByName("*", RKLogLevelOff);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelDefault);
+    //RKLogConfigureByName("*", RKLogLevelOff);
     
     return YES;
 }

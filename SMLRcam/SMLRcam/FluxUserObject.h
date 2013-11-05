@@ -17,4 +17,10 @@
 @property (nonatomic, weak) NSString*email;
 @property (nonatomic, weak) UIImage*profilePic;
 
+- (id)initWithName:(NSString*)theName
+   andUsername:(NSString*)theUsername
+         andPassword:(NSString*)thePassword
+       andEmail:(NSString*)theEmail
+andProfilePic:(UIImage*)theProfilePic;
+
 @end

@@ -72,11 +72,10 @@
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"firstName":     @"firstname",
-                                                  @"lastName":      @"lastname",
+                                                  @"name":     @"name",
+                                                  @"password":      @"password",
                                                   @"userName":      @"nickname",
-                                                  @"dateCreated":   @"created_at",
-                                                  @"userID":        @"id"
+                                                  @"email":   @"email"
                                                  }];
     
     [mapping addAttributeMappingsFromArray:@[@"privacy"]];
