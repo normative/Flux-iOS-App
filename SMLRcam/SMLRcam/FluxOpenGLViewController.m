@@ -1228,6 +1228,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     NSError *error;
     
+    [self deleteImageTextureIdx:tIndex];
+
     // Load the new texture
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
@@ -1370,7 +1372,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
             tel.localID = nil;
             tel.imageType = none;
-            _texture[tel.textureIndex] = nil;
+            [self deleteImageTextureIdx:tel.textureIndex];
         }
     }
     
