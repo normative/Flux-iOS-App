@@ -1224,8 +1224,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     
     // load the actual texture
-    [self deleteImageTextureIdx:tIndex];
-    
     NSError *error;
     
     [self deleteImageTextureIdx:tIndex];
