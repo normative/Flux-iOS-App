@@ -1110,6 +1110,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     */
     
     [self setupBuffers];
+    [pedoLabel setText:@"ped"];
 }
 
 - (void)tearDownGL
