@@ -215,5 +215,9 @@
     NSLog(@"X[%f %f %f %f",X[0],X[1],X[2],X[3]);
    
 }
+-(void) resetFilter
+{
+    
+}
 
 @end

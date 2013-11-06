@@ -581,8 +581,8 @@
 				17891FBE181D69D80064B2F9 /* FluxTextureToImageMapElement.h */,
 				17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */,
 				17891FC4181D6D5C0064B2F9 /* FluxOpenGLCommon.h */,
-				89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */,
 				89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */,
+				89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */,
 			);
 			name = "OpenGL ImageViewer";
 			sourceTree = "<group>";

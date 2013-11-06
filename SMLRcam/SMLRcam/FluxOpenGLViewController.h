@@ -70,7 +70,24 @@
     
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
+    
+    
     FluxKalmanFilter *kfilter;
+    NSTimer *kfilterTimer;
+    bool kfStarted;
+    bool kfValidData;
+    
+    
+    double kfDt;
+    double kfMeasureX;
+    double kfMeasureY;
+    double kfNoiseX;
+    double kfNoiseY;
+    GLKMatrix4 kfrotation_teM;
+    sensorPose _kfInit;
+    sensorPose _kfMeasure;
+    
+    
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
     

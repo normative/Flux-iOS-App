@@ -938,8 +938,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
-    kfilter = [[FluxKalmanFilter alloc] init];
-    [self testKalman];
+    [self initKFilter];
+    [self startKFilter];
+    
+    
+  
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1750,4 +1753,142 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return YES;
 }
 
+#pragma mark - KFiltering
+-(void) tPlaneRotationKFilterWithPose:(sensorPose*) sp
+{
+    
+    float rotation_te[16];
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
+    
+    rotation_te[0] = -1.0 * sin(lla_rad.y);
+    rotation_te[1] = cos(lla_rad.y);
+    rotation_te[2] = 0.0;
+    rotation_te[3]= 0.0;
+    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
+    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[6] = cos(lla_rad.x);
+    rotation_te[7]= 0.0;
+    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
+    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[10] = sin(lla_rad.x);
+    rotation_te[11]= 0.0;
+    rotation_te[12]= 0.0;
+    rotation_te[13]= 0.0;
+    rotation_te[14]= 0.0;
+    rotation_te[15]= 1.0;
+    
+    kfrotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
+    
+}
+-(void) computeKInitKFilter
+{
+    
+	GLKVector3 positionTP;
+    positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    WGS84_to_ECEF(&_kfInit);
+    [self tPlaneRotationKFilterWithPose:&_kfInit];
+    
+}
+
+//distance - distance of plane
+-(void) computeKMeasureKFilter
+{
+    GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    
+    WGS84_to_ECEF(&_kfMeasure);
+    
+    
+    positionTP.x = _kfMeasure.ecef.x - _kfInit.ecef.x;
+    positionTP.y = _kfMeasure.ecef.y - _kfInit.ecef.y;
+    positionTP.z = 0;
+   
+    
+    positionTP = GLKMatrix4MultiplyVector3(kfrotation_teM, positionTP);
+    
+    kfMeasureX= positionTP.x;
+    kfMeasureY = positionTP.y;
+    
+    
+    
+}
+-(void) computeECEFfromTPKFilter
+{
+    
+}
+
+
+
+-(void) initKFilter
+{
+    kfStarted =false;
+    kfValidData = false;
+    kfDt = 1.0;
+    kfNoiseX = 0.0;
+    kfNoiseY = 0.0;
+    
+    kfilter = [[FluxKalmanFilter alloc] init];
+    //[self testKalman];
+    
+}
+- (void) startKFilter
+{
+    kfilterTimer = [NSTimer scheduledTimerWithTimeInterval:kfDt
+                                                   target:self
+                                                 selector:@selector(updateKFilter)
+                                                 userInfo:nil
+                                                  repeats:YES];
+    
+    
+}
+
+-(void) stopKFilter
+{
+    
+}
+-(void) resetKFilter
+{
+    
+}
+-(void) updateKFilter
+{
+    
+    
+    if(kfStarted!=true)
+    {
+        if(self.fluxDisplayManager.locationManager.location.horizontalAccuracy < 0)
+        {
+            NSLog(@"updateKFilter:Invalid location, kf not started");
+            return;
+        }
+        _kfInit.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+        _kfInit.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
+        _kfInit.position.z =self.fluxDisplayManager.locationManager.location.altitude;
+       
+        kfStarted = true;
+        [self computeKInitKFilter];
+        //set pedometer count to zero
+        
+        return;
+    }
+    if(self.fluxDisplayManager.locationManager.location.horizontalAccuracy < 0)
+    {
+        NSLog(@"updateKFilter:Invalid location, kf ignores measurement");
+        return;
+        
+    }
+    _kfMeasure.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+    _kfMeasure.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
+    _kfMeasure.position.z =self.fluxDisplayManager.locationManager.location.altitude;
+    kfNoiseX = kfNoiseY = self.fluxDisplayManager.locationManager.location.horizontalAccuracy;
+    
+    [self computeKMeasureKFilter];
+    
+    [kfilter predictWithXDisp:0.0 YDisp:0.0 dT:kfDt];
+    [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
+}
 @end
