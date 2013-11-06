@@ -880,7 +880,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     free(buffer2);
     return myImage;
 }
+- (void) testKalman
+{
+    double measX[] ={};
+    double measY[] ={};
+    
+    int i;
+    for(i =0; i <10000; i++)
+    {
+        [kfilter predictWithXDisp:0.0 YDisp:0.0 dT:0.1];
+        [kfilter measurementUpdateWithZX:measX[i] ZY:measY[i] Rx:0.0 Ry:0.0];
+    }
 
+
+}
 
 #pragma mark - View Lifecycle
 
@@ -926,6 +939,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
+    kfilter = [[FluxKalmanFilter alloc] init];
+    [self testKalman];
 }
 
 - (void)viewWillAppear:(BOOL)animated

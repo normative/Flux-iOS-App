@@ -14,7 +14,7 @@
 #import "FluxMotionManagerSingleton.h"
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import <AVFoundation/AVFoundation.h>
-
+#import "FluxKalmanFilter.h"
 #import "FluxAVCameraSingleton.h"
 #import "FluxOpenGLCommon.h"
 #import "FluxTextureToImageMapElement.h"
@@ -70,7 +70,7 @@
     
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
-    
+    FluxKalmanFilter *kfilter;
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
     
