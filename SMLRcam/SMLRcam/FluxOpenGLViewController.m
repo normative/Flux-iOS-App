@@ -882,16 +882,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 - (void) testKalman
 {
-    double measX[] ={};
-    double measY[] ={};
+    double measX[] ={5.0, 5.0, 10.0, 20.0, 30.0};
+    double measY[] ={0.0, 2.0, 4.0, 4.0, 6.0};
     
     int i;
-    for(i =0; i <10000; i++)
+    for(i =0; i <5; i++)
     {
         [kfilter predictWithXDisp:0.0 YDisp:0.0 dT:0.1];
         [kfilter measurementUpdateWithZX:measX[i] ZY:measY[i] Rx:0.0 Ry:0.0];
     }
-
 
 }
 
