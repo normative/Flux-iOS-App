@@ -56,7 +56,10 @@
         [motionUpdateTimer invalidate];
     }
 }
-
+- (void) resetPedometer
+{
+    [pedometer resetCount];
+}
 - (void)UpdateDeviceMotion:(NSTimer*)timer
 {
     if ((motionManager) && ([motionManager isDeviceMotionActive]))
@@ -66,6 +69,8 @@
         if (pedometer != nil)
         {
             [pedometer processMotion:motionManager.deviceMotion];
+            _pedometerCount =   pedometer.pstepCount;
+            
         }
     }
     

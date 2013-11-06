@@ -335,7 +335,7 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
         default:
             break;
     }
-    
+    _pstepCount =  stepCount;
     walkingTimer = [NSTimer scheduledTimerWithTimeInterval:MAX_STRIDE_TIME
                                                     target:self
                                                   selector:@selector(turnWalkingOff)
@@ -421,5 +421,10 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
     [motionFile writeData:[outStr dataUsingEncoding:NSUTF8StringEncoding]];
     
 //    [motionFileLock unlock];
+}
+
+- (void) resetCount
+{
+    stepCount =0;
 }
 @end

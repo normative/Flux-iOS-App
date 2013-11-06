@@ -295,6 +295,8 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     WGS84_to_ECEF(usp);
     
+   
+    
     tangentplaneRotation(usp);
     // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
@@ -1785,6 +1787,40 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfrotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
     
 }
+-(void) tPInverseRotationKFilterWithPose:(sensorPose*) sp
+{
+    
+    float rotation_te[16];
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
+    
+    rotation_te[0] = -1.0 * sin(lla_rad.y);
+    rotation_te[1] = cos(lla_rad.y);
+    rotation_te[2] = 0.0;
+    rotation_te[3]= 0.0;
+    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
+    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[6] = cos(lla_rad.x);
+    rotation_te[7]= 0.0;
+    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
+    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[10] = sin(lla_rad.x);
+    rotation_te[11]= 0.0;
+    rotation_te[12]= 0.0;
+    rotation_te[13]= 0.0;
+    rotation_te[14]= 0.0;
+    rotation_te[15]= 1.0;
+    
+    kfInverseRotation_teM = GLKMatrix4MakeWithArray(rotation_te);
+    
+}
+
+
+
 -(void) computeKInitKFilter
 {
     
@@ -1792,6 +1828,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     WGS84_to_ECEF(&_kfInit);
     [self tPlaneRotationKFilterWithPose:&_kfInit];
+     [self tPInverseRotationKFilterWithPose:&_kfInit];
     
 }
 
@@ -1816,11 +1853,49 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
 }
--(void) computeECEFfromTPKFilter
+- (void)computePedDisplacementKFilter
+
 {
+    
+    double heading;
+    double enuHeadingRad;
+    int count = motionManager.pedometerCount;
+    double stepsize =0.73;
+    
+    
+     heading =self.fluxDisplayManager.locationManager.heading ;
+    
+    enuHeadingRad = (90.0 - heading)/180.0 *PI;
+    
+    kfXDisp = stepsize * (double)count* cos(enuHeadingRad);
+    kfYDisp = stepsize * (double)count* cos(enuHeadingRad);
+    
+     NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
+    
+    [motionManager resetPedometer];
+    
+    
     
 }
 
+- (void) computeFilteredECEF
+{
+    GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    
+    
+    
+    
+    
+    
+    positionTP.x = kfMeasureX;
+    positionTP.y = kfMeasureY;
+    positionTP = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
+    
+    _kfPose.ecef.x = _kfInit.ecef.x + positionTP.x;
+    _kfPose.ecef.y = _kfInit.ecef.y + positionTP.y;
+    _kfPose.ecef.z = _kfInit.ecef.z;
+
+}
 
 
 -(void) initKFilter
@@ -1885,10 +1960,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _kfMeasure.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
     _kfMeasure.position.z =self.fluxDisplayManager.locationManager.location.altitude;
     kfNoiseX = kfNoiseY = self.fluxDisplayManager.locationManager.location.horizontalAccuracy;
-    
     [self computeKMeasureKFilter];
-    
-    [kfilter predictWithXDisp:0.0 YDisp:0.0 dT:kfDt];
+    [self computePedDisplacementKFilter];
+    [kfilter predictWithXDisp:kfXDisp YDisp:kfYDisp dT:kfDt];
     [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
+    [self computeFilteredECEF];
 }
 @end

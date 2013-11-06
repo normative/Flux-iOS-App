@@ -83,10 +83,13 @@
     double kfMeasureY;
     double kfNoiseX;
     double kfNoiseY;
+    double kfXDisp;
+    double kfYDisp;
     GLKMatrix4 kfrotation_teM;
+    GLKMatrix4 kfInverseRotation_teM;
     sensorPose _kfInit;
     sensorPose _kfMeasure;
-    
+    sensorPose _kfPose;
     
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;

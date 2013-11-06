@@ -89,10 +89,10 @@ typedef enum _walkdir {
 
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
-
+@property (readonly)  int pstepCount;
 //- (IBAction)pauseButtonTaped:(id)sender;
 //- (void)turnWalkingOff;
 - (void)processMotion:(CMDeviceMotion *)devMotion;
-
+- (void) resetCount;
 
 @end
