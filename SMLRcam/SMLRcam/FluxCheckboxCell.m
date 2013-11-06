@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
-#import "FluxTagFilterCell.h"
+#import "FluxCheckboxCell.h"
 
-@implementation FluxTagFilterCell
+@implementation FluxCheckboxCell
 
 @synthesize delegate;
 
@@ -40,8 +40,8 @@
 //the checkbox was tapped
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
     [self setIsActive:checked];
-    if ([delegate respondsToSelector:@selector(TagCell:boxWasChecked:)]) {
-        [delegate TagCell:self boxWasChecked:checked];
+    if ([delegate respondsToSelector:@selector(checkboxCell:boxWasChecked:)]) {
+        [delegate checkboxCell:self boxWasChecked:checked];
     }
 
 }

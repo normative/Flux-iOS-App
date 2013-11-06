@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "FluxSocialFilterCell.h"
-#import "FluxTagFilterCell.h"
+#import "FluxCheckboxCell.h"
 
 #import "FluxDataManager.h"
 #import "FluxLocationServicesSingleton.h"
@@ -22,7 +22,7 @@
 @end
 
 
-@interface FluxFiltersViewController : UIViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, TagFilterTableViewCellDelegate>{
+@interface FluxFiltersViewController : UIViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;

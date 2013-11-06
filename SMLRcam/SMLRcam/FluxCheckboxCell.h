@@ -9,13 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "KTCheckboxButton.h"
 
-@class FluxTagFilterCell;
-@protocol TagFilterTableViewCellDelegate <NSObject>
+@class FluxCheckboxCell;
+@protocol CheckboxTableViewCellDelegate <NSObject>
 @optional
-- (void)TagCell:(FluxTagFilterCell *)checkCell boxWasChecked:(BOOL)checked;
+- (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked;
 @end
 
-@interface FluxTagFilterCell : UITableViewCell <KTCheckboxButtonDelegate>{
+@interface FluxCheckboxCell : UITableViewCell <KTCheckboxButtonDelegate>{
     BOOL active;
     id __unsafe_unretained delegate;
 }
@@ -23,7 +23,7 @@
 @property (weak, nonatomic) IBOutlet KTCheckboxButton *checkbox;
 
 
-@property (unsafe_unretained) id <TagFilterTableViewCellDelegate> delegate;
+@property (unsafe_unretained) id <CheckboxTableViewCellDelegate> delegate;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
 -(void)setIsActive:(BOOL)bActive;

@@ -7,6 +7,8 @@
 //
 
 #import "FluxImageAnnotationViewController.h"
+#import "FluxScanImageObject.h"
+#import "FluxImageTools.h"
 
 @interface FluxImageAnnotationViewController ()
 
@@ -31,29 +33,66 @@
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
     [ImageAnnotationTextView setTheDelegate:self];
     
-    //segmented Control
-    [categorySegmentedControl initWithImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_selected"],[UIImage imageNamed:@"btn-Annotation-place_selected"],[UIImage imageNamed:@"btn-Annotation-thing_selected"],[UIImage imageNamed:@"btn-Annotation-event_selected"], nil] andStandardImages:[NSArray arrayWithObjects:[UIImage imageNamed:@"btn-Annotation-person_default"],[UIImage imageNamed:@"btn-Annotation-place_default"],[UIImage imageNamed:@"btn-Annotation-thing_default"],[UIImage imageNamed:@"btn-Annotation-event_default"], nil]];
-    [categorySegmentedControl setDelegate:self];
-    [categorySegmentedControl setSelectedSegmentIndex:0];
+    [usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:usernameLabel.font.pointSize]];
+    [dateLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateLabel.font.pointSize]];
+    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
     
+    [socialDescriptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialDescriptionLabel.font.pointSize]];
+    [socialOptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialOptionLabel.font.pointSize]];
+    [shareOnLabel setFont:[UIFont fontWithName:@"Akkurat" size:shareOnLabel.font.pointSize]];
+    [twitterLabel setFont:[UIFont fontWithName:@"Akkurat" size:twitterLabel.font.pointSize]];
+    [facebookLabel setFont:[UIFont fontWithName:@"Akkurat" size:facebookLabel.font.pointSize]];
+    
+    [socialOptionCheckbox setDelegate:self];
+    [twitterCheckbox setDelegate:self];
+    [facebookCheckbox setDelegate:self];
+
+    [usernameLabel setText:@"myUsername"];
+    [usernameImageView setImage:[UIImage imageNamed:@""]];
+    
+    imagesToBeDeleted = [[NSMutableArray alloc]init];
 	// Do any additional setup after loading the view.
 }
 
-- (void)setBGImage:(UIImage*)image{
-    UIImageView*bgImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
-    [bgImageView setImage:image];
-    [self.view insertSubview:bgImageView belowSubview:photoAnnotationContainerView];
+- (void)prepareViewWithBGImage:(UIImage *)image andCapturedImages:(NSMutableArray *)capturedObjects withLocation:(NSString*)location andDate:(NSDate *)capturedDate{
+    FluxImageTools*tools = [[FluxImageTools alloc]init];
+    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
+    [self.view insertSubview:bgView belowSubview:containerView];
+    
+    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedObjects.count]];
+    [imageStackButton setBackgroundImage:(UIImage*)[capturedObjects objectAtIndex:0] forState:UIControlStateNormal];
+    [locationLabel setText:location];
+    
+    NSDateFormatter *theDateFormat = [[NSDateFormatter alloc] init];
+    [theDateFormat setDateFormat:@"MMM dd, yyyy - h:mma"];
+    [dateLabel setText:[theDateFormat stringFromDate:capturedDate]];
+    
+    images = capturedObjects;
+}
+
+- (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
+    if (checkButton == socialOptionCheckbox) {
+        [socialOptionCheckbox setChecked:checked];
+        NSLog(@"Set social option");
+    }
+    else if (checkButton == twitterCheckbox){
+        [twitterCheckbox setChecked:checked];
+        NSLog(@"Set twitter option");
+    }
+    else
+    {
+        [facebookCheckbox setChecked:checked];
+        NSLog(@"Set facebook option");
+    }
 }
 
 - (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
-    [UIView animateWithDuration:0.2f
-                     animations:^{
-                         [photoAnnotationContainerView setFrame:CGRectMake(0, photoAnnotationContainerView.frame.origin.y-200, photoAnnotationContainerView.frame.size.width, photoAnnotationContainerView.frame.size.height)];
-                     }];
+    
 }
 
-- (void)SegmentedControlValueDidChange:(KTSegmentedButtonControl *)segmentedControl{
-    //[capturedImageObject setCategoryID:(segmentedControl.selectedIndex + 1)];
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    [ImageAnnotationTextView resignFirstResponder];
 }
 
 - (void)didReceiveMemoryWarning
@@ -61,6 +100,25 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - Segue Methods
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    FluxEditCaptureSetViewController *editVC = (FluxEditCaptureSetViewController*)segue.destinationViewController;
+    [editVC prepareViewWithImagesArray:images andDeletionArray:imagesToBeDeleted];
+    [editVC setDelegate:self];
+}
+
+- (void)EditCaptureView:(FluxEditCaptureSetViewController *)editCaptureView didChangeImageSet:(NSMutableArray *)newImageList andRemovedIndexSet:(NSIndexSet *)indexset{
+    if (images.count != newImageList.count) {
+        images = newImageList;
+        removedImages = indexset;
+        
+        [imageCountLabel setText:[NSString stringWithFormat:@"%i",images.count]];
+        [imageStackButton setBackgroundImage:(UIImage*)[images objectAtIndex:0] forState:UIControlStateNormal];
+    }
+}
+
 
 - (IBAction)cancelButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:)]) {
@@ -70,9 +128,9 @@
 }
 
 - (IBAction)saveButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithAnnotation:)]) {
-        NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation", [NSNumber numberWithInt:categorySegmentedControl.selectedIndex], @"category", nil];
-        [delegate ImageAnnotationViewDidPop:self andApproveWithAnnotation:dict];
+    if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
+        NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",removedImages, @"removedImages", nil];        
+        [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }

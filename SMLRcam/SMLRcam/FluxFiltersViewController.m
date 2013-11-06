@@ -300,9 +300,9 @@
         else
         {
             static NSString *CellIdentifier = @"tagCell";
-            FluxTagFilterCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+            FluxCheckboxCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
             if (cell == nil) {
-                cell = [[FluxTagFilterCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+                cell = [[FluxCheckboxCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             }
             
             cell.descriptorLabel.text = [NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]];
@@ -343,7 +343,7 @@
     [self sendTagRequest];
 }
 
-- (void)TagCell:(FluxTagFilterCell *)checkCell boxWasChecked:(BOOL)checked{
+- (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{
     NSString * tag = [checkCell.descriptorLabel.text substringFromIndex:1];
     if (checked) {
         [dataFilter addHashTagToFilter:tag];
@@ -355,7 +355,7 @@
     }
     
     //update the cell
-    for (FluxTagFilterCell* cell in [self.filterTableView visibleCells]) {
+    for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
         if (cell == checkCell) {
             NSIndexPath *path = [self.filterTableView indexPathForCell:cell];
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];

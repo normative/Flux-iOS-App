@@ -91,7 +91,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (void)didUpdatePlacemark:(NSNotification *)notification;
 
 - (IBAction)showLeftDrawer:(id)sender;
-- (IBAction)showRightDrawer:(id)sender;
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)filterButtonAction:(id)sender;
 - (void)setCameraButtonEnabled:(BOOL)enabled;

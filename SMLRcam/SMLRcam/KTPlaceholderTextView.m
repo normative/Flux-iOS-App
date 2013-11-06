@@ -32,7 +32,7 @@ static size_t const kDashedCount            = (2.0f);
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isEditing:) name:UITextViewTextDidChangeNotification object:self];
-    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -20, self.frame.size.width, 75)];
+    placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -22, self.frame.size.width, 75)];
     
     //font
     [placeholderLabel setFont:self.font];
@@ -44,7 +44,7 @@ static size_t const kDashedCount            = (2.0f);
     [dottedBorder setImage:[UIImage imageNamed:@""]];
     [self addSubview:dottedBorder];
     
-    charCount = [[UILabel alloc]initWithFrame:CGRectMake(self.frame.size.width-30, self.frame.size.height-15, 30, 15)];
+    charCount = [[UILabel alloc]initWithFrame:CGRectMake(self.frame.size.width-50, self.frame.size.height-20, 30, 15)];
     [charCount setTextAlignment:NSTextAlignmentRight];
     [charCount setFont:self.font];
     [charCount setBackgroundColor:[UIColor clearColor]];
@@ -103,17 +103,17 @@ static size_t const kDashedCount            = (2.0f);
     }
     return YES;
 }
-#warning add dotted border here
-//- (void)drawRect:(CGRect)rect
-//{
-//    [super drawRect:rect];
-//    CGContextRef context = UIGraphicsGetCurrentContext();
-//    CGContextSetLineWidth(context, kDashedBorderWidth);
-//    CGContextSetStrokeColorWithColor(context, [UIColor whiteColor].CGColor);
-//    CGContextSetLineDash(context, kDashedPhase, kDashedLinesLength, kDashedCount) ;
-//    CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
-//    CGContextStrokeRect(context, rect);
-//}
+
+- (void)drawRect:(CGRect)rect
+{
+    [super drawRect:rect];
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextSetLineWidth(context, kDashedBorderWidth);
+    CGContextSetStrokeColorWithColor(context, [UIColor lightGrayColor].CGColor);
+    //CGContextSetLineDash(context, kDashedPhase, kDashedLinesLength, kDashedCount) ;
+    CGContextSetFillColorWithColor(context, [UIColor clearColor].CGColor);
+    CGContextStrokeRect(context, rect);
+}
 
 
 

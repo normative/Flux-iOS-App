@@ -30,4 +30,5 @@
 - (void)setPlaceholderText:(NSString*)thePlaceholder;
 - (void)resetView;
 
+
 @end

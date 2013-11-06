@@ -108,15 +108,20 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     [self closeButtonAction:nil];
 }
 
-- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithAnnotation:(NSDictionary *)annotations
+- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithChanges:(NSDictionary *)changes
 {
+    if ([changes objectForKey:@"removedImages"]) {
+        NSIndexSet*removedImages = [changes objectForKey:@"removedImages"];
+        [capturedImageObjects removeObjectsAtIndexes:removedImages];
+        [capturedImages removeObjectsAtIndexes:removedImages];
+    }
     for (int i = 0; i < [capturedImageObjects count]; i++)
     {
         FluxScanImageObject *imgObject = [capturedImageObjects objectAtIndex:i];
         UIImage *img = [capturedImages objectAtIndex:i];
         
-        [imgObject setCategoryID:[[annotations objectForKey:@"category"]integerValue]+1];
-        [imgObject setDescriptionString:[annotations objectForKey:@"annotation"]];
+        [imgObject setCategoryID:0];
+        [imgObject setDescriptionString:[changes objectForKey:@"annotation"]];
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
@@ -142,10 +147,11 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    FluxImageAnnotationViewController *tmp = (FluxImageAnnotationViewController*)segue.destinationViewController;
+    UINavigationController*tmp = segue.destinationViewController;
+    FluxImageAnnotationViewController* annotationsVC = (FluxImageAnnotationViewController*)tmp.topViewController;
     UIImage*bgImage = [(FluxOpenGLViewController*)self.parentViewController snapshot:self.parentViewController.view];
-    [tmp setBGImage:bgImage];
-    [tmp setDelegate:self];
+    [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
+    [annotationsVC setDelegate:self];
 }
 
 
