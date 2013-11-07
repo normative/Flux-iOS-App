@@ -713,11 +713,11 @@ void init(){
         walkDir stepDirection = n.intValue;
         switch (stepDirection) {
             case FORWARDS:
-                [self computePedDisplacementKFilter:1];
+                //[self computePedDisplacementKFilter:1];
                 // add your logic for a single forward step...
                 break;
             case BACKWARDS:
-                [self computePedDisplacementKFilter:-1];
+               // [self computePedDisplacementKFilter:-1];
                 // add your logic for a single backward step...
                 break;
 
@@ -1976,8 +1976,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     enuHeadingRad = (90.0 - heading)/180.0 *PI;
     
-    kfXDisp += stepsize * cos(enuHeadingRad) * (double)step;
-    kfYDisp += stepsize * sin(enuHeadingRad) * (double)step;
+    kfXDisp = stepsize * cos(enuHeadingRad) * (double)step;
+    kfYDisp = stepsize * sin(enuHeadingRad) * (double)step;
     
      NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
     
@@ -2019,6 +2019,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     kfilter = [[FluxKalmanFilter alloc] init];
     stepcount = 0;
+    _lastvalue =0;
     //[self testKalman];
     
 }
@@ -2044,7 +2045,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 -(void) updateKFilter
 {
-    NSString *stepS = [NSString stringWithFormat:@"%d",stepcount];
+    NSString *stepS = [NSString stringWithFormat:@"%d",_lastvalue];
     
     [pedoLabel setText:stepS];
     
@@ -2113,5 +2114,30 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
 }
-
+-(void) stepperChangedWithValue:(double)v
+{
+    NSLog(@"stepper triggered");
+    double change = v -_lastvalue;
+    if(change >0)
+    {
+        [self computePedDisplacementKFilter:1];
+    }
+    else
+        [self computePedDisplacementKFilter:-1];
+    _lastvalue= v;
+}
+/*
+- (IBAction)stepperChanged:(id)sender {
+    UIStepper*stepper = (UIStepper*)sender;
+    NSLog(@"stepper triggered");
+    int change = stepper.value -_lastvalue;
+    if(change >0)
+    {
+        [self computePedDisplacementKFilter:1];
+    }
+    else
+        [self computePedDisplacementKFilter:-1];
+    _lastvalue= stepper.value;
+}
+ */
 @end

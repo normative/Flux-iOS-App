@@ -102,6 +102,7 @@
     
     
     int stepcount;
+    double _lastvalue;//stepper
     __weak IBOutlet UILabel *pedoLabel;
     //__weak IBOutlet UILabel *pedometer;
     
@@ -118,6 +119,7 @@
 @property (nonatomic, strong)NSMutableArray *textureMap;
 
 
+//- (IBAction)stepperChanged:(id)sender;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
@@ -146,7 +148,7 @@
 
 - (void)render;
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element;
-
+-(void) stepperChangedWithValue:(double)v;
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
 

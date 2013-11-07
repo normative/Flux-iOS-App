@@ -437,6 +437,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     CameraButton.enabled = enabled;
 }
 
+- (IBAction)stepper:(id)sender {
+    UIStepper* stepper = (UIStepper*)sender;
+    
+    [openGLController stepperChangedWithValue: stepper.value];
+}
+
 
 
 #pragma mark Image Capture Helper Methods
