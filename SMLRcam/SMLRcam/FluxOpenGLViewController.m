@@ -1769,6 +1769,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     eSq = diff/(a_WGS84*a_WGS84);
     e_pSq = diff/(b_WGS84*b_WGS84);
     
+    //test
+    
+    //_kfPose.ecef.x =sp.ecef.x;
+    //_kfPose.ecef.y =sp.ecef.y;
+    //_kfPose.ecef.z =sp.ecef.z;
+    
+    //test ends
+    
+    
     lambda = atan2(_kfPose.ecef.y, _kfPose.ecef.x);
     X =_kfPose.ecef.x;
     Y = _kfPose.ecef.y;
@@ -1784,11 +1793,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     h = (p/cos(phi))-N;
 
-    _kfPose.position.x = lambda;
-    _kfPose.position.y = phi;
+    _kfPose.position.x = phi;
+    _kfPose.position.y = lambda;
     _kfPose.position.z = h;
     
-    NSLog(@"lla[%f, %f, %f]", lambda*180/PI, phi*180/PI,h);
+    NSLog(@"lla[%f, %f, %f]", phi*180/PI, lambda*180/PI,h);
     
 }
 
@@ -1950,6 +1959,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 - (void) startKFilter
 {
+    [self testWGS84Conversions];
     kfilterTimer = [NSTimer scheduledTimerWithTimeInterval:kfDt
                                                    target:self
                                                  selector:@selector(updateKFilter)
@@ -2004,20 +2014,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
     [self computeFilteredECEF];
 }
--void testWGS84Conversions()
+
+#pragma --- tests --
+-(void) testWGS84Conversions
 {
     int i =0;
-    double latitude[]={};
-    double longitude[] ={};
-    double altitude[]={};
-    
+    double lat[]={43.628342, 37.774930};
+    double lon[] ={-79.394792,-122.419416};
+    double alt[]={75,20};
+    sensorPose s;
     for(i=0; i<2; i++)
     {
+        s.position.x = lat[i];
+        s.position.y = lon[i];
+        s.position.z = alt[i];
         
+        WGS84_to_ECEF(&s);
+       //test [self ecefToWGS84KF:s];
     }
-    
-    
-    
     
     
 }
