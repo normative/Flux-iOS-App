@@ -713,11 +713,11 @@ void init(){
         walkDir stepDirection = n.intValue;
         switch (stepDirection) {
             case FORWARDS:
-                //[self computePedDisplacementKFilter:1];
+                [self computePedDisplacementKFilter:1];
                 // add your logic for a single forward step...
                 break;
             case BACKWARDS:
-               // [self computePedDisplacementKFilter:-1];
+                [self computePedDisplacementKFilter:-1];
                 // add your logic for a single backward step...
                 break;
 
@@ -2178,10 +2178,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     double change = v -_lastvalue;
     if(change >0)
     {
-        [self computePedDisplacementKFilter:1];
+        //[self computePedDisplacementKFilter:1];
     }
     else
-        [self computePedDisplacementKFilter:-1];
+       // [self computePedDisplacementKFilter:-1];
     _lastvalue= v;
 }
 /*
