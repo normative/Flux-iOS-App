@@ -1451,9 +1451,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
     
-    _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+    if(1)
+    {
+      _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
     _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
     _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
+    }
+    else
+    {
+        _userPose.position.x = _kfPose.position.x;
+        _userPose.position.y = _kfPose.position.y;
+        _userPose.position.z = _kfPose.position.z;
+    }
+    
+    
     
     GLKVector3 planeNormal;
     float distance = _projectionDistance;
@@ -1939,7 +1950,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     double heading;
     double enuHeadingRad;
-    int count = motionManager.pedometerCount;
+    //int count = motionManager.pedometerCount;
     double stepsize =0.73;
     
     stepcount++;
@@ -1947,8 +1958,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     enuHeadingRad = (90.0 - heading)/180.0 *PI;
     
-    kfXDisp += stepsize * (double)count* cos(enuHeadingRad) * (double)step;
-    kfYDisp += stepsize * (double)count* sin(enuHeadingRad) * (double)step;
+    kfXDisp += stepsize * cos(enuHeadingRad) * (double)step;
+    kfYDisp += stepsize * sin(enuHeadingRad) * (double)step;
     
      NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
     
@@ -1965,6 +1976,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     positionTP.x = kfMeasureX;
     positionTP.y = kfMeasureY;
+    positionTP.z = 0;
     positionTP = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
     
     _kfPose.ecef.x = _kfInit.ecef.x + positionTP.x;
@@ -2051,6 +2063,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfYDisp =0.0;
     [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
     [self computeFilteredECEF];
+    [self ecefToWGS84KF];
 }
 
 #pragma --- tests --
