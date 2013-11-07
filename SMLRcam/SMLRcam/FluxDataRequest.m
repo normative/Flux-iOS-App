@@ -76,6 +76,20 @@
     }
 }
 
+- (void)whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.uploadUserComplete)
+    {
+        self.uploadUserComplete(userObject, completeDataRequest);
+    }
+}
+
+-(void)whenLoginUserComplete:(NSString *)token withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.loginUserComplete)
+    {
+        self.loginUserComplete(token,completeDataRequest);
+    }
+}
+
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.tagsReady)

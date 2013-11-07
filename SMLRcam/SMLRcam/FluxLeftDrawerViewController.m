@@ -49,24 +49,7 @@
     
     NSString *versionString = [NSString stringWithFormat:@"Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
     [self.versionLbl setText:versionString];
-
-//    [self.navigationController.navigationBar setTranslucent:YES];
-//    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:31.0/255.0 green:33/255.0 blue:36.0/255.0 alpha:1.0]];
-//    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
-//    [self.navigationController setNavigationBarHidden:NO animated:YES];
-//    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
-//    [self setTitle:@"Flux"];
-//    
-//    [self.view needsUpdateConstraints];
 }
-//
-//- (CGSize)preferredContentSize
-//{
-//    [self.tableView setFrame:CGRectMake(self.tableView.frame.origin.x, self.tableView.frame.origin.y, self.tableView.frame.size.width, self.tableView.frame.size.height +150)];
-//    // Force the table view to calculate its height
-//    [self.tableView layoutIfNeeded];
-//    return self.tableView.contentSize;
-//}
 
 - (void)didReceiveMemoryWarning
 {

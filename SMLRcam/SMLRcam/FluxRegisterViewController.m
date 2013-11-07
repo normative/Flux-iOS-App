@@ -7,7 +7,7 @@
 //
 
 #import "FluxRegisterViewController.h"
-
+#import "ProgressHUD.h"
 #import "FluxUserObject.h"
 
 
@@ -51,6 +51,8 @@
     [bioTextView setPlaceholderColor:[UIColor darkGrayColor]];
     [bioTextView setTheDelegate:self];
     
+    self.fluxDataManager = [[FluxDataManager alloc]init];
+    
     textInputElements = [[NSArray alloc]initWithObjects:usernameField, passwordField, confirmPasswordField, nameField, emailField, bioTextView, nil];
     scrollView.delegate=self;
 }
@@ -87,6 +89,12 @@
     [scrollView setContentOffset:CGPointMake(0,placeholderTextView.center.y-250) animated:YES];
 }
 
+- (void)hideKeyboard{
+    for (int i = 0; i<textInputElements.count; i++) {
+        [[textInputElements objectAtIndex:i]resignFirstResponder];
+    }
+}
+
 - (void)fadeOutLogin
 {
     UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
@@ -118,17 +126,33 @@
 }
 
 - (IBAction)nextButtonAction:(id)sender {
-//    FluxUserObject *newUser = [[FluxUserObject alloc]initWithName:nameField.text andUsername:usernameField.text andPassword:passwordField.text andEmail:emailField.text andProfilePic:    profilePic];
-//    
-//    FluxNetworkServices * networkServices = [[FluxNetworkServices alloc]init];
-//    [networkServices createUser:newUser];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    BOOL isremote = [[defaults objectForKey:@"Server Location"]intValue];
+    if (!isremote) {
+        [self fadeOutLogin];
+        return;
+    }
     
-    [self fadeOutLogin];
+    [self.navigationItem.leftBarButtonItem setEnabled:NO];
+    [self.navigationItem.rightBarButtonItem setEnabled:NO];
+    [scrollView setContentOffset:CGPointMake(0, -scrollView.contentInset.top) animated:YES];
 
-}
-
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject *)userObject{
-    [self fadeOutLogin];
+    FluxUserObject *newUser = [[FluxUserObject alloc]initWithName:nameField.text andUsername:usernameField.text andPassword:passwordField.text andEmail:emailField.text andBio:bioTextView.text andProfilePic:profilePic];
+    
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setUploadUserComplete:^(FluxUserObject*uploadedUserObject, FluxDataRequest *completedDataRequest){
+        [ProgressHUD showSuccess:@"Account Created!"];
+        [self performSelector:@selector(fadeOutLogin) withObject:nil afterDelay:0.3];
+    }];
+    [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+        [self.navigationItem.leftBarButtonItem setEnabled:YES];
+        [self.navigationItem.rightBarButtonItem setEnabled:YES];
+        NSString*str = [NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    [self hideKeyboard];
+    [ProgressHUD show:@"Creating Your Account"];
+    [self.fluxDataManager uploadNewUser:newUser withImage:profilePic withDataRequest:dataRequest];
 }
 
 - (IBAction)cancelButtonAction:(id)sender {

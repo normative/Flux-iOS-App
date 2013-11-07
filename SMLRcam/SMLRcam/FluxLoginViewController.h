@@ -7,8 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FluxDataManager.h"
 
-@interface FluxLoginViewController : UIViewController
+#import "MMDrawerController.h"
+#import "FluxLeftDrawerViewController.h"
+#import "FluxScanViewController.h"
+
+@interface FluxLoginViewController : UIViewController{
+
+    __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
+    __strong FluxScanViewController * scanViewController;
+    __strong MMDrawerController * drawerController;
+}
+
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
+@property (strong, nonatomic) IBOutlet UITextField *usernameTextField;
+@property (strong, nonatomic) IBOutlet UITextField *passwordField;
 - (IBAction)cancelButtonAction:(id)sender;
+- (IBAction)loginButtonActoin:(id)sender;
 
 @end

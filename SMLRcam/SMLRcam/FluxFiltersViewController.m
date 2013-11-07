@@ -239,7 +239,6 @@
             [self.tagsSearchBar setSearchBarStyle:UISearchBarStyleMinimal];
             [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor whiteColor]];
             [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setFont:[UIFont fontWithName:@"Akkurat" size:17]];
-            //[self.tagsSearchBar setTintColor:[UIColor colorWithRed:56.0/255.0 green:59.0/255.0 blue:61.0/255.0 alpha:1.0]];
             [self.tagsSearchBar setTintColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
             [self.tagsSearchBar setPlaceholder:@"Search"];
             [self.tagsSearchBar setDelegate:self];

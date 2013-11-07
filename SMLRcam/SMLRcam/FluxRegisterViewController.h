@@ -13,7 +13,8 @@
 #import "FluxScanViewController.h"
 
 #import "KTPlaceholderTextView.h"
-#import "FluxNetworkServices.h"
+#import "FluxDataManager.h"
+
 
 
 @interface FluxRegisterViewController : UIViewController <UITextFieldDelegate, KTPlaceholderTextViewDelegate, UIScrollViewDelegate, NetworkServicesDelegate>{
@@ -33,6 +34,9 @@
     IBOutlet UITextField *emailField;
     IBOutlet KTPlaceholderTextView *bioTextView;
 }
+
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
+- (void)hideKeyboard;
 - (IBAction)nextButtonAction:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
 

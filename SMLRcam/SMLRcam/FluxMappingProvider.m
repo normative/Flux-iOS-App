@@ -56,29 +56,22 @@
 + (RKObjectMapping *)userGETMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxUserObject class]];
     
-    [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":            @"userID",
-                                                  @"firstname":     @"firstName",
-                                                  @"lastname":      @"lastName",
-                                                  @"nickname":      @"userName",
-                                                  @"created_at":    @"dateCreated"
-                                                 }];
+//    [mapping addAttributeMappingsFromDictionary:@{
+//                                                  @"id":            @"userID",
+//                                                  @"firstname":     @"firstName",
+//                                                  @"lastname":      @"lastName",
+//                                                  @"nickname":      @"userName",
+//                                                  @"created_at":    @"dateCreated"
+//                                                 }];
     
-    [mapping addAttributeMappingsFromArray:@[@"privacy"]];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token"]];
     
     return mapping;
 }
 + (RKObjectMapping *)userPOSTMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
-    [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"name":     @"name",
-                                                  @"password":      @"password",
-                                                  @"userName":      @"nickname",
-                                                  @"email":   @"email"
-                                                 }];
-    
-    [mapping addAttributeMappingsFromArray:@[@"privacy"]];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email"]];
     
     return mapping;
 }
