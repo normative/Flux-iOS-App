@@ -1473,6 +1473,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
+    if(kfStarted ==true)
+    {
+        _userPose.ecef.x = _kfPose.ecef.x;
+         _userPose.ecef.y = _kfPose.ecef.y;
+         _userPose.ecef.z = _kfPose.ecef.z;
+        
+        
+    }
+        
     
     //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     //    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
@@ -1921,7 +1930,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 -(void) computeKMeasureKFilter
 {
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
-    
+    GLKVector3 positionTP1 = GLKVector3Make(0.0, 0.0, 0.0);
     //planar
     _kfMeasure.position.z = _kfInit.position.z;
     
@@ -1936,10 +1945,19 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     positionTP = GLKMatrix4MultiplyVector3(kfrotation_teM, positionTP);
     
-    kfMeasureX= positionTP.x;
+    kfMeasureX = positionTP.x;
     kfMeasureY = positionTP.y;
+    kfMeasureZ = positionTP.z;
+    /*
+    positionTP1 = (kfInverseRotation_teM, positionTP);
     
+    positionTP1.x = _kfInit.ecef.x + positionTP1.x;
+    positionTP1.y = _kfInit.ecef.y + positionTP1.y;
+    positionTP1.z = _kfInit.ecef.z + positionTP1.z;
     
+    NSLog(@"B:[%f %f %f] A:[%f %f %f]", _kfMeasure.ecef.x,_kfMeasure.ecef.y, _kfMeasure.ecef.z, positionTP1.x, positionTP1.y, positionTP1.z);
+    //test
+    */
     
 }
 
@@ -1976,12 +1994,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     positionTP.x = kfMeasureX;
     positionTP.y = kfMeasureY;
-    positionTP.z = 0;
+    positionTP.z = kfMeasureZ;
     positionTP = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
     
     _kfPose.ecef.x = _kfInit.ecef.x + positionTP.x;
     _kfPose.ecef.y = _kfInit.ecef.y + positionTP.y;
-    _kfPose.ecef.z = _kfInit.ecef.z;
+    _kfPose.ecef.z = _kfInit.ecef.z + positionTP.z;
+    
+    
+  
+    
+    
 
 }
 
@@ -2056,6 +2079,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _kfMeasure.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
     _kfMeasure.position.z =self.fluxDisplayManager.locationManager.location.altitude;
     kfNoiseX = kfNoiseY = self.fluxDisplayManager.locationManager.location.horizontalAccuracy;
+    
     [self computeKMeasureKFilter];
  
     [kfilter predictWithXDisp:kfXDisp YDisp:kfYDisp dT:kfDt];
@@ -2063,7 +2087,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfYDisp =0.0;
     [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
     [self computeFilteredECEF];
-    [self ecefToWGS84KF];
+    //tests here for tangent plane
+    
+    
+   // [self ecefToWGS84KF];
 }
 
 #pragma --- tests --

@@ -81,6 +81,7 @@
     double kfDt;
     double kfMeasureX;
     double kfMeasureY;
+    double kfMeasureZ;
     double kfNoiseX;
     double kfNoiseY;
     double kfXDisp;
