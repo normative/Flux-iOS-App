@@ -63,6 +63,9 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartCameraMode:) name:FluxImageCaptureDidPush object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
+        
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
+
     }
     
     return self;
@@ -106,6 +109,28 @@ double getAbsAngle(double angle, double heading)
 //    
 //    haveFirst = true;
     [self requestNearbyItems];
+}
+
+- (void)didTakeStep:(NSNotification *)notification{
+    NSNumber *n = [notification.userInfo objectForKey:@"stepDirection"];
+    
+    if (n != nil)
+    {
+        walkDir stepDirection = n.intValue;
+        switch (stepDirection) {
+            case FORWARDS:
+                // add your logic...
+                NSLog(@"FORWARD step taken");
+                break;
+            case BACKWARDS:
+                // add your logic...
+                NSLog(@"BACKWARD step taken");
+                break;
+                
+            default:
+                break;
+        }
+    }
 }
 
 #pragma mark Filter

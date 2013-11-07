@@ -24,6 +24,8 @@ typedef enum _walkdir {
     FORWARDS = 1
 } walkDir;
 
+extern NSString* const FluxPedometerDidTakeStep;
+
 @interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
 //    BOOL isPaused;
 //    CMMotionManager *motionManager;
