@@ -193,6 +193,7 @@ void init_camera_model()
 
 GLKMatrix4 rotation_teM;
 
+
 void WGS84_to_ECEF(sensorPose *sp){
     double normal;
     double eccentricity;
@@ -393,13 +394,15 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
 //        return -1;
 //    }
     
+    //assumption that the point of image acquisition and the user lie in the same plane.
+    sp->position.z = userPose.position.z;
+    
     WGS84_to_ECEF(sp);
     
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
-    positionTP.z = 0;
-    //sp->ecef.z -userPose.ecef.z;
+    positionTP.z = sp->ecef.z -userPose.ecef.z;
     /*
      positionTP.x = 0;
      positionTP.y = 0;
@@ -1756,6 +1759,41 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 #pragma mark - KFiltering
+-(void) ecefToWGS84KF
+{
+    double lambda, phi, h;
+    double p, theta, N;
+    double eSq, e_pSq, diff;
+    double X, Y, sin3theta, cos3theta;
+    diff = (a_WGS84 *a_WGS84) - (b_WGS84 *b_WGS84);
+    eSq = diff/(a_WGS84*a_WGS84);
+    e_pSq = diff/(b_WGS84*b_WGS84);
+    
+    lambda = atan2(_kfPose.ecef.y, _kfPose.ecef.x);
+    X =_kfPose.ecef.x;
+    Y = _kfPose.ecef.y;
+    p = sqrt(X*X + Y*Y);
+    theta = atan2(_kfPose.ecef.z*a_WGS84, p*b_WGS84);
+    sin3theta = sin(theta);
+    sin3theta = sin3theta*sin3theta *sin3theta;
+    cos3theta = cos(theta);
+    cos3theta = cos3theta*cos3theta *cos3theta;
+    phi = atan2((_kfPose.ecef.z+(e_pSq*b_WGS84*sin3theta)), (p-(eSq*a_WGS84*cos3theta)));
+
+    N= a_WGS84/(sqrt(1-(eSq * sin(phi)*sin(phi))));
+    
+    h = (p/cos(phi))-N;
+
+    _kfPose.position.x = lambda;
+    _kfPose.position.y = phi;
+    _kfPose.position.z = h;
+    
+    NSLog(@"lla[%f, %f, %f]", lambda*180/PI, phi*180/PI,h);
+    
+}
+
+
+
 -(void) tPlaneRotationKFilterWithPose:(sensorPose*) sp
 {
     
@@ -1828,7 +1866,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     WGS84_to_ECEF(&_kfInit);
     [self tPlaneRotationKFilterWithPose:&_kfInit];
-     [self tPInverseRotationKFilterWithPose:&_kfInit];
+    [self tPInverseRotationKFilterWithPose:&_kfInit];
     
 }
 
@@ -1837,12 +1875,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
+    //planar
+    _kfMeasure.position.z = _kfInit.position.z;
+    
+    
     WGS84_to_ECEF(&_kfMeasure);
     
     
     positionTP.x = _kfMeasure.ecef.x - _kfInit.ecef.x;
     positionTP.y = _kfMeasure.ecef.y - _kfInit.ecef.y;
-    positionTP.z = 0;
+    positionTP.z = _kfMeasure.ecef.z - _kfInit.ecef.z;
    
     
     positionTP = GLKMatrix4MultiplyVector3(kfrotation_teM, positionTP);
@@ -1881,11 +1923,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void) computeFilteredECEF
 {
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
-    
-    
-    
-    
-    
+
     
     positionTP.x = kfMeasureX;
     positionTP.y = kfMeasureY;
@@ -1966,4 +2004,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
     [self computeFilteredECEF];
 }
+-void testWGS84Conversions()
+{
+    int i =0;
+    double latitude[]={};
+    double longitude[] ={};
+    double altitude[]={};
+    
+    for(i=0; i<2; i++)
+    {
+        
+    }
+    
+    
+    
+    
+    
+}
+
 @end
