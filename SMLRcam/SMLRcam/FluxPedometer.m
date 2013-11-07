@@ -29,6 +29,8 @@ const double MIN_STRIDE_TIME = 0.1;
 
 const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging) low pass filter
 
+NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
+
 
 @interface FluxPedometer ()
 
@@ -45,6 +47,8 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
     samplecount = 0;
     vertAccelTrend = FLAT;
     
+    [self setupMotionManager];
+    
 //    [self setupLogging];
 
 //    isPaused = NO;
@@ -55,33 +59,42 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
 }
 
 #pragma mark - motion manager
+
+- (void)UpdateDeviceMotion:(NSTimer*)timer
+{
+    if ((motionManager) && ([motionManager isDeviceMotionActive]))
+    {
+        [self processMotion:motionManager.deviceMotion];
+    }
+}
+
 // this code needs to be executed/set up from whatever creates the Pedometer
-//- (void)setupMotionManager{
-//    motionManager = [[CMMotionManager alloc] init];
-//    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
-//    if (!motionManager.isDeviceMotionAvailable) {
-//    }
-//    
-//    [motionManager startDeviceMotionUpdates];
-//    [motionManager startAccelerometerUpdates];
-//    
-//    [self startDeviceMotion];
-//}
-//
-//- (void)startDeviceMotion{
-//    if (motionManager) {
-//        // New in iOS 5.0: Attitude that is referenced to true north
-//        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
-//        motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
-//    }
-//}
-//
-//- (void)stopDeviceMotion{
-//    if (motionManager) {
-//        [motionManager stopDeviceMotionUpdates];
-//        [motionUpdateTimer invalidate];
-//    }
-//}
+- (void)setupMotionManager{
+    motionManager = [[CMMotionManager alloc] init];
+    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
+    if (!motionManager.isDeviceMotionAvailable) {
+    }
+    
+    [motionManager startDeviceMotionUpdates];
+    [motionManager startAccelerometerUpdates];
+    
+    [self startDeviceMotion];
+}
+
+- (void)startDeviceMotion{
+    if (motionManager) {
+        // New in iOS 5.0: Attitude that is referenced to true north
+        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
+        motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
+    }
+}
+
+- (void)stopDeviceMotion{
+    if (motionManager) {
+        [motionManager stopDeviceMotionUpdates];
+        [motionUpdateTimer invalidate];
+    }
+}
 
 - (CMAcceleration *)reorientAccels:(CMDeviceMotion *)devM withOutAccels:(CMAcceleration *)outaccels
 {
@@ -325,22 +338,34 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
         }
     }
     
+    NSNumber *n;
     switch (walkingDirection) {
         case FORWARDS:
             stepCount++;
+            n = [NSNumber numberWithInt:1];
             break;
         case BACKWARDS:
             stepCount--;
+            n = [NSNumber numberWithInt:-1];
             break;
         default:
+            n = [NSNumber numberWithInt:0];
             break;
     }
     
+    _pstepCount =  stepCount;
     walkingTimer = [NSTimer scheduledTimerWithTimeInterval:MAX_STRIDE_TIME
                                                     target:self
                                                   selector:@selector(turnWalkingOff)
                                                   userInfo:nil
                                                    repeats:NO];
+
+    NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                  initWithObjectsAndKeys:n, @"stepDirection" , nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxPedometerDidTakeStep
+                                                        object:self userInfo:userInfoDict];
+
+    
     return true;
 }
 
@@ -422,4 +447,46 @@ const int BLOCK_SIZE_AVG  = 10;       // setup the block size for the (averaging
     
 //    [motionFileLock unlock];
 }
+
+- (void) resetCount
+{
+    stepCount =0;
+}
 @end
+
+//
+//// Add the following code to your module to receive the notification:
+//// You can see this code in place in FluxDisplayManager.m - uncomment the registration and it will work
+//
+//// include what is necessary
+//#import "FluxPedometer.h"
+//
+//
+//// register the observer - put this in an initialization routine somewhere
+//
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
+//
+//
+//// implement the notification handler in the body of your code...
+//
+//- (void)didTakeStep:(NSNotification *)notification{
+//    NSNumber *n = [notification.userInfo objectForKey:@"stepDirection"];
+//    
+//    if (n != nil)
+//    {
+//        walkDir stepDirection = n.intValue;
+//        switch (stepDirection) {
+//            case FORWARDS:
+//                // add your logic for a single forward step...
+//                break;
+//            case BACKWARDS:
+//                // add your logic for a single backward step...
+//                break;
+//                
+//            default:
+//                break;
+//        }
+//    }
+//}
+
+ 

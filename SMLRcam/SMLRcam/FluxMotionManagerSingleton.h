@@ -18,10 +18,10 @@
 }
 
 @property (nonatomic) CMAttitude* attitude;
-
+@property int pedometerCount;
 + (id)sharedManager;
 
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
-
+- (void)resetPedometer;
 @end

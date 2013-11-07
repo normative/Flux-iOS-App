@@ -193,6 +193,7 @@ void init_camera_model()
 
 GLKMatrix4 rotation_teM;
 
+
 void WGS84_to_ECEF(sensorPose *sp){
     double normal;
     double eccentricity;
@@ -295,6 +296,8 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     WGS84_to_ECEF(usp);
     
+   
+    
     tangentplaneRotation(usp);
     // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
@@ -391,13 +394,15 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
 //        return -1;
 //    }
     
+    //assumption that the point of image acquisition and the user lie in the same plane.
+    sp->position.z = userPose.position.z;
+    
     WGS84_to_ECEF(sp);
     
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
-    positionTP.z = 0;
-    //sp->ecef.z -userPose.ecef.z;
+    positionTP.z = sp->ecef.z -userPose.ecef.z;
     /*
      positionTP.x = 0;
      positionTP.y = 0;
@@ -700,6 +705,31 @@ void init(){
     }
 }
 
+- (void)didTakeStep:(NSNotification *)notification{
+    NSNumber *n = [notification.userInfo objectForKey:@"stepDirection"];
+
+    if (n != nil)
+    {
+        walkDir stepDirection = n.intValue;
+        switch (stepDirection) {
+            case FORWARDS:
+                //[self computePedDisplacementKFilter:1];
+                // add your logic for a single forward step...
+                break;
+            case BACKWARDS:
+               // [self computePedDisplacementKFilter:-1];
+                // add your logic for a single backward step...
+                break;
+
+            default:
+                break;
+        }
+    }
+    
+}
+    
+
+
 #pragma mark - Image Capture
 
 - (void)setupCameraView{
@@ -880,7 +910,19 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     free(buffer2);
     return myImage;
 }
+- (void) testKalman
+{
+    double measX[] ={5.0, 5.0, 10.0, 20.0, 30.0};
+    double measY[] ={0.0, 2.0, 4.0, 4.0, 6.0};
+    
+    int i;
+    for(i =0; i <5; i++)
+    {
+        [kfilter predictWithXDisp:0.0 YDisp:0.0 dT:0.1];
+        [kfilter measurementUpdateWithZX:measX[i] ZY:measY[i] Rx:0.0 Ry:0.0];
+    }
 
+}
 
 #pragma mark - View Lifecycle
 
@@ -891,6 +933,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
     
     [super viewDidLoad];
     _displayListHasChanged = 0;
@@ -926,6 +970,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
+    [self initKFilter];
+    [self startKFilter];
+    
+    
+  
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1110,6 +1159,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     */
     
     [self setupBuffers];
+    [pedoLabel setText:@"ped"];
 }
 
 - (void)tearDownGL
@@ -1454,9 +1504,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
     
-    _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+    if(1)
+    {
+      _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
     _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
     _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
+    }
+    else
+    {
+        _userPose.position.x = _kfPose.position.x;
+        _userPose.position.y = _kfPose.position.y;
+        _userPose.position.z = _kfPose.position.z;
+    }
+    
+    
     
     GLKVector3 planeNormal;
     float distance = _projectionDistance;
@@ -1465,6 +1526,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
+    if(kfStarted ==true)
+    {
+        _userPose.ecef.x = _kfPose.ecef.x;
+         _userPose.ecef.y = _kfPose.ecef.y;
+         _userPose.ecef.z = _kfPose.ecef.z;
+        
+        
+    }
+        
     
     //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     //    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
@@ -1793,4 +1863,339 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return YES;
 }
 
+#pragma mark - KFiltering
+-(void) ecefToWGS84KF
+{
+    double lambda, phi, h;
+    double p, theta, N;
+    double eSq, e_pSq, diff;
+    double X, Y, sin3theta, cos3theta;
+    diff = (a_WGS84 *a_WGS84) - (b_WGS84 *b_WGS84);
+    eSq = diff/(a_WGS84*a_WGS84);
+    e_pSq = diff/(b_WGS84*b_WGS84);
+    
+    //test
+    
+    //_kfPose.ecef.x =sp.ecef.x;
+    //_kfPose.ecef.y =sp.ecef.y;
+    //_kfPose.ecef.z =sp.ecef.z;
+    
+    //test ends
+    
+    
+    lambda = atan2(_kfPose.ecef.y, _kfPose.ecef.x);
+    X =_kfPose.ecef.x;
+    Y = _kfPose.ecef.y;
+    p = sqrt(X*X + Y*Y);
+    theta = atan2(_kfPose.ecef.z*a_WGS84, p*b_WGS84);
+    sin3theta = sin(theta);
+    sin3theta = sin3theta*sin3theta *sin3theta;
+    cos3theta = cos(theta);
+    cos3theta = cos3theta*cos3theta *cos3theta;
+    phi = atan2((_kfPose.ecef.z+(e_pSq*b_WGS84*sin3theta)), (p-(eSq*a_WGS84*cos3theta)));
+
+    N= a_WGS84/(sqrt(1-(eSq * sin(phi)*sin(phi))));
+    
+    h = (p/cos(phi))-N;
+
+    _kfPose.position.x = phi;
+    _kfPose.position.y = lambda;
+    _kfPose.position.z = h;
+    
+    NSLog(@"lla[%f, %f, %f]", phi*180/PI, lambda*180/PI,h);
+    
+}
+
+
+
+-(void) tPlaneRotationKFilterWithPose:(sensorPose*) sp
+{
+    
+    float rotation_te[16];
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
+    
+    rotation_te[0] = -1.0 * sin(lla_rad.y);
+    rotation_te[1] = cos(lla_rad.y);
+    rotation_te[2] = 0.0;
+    rotation_te[3]= 0.0;
+    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
+    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[6] = cos(lla_rad.x);
+    rotation_te[7]= 0.0;
+    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
+    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[10] = sin(lla_rad.x);
+    rotation_te[11]= 0.0;
+    rotation_te[12]= 0.0;
+    rotation_te[13]= 0.0;
+    rotation_te[14]= 0.0;
+    rotation_te[15]= 1.0;
+    
+    kfrotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
+    
+}
+-(void) tPInverseRotationKFilterWithPose:(sensorPose*) sp
+{
+    
+    float rotation_te[16];
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
+    
+    rotation_te[0] = -1.0 * sin(lla_rad.y);
+    rotation_te[1] = cos(lla_rad.y);
+    rotation_te[2] = 0.0;
+    rotation_te[3]= 0.0;
+    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
+    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[6] = cos(lla_rad.x);
+    rotation_te[7]= 0.0;
+    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
+    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[10] = sin(lla_rad.x);
+    rotation_te[11]= 0.0;
+    rotation_te[12]= 0.0;
+    rotation_te[13]= 0.0;
+    rotation_te[14]= 0.0;
+    rotation_te[15]= 1.0;
+    
+    kfInverseRotation_teM = GLKMatrix4MakeWithArray(rotation_te);
+    
+}
+
+
+
+-(void) computeKInitKFilter
+{
+    
+	GLKVector3 positionTP;
+    positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    WGS84_to_ECEF(&_kfInit);
+    [self tPlaneRotationKFilterWithPose:&_kfInit];
+    [self tPInverseRotationKFilterWithPose:&_kfInit];
+    
+}
+
+//distance - distance of plane
+-(void) computeKMeasureKFilter
+{
+    GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 positionTP1 = GLKVector3Make(0.0, 0.0, 0.0);
+    //planar
+    _kfMeasure.position.z = _kfInit.position.z;
+    
+    
+    WGS84_to_ECEF(&_kfMeasure);
+    
+    
+    positionTP.x = _kfMeasure.ecef.x - _kfInit.ecef.x;
+    positionTP.y = _kfMeasure.ecef.y - _kfInit.ecef.y;
+    positionTP.z = _kfMeasure.ecef.z - _kfInit.ecef.z;
+   
+    
+    positionTP = GLKMatrix4MultiplyVector3(kfrotation_teM, positionTP);
+    
+    kfMeasureX = positionTP.x;
+    kfMeasureY = positionTP.y;
+    kfMeasureZ = positionTP.z;
+    /*
+    positionTP1 = (kfInverseRotation_teM, positionTP);
+    
+    positionTP1.x = _kfInit.ecef.x + positionTP1.x;
+    positionTP1.y = _kfInit.ecef.y + positionTP1.y;
+    positionTP1.z = _kfInit.ecef.z + positionTP1.z;
+    
+    NSLog(@"B:[%f %f %f] A:[%f %f %f]", _kfMeasure.ecef.x,_kfMeasure.ecef.y, _kfMeasure.ecef.z, positionTP1.x, positionTP1.y, positionTP1.z);
+    //test
+    */
+    
+}
+
+
+
+- (void)computePedDisplacementKFilter:(int) step
+{
+    
+    double heading;
+    double enuHeadingRad;
+    //int count = motionManager.pedometerCount;
+    double stepsize =0.73;
+    
+    stepcount++;
+     heading =self.fluxDisplayManager.locationManager.heading ;
+    
+    enuHeadingRad = (90.0 - heading)/180.0 *PI;
+    
+    kfXDisp = stepsize * cos(enuHeadingRad) * (double)step;
+    kfYDisp = stepsize * sin(enuHeadingRad) * (double)step;
+    
+     NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
+    
+    //[motionManager resetPedometer];
+    
+    
+    
+}
+
+- (void) computeFilteredECEF
+{
+    GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+
+    
+    positionTP.x = kfMeasureX;
+    positionTP.y = kfMeasureY;
+    positionTP.z = kfMeasureZ;
+    positionTP = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
+    
+    _kfPose.ecef.x = _kfInit.ecef.x + positionTP.x;
+    _kfPose.ecef.y = _kfInit.ecef.y + positionTP.y;
+    _kfPose.ecef.z = _kfInit.ecef.z + positionTP.z;
+    
+    
+  
+    
+    
+
+}
+
+
+-(void) initKFilter
+{
+    kfStarted =false;
+    kfValidData = false;
+    kfDt = 1.0;
+    kfNoiseX = 0.0;
+    kfNoiseY = 0.0;
+    
+    kfilter = [[FluxKalmanFilter alloc] init];
+    stepcount = 0;
+    _lastvalue =0;
+    //[self testKalman];
+    
+}
+- (void) startKFilter
+{
+    [self testWGS84Conversions];
+    kfilterTimer = [NSTimer scheduledTimerWithTimeInterval:kfDt
+                                                   target:self
+                                                 selector:@selector(updateKFilter)
+                                                 userInfo:nil
+                                                  repeats:YES];
+    
+    
+}
+
+-(void) stopKFilter
+{
+    
+}
+-(void) resetKFilter
+{
+    
+}
+-(void) updateKFilter
+{
+    NSString *stepS = [NSString stringWithFormat:@"%d",_lastvalue];
+    
+    [pedoLabel setText:stepS];
+    
+    
+    
+
+    
+    if(kfStarted!=true)
+    {
+        if(self.fluxDisplayManager.locationManager.location.horizontalAccuracy < 0)
+        {
+            NSLog(@"updateKFilter:Invalid location, kf not started");
+            return;
+        }
+        _kfInit.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+        _kfInit.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
+        _kfInit.position.z =self.fluxDisplayManager.locationManager.location.altitude;
+       
+        kfStarted = true;
+        [self computeKInitKFilter];
+        //set pedometer count to zero
+        
+        return;
+    }
+    if(self.fluxDisplayManager.locationManager.location.horizontalAccuracy < 0)
+    {
+        NSLog(@"updateKFilter:Invalid location, kf ignores measurement");
+        return;
+        
+    }
+    _kfMeasure.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+    _kfMeasure.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
+    _kfMeasure.position.z =self.fluxDisplayManager.locationManager.location.altitude;
+    kfNoiseX = kfNoiseY = self.fluxDisplayManager.locationManager.location.horizontalAccuracy;
+    
+    [self computeKMeasureKFilter];
+ 
+    [kfilter predictWithXDisp:kfXDisp YDisp:kfYDisp dT:kfDt];
+    kfXDisp = 0.0;
+    kfYDisp =0.0;
+    [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
+    [self computeFilteredECEF];
+    //tests here for tangent plane
+    
+    
+   // [self ecefToWGS84KF];
+}
+
+#pragma --- tests --
+-(void) testWGS84Conversions
+{
+    int i =0;
+    double lat[]={43.628342, 37.774930};
+    double lon[] ={-79.394792,-122.419416};
+    double alt[]={75,20};
+    sensorPose s;
+    for(i=0; i<2; i++)
+    {
+        s.position.x = lat[i];
+        s.position.y = lon[i];
+        s.position.z = alt[i];
+        
+        WGS84_to_ECEF(&s);
+       //test [self ecefToWGS84KF:s];
+    }
+    
+    
+}
+-(void) stepperChangedWithValue:(double)v
+{
+    NSLog(@"stepper triggered");
+    double change = v -_lastvalue;
+    if(change >0)
+    {
+        [self computePedDisplacementKFilter:1];
+    }
+    else
+        [self computePedDisplacementKFilter:-1];
+    _lastvalue= v;
+}
+/*
+- (IBAction)stepperChanged:(id)sender {
+    UIStepper*stepper = (UIStepper*)sender;
+    NSLog(@"stepper triggered");
+    int change = stepper.value -_lastvalue;
+    if(change >0)
+    {
+        [self computePedDisplacementKFilter:1];
+    }
+    else
+        [self computePedDisplacementKFilter:-1];
+    _lastvalue= stepper.value;
+}
+ */
 @end

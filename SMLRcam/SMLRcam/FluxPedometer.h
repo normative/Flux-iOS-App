@@ -24,10 +24,12 @@ typedef enum _walkdir {
     FORWARDS = 1
 } walkDir;
 
+extern NSString* const FluxPedometerDidTakeStep;
+
 @interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
 //    BOOL isPaused;
-//    CMMotionManager *motionManager;
-//    NSTimer* motionUpdateTimer;
+    CMMotionManager *motionManager;
+    NSTimer* motionUpdateTimer;
     
     NSTimer*walkingTimer;
 //    NSTimer*firstStepTimer;
@@ -89,10 +91,10 @@ typedef enum _walkdir {
 
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocationDirection heading;
-
+@property (readonly)  int pstepCount;
 //- (IBAction)pauseButtonTaped:(id)sender;
 //- (void)turnWalkingOff;
 - (void)processMotion:(CMDeviceMotion *)devMotion;
-
+- (void) resetCount;
 
 @end

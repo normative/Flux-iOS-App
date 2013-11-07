@@ -43,6 +43,8 @@
 		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
 		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
 		22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB643817DA2FF3000F4AA7 /* FluxCompassButton.m */; };
+		89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */; };
+		89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A513631829AED800E25AA1 /* Accelerate.framework */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA06FE6B181AEC3400D87658 /* FluxBrowserPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */; };
 		AA06FE6F181EBBC000D87658 /* FluxAuthenticationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE6E181EBBC000D87658 /* FluxAuthenticationViewController.m */; };
@@ -183,6 +185,9 @@
 		22DB643717DA2FF3000F4AA7 /* FluxCompassButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxCompassButton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		22DB643817DA2FF3000F4AA7 /* FluxCompassButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxCompassButton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		896221BE17CFCB2900EC9A44 /* FluxMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMath.h; sourceTree = "<group>"; };
+		89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxKalmanFilter.h; sourceTree = "<group>"; };
+		89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxKalmanFilter.m; sourceTree = "<group>"; };
+		89A513631829AED800E25AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		AA06FE69181AEC3400D87658 /* FluxBrowserPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxBrowserPhoto.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxBrowserPhoto.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA06FE6D181EBBC000D87658 /* FluxAuthenticationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAuthenticationViewController.h; sourceTree = "<group>"; };
@@ -339,6 +344,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */,
 				AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */,
 				AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */,
 				AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */,
@@ -401,6 +407,7 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				89A513631829AED800E25AA1 /* Accelerate.framework */,
 				AA1183B117F329490078FCCF /* AdSupport.framework */,
 				AA14BB2D17E79938007F6764 /* libz.dylib */,
 				AA14BB2B17E797C2007F6764 /* CoreData.framework */,
@@ -589,6 +596,8 @@
 				17891FBE181D69D80064B2F9 /* FluxTextureToImageMapElement.h */,
 				17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */,
 				17891FC4181D6D5C0064B2F9 /* FluxOpenGLCommon.h */,
+				89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */,
+				89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */,
 			);
 			name = "OpenGL ImageViewer";
 			sourceTree = "<group>";
@@ -1079,6 +1088,7 @@
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
 				AA984F1618088923007F33B1 /* MIZoomOutTransition.m in Sources */,
+				89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */,
 				AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */,
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
 				AA984F0E18088923007F33B1 /* MKAnnotationView+MIExtension.m in Sources */,
@@ -1216,7 +1226,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Kei Turner (M4SJ498778)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
@@ -1242,7 +1252,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";

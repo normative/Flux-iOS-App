@@ -14,7 +14,7 @@
 #import "FluxMotionManagerSingleton.h"
 #import <CoreVideo/CVOpenGLESTextureCache.h>
 #import <AVFoundation/AVFoundation.h>
-
+#import "FluxKalmanFilter.h"
 #import "FluxAVCameraSingleton.h"
 #import "FluxOpenGLCommon.h"
 #import "FluxTextureToImageMapElement.h"
@@ -71,6 +71,27 @@
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
+    
+    FluxKalmanFilter *kfilter;
+    NSTimer *kfilterTimer;
+    bool kfStarted;
+    bool kfValidData;
+    
+    
+    double kfDt;
+    double kfMeasureX;
+    double kfMeasureY;
+    double kfMeasureZ;
+    double kfNoiseX;
+    double kfNoiseY;
+    double kfXDisp;
+    double kfYDisp;
+    GLKMatrix4 kfrotation_teM;
+    GLKMatrix4 kfInverseRotation_teM;
+    sensorPose _kfInit;
+    sensorPose _kfMeasure;
+    sensorPose _kfPose;
+    
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
     
@@ -79,6 +100,11 @@
     
     int _displayListHasChanged;
     
+    
+    int stepcount;
+    double _lastvalue;//stepper
+    __weak IBOutlet UILabel *pedoLabel;
+    //__weak IBOutlet UILabel *pedometer;
     
 }
 
@@ -92,6 +118,8 @@
 @property (nonatomic, strong)NSMutableArray *renderList;
 @property (nonatomic, strong)NSMutableArray *textureMap;
 
+
+//- (IBAction)stepperChanged:(id)sender;
 
 //- (GLuint) sub_texture:(demoImage*)img;
 - (void)setupBuffers;
@@ -120,7 +148,7 @@
 
 - (void)render;
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element;
-
+-(void) stepperChangedWithValue:(double)v;
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
 

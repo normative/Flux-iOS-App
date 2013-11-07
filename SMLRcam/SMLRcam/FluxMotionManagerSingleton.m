@@ -56,17 +56,22 @@
         [motionUpdateTimer invalidate];
     }
 }
-
+- (void) resetPedometer
+{
+    [pedometer resetCount];
+}
 - (void)UpdateDeviceMotion:(NSTimer*)timer
 {
     if ((motionManager) && ([motionManager isDeviceMotionActive]))
     {
         self.attitude = motionManager.deviceMotion.attitude;
         
-        if (pedometer != nil)
-        {
-            [pedometer processMotion:motionManager.deviceMotion];
-        }
+//        if (pedometer != nil)
+//        {
+//            [pedometer processMotion:motionManager.deviceMotion];
+//            _pedometerCount =   pedometer.pstepCount;
+//            
+//        }
     }
     
 }
