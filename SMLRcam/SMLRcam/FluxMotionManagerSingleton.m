@@ -66,12 +66,12 @@
     {
         self.attitude = motionManager.deviceMotion.attitude;
         
-        if (pedometer != nil)
-        {
-            [pedometer processMotion:motionManager.deviceMotion];
-            _pedometerCount =   pedometer.pstepCount;
-            
-        }
+//        if (pedometer != nil)
+//        {
+//            [pedometer processMotion:motionManager.deviceMotion];
+//            _pedometerCount =   pedometer.pstepCount;
+//            
+//        }
     }
     
 }

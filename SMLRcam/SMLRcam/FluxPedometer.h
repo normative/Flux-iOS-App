@@ -28,8 +28,8 @@ extern NSString* const FluxPedometerDidTakeStep;
 
 @interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
 //    BOOL isPaused;
-//    CMMotionManager *motionManager;
-//    NSTimer* motionUpdateTimer;
+    CMMotionManager *motionManager;
+    NSTimer* motionUpdateTimer;
     
     NSTimer*walkingTimer;
 //    NSTimer*firstStepTimer;

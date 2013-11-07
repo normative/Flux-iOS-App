@@ -47,6 +47,8 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
     samplecount = 0;
     vertAccelTrend = FLAT;
     
+    [self setupMotionManager];
+    
 //    [self setupLogging];
 
 //    isPaused = NO;
@@ -57,33 +59,42 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
 }
 
 #pragma mark - motion manager
+
+- (void)UpdateDeviceMotion:(NSTimer*)timer
+{
+    if ((motionManager) && ([motionManager isDeviceMotionActive]))
+    {
+        [self processMotion:motionManager.deviceMotion];
+    }
+}
+
 // this code needs to be executed/set up from whatever creates the Pedometer
-//- (void)setupMotionManager{
-//    motionManager = [[CMMotionManager alloc] init];
-//    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
-//    if (!motionManager.isDeviceMotionAvailable) {
-//    }
-//    
-//    [motionManager startDeviceMotionUpdates];
-//    [motionManager startAccelerometerUpdates];
-//    
-//    [self startDeviceMotion];
-//}
-//
-//- (void)startDeviceMotion{
-//    if (motionManager) {
-//        // New in iOS 5.0: Attitude that is referenced to true north
-//        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
-//        motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
-//    }
-//}
-//
-//- (void)stopDeviceMotion{
-//    if (motionManager) {
-//        [motionManager stopDeviceMotionUpdates];
-//        [motionUpdateTimer invalidate];
-//    }
-//}
+- (void)setupMotionManager{
+    motionManager = [[CMMotionManager alloc] init];
+    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
+    if (!motionManager.isDeviceMotionAvailable) {
+    }
+    
+    [motionManager startDeviceMotionUpdates];
+    [motionManager startAccelerometerUpdates];
+    
+    [self startDeviceMotion];
+}
+
+- (void)startDeviceMotion{
+    if (motionManager) {
+        // New in iOS 5.0: Attitude that is referenced to true north
+        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
+        motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
+    }
+}
+
+- (void)stopDeviceMotion{
+    if (motionManager) {
+        [motionManager stopDeviceMotionUpdates];
+        [motionUpdateTimer invalidate];
+    }
+}
 
 - (CMAcceleration *)reorientAccels:(CMDeviceMotion *)devM withOutAccels:(CMAcceleration *)outaccels
 {
@@ -327,14 +338,18 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
         }
     }
     
+    NSNumber *n;
     switch (walkingDirection) {
         case FORWARDS:
             stepCount++;
+            n = [NSNumber numberWithInt:1];
             break;
         case BACKWARDS:
             stepCount--;
+            n = [NSNumber numberWithInt:-1];
             break;
         default:
+            n = [NSNumber numberWithInt:0];
             break;
     }
     
@@ -346,7 +361,7 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                                                    repeats:NO];
 
     NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:[NSNumber numberWithInt:walkingDirection], @"stepDirection" , nil];
+                                  initWithObjectsAndKeys:n, @"stepDirection" , nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxPedometerDidTakeStep
                                                         object:self userInfo:userInfoDict];
 
