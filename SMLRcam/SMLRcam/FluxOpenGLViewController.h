@@ -99,6 +99,8 @@
     
     int _displayListHasChanged;
     
+    
+    int stepcount;
     __weak IBOutlet UILabel *pedoLabel;
     //__weak IBOutlet UILabel *pedometer;
     

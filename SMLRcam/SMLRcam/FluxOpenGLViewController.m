@@ -705,6 +705,31 @@ void init(){
     }
 }
 
+- (void)didTakeStep:(NSNotification *)notification{
+    NSNumber *n = [notification.userInfo objectForKey:@"stepDirection"];
+
+    if (n != nil)
+    {
+        walkDir stepDirection = n.intValue;
+        switch (stepDirection) {
+            case FORWARDS:
+                [self computePedDisplacementKFilter:1];
+                // add your logic for a single forward step...
+                break;
+            case BACKWARDS:
+                [self computePedDisplacementKFilter:-1];
+                // add your logic for a single backward step...
+                break;
+
+            default:
+                break;
+        }
+    }
+    
+}
+    
+
+
 #pragma mark - Image Capture
 
 - (void)setupCameraView{
@@ -908,6 +933,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
     
     [super viewDidLoad];
     _displayListHasChanged = 0;
@@ -1904,8 +1931,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
 }
-- (void)computePedDisplacementKFilter
 
+
+
+- (void)computePedDisplacementKFilter:(int) step
 {
     
     double heading;
@@ -1913,17 +1942,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     int count = motionManager.pedometerCount;
     double stepsize =0.73;
     
-    
+    stepcount++;
      heading =self.fluxDisplayManager.locationManager.heading ;
     
     enuHeadingRad = (90.0 - heading)/180.0 *PI;
     
-    kfXDisp = stepsize * (double)count* cos(enuHeadingRad);
-    kfYDisp = stepsize * (double)count* cos(enuHeadingRad);
+    kfXDisp += stepsize * (double)count* cos(enuHeadingRad) * (double)step;
+    kfYDisp += stepsize * (double)count* sin(enuHeadingRad) * (double)step;
     
      NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
     
-    [motionManager resetPedometer];
+    //[motionManager resetPedometer];
     
     
     
@@ -1954,6 +1983,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfNoiseY = 0.0;
     
     kfilter = [[FluxKalmanFilter alloc] init];
+    stepcount = 0;
     //[self testKalman];
     
 }
@@ -1979,7 +2009,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 -(void) updateKFilter
 {
+    NSString *stepS = [NSString stringWithFormat:@"%d",stepcount];
     
+    [pedoLabel setText:stepS];
+    
+    
+    
+
     
     if(kfStarted!=true)
     {
@@ -2009,8 +2045,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _kfMeasure.position.z =self.fluxDisplayManager.locationManager.location.altitude;
     kfNoiseX = kfNoiseY = self.fluxDisplayManager.locationManager.location.horizontalAccuracy;
     [self computeKMeasureKFilter];
-    [self computePedDisplacementKFilter];
+ 
     [kfilter predictWithXDisp:kfXDisp YDisp:kfYDisp dT:kfDt];
+    kfXDisp = 0.0;
+    kfYDisp =0.0;
     [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
     [self computeFilteredECEF];
 }
