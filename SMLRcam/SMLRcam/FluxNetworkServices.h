@@ -37,7 +37,10 @@ extern NSString* const FluxProductionServerURL;
            andRequestID:(FluxRequestID *)requestID;
 
 //users
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUserWithtoken:(NSString*)authToken
+           andRequestID:(FluxRequestID *)requestID;
 
 //tags
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
@@ -99,8 +102,10 @@ extern NSString* const FluxProductionServerURL;
 //returns user for a given userID
 - (void)getUserForID:(int)userID;
 
+- (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
+
 //creates a user with the given object
-- (void)createUser:(FluxUserObject*)user;
+- (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
 
 #pragma mark  - Tags
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;

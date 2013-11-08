@@ -12,28 +12,34 @@
 #import "FluxLeftDrawerViewController.h"
 #import "FluxScanViewController.h"
 
-#import "KTPlaceholderTextView.h"
-#import "FluxNetworkServices.h"
+#import "FluxDataManager.h"
 
 
-@interface FluxRegisterViewController : UIViewController <UITextFieldDelegate, KTPlaceholderTextViewDelegate, UIScrollViewDelegate, NetworkServicesDelegate>{
+@interface FluxRegisterViewController : UIViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     __strong MMDrawerController * drawerController;
     
-    NSArray*textInputElements;
-
-    IBOutlet UIScrollView *scrollView;
+    NSMutableArray*textInputElements;
+    BOOL isInSignUp;
     
-    UIImage * profilePic;
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;
-    IBOutlet UITextField *confirmPasswordField;
-    IBOutlet UITextField *nameField;
     IBOutlet UITextField *emailField;
-    IBOutlet KTPlaceholderTextView *bioTextView;
+    IBOutlet UIView *loginElementsContainerView;
+    IBOutlet UILabel *loginTogglePromptLabel;
+    IBOutlet UIButton *loginToggleButton;
+    IBOutlet UIButton *twitterButton;
+    IBOutlet UIButton *facebookButton;
+    IBOutlet UIButton *createLoginButton;
+    IBOutlet UIView *topSeparator;
 }
-- (IBAction)nextButtonAction:(id)sender;
-- (IBAction)cancelButtonAction:(id)sender;
+
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
+- (void)hideKeyboard;
+- (IBAction)createAccountButtonAction:(id)sender;
+- (IBAction)loginSignupToggleAction:(id)sender;
+
 
 @end

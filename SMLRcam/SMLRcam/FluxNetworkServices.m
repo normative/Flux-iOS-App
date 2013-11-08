@@ -50,11 +50,18 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                                    keyPath:nil
                                                                                                statusCodes:statusCodes];
         
+        
         RKRequestDescriptor *userRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
                                                                                            objectClass:[FluxUserObject class]
                                                                                            rootKeyPath:@"user"
                                                                                                 method:RKRequestMethodPOST];
-        [objectManager addRequestDescriptor:userRequestDescriptor];
+        
+        RKRequestDescriptor *userLoginRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
+                                                                                           objectClass:[FluxUserObject class]
+                                                                                           rootKeyPath:nil
+                                                                                                method:RKRequestMethodPOST];
+        //[objectManager addRequestDescriptor:userRequestDescriptor];
+        [objectManager addRequestDescriptor:userLoginRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
         
         //and again for image-related calls
@@ -315,29 +322,79 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 
 #pragma mark  - Users
 
-- (void)createUser:(FluxUserObject*)user
+- (void)createUser:(FluxUserObject*)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID
 {
-    [objectManager postObject:user path:@"/users" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+    
+    // Serialize the Article attributes then attach a file
+    NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:userObject
+                                                                                            method:RKRequestMethodPOST
+                                                                                              path:@"/users"
+                                                                                        parameters:nil
+                                                                         constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
+                                    {
+//                                        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
+//                                                                    name:@"image[image]"
+//                                                                fileName:@"photo.jpeg"
+//                                                                mimeType:@"image/jpeg"];
+                                    }];
+    
+    RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
+                                                                                                     success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+                                           {
+                                               if ([result count]>0)
+                                               {
+                                                   FluxUserObject *userObject = [result firstObject];
+                                                   NSLog(@"Successfuly Created user %i with details: %@: %@",userObject.userID,userObject.name,userObject.username);
+                                                   if ([delegate respondsToSelector:@selector(NetworkServices:didCreateUser:andRequestID:)])
+                                                   {
+                                                       [delegate NetworkServices:self didCreateUser:userObject andRequestID:requestID];
+                                                   }
+                                               }
+                                           }
+                                                                                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+                                           {
+                                               NSLog(@"Failed with error: %@", [error localizedDescription]);
+                                               if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+                                               {
+                                                   [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+                                               }
+                                           }];
+  
+    [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
+  
+    // monitor upload progress
+    if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
     {
-            if ([result count]>0)
-            {
-                FluxUserObject*temp = [result firstObject];
-                NSLog(@"Successfuly Created userObject %i with details: %@: %@",temp.userID,temp.name,temp.username);
-
-                if ([delegate respondsToSelector:@selector(NetworkServices:didCreateUser:)])
-                {
-                    [delegate NetworkServices:self didCreateUser:temp];
-                }
-        }
+        [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+            if (totalBytesExpectedToWrite > 0 && totalBytesExpectedToWrite < NSUIntegerMax) {
+                [delegate NetworkServices:self uploadProgress:(long long)totalBytesWritten
+                     ofExpectedPacketSize:(long long)totalBytesExpectedToWrite andRequestID:requestID];
+            }
+        }];
     }
-                      failure:^(RKObjectRequestOperation *operation, NSError *error)
-    {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
-        {
-            [delegate NetworkServices:self didFailWithError:error andRequestID:nil];
-        }
-    }];
+}
+
+-(void)loginUser:(FluxUserObject *)userObject withRequestID:(NSUUID *)requestID{
+    [[RKObjectManager sharedManager] postObject:userObject path:@"/users/sign_in" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         if ([result count]>0)
+         {
+             FluxUserObject*userObj = [result firstObject];
+             NSLog(@"Successfuly logged in with token %@",userObj.auth_token);
+             if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUserWithtoken:andRequestID:)])
+             {
+                 [delegate NetworkServices:self didLoginUserWithtoken:userObj.auth_token andRequestID:requestID];
+             }
+         }
+     }
+        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+         }
+     }];
 }
 
 - (void)getUserForID:(int)userID

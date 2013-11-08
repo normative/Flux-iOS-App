@@ -24,6 +24,7 @@ typedef enum FluxDataRequestType : NSUInteger {
     data_upload_request = 5,
     tag_request = 6,
     wide_Area_list_request = 7,
+    login_request = 8,
 } FluxDataRequestType;
 
 @class FluxDataRequest;
@@ -35,6 +36,8 @@ typedef void (^WideAreaListReadyBlock)(NSArray *);
 typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
+typedef void (^UploadUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
+typedef void (^LoginUserCompleteBlock)(NSString*, FluxDataRequest *);
 typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 
@@ -91,6 +94,12 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 // Callback for periodic updates of upload progress
 @property (strong) UploadInProgressBlock uploadInProgress;
 
+// Callback for successful upload of user + image metadata
+@property (strong) UploadUserCompleteBlock uploadUserComplete;
+
+// Callback for successful user login
+@property (strong) LoginUserCompleteBlock loginUserComplete;
+
 // Callback for list of tags retrieved
 @property (strong) TagsReadyBlock tagsReady;
 
@@ -104,6 +113,8 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
+- (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenLoginUserComplete:(NSString *)token withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenErrorOccurred:(NSError *)e withDataRequest:(FluxDataRequest *)errorDataRequest;
 

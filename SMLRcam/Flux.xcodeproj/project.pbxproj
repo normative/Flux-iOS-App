@@ -82,6 +82,8 @@
 		AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */; };
 		AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */; };
+		AA69DA96182D4DF800B0BEED /* FluxTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA95182D4DF800B0BEED /* FluxTextField.m */; };
+		AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */; };
 		AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxCheckboxCell.m */; };
 		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
 		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
@@ -255,6 +257,10 @@
 		AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFiltersViewController.m; sourceTree = "<group>"; };
 		AA650F0C1802EE1900424223 /* FluxImageCaptureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageCaptureViewController.h; sourceTree = "<group>"; };
 		AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageCaptureViewController.m; sourceTree = "<group>"; };
+		AA69DA94182D4DF800B0BEED /* FluxTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTextField.h; sourceTree = "<group>"; };
+		AA69DA95182D4DF800B0BEED /* FluxTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTextField.m; sourceTree = "<group>"; };
+		AA69DA9A182D647900B0BEED /* FluxTextFieldCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTextFieldCell.h; sourceTree = "<group>"; };
+		AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTextFieldCell.m; sourceTree = "<group>"; };
 		AA70841217B2B93D005D4F9F /* FluxCheckboxCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCheckboxCell.h; sourceTree = "<group>"; };
 		AA70841317B2B93D005D4F9F /* FluxCheckboxCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCheckboxCell.m; sourceTree = "<group>"; };
 		AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTCheckboxButton.h; sourceTree = "<group>"; };
@@ -518,6 +524,8 @@
 				AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */,
 				AA61528A18282AE200B8F2C8 /* FluxLoginViewController.h */,
 				AA61528B18282AE200B8F2C8 /* FluxLoginViewController.m */,
+				AA69DA9A182D647900B0BEED /* FluxTextFieldCell.h */,
+				AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */,
 			);
 			name = Login;
 			sourceTree = "<group>";
@@ -662,6 +670,8 @@
 				AA9CC94917D80858006AF61F /* FluxCameraButton.m */,
 				AAFD390C17DE0B4F006CBC14 /* KTSegmentedButtonControl.h */,
 				AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */,
+				AA69DA94182D4DF800B0BEED /* FluxTextField.h */,
+				AA69DA95182D4DF800B0BEED /* FluxTextField.m */,
 				AA85AD7017A995F7003EBC89 /* 3rd Party */,
 			);
 			name = "Custom UI Elements";
@@ -1061,6 +1071,7 @@
 				17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */,
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
+				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA61528C18282AE200B8F2C8 /* FluxLoginViewController.m in Sources */,
@@ -1084,6 +1095,7 @@
 				AA984F1518088923007F33B1 /* MIZoomInTransition.m in Sources */,
 				AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */,
 				AAFB4DC418159F2500EB8DBA /* FluxTimeFilterScrollView.m in Sources */,
+				AA69DA96182D4DF800B0BEED /* FluxTextField.m in Sources */,
 				AA984F1118088923007F33B1 /* MIMapIndex.m in Sources */,
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
