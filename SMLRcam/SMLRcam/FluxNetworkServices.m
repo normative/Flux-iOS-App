@@ -55,7 +55,13 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                            objectClass:[FluxUserObject class]
                                                                                            rootKeyPath:@"user"
                                                                                                 method:RKRequestMethodPOST];
-        [objectManager addRequestDescriptor:userRequestDescriptor];
+        
+        RKRequestDescriptor *userLoginRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
+                                                                                           objectClass:[FluxUserObject class]
+                                                                                           rootKeyPath:nil
+                                                                                                method:RKRequestMethodPOST];
+        //[objectManager addRequestDescriptor:userRequestDescriptor];
+        [objectManager addRequestDescriptor:userLoginRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
         
         //and again for image-related calls

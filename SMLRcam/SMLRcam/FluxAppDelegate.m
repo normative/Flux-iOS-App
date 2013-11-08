@@ -51,8 +51,11 @@
         [defaults synchronize];
     }
     
+    [[UINavigationBar appearance] setBackgroundColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]];
+    
     [[UINavigationBar appearance] setTitleTextAttributes:@{
                                                            UITextAttributeFont: [UIFont fontWithName:@"Akkurat-Bold" size:17.0],
+                                                           UITextAttributeTextColor: [UIColor whiteColor],
                                                            }];
     
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{

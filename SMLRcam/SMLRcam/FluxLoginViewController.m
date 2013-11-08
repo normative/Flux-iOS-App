@@ -28,6 +28,17 @@
 {
     [super viewDidLoad];
     self.fluxDataManager = [[FluxDataManager alloc]init];
+    
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 400, 50)];
+    label.backgroundColor = [UIColor clearColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:17.0]];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.textColor = [UIColor blackColor];
+    label.adjustsFontSizeToFitWidth = YES;
+    label.text = self.title;
+    self.navigationItem.titleView = label;
+    [self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
+    
 	// Do any additional setup after loading the view.
 }
 
@@ -64,8 +75,13 @@
     [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
         [self.navigationItem.leftBarButtonItem setEnabled:YES];
         [self.navigationItem.rightBarButtonItem setEnabled:YES];
-        NSString*str = [NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+        if ([e.userInfo objectForKey:@"NSLocalizedRecoverySuggestion"]) {
+            [ProgressHUD showError:(NSString*)[e.userInfo objectForKey:@"NSLocalizedRecoverySuggestion"]];
+        }
+        else{
+            NSString*str = [NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]];
+            [ProgressHUD showError:str];
+        }
     }];
     [self hideKeyboard];
     [ProgressHUD show:nil];
