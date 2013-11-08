@@ -183,22 +183,7 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                     {
                         int idx = ((peakIdx - x) + MAXSAMPLES) % MAXSAMPLES;
                         
-                        if ((lastSample >= 0.0) && (lpf[2][idx] < 0.0))
-                        {
-                            // crossed 0 from + to - (traversing backwards through samples)
-                            if (!foundFirstZero)
-                            {
-                                // moving backwards??
-                                movingForward = false;
-                                foundFirstZero = true;
-                            }
-                            else
-                            {
-                                // end of speed calc
-                                foundSecondZero = true;
-                            }
-                        }
-                        else if ((lastSample <= 0.0) && (lpf[2][idx] > 0.0))
+                        if ((lastSample <= 0.0) && (lpf[2][idx] > 0.0))
                         {
                             // crossed 0 from - to + (traversing backwards through samples)
                             if (!foundFirstZero)
@@ -212,7 +197,23 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                                 foundSecondZero = true;
                             }
                         }
-                        
+// disable moving backwards trapping...
+//                        else if ((lastSample >= 0.0) && (lpf[2][idx] < 0.0))
+//                        {
+//                            // crossed 0 from + to - (traversing backwards through samples)
+//                            if (!foundFirstZero)
+//                            {
+//                                // moving backwards??
+//                                movingForward = false;
+//                                foundFirstZero = true;
+//                            }
+//                            else
+//                            {
+//                                // end of speed calc
+//                                foundSecondZero = true;
+//                            }
+//                        }
+
                         if (!foundHorizAccel)
                         {
                             if (lpf[2][idx] > maxHAccel)

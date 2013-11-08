@@ -244,16 +244,17 @@ double getAbsAngle(double angle, double heading)
         
         // sort by abs(heading delta with current) asc
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
-            // get heading deltas relative to current...
-            
-            double h1 = floor(getAbsAngle(obj1.imageMetadata.heading, localCurrHeading) / 5.0);
-            double h2 = floor(getAbsAngle(obj2.imageMetadata.heading, localCurrHeading) / 5.0);
-
-            if (h1 != h2)
-            {
-                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
-            }
-            else
+// sort based on heading - needs to be reworked to use a proper heading relative to projection plane placement
+//            // get heading deltas relative to current...
+//            
+//            double h1 = floor(getAbsAngle(obj1.imageMetadata.heading, localCurrHeading) / 5.0);
+//            double h2 = floor(getAbsAngle(obj2.imageMetadata.heading, localCurrHeading) / 5.0);
+//
+//            if (h1 != h2)
+//            {
+//                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
+//            }
+//            else
             {
                 return ([obj2.timestamp compare:obj1.timestamp]);   // sort descending timestamp
             }
