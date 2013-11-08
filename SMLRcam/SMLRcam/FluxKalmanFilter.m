@@ -212,7 +212,7 @@
     cblas_daxpy(16, -1.0,I, 1, T44,1 );
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 4, 4 , 4, -1.0, T44, 4, P_p, 4, 0.0, P, 4);
     //cblas_dcopy(16, P_pp, 1, P, 1);
-    NSLog(@"X[%f %f %f %f",X[0],X[1],X[2],X[3]);
+   // NSLog(@"X[%f %f %f %f",X[0],X[1],X[2],X[3]);
     _positionX = X[0];
     _positionY = X[1];
    
