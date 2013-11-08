@@ -1506,9 +1506,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if(1)
     {
-      _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
-    _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
-    _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
+        _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+        _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
+        _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
     }
     else
     {
@@ -1526,6 +1526,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
+   
     if(kfStarted ==true)
     {
         _userPose.ecef.x = _kfPose.ecef.x;
@@ -1534,7 +1535,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         
     }
-        
+    
     
     //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     //    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
@@ -2007,7 +2008,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfMeasureY = positionTP.y;
     kfMeasureZ = positionTP.z;
     /*
-    positionTP1 = (kfInverseRotation_teM, positionTP);
+    positionTP1 = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
     
     positionTP1.x = _kfInit.ecef.x + positionTP1.x;
     positionTP1.y = _kfInit.ecef.y + positionTP1.y;
@@ -2050,8 +2051,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
     
-    positionTP.x = kfMeasureX;
-    positionTP.y = kfMeasureY;
+    positionTP.x = kfilter.positionX;
+    positionTP.y = kfilter.positionY;
     positionTP.z = kfMeasureZ;
     positionTP = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
     
@@ -2071,7 +2072,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     kfStarted =false;
     kfValidData = false;
-    kfDt = 1.0;
+    kfDt = 1.0/60.0;
     kfNoiseX = 0.0;
     kfNoiseY = 0.0;
     
@@ -2103,7 +2104,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 -(void) updateKFilter
 {
-    NSString *stepS = [NSString stringWithFormat:@"%d",_lastvalue];
+    NSString *stepS = [NSString stringWithFormat:@"%d",stepcount];
     
     [pedoLabel setText:stepS];
     
