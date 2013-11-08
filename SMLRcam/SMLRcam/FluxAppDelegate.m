@@ -14,8 +14,10 @@
 #define GATrackingID @"UA-17713937-4"
 
 #import "TestFlight.h"
-#define TestFlightAppToken @"ef9c1a90-3dc3-4db5-8fad-867e31b66e8c"
-
+// Normative
+//#define TestFlightAppToken @"ef9c1a90-3dc3-4db5-8fad-867e31b66e8c"
+// SMLR
+#define TestFlightAppToken @"0eda8ac5-1a9d-460a-bdd4-872906086253"
 
 
 @implementation FluxAppDelegate
