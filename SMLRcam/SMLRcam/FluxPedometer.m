@@ -96,7 +96,7 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
     }
 }
 
-- (CMAcceleration *)reorientAccels:(CMDeviceMotion *)devM withOutAccels:(CMAcceleration *)outaccels
+- (CMAcceleration *)reorientAccels:(CMDeviceMotion *)devM withOutAccels:(CMAcceleration *)outaccels withGravity:(CMAcceleration *)gravity
 {
     // do whatever needs to be done to transform existing device motion / accels
     // to compensate for device orientation
@@ -106,7 +106,9 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
         outaccels->x = devM.userAcceleration.x;
         outaccels->y = devM.userAcceleration.y;
         outaccels->z = devM.userAcceleration.z;
-    }
+        gravity->x = devM.gravity.x;
+        gravity->y = devM.gravity.y;
+        gravity->z = devM.gravity.z;    }
     
     return outaccels;
 }
@@ -120,12 +122,15 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
         double slopeDir = 0.0;
         double speed = 0.0;
         CMAcceleration newAccels;
+        CMAcceleration gravVec;
+        double acceleration;
         
-        [self reorientAccels:devMotion withOutAccels:&newAccels];
+        [self reorientAccels:devMotion withOutAccels:&newAccels withGravity:&gravVec];
         
+        acceleration = gravVec.x * newAccels.x + gravVec.y * newAccels.y + gravVec.z * newAccels.z;
         // raw sample
         samples[0][samplecount] = newAccels.x;    // lateral (l/r)
-        samples[1][samplecount] = newAccels.y;    // vertical (u/d)
+        samples[1][samplecount] = acceleration;    // vertical (u/d)
         samples[2][samplecount] = newAccels.z;    // line-of-sight (f/b)
         
         double sum[3] = { 0.0, 0.0, 0.0 };
