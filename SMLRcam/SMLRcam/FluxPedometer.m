@@ -173,13 +173,15 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                     bool foundFirstZero = false;
                     bool foundSecondZero = false;
                     int segmentCount = 0;
-                    bool movingForward = false;
+//                    bool movingForward = false;
+                    walkDir movingDirection = UNKNOWN;
                     double maxHAccel = 0.0;
                     double minHAccel = 0.0;
                     
-                    lastSample = lpf[2][peakIdx];
+                    lastSample = -lpf[2][peakIdx];      // force a transition right out of the gate
                     
-                    for (int x = 0; ((x < SPEED_CALC_WINDOW_SIZE) && !(foundHorizAccel && foundSecondZero)); x++)
+//                    for (int x = 0; ((x < SPEED_CALC_WINDOW_SIZE) && !(foundHorizAccel && foundSecondZero)); x++)
+                    for (int x = 0; ((x < SPEED_CALC_WINDOW_SIZE)/* && !(foundHorizAccel && foundSecondZero)*/); x++)
                     {
                         int idx = ((peakIdx - x) + MAXSAMPLES) % MAXSAMPLES;
                         
@@ -189,30 +191,45 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                             if (!foundFirstZero)
                             {
                                 // moving forwards??
-                                movingForward = true;
+                                movingDirection = FORWARDS;
                                 foundFirstZero = true;
+                            }
+                            else if ((movingDirection == BACKWARDS) && (segmentCount < 10))
+                            {
+                                // wrong side of 0 - change direction and reset
+                                movingDirection = FORWARDS;
+                                segmentCount = 0;
+                                speed = 0.0;
+                                foundHorizAccel = false;
                             }
                             else
                             {
                                 foundSecondZero = true;
                             }
                         }
-// disable moving backwards trapping...
-//                        else if ((lastSample >= 0.0) && (lpf[2][idx] < 0.0))
-//                        {
-//                            // crossed 0 from + to - (traversing backwards through samples)
-//                            if (!foundFirstZero)
-//                            {
-//                                // moving backwards??
-//                                movingForward = false;
-//                                foundFirstZero = true;
-//                            }
-//                            else
-//                            {
-//                                // end of speed calc
-//                                foundSecondZero = true;
-//                            }
-//                        }
+                        else if ((lastSample >= 0.0) && (lpf[2][idx] < 0.0))
+                        {
+                            // crossed 0 from + to - (traversing backwards through samples)
+                            if (!foundFirstZero)
+                            {
+                                // moving backwards??
+                                movingDirection = BACKWARDS;
+                                foundFirstZero = true;
+                            }
+                            else if ((movingDirection == FORWARDS) && (segmentCount < 10))
+                            {
+                                // wrong side of 0 - change direction and reset
+                                movingDirection = BACKWARDS;
+                                segmentCount = 0;
+                                speed = 0.0;
+                                foundHorizAccel = false;
+                            }
+                            else
+                            {
+                                // end of speed calc
+                                foundSecondZero = true;
+                            }
+                        }
 
                         if (!foundHorizAccel)
                         {
@@ -226,11 +243,11 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                             }
                             if ((foundFirstZero) && (!foundHorizAccel))
                             {
-                                if (movingForward)
+                                if (movingDirection == FORWARDS)
                                 {
                                     foundHorizAccel = (maxHAccel >= ACCEL_HORIZ_THRESHOLD);
                                 }
-                                else
+                                else if (movingDirection == BACKWARDS)
                                 {
                                     foundHorizAccel = (minHAccel <= -ACCEL_HORIZ_THRESHOLD);
                                 }
@@ -258,8 +275,11 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                     
                     if (foundHorizAccel && (speed > VELOCITY_THRESHOLD))
                     {
-                        [self turnWalkingOn:movingForward];
+                        [self turnWalkingOn:movingDirection];
                         countState = 1;
+                        timeOfLastFootFall = [[NSDate alloc]init];
+                        timeOfLastStep = [[NSDate alloc]initWithTimeIntervalSinceNow:-MIN_STRIDE_TIME];
+                        currentSpeed = speed;
                     }
                 }
             }
@@ -274,14 +294,27 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
                 }
                 else
                 {
+                    NSDate *now = [[NSDate alloc]init];
                     if (countState == 1)
                     {
                         if ((vertAccelTrend == FALLING) && (samples[1][peakIdx] > ACCEL_VERT_RETURN_THRESHOLD))
                         {
                             // apex of leg swing
+
+//                            NSTimeInterval timeSinceLastFootFall = [now timeIntervalSinceDate:timeOfLastFootFall];
+//                            NSTimeInterval timeSinceLastStep = [now timeIntervalSinceDate:timeOfLastStep];
+//                            timeOfLastStep = now;
+//
+//                            if ((timeSinceLastFootFall < (MIN_STRIDE_TIME * 0.5)) || (timeSinceLastStep < MIN_STRIDE_TIME))
+//                            {
+//                                [self turnWalkingOff];
+//                                countState = 0;
+//                            }
+//                            else
                             if ([self didTakeStep])
                             {
                                 countState = 0;
+                                timeOfLastFootFall = now;
                             }
                         }
                     }
@@ -370,18 +403,11 @@ NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
     return true;
 }
 
-- (void)turnWalkingOn:(bool)movingForward
+- (void)turnWalkingOn:(walkDir)movingDirection
 {
     isWalking = YES;
     
-    if (movingForward)
-    {
-        walkingDirection = FORWARDS;
-    }
-    else
-    {
-        walkingDirection = BACKWARDS;
-    }
+    walkingDirection = movingDirection;
 }
 
 - (void)turnWalkingOff{

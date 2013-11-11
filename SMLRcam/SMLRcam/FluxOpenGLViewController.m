@@ -187,7 +187,7 @@ void init_camera_model()
     iPhone5_topcrop = iPhone5_bottomcrop;
 }
 
-#define PI 3.1415926535898
+#define PI M_PI
 #define a_WGS84 6378137.0
 #define b_WGS84 6356752.3142
 
@@ -2030,7 +2030,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     //int count = motionManager.pedometerCount;
     double stepsize =0.73;
     
-    stepcount++;
+    stepcount += step;
      heading =self.fluxDisplayManager.locationManager.heading ;
     
     enuHeadingRad = (90.0 - heading)/180.0 *PI;
