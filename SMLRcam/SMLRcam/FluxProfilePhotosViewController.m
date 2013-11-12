@@ -27,13 +27,12 @@
 {
     [super viewDidLoad];
     
-    [self.navigationController.navigationBar setTranslucent:YES];
-    [self.navigationController.navigationBar setBarTintColor:[UIColor colorWithRed:31.0/255.0 green:33/255.0 blue:36.0/255.0 alpha:1.0]];
-    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
-
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
     
-    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:UITextAttributeTextColor];
+    picturesArray = [[NSMutableArray alloc]init];
+    for (int i = 0; i<9; i++) {
+        IDMPhoto *photo = [[IDMPhoto alloc]initWithImage:[UIImage imageNamed:@"Image"]];
+        [picturesArray addObject:photo];
+    }
     
     [self setTitle:@"My Photos"];
     
@@ -47,7 +46,7 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 9;
+    return picturesArray.count;
 }
 
 
@@ -57,12 +56,19 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     
     UIImageView *recipeImageView = (UIImageView *)[cell viewWithTag:100];
-    recipeImageView.image = [UIImage imageNamed:@"Image"];
+    recipeImageView.image = [(IDMPhoto*)[picturesArray objectAtIndex:indexPath.row]underlyingImage];
     
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:picturesArray animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
+    [browser setInitialPageIndex:indexPath.row];
+    [browser setDelegate:self];
+    [self presentViewController:browser animated:YES completion:nil];
+}
+
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     
 }
 

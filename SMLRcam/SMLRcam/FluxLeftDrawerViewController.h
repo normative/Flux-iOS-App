@@ -14,7 +14,9 @@
 #import "FluxDataManager.h"
 #import "MMDrawerController.h"
 
-@interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate>
+@interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate>{
+    NSMutableArray*tableViewArray;
+}
 
 @property (weak, nonatomic) IBOutlet UIView *copyrightView;
 @property (weak, nonatomic) IBOutlet UILabel *versionLbl;

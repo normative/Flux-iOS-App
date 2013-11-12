@@ -19,11 +19,5 @@
 @property (nonatomic, strong) NSString*auth_token;
 @property (nonatomic, strong) UIImage*profilePic;
 
-- (id)initWithName:(NSString*)theName
-   andUsername:(NSString*)theUsername
-         andPassword:(NSString*)thePassword
-       andEmail:(NSString*)theEmail
-            andBio:(NSString*)theBio
-andProfilePic:(UIImage*)theProfilePic;
 
 @end

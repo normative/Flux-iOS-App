@@ -10,6 +10,8 @@
 #import "TestFlight.h"
 #import "TestFlight+OpenFeedback.h"
 #import "UIViewController+MMDrawerController.h"
+#import "FluxLeftMenuCell.h"
+#import "UICKeyChainStore.h"
 
 #import "FluxSettingsViewController.h"
 
@@ -31,24 +33,23 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:YES];
     [self.drawerController setMaximumLeftDrawerWidth:256.0 animated:YES completion:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated{
-    [self.tableView setContentSize:CGSizeMake(self.tableView.contentSize.width, self.tableView.contentSize.height+25)];
-}
-
--(void)viewDidDisappear:(BOOL)animated{
-    
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Photos" , nil];
+    NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Following" , nil];
+    NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
+    NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
+    NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
+    tableViewArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
     
     NSString *versionString = [NSString stringWithFormat:@"Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
     [self.versionLbl setText:versionString];
+    
+    [self.navigationController setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)didReceiveMemoryWarning
@@ -66,7 +67,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 5;
+    return tableViewArray.count+1;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -78,48 +79,34 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"standardCell";
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    static NSString *cellIdentifier = @"standardLeftCell";
+    FluxLeftMenuCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+        cell = [[FluxLeftMenuCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
-    [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
-    [cell.textLabel setTextColor:[UIColor whiteColor]];
-    
-    //NSString *currentValue = [shareValues objectAtIndex:[indexPath row]];
-    //[[cell textLabel]setText:currentValue];
-    //return cell;
-
-    switch (indexPath.row)
-    {
-        case 0:
-            {
-                NSString *cellIdentifier = @"profileCell";
-                UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-                if (!cell) {
-                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-                }
-                return cell;
-            }
-            break;
-        case 1:
-            [cell.textLabel setText:@"Photos"];
-            break;
-        case 2:
-            [cell.textLabel setText:@"Following"];
-            break;
-        case 3:
-            [cell.textLabel setText:@"Followers"];
-            break;
-        case 4:
-            [cell.textLabel setText:@"Settings"];
-            break;
+    [cell initCell];
+    if (indexPath.row == 0) {
+        NSString *username = [UICKeyChainStore stringForKey:@"username" service:@"com.flux"];
+        
+        NSString *cellIdentifier = @"profileCell";
+        UITableViewCell * profileCell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        if (!profileCell) {
+            profileCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+        }
+        return profileCell;
+    }
+    else if (indexPath.row == tableViewArray.count){
+        cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
+        cell.countLabel.text = @"";
+    }
+    else{
+        cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
+        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
     }
     return cell;
 }
 
-- (void)        tableView:(UITableView *)tableView
-  didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     switch (indexPath.row)
     {
@@ -136,6 +123,9 @@
             //[self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
             break;
         case 4:
+            //[self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            break;
+        case 5:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
             break;
             
@@ -146,63 +136,11 @@
     [self.mm_drawerController setMaximumLeftDrawerWidth:320 animated:YES completion:nil];
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a story board-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-
- */
-
 #pragma IBActions
 
 - (IBAction)onSendFeedBackBtn:(id)sender
 {
     [TestFlight openFeedbackViewFromView:self];
-    [self.tableView setContentSize:CGSizeMake(self.tableView.contentSize.width, self.tableView.contentSize.height+25)];
 }
 
 #pragma mark - delegate

@@ -15,6 +15,7 @@
 - (UIImage *)imageForPhoto:(id<IDMPhoto>)photo;
 - (void)cancelControlHiding;
 - (void)hideControlsAfterDelay;
+- (void)toggleControls;
 @end
 
 // Private methods and properties
@@ -30,7 +31,6 @@
 
 - (id)initWithPhotoBrowser:(IDMPhotoBrowser *)browser {
     if ((self = [super init])) {
-        
         // Delegate
         self.photoBrowser = browser;
         
@@ -61,11 +61,12 @@
         
         // Progress view
         _progressView = [[DACircularProgressView alloc] initWithFrame:CGRectMake((screenWidth-35.)/2., (screenHeight-35.)/2, 35.0f, 35.0f)];
-        _progressView.roundedCorners = YES;
-        _progressView.tag = 101;
-        _progressView.trackTintColor    = usingWhiteBackground ? [UIColor colorWithWhite:0.8 alpha:1] : [UIColor colorWithWhite:0.2 alpha:1];
-        _progressView.progressTintColor = usingWhiteBackground ? [UIColor orangeColor] : [UIColor colorWithWhite:1.0 alpha:1];
         [_progressView setProgress:0.0f];
+        _progressView.tag = 101;
+        _progressView.thicknessRatio = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7") ? 0.1 : 0.2;
+        _progressView.roundedCorners = SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7") ? NO  : YES;
+        _progressView.trackTintColor    = usingWhiteBackground ? [UIColor colorWithWhite:0.8 alpha:1] : [UIColor colorWithWhite:0.2 alpha:1];
+        _progressView.progressTintColor = usingWhiteBackground ? browser.view.tintColor               : [UIColor colorWithWhite:1.0 alpha:1];
         [self addSubview:_progressView];
         
 		// Setup
@@ -139,14 +140,11 @@
 	}
 }
 
-- (void)setProgress:(CGFloat)progress forPhoto:(IDMPhoto*)photo
-{
+- (void)setProgress:(CGFloat)progress forPhoto:(IDMPhoto*)photo {
     IDMPhoto *p = (IDMPhoto*)self.photo;
 
-    if ([photo.photoURL.absoluteString isEqualToString:p.photoURL.absoluteString])
-    {
-        if (_progressView.progress < progress)
-        {
+    if ([photo.photoURL.absoluteString isEqualToString:p.photoURL.absoluteString]) {
+        if (_progressView.progress < progress) {
             [_progressView setProgress:progress animated:YES];
         }
     }
