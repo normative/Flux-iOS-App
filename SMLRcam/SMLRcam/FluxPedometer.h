@@ -57,6 +57,11 @@ extern NSString* const FluxPedometerDidTakeStep;
     NSString *motionFilename;
     NSFileHandle *motionFile;
     
+    NSDate *timeOfLastFootFall;
+    NSDate *timeOfLastStep;
+    
+    double currentSpeed;
+    
 }
 
 
