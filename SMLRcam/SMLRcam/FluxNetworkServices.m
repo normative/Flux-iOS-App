@@ -50,19 +50,29 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                                    keyPath:nil
                                                                                                statusCodes:statusCodes];
         
+        RKResponseDescriptor *userLoginResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
+                                                                                                    method:RKRequestMethodAny
+                                                                                               pathPattern:@"users/sign_in"
+                                                                                                   keyPath:nil
+                                                                                               statusCodes:statusCodes];
+        
+        
+//        RKRequestDescriptor *userRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
+//                                                                                           objectClass:[FluxUserObject class]
+//                                                                                           rootKeyPath:nil
+//                                                                                                method:RKRequestMethodPOST];
         
         RKRequestDescriptor *userRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
                                                                                            objectClass:[FluxUserObject class]
                                                                                            rootKeyPath:@"user"
                                                                                                 method:RKRequestMethodPOST];
         
-        RKRequestDescriptor *userLoginRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
-                                                                                           objectClass:[FluxUserObject class]
-                                                                                           rootKeyPath:nil
-                                                                                                method:RKRequestMethodPOST];
+        
+        
+        [objectManager addRequestDescriptor:userRequestDescriptor];
         //[objectManager addRequestDescriptor:userRequestDescriptor];
-        [objectManager addRequestDescriptor:userLoginRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
+        [objectManager addResponseDescriptor:userLoginResponseDescriptor];
         
         //and again for image-related calls
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
@@ -389,6 +399,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
      }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
+         
          NSLog(@"Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
          {

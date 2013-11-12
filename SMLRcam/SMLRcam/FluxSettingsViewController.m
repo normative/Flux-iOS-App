@@ -29,9 +29,6 @@
 {
     [super viewDidLoad];
     
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor]];
-    
     [self setTitle:@"Settings"];
 
     // Uncomment the following line to preserve selection between presentations.

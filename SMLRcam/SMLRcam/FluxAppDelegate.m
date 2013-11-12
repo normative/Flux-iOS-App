@@ -53,16 +53,28 @@
         [defaults synchronize];
     }
     
-    [[UINavigationBar appearance] setBackgroundColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]];
-    
     [[UINavigationBar appearance] setTitleTextAttributes:@{
-                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat-Bold" size:17.0],
-                                                           UITextAttributeTextColor: [UIColor whiteColor],
+                                                           NSFontAttributeName: [UIFont fontWithName:@"Akkurat-Bold" size:17.0],
+                                                           NSForegroundColorAttributeName: [UIColor whiteColor],
                                                            }];
     
     [[UIBarButtonItem appearance] setTitleTextAttributes:@{
-                                                           UITextAttributeFont: [UIFont fontWithName:@"Akkurat" size:17.0],
+                                                           NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:17.0],
+                                                           NSForegroundColorAttributeName: [UIColor whiteColor],
                                                            } forState:UIControlStateNormal];
+    
+    [[UINavigationBar appearance]setBarTintColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    
+    if ([UITextField conformsToProtocol:@protocol(UIAppearance)])
+    {
+        [[UITextField appearance] setTintColor:[UIColor whiteColor]];
+    }
+    
+    if ([UIButton conformsToProtocol:@protocol(UIAppearance)])
+    {
+        [[UIButton appearance].titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:17.0]];
+    }
     
     //google analytics
     // Optional: automatically send uncaught exceptions to Google Analytics.
@@ -77,7 +89,7 @@
     //testFlight analytics
     [TestFlight takeOff:TestFlightAppToken];
     
-    RKLogConfigureByName("RestKit/Network", RKLogLevelDefault);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     //RKLogConfigureByName("*", RKLogLevelOff);
     
     return YES;

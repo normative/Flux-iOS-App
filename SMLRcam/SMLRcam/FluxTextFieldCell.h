@@ -25,5 +25,6 @@
 @property (unsafe_unretained) id <FluxTextFieldCellDelegate> delegate;
 
 - (void)setupForPosition:(int)position andPlaceholder:(NSString*)placeholder;
+- (void)setChecked:(BOOL)checked;
 
 @end

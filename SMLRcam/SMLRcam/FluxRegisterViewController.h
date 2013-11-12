@@ -15,7 +15,7 @@
 #import "FluxDataManager.h"
 
 
-@interface FluxRegisterViewController : UIViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate>{
+@interface FluxRegisterViewController : UIViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     __strong MMDrawerController * drawerController;
@@ -33,6 +33,7 @@
     IBOutlet UIButton *facebookButton;
     IBOutlet UIButton *createLoginButton;
     IBOutlet UIView *topSeparator;
+    IBOutlet UIImageView *logoImageView;
 }
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;

@@ -92,6 +92,18 @@
     else{
         [self.textField setPlaceholder:placeholder];
     }
+    
+    [self.checkImageView setImage:[UIImage imageNamed:@"check"]];
+    [self.checkImageView setHidden:YES];
+}
+
+- (void)setChecked:(BOOL)checked{
+    if (checked) {
+        [self.checkImageView setHidden:NO];
+    }
+    else{
+        [self.checkImageView setHidden:YES];
+    }
 }
 
 @end

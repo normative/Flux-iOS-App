@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "IDMPhotoBrowser.h"
 
-@interface FluxProfilePhotosViewController : UICollectionViewController
+@interface FluxProfilePhotosViewController : UICollectionViewController<IDMPhotoBrowserDelegate>{
+    NSMutableArray*picturesArray;
+    
+    IDMPhotoBrowser * photoViewerView;
+}
 
 @end
