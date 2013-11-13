@@ -1159,6 +1159,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     */
     
     [self setupBuffers];
+    [self loadAlphaTexture];
     [pedoLabel setText:@"ped"];
 }
 
@@ -1173,6 +1174,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glDeleteProgram(_program);
         _program = 0;
     }
+}
+
+- (void) loadAlphaTexture
+{
+    NSError *error;
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+   options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderGrayscaleAsAlpha];
+    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"mask" ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(_texture[5].target, _texture[5].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
 }
 
 - (void)setupBuffers
@@ -1609,6 +1625,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
     }
     
+    
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(_texture[5].target, _texture[5].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER5], 5);
+
+    
     // then spin through the images...
     NSEnumerator *revEnumerator = [self.renderList reverseObjectEnumerator];
     int c = 0;
@@ -1759,6 +1783,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     uniforms[UNIFORM_MYTEXTURE_SAMPLER2] = glGetUniformLocation(_program, "textureSampler[2]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER3] = glGetUniformLocation(_program, "textureSampler[3]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER5] = glGetUniformLocation(_program, "textureSampler[5]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER7] = glGetUniformLocation(_program, "textureSampler[7]");
     
     uniforms[UNIFORM_RENDER_ENABLE0] = glGetUniformLocation(_program, "renderEnable[0]");
