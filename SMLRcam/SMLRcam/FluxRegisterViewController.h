@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MMDrawerController.h"
 #import "FluxLeftDrawerViewController.h"
 #import "FluxScanViewController.h"
 
@@ -18,7 +17,6 @@
 @interface FluxRegisterViewController : UIViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
-    __strong MMDrawerController * drawerController;
     
     NSMutableArray*textInputElements;
     BOOL isInSignUp;

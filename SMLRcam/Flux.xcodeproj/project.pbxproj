@@ -53,10 +53,6 @@
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
 		AA1183B017F327760078FCCF /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA1183AF17F327760078FCCF /* libGoogleAnalyticsServices.a */; };
 		AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA1183B117F329490078FCCF /* AdSupport.framework */; };
-		AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFB17AAD09500725AB1 /* MMDrawerBarButtonItem.m */; };
-		AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFD17AAD09500725AB1 /* MMDrawerController.m */; };
-		AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134AFF17AAD09500725AB1 /* MMDrawerVisualState.m */; };
-		AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */; };
 		AA14BB2A17E797BB007F6764 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */; };
 		AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2B17E797C2007F6764 /* CoreData.framework */; };
 		AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2D17E79938007F6764 /* libz.dylib */; };
@@ -207,14 +203,6 @@
 		AA1183AB17F323750078FCCF /* GAITracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
 		AA1183AF17F327760078FCCF /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
 		AA1183B117F329490078FCCF /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
-		AA134AFA17AAD09500725AB1 /* MMDrawerBarButtonItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerBarButtonItem.h; sourceTree = "<group>"; };
-		AA134AFB17AAD09500725AB1 /* MMDrawerBarButtonItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMDrawerBarButtonItem.m; sourceTree = "<group>"; };
-		AA134AFC17AAD09500725AB1 /* MMDrawerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerController.h; sourceTree = "<group>"; };
-		AA134AFD17AAD09500725AB1 /* MMDrawerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMDrawerController.m; sourceTree = "<group>"; };
-		AA134AFE17AAD09500725AB1 /* MMDrawerVisualState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMDrawerVisualState.h; sourceTree = "<group>"; };
-		AA134AFF17AAD09500725AB1 /* MMDrawerVisualState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMDrawerVisualState.m; sourceTree = "<group>"; };
-		AA134B0017AAD09500725AB1 /* UIViewController+MMDrawerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+MMDrawerController.h"; sourceTree = "<group>"; };
-		AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MMDrawerController.m"; sourceTree = "<group>"; };
 		AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		AA14BB2B17E797C2007F6764 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		AA14BB2D17E79938007F6764 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -566,21 +554,6 @@
 			name = "Image Capture";
 			sourceTree = "<group>";
 		};
-		AA134AF917AAD09500725AB1 /* MMDrawerController */ = {
-			isa = PBXGroup;
-			children = (
-				AA134AFA17AAD09500725AB1 /* MMDrawerBarButtonItem.h */,
-				AA134AFB17AAD09500725AB1 /* MMDrawerBarButtonItem.m */,
-				AA134AFC17AAD09500725AB1 /* MMDrawerController.h */,
-				AA134AFD17AAD09500725AB1 /* MMDrawerController.m */,
-				AA134AFE17AAD09500725AB1 /* MMDrawerVisualState.h */,
-				AA134AFF17AAD09500725AB1 /* MMDrawerVisualState.m */,
-				AA134B0017AAD09500725AB1 /* UIViewController+MMDrawerController.h */,
-				AA134B0117AAD09500725AB1 /* UIViewController+MMDrawerController.m */,
-			);
-			path = MMDrawerController;
-			sourceTree = "<group>";
-		};
 		AA14BB2017E792C0007F6764 /* Google Analytics */ = {
 			isa = PBXGroup;
 			children = (
@@ -716,7 +689,6 @@
 				AA06FE68181AEBF900D87658 /* ImageViewer */,
 				AAC1BF061811AF67001D3C01 /* ProgressHUD */,
 				AA984EE718088923007F33B1 /* MapIndex */,
-				AA134AF917AAD09500725AB1 /* MMDrawerController */,
 			);
 			name = "3rd Party";
 			sourceTree = "<group>";
@@ -1063,7 +1035,6 @@
 			files = (
 				AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */,
 				AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */,
-				AA134B0517AAD09500725AB1 /* UIViewController+MMDrawerController.m in Sources */,
 				AA69DA9F18313B9F00B0BEED /* FluxLeftMenuCell.m in Sources */,
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
@@ -1078,7 +1049,6 @@
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
-				AA134B0417AAD09500725AB1 /* MMDrawerVisualState.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA61528C18282AE200B8F2C8 /* FluxLoginViewController.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
@@ -1088,7 +1058,6 @@
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
 				AA984F1718088923007F33B1 /* MITransitionFactory.m in Sources */,
 				AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */,
-				AA134B0217AAD09500725AB1 /* MMDrawerBarButtonItem.m in Sources */,
 				AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */,
 				AA55534217F0C0EA0098C45C /* FluxDisplayManager.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
@@ -1118,7 +1087,6 @@
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA984F0F18088923007F33B1 /* MIPointList.m in Sources */,
-				AA134B0317AAD09500725AB1 /* MMDrawerController.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
 				17891FC3181D6C840064B2F9 /* FluxImageRenderElement.m in Sources */,
 				AA61527D1822DC9300B8F2C8 /* FluxImageTools.m in Sources */,

@@ -75,6 +75,8 @@
     {
         [[UIButton appearance].titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:17.0]];
     }
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
     
     //google analytics
     // Optional: automatically send uncaught exceptions to Google Analytics.

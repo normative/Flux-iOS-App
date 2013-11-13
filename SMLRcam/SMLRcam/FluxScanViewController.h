@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "MMDrawerBarButtonItem.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxCameraButton.h"
 #import "FluxCompassButton.h"
@@ -94,6 +93,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)filterButtonAction:(id)sender;
 - (void)setCameraButtonEnabled:(BOOL)enabled;
+- (IBAction)shareButtonAction:(id)sender;
 
 - (IBAction)stepper:(id)sender;
 

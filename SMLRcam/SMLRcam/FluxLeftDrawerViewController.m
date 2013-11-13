@@ -9,7 +9,6 @@
 #import "FluxLeftDrawerViewController.h"
 #import "TestFlight.h"
 #import "TestFlight+OpenFeedback.h"
-#import "UIViewController+MMDrawerController.h"
 #import "FluxLeftMenuCell.h"
 #import "UICKeyChainStore.h"
 
@@ -33,7 +32,6 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.drawerController setMaximumLeftDrawerWidth:256.0 animated:YES completion:nil];
 }
 
 - (void)viewDidLoad
@@ -48,8 +46,6 @@
     
     NSString *versionString = [NSString stringWithFormat:@"Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
     [self.versionLbl setText:versionString];
-    
-    [self.navigationController setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)didReceiveMemoryWarning
@@ -99,6 +95,13 @@
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
     }
+    else if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4){
+        cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
+        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
+        [cell.titleLabel setEnabled:NO];
+        [cell.countLabel setEnabled:NO];
+        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+    }
     else{
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
@@ -117,13 +120,13 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-            //[self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+                [tableView deselectRowAtIndexPath:indexPath animated:NO];
             break;
         case 3:
-            //[self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+                [tableView deselectRowAtIndexPath:indexPath animated:NO];
             break;
         case 4:
-            //[self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+                [tableView deselectRowAtIndexPath:indexPath animated:NO];
             break;
         case 5:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
@@ -133,7 +136,6 @@
             break;
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [self.mm_drawerController setMaximumLeftDrawerWidth:320 animated:YES completion:nil];
 }
 
 #pragma IBActions
@@ -141,6 +143,10 @@
 - (IBAction)onSendFeedBackBtn:(id)sender
 {
     [TestFlight openFeedbackViewFromView:self];
+}
+
+- (IBAction)doneButtonAction:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - delegate

@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "FluxDataManager.h"
 
-#import "MMDrawerController.h"
 #import "FluxLeftDrawerViewController.h"
 #import "FluxScanViewController.h"
 
@@ -17,7 +16,6 @@
 
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
-    __strong MMDrawerController * drawerController;
 }
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;

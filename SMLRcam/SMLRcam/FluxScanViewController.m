@@ -8,7 +8,6 @@
 
 #import "FluxScanViewController.h"
 
-#import "UIViewController+MMDrawerController.h"
 #import "FluxLeftDrawerViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
@@ -70,7 +69,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
-    [self.mm_drawerController toggleDrawerSide:MMDrawerSideLeft animated:YES completion:nil];
+    
 }
 
 #pragma mark - Annotations Feed Methods
@@ -437,6 +436,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     CameraButton.enabled = enabled;
 }
 
+- (IBAction)shareButtonAction:(id)sender {
+}
+
 - (IBAction)stepper:(id)sender {
     UIStepper* stepper = (UIStepper*)sender;
     
@@ -479,7 +481,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [super viewDidLoad];
     
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
-    ((FluxLeftDrawerViewController*)self.mm_drawerController.leftDrawerViewController).fluxDataManager = self.fluxDisplayManager.fluxDataManager;
     
     
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -499,8 +500,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [locationManager startLocating];
     
     currentDataFilter = [[FluxDataFilter alloc] init];
-    
-    
+
     self.screenName = @"Scan View";
 }
 
@@ -533,6 +533,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [filtersVC setBackgroundView:capture];
         
         [self animationPushBackScaleDown];
+    }
+    else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
+        FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
+        [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
     }
 }
 

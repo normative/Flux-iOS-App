@@ -95,31 +95,6 @@
 
 - (void)fadeOutLogin
 {
-    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
-                                                             bundle: nil];
-    
-    
-    leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
-    UINavigationController *leftDrawerNavigationController = [[UINavigationController alloc] initWithRootViewController:leftSideDrawerViewController];
-    
-    scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
-    
-    drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftDrawerNavigationController];
-    leftSideDrawerViewController.drawerController = drawerController;
-    
-    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
-    [drawerController setCloseDrawerGestureModeMask: (MMCloseDrawerGestureModeTapCenterView | MMCloseDrawerGestureModePanningCenterView)];
-    
-    [drawerController setGestureCompletionBlock:^(MMDrawerController *theDrawerController, UIGestureRecognizer *gesture) {
-        
-        if (([theDrawerController.leftDrawerViewController class] == NSClassFromString(@"UINavigationController"))&&
-            (theDrawerController.openSide != MMDrawerSideLeft))
-        {
-            UINavigationController *navController = (UINavigationController *)theDrawerController.leftDrawerViewController;
-            [navController popToRootViewControllerAnimated:YES];
-        }
-    }];
-    [drawerController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
-    [self presentViewController:drawerController animated:YES completion:nil];
+
 }
 @end

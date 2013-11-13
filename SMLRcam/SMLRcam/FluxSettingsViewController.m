@@ -8,8 +8,6 @@
 
 #import "FluxSettingsViewController.h"
 
-#import "UIViewController+MMDrawerController.h"
-
 @interface FluxSettingsViewController ()
 
 @end
@@ -23,6 +21,18 @@
         // Custom initialization
     }
     return self;
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+//    [super viewWillAppear:animated];
+//    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
+//    label.backgroundColor = [UIColor clearColor];
+//    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:17.0]];
+//    label.textAlignment = UITextAlignmentCenter;
+//    label.textColor = [UIColor whiteColor];
+//    label.adjustsFontSizeToFitWidth = YES;
+//    label.text = self.title;
+//    self.navigationItem.titleView = label;
 }
 
 - (void)viewDidLoad
