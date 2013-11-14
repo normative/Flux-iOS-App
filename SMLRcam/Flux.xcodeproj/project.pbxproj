@@ -59,8 +59,7 @@
 		AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2D17E79938007F6764 /* libz.dylib */; };
 		AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */; };
 		AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA25515E18355A6400DCA62F /* FluxSocialManager.m */; };
-		AA25516218355AC700DCA62F /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA25516118355AC700DCA62F /* FacebookSDK.framework */; };
-		AA25516418355AE000DCA62F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA25516318355AE000DCA62F /* Social.framework */; };
+		AA255166183577D900DCA62F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA255165183577D900DCA62F /* Social.framework */; };
 		AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */; };
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
@@ -215,8 +214,7 @@
 		AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxAVCameraSingleton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA25515D18355A6400DCA62F /* FluxSocialManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialManager.h; sourceTree = "<group>"; };
 		AA25515E18355A6400DCA62F /* FluxSocialManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialManager.m; sourceTree = "<group>"; };
-		AA25516118355AC700DCA62F /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
-		AA25516318355AE000DCA62F /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Social.framework; sourceTree = "<group>"; };
+		AA255165183577D900DCA62F /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewerImageUtil.h; sourceTree = "<group>"; };
@@ -350,10 +348,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA255166183577D900DCA62F /* Social.framework in Frameworks */,
 				89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */,
 				AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */,
 				AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */,
-				AA25516418355AE000DCA62F /* Social.framework in Frameworks */,
 				AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */,
 				AA14BB2A17E797BB007F6764 /* SystemConfiguration.framework in Frameworks */,
 				AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */,
@@ -372,7 +370,6 @@
 				17604B941785CB35005CF054 /* AVFoundation.framework in Frameworks */,
 				17604B991785F4CA005CF054 /* CoreVideo.framework in Frameworks */,
 				17604B671785CA59005CF054 /* UIKit.framework in Frameworks */,
-				AA25516218355AC700DCA62F /* FacebookSDK.framework in Frameworks */,
 				AA1183B017F327760078FCCF /* libGoogleAnalyticsServices.a in Frameworks */,
 				17604B691785CA59005CF054 /* Foundation.framework in Frameworks */,
 				91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */,
@@ -415,8 +412,7 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				AA25516318355AE000DCA62F /* Social.framework */,
-				AA25516118355AC700DCA62F /* FacebookSDK.framework */,
+				AA255165183577D900DCA62F /* Social.framework */,
 				89A513631829AED800E25AA1 /* Accelerate.framework */,
 				AA1183B117F329490078FCCF /* AdSupport.framework */,
 				AA14BB2D17E79938007F6764 /* libz.dylib */,
