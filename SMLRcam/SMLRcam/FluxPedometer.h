@@ -27,17 +27,11 @@ typedef enum _walkdir {
 extern NSString* const FluxPedometerDidTakeStep;
 
 @interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
-//    BOOL isPaused;
     CMMotionManager *motionManager;
     NSTimer* motionUpdateTimer;
     
     NSTimer*walkingTimer;
-//    NSTimer*firstStepTimer;
-    
-//    NSTimer*gpsTimer;
-//    float oldCourse;
-    
-//    CLLocationManager * locationManager;
+
     int countState;
     int stepCount;
     BOOL isWalking;
@@ -53,53 +47,35 @@ extern NSString* const FluxPedometerDidTakeStep;
     
     NSDateFormatter *dateFormat;
     
-//    NSLock *motionFileLock;
     NSString *motionFilename;
     NSFileHandle *motionFile;
     
+    NSMutableArray *motionData;
+    int nextDataIdx;
+    
     NSDate *timeOfLastFootFall;
     NSDate *timeOfLastStep;
+    NSDate *timeSinceLastCheck;
     
     double currentSpeed;
+
+//    double velocity[3];
     
+    CMAcceleration accelAccumZ;
+    int accelCount;
+    CMAcceleration accelStepAvg;
+    
+    bool firstStep;
+    
+    bool horizAccelThresholdReached;
+    bool vertAccelThresholdReached;
 }
 
+@property (nonatomic, setter = setIsPaused:) bool isPaused;
 
-//labels
-//@property (weak, nonatomic) IBOutlet UILabel *countLabel;
-//@property (weak, nonatomic) IBOutlet UIBarButtonItem *pauseButton;
-//@property (weak, nonatomic) IBOutlet GraphView *accelGraph;
-//@property (weak, nonatomic) IBOutlet GraphView *motionGraph;
-
-
-//graphs
-//@property (weak, nonatomic) IBOutlet UILabel *accelGraphXLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *accelGraphYLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *accelGraphZLabel;
-//
-//@property (weak, nonatomic) IBOutlet UILabel *MotionGraphYawLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *MotionGraphPitchLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *MotionGraphRollLabel;
-
-//location
-//@property (weak, nonatomic) IBOutlet UILabel *locarionCoordLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *locationSpeedLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *locarionAccuracyLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *locarionHeadingLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *locationCourseLabel;
-//@property (weak, nonatomic) IBOutlet UILabel *locationCourseStringLabel;
-
-//lights
-//@property (weak, nonatomic) IBOutlet UIImageView *walkingLight;
-//@property (weak, nonatomic) IBOutlet UIImageView *firstStepLight;
-//@property (weak, nonatomic) IBOutlet UIImageView *walkLight;
-
-@property (nonatomic) CLLocation* location;
-@property (nonatomic) CLLocationDirection heading;
-@property (readonly)  int pstepCount;
-//- (IBAction)pauseButtonTaped:(id)sender;
-//- (void)turnWalkingOff;
+//- (void)pauseButtonTaped;
 - (void)processMotion:(CMDeviceMotion *)devMotion;
 - (void) resetCount;
+- (void) setViewController:(UIViewController *)vc;
 
 @end
