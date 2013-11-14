@@ -708,6 +708,10 @@ void init(){
 - (void)didTakeStep:(NSNotification *)notification{
     NSNumber *n = [notification.userInfo objectForKey:@"stepDirection"];
 
+    NSNumber *stepAvgAccelX = [notification.userInfo objectForKey:@"stepAvgAccelX"];
+    NSNumber *stepAvgAccelY = [notification.userInfo objectForKey:@"stepAvgAccelY"];
+    NSNumber *stepAvgAccelZ = [notification.userInfo objectForKey:@"stepAvgAccelZ"];
+
     if (n != nil)
     {
         walkDir stepDirection = n.intValue;
