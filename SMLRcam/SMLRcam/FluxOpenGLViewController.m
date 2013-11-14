@@ -1547,15 +1547,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
    
-    if(kfStarted ==true)
-    {
-        _userPose.ecef.x = _kfPose.ecef.x;
-         _userPose.ecef.y = _kfPose.ecef.y;
-         _userPose.ecef.z = _kfPose.ecef.z;
-        
-        
-    }
     
+    //disabling Kalman Filter for debugging start
+    //if(kfStarted ==true)
+   // {
+    //    _userPose.ecef.x = _kfPose.ecef.x;
+     //    _userPose.ecef.y = _kfPose.ecef.y;
+   //      _userPose.ecef.z = _kfPose.ecef.z;
+   // }
+    //disabling Kalman Filter for debugging ends
     
     //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
     //    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
