@@ -16,7 +16,6 @@
     NSMutableArray *radarStatusArray;
     NSMutableArray* radarImagesArray;
     
-    UIImage*offImg;
     UIImage*onImg;
     
     CLLocationDirection lastSynTrueHeading;

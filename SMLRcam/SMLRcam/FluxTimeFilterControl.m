@@ -31,10 +31,10 @@
         [timeGaugeImageView setImage:[UIImage imageNamed:@"timeControlBG"]];
         [clockContainerView addSubview:timeGaugeImageView];
         
-        timeGaugeClockView = [[UIImageView alloc]initWithFrame:clockContainerView.bounds];
-        [timeGaugeClockView setImage:[UIImage imageNamed:@"timeControlClock"]];
-        [clockContainerView addSubview:timeGaugeClockView];
-        
+//        timeGaugeClockView = [[UIImageView alloc]initWithFrame:clockContainerView.bounds];
+//        [timeGaugeClockView setImage:[UIImage imageNamed:@"timeControlClock"]];
+//        [clockContainerView addSubview:timeGaugeClockView];
+//        
         UIView*rotatedView = [[UIView alloc]initWithFrame:clockContainerView.bounds];
         rotatedView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(90));
         
@@ -133,8 +133,8 @@
     int numberOfDegrees = -(scrollView.contentOffset.y/scrollView.contentSize.height)*320;
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
     
-    float angleToMove = DEGREES_TO_RADIANS(((oldScrollPos-scrollView.contentOffset.y)/(scrollView.contentSize.height))*300);
-    timeGaugeClockView.transform = CGAffineTransformRotate(timeGaugeClockView.transform, angleToMove*17);
+//    float angleToMove = DEGREES_TO_RADIANS(((oldScrollPos-scrollView.contentOffset.y)/(scrollView.contentSize.height))*300);
+//    timeGaugeClockView.transform = CGAffineTransformRotate(timeGaugeClockView.transform, angleToMove*17);
 
     
     oldScrollPos = scrollView.contentOffset.y;

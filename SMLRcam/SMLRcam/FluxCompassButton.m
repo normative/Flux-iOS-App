@@ -48,11 +48,11 @@
 {
     for (int i = 0; i<radarStatusArray.count; i++)
     {
-        if ([radarStatusArray objectAtIndex:i] == [NSNumber numberWithInt:0]){
-            [[radarImagesArray objectAtIndex:i] setImage:offImg];
+        if ([radarStatusArray objectAtIndex:i] != [NSNumber numberWithInt:0]){
+            [[radarImagesArray objectAtIndex:i] setHidden:NO];
         }
         else{
-            [[radarImagesArray objectAtIndex:i] setImage:onImg];
+            [[radarImagesArray objectAtIndex:i] setHidden:YES];
         }
     }
 }
@@ -63,17 +63,19 @@
 - (void)createRadarView
 {
     radarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+    UIImageView*bgView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"radarSegmentsBase"]];
+    [bgView setFrame:radarView.bounds];
+    [radarView addSubview:bgView];
     
     radarStatusArray = [[NSMutableArray alloc] init];
     radarImagesArray = [[NSMutableArray alloc] init];
     
-    offImg = [UIImage imageNamed:@"radarSegmentOff"];
     onImg = [UIImage imageNamed:@"radarSegmentOn"];
     
     for (int i = 0; i<12; i++)
     {
         [radarStatusArray addObject:[NSNumber numberWithInt:0]];
-        UIImageView *radarImageView = [[UIImageView alloc] initWithImage:offImg];
+        UIImageView *radarImageView = [[UIImageView alloc] initWithImage:onImg];
         [radarImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         [radarImageView setContentMode:UIViewContentModeScaleAspectFit];
         float rotateDegree = i*30;
