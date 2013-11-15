@@ -72,7 +72,7 @@ void main()
         if(projCoord.s >0.0 && projCoord.t> 0.0)
         {
             alpha = texture2D(textureSampler[5], projCoord).a;
-            foreground = vec3(texture2D(textureSampler[0], projCoord).rgb);
+            foreground = vec3(texture2D(textureSampler[1], projCoord).rgb);
             transparent = (1.0 -alpha)*background + alpha*foreground;
             background = transparent;
             gl_FragColor = vec4(transparent.rgb, 1.0);
@@ -87,7 +87,7 @@ void main()
         if(projCoord.s >0.0 && projCoord.t> 0.0)
         {
             alpha = texture2D(textureSampler[5], projCoord).a;
-            foreground = vec3(texture2D(textureSampler[0], projCoord).rgb);
+            foreground = vec3(texture2D(textureSampler[2], projCoord).rgb);
             transparent = (1.0 -alpha)*background + alpha*foreground;
             background = transparent;
             gl_FragColor = vec4(transparent.rgb, 1.0);
@@ -103,7 +103,7 @@ void main()
         if(projCoord.s >0.0 && projCoord.t> 0.0)
         {
             alpha = texture2D(textureSampler[5], projCoord).a;
-            foreground = vec3(texture2D(textureSampler[0], projCoord).rgb);
+            foreground = vec3(texture2D(textureSampler[3], projCoord).rgb);
             transparent = (1.0 -alpha)*background + alpha*foreground;
             background = transparent;
             gl_FragColor = vec4(transparent.rgb, 1.0);
@@ -118,7 +118,7 @@ void main()
         if(projCoord.s >0.0 && projCoord.t> 0.0)
         {
             alpha = texture2D(textureSampler[5], projCoord).a;
-            foreground = vec3(texture2D(textureSampler[0], projCoord).rgb);
+            foreground = vec3(texture2D(textureSampler[4], projCoord).rgb);
             transparent = (1.0 -alpha)*background + alpha*foreground;
             background = transparent;
             gl_FragColor = vec4(transparent.rgb, 1.0);
