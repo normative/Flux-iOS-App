@@ -24,7 +24,7 @@
     circleView = [[UIImageView alloc]initWithFrame:self.frame];
 //    [circleView setFrame:self.frame];
     [circleView setFrame:CGRectMake(-self.frame.size.width/2, -self.frame.size.height/2, self.frame.size.width*2, self.frame.size.height*2)];
-    [circleView setImage:[UIImage imageNamed:@"thumbCircle"]];
+    [circleView setImage:[UIImage imageNamed:@"camCircle"]];
     [circleView setAlpha:0.0];
     [circleView setHidden:YES];
     [self addSubview:circleView];

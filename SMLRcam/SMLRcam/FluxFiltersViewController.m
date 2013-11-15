@@ -242,6 +242,11 @@
             [self.tagsSearchBar setTintColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
             [self.tagsSearchBar setPlaceholder:@"Search"];
             [self.tagsSearchBar setDelegate:self];
+            
+            //disable for now
+            [self.tagsSearchBar setUserInteractionEnabled:NO];
+            [self.tagsSearchBar setAlpha:0.7];
+            
             [view addSubview:self.tagsSearchBar];
         }
         

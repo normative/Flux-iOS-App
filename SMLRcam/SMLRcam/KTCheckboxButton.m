@@ -16,7 +16,7 @@
 - (id)initWithCoder:(NSCoder *)aDecoder{
     if(self = [super initWithCoder:aDecoder]) {
         checked = NO;
-        [self setCheckedImage:[UIImage imageNamed:@"filter_Checked.png"] andUncheckedImg:[UIImage imageNamed:@"filter_Unchecked.png"]];
+        [self setCheckedImage:[UIImage imageNamed:@"checkbox_checked"] andUncheckedImg:[UIImage imageNamed:@"checkbox_unchecked"]];
         
         
         [self setCheckImage:checked];
