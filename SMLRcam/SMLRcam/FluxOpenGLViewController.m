@@ -706,29 +706,29 @@ void init(){
 }
 
 - (void)didTakeStep:(NSNotification *)notification{
-    NSNumber *n = [notification.userInfo objectForKey:@"stepDirection"];
-
-    NSNumber *stepAvgAccelX = [notification.userInfo objectForKey:@"stepAvgAccelX"];
-    NSNumber *stepAvgAccelY = [notification.userInfo objectForKey:@"stepAvgAccelY"];
-    NSNumber *stepAvgAccelZ = [notification.userInfo objectForKey:@"stepAvgAccelZ"];
-
-    if (n != nil)
-    {
-        walkDir stepDirection = n.intValue;
-        switch (stepDirection) {
-            case FORWARDS:
-                [self computePedDisplacementKFilter:1];
-                // add your logic for a single forward step...
-                break;
-            case BACKWARDS:
-                [self computePedDisplacementKFilter:-1];
-                // add your logic for a single backward step...
-                break;
-
-            default:
-                break;
-        }
-    }
+//    NSNumber *n = [notification.userInfo objectForKey:@"stepDirection"];
+//
+//    NSNumber *stepAvgAccelX = [notification.userInfo objectForKey:@"stepAvgAccelX"];
+//    NSNumber *stepAvgAccelY = [notification.userInfo objectForKey:@"stepAvgAccelY"];
+//    NSNumber *stepAvgAccelZ = [notification.userInfo objectForKey:@"stepAvgAccelZ"];
+//
+//    if (n != nil)
+//    {
+//        walkDir stepDirection = n.intValue;
+//        switch (stepDirection) {
+//            case FORWARDS:
+//                [self computePedDisplacementKFilter:1];
+//                // add your logic for a single forward step...
+//                break;
+//            case BACKWARDS:
+//                [self computePedDisplacementKFilter:-1];
+//                // add your logic for a single backward step...
+//                break;
+//
+//            default:
+//                break;
+//        }
+//    }
     
 }
     
@@ -1560,17 +1560,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
    
     
-    //disabling Kalman Filter for debugging start
-    //if(kfStarted ==true)
-   // {
-    //    _userPose.ecef.x = _kfPose.ecef.x;
-     //    _userPose.ecef.y = _kfPose.ecef.y;
-   //      _userPose.ecef.z = _kfPose.ecef.z;
-   // }
-    //disabling Kalman Filter for debugging ends
-    
-    //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
-    //    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
+    if(kfStarted ==true)
+    {
+        _userPose.ecef.x = _kfPose.ecef.x;
+        _userPose.ecef.y = _kfPose.ecef.y;
+        _userPose.ecef.z = _kfPose.ecef.z;
+    }
+
+//    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
+//    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
     
     GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(vpuser.origin.x, vpuser.origin.y, vpuser.origin.z,
                                                  vpuser.at.x, vpuser.at.y, vpuser.at.z ,
