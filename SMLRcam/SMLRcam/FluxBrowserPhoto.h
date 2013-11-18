@@ -10,8 +10,12 @@
 #import "FluxScanImageObject.h"
 
 @interface FluxBrowserPhoto : IDMPhoto{
-    
+
 }
+
+@property(nonatomic) int userID;
+@property(nonatomic, strong) NSString *username;
+@property(nonatomic, strong) NSString*timestring;
 
 - (id)initWithImageObject:(FluxScanImageObject*)imgObject;
 

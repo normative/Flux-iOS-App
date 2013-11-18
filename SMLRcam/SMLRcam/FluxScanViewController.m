@@ -12,11 +12,14 @@
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxBrowserPhoto.h"
+#import "FluxBrowserCaptionView.h"
 #import "FluxImageRenderElement.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
+
+#define IS_RETINA ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
 
 NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
 NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
@@ -271,8 +274,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
-//    NSLog(@"Point Tapped at :%f, %f",point.x, point.y);
-    FluxScanImageObject*tappedImageObject = [openGLController imageTappedAtPoint:point];
+    
+    FluxScanImageObject*tappedImageObject;
+    
+    if (IS_RETINA) {
+        tappedImageObject = [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
+    }
+    else{
+        tappedImageObject = [openGLController imageTappedAtPoint:point];
+    }
+    
     
     FluxBrowserPhoto *photo = [[FluxBrowserPhoto alloc] initWithImageObject:tappedImageObject];
     NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
@@ -284,7 +295,14 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
     IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
     [browser setDelegate:self];
+    [browser setDisplayToolbar:NO];
     [self presentViewController:browser animated:YES completion:nil];
+}
+
+- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
+    FluxBrowserPhoto*photo = photoBrowser.currentPhoto;
+    FluxBrowserCaptionView *captionView = [[FluxBrowserCaptionView alloc] initWithPhoto:photoBrowser.currentPhoto];
+    return captionView;
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{

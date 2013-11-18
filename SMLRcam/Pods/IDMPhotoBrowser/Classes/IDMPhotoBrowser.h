@@ -51,6 +51,8 @@
 // animation time defult .28
 @property (nonatomic) float animationDuration;
 
+@property (nonatomic, strong) IDMPhoto* currentPhoto;
+
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray;
 

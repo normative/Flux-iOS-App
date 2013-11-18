@@ -117,6 +117,7 @@
 		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
 		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
 		AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */; };
+		AAF1BCF5183AC57600909AFF /* FluxBrowserCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF1BCF4183AC57600909AFF /* FluxBrowserCaptionView.m */; };
 		AAFB4DC418159F2500EB8DBA /* FluxTimeFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */; };
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
@@ -330,6 +331,8 @@
 		AAD2DFF917BD54BA00D572A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AAF1BCEF183A73A300909AFF /* BBCyclingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBCyclingLabel.h; sourceTree = "<group>"; };
 		AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBCyclingLabel.m; sourceTree = "<group>"; };
+		AAF1BCF3183AC57600909AFF /* FluxBrowserCaptionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxBrowserCaptionView.h; sourceTree = "<group>"; };
+		AAF1BCF4183AC57600909AFF /* FluxBrowserCaptionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxBrowserCaptionView.m; sourceTree = "<group>"; };
 		AAFB4DC218159F2500EB8DBA /* FluxTimeFilterScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterScrollView.h; sourceTree = "<group>"; };
 		AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterScrollView.m; sourceTree = "<group>"; };
 		AAFD390C17DE0B4F006CBC14 /* KTSegmentedButtonControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTSegmentedButtonControl.h; sourceTree = "<group>"; };
@@ -515,6 +518,8 @@
 			children = (
 				AA06FE69181AEC3400D87658 /* FluxBrowserPhoto.h */,
 				AA06FE6A181AEC3400D87658 /* FluxBrowserPhoto.m */,
+				AAF1BCF3183AC57600909AFF /* FluxBrowserCaptionView.h */,
+				AAF1BCF4183AC57600909AFF /* FluxBrowserCaptionView.m */,
 			);
 			name = ImageViewer;
 			sourceTree = "<group>";
@@ -1080,6 +1085,7 @@
 				AA69DA9F18313B9F00B0BEED /* FluxLeftMenuCell.m in Sources */,
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
+				AAF1BCF5183AC57600909AFF /* FluxBrowserCaptionView.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */,
 				AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */,

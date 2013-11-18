@@ -16,6 +16,9 @@
     if (self = [super initWithURL:[NSURL URLWithString:urlString]])
     {
         self.caption = imgObject.descriptionString;
+        self.userID = imgObject.userID;
+        self.username = imgObject.username;
+        self.timestring = imgObject.timestampString;
     }
     return self;
 }

@@ -180,6 +180,9 @@
 {
     if ((self = [self init])) {
 		_newPhotos = [[NSMutableArray alloc] initWithArray:photosArray];
+        if (_newPhotos.count>0) {
+            self.currentPhoto = [_newPhotos objectAtIndex:0];
+        }
         _senderViewForAnimation = view;
 	}
 	return self;
