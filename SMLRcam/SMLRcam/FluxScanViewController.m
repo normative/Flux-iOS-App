@@ -594,14 +594,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	
 	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
 	[view.layer addAnimation:group forKey:nil];
-    
-    [UIView animateWithDuration:0.2f animations:^{
-        [statusBarView setAlpha:0.0];
-    } completion:nil];
 }
 
 -(void) animationPopFrontScaleUp {
-    [statusBarView setAlpha:1.0];
 	CABasicAnimation* scaleUp = [CABasicAnimation animationWithKeyPath:@"transform"];
 	scaleUp.toValue = [NSValue valueWithCATransform3D:CATransform3DIdentity];
 	scaleUp.fromValue = [NSValue valueWithCATransform3D:HC_DEFINE_TO_SCALE];

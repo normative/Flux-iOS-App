@@ -3,7 +3,7 @@
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3746"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
         <!--Flux OpenGL View Controller - OpenGLView-->
@@ -696,11 +696,19 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jDD-EI-IPQ" userLabel="Scan UI">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="548"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="backgroundGradient_top" translatesAutoresizingMaskIntoConstraints="NO" id="UQ2-gX-PYO">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="137"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    </imageView>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="backgroundGradient_bottom" translatesAutoresizingMaskIntoConstraints="NO" id="Jav-fJ-sQd">
+                                        <rect key="frame" x="0.0" y="431" width="320" height="137"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sxZ-KT-aF5" customClass="FluxTimeFilterControl">
-                                        <rect key="frame" x="0.0" y="20" width="320" height="548"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="588"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="tintColor" red="0.0" green="0.71372549019999998" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -722,7 +730,7 @@
                                         </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WoV-XC-xK1" userLabel="Profile Button">
-                                        <rect key="frame" x="20" y="503" width="50" height="50"/>
+                                        <rect key="frame" x="20" y="500" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="E0J-Uu-ljY"/>
@@ -769,7 +777,7 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
-                                        <rect key="frame" x="250" y="503" width="50" height="50"/>
+                                        <rect key="frame" x="250" y="500" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="50" id="BWO-Y3-kqO"/>
@@ -783,42 +791,31 @@
                                         </connections>
                                     </button>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="RP7-i5-SqD">
-                                        <rect key="frame" x="0.0" y="20" width="320" height="2"/>
+                                        <rect key="frame" x="0.0" y="566" width="320" height="2"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="2" id="Njl-qi-XgI"/>
-                                            <constraint firstAttribute="width" constant="320" id="l3H-fY-KB1"/>
+                                            <constraint firstAttribute="width" constant="320" id="BCb-HV-Lat"/>
+                                            <constraint firstAttribute="height" constant="2" id="fPV-8j-rov"/>
                                         </constraints>
-                                        <color key="progressTintColor" red="0.0" green="0.70588235294117641" blue="0.92156862745098034" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
+                                        <color key="progressTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
                                     </progressView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VeC-Hk-pfe" userLabel="StatusBarView">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="20"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.45000000000000001" colorSpace="calibratedRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="20" id="JFH-cd-rul"/>
-                                            <constraint firstAttribute="width" constant="320" id="brb-SH-2aS"/>
-                                        </constraints>
-                                    </view>
                                 </subviews>
                                 <constraints>
-                                    <constraint firstItem="RP7-i5-SqD" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="6wO-Xx-FY1"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="20" id="9bm-pI-i65"/>
                                     <constraint firstAttribute="trailing" secondItem="sxZ-KT-aF5" secondAttribute="trailing" id="BWH-59-UAz"/>
+                                    <constraint firstAttribute="bottom" secondItem="RP7-i5-SqD" secondAttribute="bottom" id="Dek-4Y-rPh"/>
                                     <constraint firstAttribute="trailing" secondItem="bo9-BI-7cK" secondAttribute="trailing" constant="20" id="Jlp-aF-brH"/>
                                     <constraint firstAttribute="trailing" secondItem="h79-G8-U1l" secondAttribute="trailing" constant="20" id="LuB-B7-Ffw"/>
-                                    <constraint firstItem="VeC-Hk-pfe" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="Nvh-c0-SAe"/>
-                                    <constraint firstAttribute="bottom" secondItem="h79-G8-U1l" secondAttribute="bottom" constant="-5" id="bdq-Q2-9eq"/>
+                                    <constraint firstAttribute="bottom" secondItem="h79-G8-U1l" secondAttribute="bottom" constant="18" id="bdq-Q2-9eq"/>
                                     <constraint firstItem="sxZ-KT-aF5" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="cF1-bA-VzH"/>
-                                    <constraint firstAttribute="bottom" secondItem="WoV-XC-xK1" secondAttribute="bottom" constant="-5" id="dWh-hz-Nfh"/>
+                                    <constraint firstAttribute="bottom" secondItem="WoV-XC-xK1" secondAttribute="bottom" constant="18" id="dWh-hz-Nfh"/>
                                     <constraint firstAttribute="width" constant="320" id="fhw-AM-un3"/>
                                     <constraint firstAttribute="bottom" secondItem="sxZ-KT-aF5" secondAttribute="bottom" constant="-20" id="mDS-Cv-WkW"/>
-                                    <constraint firstItem="VeC-Hk-pfe" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="oZf-4c-90Z"/>
                                     <constraint firstItem="bo9-BI-7cK" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="33" id="oyO-9C-dca"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="32" id="tQm-EJ-5kf"/>
                                     <constraint firstItem="WoV-XC-xK1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="20" id="uBr-ww-aL1"/>
-                                    <constraint firstItem="sxZ-KT-aF5" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="20" id="wys-fz-KvJ"/>
-                                    <constraint firstItem="RP7-i5-SqD" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="20" id="zt0-mC-Yiu"/>
+                                    <constraint firstItem="RP7-i5-SqD" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="uP2-MJ-Xxw"/>
+                                    <constraint firstItem="sxZ-KT-aF5" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="wys-fz-KvJ"/>
                                 </constraints>
                             </view>
                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c58-0p-wGY" userLabel="Camera Button" customClass="FluxCameraButton">
@@ -843,7 +840,7 @@
                         </subviews>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="jDD-EI-IPQ" secondAttribute="bottom" constant="20" id="J23-hv-x9J"/>
+                            <constraint firstAttribute="bottom" secondItem="jDD-EI-IPQ" secondAttribute="bottom" id="J23-hv-x9J"/>
                             <constraint firstAttribute="bottom" secondItem="c58-0p-wGY" secondAttribute="bottom" constant="20" id="PmY-uh-dtX"/>
                             <constraint firstItem="jDD-EI-IPQ" firstAttribute="top" secondItem="3UQ-h3-q7y" secondAttribute="top" id="jia-6q-PDz"/>
                             <constraint firstAttribute="centerX" secondItem="c58-0p-wGY" secondAttribute="centerX" id="pO9-Xi-TLM"/>
@@ -858,7 +855,6 @@
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
                         <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
                         <outlet property="radarButton" destination="QTA-2K-tgO" id="fZZ-Fu-W7o"/>
-                        <outlet property="statusBarView" destination="VeC-Hk-pfe" id="d81-qE-5w8"/>
                         <outlet property="timeFilterControl" destination="sxZ-KT-aF5" id="wAK-zm-eyj"/>
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="crossDissolve" id="AGI-r8-OnT"/>
                     </connections>
@@ -1035,6 +1031,10 @@
                                     <outlet property="delegate" destination="YQi-AC-BdW" id="Enu-U9-q0v"/>
                                 </connections>
                             </mapView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="backgroundGradient_top" translatesAutoresizingMaskIntoConstraints="NO" id="7VM-pp-Hct">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="137"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ka0-3T-Kej">
                                 <rect key="frame" x="250" y="38" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1050,15 +1050,6 @@
                                     <segue destination="OPi-Zk-6ZT" kind="modal" modalTransitionStyle="coverVertical" id="03e-8S-vGN"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qtK-1F-kYU" userLabel="StatusBarView">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="20"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.45000000000000001" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="0iL-94-vxD"/>
-                                    <constraint firstAttribute="width" constant="320" id="wh6-ws-hOE"/>
-                                </constraints>
-                            </view>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBs-aE-2LI">
                                 <rect key="frame" x="23" y="33" width="60" height="60"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1078,13 +1069,10 @@
                         <constraints>
                             <constraint firstItem="gBs-aE-2LI" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="33" id="IS8-1X-OZk"/>
                             <constraint firstItem="gBs-aE-2LI" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" constant="23" id="byb-31-h9b"/>
-                            <constraint firstAttribute="centerX" secondItem="qtK-1F-kYU" secondAttribute="centerX" id="hau-Ah-kcl"/>
                             <constraint firstAttribute="trailing" secondItem="ka0-3T-Kej" secondAttribute="trailing" constant="20" id="isb-lm-PQ1"/>
                             <constraint firstItem="ka0-3T-Kej" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="38" id="rh3-Oz-45y"/>
-                            <constraint firstItem="qtK-1F-kYU" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" id="rrc-3G-dRo"/>
                         </constraints>
                     </view>
-                    <nil key="simulatedStatusBarMetrics"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
                     <connections>
@@ -1351,6 +1339,8 @@
     </scenes>
     <resources>
         <image name="ConfirmCamButton" width="100" height="101"/>
+        <image name="backgroundGradient_bottom" width="640" height="275"/>
+        <image name="backgroundGradient_top" width="640" height="275"/>
         <image name="camButton" width="100" height="100"/>
         <image name="clockIcon" width="23" height="24"/>
         <image name="closeCamButton" width="100" height="101"/>
@@ -1367,6 +1357,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="VPw-Ht-DPL"/>
+        <segue reference="03e-8S-vGN"/>
     </inferredMetricsTieBreakers>
 </document>

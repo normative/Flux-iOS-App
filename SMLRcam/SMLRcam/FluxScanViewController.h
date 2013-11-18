@@ -60,7 +60,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     IBOutlet UIButton *filterButton;
 
     __weak IBOutlet UIProgressView *progressView;
-    IBOutlet UIView *statusBarView;
     
     //Network + Motion
     FluxLocationServicesSingleton *locationManager;
