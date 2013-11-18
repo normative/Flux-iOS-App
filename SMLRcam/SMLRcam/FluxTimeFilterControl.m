@@ -10,6 +10,9 @@
 
 #define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
 
+#define CELLS_PER_VIEW 5
+#define RADIUS 28
+
 @implementation FluxTimeFilterControl
 
 - (id)initWithFrame:(CGRect)frame
@@ -64,17 +67,16 @@
     
     
     float height = [[UIScreen mainScreen] bounds].size.height;
-    float heightPerCell = height/5;
+    float heightPerCell = height/CELLS_PER_VIEW;
     self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell*count);
     
     // Set up the shape of the circle
-    int radius = 28;
     circleLayer = [CAShapeLayer layer];
     
     CGFloat circleStartAngle;
     CGFloat circleEndAngle;
     
-    if (count < 6) {
+    if (count <= CELLS_PER_VIEW) {
         circleStartAngle = 340;
         circleEndAngle = 20;
     }
@@ -89,7 +91,7 @@
     
     // Make a circular shape
     circleLayer.path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(0,0)
-                                                 radius:radius
+                                                 radius:RADIUS
                                              startAngle:circleStartAngle
                                                endAngle:circleEndAngle
                                                    clockwise:NO].CGPath;
