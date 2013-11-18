@@ -12,6 +12,7 @@
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxBrowserPhoto.h"
+#import "FluxImageRenderElement.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -29,9 +30,21 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
 }
 
-//- (void)didUpdateDisplayImageList:(NSNotification *)notification
-//{
-//}
+- (void)didUpdateDisplayImageList:(NSNotification *)notification
+{
+    if (dateRangeLabel.alpha == 0) {
+        [UIView animateWithDuration:0.2 animations:^{
+            [dateRangeLabel setAlpha:1.0];
+        }];
+    }
+    NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
+    NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
+    [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+    
+    [dateRangeLabelHideTimer invalidate];
+    dateRangeLabelHideTimer = nil;
+    dateRangeLabelHideTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(hideDateRangeLabel) userInfo:nil repeats:NO];
+}
 
 #pragma mark - Location Manager
 
@@ -196,7 +209,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     cell.descriptionLabel.text = rowObject.descriptionString;
     cell.userLabel.text = [NSString stringWithFormat:@"User %i",rowObject.userID];
-    [cell.timestampLabel setText:[dateFormatter stringFromDate:rowObject.timestamp]];
     [cell setCategory:rowObject.categoryID];
     
     return cell;
@@ -291,15 +303,17 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [blurView setAlpha:0.0];
     [blurView setHidden:YES];
     [self.view addSubview:blurView];
+    dateFormatter = [[NSDateFormatter alloc]init];
+    [dateFormatter setDateFormat:@"MMM dd, yyyy"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
-    [self performSelector:@selector(fixCameraButtonPosition) withObject:nil afterDelay:0.0f];
+    [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:15]];
+    [dateRangeLabel setTextColor:[UIColor whiteColor]];
+    [dateRangeLabel setTextAlignment:NSTextAlignmentCenter];
+    dateRangeLabel.transitionEffect = BBCyclingLabelTransitionEffectCrossFade;
+    dateRangeLabel.transitionDuration = 0.2;
+    
     [radarButton addTarget:self action:@selector(presentMapView) forControlEvents:UIControlEventTouchUpInside];
-}
-
-- (void)fixCameraButtonPosition{
-    [CameraButton removeFromSuperview];
-    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.view insertSubview:CameraButton aboveSubview:ScanUIContainerView];
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
@@ -484,7 +498,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     
     //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateDisplayImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateDisplayImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
@@ -613,6 +627,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	
 	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
 	[view.layer addAnimation:group forKey:nil];
+}
+
+- (void)hideDateRangeLabel{
+    [UIView animateWithDuration:1.0 animations:^{
+        [dateRangeLabel setAlpha:0.0];
+    }];
 }
 
 

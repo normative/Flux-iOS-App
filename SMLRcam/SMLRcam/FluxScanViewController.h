@@ -20,6 +20,7 @@
 #import "FluxFiltersViewController.h"
 #import "FluxLocationServicesSingleton.h"
 #import "IDMPhotoBrowser.h"
+#import "BBCyclingLabel.h"
 
 #import "FluxDisplayManager.h"
 
@@ -58,6 +59,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     UIImageView*blurView;
     __strong IBOutlet FluxCameraButton *CameraButton;
     IBOutlet UIButton *filterButton;
+    IBOutlet BBCyclingLabel *dateRangeLabel;
+    NSTimer *dateRangeLabelHideTimer;
 
     __weak IBOutlet UIProgressView *progressView;
     
