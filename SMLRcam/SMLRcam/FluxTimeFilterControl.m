@@ -55,6 +55,10 @@
         [self addSubview:self.timeScrollView];
         
         oldScrollPos =  0;
+        
+        
+        //invert it
+        //self.transform = CGAffineTransformMakeScale(-1, 1);
     }
     return self;
 }

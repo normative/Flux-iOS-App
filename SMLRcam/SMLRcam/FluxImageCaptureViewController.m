@@ -50,18 +50,15 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     [blackView setHidden:YES];
     [self.view addSubview:blackView];
     
-    CALayer *borders = [CALayer layer];
-    borders.frame = CGRectMake(-10, 0, imageCaptureSquareView.frame.size.width+20, imageCaptureSquareView.frame.size.height);
-    [borders setBorderColor:[UIColor blackColor].CGColor];
-    [borders setBorderWidth:2.0];
-    [imageCaptureSquareView.layer addSublayer:borders];
-    
     capturedImageObjects = [[NSMutableArray alloc]init];
     capturedImages = [[NSMutableArray alloc]init];
     
     [self setupAVCapture];
     
     self.screenName = @"Image Capture View";
+    
+    [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
+    [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
     
     motionManager = [FluxMotionManagerSingleton sharedManager];
     locationManager = [FluxLocationServicesSingleton sharedManager];

@@ -34,6 +34,7 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
     IBOutlet UIView *imageCaptureSquareView;
     IBOutlet UILabel *imageCountLabel;
     IBOutlet UIButton *approveButton;
+    IBOutlet UILabel *photosLabel;
     
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
