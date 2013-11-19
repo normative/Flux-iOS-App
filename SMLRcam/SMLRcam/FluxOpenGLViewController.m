@@ -973,6 +973,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kX.hidden = YES;
     kY.hidden =YES;
     delta.hidden = YES;
+    pedometerL.hidden = YES;
     
 }
 

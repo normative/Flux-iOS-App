@@ -66,6 +66,7 @@
     
     int _displayListHasChanged;
     
+    __weak IBOutlet UILabel *pedometerL;
     __weak IBOutlet UILabel *gpsX;
     
     __weak IBOutlet UILabel *gpsY;
