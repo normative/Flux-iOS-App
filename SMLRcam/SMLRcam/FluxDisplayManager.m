@@ -170,11 +170,13 @@ double getAbsAngle(double angle, double heading)
     element.imagePose->position.y =  locationObject.longitude;
     element.imagePose->position.z =  locationObject.altitude;
     
-    
-    element.imagePose->ecef.x = locationObject.ecefX;
-    element.imagePose->ecef.y = locationObject.ecefY;
-    element.imagePose->ecef.z = locationObject.ecefZ;
-    
+    if(locationObject.location_confidence==1.0)
+    {
+        element.imagePose->validECEFEstimate =1;
+        element.imagePose->ecef.x = locationObject.ecefX;
+        element.imagePose->ecef.y = locationObject.ecefY;
+        element.imagePose->ecef.z = locationObject.ecefZ;
+    }
     quaternion.x = locationObject.qx;
     quaternion.y = locationObject.qy;
     quaternion.z = locationObject.qz;

@@ -397,8 +397,11 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     //assumption that the point of image acquisition and the user lie in the same plane.
     sp->position.z = userPose.position.z;
     
-    WGS84_to_ECEF(sp);
     
+    if(sp->validECEFEstimate !=1)
+    {
+        WGS84_to_ECEF(sp);
+    }
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
