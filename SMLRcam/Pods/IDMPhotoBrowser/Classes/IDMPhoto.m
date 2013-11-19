@@ -141,7 +141,12 @@ caption = _caption;
             AFImageRequestOperation *operation = [AFImageRequestOperation
                                                   imageRequestOperationWithRequest:request
                                                   success:^(UIImage *image) {
-                                                      self.underlyingImage = image;
+#warning hack for non-suqare images
+                                                      CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, ([[UIScreen mainScreen] bounds].size.height/2)-160, 320, 320));
+                                                      // or use the UIImage wherever you like
+                                                      UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+                                                      CGImageRelease(imageRef);
+                                                      self.underlyingImage = cropppedImg;
                                                       [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
                                                   }];
             

@@ -784,11 +784,15 @@ void init(){
 {
     FluxScanImageObject *touchedObject = nil;
     
-//    FluxImageRenderElement *ire = [self.renderList objectAtIndex:0];
-//    if (ire != nil)
-//    {
-//        touchedObject = ire.imageMetadata;
-//    }
+    if (self.renderList.count>0) {
+        FluxImageRenderElement *ire = [self.renderList objectAtIndex:0];
+        if (ire != nil)
+        {
+            //        FluxScanImageObject *touchedObject = [[FluxScanImageObject alloc]initWithUserID:ire.imageMetadata.userID atTimestampString:nil andCameraID:0 andCategoryID:0 withDescriptionString:ire.imageMetadata.descriptionString andlatitude:0 andlongitude:0 andaltitude:0 andHeading:0 andYaw:0 andPitch:0 andRoll:0 andQW:0 andQX:0 andQY:0 andQZ:0 andHorizAccuracy:0 andVertAccuracy:0];
+            touchedObject = ire.imageMetadata;
+        }
+    }
+
 
     return touchedObject;
 }

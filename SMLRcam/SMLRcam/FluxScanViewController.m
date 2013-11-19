@@ -11,12 +11,13 @@
 #import "FluxLeftDrawerViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
-#import "FluxBrowserPhoto.h"
 #import "FluxImageRenderElement.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
+
+#define IS_RETINA ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
 
 NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
 NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
@@ -271,10 +272,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
-//    NSLog(@"Point Tapped at :%f, %f",point.x, point.y);
-    FluxScanImageObject*tappedImageObject = [openGLController imageTappedAtPoint:point];
     
-    FluxBrowserPhoto *photo = [[FluxBrowserPhoto alloc] initWithImageObject:tappedImageObject];
+    FluxScanImageObject*tappedImageObject;
+    
+    if (IS_RETINA) {
+        tappedImageObject = [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
+    }
+    else{
+        tappedImageObject = [openGLController imageTappedAtPoint:point];
+    }
+    
+    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
+    IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
+    photo.userID = tappedImageObject.userID;
+    photo.caption = tappedImageObject.descriptionString;
+    NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
+    [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
+    photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
     NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
     
     if (!photoViewerPlacementView) {
@@ -284,8 +298,19 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
     IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
     [browser setDelegate:self];
+    [browser setDisplayToolbar:NO];
+    [browser setDisplayDoneButtonBackgroundImage:NO];
     [self presentViewController:browser animated:YES completion:nil];
 }
+//
+//- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
+//    IDMPhoto*photo = [[IDMPhoto alloc]initWithURL:photoBrowser.currentPhoto.photoURL];
+//    photo.userID = 1;
+//    photo.caption = @"JESUS";
+//
+//    FluxBrowserCaptionView *captionView = [[FluxBrowserCaptionView alloc] initWithPhoto:photo];
+//    return captionView;
+//}
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [photoViewerPlacementView removeFromSuperview];

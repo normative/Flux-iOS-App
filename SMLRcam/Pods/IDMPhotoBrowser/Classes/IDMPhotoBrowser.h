@@ -33,6 +33,7 @@
 @property (nonatomic) BOOL displayCounterLabel;
 @property (nonatomic) BOOL displayArrowButton;
 @property (nonatomic) BOOL displayActionButton;
+@property (nonatomic) BOOL displayDoneButtonBackgroundImage;
 @property (nonatomic, retain) NSArray *actionButtonTitles;
 @property (nonatomic, weak) UIImage *leftArrowImage, *leftArrowSelectedImage;
 @property (nonatomic, weak) UIImage *rightArrowImage, *rightArrowSelectedImage;
@@ -50,6 +51,8 @@
 
 // animation time defult .28
 @property (nonatomic) float animationDuration;
+
+@property (nonatomic, strong) IDMPhoto* currentPhoto;
 
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray;
