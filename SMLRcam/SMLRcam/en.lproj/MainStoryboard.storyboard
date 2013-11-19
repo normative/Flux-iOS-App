@@ -3,7 +3,7 @@
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3746"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
         <!--Flux OpenGL View Controller - OpenGLView-->
@@ -1181,6 +1181,11 @@
                                             <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
+                                        <view tag="200" contentMode="scaleAspectFit" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="309-un-MG3" customClass="KTCheckboxButton">
+                                            <rect key="frame" x="65" y="10" width="25" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
@@ -1191,8 +1196,27 @@
                             <outlet property="delegate" destination="Hk4-y1-dJH" id="Cmf-pv-dt3"/>
                         </connections>
                     </collectionView>
-                    <navigationItem key="navigationItem" id="LJJ-lU-bmv"/>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="LQQ-SN-NYo"/>
+                        <barButtonItem systemItem="trash" id="zvu-vU-3lN">
+                            <connections>
+                                <action selector="garbageButtonAction:" destination="Hk4-y1-dJH" id="elY-ry-avN"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <navigationItem key="navigationItem" id="LJJ-lU-bmv">
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="nd7-kF-x8E">
+                            <connections>
+                                <action selector="editButtonAction:" destination="Hk4-y1-dJH" id="eXH-Yx-AN6"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <connections>
+                        <outlet property="garbageButton" destination="zvu-vU-3lN" id="pbS-0g-CAL"/>
+                        <outlet property="theCollectionView" destination="BSi-15-rkx" id="ABi-6O-DPw"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ijg-Ri-Urg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
