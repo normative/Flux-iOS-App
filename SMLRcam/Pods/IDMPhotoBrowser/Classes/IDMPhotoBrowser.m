@@ -115,7 +115,7 @@
 @implementation IDMPhotoBrowser
 
 // Properties
-@synthesize displayDoneButton = _displayDoneButton, displayToolbar = _displayToolbar, displayActionButton = _displayActionButton, displayCounterLabel = _displayCounterLabel, useWhiteBackgroundColor = _useWhiteBackgroundColor, doneButtonImage = _doneButtonImage;
+@synthesize displayDoneButton = _displayDoneButton, displayDoneButtonBackgroundImage = _displayDoneButtonBackgroundImage,  displayToolbar = _displayToolbar, displayActionButton = _displayActionButton, displayCounterLabel = _displayCounterLabel, useWhiteBackgroundColor = _useWhiteBackgroundColor, doneButtonImage = _doneButtonImage;
 @synthesize leftArrowImage = _leftArrowImage, rightArrowImage = _rightArrowImage, leftArrowSelectedImage = _leftArrowSelectedImage, rightArrowSelectedImage = _rightArrowSelectedImage;
 @synthesize displayArrowButton = _displayArrowButton, actionButtonTitles = _actionButtonTitles;
 @synthesize actionsSheet = _actionsSheet, activityViewController = _activityViewController;
@@ -140,6 +140,7 @@
         _autoHide = YES;
         _displayDoneButton = YES;
         _displayActionButton = YES;
+        _displayDoneButtonBackgroundImage = YES;
         _displayArrowButton = YES;
         _displayCounterLabel = NO;
         _useWhiteBackgroundColor = NO;
@@ -524,21 +525,28 @@
     [_doneButton setAlpha:1.0f];
     [_doneButton addTarget:self action:@selector(doneButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     
-    if(!_doneButtonImage)
-    {
-        [_doneButton setTitleColor:[UIColor colorWithWhite:0.9 alpha:0.9] forState:UIControlStateNormal|UIControlStateHighlighted];
-        [_doneButton setTitle:NSLocalizedString(@"Done", nil) forState:UIControlStateNormal];
-        [_doneButton.titleLabel setFont:[UIFont boldSystemFontOfSize:11.0f]];
-        [_doneButton setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:0.5]];
-        _doneButton.layer.cornerRadius = 3.0f;
-        _doneButton.layer.borderColor = [UIColor colorWithWhite:0.9 alpha:0.9].CGColor;
-        _doneButton.layer.borderWidth = 1.0f;
-    }
-    else
-    {
-        [_doneButton setBackgroundImage:_doneButtonImage forState:UIControlStateNormal];
-        _doneButton.contentMode = UIViewContentModeScaleAspectFit;
-    }
+
+        if(!_doneButtonImage)
+        {
+            [_doneButton setTitleColor:[UIColor colorWithWhite:0.9 alpha:0.9] forState:UIControlStateNormal|UIControlStateHighlighted];
+            [_doneButton setTitle:NSLocalizedString(@"Done", nil) forState:UIControlStateNormal];
+            [_doneButton.titleLabel setFont:[UIFont boldSystemFontOfSize:11.0f]];
+            if(_displayDoneButtonBackgroundImage){
+                [_doneButton setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:0.5]];
+                _doneButton.layer.cornerRadius = 3.0f;
+                _doneButton.layer.borderColor = [UIColor colorWithWhite:0.9 alpha:0.9].CGColor;
+                _doneButton.layer.borderWidth = 1.0f;
+            }
+            else{
+                [_doneButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
+            }
+        }
+        else
+        {
+            [_doneButton setBackgroundImage:_doneButtonImage forState:UIControlStateNormal];
+            _doneButton.contentMode = UIViewContentModeScaleAspectFit;
+        }
+
     
     UIImage *leftButtonImage = (_leftArrowImage == nil) ?
     [UIImage imageNamed:@"IDMPhotoBrowser.bundle/images/IDMPhotoBrowser_arrowLeft.png"]          : _leftArrowImage;
@@ -1083,7 +1091,9 @@
     
     CGSize captionSize = [captionView sizeThatFits:CGSizeMake(pageFrame.size.width, 0)];
     CGRect captionFrame = CGRectMake(pageFrame.origin.x, pageFrame.size.height - captionSize.height - (_toolbar.superview?_toolbar.frame.size.height:0), pageFrame.size.width, captionSize.height);
+    captionFrame = CGRectMake(pageFrame.origin.x, pageFrame.size.height - 75, pageFrame.size.width, 75);
     
+     
     return captionFrame;
 }
 

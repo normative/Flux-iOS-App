@@ -25,7 +25,7 @@ PODS:
     - RKValueTransformers (~> 1.0.0)
   - RestKit/Support (0.21.0):
     - TransitionKit (= 1.1.1)
-  - RKValueTransformers (1.0.0)
+  - RKValueTransformers (1.0.1)
   - SOCKit (1.1)
   - SVProgressHUD (0.9)
   - TransitionKit (1.1.1)
@@ -42,7 +42,7 @@ SPEC CHECKSUMS:
   IDMPhotoBrowser: 9334d802ae20887fd8942bee4dbef74818ce730c
   ISO8601DateFormatterValueTransformer: d0af1f50a9df42db72d7418db31938b8473e0af8
   RestKit: c11a30e7bc73513d9d2c2695672aba7697d24181
-  RKValueTransformers: 01dc043fd853f6e40459b2e732dff545298a0f91
+  RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581
   SVProgressHUD: 03d4845ec8e64591726428a08236c6a5489d45f8
   TransitionKit: d0e3344aac92991395d4c2e72d9c5a8ceeb12910

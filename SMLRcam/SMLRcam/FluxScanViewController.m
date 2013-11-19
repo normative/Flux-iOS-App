@@ -11,8 +11,6 @@
 #import "FluxLeftDrawerViewController.h"
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
-#import "FluxBrowserPhoto.h"
-#import "FluxBrowserCaptionView.h"
 #import "FluxImageRenderElement.h"
 
 #import <ImageIO/ImageIO.h>
@@ -284,8 +282,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         tappedImageObject = [openGLController imageTappedAtPoint:point];
     }
     
-    
-    FluxBrowserPhoto *photo = [[FluxBrowserPhoto alloc] initWithImageObject:tappedImageObject];
+    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
+    IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
+    photo.userID = tappedImageObject.userID;
+    photo.caption = tappedImageObject.descriptionString;
+    NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
+    [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
+    photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
     NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
     
     if (!photoViewerPlacementView) {
@@ -296,14 +299,18 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
     [browser setDelegate:self];
     [browser setDisplayToolbar:NO];
+    [browser setDisplayDoneButtonBackgroundImage:NO];
     [self presentViewController:browser animated:YES completion:nil];
 }
-
-- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
-    FluxBrowserPhoto*photo = photoBrowser.currentPhoto;
-    FluxBrowserCaptionView *captionView = [[FluxBrowserCaptionView alloc] initWithPhoto:photoBrowser.currentPhoto];
-    return captionView;
-}
+//
+//- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
+//    IDMPhoto*photo = [[IDMPhoto alloc]initWithURL:photoBrowser.currentPhoto.photoURL];
+//    photo.userID = 1;
+//    photo.caption = @"JESUS";
+//
+//    FluxBrowserCaptionView *captionView = [[FluxBrowserCaptionView alloc] initWithPhoto:photo];
+//    return captionView;
+//}
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [photoViewerPlacementView removeFromSuperview];
