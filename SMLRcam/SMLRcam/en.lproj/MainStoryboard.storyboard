@@ -185,11 +185,11 @@
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
-                        <outlet property="PhotosLabel" destination="AOU-Tz-VcT" id="P7D-PV-154"/>
                         <outlet property="approveButton" destination="cif-Zm-36F" id="Wh0-ko-rAJ"/>
                         <outlet property="closeButton" destination="Mt2-5Z-isg" id="cpk-p9-jCi"/>
                         <outlet property="imageCaptureSquareView" destination="UPP-yk-7fe" id="KNp-oS-9oV"/>
                         <outlet property="imageCountLabel" destination="Zi1-Yb-u00" id="8ro-SH-FxI"/>
+                        <outlet property="photosLabel" destination="AOU-Tz-VcT" id="Bhi-w1-yh0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bsn-pr-Bkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
