@@ -20,20 +20,6 @@
 #import "FluxTextureToImageMapElement.h"
 #import "FluxImageRenderElement.h"
 
-//
-//typedef struct{
-//    GLKVector3 origin;
-//    GLKVector3 at;
-//    GLKVector3 up;
-//} viewParameters;
-//
-//typedef struct {
-//    
-//    GLKMatrix4 rotationMatrix;
-//    GLKVector3 rotation_ypr;
-//    GLKVector3 position;
-//    GLKVector3 ecef;
-//} sensorPose;
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;
@@ -71,32 +57,6 @@
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
-    /*
-    FluxKalmanFilter *kfilter;
-    NSTimer *kfilterTimer;
-    bool kfStarted;
-    bool kfValidData;
-    
-    
-    double kfDt;
-    double kfMeasureX;
-    double kfMeasureY;
-    double kfMeasureZ;
-    double kfNoiseX;
-    double kfNoiseY;
-    double kfXDisp;
-    double kfYDisp;
-    GLKMatrix4 kfrotation_teM;
-    GLKMatrix4 kfInverseRotation_teM;
-    sensorPose _kfInit;
-    sensorPose _kfMeasure;
-    sensorPose _kfPose;
-    
-    double _rawX;
-    double _rawY;
-    double _estimateDelta;
-    double _resetThreshold;
-    */
     
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
@@ -114,21 +74,8 @@
     __weak IBOutlet UILabel *kY;
     
     __weak IBOutlet UILabel *delta;
-    //KF Debugging
-    /*
-    int stepcount;
-    double _lastvalue;//steppe
-    */
-    /*
-    __weak IBOutlet UILabel *pedoLabel;
-    __weak IBOutlet UILabel *gpsX;
-    __weak IBOutlet UILabel *gpsY;
-    __weak IBOutlet UILabel *kX;
-    __weak IBOutlet UILabel *kY;
-    __weak IBOutlet UILabel *delta;
-    */
-    //__weak IBOutlet UILabel *pedometer;
-    
+   //    __weak IBOutlet UILabel *pedoLabel;
+   
 }
 
 @property (strong, nonatomic) EAGLContext *context;
