@@ -61,7 +61,13 @@
     [self.view insertSubview:bgView belowSubview:containerView];
     
     [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedObjects.count]];
-    [imageStackButton setBackgroundImage:(UIImage*)[capturedObjects objectAtIndex:0] forState:UIControlStateNormal];
+    UIImage *theImg = (UIImage*)[capturedObjects objectAtIndex:0];
+    CGImageRef imageRef = CGImageCreateWithImageInRect([theImg CGImage], CGRectMake(0, (theImg.size.height/2) - (theImg.size.width/2), theImg.size.width, theImg.size.width));
+    // or use the UIImage wherever you like
+    UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    
+    [imageStackButton setBackgroundImage:cropppedImg forState:UIControlStateNormal];
     [locationLabel setText:location];
     
     NSDateFormatter *theDateFormat = [[NSDateFormatter alloc] init];
