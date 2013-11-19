@@ -40,12 +40,25 @@
     [super viewDidLoad];
     
     [self setTitle:@"Settings"];
-
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    initialMask = [[defaults objectForKey:@"Mask"] integerValue];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    int tmp = [[defaults objectForKey:@"Mask"] integerValue];
+
+    if (tmp!= initialMask) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"maskChange"
+                                                            object:self userInfo:nil];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -65,7 +78,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 3;
+    return 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -85,6 +98,13 @@
         case 2:
             self.connectServerSegmentedControl.selectedSegmentIndex = [[defaults objectForKey:@"Server Location"] intValue];
             break;
+        case 3:{
+            self.maskSlider.value = [[defaults objectForKey:@"Mask"] floatValue];
+            [self.maskLabel setText:[NSString stringWithFormat:@"%i",[[defaults objectForKey:@"Mask"] integerValue]]];
+        }
+            
+            break;
+            
     }
     return cell;
 }
@@ -103,6 +123,15 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:[NSNumber numberWithInt:self.connectServerSegmentedControl.selectedSegmentIndex] forKey:@"Server Location"];
     [defaults synchronize];
+}
+
+- (IBAction)maskSliderChanged:(id)sender {
+    int discreteValue = roundl([self.maskSlider value]);
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[NSNumber numberWithInt:discreteValue] forKey:@"Mask"];
+    [defaults synchronize];
+    [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
+    [self.maskSlider setValue:(float)discreteValue];
 }
 
 - (IBAction)onAreaResetBtn:(id)sender

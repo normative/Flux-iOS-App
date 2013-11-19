@@ -13,6 +13,13 @@
     NSMutableArray*picturesArray;
     
     IDMPhotoBrowser * photoViewerView;
+    IBOutlet UIBarButtonItem *garbageButton;
+    
+    NSMutableArray*removedImages;
+    IBOutlet UICollectionView*theCollectionView;
+    BOOL isEditing;
 }
+- (IBAction)garbageButtonAction:(id)sender;
+- (IBAction)editButtonAction:(id)sender;
 
 @end

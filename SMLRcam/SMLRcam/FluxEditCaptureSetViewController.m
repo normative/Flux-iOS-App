@@ -86,8 +86,14 @@
     
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     
-    UIImageView *recipeImageView = (UIImageView *)[cell viewWithTag:100];
-    recipeImageView.image = [self.imagesArray objectAtIndex:indexPath.row];
+    UIImageView *theImageView = (UIImageView *)[cell viewWithTag:100];
+    UIImage *theImg = (UIImage*)[self.imagesArray objectAtIndex:indexPath.row];
+    CGImageRef imageRef = CGImageCreateWithImageInRect([theImg CGImage], CGRectMake(0, (theImg.size.height/2) - (theImg.size.width/2), theImg.size.width, theImg.size.width));
+    // or use the UIImage wherever you like
+    UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    
+    theImageView.image = cropppedImg;
     KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
     if ([self.removedImagesArray containsObject:[NSNumber numberWithInt:indexPath.row]]) {
         [checkbox setChecked:YES];
