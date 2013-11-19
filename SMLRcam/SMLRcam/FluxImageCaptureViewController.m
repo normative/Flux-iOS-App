@@ -256,6 +256,17 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
              // Also set the internal timestamp variable to match the string representation
              [capturedImageObject setTimestamp:startTime];
              
+             //set estimated location
+             if(locationManager.kflocation.valid ==1)
+             {
+                 capturedImageObject.location_confidence =1.0;
+                 capturedImageObject.ecefX = locationManager.kflocation.x;
+                 capturedImageObject.ecefY = locationManager.kflocation.y;
+                 capturedImageObject.ecefZ = locationManager.kflocation.z;
+                            
+             }
+             
+             
              [self saveImageObject:capturedImageObject];
              [self incrementCountLabel];
              
