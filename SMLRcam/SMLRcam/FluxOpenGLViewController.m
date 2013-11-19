@@ -1552,7 +1552,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
-   /*
+   
     
     if(self.fluxDisplayManager.locationManager.kflocation.valid ==1)
     {
@@ -1560,10 +1560,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.ecef.x =  self.fluxDisplayManager.locationManager.kflocation.x;
         _userPose.ecef.y =  self.fluxDisplayManager.locationManager.kflocation.y;
         _userPose.ecef.z =  self.fluxDisplayManager.locationManager.kflocation.z;
-       // [self printDebugInfo];
+        
+        // [self printDebugInfo];
        
     }
-*/
+
 //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
 //    GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(90.0f), aspect, 0.1f, 100.0f);
     
