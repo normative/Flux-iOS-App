@@ -9,6 +9,20 @@
 #ifndef Flux_FluxOpenGLCommon_h
 #define Flux_FluxOpenGLCommon_h
 
+typedef struct{
+    int valid;
+    double x;
+    double y;
+    double z;
+}kfECEF;
+
+typedef struct{
+    
+    float gpsx;
+    float gpsy;
+    float filterx;
+    float filtery;
+}kfDEBUG;
 
 typedef struct{
     GLKVector3 origin;

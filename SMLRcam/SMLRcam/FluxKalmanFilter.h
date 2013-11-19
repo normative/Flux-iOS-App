@@ -46,5 +46,5 @@
 @property (readonly) double positionY;
 -(void) predictWithXDisp:(double)xdisp YDisp:(double)ydisp dT:(double) dt;
 -(void) measurementUpdateWithZX:(double)zx ZY:(double)zy Rx:(double)rx Ry:(double)ry;
--(void) resetFilter;
+-(void) resetKalmanFilter;
 @end
