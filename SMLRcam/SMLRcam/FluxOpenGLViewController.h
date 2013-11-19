@@ -71,7 +71,7 @@
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
-    
+    /*
     FluxKalmanFilter *kfilter;
     NSTimer *kfilterTimer;
     bool kfStarted;
@@ -92,6 +92,12 @@
     sensorPose _kfMeasure;
     sensorPose _kfPose;
     
+    double _rawX;
+    double _rawY;
+    double _estimateDelta;
+    double _resetThreshold;
+    */
+    
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
     
@@ -100,10 +106,27 @@
     
     int _displayListHasChanged;
     
+    __weak IBOutlet UILabel *gpsX;
     
+    __weak IBOutlet UILabel *gpsY;
+    __weak IBOutlet UILabel *kX;
+    
+    __weak IBOutlet UILabel *kY;
+    
+    __weak IBOutlet UILabel *delta;
+    //KF Debugging
+    /*
     int stepcount;
-    double _lastvalue;//stepper
+    double _lastvalue;//steppe
+    */
+    /*
     __weak IBOutlet UILabel *pedoLabel;
+    __weak IBOutlet UILabel *gpsX;
+    __weak IBOutlet UILabel *gpsY;
+    __weak IBOutlet UILabel *kX;
+    __weak IBOutlet UILabel *kY;
+    __weak IBOutlet UILabel *delta;
+    */
     //__weak IBOutlet UILabel *pedometer;
     
 }

@@ -914,19 +914,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     free(buffer2);
     return myImage;
 }
-- (void) testKalman
-{
-    double measX[] ={5.0, 5.0, 10.0, 20.0, 30.0};
-    double measY[] ={0.0, 2.0, 4.0, 4.0, 6.0};
-    
-    int i;
-    for(i =0; i <5; i++)
-    {
-        [kfilter predictWithXDisp:0.0 YDisp:0.0 dT:0.1];
-        [kfilter measurementUpdateWithZX:measX[i] ZY:measY[i] Rx:0.0 Ry:0.0];
-    }
 
-}
 
 #pragma mark - View Lifecycle
 
@@ -974,11 +962,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
-    [self initKFilter];
-    [self startKFilter];
-    
-    
-  
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1164,7 +1147,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self setupBuffers];
     [self loadAlphaTexture];
-    [pedoLabel setText:@"ped"];
+    //[pedoLabel setText:@"ped"];
 }
 
 - (void)tearDownGL
@@ -1536,19 +1519,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
     
-    if(1)
-    {
+   
         _userPose.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
         _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
         _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
-    }
-    else
-    {
-        _userPose.position.x = _kfPose.position.x;
-        _userPose.position.y = _kfPose.position.y;
-        _userPose.position.z = _kfPose.position.z;
-    }
-    
+  
     
     
     GLKVector3 planeNormal;
@@ -1560,11 +1535,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
    
     
-    if(kfStarted ==true)
+    if(self.fluxDisplayManager.locationManager.kflocation.valid ==1)
     {
-        _userPose.ecef.x = _kfPose.ecef.x;
-        _userPose.ecef.y = _kfPose.ecef.y;
-        _userPose.ecef.z = _kfPose.ecef.z;
+        
+        _userPose.ecef.x =  self.fluxDisplayManager.locationManager.kflocation.x;
+        _userPose.ecef.y =  self.fluxDisplayManager.locationManager.kflocation.y;
+        _userPose.ecef.z =  self.fluxDisplayManager.locationManager.kflocation.z;
+        [self printDebugInfo];
+       
     }
 
 //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
@@ -1904,6 +1882,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 #pragma mark - KFiltering
+/*
 -(void) ecefToWGS84KF
 {
     double lambda, phi, h;
@@ -2046,17 +2025,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfMeasureX = positionTP.x;
     kfMeasureY = positionTP.y;
     kfMeasureZ = positionTP.z;
-    /*
-    positionTP1 = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
-    
-    positionTP1.x = _kfInit.ecef.x + positionTP1.x;
-    positionTP1.y = _kfInit.ecef.y + positionTP1.y;
-    positionTP1.z = _kfInit.ecef.z + positionTP1.z;
-    
-    NSLog(@"B:[%f %f %f] A:[%f %f %f]", _kfMeasure.ecef.x,_kfMeasure.ecef.y, _kfMeasure.ecef.z, positionTP1.x, positionTP1.y, positionTP1.z);
-    //test
-    */
-    
+        
 }
 
 
@@ -2105,7 +2074,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
 
 }
-
+- (void) computeEstimateDelta
+{
+   
+    double tx, ty;
+    tx = kfMeasureX - kfilter.positionX;
+    ty = kfMeasureY - kfilter.positionY;
+    
+    _estimateDelta = sqrt(tx*tx + ty*ty);
+    if(_estimateDelta > _resetThreshold)
+       [self resetKFilter];
+    
+}
 
 -(void) initKFilter
 {
@@ -2118,6 +2098,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfilter = [[FluxKalmanFilter alloc] init];
     stepcount = 0;
     _lastvalue =0;
+    _resetThreshold = 20.0; //in meters;
     //[self testKalman];
     
 }
@@ -2139,13 +2120,19 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 -(void) resetKFilter
 {
+    _kfInit.position.x =self.fluxDisplayManager.locationManager.location.coordinate.latitude;
+    _kfInit.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
+    _kfInit.position.z =self.fluxDisplayManager.locationManager.location.altitude;
     
+    kfStarted = true;
+    [self computeKInitKFilter];
+    [kfilter resetKalmanFilter];
 }
 -(void) updateKFilter
 {
-    NSString *stepS = [NSString stringWithFormat:@"%d",stepcount];
+   // NSString *stepS = [NSString stringWithFormat:@"%d",stepcount];
     
-    [pedoLabel setText:stepS];
+    //[pedoLabel setText:stepS];
     
     
     
@@ -2186,9 +2173,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     kfYDisp =0.0;
     [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
     [self computeFilteredECEF];
+    [self computeEstimateDelta];
+    
     //tests here for tangent plane
     
-    
+   // [self printDebugInfo];
    // [self ecefToWGS84KF];
 }
 
@@ -2224,18 +2213,45 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        // [self computePedDisplacementKFilter:-1];
     _lastvalue= v;
 }
-/*
-- (IBAction)stepperChanged:(id)sender {
-    UIStepper*stepper = (UIStepper*)sender;
-    NSLog(@"stepper triggered");
-    int change = stepper.value -_lastvalue;
-    if(change >0)
-    {
-        [self computePedDisplacementKFilter:1];
-    }
-    else
-        [self computePedDisplacementKFilter:-1];
-    _lastvalue= stepper.value;
+*/
+#pragma --- kalman filter debug ---
+
+-(void) printDebugInfo
+{
+    double distancef;
+    double tx, ty, tkx, tky;
+    
+    
+    NSString *rawXS = [NSString stringWithFormat:@"RX: %f",self.fluxDisplayManager.locationManager.kfdebug.gpsx];
+    [gpsX setText:rawXS];
+   
+    
+    NSString *rawYS = [NSString stringWithFormat:@"RY: %f",self.fluxDisplayManager.locationManager.kfdebug.gpsy];
+    [gpsY setText:rawYS];
+    
+    NSString *kXS = [NSString stringWithFormat:@"kX: %f",self.fluxDisplayManager.locationManager.kfdebug.filterx];
+    [kX setText:kXS];
+    
+    NSString *kYS = [NSString stringWithFormat:@"kY: %f",self.fluxDisplayManager.locationManager.kfdebug.filtery];
+    [kY setText:kYS];
+    
+    tkx = self.fluxDisplayManager.locationManager.kfdebug.gpsx;
+    tky = self.fluxDisplayManager.locationManager.kfdebug.gpsy;
+    tx = self.fluxDisplayManager.locationManager.kfdebug.filterx -tkx;
+    ty = self.fluxDisplayManager.locationManager.kfdebug.filtery -tky;
+    
+    distancef = sqrt(tx*tx + ty*ty);
+    
+    NSString *distanceS = [NSString stringWithFormat:@"D: %f",distancef];
+    [delta setText:distanceS];
+
+    
+    
 }
- */
+
+
+- (IBAction)stepperChanged:(id)sender {
+    
+    }
+
 @end

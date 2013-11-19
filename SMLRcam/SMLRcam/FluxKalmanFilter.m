@@ -73,52 +73,8 @@
     work = malloc(MEASUREMENTV_SIZE *MEASUREMENTV_SIZE *sizeof(double));
     
     
-    //zero stuff
-    [self zeroMatWithMat:X numElements:STATEV_SIZE];
-    [self zeroMatWithMat:F numElements:STATEV_SIZE * STATEV_SIZE];
-    [self zeroMatWithMat:u numElements:STATEV_SIZE];
-    [self zeroMatWithMat:P numElements:STATEV_SIZE * STATEV_SIZE];
-    [self zeroMatWithMat:X_p numElements:STATEV_SIZE];
-    [self zeroMatWithMat:P_p numElements:STATEV_SIZE * STATEV_SIZE];
-    [self zeroMatWithMat:X_pp numElements:STATEV_SIZE];
-    [self zeroMatWithMat:P_pp numElements:STATEV_SIZE * STATEV_SIZE];
-    
-    [self zeroMatWithMat:Z numElements:MEASUREMENTV_SIZE];
-    [self zeroMatWithMat:H numElements:MEASUREMENTV_SIZE * STATEV_SIZE];
-    [self zeroMatWithMat:Q numElements:MEASUREMENTV_SIZE * MEASUREMENTV_SIZE];
-    [self zeroMatWithMat:I numElements:STATEV_SIZE * STATEV_SIZE];
-    
-    [self zeroMatWithMat:y numElements:MEASUREMENTV_SIZE];
-    [self zeroMatWithMat:S numElements:MEASUREMENTV_SIZE * MEASUREMENTV_SIZE];
-    [self zeroMatWithMat:K numElements:STATEV_SIZE * MEASUREMENTV_SIZE];
-    [self zeroMatWithMat:T21 numElements:2];
-    [self zeroMatWithMat:T44 numElements:16];
-
-    [self zeroMatWithMat:T24 numElements:8];
-
-    [self zeroMatWithMat:T22 numElements:4];
-    [self zeroMatWithMat:T42 numElements:8];
-    [self zeroMatWithMat:T41 numElements:4];
-    [self zeroMatWithMat:work numElements:4];
-
-    
-    
-    
-    //initialize everything
-    F[0] = F[5] =F[10]=F[15] = 1.0;
-    F[2] =0.1;
-    F[7] =0.1;
-    I[0] = I[5] =I[10] =I[15] = 1.0;
-    
-    //uncertainity in noise????
-    //tune
-    
-    P[0] = P[5] =5.0;
-    P[10] = P[15] = 1000.0;
-    H[0] = H[5] = 1.0;
-    Q[0] = Q[3] = 10.0;
-    
-    [self testReinitialize];
+    [self resetKalmanFilter];
+   // [self testReinitialize];
     
     return self;
 }
@@ -173,7 +129,8 @@
 -(void) measurementUpdateWithZX:(double)zx ZY:(double)zy Rx:(double)rx Ry:(double)ry
 {
     int invert=-1.0;
-    
+    Q[0] = rx;
+    Q[3] = ry;
     
     //3
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 2, 1 , 4, 1.0, H, 4, X_p, 1, 0.0, T21, 1);
@@ -217,9 +174,52 @@
     _positionY = X[1];
    
 }
--(void) resetFilter
+-(void) resetKalmanFilter
 {
+    //zero everything
+    [self zeroMatWithMat:X numElements:STATEV_SIZE];
+    [self zeroMatWithMat:F numElements:STATEV_SIZE * STATEV_SIZE];
+    [self zeroMatWithMat:u numElements:STATEV_SIZE];
+    [self zeroMatWithMat:P numElements:STATEV_SIZE * STATEV_SIZE];
+    [self zeroMatWithMat:X_p numElements:STATEV_SIZE];
+    [self zeroMatWithMat:P_p numElements:STATEV_SIZE * STATEV_SIZE];
+    [self zeroMatWithMat:X_pp numElements:STATEV_SIZE];
+    [self zeroMatWithMat:P_pp numElements:STATEV_SIZE * STATEV_SIZE];
     
+    [self zeroMatWithMat:Z numElements:MEASUREMENTV_SIZE];
+    [self zeroMatWithMat:H numElements:MEASUREMENTV_SIZE * STATEV_SIZE];
+    [self zeroMatWithMat:Q numElements:MEASUREMENTV_SIZE * MEASUREMENTV_SIZE];
+    [self zeroMatWithMat:I numElements:STATEV_SIZE * STATEV_SIZE];
+    
+    [self zeroMatWithMat:y numElements:MEASUREMENTV_SIZE];
+    [self zeroMatWithMat:S numElements:MEASUREMENTV_SIZE * MEASUREMENTV_SIZE];
+    [self zeroMatWithMat:K numElements:STATEV_SIZE * MEASUREMENTV_SIZE];
+    [self zeroMatWithMat:T21 numElements:2];
+    [self zeroMatWithMat:T44 numElements:16];
+    
+    [self zeroMatWithMat:T24 numElements:8];
+    
+    [self zeroMatWithMat:T22 numElements:4];
+    [self zeroMatWithMat:T42 numElements:8];
+    [self zeroMatWithMat:T41 numElements:4];
+    [self zeroMatWithMat:work numElements:4];
+    
+    
+    
+    
+    //initialize everything
+    F[0] = F[5] =F[10]=F[15] = 1.0;
+    F[2] =0.1;
+    F[7] =0.1;
+    I[0] = I[5] =I[10] =I[15] = 1.0;
+    
+    //uncertainity in noise????
+    //tune
+    
+    P[0] = P[5] =5.0;
+    P[10] = P[15] = 1.0;
+    H[0] = H[5] = 1.0;
+    Q[0] = Q[3] = 10.0;
 }
 
 @end

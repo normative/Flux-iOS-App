@@ -30,6 +30,13 @@ typedef enum FluxImageType : NSUInteger {
 @property (nonatomic) double latitude;
 @property (nonatomic) double altitude;
 
+
+//location ecef for kalman estimated values
+@property (nonatomic) double ecefX;
+@property (nonatomic) double ecefY;
+@property (nonatomic) double ecefZ;
+
+
 //orientation (euler angles)
 @property (nonatomic) double yaw;
 @property (nonatomic) double pitch;
@@ -45,7 +52,7 @@ typedef enum FluxImageType : NSUInteger {
 // position accuracy and confidence levels
 @property (nonatomic) double horiz_accuracy;
 @property (nonatomic) double vert_accuracy;
-@property (nonatomic) double location_confidence;
+@property (nonatomic) double location_confidence; //modify this for live
 
 //other
 @property (nonatomic, strong) NSString* timestampString;

@@ -11,6 +11,9 @@
 NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
 NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocationServicesSingletonDidUpdatePlacemark";
+#define PI M_PI
+#define a_WGS84 6378137.0
+#define b_WGS84 6356752.3142
 
 @implementation FluxLocationServicesSingleton
 
@@ -52,6 +55,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         }
     }
     self.notMoving = 1;
+    [self initKFilter];
+    [self startKFilter];
     return self;
 }
 
@@ -170,7 +175,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);
-
+    [self setMeasurementWithLocation:self.location];
     // Notify observers of updated position
     if (self.location != nil)
     {
@@ -250,7 +255,425 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     return YES;
 }
 
+#pragma mark - Filtering
 
+-(void) WGS84_to_ECEF:(sensorPose *)sp{
+    double normal;
+    double eccentricity;
+    double flatness;
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
+    
+    flatness = (a_WGS84 - b_WGS84) / a_WGS84;
+    
+    eccentricity = sqrt(flatness * (2 - flatness));
+    normal = a_WGS84 / sqrt(1 - (eccentricity * eccentricity * sin(lla_rad.x) *sin(lla_rad.x)));
+    
+    sp->ecef.x = (lla_rad.z + normal)* cos(lla_rad.x) * cos(lla_rad.y);
+    sp->ecef.y = (lla_rad.z + normal)* cos(lla_rad.x) * sin(lla_rad.y);
+    sp->ecef.z = (lla_rad.z + (1- eccentricity* eccentricity)*normal)* sin(lla_rad.x);
+    
+    
+}
+
+-(void) ecefToWGS84KF
+{
+    double lambda, phi, h;
+    double p, theta, N;
+    double eSq, e_pSq, diff;
+    double X, Y, sin3theta, cos3theta;
+    diff = (a_WGS84 *a_WGS84) - (b_WGS84 *b_WGS84);
+    eSq = diff/(a_WGS84*a_WGS84);
+    e_pSq = diff/(b_WGS84*b_WGS84);
+    
+    //test
+    
+    //_kfPose.ecef.x =sp.ecef.x;
+    //_kfPose.ecef.y =sp.ecef.y;
+    //_kfPose.ecef.z =sp.ecef.z;
+    
+    //test ends
+    
+    
+    lambda = atan2(_kfPose.ecef.y, _kfPose.ecef.x);
+    X =_kfPose.ecef.x;
+    Y = _kfPose.ecef.y;
+    p = sqrt(X*X + Y*Y);
+    theta = atan2(_kfPose.ecef.z*a_WGS84, p*b_WGS84);
+    sin3theta = sin(theta);
+    sin3theta = sin3theta*sin3theta *sin3theta;
+    cos3theta = cos(theta);
+    cos3theta = cos3theta*cos3theta *cos3theta;
+    phi = atan2((_kfPose.ecef.z+(e_pSq*b_WGS84*sin3theta)), (p-(eSq*a_WGS84*cos3theta)));
+    
+    N= a_WGS84/(sqrt(1-(eSq * sin(phi)*sin(phi))));
+    
+    h = (p/cos(phi))-N;
+    
+    _kfPose.position.x = phi;
+    _kfPose.position.y = lambda;
+    _kfPose.position.z = h;
+    
+    NSLog(@"lla[%f, %f, %f]", phi*180/PI, lambda*180/PI,h);
+    
+}
+
+
+
+-(void) tPlaneRotationKFilterWithPose:(sensorPose*) sp
+{
+    
+    float rotation_te[16];
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
+    
+    rotation_te[0] = -1.0 * sin(lla_rad.y);
+    rotation_te[1] = cos(lla_rad.y);
+    rotation_te[2] = 0.0;
+    rotation_te[3]= 0.0;
+    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
+    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[6] = cos(lla_rad.x);
+    rotation_te[7]= 0.0;
+    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
+    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[10] = sin(lla_rad.x);
+    rotation_te[11]= 0.0;
+    rotation_te[12]= 0.0;
+    rotation_te[13]= 0.0;
+    rotation_te[14]= 0.0;
+    rotation_te[15]= 1.0;
+    
+    kfrotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
+    
+}
+-(void) tPInverseRotationKFilterWithPose:(sensorPose*) sp
+{
+    
+    float rotation_te[16];
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x*PI/180.0;
+    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.z = sp->position.z;
+    
+    rotation_te[0] = -1.0 * sin(lla_rad.y);
+    rotation_te[1] = cos(lla_rad.y);
+    rotation_te[2] = 0.0;
+    rotation_te[3]= 0.0;
+    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
+    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[6] = cos(lla_rad.x);
+    rotation_te[7]= 0.0;
+    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
+    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
+    rotation_te[10] = sin(lla_rad.x);
+    rotation_te[11]= 0.0;
+    rotation_te[12]= 0.0;
+    rotation_te[13]= 0.0;
+    rotation_te[14]= 0.0;
+    rotation_te[15]= 1.0;
+    
+    kfInverseRotation_teM = GLKMatrix4MakeWithArray(rotation_te);
+    
+}
+
+
+
+-(void) computeKInitKFilter
+{
+    
+	GLKVector3 positionTP;
+    positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    [self WGS84_to_ECEF:&_kfInit];
+    [self tPlaneRotationKFilterWithPose:&_kfInit];
+    [self tPInverseRotationKFilterWithPose:&_kfInit];
+    
+}
+
+//distance - distance of plane
+-(void) computeKMeasureKFilter
+{
+    GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    // GLKVector3 positionTP1 = GLKVector3Make(0.0, 0.0, 0.0);
+    //planar
+    _kfMeasure.position.z = _kfInit.position.z;
+    
+    
+    [self WGS84_to_ECEF:&_kfMeasure];
+    
+    
+    positionTP.x = _kfMeasure.ecef.x - _kfInit.ecef.x;
+    positionTP.y = _kfMeasure.ecef.y - _kfInit.ecef.y;
+    positionTP.z = _kfMeasure.ecef.z - _kfInit.ecef.z;
+    
+    
+    positionTP = GLKMatrix4MultiplyVector3(kfrotation_teM, positionTP);
+    
+    kfMeasureX = positionTP.x;
+    kfMeasureY = positionTP.y;
+    kfMeasureZ = positionTP.z;
+    /*
+     positionTP1 = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
+     
+     positionTP1.x = _kfInit.ecef.x + positionTP1.x;
+     positionTP1.y = _kfInit.ecef.y + positionTP1.y;
+     positionTP1.z = _kfInit.ecef.z + positionTP1.z;
+     
+     NSLog(@"B:[%f %f %f] A:[%f %f %f]", _kfMeasure.ecef.x,_kfMeasure.ecef.y, _kfMeasure.ecef.z, positionTP1.x, positionTP1.y, positionTP1.z);
+     //test
+     */
+    
+}
+
+/*
+ 
+ - (void)computePedDisplacementKFilter:(int) step
+ {
+ 
+ double heading;
+ double enuHeadingRad;
+ //int count = motionManager.pedometerCount;
+ double stepsize =0.73;
+ 
+ stepcount += step;
+ heading =self.fluxDisplayManager.locationManager.heading ;
+ 
+ enuHeadingRad = (90.0 - heading)/180.0 *PI;
+ 
+ kfXDisp = stepsize * cos(enuHeadingRad) * (double)step;
+ kfYDisp = stepsize * sin(enuHeadingRad) * (double)step;
+ 
+ NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
+ 
+ //[motionManager resetPedometer];
+ 
+ 
+ 
+ }
+ */
+- (void) computeFilteredECEF
+{
+    GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    
+    positionTP.x = kfilter.positionX;
+    positionTP.y = kfilter.positionY;
+    positionTP.z = kfMeasureZ;
+    positionTP = GLKMatrix4MultiplyVector3(kfInverseRotation_teM, positionTP);
+    
+    
+    _kfPose.ecef.x = _kfInit.ecef.x + positionTP.x;
+    _kfPose.ecef.y = _kfInit.ecef.y + positionTP.y;
+    _kfPose.ecef.z = _kfInit.ecef.z + positionTP.z;
+    
+    _kflocation.valid = 1;
+    _kflocation.x = _kfPose.ecef.x;
+    _kflocation.y = _kfPose.ecef.y;
+    _kflocation.z = _kfPose.ecef.z;
+}
+- (void) computeEstimateDelta
+{
+    
+    double tx, ty;
+    _kfdebug.gpsx = kfMeasureX;
+    _kfdebug.gpsy = kfMeasureY;
+    _kfdebug.filterx = kfilter.positionX;
+    _kfdebug.filterx = kfilter.positionY;
+    
+    
+    
+    
+    
+    tx = kfMeasureX - kfilter.positionX;
+    ty = kfMeasureY - kfilter.positionY;
+    
+    _estimateDelta = sqrt( tx*tx + ty*ty );
+    if(_estimateDelta > _resetThreshold)
+        [self resetKFilter];
+    
+}
+
+- (void) initKFilter
+{
+    kfStarted =false;
+    kfValidData = false;
+    kfDt = 1.0/60.0;
+    kfNoiseX = 0.0;
+    kfNoiseY = 0.0;
+    
+    kfilter = [[FluxKalmanFilter alloc] init];
+    stepcount = 0;
+    _lastvalue =0;
+    _resetThreshold = 20.0; //in meters;
+    _validCurrentLocationData = -1;
+    _validInitLocationData = -1;
+    //[self testKalman];
+}
+- (void) startKFilter
+{
+    //[self testWGS84Conversions];
+    kfilterTimer = [NSTimer scheduledTimerWithTimeInterval:kfDt
+                                                    target:self
+                                                  selector:@selector(updateKFilter)
+                                                  userInfo:nil
+                                                   repeats:YES];
+    
+    
+}
+- (void) setMeasurementWithLocation:(CLLocation*)location
+{
+    _kfMeasure.position.x = location.coordinate.latitude;
+    _kfMeasure.position.y = location.coordinate.longitude;
+    _kfMeasure.position.z = location.altitude;
+    
+    
+    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0)
+    {
+        _validCurrentLocationData = 0;
+        _validInitLocationData = 0;
+        _horizontalAccuracy = location.horizontalAccuracy;
+    }
+    else
+    {
+        _validCurrentLocationData = -1;
+    }
+    
+}
+
+
+
+-(void) stopKFilter
+{
+    
+}
+-(void) resetKFilter
+{
+    _kfInit.position.x = _kfMeasure.position.x;
+    _kfInit.position.y = _kfMeasure.position.y;
+    _kfInit.position.z = _kfMeasure.position.z;
+    
+    kfStarted = true;
+    [self computeKInitKFilter];
+    [kfilter resetKalmanFilter];
+}
+-(void) updateKFilter
+{
+    //NSString *stepS = [NSString stringWithFormat:@"%d",stepcount];
+    
+    //[pedoLabel setText:stepS];
+    
+    if(kfStarted!=true)
+    {
+        if(_validCurrentLocationData <0)
+        {
+            NSLog(@"updateKFilter:Invalid location, kf not started");
+            return;
+        }
+        _kfInit.position.x = _kfMeasure.position.x;
+        _kfInit.position.y = _kfMeasure.position.y;
+        _kfInit.position.z = _kfMeasure.position.z;
+        
+        kfStarted = true;
+        [self computeKInitKFilter];
+        //set pedometer count to zero
+        
+        return;
+    }
+    
+    kfNoiseX = kfNoiseY = _horizontalAccuracy;
+    
+    [self computeKMeasureKFilter];
+    
+    [kfilter predictWithXDisp:kfXDisp YDisp:kfYDisp dT:kfDt];
+    kfXDisp = 0.0;
+    kfYDisp =0.0;
+    [kfilter measurementUpdateWithZX:kfMeasureX ZY:kfMeasureY Rx:kfNoiseX Ry:kfNoiseY];
+    [self computeFilteredECEF];
+    [self computeEstimateDelta];
+    
+    //tests here for tangent plane
+    
+    [self printDebugInfo];
+    // [self ecefToWGS84KF];
+}
+
+#pragma mark - test and debug filter
+
+-(void) testWGS84Conversions
+{
+    int i =0;
+    double lat[]={43.628342, 37.774930};
+    double lon[] ={-79.394792,-122.419416};
+    double alt[]={75,20};
+    sensorPose s;
+    for(i=0; i<2; i++)
+    {
+        s.position.x = lat[i];
+        s.position.y = lon[i];
+        s.position.z = alt[i];
+        
+        //WGS84_to_ECEF(&s);
+        //test [self ecefToWGS84KF:s];
+    }
+    
+    
+}
+
+-(void) printDebugInfo
+{
+    /*
+     double distancef;
+     double tx, ty, tkx, tky;
+     
+     
+     NSString *rawXS = [NSString stringWithFormat:@"RX: %f",kfMeasureX];
+     [gpsX setText:rawXS];
+     
+     
+     NSString *rawYS = [NSString stringWithFormat:@"RY: %f",kfMeasureY];
+     [gpsY setText:rawYS];
+     
+     NSString *kXS = [NSString stringWithFormat:@"kX: %f",kfilter.positionX];
+     [kX setText:kXS];
+     
+     NSString *kYS = [NSString stringWithFormat:@"kY: %f",kfilter.positionY];
+     [kY setText:kYS];
+     
+     tkx = kfilter.positionX;
+     tky = kfilter.positionY;
+     tx = kfMeasureX - tkx;
+     ty = kfMeasureY -tky;
+     
+     distancef = sqrt(tx*tx + ty*ty);
+     
+     NSString *distanceS = [NSString stringWithFormat:@"D: %f",distancef];
+     [distance setText:distanceS];
+     */
+}
+/*
+- (void) testKalman
+{
+    double measX[] ={5.0, 5.0, 10.0, 20.0, 30.0};
+    double measY[] ={0.0, 2.0, 4.0, 4.0, 6.0};
+    
+    int i;
+    for(i =0; i <5; i++)
+    {
+        [kfilter predictWithXDisp:0.0 YDisp:0.0 dT:0.1];
+        [kfilter measurementUpdateWithZX:measX[i] ZY:measY[i] Rx:0.0 Ry:0.0];
+    }
+    
+}
+*/
 @end
 
 
