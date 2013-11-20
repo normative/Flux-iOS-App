@@ -397,8 +397,11 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     //assumption that the point of image acquisition and the user lie in the same plane.
     sp->position.z = userPose.position.z;
     
-    WGS84_to_ECEF(sp);
     
+    if(sp->validECEFEstimate !=1)
+    {
+        WGS84_to_ECEF(sp);
+    }
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
@@ -1061,6 +1064,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     element.imagePose->position.y =  locationObject.longitude;
     element.imagePose->position.z =  locationObject.altitude;
     
+    
+    
+    
     quaternion.x = locationObject.qx;
     quaternion.y = locationObject.qy;
     quaternion.z = locationObject.qz;
@@ -1359,20 +1365,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     // not found so always load lowest resolution (thumb typically)
                     FluxImageType rtype = none;
                     UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
-
+                    
                     if (image != nil)
                     {
+                        textureIndex = tel.textureIndex;
 //                        NSError *error = [self loadTexture:textureIndex withImage:ire.image];
                         NSError *error = [self loadTexture:textureIndex withImage:image];
-
+                        
                         if (error)
                         {
                             textureIndex = -1;
                         }
                         else
                         {
-                            // found one - set it up...
-                            
+                                // found one - set it up...
+                                
                             if (tel.localID != nil)
                             {
                                 // break link from old ire to tel - need to search and update it.
@@ -1388,7 +1395,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                             tel.localID = ire.localID;
                             tel.imageType = rtype;
                             justLoaded = true;
-                            textureIndex = tel.textureIndex;
 
                             NSLog(@"Loaded Image texture in slot %d for key %@", (textureIndex),ire.localID);
                         }
@@ -1561,7 +1567,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.ecef.x =  self.fluxDisplayManager.locationManager.kflocation.x;
         _userPose.ecef.y =  self.fluxDisplayManager.locationManager.kflocation.y;
         _userPose.ecef.z =  self.fluxDisplayManager.locationManager.kflocation.z;
-       // [self printDebugInfo];
+        
+        // [self printDebugInfo];
        
     }
 

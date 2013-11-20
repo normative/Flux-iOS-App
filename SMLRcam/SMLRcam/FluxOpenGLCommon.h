@@ -31,7 +31,7 @@ typedef struct{
 } viewParameters;
 
 typedef struct {
-    
+    int validECEFEstimate;
     GLKMatrix4 rotationMatrix;
     GLKVector3 rotation_ypr;
     GLKVector3 position;
