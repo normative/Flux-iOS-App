@@ -73,6 +73,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartCameraMode:) name:FluxImageCaptureDidPush object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
     }
     
     return self;
@@ -377,6 +378,16 @@ double getAbsAngle(double angle, double heading)
     ire.localCaptureTime = ire.timestamp;
     [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
     [_nearbyCamList addObject:ire];
+    [self requestNearbyItems];
+}
+
+- (void)didUndoCapture:(NSNotification *)notification
+{
+    [_fluxNearbyMetadata removeObjectForKey: [[notification userInfo] objectForKey:@"localID"]];
+    if (_nearbyCamList.count > 0) {
+        [_nearbyCamList removeObjectAtIndex:0];
+    }
+    
     [self requestNearbyItems];
 }
 

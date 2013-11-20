@@ -136,9 +136,11 @@
 - (void)swapEditModes{
     isEditing = !isEditing;
     if (isEditing) {
+        [editBarButton setTitle:@"Cancel"];
         [self.navigationController setToolbarHidden:NO animated:YES];
     }
     else{
+        [editBarButton setTitle:@"Edit"];
         [self.navigationController setToolbarHidden:YES animated:YES];
     }
     

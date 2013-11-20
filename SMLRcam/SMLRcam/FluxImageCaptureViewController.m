@@ -14,6 +14,7 @@
 NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
 NSString* const FluxImageCaptureDidPush = @"FluxImageCaptureDidPush";
 NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureImage";
+NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCapture";
 
 @interface FluxImageCaptureViewController ()
 
@@ -58,11 +59,17 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     self.screenName = @"Image Capture View";
     
     [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
-    [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
+    [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosLabel.font.pointSize]];
+    [undoButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:undoButton.titleLabel.font.pointSize]];
     
     motionManager = [FluxMotionManagerSingleton sharedManager];
     locationManager = [FluxLocationServicesSingleton sharedManager];
 	// Do any additional setup after loading the view.
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [approveButton setHidden:YES];
+    [undoButton setHidden:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -89,6 +96,20 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
              completion:^(BOOL finished){
                  [self.view setHidden:YES];
              }];
+    }
+}
+
+- (IBAction)undoButtonAction:(id)sender {
+    NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                  initWithObjectsAndKeys:[(FluxScanImageObject*)[capturedImageObjects lastObject]localID], @"localID",nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidUndoCapture
+                                                        object:self userInfo:userInfoDict];
+    [capturedImageObjects removeLastObject];
+    [capturedImages removeLastObject];
+    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
+    if (capturedImageObjects.count == 0) {
+        [approveButton setHidden:YES];
+        [undoButton setHidden:YES];
     }
 }
 
@@ -277,6 +298,7 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
                  [blackView setHidden:YES];
              }];
              [approveButton setHidden:NO];
+             [undoButton setHidden:NO];
          }
      }];
 }

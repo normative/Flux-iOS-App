@@ -26,6 +26,7 @@
 extern NSString* const FluxImageCaptureDidPop;
 extern NSString* const FluxImageCaptureDidPush;
 extern NSString* const FluxImageCaptureDidCaptureImage;
+extern NSString* const FluxImageCaptureDidUndoCapture;
 
 @interface FluxImageCaptureViewController : GAITrackedViewController<ImageAnnotationDelegate>{
     UIImageView *gridView;
@@ -35,6 +36,7 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
     IBOutlet UILabel *imageCountLabel;
     IBOutlet UIButton *approveButton;
     IBOutlet UILabel *photosLabel;
+    IBOutlet UIButton *undoButton;
     
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -57,6 +59,7 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
 
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 
+- (IBAction)undoButtonAction:(id)sender;
 
 - (IBAction)closeButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
