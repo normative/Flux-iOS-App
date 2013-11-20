@@ -40,6 +40,7 @@
     [message show];
     
     [[UIApplication sharedApplication] setStatusBarHidden:NO];
+    [self checkCurrentLoginState];
 }
 
 - (void)viewDidLoad
@@ -53,12 +54,7 @@
     [facebookButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:facebookButton.titleLabel.font.pointSize]];
     [createLoginButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:createLoginButton.titleLabel.font.pointSize]];
     
-    
     self.fluxDataManager = [[FluxDataManager alloc]init];
-    
-    [self hideContainerViewAnimated:YES];
-    [self checkCurrentLoginState];
-    
     
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
 }
@@ -221,7 +217,8 @@
 }
 
 - (IBAction)createAccountButtonAction:(id)sender {
-    [self fadeOutLogin];
+    [self hideContainerViewAnimated:YES];
+    [self performSelector:@selector(fadeOutLogin) withObject:nil afterDelay:0.5];
     return;
     
     UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome!" message:@"Thanks for taking the time to look into Flux. At the moment, Flux is still in beta, and requires a pin to continue. If you're one of the lucky ones, please enter your pin below." delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles:@"Activate Pin", nil];
@@ -382,13 +379,13 @@
 
 - (void)hideContainerViewAnimated:(BOOL)animated{
     if (animated) {
-        [UIView animateWithDuration:0.5  animations:^{
-            [loginElementsContainerView setCenter:CGPointMake(loginElementsContainerView.center.x, loginElementsContainerView.center.y+500)];
+        [UIView animateWithDuration:0.3  animations:^{
+            [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             [logoImageView setCenter:CGPointMake(logoImageView.center.x, self.view.center.y)];
         }];
     }
     else{
-        [loginElementsContainerView setCenter:CGPointMake(loginElementsContainerView.center.x, loginElementsContainerView.center.y+500)];
+        [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         [logoImageView setCenter:CGPointMake(logoImageView.center.x, self.view.center.y)];
     }
 }
@@ -396,12 +393,12 @@
 - (void)showContainerViewAnimated:(BOOL)animated{
     if (animated) {
         [UIView animateWithDuration:0.5 animations:^{
-            [loginElementsContainerView setCenter:CGPointMake(loginElementsContainerView.center.x, loginElementsContainerView.center.y-500)];
+            [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             [logoImageView setCenter:CGPointMake(logoImageView.center.x, 94)];
         }];
     }
     else{
-        [loginElementsContainerView setCenter:CGPointMake(loginElementsContainerView.center.x, loginElementsContainerView.center.y-500)];
+        [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         [logoImageView setCenter:CGPointMake(logoImageView.center.x, 94)];
     }
 }

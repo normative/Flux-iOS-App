@@ -19,21 +19,21 @@
       "orientation" : "portrait",
       "idiom" : "iphone",
       "extent" : "full-screen",
-      "filename" : "splash_480.png",
+      "filename" : "1x.png",
       "scale" : "1x"
     },
     {
       "orientation" : "portrait",
       "idiom" : "iphone",
       "extent" : "full-screen",
-      "filename" : "splash_960.png",
+      "filename" : "2x.png",
       "scale" : "2x"
     },
     {
       "orientation" : "portrait",
       "idiom" : "iphone",
       "extent" : "full-screen",
-      "filename" : "splash.png",
+      "filename" : "5.png",
       "subtype" : "retina4",
       "scale" : "2x"
     }
