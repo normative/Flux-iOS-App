@@ -1053,31 +1053,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
--(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
-{
-    //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
-    GLKQuaternion quaternion;
-    
-    FluxScanImageObject *locationObject = element.imageMetadata;
-    
-    element.imagePose->position.x =  locationObject.latitude;
-    element.imagePose->position.y =  locationObject.longitude;
-    element.imagePose->position.z =  locationObject.altitude;
-    
-    
-    
-    
-    quaternion.x = locationObject.qx;
-    quaternion.y = locationObject.qy;
-    quaternion.z = locationObject.qz;
-    quaternion.w = locationObject.qw;
-    
-    GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
-    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
-    element.imagePose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
-    //    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-}
-
 -(void)updateImageMetaData
 {
     viewParameters vpimage;

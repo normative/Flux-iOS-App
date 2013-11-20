@@ -118,7 +118,6 @@
 //- (void)updateImageTexture:(NSNotification *)notification;
 
 - (void)render;
--(void) updateImageMetadataForElement:(FluxImageRenderElement*)element;
 -(void) stepperChangedWithValue:(double)v;
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
