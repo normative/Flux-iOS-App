@@ -27,7 +27,7 @@
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        clockContainerView = [[UIView alloc]initWithFrame:CGRectMake(0, 45, 60, 60)];
+        clockContainerView = [[UIView alloc]initWithFrame:CGRectMake(0, 38, 70, 70)];
         [clockContainerView setCenter:CGPointMake(self.center.x, clockContainerView.center.y)];
         
         timeGaugeImageView = [[UIImageView alloc]initWithFrame:clockContainerView.bounds];

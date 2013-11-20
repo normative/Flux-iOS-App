@@ -27,5 +27,6 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
 -(void)setIsActive:(BOOL)bActive;
+-(BOOL)isChecked;
 
 @end

@@ -326,16 +326,13 @@
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+
 #pragma mark Cell Subview Delegates
 
 //if the checkbox is selected, the callback comes here. In the method below we check which cell it is and mark the corresponding object as active.
 - (void)SocialCell:(FluxSocialFilterCell *)checkCell boxWasChecked:(BOOL)checked{
-    if (checked) {
-        [dataFilter addCategoryToFilter:checkCell.dbTitle];
-    }
-    else{
-        [dataFilter removeCategoryFromFilter:checkCell.dbTitle];
-    }
+    [self modifyDataFilter:dataFilter filterSting:checkCell.dbTitle forType:social_filterType andAdd:checked];
+    
     //update the cell
     for (FluxSocialFilterCell* cell in [self.filterTableView visibleCells]) {
         if (cell == checkCell) {
@@ -343,21 +340,13 @@
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
-    
     [self sendTagRequest];
 }
 
 - (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{
     NSString * tag = [checkCell.descriptorLabel.text substringFromIndex:1];
-    if (checked) {
-        [dataFilter addHashTagToFilter:tag];
-        [selectedTags addObject:tag];
-    }
-    else{
-        [dataFilter removeHashTagFromFilter:tag];
-        [selectedTags removeObject:tag];
-    }
-    
+    [self modifyDataFilter:dataFilter filterSting:tag forType:tags_filterType andAdd:checked];
+
     //update the cell
     for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
         if (cell == checkCell) {
@@ -366,6 +355,27 @@
         }
     }
 }
+
+-(void)modifyDataFilter:(FluxDataFilter*)filter filterSting:(NSString*)string forType:(FluxFilterType)type andAdd:(BOOL)add{
+    if (type == social_filterType) {
+        if (add) {
+            [dataFilter addCategoryToFilter:string];
+        }
+        else{
+            [dataFilter removeCategoryFromFilter:string];
+        }
+    }
+    if (type == tags_filterType) {
+        if (add) {
+            [dataFilter addHashTagToFilter:string];
+        }
+        else{
+            [dataFilter removeHashTagFromFilter:string];
+        }
+    }
+    
+}
+
 
 
 #pragma mark - UISearchDisplayController Delegate Methods

@@ -37,14 +37,6 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [self.view setAlpha:0.0];
     [self.view setHidden:YES];
     
-    //add gridlines
-    gridView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"CameraGridlines.png"]];
-    [gridView setFrame:self.view.bounds];
-    [gridView setHidden:YES];
-    [gridView setAlpha:0.0];
-    [gridView setContentMode:UIViewContentModeScaleAspectFill];
-    [self.view addSubview:gridView];
-    
     blackView = [[UIView alloc]initWithFrame:imageCaptureSquareView.frame];
     [blackView setBackgroundColor:[UIColor blackColor]];
     [blackView setAlpha:0.0];

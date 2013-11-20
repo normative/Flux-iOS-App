@@ -35,7 +35,6 @@
     
     [usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:usernameLabel.font.pointSize]];
     [dateLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateLabel.font.pointSize]];
-    [locationLabel setFont:[UIFont fontWithName:@"Akkurat" size:locationLabel.font.pointSize]];
     
     [socialDescriptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialDescriptionLabel.font.pointSize]];
     [socialOptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialOptionLabel.font.pointSize]];
@@ -67,14 +66,53 @@
     UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
     CGImageRelease(imageRef);
     
-    [imageStackButton setBackgroundImage:cropppedImg forState:UIControlStateNormal];
-    [locationLabel setText:location];
     
     NSDateFormatter *theDateFormat = [[NSDateFormatter alloc] init];
     [theDateFormat setDateFormat:@"MMM dd, yyyy - h:mma"];
     [dateLabel setText:[theDateFormat stringFromDate:capturedDate]];
     
     images = capturedObjects;
+}
+
+#pragma mark - CollectionView Delegate
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return images.count;
+}
+
+
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    static NSString *identifier = @"cell";
+    
+    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+
+    KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
+    if ([imagesToBeDeleted containsObject:[NSNumber numberWithInt:indexPath.row]]) {
+        [checkbox setChecked:YES];
+    }
+    else{
+        [checkbox setChecked:NO];
+    }
+    UIImage *theImg = (UIImage*)[images objectAtIndex:indexPath.row];
+    CGImageRef imageRef = CGImageCreateWithImageInRect([theImg CGImage], CGRectMake(0, (theImg.size.height/2) - (theImg.size.width/2), theImg.size.width, theImg.size.width));
+    // or use the UIImage wherever you like
+    UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    
+    UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
+    imageView.image = cropppedImg;
+    
+    return cell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+    if ([imagesToBeDeleted containsObject:[NSNumber numberWithInt:indexPath.row]]) {
+        [imagesToBeDeleted removeObject:[NSNumber numberWithInt:indexPath.row]];
+        [collectionView reloadData];
+    }
+    else{
+        [imagesToBeDeleted addObject:[NSNumber numberWithInt:indexPath.row]];
+        [collectionView reloadData];
+    }
 }
 
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
@@ -121,7 +159,6 @@
         removedImages = indexset;
         
         [imageCountLabel setText:[NSString stringWithFormat:@"%i",images.count]];
-        [imageStackButton setBackgroundImage:(UIImage*)[images objectAtIndex:0] forState:UIControlStateNormal];
     }
 }
 

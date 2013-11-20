@@ -28,6 +28,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
@@ -39,7 +40,7 @@
                                             otherButtonTitles:nil];
     [message show];
     
-    [[UIApplication sharedApplication] setStatusBarHidden:NO];
+
     [self checkCurrentLoginState];
 }
 
@@ -57,6 +58,10 @@
     self.fluxDataManager = [[FluxDataManager alloc]init];
     
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
+    
+    //[logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y+60, logoImageView.frame.size.width, logoImageView.frame.size.height)];
+    [logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -185,35 +190,8 @@
 
 - (void)fadeOutLogin
 {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     [self performSegueWithIdentifier:@"pushScanView" sender:self];
-//    
-//    
-//    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
-//                                                             bundle: nil];
-//    
-//    
-//    leftSideDrawerViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxLeftDrawerViewController"];
-//    UINavigationController *leftDrawerNavigationController = [[UINavigationController alloc] initWithRootViewController:leftSideDrawerViewController];
-//    
-//    scanViewController = [mainStoryboard instantiateViewControllerWithIdentifier:@"FluxScanViewController"];
-//    
-//    drawerController = [[MMDrawerController alloc] initWithCenterViewController:scanViewController  leftDrawerViewController:leftDrawerNavigationController];
-//    leftSideDrawerViewController.drawerController = drawerController;
-//    
-//    [drawerController setOpenDrawerGestureModeMask:MMOpenDrawerGestureModeNone];
-//    [drawerController setCloseDrawerGestureModeMask: (MMCloseDrawerGestureModeTapCenterView | MMCloseDrawerGestureModePanningCenterView)];
-//    
-//    [drawerController setGestureCompletionBlock:^(MMDrawerController *theDrawerController, UIGestureRecognizer *gesture) {
-//        
-//        if (([theDrawerController.leftDrawerViewController class] == NSClassFromString(@"UINavigationController"))&&
-//            (theDrawerController.openSide != MMDrawerSideLeft))
-//        {
-//            UINavigationController *navController = (UINavigationController *)theDrawerController.leftDrawerViewController;
-//            [navController popToRootViewControllerAnimated:YES];
-//        }
-//    }];
-//    [drawerController setModalTransitionStyle:UIModalTransitionStyleCrossDissolve];
-//    [self presentViewController:drawerController animated:YES completion:nil];
 }
 
 - (IBAction)createAccountButtonAction:(id)sender {

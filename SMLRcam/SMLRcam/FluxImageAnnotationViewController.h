@@ -22,18 +22,17 @@
 @end
 
 
-@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, EditCaptureSetViewDelegate>{
+@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, EditCaptureSetViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate>{
     __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
     __weak IBOutlet UIView *photoAnnotationContainerView;
     
     __weak id <ImageAnnotationDelegate> delegate;
     IBOutlet UIView *containerView;
+    IBOutlet UICollectionView *imageCollectionView;
     IBOutlet UILabel *imageCountLabel;
-    IBOutlet UIButton *imageStackButton;
     IBOutlet UIImageView *usernameImageView;
     IBOutlet UILabel *usernameLabel;
     IBOutlet UILabel *dateLabel;
-    IBOutlet UILabel *locationLabel;
     
     IBOutlet UILabel *socialDescriptionLabel;
     IBOutlet UILabel *socialOptionLabel;
