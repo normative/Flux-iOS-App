@@ -1360,64 +1360,51 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             // find a new texture and load it up...
             for (FluxTextureToImageMapElement *tel in self.textureMap)
             {
-                
                 if (tel.used == false)
                 {
-                    // found one - set it up...
-                    textureIndex = tel.textureIndex;
-                    
                     // not found so always load lowest resolution (thumb typically)
                     FluxImageType rtype = none;
                     UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
                     
-                    //                    NSError *error = [self loadTexture:textureIndex withImage:ire.image];
-                    NSError *error = [self loadTexture:textureIndex withImage:image];
-                    
-                    if (error)
+                    if (image != nil)
                     {
-                        textureIndex = -1;
+                        textureIndex = tel.textureIndex;
+//                        NSError *error = [self loadTexture:textureIndex withImage:ire.image];
+                        NSError *error = [self loadTexture:textureIndex withImage:image];
+                        
+                        if (error)
+                        {
+                            textureIndex = -1;
+                        }
+                        else
+                        {
+                                // found one - set it up...
+                                
+                            if (tel.localID != nil)
+                            {
+                                // break link from old ire to tel - need to search and update it.
+                                FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+                                if (tire != nil)
+                                {
+                                    tire.textureMapElement = nil;
+                                }
+                            }
+                            
+                            ire.textureMapElement = tel;
+                            tel.used = true;
+                            tel.localID = ire.localID;
+                            tel.imageType = rtype;
+                            justLoaded = true;
+
+                            NSLog(@"Loaded Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                        }
+                        break;
                     }
                     else
                     {
-                        if (tel.localID != nil)
-                        {
-                            // break link from old ire to tel - need to search and update it.
-                            FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-                            if (tire != nil)
-                            {
-                                tire.textureMapElement = nil;
-                            }
-                        }
-                        
-                        ire.textureMapElement = tel;
-                        tel.used = true;
-                        tel.localID = ire.localID;
-                        tel.imageType = rtype;
-                        justLoaded = true;
-                        NSLog(@"Loaded Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                        NSLog(@"GLVC:UpdateTextures: lowest_res texture not found in cache");
                     }
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                break;
-                
-            
-            
-            }
+                }
             }
         }
         else
