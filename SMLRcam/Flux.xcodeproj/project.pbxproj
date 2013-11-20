@@ -126,6 +126,8 @@
 		F240346017E103140088CA2D /* FluxDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345F17E103140088CA2D /* FluxDataRequest.m */; };
 		F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162117E206DC0027BD1F /* FluxDataManager.m */; };
 		F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162417E23FAA0027BD1F /* FluxDataFilter.m */; };
+		F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */; };
+		F26EF31D183D110900536C54 /* FluxFeatureMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF31C183D110900536C54 /* FluxFeatureMatcher.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -349,6 +351,10 @@
 		F245162117E206DC0027BD1F /* FluxDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F245162317E23FAA0027BD1F /* FluxDataFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDataFilter.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F245162417E23FAA0027BD1F /* FluxDataFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataFilter.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		F26EF318183D10EF00536C54 /* FluxFeatureMatchingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingQueue.h; sourceTree = "<group>"; };
+		F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingQueue.m; sourceTree = "<group>"; };
+		F26EF31B183D110900536C54 /* FluxFeatureMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatcher.h; sourceTree = "<group>"; };
+		F26EF31C183D110900536C54 /* FluxFeatureMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatcher.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -728,6 +734,7 @@
 			isa = PBXGroup;
 			children = (
 				AA082E9517EA2B8E000B53B0 /* AVCamera */,
+				F26EF317183D109F00536C54 /* Feature Matching */,
 				AA1183FE17FDB9430078FCCF /* Image Capture */,
 				AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */,
 				AA4CE16A17B921A3008D04BE /* TopView */,
@@ -924,6 +931,17 @@
 				17891FC2181D6C840064B2F9 /* FluxImageRenderElement.m */,
 			);
 			name = "Data Store";
+			sourceTree = "<group>";
+		};
+		F26EF317183D109F00536C54 /* Feature Matching */ = {
+			isa = PBXGroup;
+			children = (
+				F26EF31B183D110900536C54 /* FluxFeatureMatcher.h */,
+				F26EF31C183D110900536C54 /* FluxFeatureMatcher.m */,
+				F26EF318183D10EF00536C54 /* FluxFeatureMatchingQueue.h */,
+				F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */,
+			);
+			name = "Feature Matching";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1140,6 +1158,8 @@
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */,
+				F26EF31D183D110900536C54 /* FluxFeatureMatcher.m in Sources */,
+				F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,
