@@ -128,6 +128,8 @@
 		F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162417E23FAA0027BD1F /* FluxDataFilter.m */; };
 		F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */; };
 		F26EF31D183D110900536C54 /* FluxFeatureMatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF31C183D110900536C54 /* FluxFeatureMatcher.m */; };
+		F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F26EF31E183D138F00536C54 /* opencv2.framework */; };
+		F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -355,6 +357,8 @@
 		F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingQueue.m; sourceTree = "<group>"; };
 		F26EF31B183D110900536C54 /* FluxFeatureMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatcher.h; sourceTree = "<group>"; };
 		F26EF31C183D110900536C54 /* FluxFeatureMatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatcher.m; sourceTree = "<group>"; };
+		F26EF31E183D138F00536C54 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = OpenCV_mod/opencv2.framework; sourceTree = "<group>"; };
+		F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -362,6 +366,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */,
+				F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */,
 				AA255166183577D900DCA62F /* Social.framework in Frameworks */,
 				89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */,
 				AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */,
@@ -426,6 +432,8 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */,
+				F26EF31E183D138F00536C54 /* opencv2.framework */,
 				AA255165183577D900DCA62F /* Social.framework */,
 				89A513631829AED800E25AA1 /* Accelerate.framework */,
 				AA1183B117F329490078FCCF /* AdSupport.framework */,
@@ -1282,7 +1290,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam,
+					$SRCROOT,
+					$SRCROOT/OpenCV_mod,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
@@ -1294,6 +1303,10 @@
 					SMLRcam/TestFlightSDK2.0.0,
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-force_load",
+					"$(TARGET_BUILD_DIR)/libPods.a",
+				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
@@ -1312,7 +1325,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam,
+					$SRCROOT,
+					$SRCROOT/OpenCV_mod,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
@@ -1322,6 +1336,10 @@
 					"$(inherited)",
 					SMLRcam,
 					SMLRcam/TestFlightSDK2.0.0,
+				);
+				OTHER_LDFLAGS = (
+					"-force_load",
+					"$(TARGET_BUILD_DIR)/libPods.a",
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
