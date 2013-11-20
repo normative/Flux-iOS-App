@@ -1,0 +1,85 @@
+Release Notes:
+
+
+******************************************
+
+V0.13 B06
+
+Released: 2013-11-19 21:35:47
+
+Release Notes:
+- image rendering issues addressed, possibly resolved
+  - Please contact development if image rendering issues are seen (wrong textures in particular)
+- PhotoBrowser work
+- Kalman tuning and refactoring
+  - NOTE: no change in pedometer in this version.  Pedometer is still disabled
+
+******************************************
+
+V0.13 B05
+
+Released: 2013-11-15 16:45:22
+
+Release Notes:
+- re-enable Kalman filter but keep pedometer disabled
+- small error fixup to rendering which may eliminate some grey/black images
+
+******************************************
+
+V0.13 B04
+
+Released: 2013-11-14 22:55:37
+
+Release Notes:
+- fixed major rendering issue - should now see each image rendered in correct box
+- all other functionality is as per previous build (Version 0.13 Build 03)
+
+******************************************
+
+V0.13 B03
+
+Released: 2013-11-14 18:06:05
+
+Release Notes:
+WARNING: this is a build with known issues.  Please read these release notes before deciding to update your app.
+
+Updates and additions:
+- square photos
+- feathered edges of photos
+- updated graphics and flows
+- Kalman filter is disabled
+- pedometer is not used but will feed-back to number in center of screen 
+   - number will increase with forward steps, decrease with backwards steps
+   - pedometer will not impact viewing
+
+NOTE: there are known rendering issues including:
+- same texture rendered in multiple locations
+- black / grey textures
+- random noise textures
+
+Please report all issues, known or unknown.
+
+
+******************************************
+
+V0.13 B02
+
+Released: 2013-11-08 18:12:13
+
+Release Notes:
+- new registration views
+- forward-only pedometer
+- revised mid-layer image sorting (by date rather than heading)
+- expanded distribution to include new devices
+
+
+******************************************
+
+V0.13 B01
+
+Released: 2013-11-08 10:17:59
+
+Release Notes:
+- improvements to Kalman filter
+
+******************************************
