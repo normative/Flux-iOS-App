@@ -10,6 +10,7 @@
 #import "FluxScanViewController.h"
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
+#import "FluxFeatureMatchingQueue.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -979,6 +980,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     delta.hidden = YES;
     pedometerL.hidden = YES;
     
+    FluxFeatureMatchingQueue* fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated

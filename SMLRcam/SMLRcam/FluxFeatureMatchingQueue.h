@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxFeatureMatcher.h"
 
 @interface FluxFeatureMatchingQueue : NSObject
+{
+    FluxFeatureMatcher* fluxFeatureMatcher;
+}
 
 @end

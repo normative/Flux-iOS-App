@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxMatcherWrapper.h"
 
 @interface FluxFeatureMatcher : NSObject
+{
+    FluxMatcherWrapper* fluxMatcher;
+}
 
 @end

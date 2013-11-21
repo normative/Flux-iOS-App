@@ -10,4 +10,14 @@
 
 @implementation FluxFeatureMatcher
 
+- (id)init
+{
+    if (self = [super init])
+    {
+        fluxMatcher = [[FluxMatcherWrapper alloc] init];
+    }
+    
+    return self;
+}
+
 @end

@@ -10,4 +10,14 @@
 
 @implementation FluxFeatureMatchingQueue
 
+- (id)init
+{
+    if (self = [super init])
+    {
+        fluxFeatureMatcher = [[FluxFeatureMatcher alloc] init];
+    }
+
+    return self;
+}
+
 @end
