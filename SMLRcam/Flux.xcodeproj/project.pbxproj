@@ -127,12 +127,13 @@
 		F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162117E206DC0027BD1F /* FluxDataManager.m */; };
 		F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162417E23FAA0027BD1F /* FluxDataFilter.m */; };
 		F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */; };
-		F26EF31D183D110900536C54 /* FluxFeatureMatcher.mm in Sources */ = {isa = PBXBuildFile; fileRef = F26EF31C183D110900536C54 /* FluxFeatureMatcher.mm */; };
 		F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F26EF31E183D138F00536C54 /* opencv2.framework */; };
 		F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */; };
 		F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1E5183D51C100D32084 /* UIImage+OpenCV.mm */; };
 		F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1F2183E39DC00D32084 /* FluxMatcher.cpp */; };
 		F2B2C1F7183E41CE00D32084 /* FluxMatcherWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1F6183E41CE00D32084 /* FluxMatcherWrapper.mm */; };
+		F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1FB183E819B00D32084 /* PendingOperations.m */; };
+		F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -358,8 +359,6 @@
 		F245162417E23FAA0027BD1F /* FluxDataFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataFilter.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F26EF318183D10EF00536C54 /* FluxFeatureMatchingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingQueue.h; sourceTree = "<group>"; };
 		F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingQueue.m; sourceTree = "<group>"; };
-		F26EF31B183D110900536C54 /* FluxFeatureMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatcher.h; sourceTree = "<group>"; };
-		F26EF31C183D110900536C54 /* FluxFeatureMatcher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FluxFeatureMatcher.mm; sourceTree = "<group>"; };
 		F26EF31E183D138F00536C54 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = OpenCV_mod/opencv2.framework; sourceTree = "<group>"; };
 		F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		F2B2C1E4183D51C100D32084 /* UIImage+OpenCV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+OpenCV.h"; sourceTree = "<group>"; };
@@ -368,6 +367,10 @@
 		F2B2C1F3183E39DC00D32084 /* FluxMatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMatcher.h; sourceTree = "<group>"; };
 		F2B2C1F5183E41CE00D32084 /* FluxMatcherWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMatcherWrapper.h; sourceTree = "<group>"; };
 		F2B2C1F6183E41CE00D32084 /* FluxMatcherWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FluxMatcherWrapper.mm; sourceTree = "<group>"; };
+		F2B2C1FA183E819B00D32084 /* PendingOperations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PendingOperations.h; sourceTree = "<group>"; };
+		F2B2C1FB183E819B00D32084 /* PendingOperations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PendingOperations.m; sourceTree = "<group>"; };
+		F2B2C1FC183E819B00D32084 /* FluxFeatureMatchingTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingTask.h; sourceTree = "<group>"; };
+		F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingTask.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -954,8 +957,7 @@
 			isa = PBXGroup;
 			children = (
 				F2B2C1E8183D55B800D32084 /* Matcher */,
-				F26EF31B183D110900536C54 /* FluxFeatureMatcher.h */,
-				F26EF31C183D110900536C54 /* FluxFeatureMatcher.mm */,
+				F2B2C201183E81A800D32084 /* OperationQueue */,
 				F26EF318183D10EF00536C54 /* FluxFeatureMatchingQueue.h */,
 				F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */,
 			);
@@ -973,6 +975,17 @@
 				F2B2C1E5183D51C100D32084 /* UIImage+OpenCV.mm */,
 			);
 			name = Matcher;
+			sourceTree = "<group>";
+		};
+		F2B2C201183E81A800D32084 /* OperationQueue */ = {
+			isa = PBXGroup;
+			children = (
+				F2B2C1FA183E819B00D32084 /* PendingOperations.h */,
+				F2B2C1FB183E819B00D32084 /* PendingOperations.m */,
+				F2B2C1FC183E819B00D32084 /* FluxFeatureMatchingTask.h */,
+				F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */,
+			);
+			name = OperationQueue;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1138,12 +1151,14 @@
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
 				F2B2C1F7183E41CE00D32084 /* FluxMatcherWrapper.mm in Sources */,
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
+				F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */,
 				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
 				17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */,
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
+				F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */,
 				AA61528C18282AE200B8F2C8 /* FluxLoginViewController.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,
@@ -1191,7 +1206,6 @@
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */,
-				F26EF31D183D110900536C54 /* FluxFeatureMatcher.mm in Sources */,
 				F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */,
 				F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,

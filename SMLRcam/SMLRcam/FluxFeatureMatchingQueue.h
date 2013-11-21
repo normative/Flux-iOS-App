@@ -7,11 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FluxFeatureMatcher.h"
+#import "FluxFeatureMatchingTask.h"
+#import "FluxMatcherWrapper.h"
+#import "FluxImageRenderElement.h"
+#import "PendingOperations.h"
 
-@interface FluxFeatureMatchingQueue : NSObject
+@interface FluxFeatureMatchingQueue : NSObject <FluxFeatureMatchingTaskDelegate>
 {
-    FluxFeatureMatcher* fluxFeatureMatcher;
+    FluxMatcherWrapper* fluxMatcherEngine;
 }
+
+@property (nonatomic, strong) PendingOperations *pendingOperations;
+
+-(void)addMatchRequest:(FluxImageRenderElement*)ireToMatch;
 
 @end

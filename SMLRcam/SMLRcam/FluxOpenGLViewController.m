@@ -10,7 +10,6 @@
 #import "FluxScanViewController.h"
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
-#import "FluxFeatureMatchingQueue.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -980,7 +979,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     delta.hidden = YES;
     pedometerL.hidden = YES;
     
-    FluxFeatureMatchingQueue* fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
+    fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1415,6 +1414,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         ire.image = image;
                         loadedOneHiRes = true;
                         NSLog(@"Updated Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                        
+                        // Queue up image for feature matching with background camera feed
+                        
+                        // TODO: Add additional checks to see if we actually need to perform a match operation
+                        
+                        // Only add object image + metadata to queue - scene object will be grabbed by matcher
+                        
+                        // TODO: Need to set a callback function that does something with the updated metadata
+                        // Easiest way is to give DisplayManager the updated ImageRenderElement (or portion of)
+                        // and tell it to notify OpenGL VC that list changed.
+                        
+                        [fluxFeatureMatchingQueue addMatchRequest:ire];
                     }
                 }
                 else

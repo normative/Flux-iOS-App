@@ -22,6 +22,7 @@
         _textureMapElement = nil;
         _image = nil;
         _dirty = true;
+        _matched = false;
         _imageType = none;
         _imageFetchType = none;
         _imagePose = malloc(sizeof(sensorPose));
@@ -45,6 +46,7 @@
             _textureMapElement = nil;
             _image = nil;
             _dirty = true;
+            _matched = false;
             _imageType = none;
             _imagePose = malloc(sizeof(sensorPose));
         }

@@ -19,6 +19,7 @@
 #import "FluxOpenGLCommon.h"
 #import "FluxTextureToImageMapElement.h"
 #import "FluxImageRenderElement.h"
+#import "FluxFeatureMatchingQueue.h"
 
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
@@ -57,6 +58,7 @@
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
+    FluxFeatureMatchingQueue* fluxFeatureMatchingQueue;
     
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;

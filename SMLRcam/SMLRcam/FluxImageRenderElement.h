@@ -23,6 +23,7 @@
 @property (nonatomic, strong)   NSDate *localCaptureTime;
 @property (nonatomic, strong)   FluxTextureToImageMapElement *textureMapElement;
 @property (nonatomic)           bool dirty;
+@property (nonatomic)           bool matched;
 @property (nonatomic, weak)     UIImage *image;
 @property (nonatomic)           FluxImageType imageType;
 @property (nonatomic)           FluxImageType imageFetchType;
