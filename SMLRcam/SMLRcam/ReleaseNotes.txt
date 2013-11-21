@@ -3,6 +3,22 @@ Release Notes:
 
 ******************************************
 
+V0.13 B07
+
+Released: 2013-11-20 23:16:00
+
+Release Notes:
+
+Update:
+- assets + layout of scanView
+- image capture tweaks (ongoing)
+- image capture annotation view tweaks (ongoing)
+- undo previous image capture
+- delete images from profile
+- filters tweaks
+
+******************************************
+
 V0.13 B06
 
 Released: 2013-11-19 21:35:47
