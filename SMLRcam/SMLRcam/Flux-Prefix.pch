@@ -26,5 +26,7 @@
 #import <CoreServices/CoreServices.h>
 #endif
 
+#ifdef __OBJC__
 // Make RestKit globally available
 #import <RestKit/RestKit.h>
+#endif
