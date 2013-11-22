@@ -10,4 +10,13 @@
 
 @implementation FluxCameraFrameElement
 
+- (id)init
+{
+    if (self = [super init])
+    {
+        _cameraRequestDate = [NSDate date];
+    }
+    return self;
+}
+
 @end

@@ -43,19 +43,23 @@
         FluxFeatureMatchingRecord *matchRecord = [[FluxFeatureMatchingRecord alloc] init];
         matchRecord.ire = ireToMatch;
         
-        // TODO: Check to see if the current frame is recent enough
+        // Check to see if there is a current frame that is recent enough
         // Note we use request date rather than frame date, since pending requests don't have a frame date yet.
         // Should be close enough, given the frame rate of the preview.
-        if (1)
+        NSDate *recentDate = [[[self.pendingOperations.cameraFrameGrabInProgress allKeys] sortedArrayUsingSelector:@selector(comparator)] lastObject];
+
+        // Find reference to most recent frame, if one exists
+        if (!recentDate && ([recentDate timeIntervalSinceNow] < 3.0))
         {
-            // TODO: Find reference to current frame
-            // matchRecord.cfe = New frame's cfe.
-        }
-        else if (0)
-        {
-            // TODO: If not, check to see if there are any current requests to add as a dependency
-            // dependency = [self.pendingOperations.cameraFrameGrabInProgress objectForKey:some_key_to_reference_it];
+            NSLog(@"Using existing camera from at time %@", recentDate);
+            dependency = [self.pendingOperations.cameraFrameGrabInProgress objectForKey:recentDate];
             matchRecord.cfe = dependency.cameraRecord;
+            
+            // Check if dependency is completed already or not (since we keep them in the queue until not used any more)
+            if ([dependency isFinished])
+            {
+                dependency = nil;
+            }
         }
         else
         {
@@ -66,10 +70,10 @@
                                                         initWithCameraFrameRecord:newCfe withMatcher:fluxMatcherEngine delegate:self];
             
             dependency = cameraFrameTask;
+            matchRecord.cfe = dependency.cameraRecord;
             
             [self.pendingOperations.cameraFrameGrabInProgress setObject:cameraFrameTask forKey:newCfe.cameraRequestDate];
             [self.pendingOperations.cameraFrameGrabQueue addOperation:cameraFrameTask];
-            
         }
         
         NSLog(@"Adding to queue local ID: %@", ireToMatch.localID);
@@ -107,14 +111,6 @@
     // Another will eventually delete it from pendingOperations.cameraFrameGrabInProgress once no one is using it.
     
     NSLog(@"cameraFrameGrabTask complete for request time %@", cameraFrameGrab.cameraRecord.cameraRequestDate);
-    
-//    FluxCameraFrameElement *record = cameraFrameGrab.cameraRecord;
-//
-//    // TODO: update this once we know what key we used to add it
-//    [self.pendingOperations.cameraFrameGrabInProgress removeObjectForKey:record.cameraFrameDate];
-//    
-//    NSLog(@"Removing from camera frame grab queue request for date: %@", record.cameraFrameDate);
-
 }
 
 @end
