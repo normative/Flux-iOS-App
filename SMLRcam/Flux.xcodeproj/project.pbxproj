@@ -75,7 +75,6 @@
 		AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA615284182418DB00B8F2C8 /* FluxSocialFilterCell.m */; };
 		AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */; };
 		AA61528C18282AE200B8F2C8 /* FluxLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA61528B18282AE200B8F2C8 /* FluxLoginViewController.m */; };
-		AA61529218297A2500B8F2C8 /* FluxEditCaptureSetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA61529118297A2500B8F2C8 /* FluxEditCaptureSetViewController.m */; };
 		AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */; };
 		AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */; };
@@ -246,8 +245,6 @@
 		AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegisterViewController.m; sourceTree = "<group>"; };
 		AA61528A18282AE200B8F2C8 /* FluxLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLoginViewController.h; sourceTree = "<group>"; };
 		AA61528B18282AE200B8F2C8 /* FluxLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLoginViewController.m; sourceTree = "<group>"; };
-		AA61529018297A2500B8F2C8 /* FluxEditCaptureSetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxEditCaptureSetViewController.h; sourceTree = "<group>"; };
-		AA61529118297A2500B8F2C8 /* FluxEditCaptureSetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxEditCaptureSetViewController.m; sourceTree = "<group>"; };
 		AA650F0117FDBFD000424223 /* FluxImageAnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageAnnotationViewController.h; sourceTree = "<group>"; };
 		AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageAnnotationViewController.m; sourceTree = "<group>"; };
 		AA650F0917FDFF0F00424223 /* FluxFiltersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFiltersViewController.h; sourceTree = "<group>"; };
@@ -557,8 +554,6 @@
 				AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */,
 				AA650F0C1802EE1900424223 /* FluxImageCaptureViewController.h */,
 				AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */,
-				AA61529018297A2500B8F2C8 /* FluxEditCaptureSetViewController.h */,
-				AA61529118297A2500B8F2C8 /* FluxEditCaptureSetViewController.m */,
 			);
 			name = "Image Capture";
 			sourceTree = "<group>";
@@ -1109,7 +1104,6 @@
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
 				22335E45181B07380098F205 /* FluxSettingsViewController.m in Sources */,
 				AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */,
-				AA61529218297A2500B8F2C8 /* FluxEditCaptureSetViewController.m in Sources */,
 				AA4CE15F17B58433008D04BE /* FluxScanImageObject.m in Sources */,
 				17604B771785CA59005CF054 /* FluxAppDelegate.m in Sources */,
 				AA984F1518088923007F33B1 /* MIZoomInTransition.m in Sources */,

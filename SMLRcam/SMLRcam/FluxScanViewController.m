@@ -106,7 +106,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 
 - (IBAction)annotationsButtonAction:(id)sender {
-    [CameraButton setEnabled:YES];
     if ([annotationsTableView isHidden]) {
         if (self.fluxDisplayManager.nearbyListCount > 0) {
             [annotationsTableView reloadData];
@@ -270,6 +269,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [timeFilterControl setScrollIndicatorCenter:CGPointMake(self.view.center.x, radarButton.center.y)];
     [timeFilterControl.timeScrollView setTapDelegate:self];
 }
+
+#pragma mark - Tapping images
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     

@@ -21,9 +21,9 @@
 }
 
 - (void)awakeFromNib {
-    circleView = [[UIImageView alloc]initWithFrame:self.frame];
-//    [circleView setFrame:self.frame];
-    [circleView setFrame:CGRectMake(-self.frame.size.width/2, -self.frame.size.height/2, self.frame.size.width*2, self.frame.size.height*2)];
+    circleView = [[UIImageView alloc]initWithFrame:self.bounds];
+    [circleView setFrame:CGRectMake(0, 0, self.frame.size.width*1.3, self.frame.size.height*1.3)];
+    [circleView setCenter:CGPointMake(self.frame.size.width/2, self.frame.size.height/2)];
     [circleView setImage:[UIImage imageNamed:@"camCircle"]];
     [circleView setAlpha:0.0];
     [circleView setHidden:YES];

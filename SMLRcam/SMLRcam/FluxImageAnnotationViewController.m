@@ -32,24 +32,20 @@
     [super viewDidLoad];
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
     [ImageAnnotationTextView setTheDelegate:self];
+    [ImageAnnotationTextView becomeFirstResponder];
     
     [usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:usernameLabel.font.pointSize]];
     [dateLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateLabel.font.pointSize]];
     
-    [socialDescriptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialDescriptionLabel.font.pointSize]];
-    [socialOptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialOptionLabel.font.pointSize]];
-    [shareOnLabel setFont:[UIFont fontWithName:@"Akkurat" size:shareOnLabel.font.pointSize]];
-    [twitterLabel setFont:[UIFont fontWithName:@"Akkurat" size:twitterLabel.font.pointSize]];
-    [facebookLabel setFont:[UIFont fontWithName:@"Akkurat" size:facebookLabel.font.pointSize]];
+    [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"Akkurat" size:13.0], NSFontAttributeName, nil] forState:UIControlStateNormal];
     
-    [socialOptionCheckbox setDelegate:self];
-    [twitterCheckbox setDelegate:self];
-    [facebookCheckbox setDelegate:self];
+    [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0], NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
+
 
     [usernameLabel setText:@"myUsername"];
-    [usernameImageView setImage:[UIImage imageNamed:@""]];
+    [usernameImageView setImage:[UIImage imageNamed:@"profileImage"]];
     
-    imagesToBeDeleted = [[NSMutableArray alloc]init];
+    removedImages = [[NSMutableIndexSet alloc]init];
 	// Do any additional setup after loading the view.
 }
 
@@ -58,13 +54,11 @@
     UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
     [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
     [self.view insertSubview:bgView belowSubview:containerView];
-    
-    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedObjects.count]];
-    UIImage *theImg = (UIImage*)[capturedObjects objectAtIndex:0];
-    CGImageRef imageRef = CGImageCreateWithImageInRect([theImg CGImage], CGRectMake(0, (theImg.size.height/2) - (theImg.size.width/2), theImg.size.width, theImg.size.width));
-    // or use the UIImage wherever you like
-    UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
-    CGImageRelease(imageRef);
+    //    UIImage *theImg = (UIImage*)[capturedObjects objectAtIndex:0];
+//    CGImageRef imageRef = CGImageCreateWithImageInRect([theImg CGImage], CGRectMake(0, (theImg.size.height/2) - (theImg.size.width/2), theImg.size.width, theImg.size.width));
+//    // or use the UIImage wherever you like
+//    UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+//    CGImageRelease(imageRef);
     
     
     NSDateFormatter *theDateFormat = [[NSDateFormatter alloc] init];
@@ -86,12 +80,15 @@
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
 
     KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
-    if ([imagesToBeDeleted containsObject:[NSNumber numberWithInt:indexPath.row]]) {
-        [checkbox setChecked:YES];
-    }
-    else{
+    [checkbox setDelegate:self];
+    if ([removedImages containsIndex:indexPath.row]) {
         [checkbox setChecked:NO];
     }
+    else
+    {
+        [checkbox setChecked:YES];
+    }
+
     UIImage *theImg = (UIImage*)[images objectAtIndex:indexPath.row];
     CGImageRef imageRef = CGImageCreateWithImageInRect([theImg CGImage], CGRectMake(0, (theImg.size.height/2) - (theImg.size.width/2), theImg.size.width, theImg.size.width));
     // or use the UIImage wherever you like
@@ -105,38 +102,29 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
-    if ([imagesToBeDeleted containsObject:[NSNumber numberWithInt:indexPath.row]]) {
-        [imagesToBeDeleted removeObject:[NSNumber numberWithInt:indexPath.row]];
+    if ([removedImages containsIndex:indexPath.row]) {
+        [removedImages removeIndex:indexPath.row];
         [collectionView reloadData];
     }
     else{
-        [imagesToBeDeleted addObject:[NSNumber numberWithInt:indexPath.row]];
+        [removedImages addIndex:indexPath.row];
         [collectionView reloadData];
     }
 }
 
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
-    if (checkButton == socialOptionCheckbox) {
-        [socialOptionCheckbox setChecked:checked];
-        NSLog(@"Set social option");
-    }
-    else if (checkButton == twitterCheckbox){
-        [twitterCheckbox setChecked:checked];
-        NSLog(@"Set twitter option");
-    }
-    else
-    {
-        [facebookCheckbox setChecked:checked];
-        NSLog(@"Set facebook option");
+    NSArray*elements = [imageCollectionView visibleCells];
+    for (int i = 0; i<elements.count; i++) {
+        UICollectionViewCell*cell = (UICollectionViewCell*)[elements objectAtIndex:i];
+        KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
+        if (checkButton == checkbox) {
+            [self collectionView:imageCollectionView didSelectItemAtIndexPath:[imageCollectionView indexPathForCell:cell]];
+        }
     }
 }
 
 - (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
     
-}
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    [ImageAnnotationTextView resignFirstResponder];
 }
 
 - (void)didReceiveMemoryWarning
@@ -145,23 +133,11 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Segue Methods
+#pragma mark - IB Actions
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    FluxEditCaptureSetViewController *editVC = (FluxEditCaptureSetViewController*)segue.destinationViewController;
-    [editVC prepareViewWithImagesArray:images andDeletionArray:imagesToBeDeleted];
-    [editVC setDelegate:self];
+
+- (IBAction)socialOptionChanged:(id)sender {
 }
-
-- (void)EditCaptureView:(FluxEditCaptureSetViewController *)editCaptureView didChangeImageSet:(NSMutableArray *)newImageList andRemovedIndexSet:(NSIndexSet *)indexset{
-    if (images.count != newImageList.count) {
-        images = newImageList;
-        removedImages = indexset;
-        
-        [imageCountLabel setText:[NSString stringWithFormat:@"%i",images.count]];
-    }
-}
-
 
 - (IBAction)cancelButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:)]) {
@@ -171,10 +147,12 @@
 }
 
 - (IBAction)saveButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
-        NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",removedImages, @"removedImages", nil];        
-        [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
+    if (ImageAnnotationTextView.text.length < 141) {
+        if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
+            NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",removedImages, @"removedImages", nil];
+            [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
+        }
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 @end
