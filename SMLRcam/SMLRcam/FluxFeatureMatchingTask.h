@@ -1,6 +1,6 @@
 //
-//  ImageDownloader.h
-//  ClassicPhotos
+//  FluxFeatureMatchingTask.h
+//  Flux
 //
 //  Created by Ryan Martens on 11/21/13.
 //  Copyright (c) 2013 SMLR. All rights reserved.

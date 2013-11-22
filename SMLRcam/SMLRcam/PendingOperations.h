@@ -13,4 +13,7 @@
 @property (nonatomic, strong) NSMutableDictionary *featureMatchingInProgress;
 @property (nonatomic, strong) NSOperationQueue *featureMatchingQueue;
 
+@property (nonatomic, strong) NSMutableDictionary *cameraFrameGrabInProgress;
+@property (nonatomic, strong) NSOperationQueue *cameraFrameGrabQueue;
+
 @end

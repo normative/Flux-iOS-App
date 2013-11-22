@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxCameraFrameGrabTask.h"
 #import "FluxFeatureMatchingTask.h"
 #import "FluxMatcherWrapper.h"
 #import "FluxImageRenderElement.h"
@@ -19,6 +20,6 @@
 
 @property (nonatomic, strong) PendingOperations *pendingOperations;
 
--(void)addMatchRequest:(FluxImageRenderElement*)ireToMatch;
+-(void)addMatchRequest:(FluxImageRenderElement *)ireToMatch;
 
 @end

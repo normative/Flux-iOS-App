@@ -134,6 +134,8 @@
 		F2B2C1F7183E41CE00D32084 /* FluxMatcherWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1F6183E41CE00D32084 /* FluxMatcherWrapper.mm */; };
 		F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1FB183E819B00D32084 /* PendingOperations.m */; };
 		F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */; };
+		F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */ = {isa = PBXBuildFile; fileRef = F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */; };
+		F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -371,6 +373,8 @@
 		F2B2C1FB183E819B00D32084 /* PendingOperations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PendingOperations.m; sourceTree = "<group>"; };
 		F2B2C1FC183E819B00D32084 /* FluxFeatureMatchingTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingTask.h; sourceTree = "<group>"; };
 		F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingTask.m; sourceTree = "<group>"; };
+		F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraFrameGrabTask.h; sourceTree = "<group>"; };
+		F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraFrameGrabTask.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -980,10 +984,12 @@
 		F2B2C201183E81A800D32084 /* OperationQueue */ = {
 			isa = PBXGroup;
 			children = (
-				F2B2C1FA183E819B00D32084 /* PendingOperations.h */,
-				F2B2C1FB183E819B00D32084 /* PendingOperations.m */,
+				F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */,
+				F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */,
 				F2B2C1FC183E819B00D32084 /* FluxFeatureMatchingTask.h */,
 				F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */,
+				F2B2C1FA183E819B00D32084 /* PendingOperations.h */,
+				F2B2C1FB183E819B00D32084 /* PendingOperations.m */,
 			);
 			name = OperationQueue;
 			sourceTree = "<group>";
@@ -1085,6 +1091,7 @@
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
 				AAF1BD01183C173900909AFF /* 4.png in Resources */,
 				AAF1BD00183C173900909AFF /* 3.png in Resources */,
+				F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */,
 				AAA265BE17EA00E5003AE787 /* README.md in Resources */,
 				AAF1BCFF183C173900909AFF /* 2.png in Resources */,
 				AAA265CD17EA0305003AE787 /* TFFeedbackController_iPad.xib in Resources */,
@@ -1165,6 +1172,7 @@
 				AAA265C617EA02F6003AE787 /* TestFlight+OpenFeedback.m in Sources */,
 				AA984F0D18088923007F33B1 /* MIAnnotation.m in Sources */,
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
+				F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */,
 				AA984F1718088923007F33B1 /* MITransitionFactory.m in Sources */,
 				AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */,
 				AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */,
