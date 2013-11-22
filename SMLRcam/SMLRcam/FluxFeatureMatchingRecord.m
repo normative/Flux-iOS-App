@@ -10,18 +10,16 @@
 
 @implementation FluxFeatureMatchingRecord
 
-@synthesize sceneImage = _sceneImage;
-@synthesize sceneDate = _sceneDate;
+@synthesize cfe = _cfe;
 @synthesize ire = _ire;
 @synthesize hasCameraScene = _hasCameraScene;
 @synthesize hasObjectImage = _hasObjectImage;
 @synthesize matched = _matched;
 @synthesize failed = _failed;
 
-
 - (BOOL)hasCameraScene
 {
-    return _sceneImage != nil;
+    return _cfe != nil;
 }
 
 - (BOOL)hasObjectImage

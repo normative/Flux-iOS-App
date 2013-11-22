@@ -7,6 +7,7 @@
 //
 
 #import "FluxFeatureMatchingQueue.h"
+#import "FluxCameraFrameElement.h"
 #import "FluxFeatureMatchingRecord.h"
 
 @implementation FluxFeatureMatchingQueue
@@ -37,19 +38,46 @@
     // Check to see if already feature match in progress. If so, ignore it.
     if (![self.pendingOperations.featureMatchingInProgress.allKeys containsObject:ireToMatch.localID])
     {
+        FluxCameraFrameGrabTask *dependency;
+        
         FluxFeatureMatchingRecord *matchRecord = [[FluxFeatureMatchingRecord alloc] init];
         matchRecord.ire = ireToMatch;
         
         // TODO: Check to see if the current frame is recent enough
-        
-        // TODO: If not, check to see if there are any current requests to add as a dependency
-        
-        // TODO: If not, add a new request and add it as a dependency
+        if (1)
+        {
+            // TODO: Find reference to current frame
+            // matchRecord.cfe = New frame's cfe.
+        }
+        else if (0)
+        {
+            // TODO: If not, check to see if there are any current requests to add as a dependency
+            // dependency = [self.pendingOperations.cameraFrameGrabInProgress objectForKey:some_key_to_reference_it];
+            matchRecord.cfe = dependency.cameraRecord;
+        }
+        else
+        {
+            // If not, add a new request and add it as a dependency
+            NSLog(@"Adding item to camera frame grab queue");
+            FluxCameraFrameElement *newCfe = [[FluxCameraFrameElement alloc] init];
+            FluxCameraFrameGrabTask *cameraFrameTask = [[FluxCameraFrameGrabTask alloc]
+                                                        initWithCameraFrameRecord:newCfe withMatcher:fluxMatcherEngine delegate:self];
+            
+            dependency = cameraFrameTask;
+            
+            [self.pendingOperations.cameraFrameGrabInProgress setObject:cameraFrameTask forKey:newCfe.cameraRequestDate];
+            [self.pendingOperations.cameraFrameGrabQueue addOperation:cameraFrameTask];
+            
+        }
         
         NSLog(@"Adding to queue local ID: %@", ireToMatch.localID);
         FluxFeatureMatchingTask *featureMatchingTask = [[FluxFeatureMatchingTask alloc] initWithFeatureMatchingRecord:matchRecord
                                                                                     withMatcher:fluxMatcherEngine delegate:self];
         
+        if (dependency)
+        {
+            [featureMatchingTask addDependency:dependency];
+        }
         [self.pendingOperations.featureMatchingInProgress setObject:featureMatchingTask forKey:ireToMatch.localID];
         [self.pendingOperations.featureMatchingQueue addOperation:featureMatchingTask];
     }
@@ -69,12 +97,12 @@
 
 - (void)cameraFrameGrabTaskDidFinish:(FluxCameraFrameGrabTask *)cameraFrameGrab
 {
-    FluxFeatureMatchingRecord *record = cameraFrameGrab.matchRecord;
+    FluxCameraFrameElement *record = cameraFrameGrab.cameraRecord;
 
     // TODO: update this once we know what key we used to add it
-    [self.pendingOperations.cameraFrameGrabInProgress removeObjectForKey:record.sceneDate];
+    [self.pendingOperations.cameraFrameGrabInProgress removeObjectForKey:record.cameraFrameDate];
     
-    NSLog(@"Removing from camera frame grab queue request for date: %@", record.sceneDate);
+    NSLog(@"Removing from camera frame grab queue request for date: %@", record.cameraFrameDate);
 }
 
 @end

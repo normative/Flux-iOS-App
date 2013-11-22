@@ -15,11 +15,11 @@
 
 #pragma mark - Life Cycle
 
-- (id)initWithFeatureMatchingRecord:(FluxFeatureMatchingRecord *)record withMatcher:(FluxMatcherWrapper *)matcher delegate:(id<FluxCameraFrameGrabTaskDelegate>)theDelegate
+- (id)initWithCameraFrameRecord:(FluxCameraFrameElement *)record withMatcher:(FluxMatcherWrapper *)matcher delegate:(id<FluxCameraFrameGrabTaskDelegate>)theDelegate
 {
     if (self = [super init])
     {
-        self.matchRecord = record;
+        self.cameraRecord = record;
         self.delegate = theDelegate;
         self.matcherEngine = matcher;
     }

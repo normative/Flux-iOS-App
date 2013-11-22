@@ -7,13 +7,12 @@
 //
 
 #import <UIKit/UIKit.h> // because we need UIImage
+#import "FluxCameraFrameElement.h"
 #import "FluxImageRenderElement.h"
 
 @interface FluxFeatureMatchingRecord : NSObject
 
-@property (nonatomic, strong) UIImage *sceneImage; // To store the scene image from the camera
-@property (nonatomic, strong) NSDate *sceneDate;
-// TODO: property for scene metadata
+@property (nonatomic, strong) FluxCameraFrameElement *cfe; // Camera Frame Element to store scene image + metadata
 @property (nonatomic, strong) FluxImageRenderElement *ire; // Image Render Element to store object image + metadata
 @property (nonatomic, readonly) BOOL hasCameraScene; // Return YES if image is downloaded.
 @property (nonatomic, readonly) BOOL hasObjectImage; // Return YES if image is downloaded.

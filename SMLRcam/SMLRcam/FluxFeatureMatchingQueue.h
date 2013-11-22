@@ -13,7 +13,7 @@
 #import "FluxImageRenderElement.h"
 #import "PendingOperations.h"
 
-@interface FluxFeatureMatchingQueue : NSObject <FluxFeatureMatchingTaskDelegate>
+@interface FluxFeatureMatchingQueue : NSObject <FluxFeatureMatchingTaskDelegate, FluxCameraFrameGrabTaskDelegate>
 {
     FluxMatcherWrapper* fluxMatcherEngine;
 }
