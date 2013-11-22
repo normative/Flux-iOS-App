@@ -26,6 +26,6 @@
 
 @protocol FluxCameraFrameGrabTaskDelegate <NSObject>
 
-- (void)cameraFramgeGrabTaskDidFinish:(FluxCameraFrameGrabTask *)cameraFrameGrabTask;
+- (void)cameraFrameGrabTaskDidFinish:(FluxCameraFrameGrabTask *)cameraFrameGrabTask;
 
 @end

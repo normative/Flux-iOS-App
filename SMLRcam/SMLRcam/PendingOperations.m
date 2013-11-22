@@ -7,6 +7,8 @@
 //
 
 #import "PendingOperations.h"
+#import "FluxFeatureMatchingTask.h"
+#import "FluxCameraFrameGrabTask.h"
 
 @implementation PendingOperations
 
@@ -58,4 +60,29 @@
     
     return _cameraFrameGrabQueue;
 }
+
+- (void)cleanUpUnusedCameraFrames
+{
+    // Get a list of all pending request dates
+    NSMutableArray *currentRequestDates = [[NSMutableArray alloc] init];
+    
+    for (id key in _featureMatchingInProgress)
+    {
+        FluxFeatureMatchingTask *curTask = _featureMatchingInProgress[key];
+        [currentRequestDates addObject:curTask.matchRecord.cfe.cameraRequestDate];
+    }
+    
+    // Examine current camera frame requests. If no longer used get rid of it.
+    for (id key in _cameraFrameGrabInProgress)
+    {
+        FluxCameraFrameGrabTask *curTask = _cameraFrameGrabInProgress[key];
+        NSDate *curRequestDate = curTask.cameraRecord.cameraRequestDate;
+        if (!curRequestDate && ![currentRequestDates containsObject:curRequestDate])
+        {
+            // Remove from list
+            [_cameraFrameGrabInProgress removeObjectForKey:curRequestDate];
+        }
+    }
+}
+
 @end

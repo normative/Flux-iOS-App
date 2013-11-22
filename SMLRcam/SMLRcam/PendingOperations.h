@@ -16,4 +16,6 @@
 @property (nonatomic, strong) NSMutableDictionary *cameraFrameGrabInProgress;
 @property (nonatomic, strong) NSOperationQueue *cameraFrameGrabQueue;
 
+- (void) cleanUpUnusedCameraFrames;
+
 @end

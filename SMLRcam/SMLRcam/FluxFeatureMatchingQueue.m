@@ -44,6 +44,8 @@
         matchRecord.ire = ireToMatch;
         
         // TODO: Check to see if the current frame is recent enough
+        // Note we use request date rather than frame date, since pending requests don't have a frame date yet.
+        // Should be close enough, given the frame rate of the preview.
         if (1)
         {
             // TODO: Find reference to current frame
@@ -80,6 +82,10 @@
         }
         [self.pendingOperations.featureMatchingInProgress setObject:featureMatchingTask forKey:ireToMatch.localID];
         [self.pendingOperations.featureMatchingQueue addOperation:featureMatchingTask];
+        
+        // Clean up at end. Need to make sure that at least one featureMatchingTask references the camera task
+        // before we attempt to clean up, so we don't delete it prematurely
+        [self.pendingOperations cleanUpUnusedCameraFrames];
     }
 }
 
@@ -97,12 +103,18 @@
 
 - (void)cameraFrameGrabTaskDidFinish:(FluxCameraFrameGrabTask *)cameraFrameGrab
 {
-    FluxCameraFrameElement *record = cameraFrameGrab.cameraRecord;
-
-    // TODO: update this once we know what key we used to add it
-    [self.pendingOperations.cameraFrameGrabInProgress removeObjectForKey:record.cameraFrameDate];
+    // Don't need to do anything. Leave it in the array so that feature matching tasks can use it.
+    // Another will eventually delete it from pendingOperations.cameraFrameGrabInProgress once no one is using it.
     
-    NSLog(@"Removing from camera frame grab queue request for date: %@", record.cameraFrameDate);
+    NSLog(@"cameraFrameGrabTask complete for request time %@", cameraFrameGrab.cameraRecord.cameraRequestDate);
+    
+//    FluxCameraFrameElement *record = cameraFrameGrab.cameraRecord;
+//
+//    // TODO: update this once we know what key we used to add it
+//    [self.pendingOperations.cameraFrameGrabInProgress removeObjectForKey:record.cameraFrameDate];
+//    
+//    NSLog(@"Removing from camera frame grab queue request for date: %@", record.cameraFrameDate);
+
 }
 
 @end
