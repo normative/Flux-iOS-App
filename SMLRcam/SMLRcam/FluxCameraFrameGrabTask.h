@@ -8,18 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FluxFeatureMatchingRecord.h"
 #import "FluxMatcherWrapper.h"
 
 @protocol FluxCameraFrameGrabTaskDelegate;
 
 @interface FluxCameraFrameGrabTask : NSOperation
 
-@property (nonatomic, strong) NSDate *frameDate;
+@property (nonatomic, strong) FluxFeatureMatchingRecord *matchRecord;
 @property (nonatomic, strong) FluxMatcherWrapper *matcherEngine;
 @property (nonatomic, assign) id <FluxCameraFrameGrabTaskDelegate> delegate;
 
-- (id)initWithDate:(NSDate *)frameDate withMatcher:(FluxMatcherWrapper *)matcher
-          delegate:(id<FluxCameraFrameGrabTaskDelegate>) theDelegate;
+- (id)initWithFeatureMatchingRecord:(FluxFeatureMatchingRecord *)record withMatcher:(FluxMatcherWrapper *)matcher
+                           delegate:(id<FluxCameraFrameGrabTaskDelegate>) theDelegate;
 
 @end
 

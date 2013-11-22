@@ -136,6 +136,7 @@
 		F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */; };
 		F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */ = {isa = PBXBuildFile; fileRef = F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */; };
 		F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */; };
+		F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -375,6 +376,8 @@
 		F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingTask.m; sourceTree = "<group>"; };
 		F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraFrameGrabTask.h; sourceTree = "<group>"; };
 		F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraFrameGrabTask.m; sourceTree = "<group>"; };
+		F2ED4248183EFE1A007A825A /* FluxFeatureMatchingRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingRecord.h; sourceTree = "<group>"; };
+		F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingRecord.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -964,6 +967,8 @@
 				F2B2C201183E81A800D32084 /* OperationQueue */,
 				F26EF318183D10EF00536C54 /* FluxFeatureMatchingQueue.h */,
 				F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */,
+				F2ED4248183EFE1A007A825A /* FluxFeatureMatchingRecord.h */,
+				F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */,
 			);
 			name = "Feature Matching";
 			sourceTree = "<group>";
@@ -1152,6 +1157,7 @@
 				AA69DA9F18313B9F00B0BEED /* FluxLeftMenuCell.m in Sources */,
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
+				F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */,
 				AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */,

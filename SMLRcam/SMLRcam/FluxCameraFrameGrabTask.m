@@ -15,12 +15,11 @@
 
 #pragma mark - Life Cycle
 
-- (id)initWithDate:(NSDate *)frameDate withMatcher:(FluxMatcherWrapper *)matcher
-          delegate:(id<FluxCameraFrameGrabTaskDelegate>)theDelegate
+- (id)initWithFeatureMatchingRecord:(FluxFeatureMatchingRecord *)record withMatcher:(FluxMatcherWrapper *)matcher delegate:(id<FluxCameraFrameGrabTaskDelegate>)theDelegate
 {
     if (self = [super init])
     {
-        self.frameDate = frameDate;
+        self.matchRecord = record;
         self.delegate = theDelegate;
         self.matcherEngine = matcher;
     }

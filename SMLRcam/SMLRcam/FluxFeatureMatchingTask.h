@@ -8,18 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
-#import "FluxImageRenderElement.h"
+#import "FluxFeatureMatchingRecord.h"
 #import "FluxMatcherWrapper.h"
 
 @protocol FluxFeatureMatchingTaskDelegate;
 
 @interface FluxFeatureMatchingTask : NSOperation
 
-@property (nonatomic, strong) FluxImageRenderElement *imageRenderElementToMatch;
+@property (nonatomic, strong) FluxFeatureMatchingRecord *matchRecord;
 @property (nonatomic, strong) FluxMatcherWrapper *matcherEngine;
 @property (nonatomic, assign) id <FluxFeatureMatchingTaskDelegate> delegate;
 
-- (id)initWithImageRenderElement:(FluxImageRenderElement *)ire withMatcher:(FluxMatcherWrapper *)matcher
+- (id)initWithFeatureMatchingRecord:(FluxFeatureMatchingRecord *)record withMatcher:(FluxMatcherWrapper *)matcher
                         delegate:(id<FluxFeatureMatchingTaskDelegate>) theDelegate;
 
 @end

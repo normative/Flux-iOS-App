@@ -15,13 +15,12 @@
 
 #pragma mark - Life Cycle
 
-- (id)initWithImageRenderElement:(FluxImageRenderElement *)ire withMatcher:(FluxMatcherWrapper *)matcher
-                        delegate:(id<FluxFeatureMatchingTaskDelegate>)theDelegate
+- (id)initWithFeatureMatchingRecord:(FluxFeatureMatchingRecord *)record withMatcher:(FluxMatcherWrapper *)matcher delegate:(id<FluxFeatureMatchingTaskDelegate>)theDelegate
 {
     if (self = [super init])
     {
         self.delegate = theDelegate;
-        self.imageRenderElementToMatch = ire;
+        self.matchRecord = record;
         self.matcherEngine = matcher;
     }
     return self;
@@ -36,7 +35,7 @@
         if (self.isCancelled)
             return;
         
-        NSLog(@"Matching Local ID: %@", self.imageRenderElementToMatch.localID);
+        NSLog(@"Matching Local ID: %@", self.matchRecord.ire.localID);
         
 //        NSData *imageData = [[NSData alloc] initWithContentsOfURL:self.matchRecord.URL];
 //        
@@ -62,7 +61,8 @@
 //            return;
 
         // TODO: this does nothing yet until the IRE propagates back to the OpenGL VC
-        self.imageRenderElementToMatch.matched = true;
+        self.matchRecord.ire.matched = true;
+        self.matchRecord.matched = true;
         
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskDidFinish:) withObject:self waitUntilDone:NO];
     }
