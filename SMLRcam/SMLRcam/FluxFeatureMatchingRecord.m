@@ -17,14 +17,25 @@
 @synthesize matched = _matched;
 @synthesize failed = _failed;
 
+- (id)init
+{
+    if (self = [super init])
+    {
+        self.failed = NO;
+        self.matched = NO;
+    }
+    return self;
+}
+
 - (BOOL)hasCameraScene
 {
-    return _cfe != nil;
+    return ((_cfe != nil) && (_cfe.frameReady) && (_cfe.cameraRequestDate != nil) &&
+            (_cfe.cameraFrameImage != nil));
 }
 
 - (BOOL)hasObjectImage
 {
-    return _ire != nil;
+    return ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.image != nil));
 }
 
 - (BOOL)isFailed

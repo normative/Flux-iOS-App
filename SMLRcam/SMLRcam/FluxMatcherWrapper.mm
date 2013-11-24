@@ -55,18 +55,29 @@
 -(void)setObjectImage:(UIImage *)objectImage
 {
     // TODO: verify if we need to release any existing images here producing memory leaks
-    cv::Mat inputImage = [objectImage CVGrayscaleMat];
+//    cv::Mat inputImage = [objectImage CVGrayscaleMat];
+//    
+//    object_img = inputImage;
     
-    object_img = inputImage;
+    cv::Mat inputImage = [objectImage CVMat];
+    cv::Mat outputImage;
+    cv::cvtColor(inputImage, outputImage, CV_RGB2GRAY);
+    object_img = outputImage;
+
 }
 
 // Scene images are the background camera feed to match against
 -(void)setSceneImage:(UIImage *)sceneImage
 {
     // TODO: verify if we need to release any existing images here producing memory leaks
-    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+//    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+//    
+//    scene_img = inputImage;
     
-    scene_img = inputImage;
+    cv::Mat inputImage = [sceneImage CVMat];
+    cv::Mat outputImage;
+    cv::cvtColor(inputImage, outputImage, CV_RGB2GRAY);
+    object_img = outputImage;
 }
 
 - (void)dealloc

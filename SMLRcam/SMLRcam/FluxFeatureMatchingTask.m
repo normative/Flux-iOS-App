@@ -34,13 +34,28 @@
     {
         if (self.isCancelled)
             return;
+
+        NSDate *startTime = [NSDate date];
         
-        NSLog(@"Matching Local ID: %@", self.matchRecord.ire.localID);
+        NSLog(@"Matching localID: %@", self.matchRecord.ire.localID);
         
+        // Make sure camera frame (scene) and object are both available
+        if (!self.matchRecord.hasCameraScene || !self.matchRecord.hasObjectImage)
+        {
+            self.matchRecord.failed = YES;
+            return;
+        }
+        
+        [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
+        [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage];
+        
+        [self.matcherEngine matchFeatures];
 
         // TODO: this does nothing yet until the IRE propagates back to the OpenGL VC
-        self.matchRecord.ire.matched = true;
-        self.matchRecord.matched = true;
+        self.matchRecord.ire.matched = YES;
+        self.matchRecord.matched = YES;
+        
+        NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
         
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskDidFinish:) withObject:self waitUntilDone:NO];
     }
