@@ -65,6 +65,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
 }
 @property (nonatomic) CLLocation* location;
+@property (nonatomic) CLLocation* rawlocation;
 @property (nonatomic) CLLocationDirection heading;
 @property (nonatomic) CLPlacemark* placemark;
 
