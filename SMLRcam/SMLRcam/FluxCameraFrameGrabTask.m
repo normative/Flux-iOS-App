@@ -39,8 +39,6 @@
         if (self.isCancelled)
             return;
         
-        NSLog(@"Grabbing current camera frame");
-
         if (self.openGLVC)
         {
             // Lock before call to make sure that signal is not missed

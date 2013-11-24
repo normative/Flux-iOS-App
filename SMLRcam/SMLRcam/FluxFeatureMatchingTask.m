@@ -37,28 +37,6 @@
         
         NSLog(@"Matching Local ID: %@", self.matchRecord.ire.localID);
         
-//        NSData *imageData = [[NSData alloc] initWithContentsOfURL:self.matchRecord.URL];
-//        
-//        if (self.isCancelled)
-//        {
-//            imageData = nil;
-//            return;
-//        }
-//        
-//        if (imageData)
-//        {
-//            UIImage *downloadedImage = [UIImage imageWithData:imageData];
-//            self.matchRecord.image = downloadedImage;
-//        }
-//        else
-//        {
-//            self.matchRecord.failed = YES;
-//        }
-//        
-//        imageData = nil;
-//        
-//        if (self.isCancelled)
-//            return;
 
         // TODO: this does nothing yet until the IRE propagates back to the OpenGL VC
         self.matchRecord.ire.matched = true;

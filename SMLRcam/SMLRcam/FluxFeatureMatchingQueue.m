@@ -49,12 +49,11 @@
         // Check to see if there is a current frame that is recent enough
         // Note we use request date rather than frame date, since pending requests don't have a frame date yet.
         // Should be close enough, given the frame rate of the preview.
-        NSDate *recentDate = [[[self.pendingOperations.cameraFrameGrabInProgress allKeys] sortedArrayUsingSelector:@selector(comparator)] lastObject];
+        NSDate *recentDate = [[[self.pendingOperations.cameraFrameGrabInProgress allKeys] sortedArrayUsingSelector:@selector(compare:)] lastObject];
 
         // Find reference to most recent frame, if one exists
         if (recentDate && ([recentDate timeIntervalSinceNow] > -3.0))
         {
-            NSLog(@"Using existing camera from at time %@", recentDate);
             dependency = [self.pendingOperations.cameraFrameGrabInProgress objectForKey:recentDate];
             matchRecord.cfe = dependency.cameraRecord;
             
@@ -67,7 +66,6 @@
         else
         {
             // If not, add a new request and add it as a dependency
-            NSLog(@"Adding item to camera frame grab queue");
             FluxCameraFrameElement *newCfe = [[FluxCameraFrameElement alloc] init];
             FluxCameraFrameGrabTask *cameraFrameTask = [[FluxCameraFrameGrabTask alloc]
                                                         initWithCameraFrameRecord:newCfe
@@ -82,7 +80,6 @@
             [self.pendingOperations.cameraFrameGrabQueue addOperation:cameraFrameTask];
         }
         
-        NSLog(@"Adding to queue local ID: %@", ireToMatch.localID);
         FluxFeatureMatchingTask *featureMatchingTask = [[FluxFeatureMatchingTask alloc] initWithFeatureMatchingRecord:matchRecord
                                                                                     withMatcher:fluxMatcherEngine delegate:self];
         
@@ -106,8 +103,6 @@
 {
     FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
     [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
-
-    NSLog(@"Removing from queue local ID: %@", record.ire.localID);
 }
 
 #pragma mark - FluxCameraFrameGrab Delegate
@@ -116,8 +111,6 @@
 {
     // Don't need to do anything. Leave it in the array so that feature matching tasks can use it.
     // Another will eventually delete it from pendingOperations.cameraFrameGrabInProgress once no one is using it.
-    
-    NSLog(@"cameraFrameGrabTask complete for request time %@", cameraFrameGrab.cameraRecord.cameraRequestDate);
 }
 
 @end
