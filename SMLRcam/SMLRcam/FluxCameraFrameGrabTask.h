@@ -7,9 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "FluxCameraFrameElement.h"
 #import "FluxMatcherWrapper.h"
+
+@class FluxOpenGLViewController;
 
 @protocol FluxCameraFrameGrabTaskDelegate;
 
@@ -18,9 +19,11 @@
 @property (nonatomic, strong) FluxCameraFrameElement *cameraRecord;
 @property (nonatomic, strong) FluxMatcherWrapper *matcherEngine;
 @property (nonatomic, assign) id <FluxCameraFrameGrabTaskDelegate> delegate;
+@property (nonatomic, weak) FluxOpenGLViewController *openGLVC;
 
 - (id)initWithCameraFrameRecord:(FluxCameraFrameElement *)record withMatcher:(FluxMatcherWrapper *)matcher
-                           delegate:(id<FluxCameraFrameGrabTaskDelegate>) theDelegate;
+                           delegate:(id<FluxCameraFrameGrabTaskDelegate>) theDelegate
+                           withOpenGLVC:(FluxOpenGLViewController *)openGLview;
 
 @end
 

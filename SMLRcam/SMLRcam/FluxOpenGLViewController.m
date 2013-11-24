@@ -818,6 +818,8 @@ void init(){
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection
 {
+    NSDate *currentDate = [NSDate date];
+    
     CVReturn err;
 	CVImageBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
     _videoTextureWidth = CVPixelBufferGetWidth(pixelBuffer);
@@ -856,6 +858,36 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
+    if (frameGrabRequested && frameGrabRequest && frameGrabRequest.frameRequested)
+    {
+        // Grab copy of frame buffer and notify reciever that it is ready
+        CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
+
+        CIContext *temporaryContext = [CIContext contextWithOptions:nil];
+        CGImageRef videoImage = [temporaryContext
+                                 createCGImage:ciImage
+                                 fromRect:CGRectMake(0, 0,
+                                                     CVPixelBufferGetWidth(pixelBuffer),
+                                                     CVPixelBufferGetHeight(pixelBuffer))];
+        
+        frameGrabRequest.cameraFrameImage = [UIImage imageWithCGImage:videoImage];
+        
+        // TODO: also copy frame metadata
+        
+        frameGrabRequest.cameraFrameDate = currentDate;
+        
+        // Signal requesting thread that frame is ready
+        [frameGrabRequest.frameReadyCondition lock];
+        frameGrabRequest.frameReady = YES;
+        [frameGrabRequest.frameReadyCondition signal];
+        [frameGrabRequest.frameReadyCondition unlock];
+        
+        frameGrabRequest = nil;
+        
+        // Reset flag to grab frame
+        frameGrabRequested = NO;
+    }
+    
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -877,6 +909,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     cameraManager = [FluxAVCameraSingleton sharedCamera];
     [cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+}
+
+- (void)requestCameraFrame:(FluxCameraFrameElement *)frameRequest
+{
+    frameGrabRequest = frameRequest;
+    frameGrabRequested = YES;
 }
 
 #pragma mark ScreenShot
@@ -980,6 +1018,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     pedometerL.hidden = YES;
     
     fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
+    
+    frameGrabRequested = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1425,7 +1465,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         // Easiest way is to give DisplayManager the updated ImageRenderElement (or portion of)
                         // and tell it to notify OpenGL VC that list changed.
                         
-                        [fluxFeatureMatchingQueue addMatchRequest:ire];
+                        [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
                     }
                 }
                 else

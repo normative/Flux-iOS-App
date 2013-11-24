@@ -15,6 +15,9 @@
     if (self = [super init])
     {
         _cameraRequestDate = [NSDate date];
+        _frameRequested = YES;
+        _frameReady = NO;
+        _frameReadyCondition = [[NSCondition alloc] init];
     }
     return self;
 }

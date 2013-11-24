@@ -10,6 +10,9 @@
 #import "FluxCameraFrameElement.h"
 #import "FluxFeatureMatchingRecord.h"
 
+#import "FluxOpenGLViewController.h"
+
+
 @implementation FluxFeatureMatchingQueue
 
 @synthesize pendingOperations = _pendingOperations;
@@ -33,7 +36,7 @@
     return self;
 }
 
-- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch
+- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview
 {
     // Check to see if already feature match in progress. If so, ignore it.
     if (![self.pendingOperations.featureMatchingInProgress.allKeys containsObject:ireToMatch.localID])
@@ -67,7 +70,10 @@
             NSLog(@"Adding item to camera frame grab queue");
             FluxCameraFrameElement *newCfe = [[FluxCameraFrameElement alloc] init];
             FluxCameraFrameGrabTask *cameraFrameTask = [[FluxCameraFrameGrabTask alloc]
-                                                        initWithCameraFrameRecord:newCfe withMatcher:fluxMatcherEngine delegate:self];
+                                                        initWithCameraFrameRecord:newCfe
+                                                        withMatcher:fluxMatcherEngine
+                                                        delegate:self
+                                                        withOpenGLVC:openGLview];
             
             dependency = cameraFrameTask;
             matchRecord.cfe = dependency.cameraRecord;
@@ -84,6 +90,7 @@
         {
             [featureMatchingTask addDependency:dependency];
         }
+        
         [self.pendingOperations.featureMatchingInProgress setObject:featureMatchingTask forKey:ireToMatch.localID];
         [self.pendingOperations.featureMatchingQueue addOperation:featureMatchingTask];
         

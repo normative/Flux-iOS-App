@@ -20,6 +20,7 @@
 #import "FluxTextureToImageMapElement.h"
 #import "FluxImageRenderElement.h"
 #import "FluxFeatureMatchingQueue.h"
+#import "FluxCameraFrameElement.h"
 
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
@@ -58,7 +59,10 @@
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
-    FluxFeatureMatchingQueue* fluxFeatureMatchingQueue;
+    FluxFeatureMatchingQueue *fluxFeatureMatchingQueue;
+    
+    FluxCameraFrameElement *frameGrabRequest;
+    bool frameGrabRequested;
     
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
@@ -123,6 +127,8 @@
 -(void) stepperChangedWithValue:(double)v;
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
+
+- (void) requestCameraFrame:(FluxCameraFrameElement *)frameRequest;
 
 
 @end
