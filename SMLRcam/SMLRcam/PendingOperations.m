@@ -73,16 +73,20 @@
     }
     
     // Examine current camera frame requests. If no longer used get rid of it.
+    NSMutableArray *toDeleteList = [[NSMutableArray alloc] init];
     for (id key in _cameraFrameGrabInProgress)
     {
         FluxCameraFrameGrabTask *curTask = _cameraFrameGrabInProgress[key];
         NSDate *curRequestDate = curTask.cameraRecord.cameraRequestDate;
-        if (!curRequestDate && ![currentRequestDates containsObject:curRequestDate])
+        if (curRequestDate && ![currentRequestDates containsObject:curRequestDate])
         {
             // Remove from list
-            [_cameraFrameGrabInProgress removeObjectForKey:curRequestDate];
+            [toDeleteList addObject:curRequestDate];
         }
     }
+    
+    // Actually delete here
+    [_cameraFrameGrabInProgress removeObjectsForKeys:toDeleteList];
 }
 
 @end

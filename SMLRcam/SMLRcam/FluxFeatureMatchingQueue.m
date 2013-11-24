@@ -52,7 +52,7 @@
         NSDate *recentDate = [[[self.pendingOperations.cameraFrameGrabInProgress allKeys] sortedArrayUsingSelector:@selector(comparator)] lastObject];
 
         // Find reference to most recent frame, if one exists
-        if (!recentDate && ([recentDate timeIntervalSinceNow] < 3.0))
+        if (recentDate && ([recentDate timeIntervalSinceNow] > -3.0))
         {
             NSLog(@"Using existing camera from at time %@", recentDate);
             dependency = [self.pendingOperations.cameraFrameGrabInProgress objectForKey:recentDate];
