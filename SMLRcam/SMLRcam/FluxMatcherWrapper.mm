@@ -54,28 +54,18 @@
 // Object images are downloaded content to be matched
 -(void)setObjectImage:(UIImage *)objectImage
 {
-//    cv::Mat inputImage = [objectImage CVGrayscaleMat];
-//    
-//    object_img = inputImage;
+    cv::Mat inputImage = [objectImage CVGrayscaleMat];
     
-    cv::Mat inputImage = [objectImage CVMat];
-    cv::Mat outputImage;
-    cv::cvtColor(inputImage, outputImage, CV_RGB2GRAY);
-    object_img = outputImage;
-
+    object_img = inputImage;
 }
 
 // Scene images are the background camera feed to match against
 -(void)setSceneImage:(UIImage *)sceneImage
 {
-//    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
-//    
-//    scene_img = inputImage;
+    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
     
-    cv::Mat inputImage = [sceneImage CVMat];
-    cv::Mat outputImage;
-    cv::cvtColor(inputImage, outputImage, CV_RGB2GRAY);
-    scene_img = outputImage;
+    scene_img = inputImage;
+    
 }
 
 - (void)dealloc
