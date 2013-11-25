@@ -200,7 +200,8 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     }];
     
     // Collect position and orientation information prior to copying image
-    CLLocation *location = locationManager.location;
+    CLLocation *location = locationManager.rawlocation;
+    //CLLocation *bestlocation = locationManager.location;
     CMAttitude *att = motionManager.attitude;
     CLLocationDirection heading = locationManager.heading;
     

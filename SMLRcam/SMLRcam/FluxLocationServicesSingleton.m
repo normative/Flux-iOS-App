@@ -99,6 +99,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations{
     // Grab last entry for now, since we should be getting all of them
+    Geolocation kfgeolocation;
+    
     if ([newLocations count] > 1)
     {
         NSLog(@"Received more than one location (%d)", [newLocations count]);
@@ -160,7 +162,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 //                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
     self.location = newLocation;
-    
+    self.rawlocation = newLocation;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSNumber *walkMode = [defaults objectForKey:@"Walk Mode"];
     
@@ -172,10 +174,23 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     {
         self.notMoving = 1;
     }
+   
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);
+  
+    
     [self setMeasurementWithLocation:self.location];
+    [self ComputeGeodecticFromkfECEF:&kfgeolocation];
+    
+    
+    
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
+      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
+                                          horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+                                          course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    self.location = newLocation;
+    
     // Notify observers of updated position
     if (self.location != nil)
     {
@@ -280,6 +295,50 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
 }
 
+
+//Maximum 4 iterations;
+
+-(void) ComputeGeodecticFromkfECEF:(Geolocation *) kfgeolocation
+{
+    int max_iterations =4;
+    int i;
+    double lambda, phi, h, phi_next, h_next;
+    double p; //radius in xy plane
+    double X, Y,Z; //ecef coordinates;
+    double N;
+    X = _kflocation.x;
+    Y = _kflocation.y;
+    Z = _kflocation.z;
+    
+    double diff, eSq; //eSq eccentricity square
+    
+    diff = (a_WGS84 *a_WGS84) - (b_WGS84 *b_WGS84);
+    eSq = diff/(a_WGS84*a_WGS84);
+    lambda = atan2(Y, X);
+   
+    p = sqrt(X * X + Y * Y);
+    
+    phi = atan2(Z, p*(1-eSq));
+    
+    
+    
+    for(i =0; i< max_iterations;i++)
+    {
+        N= a_WGS84/(sqrt(1-(eSq * sin(phi)*sin(phi))));
+        h_next = p/cos(phi) -N;
+        phi_next = atan2(Z, p*(1 - (eSq*(N/(N+h_next)))));
+        h = h_next;
+        phi = phi_next;
+    }
+    
+    kfgeolocation->latitude  =  phi/PI * 180.0;
+    kfgeolocation->longitude = lambda/PI * 180.0;
+    kfgeolocation->altitude  = h;
+    
+}
+
+
+//only works for height = 0
 -(void) ecefToWGS84KF
 {
     double lambda, phi, h;
@@ -615,14 +674,22 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     double lon[] ={-79.394792,-122.419416};
     double alt[]={75,20};
     sensorPose s;
+    Geolocation kfgeo;
     for(i=0; i<2; i++)
     {
         s.position.x = lat[i];
         s.position.y = lon[i];
         s.position.z = alt[i];
         
-        //WGS84_to_ECEF(&s);
-        //test [self ecefToWGS84KF:s];
+        [self WGS84_to_ECEF:&s];
+        _kflocation.x = s.ecef.x;
+        _kflocation.y = s.ecef.y;
+        _kflocation.z = s.ecef.z;
+        
+        [self ComputeGeodecticFromkfECEF:&kfgeo];
+        
+        NSLog(@"[bef]aft lat:[ %f ] %f | lon:[ %f ] %f | alt:[ %f ] %f",lat[i], kfgeo.latitude, lon[i], kfgeo.longitude, alt[i], kfgeo.altitude);
+      
     }
     
     

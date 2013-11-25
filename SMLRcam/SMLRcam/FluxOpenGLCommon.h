@@ -9,12 +9,25 @@
 #ifndef Flux_FluxOpenGLCommon_h
 #define Flux_FluxOpenGLCommon_h
 
+
 typedef struct{
     int valid;
     double x;
     double y;
     double z;
 }kfECEF;
+
+
+
+
+typedef struct{
+    double latitude;
+    double longitude;
+    double altitude;
+}Geolocation;
+
+
+
 
 typedef struct{
     
