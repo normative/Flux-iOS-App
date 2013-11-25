@@ -871,6 +871,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                      CVPixelBufferGetHeight(pixelBuffer))];
         
         frameGrabRequest.cameraFrameImage = [UIImage imageWithCGImage:videoImage];
+
+        CGImageRelease(videoImage);
+        videoImage = nil;
         
         // TODO: also copy frame metadata
         
