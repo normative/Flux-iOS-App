@@ -71,7 +71,7 @@ public:
         
         // Configure the descriptor extractor
         
-        cv::Ptr<cv::DescriptorExtractor> extractor = cv::DescriptorExtractor::create("BRISK");
+        extractor = cv::DescriptorExtractor::create("BRISK");
         
         if (useBRISKRotation)
         {

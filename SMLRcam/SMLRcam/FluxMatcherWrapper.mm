@@ -77,7 +77,7 @@
     cv::Mat inputImage = [sceneImage CVMat];
     cv::Mat outputImage;
     cv::cvtColor(inputImage, outputImage, CV_RGB2GRAY);
-    object_img = outputImage;
+    scene_img = outputImage;
 }
 
 - (void)dealloc
