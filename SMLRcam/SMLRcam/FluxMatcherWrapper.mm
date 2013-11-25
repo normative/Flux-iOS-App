@@ -64,8 +64,10 @@
 {
     cv::Mat inputImage = [sceneImage CVGrayscaleMat];
     
-    scene_img = inputImage;
+    cv::transpose(inputImage, inputImage);
+    cv::flip(inputImage, inputImage, 1);
     
+    scene_img = inputImage;
 }
 
 - (void)dealloc
