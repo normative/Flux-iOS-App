@@ -548,15 +548,15 @@ double getAbsAngle(double angle, double heading)
     //if we have items already, check if it's worth pulling again
     if (self.fluxMapContentMetadata && previousMapViewLocation) {
         if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50) {
-            [self requestMapPinsForFilter:nil];
+            [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
         }
     }
     else{
-        [self requestMapPinsForFilter:nil];
+        [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
     }
 }
 
-- (void)requestMapPinsForFilter:(FluxDataFilter*)mapDataFilter{
+- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter *)mapDataFilter{
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     
@@ -574,7 +574,8 @@ double getAbsAngle(double angle, double heading)
     
     [dataRequest setWideAreaListReady:^(NSArray *imageList){
         self.fluxMapContentMetadata = imageList;
-        previousMapViewLocation = self.locationManager.location;
+        CLLocation*temp = [[CLLocation alloc]initWithLatitude:location.latitude longitude:location.longitude];
+        previousMapViewLocation = temp;
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateMapPinList
                                                             object:self userInfo:nil];
     }];
@@ -585,7 +586,7 @@ double getAbsAngle(double angle, double heading)
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidFailToUpdateMapPinList
                                                             object:self userInfo:userInfoDict];
     }];
-    [self.fluxDataManager requestMapImageListAtLocation:self.locationManager.location.coordinate withRadius:500.0 withDataRequest:dataRequest];
+    [self.fluxDataManager requestMapImageListAtLocation:location withRadius:radius withDataRequest:dataRequest];
 }
 
 #pragma mark - List Management Support

@@ -68,7 +68,7 @@ extern NSString* const FluxOpenGLShouldRender;
 - (void)timeBracketDidChange:(float)value;
 
 - (void)mapViewWillDisplay;
-- (void)requestMapPinsForFilter:(FluxDataFilter*)mapDataFilter;
+- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter*)mapDataFilter;
 
 - (void)lockDisplayList;
 - (void)unlockDisplayList;

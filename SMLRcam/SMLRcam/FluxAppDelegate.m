@@ -91,7 +91,7 @@
     //testFlight analytics
     [TestFlight takeOff:TestFlightAppToken];
     
-    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
     //RKLogConfigureByName("*", RKLogLevelOff);
     
     return YES;

@@ -579,14 +579,10 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Map Images",[result count]);
-         
-         if ([result count] > 0)
+         NSLog(@"Found %i Map Images",[result count]);         
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnMapList:andRequestID:)])
          {
-             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnMapList:andRequestID:)])
-             {
-                 [delegate NetworkServices:self didReturnMapList:result.array andRequestID:requestID];
-             }
+             [delegate NetworkServices:self didReturnMapList:result.array andRequestID:requestID];
          }
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)

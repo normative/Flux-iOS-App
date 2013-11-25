@@ -23,7 +23,9 @@
 
 @interface FluxMapViewController : GAITrackedViewController<MKMapViewDelegate, UIGestureRecognizerDelegate, FiltersTableViewDelegate>
 {
-    CLLocationCoordinate2D userLastSynchedLocation;
+    CLLocationCoordinate2D lastSynchedLocation;
+     double lastRadius;
+    int outstandingRequests;
     
     // Map View
     __weak IBOutlet MIMapView *fluxMapView;
