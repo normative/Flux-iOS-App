@@ -49,7 +49,9 @@
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
         [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage];
         
-        [self.matcherEngine matchFeatures];
+//        [self.matcherEngine matchFeatures];
+        UIImage *testImage = [self.matcherEngine matchAndDrawFeatures];
+        UIImageWriteToSavedPhotosAlbum(testImage, nil, nil, nil);
 
         // TODO: this does nothing yet until the IRE propagates back to the OpenGL VC
         self.matchRecord.ire.matched = YES;

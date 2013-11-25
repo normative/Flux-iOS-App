@@ -19,4 +19,7 @@
 // Wrapper for: FluxMatcher::match()
 -(void)matchFeatures;
 
+// Wrapper for: FluxMatcher::match() with matched box drawn
+-(UIImage *)matchAndDrawFeatures;
+
 @end
