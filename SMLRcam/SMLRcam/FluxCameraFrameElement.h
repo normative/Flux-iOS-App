@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxOpenGLCommon.h"
 
 @interface FluxCameraFrameElement : NSObject
 
@@ -16,6 +17,7 @@
 @property (nonatomic, strong) UIImage *cameraFrameImage; // To store the scene image from the camera
 @property (nonatomic, strong) NSDate *cameraRequestDate; // Date request was made
 @property (nonatomic, strong) NSDate *cameraFrameDate; // Date of actual camera frame
-// TODO: property for scene metadata
+@property (nonatomic) sensorPose cameraPose;
+@property (nonatomic) float cameraProjectionDistance;
 
 @end

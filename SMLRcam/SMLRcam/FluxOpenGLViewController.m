@@ -878,6 +878,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         // TODO: also copy frame metadata
         
         frameGrabRequest.cameraFrameDate = currentDate;
+        frameGrabRequest.cameraPose = _userPose;
+        frameGrabRequest.cameraProjectionDistance = _projectionDistance;
         
         // Signal requesting thread that frame is ready
         [frameGrabRequest.frameReadyCondition lock];

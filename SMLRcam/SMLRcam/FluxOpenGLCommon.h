@@ -9,6 +9,8 @@
 #ifndef Flux_FluxOpenGLCommon_h
 #define Flux_FluxOpenGLCommon_h
 
+#import <GLKit/GLKit.h>
+
 typedef struct{
     int valid;
     double x;
