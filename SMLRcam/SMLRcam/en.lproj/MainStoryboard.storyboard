@@ -298,7 +298,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="twitter"/>
                                     </textView>
                                     <collectionView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Cit-Ms-vJp">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="133"/>
@@ -536,7 +536,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GBy-Jj-gnf">
-                                                    <rect key="frame" x="233" y="6" width="51" height="31"/>
+                                                    <rect key="frame" x="251" y="6" width="51" height="31"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <connections>
                                                         <action selector="changeSaveLocallySwitch:" destination="0Hb-dd-ez9" eventType="valueChanged" id="ieN-0b-rpJ"/>
@@ -545,7 +545,7 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="bottom" secondItem="GBy-Jj-gnf" secondAttribute="bottom" constant="6" id="63j-ev-dWa"/>
-                                                <constraint firstAttribute="trailing" secondItem="GBy-Jj-gnf" secondAttribute="trailing" constant="38" id="Kum-aW-Nh1"/>
+                                                <constraint firstAttribute="trailing" secondItem="GBy-Jj-gnf" secondAttribute="trailing" constant="20" id="Kum-aW-Nh1"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -565,7 +565,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dPL-iZ-STe">
-                                                    <rect key="frame" x="232" y="7" width="56" height="30"/>
+                                                    <rect key="frame" x="244" y="7" width="56" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="56" id="A9o-gd-iDn"/>
@@ -584,7 +584,7 @@
                                                 <constraint firstItem="dPL-iZ-STe" firstAttribute="top" secondItem="5tO-RZ-tcQ" secondAttribute="top" constant="7" id="4XU-1g-f2U"/>
                                                 <constraint firstItem="dPL-iZ-STe" firstAttribute="baseline" secondItem="PFT-ac-0I3" secondAttribute="baseline" id="KLA-tO-p1x"/>
                                                 <constraint firstItem="PFT-ac-0I3" firstAttribute="leading" secondItem="5tO-RZ-tcQ" secondAttribute="leading" constant="20" symbolic="YES" id="mzb-zS-GNT"/>
-                                                <constraint firstAttribute="trailing" secondItem="dPL-iZ-STe" secondAttribute="trailing" constant="32" id="s1J-tw-Ebn"/>
+                                                <constraint firstAttribute="trailing" secondItem="dPL-iZ-STe" secondAttribute="trailing" constant="20" id="s1J-tw-Ebn"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -653,6 +653,36 @@
                                                         <action selector="maskSliderChanged:" destination="0Hb-dd-ez9" eventType="valueChanged" id="gya-c2-1Lt"/>
                                                     </connections>
                                                 </slider>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    </tableViewCell>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="Ug1-TZ-g2h">
+                                        <rect key="frame" x="0.0" y="240" width="320" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Ug1-TZ-g2h" id="lUO-dC-wBF">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HVD-hX-Qha">
+                                                    <rect key="frame" x="239" y="7" width="61" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                                    <state key="normal" title="Logout">
+                                                        <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="logoutButtonAction:" destination="0Hb-dd-ez9" eventType="touchUpInside" id="nDi-Bm-Spe"/>
+                                                    </connections>
+                                                </button>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Account Management" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uli-5h-M7t">
+                                                    <rect key="frame" x="20" y="11" width="170" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
                                             </subviews>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -953,6 +983,9 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="twitterSignInAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="uIg-nt-ARL"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="fill" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="giK-n0-WlU">
                                         <rect key="frame" x="74" y="299" width="173" height="30"/>
@@ -962,6 +995,9 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="facebookSignInAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="eaU-nI-TQV"/>
+                                        </connections>
                                     </button>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="0Rt-aQ-rNK">
                                         <rect key="frame" x="10" y="-15" width="300" height="196"/>
@@ -1230,7 +1266,14 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fGK-Sg-cda">
-                                                    <rect key="frame" x="20" y="12" width="237" height="20"/>
+                                                    <rect key="frame" x="20" y="12" width="193" height="20"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="tRi-Zc-BGI">
+                                                    <rect key="frame" x="221" y="12" width="36" height="20"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -1249,6 +1292,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
                                             <outlet property="checkbox" destination="r6u-5A-gBZ" id="yq1-CP-UYz"/>
+                                            <outlet property="countLabel" destination="tRi-Zc-BGI" id="au2-ID-6fd"/>
                                             <outlet property="descriptorLabel" destination="fGK-Sg-cda" id="HYM-tl-F4w"/>
                                         </connections>
                                     </tableViewCell>

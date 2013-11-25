@@ -46,7 +46,6 @@
 		89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */; };
 		89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A513631829AED800E25AA1 /* Accelerate.framework */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
-		AA06FE6F181EBBC000D87658 /* FluxAuthenticationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE6E181EBBC000D87658 /* FluxAuthenticationViewController.m */; };
 		AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -74,7 +73,6 @@
 		AA61527D1822DC9300B8F2C8 /* FluxImageTools.m in Sources */ = {isa = PBXBuildFile; fileRef = AA61527C1822DC9300B8F2C8 /* FluxImageTools.m */; };
 		AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA615284182418DB00B8F2C8 /* FluxSocialFilterCell.m */; };
 		AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */; };
-		AA61528C18282AE200B8F2C8 /* FluxLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA61528B18282AE200B8F2C8 /* FluxLoginViewController.m */; };
 		AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */; };
 		AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */; };
@@ -119,6 +117,7 @@
 		AAF1BCFF183C173900909AFF /* 2.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFA183C173900909AFF /* 2.png */; };
 		AAF1BD00183C173900909AFF /* 3.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFB183C173900909AFF /* 3.png */; };
 		AAF1BD01183C173900909AFF /* 4.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFC183C173900909AFF /* 4.png */; };
+		AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */; };
 		AAFB4DC418159F2500EB8DBA /* FluxTimeFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */; };
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
@@ -193,8 +192,6 @@
 		89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxKalmanFilter.h; sourceTree = "<group>"; };
 		89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxKalmanFilter.m; sourceTree = "<group>"; };
 		89A513631829AED800E25AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
-		AA06FE6D181EBBC000D87658 /* FluxAuthenticationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAuthenticationViewController.h; sourceTree = "<group>"; };
-		AA06FE6E181EBBC000D87658 /* FluxAuthenticationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAuthenticationViewController.m; sourceTree = "<group>"; };
 		AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfilePhotosViewController.h; sourceTree = "<group>"; };
 		AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfilePhotosViewController.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -243,8 +240,6 @@
 		AA615284182418DB00B8F2C8 /* FluxSocialFilterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialFilterCell.m; sourceTree = "<group>"; };
 		AA6152861827F80B00B8F2C8 /* FluxRegisterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRegisterViewController.h; sourceTree = "<group>"; };
 		AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegisterViewController.m; sourceTree = "<group>"; };
-		AA61528A18282AE200B8F2C8 /* FluxLoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLoginViewController.h; sourceTree = "<group>"; };
-		AA61528B18282AE200B8F2C8 /* FluxLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLoginViewController.m; sourceTree = "<group>"; };
 		AA650F0117FDBFD000424223 /* FluxImageAnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageAnnotationViewController.h; sourceTree = "<group>"; };
 		AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageAnnotationViewController.m; sourceTree = "<group>"; };
 		AA650F0917FDFF0F00424223 /* FluxFiltersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFiltersViewController.h; sourceTree = "<group>"; };
@@ -332,6 +327,7 @@
 		AAF1BCFA183C173900909AFF /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
 		AAF1BCFB183C173900909AFF /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
 		AAF1BCFC183C173900909AFF /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
+		AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		AAFB4DC218159F2500EB8DBA /* FluxTimeFilterScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterScrollView.h; sourceTree = "<group>"; };
 		AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterScrollView.m; sourceTree = "<group>"; };
 		AAFD390C17DE0B4F006CBC14 /* KTSegmentedButtonControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTSegmentedButtonControl.h; sourceTree = "<group>"; };
@@ -374,6 +370,7 @@
 				17604B921785CB27005CF054 /* CoreImage.framework in Frameworks */,
 				17604B941785CB35005CF054 /* AVFoundation.framework in Frameworks */,
 				17604B991785F4CA005CF054 /* CoreVideo.framework in Frameworks */,
+				AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */,
 				17604B671785CA59005CF054 /* UIKit.framework in Frameworks */,
 				AA1183B017F327760078FCCF /* libGoogleAnalyticsServices.a in Frameworks */,
 				17604B691785CA59005CF054 /* Foundation.framework in Frameworks */,
@@ -417,6 +414,7 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */,
 				AA255165183577D900DCA62F /* Social.framework */,
 				89A513631829AED800E25AA1 /* Accelerate.framework */,
 				AA1183B117F329490078FCCF /* AdSupport.framework */,
@@ -515,12 +513,8 @@
 		AA06FE6C181EBB2C00D87658 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				AA06FE6D181EBBC000D87658 /* FluxAuthenticationViewController.h */,
-				AA06FE6E181EBBC000D87658 /* FluxAuthenticationViewController.m */,
 				AA6152861827F80B00B8F2C8 /* FluxRegisterViewController.h */,
 				AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */,
-				AA61528A18282AE200B8F2C8 /* FluxLoginViewController.h */,
-				AA61528B18282AE200B8F2C8 /* FluxLoginViewController.m */,
 				AA69DA9A182D647900B0BEED /* FluxTextFieldCell.h */,
 				AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */,
 			);
@@ -1089,7 +1083,6 @@
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
-				AA61528C18282AE200B8F2C8 /* FluxLoginViewController.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,
 				AAA265C617EA02F6003AE787 /* TestFlight+OpenFeedback.m in Sources */,
@@ -1139,7 +1132,6 @@
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,
 				AA984F1218088923007F33B1 /* MIMapView.m in Sources */,
 				AAA265C717EA02F6003AE787 /* TFFeedbackController.m in Sources */,
-				AA06FE6F181EBBC000D87658 /* FluxAuthenticationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,8 +7,7 @@
 //
 
 #import "FluxAppDelegate.h"
-
-#import <Security/Security.h>
+#import <FacebookSDK/FacebookSDK.h>
 
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
@@ -96,6 +95,16 @@
     
     return YES;
 }
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+  sourceApplication:(NSString *)sourceApplication
+         annotation:(id)annotation {
+    // attempt to extract a token from the url
+    return [FBAppCall handleOpenURL:url
+                  sourceApplication:sourceApplication
+                        withSession:FBSession.activeSession];
+}
 							
 - (void)applicationWillResignActive:(UIApplication *)application
 {
@@ -117,6 +126,16 @@
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [FBAppEvents activateApp];
+    
+    /*
+     Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+     */
+    
+    // FBSample logic
+    // We need to properly handle activation of the application with regards to SSO
+    //  (e.g., returning from iOS 6.0 authorization dialog or from fast app switching).
+    [FBAppCall handleDidBecomeActiveWithSession:FBSession.activeSession];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

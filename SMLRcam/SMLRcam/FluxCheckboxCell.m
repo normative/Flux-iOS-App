@@ -25,7 +25,9 @@
     if(self = [super initWithCoder:aDecoder]) {
         [self setBackgroundColor:[UIColor clearColor]];
         [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
+        [self.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.countLabel.font.pointSize]];
         [self.descriptorLabel setTextColor:[UIColor whiteColor]];
+        [self.countLabel setTextColor:[UIColor whiteColor]];
         [self.checkbox setDelegate:self];
     }
     return self;

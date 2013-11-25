@@ -26,4 +26,5 @@
 - (IBAction)onAreaResetBtn:(id)sender;
 - (IBAction)changeConnectServerSegment:(id)sender;
 - (IBAction)maskSliderChanged:(id)sender;
+- (IBAction)logoutButtonAction:(id)sender;
 @end

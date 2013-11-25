@@ -7,6 +7,8 @@
 //
 
 #import "FluxSettingsViewController.h"
+#import "UICKeyChainStore.h"
+#import <FacebookSDK/FacebookSDK.h>
 
 @interface FluxSettingsViewController ()
 
@@ -132,6 +134,15 @@
     [defaults synchronize];
     [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
     [self.maskSlider setValue:(float)discreteValue];
+}
+
+- (IBAction)logoutButtonAction:(id)sender {
+    [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
+        [UICKeyChainStore removeAllItems];
+        if (FBSession.activeSession.isOpen) {
+            [FBSession.activeSession closeAndClearTokenInformation];
+        }
+    }];
 }
 
 - (IBAction)onAreaResetBtn:(id)sender

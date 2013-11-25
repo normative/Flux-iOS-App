@@ -18,6 +18,8 @@
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     
+    NSString*socialOauthPin;
+    
     NSMutableArray*textInputElements;
     BOOL isInSignUp;
     
@@ -38,6 +40,8 @@
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 - (void)hideKeyboard;
 - (IBAction)createAccountButtonAction:(id)sender;
+- (IBAction)twitterSignInAction:(id)sender;
+- (IBAction)facebookSignInAction:(id)sender;
 - (IBAction)loginSignupToggleAction:(id)sender;
 
 

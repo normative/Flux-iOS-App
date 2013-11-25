@@ -167,7 +167,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-    [filtersVC prepareViewWithFilter:currentDataFilter];
+    [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.fluxMapContentMetadata.count];
     [self animationPushBackScaleDown];
         [filtersVC setRadius:500.0];
 }

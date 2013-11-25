@@ -12,6 +12,8 @@
 #import "FluxTextFieldCell.h"
 #import "UICKeyChainStore.h"
 
+#import <FacebookSDK/FacebookSDK.h>
+
 @interface FluxRegisterViewController ()
 
 @end
@@ -205,6 +207,71 @@
     [alert show];
 }
 
+- (IBAction)twitterSignInAction:(id)sender {
+    
+}
+
+- (IBAction)facebookSignInAction:(id)sender {
+    if (!FBSession.activeSession.isOpen) {
+        [self hideContainerViewAnimated:YES];
+        if (FBSession.activeSession.state != FBSessionStateCreated) {
+            // Create a new, logged out session.
+            FBSession.activeSession = [[FBSession alloc] init];
+        }
+        
+        // if the session isn't open, let's open it now and present the login UX to the user
+        NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
+        [FBSession openActiveSessionWithReadPermissions:permissions
+                                           allowLoginUI:YES
+                                      completionHandler:
+         ^(FBSession *session,
+           FBSessionState state, NSError *error) {
+             if (!error) {
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
+                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                     [alert show];
+                     
+                     if (FBSession.activeSession.isOpen) {
+                         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
+                         if (!error) {
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                             NSString * userString = [NSString stringWithFormat:@"Name: %@ \nUsername: %@ \nEmail: %@",user.name, user.username,[user objectForKey:@"email"]];
+                             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:userString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                             [alert show];
+                         });
+                         NSLog(@"Name: %@",user.name);
+                         NSLog(@"Username: %@",user.username);
+                         NSLog(@"Email: %@",[user objectForKey:@"email"]);
+                             
+                         [UICKeyChainStore setString:user.username forKey:@"username" service:@"com.flux"];
+                         
+                         socialOauthPin = FBSession.activeSession.accessTokenData.accessToken;
+                         [self fadeOutLogin];
+                         }
+                         else{
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+                                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                                 [alert show];
+                                 });
+                             }
+                         }];
+                     }
+                 });
+             }
+             else{
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                     [alert show];
+                 });
+                 [self showContainerViewAnimated:YES];
+             }
+         }];
+    }
+}
+
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
         NSLog(@"Entered: %@",[[alertView textFieldAtIndex:0] text]);
@@ -218,12 +285,12 @@
 -(void)loginSignupWithPin:(NSString*)pin{
     if (isInSignUp) {
         
-//        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//        BOOL isremote = [[defaults objectForKey:@"Server Location"]intValue];
-//        if (!isremote) {
-//            [self fadeOutLogin];
-//            return;
-//        }
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        BOOL isremote = [[defaults objectForKey:@"Server Location"]intValue];
+        if (!isremote) {
+            [self fadeOutLogin];
+            return;
+        }
         
         FluxUserObject *newUser = [[FluxUserObject alloc]init];
         
@@ -305,12 +372,80 @@
     NSString *password = [UICKeyChainStore stringForKey:@"password" service:@"com.flux"];
     NSString *token = [UICKeyChainStore stringForKey:@"token" service:@"com.flux"];
     
+    [self checkFBLoginStatus];
+    
     if (username && token && password) {
         [self fadeOutLogin];
     }
     else{
         [self showContainerViewAnimated:YES];
     }
+}
+
+- (void)checkFBLoginStatus{
+    if (!FBSession.activeSession) {
+        // create a fresh session object
+        FBSession.activeSession = [[FBSession alloc] init];
+        [FBSession setActiveSession: FBSession.activeSession];
+        
+        // if we don't have a cached token, a call to open here would cause UX for login to
+        // occur; we don't want that to happen unless the user clicks the login button, and so
+        // we check here to make sure we have a token before calling open
+        if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+            // even though we had a cached token, we need to login to make the session usable
+            NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
+            [FBSession openActiveSessionWithReadPermissions:permissions
+                                               allowLoginUI:YES
+                                          completionHandler:
+             ^(FBSession *session,
+               FBSessionState state, NSError *error) {
+                 if (!error) {
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
+                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                         [alert show];
+                     });
+                 }
+                 else{
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                         [alert show];
+                     });
+                 }
+             }];
+        }
+    }
+//    else{
+//        if (![FBSession.activeSession.permissions containsObject:@"email"]) {
+//            NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
+//            [FBSession openActiveSessionWithReadPermissions:permissions
+//                                               allowLoginUI:YES
+//                                          completionHandler:
+//             ^(FBSession *session,
+//               FBSessionState state, NSError *error) {
+//                 if (!error) {
+//                     dispatch_async(dispatch_get_main_queue(), ^{
+//                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
+//                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//                         [alert show];
+//                         
+//                     });
+//                 }
+//                 else{
+//                     dispatch_async(dispatch_get_main_queue(), ^{
+//                         NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+//                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//                         [alert show];
+//                     });
+//                 }
+//             }];
+//        }
+//    }
+}
+
+- (void)checkTWloginStatus{
+    
 }
 
 - (IBAction)loginSignupToggleAction:(id)sender {

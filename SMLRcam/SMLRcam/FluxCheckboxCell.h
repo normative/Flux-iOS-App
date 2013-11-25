@@ -19,6 +19,7 @@
     BOOL active;
     id __unsafe_unretained delegate;
 }
+@property (strong, nonatomic) IBOutlet UILabel *countLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descriptorLabel;
 @property (weak, nonatomic) IBOutlet KTCheckboxButton *checkbox;
 

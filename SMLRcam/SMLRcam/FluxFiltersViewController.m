@@ -21,7 +21,7 @@
 
 @implementation FluxFiltersViewController
 
-@synthesize delegate;
+@synthesize delegate, imageCount;
 
 - (void)viewDidLoad
 {
@@ -42,7 +42,7 @@
     [self.backgroundImageView addSubview:darkenedView];
 
     
-    imageCount = 0;
+
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideKeyboard)];
     
@@ -65,10 +65,13 @@
     [self sendTagRequest];
 }
 
-- (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter{
+- (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andDBTitle:@"myPhotos" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"myPhotos"]];
     FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
     FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Favourites" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
+    
+    startImageCount = count;
+    imageCount = [NSNumber numberWithInt:count];
     
     socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, favouritesFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
@@ -181,13 +184,13 @@
             [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
             
             // Create label with section title
-            UILabel *label = [[UILabel alloc] init];
+            UILabel*label = [[UILabel alloc] init];
             label.frame = CGRectMake(20, 10, 150, height);
             label.textColor = [UIColor whiteColor];
             [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:19]];
             label.text = @"Showing";
             label.backgroundColor = [UIColor clearColor];
-            [label setCenter:CGPointMake(label.center.x, view.center.y)];
+            [label setCenter:CGPointMake(label.center.x, label.center.y)];
             [view addSubview:label];
             
             CGPoint countCenter = CGPointMake(view.frame.size.width-45, view.center.y);
@@ -207,14 +210,14 @@
             [view.layer addSublayer:circleLayer];
             
             //Add count label
-            UILabel *countLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 50, 50)];
-            [countLabel setCenter:countCenter];
-            countLabel.textColor = [UIColor whiteColor];
-            [countLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:19]];
-            countLabel.text = [NSString stringWithFormat:@"%i", imageCount];
-            countLabel.backgroundColor = [UIColor clearColor];
-            countLabel.textAlignment = NSTextAlignmentCenter;
-            [view addSubview:countLabel];
+            imageCountLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 50, 50)];
+            [imageCountLabel setCenter:countCenter];
+            imageCountLabel.textColor = [UIColor whiteColor];
+            [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:19]];
+            imageCountLabel.text = [NSString stringWithFormat:@"%i", imageCount.intValue];
+            imageCountLabel.backgroundColor = [UIColor clearColor];
+            imageCountLabel.textAlignment = NSTextAlignmentCenter;
+            [view addSubview:imageCountLabel];
             
             // Save this shape layer in a class property for future reference,
             // namely so we can remove it later if we tap elsewhere on the screen.
@@ -293,6 +296,8 @@
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
             
+            [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
+            
             //set the cell properties to the array elements declared above
             [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
@@ -308,8 +313,10 @@
             if (cell == nil) {
                 cell = [[FluxCheckboxCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             }
-            
+            [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
+            [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
             cell.descriptorLabel.text = [NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]];
+            cell.countLabel.text = [NSString stringWithFormat:@"%i",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
@@ -332,7 +339,6 @@
 //if the checkbox is selected, the callback comes here. In the method below we check which cell it is and mark the corresponding object as active.
 - (void)SocialCell:(FluxSocialFilterCell *)checkCell boxWasChecked:(BOOL)checked{
     [self modifyDataFilter:dataFilter filterSting:checkCell.dbTitle forType:social_filterType andAdd:checked];
-    
     //update the cell
     for (FluxSocialFilterCell* cell in [self.filterTableView visibleCells]) {
         if (cell == checkCell) {
@@ -340,13 +346,20 @@
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
-    [self sendTagRequest];
+    //[self sendTagRequest];
 }
 
 - (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{
     NSString * tag = [checkCell.descriptorLabel.text substringFromIndex:1];
     [self modifyDataFilter:dataFilter filterSting:tag forType:tags_filterType andAdd:checked];
-
+    
+    if (checked) {
+        [self updateImageCount:[checkCell.countLabel.text intValue]];
+    }
+    else
+        [self updateImageCount:-[checkCell.countLabel.text intValue]];
+    
+    
     //update the cell
     for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
         if (cell == checkCell) {
@@ -373,7 +386,26 @@
             [dataFilter removeHashTagFromFilter:string];
         }
     }
+}
+
+- (void)updateImageCount:(int)num{
+    //if it's the first filter applied, make it the only active filter
+    if (imageCount.intValue == startImageCount) {
+        imageCount = [NSNumber numberWithInt:num];
+    }
     
+    //if not, add it up
+    else{
+        imageCount = [NSNumber numberWithInt:[imageCount intValue]+num];
+    }
+
+    //if we've subtracted back to 0, show the initial count (no filters applied anymore)
+    if (imageCount.intValue == 0) {
+        imageCount = [NSNumber numberWithInt:startImageCount];
+    }
+    
+    [imageCountLabel setText:[NSString stringWithFormat:@"%i",imageCount.intValue]];
+
 }
 
 

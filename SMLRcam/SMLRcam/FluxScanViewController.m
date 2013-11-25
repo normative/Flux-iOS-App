@@ -573,7 +573,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [filtersVC setDelegate:self];
         [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-        [filtersVC prepareViewWithFilter:currentDataFilter];
+        [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
         
         UIImage*capture = [openGLController takeScreenCap];
         [filtersVC setBackgroundView:capture];
