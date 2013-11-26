@@ -183,8 +183,8 @@
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                     </imageView>
-                                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Zi1-Yb-u00">
-                                                        <rect key="frame" x="6" y="0.0" width="33" height="33"/>
+                                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Zi1-Yb-u00">
+                                                        <rect key="frame" x="6" y="2" width="33" height="33"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -338,7 +338,7 @@
                                         </connections>
                                     </collectionView>
                                     <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="ZpU-bR-NWm">
-                                        <rect key="frame" x="10" y="245" width="300" height="29"/>
+                                        <rect key="frame" x="10" y="245" width="246" height="29"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <segments>
                                             <segment title="Public"/>
@@ -349,6 +349,26 @@
                                             <action selector="socialOptionChanged:" destination="eyG-qJ-3R4" eventType="valueChanged" id="vIq-Du-Vs9"/>
                                         </connections>
                                     </segmentedControl>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rtn-gi-ks8">
+                                        <rect key="frame" x="264" y="249" width="20" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" image="Image">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="facebookButtonAction:" destination="eyG-qJ-3R4" eventType="touchUpInside" id="GeZ-eS-KcC"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gL4-B4-A1O">
+                                        <rect key="frame" x="288" y="249" width="20" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" image="Image">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="twitterButtonAction:" destination="eyG-qJ-3R4" eventType="touchUpInside" id="aUk-2f-jml"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.18431372549019609" green="0.18431372549019609" blue="0.18431372549019609" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
                             </view>
@@ -371,9 +391,11 @@
                         <outlet property="ImageAnnotationTextView" destination="PY6-5W-SRh" id="EzU-9Y-kuI"/>
                         <outlet property="containerView" destination="Hpz-QJ-bJr" id="eSh-OF-X3d"/>
                         <outlet property="dateLabel" destination="l7F-DR-WWV" id="gvl-sH-3qo"/>
+                        <outlet property="facebookButton" destination="rtn-gi-ks8" id="GR9-Gc-hhy"/>
                         <outlet property="imageCollectionView" destination="Cit-Ms-vJp" id="GAp-qM-nzF"/>
                         <outlet property="saveButton" destination="eUp-6g-yM5" id="q3l-dE-LT5"/>
                         <outlet property="socialOptionSegmentedControl" destination="ZpU-bR-NWm" id="toU-dU-LUM"/>
+                        <outlet property="twitterButton" destination="gL4-B4-A1O" id="pjo-ds-SN5"/>
                         <outlet property="usernameImageView" destination="1ZK-0H-WHv" id="YvA-BC-cad"/>
                         <outlet property="usernameLabel" destination="116-SP-MgJ" id="Oz2-Wo-DJh"/>
                     </connections>
@@ -806,17 +828,6 @@
                                             <segue destination="OPi-Zk-6ZT" kind="modal" identifier="pushFiltersView" modalTransitionStyle="coverVertical" id="VPw-Ht-DPL"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DOx-wz-4Oh" userLabel="fakeButton">
-                                        <rect key="frame" x="116" y="48" width="92" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <state key="normal">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="annotationsButtonAction:" destination="2" eventType="touchUpInside" id="zVf-sz-AnE"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
                                         <rect key="frame" x="215" y="486" width="70" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1075,10 +1086,11 @@
                                     <outlet property="delegate" destination="YQi-AC-BdW" id="Enu-U9-q0v"/>
                                 </connections>
                             </mapView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="backgroundGradient_top" translatesAutoresizingMaskIntoConstraints="NO" id="7VM-pp-Hct">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="137"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            </imageView>
+                            <view alpha="0.5" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="scd-9z-Ndw">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="122"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ka0-3T-Kej">
                                 <rect key="frame" x="250" y="38" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1416,11 +1428,12 @@
     </scenes>
     <resources>
         <image name="ConfirmCamButton" width="100" height="101"/>
+        <image name="Image" width="640" height="1136"/>
         <image name="backgroundGradient_bottom" width="640" height="276"/>
         <image name="backgroundGradient_top" width="640" height="276"/>
         <image name="camButton" width="140" height="140"/>
         <image name="closeCamButton" width="100" height="101"/>
-        <image name="compassButton" width="121" height="120"/>
+        <image name="compassButton" width="140" height="140"/>
         <image name="filterButton" width="140" height="140"/>
         <image name="fluxlogo" width="186" height="217"/>
         <image name="imageViewerClock" width="28" height="28"/>
@@ -1434,6 +1447,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="VPw-Ht-DPL"/>
+        <segue reference="03e-8S-vGN"/>
     </inferredMetricsTieBreakers>
 </document>

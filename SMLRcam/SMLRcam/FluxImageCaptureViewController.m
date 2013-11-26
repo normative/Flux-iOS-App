@@ -59,11 +59,6 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 	// Do any additional setup after loading the view.
 }
 
--(void)viewWillAppear:(BOOL)animated{
-    [approveButton setHidden:YES];
-    [undoButton setHidden:YES];
-}
-
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -73,6 +68,8 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 - (void)setHidden:(BOOL)hidden{
     if (!hidden) {
         [self.view setHidden:NO];
+        [approveButton setHidden:YES];
+        [undoButton setHidden:YES];
         [UIView animateWithDuration:0.3f
                          animations:^{
                              [self.view setAlpha:1.0];
@@ -152,7 +149,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 
 - (IBAction)approveImageAction:(id)sender
 {        
-
+    
 }
 
 

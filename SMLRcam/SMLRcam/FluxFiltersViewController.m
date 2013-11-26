@@ -35,8 +35,7 @@
     self.radius = 15;
     FluxImageTools*imageTools = [[FluxImageTools alloc]init];
     
-    [self.backgroundImageView setImage:bgImage];
-    [self.backgroundImageView setImage:[imageTools blurImage:[UIImage imageNamed:@"Image"] withBlurLevel:0.6]];
+    [self.backgroundImageView setImage:[imageTools blurImage:bgImage withBlurLevel:0.6]];
     UIView*darkenedView = [[UIView alloc]initWithFrame:self.backgroundImageView.bounds];
     [darkenedView setBackgroundColor:[UIColor colorWithRed:47/255.0 green:47/255.0 blue:47/255.0 alpha:0.8]];
     [self.backgroundImageView addSubview:darkenedView];
@@ -188,7 +187,7 @@
             label.frame = CGRectMake(20, 10, 150, height);
             label.textColor = [UIColor whiteColor];
             [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:19]];
-            label.text = @"Showing";
+            label.text = @"Show Only";
             label.backgroundColor = [UIColor clearColor];
             [label setCenter:CGPointMake(label.center.x, label.center.y)];
             [view addSubview:label];

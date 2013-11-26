@@ -141,6 +141,7 @@
     if ((scrollView.contentOffset.y < scrollView.contentSize.height - scrollView.frame.size.height) && scrollView.contentOffset.y > 0) {
         if (self.fluxDisplayManager && self.fluxDisplayManager.nearbyListCount > 5) {
             [self.fluxDisplayManager timeBracketDidChange:(scrollView.contentOffset.y/scrollView.contentSize.height)];
+            
         }
     }
     

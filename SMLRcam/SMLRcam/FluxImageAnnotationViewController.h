@@ -35,6 +35,8 @@
 
     IBOutlet UISegmentedControl *socialOptionSegmentedControl;
     IBOutlet UIBarButtonItem *saveButton;
+    IBOutlet UIButton *facebookButton;
+    IBOutlet UIButton *twitterButton;
     NSArray*images;
     NSMutableIndexSet*removedImages;
 }
@@ -44,6 +46,8 @@
 - (IBAction)socialOptionChanged:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)saveButtonAction:(id)sender;
+- (IBAction)facebookButtonAction:(id)sender;
+- (IBAction)twitterButtonAction:(id)sender;
 
 - (void)prepareViewWithBGImage:(UIImage*)image andCapturedImages:(NSMutableArray*)capturedObjects withLocation:(NSString*)location andDate:(NSDate*)capturedDate;
 

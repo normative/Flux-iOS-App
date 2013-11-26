@@ -54,12 +54,6 @@
     UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
     [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
     [self.view insertSubview:bgView belowSubview:containerView];
-    //    UIImage *theImg = (UIImage*)[capturedObjects objectAtIndex:0];
-//    CGImageRef imageRef = CGImageCreateWithImageInRect([theImg CGImage], CGRectMake(0, (theImg.size.height/2) - (theImg.size.width/2), theImg.size.width, theImg.size.width));
-//    // or use the UIImage wherever you like
-//    UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
-//    CGImageRelease(imageRef);
-    
     
     NSDateFormatter *theDateFormat = [[NSDateFormatter alloc] init];
     [theDateFormat setDateFormat:@"MMM dd, yyyy - h:mma"];
@@ -72,7 +66,6 @@
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return images.count;
 }
-
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *identifier = @"cell";
@@ -133,6 +126,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+//if it's a 4s or before, tap hides the keyboard
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    if ([[UIScreen mainScreen] bounds].size.height < 568.0f)
+    {
+        [ImageAnnotationTextView resignFirstResponder];
+    }
+}
+
 #pragma mark - IB Actions
 
 
@@ -154,5 +155,11 @@
         }
         [self dismissViewControllerAnimated:YES completion:nil];
     }
+}
+
+- (IBAction)facebookButtonAction:(id)sender {
+}
+
+- (IBAction)twitterButtonAction:(id)sender {
 }
 @end
