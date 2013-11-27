@@ -33,15 +33,19 @@
     return self;
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    [self setIsActive:!active];
-    [self CheckBoxButtonWasTapped:self.checkbox andChecked:active];
-}
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+//    [self setIsActive:!active];
+//    [self CheckBoxButtonWasTapped:self.checkbox andChecked:active];
+//}
 
 //for now setting the cell active just makes it bold, checks the checkmark
 -(void)setIsActive:(BOOL)bActive{
     active = bActive;
     [self.checkbox setChecked:active];
+}
+
+-(void)cellWasTapped{
+    [self CheckBoxButtonWasTapped:self.checkbox andChecked:!active];
 }
 
 //the checkbox was tapped

@@ -80,6 +80,7 @@
         [radarImageView setContentMode:UIViewContentModeScaleAspectFit];
         float rotateDegree = i*30;
         radarImageView.transform = CGAffineTransformMakeRotation(rotateDegree * M_PI/180);
+        [radarImageView setHidden:YES];
         
         [radarView addSubview:radarImageView];
         [radarImagesArray addObject:radarImageView];

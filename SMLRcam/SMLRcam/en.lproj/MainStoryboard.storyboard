@@ -1235,7 +1235,7 @@
                                 <color key="separatorColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="socialCell" id="dES-eU-K1v" customClass="FluxSocialFilterCell">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="socialCell" id="dES-eU-K1v" customClass="FluxSocialFilterCell">
                                         <rect key="frame" x="0.0" y="22" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dES-eU-K1v" id="9RI-aU-J5e">
@@ -1270,7 +1270,7 @@
                                             <outlet property="descriptorLabel" destination="Ezl-0m-8f7" id="oJx-Nl-25V"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="tagCell" id="cEi-FY-Yzs" customClass="FluxCheckboxCell">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="tagCell" id="cEi-FY-Yzs" customClass="FluxCheckboxCell">
                                         <rect key="frame" x="0.0" y="66" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cEi-FY-Yzs" id="hnk-DO-h7d">
@@ -1406,6 +1406,24 @@
             </objects>
             <point key="canvasLocation" x="523" y="-321"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="t1m-9n-g75">
+            <objects>
+                <viewController id="VHQ-NB-Pjr" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="7Q5-TV-CRy"/>
+                        <viewControllerLayoutGuide type="bottom" id="apP-cz-VHB"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="IkI-dI-3Bn">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="pVb-LP-qwT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2354" y="364"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="hwp-JT-Ovc">
             <objects>
@@ -1447,6 +1465,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="03e-8S-vGN"/>
+        <segue reference="VPw-Ht-DPL"/>
     </inferredMetricsTieBreakers>
 </document>

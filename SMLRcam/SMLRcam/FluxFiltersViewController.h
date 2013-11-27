@@ -15,6 +15,8 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxDataFilter.h"
 
+#import "GAITrackedViewController.h"
+
 @class FluxFiltersViewController;
 @protocol FiltersTableViewDelegate <NSObject>
 @optional
@@ -22,7 +24,7 @@
 @end
 
 
-@interface FluxFiltersViewController : UIViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
+@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;

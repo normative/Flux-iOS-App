@@ -48,7 +48,8 @@
     // prevents the scroll view from swallowing up the touch event of child buttons
     tapGesture.cancelsTouchesInView = NO;
     
-    [self.filterTableView addGestureRecognizer:tapGesture];
+    //[self.filterTableView addGestureRecognizer:tapGesture];
+    self.screenName = @"Filters View";
 }
 
 
@@ -184,7 +185,7 @@
             
             // Create label with section title
             UILabel*label = [[UILabel alloc] init];
-            label.frame = CGRectMake(20, 10, 150, height);
+            label.frame = CGRectMake(20, 2, 150, height);
             label.textColor = [UIColor whiteColor];
             [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:19]];
             label.text = @"Show Only";
@@ -209,7 +210,7 @@
             [view.layer addSublayer:circleLayer];
             
             //Add count label
-            imageCountLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 50, 50)];
+            imageCountLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 2, 50, 50)];
             [imageCountLabel setCenter:countCenter];
             imageCountLabel.textColor = [UIColor whiteColor];
             [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:19]];
@@ -296,6 +297,7 @@
             [cell setDelegate:self];
             
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
+            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             
             //set the cell properties to the array elements declared above
             [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
@@ -316,6 +318,7 @@
             [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
             cell.descriptorLabel.text = [NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]];
             cell.countLabel.text = [NSString stringWithFormat:@"%i",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
+            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
@@ -328,7 +331,13 @@
     return nil;
 }
 
-- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (indexPath.section == 0) {
+        [(FluxSocialFilterCell*)[tableView cellForRowAtIndexPath:indexPath]cellWasTapped];
+    }
+    else{
+        [(FluxCheckboxCell*)[tableView cellForRowAtIndexPath:indexPath]cellWasTapped];
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
