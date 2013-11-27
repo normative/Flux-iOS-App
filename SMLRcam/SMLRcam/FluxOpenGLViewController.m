@@ -1220,12 +1220,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                             }
                             
                             ire.textureMapElement = tel;
+                            ire.imageType = rtype;
+                            ire.image = image;
+                            tel.imageType = rtype;
                             tel.used = true;
                             tel.localID = ire.localID;
-                            tel.imageType = rtype;
                             justLoaded = true;
+                            int width = CGImageGetWidth(image.CGImage);
+                            int height = CGImageGetWidth(image.CGImage);
 
-                            NSLog(@"Loaded Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                            NSLog(@"Loaded Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, tel.imageType, width, height);
                         }
                         break;
                     }
@@ -1266,7 +1270,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         ire.imageType = rtype;
                         ire.image = image;
                         loadedOneHiRes = true;
-                        NSLog(@"Updated Image texture in slot %d for key %@", (textureIndex),ire.localID);
+                        
+                        int width = CGImageGetWidth(image.CGImage);
+                        int height = CGImageGetWidth(image.CGImage);
+
+                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageType, width, height);
                     }
                 }
                 else

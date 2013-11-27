@@ -109,15 +109,15 @@ double getAbsAngle(double angle, double heading)
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
-//    // HACK - with fixed positioning, only need the first, then can ignore
-//    static bool haveFirst = false;
-//
-//    if (haveFirst)
-//        return;
-//    
-//    haveFirst = true;
-    [self requestNearbyItems];
-}
+    // HACK - with fixed positioning, only need the first, then can ignore
+    static bool haveFirst = false;
+
+    if (haveFirst)
+        return;
+    
+    haveFirst = true;
+        [self requestNearbyItems];
+    }
 
 #pragma mark Filter
 
@@ -430,7 +430,7 @@ double getAbsAngle(double angle, double heading)
                 
                 //  clean nearbyList (empty)
                 [self.nearbyList removeAllObjects];
-
+                
                 //  for each item in response
                 for (FluxScanImageObject *curImgObj in imageList)
                 {
@@ -477,7 +477,21 @@ double getAbsAngle(double angle, double heading)
                     }
                     
                     // copy to nearbyList
-                    [self.nearbyList addObject:curImgRenderObj];
+//                    bool found = false;
+//                    for (FluxImageRenderElement *ire in self.nearbyList)
+//                    {
+//                        if (ire.imageMetadata.imageID == curImgRenderObj.imageMetadata.imageID)
+//                        {
+//                            found = true;
+//                            NSLog(@"Found ID %d in nearby list already!!", ire.imageMetadata.imageID);
+//                        }
+//                    }
+//                    
+//                    if (!found)
+//                    if ([self.nearbyList indexOfObject:curImgRenderObj] == NSNotFound)
+                    {
+                        [self.nearbyList addObject:curImgRenderObj];
+                    }
                 }
                 
                 //  for each remaining item in localOnlyObjects list
@@ -506,6 +520,33 @@ double getAbsAngle(double angle, double heading)
                                                                             nil];
                 
                 [self.nearbyList sortUsingDescriptors:sortDescriptors];
+                
+                // spin through list and remove duplicates - shouldn't be any but given the fits the GL rendering sub-system throws if they are present, better safe than sorry...
+                // NOTE: elements should be right next to each other - this allows us to do neighbour comparisons rather than full-list checks.
+                NSMutableArray *duplist = [[NSMutableArray alloc]init];
+                FluxImageRenderElement *prevIre = nil;
+                int c = 0;
+                int d = 0;
+                for (FluxImageRenderElement *ire in self.nearbyList)
+                {
+                    if (prevIre != nil)
+                    {
+                        if (prevIre.imageMetadata.imageID == ire.imageMetadata.imageID)
+                        {
+                            // have a duplicate - kill the first one
+                            d = [self.nearbyList indexOfObject:ire];
+                            [duplist addObject:[NSNumber numberWithInteger:c++]];
+                        }
+                    }
+                    
+                    prevIre = ire;
+                }
+                
+                // remove in reverse order (bottom up) so indexes aren't messed up
+                for (NSNumber *idx in [duplist reverseObjectEnumerator])
+                {
+                    [self.nearbyList removeObjectAtIndex:[idx intValue]];
+                }
 
                 [self calculateTimeAdjustedImageList];
             }
