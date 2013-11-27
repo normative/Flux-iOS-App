@@ -1,6 +1,6 @@
 Release Notes:
 
-
+- added code to prevent duplicate image entries in images lists (especially the renderList) to address the "noise" rendering issue
 
 ******************************************
 
