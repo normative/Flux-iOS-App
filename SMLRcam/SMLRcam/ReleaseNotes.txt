@@ -3,6 +3,27 @@ Release Notes:
 
 ******************************************
 
+V0.13 B09
+
+Released: 2013-11-27 14:00:00
+
+- added code to prevent duplicate image entries in images lists (especially the renderList) to address the "noise" rendering issue
+- same fix also addresses potential bug where app crashes after taking multiple rapid-fire images
+
+******************************************
+
+V0.13 B08
+
+Released: 2013-11-25 21:15:00
+
+Release Notes:
+
+- adds pan functionality to mapView
+- Data fetch based on Kalman Filtered location. Raw value is propagated to cloud.
+- updated image annotationView, removed edit imageCaptureview, tweaked cambutton
+
+******************************************
+
 V0.13 B07
 
 Released: 2013-11-20 23:16:00

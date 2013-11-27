@@ -1260,7 +1260,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam,
+					$SRCROOT,
+					$SRCROOT/OpenCV_mod,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
@@ -1290,7 +1291,8 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/kei/Documents/Maps_Project/Current_GitProject/smlr_repo/SMLRcam,
+					$SRCROOT,
+					$SRCROOT/OpenCV_mod,
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";

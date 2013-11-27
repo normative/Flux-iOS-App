@@ -109,13 +109,13 @@ double getAbsAngle(double angle, double heading)
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
+    
 //    // HACK - with fixed positioning, only need the first, then can ignore
-//    static bool haveFirst = false;
+//    static int haveFirst = 0;
 //
-//    if (haveFirst)
+//    if (haveFirst ++ > 5)
 //        return;
-//    
-//    haveFirst = true;
+    
     [self requestNearbyItems];
 }
 
@@ -419,7 +419,24 @@ double getAbsAngle(double angle, double heading)
             
             [_nearbyListLock lock];
             {
-                // Iterate over the list and clear out anything that is not local-only
+//                for (int oidx = 0; oidx < (imageList.count-1); oidx++)
+//                {
+//                    FluxScanImageObject *oObj = [imageList objectAtIndex:oidx];
+//                    for (int iidx = oidx + 1; iidx < imageList.count; iidx++)
+//                    {
+//                        FluxScanImageObject *iObj = [imageList objectAtIndex:iidx];
+//                        if ((iObj != nil) && (oObj != nil))
+//                        {
+//                            if ([iObj.localID isEqualToString:oObj.localID])
+//                            {
+//                                NSLog(@"Duplicated image IDs in received image list: %@, %@, %d, %d", oObj.localID, iObj.localID, oObj.imageID, iObj.imageID);
+//                            }
+//                        }
+//                    }
+//                    
+//                }
+
+                // Iterate over the current nearbylist and clear out anything that is not local-only
                 for (FluxImageRenderElement *ire in self.nearbyList)
                 {
                     if (ire.imageMetadata.imageID < 0)
@@ -430,7 +447,7 @@ double getAbsAngle(double angle, double heading)
                 
                 //  clean nearbyList (empty)
                 [self.nearbyList removeAllObjects];
-
+                
                 //  for each item in response
                 for (FluxScanImageObject *curImgObj in imageList)
                 {
@@ -477,7 +494,22 @@ double getAbsAngle(double angle, double heading)
                     }
                     
                     // copy to nearbyList
-                    [self.nearbyList addObject:curImgRenderObj];
+// list dup elimination
+//                    bool found = false;
+//                    for (FluxImageRenderElement *ire in self.nearbyList)
+//                    {
+//                        if (ire.imageMetadata.imageID == curImgRenderObj.imageMetadata.imageID)
+//                        {
+//                            found = true;
+//                            NSLog(@"Found ID %d in nearby list already!!", ire.imageMetadata.imageID);
+//                        }
+//                    }
+//                    
+//                    if (!found)
+//                    if ([self.nearbyList indexOfObject:curImgRenderObj] == NSNotFound)
+                    {
+                        [self.nearbyList addObject:curImgRenderObj];
+                    }
                 }
                 
                 //  for each remaining item in localOnlyObjects list
@@ -506,6 +538,31 @@ double getAbsAngle(double angle, double heading)
                                                                             nil];
                 
                 [self.nearbyList sortUsingDescriptors:sortDescriptors];
+                
+                // spin through list and remove duplicates - shouldn't be any but given the fits the GL rendering sub-system throws if they are present, better safe than sorry...
+                // NOTE: elements should be right next to each other (same timestamp) - this allows us to do neighbour comparisons rather than full-list checks.
+                NSMutableArray *duplist = [[NSMutableArray alloc]init];
+                FluxImageRenderElement *prevIre = nil;
+                int c = 0;
+                for (FluxImageRenderElement *ire in self.nearbyList)
+                {
+                    if (prevIre != nil)
+                    {
+                        if (prevIre.imageMetadata.imageID == ire.imageMetadata.imageID)
+                        {
+                            // have a duplicate - kill the first one
+                            [duplist addObject:[NSNumber numberWithInteger:c]];
+                        }
+                    }
+                    c++;
+                    prevIre = ire;
+                }
+                
+                // remove in reverse order (bottom up) so indexes aren't messed up
+                for (NSNumber *idx in [duplist reverseObjectEnumerator])
+                {
+                    [self.nearbyList removeObjectAtIndex:[idx intValue]];
+                }
 
                 [self calculateTimeAdjustedImageList];
             }
@@ -645,16 +702,24 @@ double getAbsAngle(double angle, double heading)
     {
         for (FluxImageRenderElement *ire in self.displayList)
         {
-//        for (int idx = 0; idx < maxDisplayCount; idx++)
-//        {
             double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
             if (h1 < 90.0)
             {
-                [renderList addObject:ire];
-                count++;
-                if (count >= maxDisplayCount)
+                // make sure a duplicate object isn't there already - need to search for duplicate localIDs.
+                bool dupFound = false;
+                for (FluxImageRenderElement *lire in renderList)
                 {
-                    break;
+                    dupFound = dupFound || ([lire.localID isEqualToString:ire.localID]);
+                }
+                
+                if (!dupFound)
+                {
+                    [renderList addObject:ire];
+                    count++;
+                    if (count >= maxDisplayCount)
+                    {
+                        break;
+                    }
                 }
             }
         }
