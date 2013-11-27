@@ -1,6 +1,14 @@
 Release Notes:
 
+
+******************************************
+
+V0.13 B09
+
+Released: 2013-11-27 14:00:00
+
 - added code to prevent duplicate image entries in images lists (especially the renderList) to address the "noise" rendering issue
+- same fix also addresses potential bug where app crashes after taking multiple rapid-fire images
 
 ******************************************
 
