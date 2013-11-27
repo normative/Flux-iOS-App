@@ -13,8 +13,11 @@
 
 #import "FluxDataManager.h"
 
+#import "GAITrackedViewController.h"
 
-@interface FluxRegisterViewController : UIViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>{
+
+
+@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     

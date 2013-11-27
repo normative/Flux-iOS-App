@@ -1,26 +1,20 @@
 //
-//  FluxLeftMenuCell.m
+//  FluxProfileCell.m
 //  Flux
 //
-//  Created by Kei Turner on 11/11/2013.
+//  Created by Kei Turner on 11/27/2013.
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import "FluxLeftMenuCell.h"
+#import "FluxProfileCell.h"
 
-@implementation FluxLeftMenuCell
+@implementation FluxProfileCell
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-    }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder{
-    if(self = [super initWithCoder:aDecoder]) {
     }
     return self;
 }
@@ -37,7 +31,8 @@
     bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
     [self setSelectedBackgroundView:bgColorView];
     
-    self.titleLabel.font = self.countLabel.font = [UIFont fontWithName:@"Akkurat" size:self.titleLabel.font.pointSize];
+    [self.usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.usernameLabel.font.pointSize]];
+    self.bioLabel.font = self.imageCountLabel.font = [UIFont fontWithName:@"Akkurat" size:self.imageCountLabel.font.pointSize];
 }
 
 @end

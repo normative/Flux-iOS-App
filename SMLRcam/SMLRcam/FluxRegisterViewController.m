@@ -64,6 +64,7 @@
     //[logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y+60, logoImageView.frame.size.width, logoImageView.frame.size.height)];
     [logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
 
+    self.screenName = @"Registation View";
 }
 
 - (void)didReceiveMemoryWarning

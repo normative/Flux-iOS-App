@@ -300,7 +300,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [browser setDelegate:self];
     [browser setDisplayToolbar:NO];
     [browser setDisplayDoneButtonBackgroundImage:NO];
-    [self presentViewController:browser animated:YES completion:nil];
+    UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
+    [nav setNavigationBarHidden:YES];
+    [self presentViewController:nav animated:YES completion:nil];
 }
 //
 //- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{

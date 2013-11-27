@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FluxLeftMenuCell : UITableViewCell
+@interface FluxCountTableViewCell : UITableViewCell
 @property (strong, nonatomic) IBOutlet UILabel *titleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *countLabel;
 
