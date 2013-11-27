@@ -13,7 +13,9 @@
 @property (strong, nonatomic) IBOutlet UILabel *usernameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *bioLabel;
 @property (strong, nonatomic) IBOutlet UILabel *imageCountLabel;
+@property (strong, nonatomic) IBOutlet UIImageView *cameraImageView;
 
 - (void)initCell;
+- (void)hideCamStats;
 
 @end

@@ -18,6 +18,7 @@
 }
 
 @property (weak, nonatomic) IBOutlet UIView *copyrightView;
+@property (strong, nonatomic) IBOutlet UIButton *feedbackButton;
 @property (weak, nonatomic) IBOutlet UILabel *versionLbl;
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;

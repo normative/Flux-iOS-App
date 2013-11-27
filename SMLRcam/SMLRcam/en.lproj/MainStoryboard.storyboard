@@ -420,12 +420,13 @@
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oYY-Vs-Dgh">
-                                    <rect key="frame" x="106" y="150" width="108" height="30"/>
+                                    <rect key="frame" x="106" y="113" width="108" height="30"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="30" id="0ln-rs-FgD"/>
                                         <constraint firstAttribute="width" constant="108" id="2IA-6R-4hS"/>
                                     </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <state key="normal" title="Send Feedback">
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -434,10 +435,23 @@
                                         <action selector="onSendFeedBackBtn:" destination="iEx-Eu-CFI" eventType="touchUpInside" id="Ok4-Dv-Mpl"/>
                                     </connections>
                                 </button>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eTl-Gu-teW">
+                                    <rect key="frame" x="116" y="137" width="88" height="21"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="21" id="bCe-8p-TqD"/>
+                                        <constraint firstAttribute="width" constant="88" id="dlV-OD-GIu"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                    <color key="textColor" red="0.17254901959999999" green="0.20784313730000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
-                                <constraint firstAttribute="bottom" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="12" id="EPG-JY-jlc"/>
+                                <constraint firstAttribute="centerX" secondItem="eTl-Gu-teW" secondAttribute="centerX" id="1dp-U0-k8i"/>
+                                <constraint firstAttribute="bottom" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="49" id="EPG-JY-jlc"/>
+                                <constraint firstItem="eTl-Gu-teW" firstAttribute="top" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="-6" id="NAG-u5-yZU"/>
                                 <constraint firstAttribute="centerX" secondItem="oYY-Vs-Dgh" secondAttribute="centerX" id="QfM-pN-Vpx"/>
                             </constraints>
                         </view>
@@ -483,6 +497,7 @@
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="bioLabel" destination="cJw-eG-xju" id="7jj-NT-m5m"/>
+                                    <outlet property="cameraImageView" destination="Dce-a0-MmP" id="NNR-uV-F05"/>
                                     <outlet property="imageCountLabel" destination="hCZ-6k-eJq" id="LVp-56-Sig"/>
                                     <outlet property="profileImageView" destination="sQh-0v-Iz5" id="bUV-nM-JdA"/>
                                     <outlet property="usernameLabel" destination="dgw-RX-FNB" id="LYI-OD-Vm9"/>
@@ -533,6 +548,8 @@
                     </navigationItem>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
+                        <outlet property="feedbackButton" destination="oYY-Vs-Dgh" id="anK-9d-wk1"/>
+                        <outlet property="versionLbl" destination="eTl-Gu-teW" id="Q0O-vq-FZx"/>
                         <segue destination="0Hb-dd-ez9" kind="push" identifier="pushSettingsSegue" id="bTt-Mn-4jt"/>
                         <segue destination="Hk4-y1-dJH" kind="push" identifier="pushPhotosSegue" id="5Gp-6F-wwh"/>
                     </connections>
