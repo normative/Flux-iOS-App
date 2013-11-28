@@ -92,7 +92,7 @@
     [footerView addSubview:followButton];
     [footerView addSubview:addFriendButton];
     
-    UIView*separator = [[UIView alloc]initWithFrame:CGRectMake(0, 1, self.view.frame.size.width, 0.5)];
+    UIView*separator = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0.5)];
     [separator setBackgroundColor:[UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7]];
     [footerView addSubview:separator];
 
@@ -112,6 +112,7 @@
         [cell.usernameLabel setText:@"CmdrTaco"];
         [cell.profileImageView setImage:[UIImage imageNamed:@"profileImage"]];
         [cell initCell];
+        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
         return cell;
     }
     else if (indexPath.row == 1){
@@ -123,6 +124,9 @@
         [cell initCell];
         [cell.titleLabel setText:@"Following"];
         [cell.countLabel setText:@"117"];
+        
+        [cell.titleLabel setEnabled:NO];
+        [cell.countLabel setEnabled:NO];
         return cell;
     }
     else{
@@ -134,13 +138,16 @@
         [cell initCell];
         [cell.titleLabel setText:@"Followers"];
         [cell.countLabel setText:@"23"];
+        
+        [cell.titleLabel setEnabled:NO];
+        [cell.countLabel setEnabled:NO];
         return cell;
     }
 
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
 - (void)didReceiveMemoryWarning

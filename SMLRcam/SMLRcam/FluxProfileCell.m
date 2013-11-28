@@ -26,6 +26,11 @@
     // Configure the view for the selected state
 }
 
+- (void)hideCamStats{
+    [self.imageCountLabel setHidden:YES];
+    [self.cameraImageView setHidden:YES];
+}
+
 - (void)initCell{
     UIView *bgColorView = [[UIView alloc] init];
     bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
