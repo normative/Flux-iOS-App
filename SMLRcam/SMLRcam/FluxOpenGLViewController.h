@@ -97,7 +97,7 @@
 - (void)updateBuffers;
 - (void)setupGL;
 - (void)tearDownGL;
-- (void) checkShaderLimitations;
+- (void)checkShaderLimitations;
 - (BOOL)loadShaders;
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
@@ -112,16 +112,19 @@
 //image capture methods
 - (void)showImageCapture;
 - (UIImage*)snapshot:(UIView*)eaglview;
--(UIImage*)takeScreenCap;
+- (UIImage*)takeScreenCap;
 
 - (void)didUpdateImageList:(NSNotification *)notification;
 //- (void)updateImageTexture:(NSNotification *)notification;
 
 - (void)render;
--(void) updateImageMetadataForElement:(FluxImageRenderElement*)element;
--(void) stepperChangedWithValue:(double)v;
+//- (void)updateImageMetadataForElement:(FluxImageRenderElement*)element;
+- (void)stepperChangedWithValue:(double)v;
+- (void)updateImageMetadataForElementList:(NSMutableArray *)elementList;
+
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
+
 
 
 @end

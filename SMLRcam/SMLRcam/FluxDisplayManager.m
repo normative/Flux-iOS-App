@@ -9,6 +9,7 @@
 #import "FluxDisplayManager.h"
 #import "FluxScanImageObject.h"
 #import "FluxImageCaptureViewController.h"
+#import "FluxOpenGLViewController.h"
 
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
@@ -63,6 +64,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
         _imageRequestCountLock = [[NSLock alloc]init];
         
+        _openGLVC = nil;
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -79,17 +82,17 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     return self;
 }
 
-double getAbsAngle(double angle, double heading)
-{
-    double h1 = fmod((angle + 360.0), 360.0);
-    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
-    if (h1 > 180.0)
-    {
-        h1 = 360.0 - h1;
-    }
-    
-    return h1;
-}
+//double getAbsAngle(double angle, double heading)
+//{
+//    double h1 = fmod((angle + 360.0), 360.0);
+//    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
+//    if (h1 > 180.0)
+//    {
+//        h1 = 360.0 - h1;
+//    }
+//    
+//    return h1;
+//}
 
 
 #pragma mark - Notifications
@@ -197,7 +200,6 @@ double getAbsAngle(double angle, double heading)
 - (void)calculateTimeAdjustedImageList
 {
     static bool inCalcTimeAdjImageList = false;
-    double localCurrHeading;
 
     if (inCalcTimeAdjImageList)
         return;
@@ -205,8 +207,18 @@ double getAbsAngle(double angle, double heading)
     [_displayListLock lock];
     [_nearbyListLock lock];
     {
+        // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
+        // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
+        // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
+        // hard pressed to see the issues simply because of motion blur.
+        
+        // spin through nearbylist to update...
+        if (self.openGLVC != nil)
+        {
+            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList];
+        }
+        
         inCalcTimeAdjImageList = true;
-        localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
         
         // generate the displayList...
         
@@ -257,17 +269,16 @@ double getAbsAngle(double angle, double heading)
         
         // sort by abs(heading delta with current) asc
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
-// sort based on heading - needs to be reworked to use a proper heading relative to projection plane placement
-//            // get heading deltas relative to current...
-//            
-//            double h1 = floor(getAbsAngle(obj1.imageMetadata.heading, localCurrHeading) / 5.0);
-//            double h2 = floor(getAbsAngle(obj2.imageMetadata.heading, localCurrHeading) / 5.0);
-//
-//            if (h1 != h2)
-//            {
-//                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
-//            }
-//            else
+            // get heading deltas relative to current...
+            
+            double h1 = floor(fabs(obj1.imageMetadata.heading) / 5.0);         // 5-degree blocks
+            double h2 = floor(fabs(obj2.imageMetadata.heading) / 5.0);
+
+            if (h1 != h2)
+            {
+                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
+            }
+            else
             {
                 return ([obj2.timestamp compare:obj1.timestamp]);   // sort descending timestamp
             }
@@ -289,8 +300,7 @@ double getAbsAngle(double angle, double heading)
 //    i = 0;
 //    for (FluxImageRenderElement *ire in self.displayList)
 //    {
-//        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-//        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
+//        NSLog(@"dl: i=%d, key=%@, headDelta=%f, timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
 //    }
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
@@ -695,15 +705,13 @@ double getAbsAngle(double angle, double heading)
     maxDisplayCount = MIN(maxDisplayCount, maxCount);
 
     [self lockDisplayList];
-    double localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
 
     int count = 0;
     if (count < maxDisplayCount)
     {
         for (FluxImageRenderElement *ire in self.displayList)
         {
-            double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-            if (h1 < 90.0)
+            if (fabs(ire.imageMetadata.heading) < 90.0)
             {
                 // make sure a duplicate object isn't there already - need to search for duplicate localIDs.
                 bool dupFound = false;
@@ -726,13 +734,6 @@ double getAbsAngle(double angle, double heading)
     }
     [self unlockDisplayList];
 
-//    if (maxDisplayCount > 0)
-//    {
-//        [self lockDisplayList];
-//        [renderList addObjectsFromArray:[self.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
-//        [self unlockDisplayList];
-//    }
-    
     return renderList;
 }
 

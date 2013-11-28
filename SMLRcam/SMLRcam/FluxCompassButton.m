@@ -33,11 +33,8 @@
     {
         FluxScanImageObject *imageObject = ire.imageMetadata;
         
-        //float deltaLat = imageObject.coordinate.latitude - locationManager.location.coordinate.latitude;
-        //float deltaLong = imageObject.coordinate.longitude - locationManager.location.coordinate.longitude;
-        //float degree = atan2f(deltaLat, deltaLong) * 180.0f / M_PI;
-        
-        int position = abs(imageObject.heading / 30);
+        double h = imageObject.heading;// + 15.0;
+        int position = (((int)(h + 360) % 360)  / 30);
         [radarStatusArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
     }
     [self updateRadarImageView];
@@ -72,13 +69,13 @@
     
     onImg = [UIImage imageNamed:@"radarSegmentOn"];
     
-    for (int i = 0; i<12; i++)
+    for (int i = 0; i < 12; i++)
     {
         [radarStatusArray addObject:[NSNumber numberWithInt:0]];
         UIImageView *radarImageView = [[UIImageView alloc] initWithImage:onImg];
         [radarImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         [radarImageView setContentMode:UIViewContentModeScaleAspectFit];
-        float rotateDegree = i*30;
+        float rotateDegree = (i * 30);
         radarImageView.transform = CGAffineTransformMakeRotation(rotateDegree * M_PI/180);
         [radarImageView setHidden:YES];
         
@@ -112,8 +109,9 @@
 // heading update from location manager
 - (void)headingUpdated:(NSNotification *)notification
 {
-    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading*M_PI/180.0);
-    radarView.transform = transform;
+// no longer need to rotate by current heading - image headings are already current-heading-relative
+//    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading*M_PI/180.0);
+//    radarView.transform = transform;
 }
 
 #pragma mark - uiview lifecycle
@@ -129,7 +127,7 @@
         locationManager = [FluxLocationServicesSingleton sharedManager];
         if (locationManager != nil)
         {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+//            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
             [self headingUpdated:nil];
         }
