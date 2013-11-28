@@ -53,8 +53,8 @@ extern NSString* const FluxOpenGLShouldRender;
     int _imageRequestCountQuart;
     NSLock *_imageRequestCountLock;
     
-//    GLKViewController *openGLVC;
-    
+    sensorPose lastMotionPose;
+    NSDate *lastMotionTime;
 }
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;

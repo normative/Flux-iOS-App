@@ -1119,7 +1119,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // remove those from nearbyList that can not be seen (too far away)
     for (FluxImageRenderElement *ire in removeList)
     {
-        NSLog(@"image %d: removed", ire.imageMetadata.imageID);
+//        NSLog(@"image %d: removed", ire.imageMetadata.imageID);
         [elementList removeObject:ire];
     }
     

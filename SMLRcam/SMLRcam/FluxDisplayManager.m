@@ -17,6 +17,9 @@ const int maxDisplayListCount   = 10;
 const int maxRequestCountQuart = 2;
 const int maxRequestCountThumb = 5;
 
+const double minMoveDistanceThreshold = 1.0;
+const NSTimeInterval maxMoveTimeThreshold = 5.0;
+
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
 NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDidUpdateImageTexture";
@@ -36,6 +39,14 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     if (self)
     {
         _locationManager = [FluxLocationServicesSingleton sharedManager];
+
+        lastMotionPose.position.x = 0.0;
+        lastMotionPose.position.y = 0.0;
+        lastMotionPose.position.z = 0.0;
+        lastMotionTime = [NSDate date];
+        
+        [_locationManager WGS84_to_ECEF:&lastMotionPose];
+        
         [self.locationManager startLocating];
         
         _fluxDataManager = [[FluxDataManager alloc] init];
@@ -113,13 +124,33 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 - (void)didUpdateLocation:(NSNotification *)notification{
     // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
     
-//    // HACK - with fixed positioning, only need the first, then can ignore
-//    static int haveFirst = 0;
-//
-//    if (haveFirst ++ > 5)
-//        return;
+    // setup local sensorPose object with new lat/long
+    // calc ECEF
+    // compare to last ECEF
+    //  if > threshold then
+    //      last ECEF = current ECEF,
+    //      request nearby
+    sensorPose newPose;
+    newPose.position.x = self.locationManager.location.coordinate.latitude;
+    newPose.position.y = self.locationManager.location.coordinate.longitude;
+    newPose.position.z = self.locationManager.location.altitude;
     
-    [self requestNearbyItems];
+    [self.locationManager WGS84_to_ECEF:&newPose];
+
+    double dx = newPose.ecef.x - lastMotionPose.ecef.x;
+    double dy = newPose.ecef.y - lastMotionPose.ecef.y;
+    
+    double dist = sqrt(dx * dx + dy * dy);
+    
+    NSDate *now = [NSDate date];
+    NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:lastMotionTime];
+    
+    if ((dist > minMoveDistanceThreshold) || (timeSinceLast > maxMoveTimeThreshold))
+    {
+        lastMotionPose = newPose;
+        lastMotionTime = now;
+        [self requestNearbyItems];
+    }
 }
 
 #pragma mark Filter
