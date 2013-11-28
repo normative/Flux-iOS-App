@@ -28,12 +28,10 @@
     __weak id <ImageAnnotationDelegate> delegate;
     IBOutlet UIView *containerView;
     IBOutlet UICollectionView *imageCollectionView;
-    IBOutlet UIImageView *usernameImageView;
-    IBOutlet UILabel *usernameLabel;
-    IBOutlet UILabel *dateLabel;
     
-
-    IBOutlet UISegmentedControl *socialOptionSegmentedControl;
+    BOOL isSnapshot;
+ 
+    IBOutlet UIButton *privacyButton;
     IBOutlet UIBarButtonItem *saveButton;
     IBOutlet UIButton *facebookButton;
     IBOutlet UIButton *twitterButton;
@@ -43,13 +41,14 @@
 
 
 @property (nonatomic, weak) id <ImageAnnotationDelegate> delegate;
-- (IBAction)socialOptionChanged:(id)sender;
+- (IBAction)privacyButtonAction:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)saveButtonAction:(id)sender;
 - (IBAction)facebookButtonAction:(id)sender;
 - (IBAction)twitterButtonAction:(id)sender;
 
 - (void)prepareViewWithBGImage:(UIImage*)image andCapturedImages:(NSMutableArray*)capturedObjects withLocation:(NSString*)location andDate:(NSDate*)capturedDate;
+- (void)prepareSnapShotViewWithImage:(UIImage*)image withLocation:(NSString*)location andDate:(NSDate*)capturedDate;
 
 
 

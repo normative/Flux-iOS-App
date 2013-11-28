@@ -355,6 +355,33 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
 }
 
+- (void)activateSnapshotView{
+    [UIView animateWithDuration:0.3f
+                     animations:^{
+                         [ScanUIContainerView setAlpha:0.0];
+                         [CameraButton setAlpha:0.0];
+                     }
+                     completion:^(BOOL finished){
+                         //stops drawing them
+                         [ScanUIContainerView setHidden:YES];
+                         [self startDeviceMotion];
+                         imageCaptureIsActive = YES;
+                     }];
+}
+
+- (void)deactivateSnapshotView{
+    [ScanUIContainerView setHidden:NO];
+    
+    [UIView animateWithDuration:0.3f
+                     animations:^{
+                         [ScanUIContainerView setAlpha:1.0];
+                         [CameraButton setAlpha:1.0];
+                     }
+                     completion:^(BOOL finished){
+                     }];
+    imageCaptureIsActive = NO;
+}
+
 - (void)activateImageCapture{
     [[CameraButton getThumbView] setHidden:NO];
     [UIView animateWithDuration:0.3f
@@ -465,7 +492,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
 
     }
-    [self deactivateImageCapture];
+    if (openGLController.imageCaptureViewController.isSnapshot) {
+        [self deactivateSnapshotView];
+        openGLController.imageCaptureViewController.isSnapshot = NO;
+    }
+    else{
+        [self deactivateImageCapture];
+    }
 }
 
 -(void)hideProgressView{
@@ -480,6 +513,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (IBAction)shareButtonAction:(id)sender {
+    [self activateSnapshotView];
+    [openGLController takeSnapshotAndPresentApproval];    
 }
 
 - (IBAction)stepper:(id)sender {
@@ -558,6 +593,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [CameraButton.layer addObserver:self forKeyPath:@"zPosition" options:0 context:NULL];
     [CameraButton.layer addObserver:self forKeyPath:@"frame" options:0 context:NULL];
     [CameraButton.layer addObserver:self forKeyPath:@"transform" options:0 context:NULL];
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [CameraButton removeFromSuperview];
+    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view addSubview:CameraButton];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

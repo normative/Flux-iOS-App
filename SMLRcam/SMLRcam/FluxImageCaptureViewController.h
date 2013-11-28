@@ -32,11 +32,17 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     UIImageView *gridView;
     UIImage *capturedImage;
     UIView *blackView;
+    
+    UIImage*snapshotImage;
+    UIImageView*snapshotImageView;
+
     IBOutlet UIView *imageCaptureSquareView;
     IBOutlet UILabel *imageCountLabel;
     IBOutlet UIButton *approveButton;
     IBOutlet UILabel *photosLabel;
     IBOutlet UIButton *undoButton;
+    IBOutlet UIView *topContainerView;
+    IBOutlet UIView *bottomContainerView;
     
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -52,6 +58,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     
 }
 @property (strong, nonatomic) IBOutlet UIButton *closeButton;
+@property (nonatomic) BOOL isSnapshot;
 
 // TS: no longer needed - should get list(s) from DisplayManager directly
 //@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
@@ -69,4 +76,5 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
 - (void)setHidden:(BOOL)hidden;
 
 - (void)takePicture;
+- (void)presentSnapshot:(UIImage*)snapshot;
 @end

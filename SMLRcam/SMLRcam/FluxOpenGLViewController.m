@@ -588,14 +588,21 @@ void init(){
 }
 
 - (void)showImageCapture{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self.imageCaptureViewController setHidden:NO];
     camIsOn = YES;
-    self.imageCaptureViewController.fluxDisplayManager = [(FluxScanViewController*)self.parentViewController fluxDisplayManager];
-    
+
     // TS: need to call back into fluxDisplayManager to switch to image capture mode - could be a notification send (FluxImageCaptureDidPush)
     // really should be called from ImageCaptureViewController but no really obvious place to put it.
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
                                                         object:self userInfo:nil];
+}
+
+- (void)takeSnapshotAndPresentApproval{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    UIImage*img = [self snapshot:self.view];
+    [self.imageCaptureViewController setHidden:NO];
+    [self.imageCaptureViewController presentSnapshot:img];
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
@@ -865,6 +872,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (BOOL)openGLRenderIsActive
 {
     return [self isPaused];
+}
+
+- (void)setFluxDisplayManager:(FluxDisplayManager *)fluxDisplayManager{
+    _fluxDisplayManager = fluxDisplayManager;
+    self.imageCaptureViewController.fluxDisplayManager = fluxDisplayManager;
 }
 
 
