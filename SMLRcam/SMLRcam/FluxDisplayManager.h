@@ -55,6 +55,10 @@ extern NSString* const FluxOpenGLShouldRender;
     
     sensorPose lastMotionPose;
     NSDate *lastMotionTime;
+    
+    NSDateFormatter *logDateFormat;
+    NSFileHandle *logFile;
+    
 }
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;

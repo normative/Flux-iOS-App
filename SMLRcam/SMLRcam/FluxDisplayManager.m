@@ -38,6 +38,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     self = [super init];
     if (self)
     {
+        [self createNewLogFiles];
+        
         _locationManager = [FluxLocationServicesSingleton sharedManager];
 
         lastMotionPose.position.x = 0.0;
@@ -149,7 +151,10 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     {
         lastMotionPose = newPose;
         lastMotionTime = now;
+        NSString *logstr = [NSString stringWithFormat:@"New request at (%f, %f, %f), (distance=%f)", newPose.position.x, newPose.position.y, newPose.position.z, dist];
+        [self writeLog:logstr];
         [self requestNearbyItems];
+        
     }
 }
 
@@ -771,8 +776,6 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
 //    NSLog(@"Renderlist Count: %d", renderList.count);
-    // TODO: sort the provided list
-    // based on sorting, current state, availability etc. determine which image resolution to load, fetch it from cache and set renderList[idx].image accordingly
 
     NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: /*[NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],*/
                                 [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
@@ -834,5 +837,37 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 //        NSLog(@"render: i=%d, key=%@, headRaw=%f, timestamp=%@, fetchtype=%d, loadtype=%d", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp, ire.imageFetchType, lt);
 //    }
 }
+
+#pragma mark - Logging
+
+- (void) createNewLogFiles
+{
+    NSString *logName = @"Documents/log.txt";
+    
+    NSString *logFilename = [NSHomeDirectory() stringByAppendingPathComponent:logName];
+    [[NSFileManager defaultManager] createFileAtPath:logFilename contents:nil attributes:nil];
+    logFile = [NSFileHandle fileHandleForWritingAtPath:logFilename];
+    
+    logDateFormat = [[NSDateFormatter alloc] init];
+    [logDateFormat setDateFormat:@"yyyy'-'MM'-'dd', 'HH':'mm':'ss'.'SSS', '"];
+}
+
+- (void) writeLog:(NSString *)logmsg
+{
+    if (logFile == nil)
+    {
+        return;
+    }
+    
+    NSDate *curDate = [NSDate date];
+    NSString *curDateString = [logDateFormat stringFromDate:curDate];
+    
+    NSString *outStr = [[curDateString stringByAppendingString:logmsg] stringByAppendingString:@"\n"];
+    
+    [logFile writeData:[outStr dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+
+
 
 @end
