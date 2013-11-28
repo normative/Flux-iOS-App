@@ -93,7 +93,7 @@
     [footerView addSubview:addFriendButton];
     
     UIView*separator = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0.5)];
-    [separator setBackgroundColor:[UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7]];
+    [separator setBackgroundColor:[UIColor colorWithRed:101/255.0 green:108/255.0 blue:112/255.0 alpha:0.7]];
     [footerView addSubview:separator];
 
     

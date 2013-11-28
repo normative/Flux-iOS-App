@@ -590,7 +590,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.46274509800000002" green="0.48627450979999998" blue="0.49803921569999998" alpha="1" colorSpace="calibratedRGB"/>
-                        <color key="separatorColor" red="0.17254901959999999" green="0.20784313730000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="separatorColor" red="0.39607843139999999" green="0.42352941179999998" blue="0.43921568630000002" alpha="1" colorSpace="calibratedRGB"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <sections>
@@ -740,9 +740,9 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HVD-hX-Qha">
-                                                    <rect key="frame" x="239" y="7" width="61" height="30"/>
+                                                    <rect key="frame" x="236" y="7" width="64" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                                     <state key="normal" title="Logout">
                                                         <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -1468,6 +1468,38 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CYM-86-Fic" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="523" y="-321"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="loE-vf-kVN">
+            <objects>
+                <viewController id="xnx-3p-Rmh" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ps9-xe-Seg"/>
+                        <viewControllerLayoutGuide type="bottom" id="CA6-Cj-NUh"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="CgU-zY-nGJ">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iDs-7p-HkM">
+                                <rect key="frame" x="25" y="44" width="270" height="480"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TN3-R6-wgD">
+                                        <rect key="frame" x="0.0" y="105" width="270" height="270"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oMi-zc-xbr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1497" y="1044"/>
         </scene>
         <!--Flux Public Profile View Controller-->
         <scene sceneID="iyM-zj-paR">
