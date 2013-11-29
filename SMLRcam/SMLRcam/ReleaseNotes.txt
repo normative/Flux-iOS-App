@@ -3,7 +3,6 @@ Release Notes:
 - added in sort by relative heading to minimize / eliminate image popping in and out of visibility.
 - sort also allowed clean-up and correction of image counts for scan view.  Filter view needs to be verified.
 - added in location update and content request filtering based on movement and time since last request.
-- changed compass view over to use relative heading (WIP)
 
 ******************************************
 
