@@ -4,6 +4,52 @@ Release Notes:
 - sort also allowed clean-up and correction of image counts for scan view.  Filter view needs to be verified.
 - added in location update and content request filtering based on movement and time since last request.
 
+RegistrationView:
+- Social icons
+- checkmark
+
+ScanView
+- font size change on filters button
+- Date fadeout improvement
+
+MapView
+- Back button change
+- added other gauges + made to match scan
+- added gradient background
+
+FiltersView
+- checkmark
+- separator colour
+- Header title
+- header count circle is softer
+- Checkmark size change
+
+Image capture
+- reconfiguration of elements
+- now hides status bar
+
+Snapshot Capture
+- added gradient top panel
+
+Image Annotation
+- reconfigured social elements
+- new icons for social elements
+- new checkbox
+
+ProfileView
+- reconfigured look
+
+Settings
+- added logout button (currently crashes the app)
+
+My Photos 
+- Added padding around each image
+
+Edit Profile
+- Added a shell of the view
+
+
+
 ******************************************
 
 V0.13 B09
