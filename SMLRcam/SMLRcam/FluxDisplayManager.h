@@ -53,11 +53,18 @@ extern NSString* const FluxOpenGLShouldRender;
     int _imageRequestCountQuart;
     NSLock *_imageRequestCountLock;
     
+    sensorPose lastMotionPose;
+    NSDate *lastMotionTime;
+    
+    NSDateFormatter *logDateFormat;
+    NSFileHandle *logFile;
+    
 }
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxLocationServicesSingleton *locationManager;
 @property (nonatomic, strong) NSArray *fluxMapContentMetadata;
+@property (nonatomic, strong) GLKViewController *openGLVC;
 
 @property (readonly, nonatomic, strong) NSMutableArray *nearbyList;
 @property (readonly, nonatomic, strong) NSMutableArray *displayList;

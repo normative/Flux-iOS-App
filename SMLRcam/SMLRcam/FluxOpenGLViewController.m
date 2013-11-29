@@ -340,6 +340,139 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     return 0;
 }
 
+int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
+{
+//    viewParameters viewP;
+	GLKVector3 positionTP;
+    positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+
+    setParametersTP(usp->position);
+    
+    WGS84_to_ECEF(usp);
+    
+    tangentplaneRotation(usp);
+
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    zRay = GLKVector3Normalize(zRay);
+    
+    GLKVector3 v = GLKMatrix4MultiplyVector3(usp->rotationMatrix, zRay);
+    
+    //NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+    
+    //normal plane
+//    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+//    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((usp->rotationMatrix), planeNormalI);
+    //intersection with plane
+//    GLKVector3 N = planeNormalRotated;
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(v);
+    
+//    float vd = GLKVector3DotProduct(N,V);
+//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+//    float t = v0/vd;
+//    
+//    if(vd==0)
+//    {
+//        // NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+//        return -1;
+//    }
+//    if(t < 0)
+//    {
+//        
+//        // NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+//        return -1;
+//    }
+    
+//    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+//    viewP.at = V;
+//    viewP.up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    
+    (*vp).origin = GLKVector3Add(positionTP, P0);
+    (*vp).at = V;
+    (*vp).up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    
+    //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
+    
+    return 0;
+}
+
+
+// compute the tangent plane location and direction vector for an image
+bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp)
+{
+    bool retval = true;
+    
+//    viewParameters viewP;
+	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    zRay = GLKVector3Normalize(zRay);
+    
+    GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
+    
+    //normal plane
+//    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+//    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((userPose.rotationMatrix), planeNormalI);
+    
+    //intersection with plane
+//    GLKVector3 N = planeNormalRotated;
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(v);
+    
+    //assumption that the point of image acquisition and the user lie in the same plane.
+    sp->position.z = userPose.position.z;
+    
+    if (sp->validECEFEstimate != 1)
+    {
+        WGS84_to_ECEF(sp);
+    }
+    
+    positionTP.x = sp->ecef.x -userPose.ecef.x;
+    positionTP.y = sp->ecef.y -userPose.ecef.y;
+    positionTP.z = sp->ecef.z -userPose.ecef.z;
+    
+    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
+    
+    P0 = positionTP;
+    
+//    float vd = GLKVector3DotProduct(N,V);
+//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+//    float t = v0/vd;
+//    
+//    if (vd == 0)
+//    {
+//        //    NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+//        return 0;
+//    }
+//
+//    if (t < 0)
+//    {
+//        
+//        // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+//        retval = 0;
+//    }
+    
+    float _distanceToUser = GLKVector3Length(P0);
+    
+    if (_distanceToUser > MAX_IMAGE_RADIUS)
+    {
+        //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
+        retval = false;
+    }
+    
+//    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));  // viewP.at would be the point of intersection of image camera LOS with projection plane
+//    viewP.at = GLKVector3Add(P0, V);  // at would = point
+
+//    viewP.at = V;       // viewP.at = raw directional vector of image camera LOS
+//    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    
+    (*vp).origin = P0;
+    (*vp).at = V;
+    (*vp).up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    
+    return retval;
+}
+
 //distance - distance of plane
 int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, sensorPose userPose, viewParameters *vp)
 {
@@ -397,9 +530,9 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         WGS84_to_ECEF(sp);
     }
     
-    positionTP.x = sp->ecef.x -userPose.ecef.x;
-    positionTP.y = sp->ecef.y -userPose.ecef.y;
-    positionTP.z = sp->ecef.z -userPose.ecef.z;
+    positionTP.x = sp->ecef.x - userPose.ecef.x;
+    positionTP.y = sp->ecef.y - userPose.ecef.y;
+    positionTP.z = sp->ecef.z - userPose.ecef.z;
     /*
      positionTP.x = 0;
      positionTP.y = 0;
@@ -479,6 +612,8 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
 
 }
+
+
 void init(){
     
     
@@ -503,6 +638,11 @@ void init(){
 - (void)didUpdateImageList:(NSNotification *)notification
 {
     // simply indicate a change has happened - set dirty flag to true to trigger processing of rendering image list in GL loop
+    FluxDisplayManager *fdm = [(FluxScanViewController*)self.parentViewController fluxDisplayManager];
+    if ((fdm != nil) && (fdm.openGLVC == nil))
+    {
+        fdm.openGLVC = self;
+    }
 
     _displayListHasChanged++;
     
@@ -894,6 +1034,141 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
+- (void) updateImageMetadataForElementList:(NSMutableArray *)elementList
+{
+    NSMutableArray *removeList = [[NSMutableArray alloc]init];
+    double relUserHeading;
+    
+    // first, get a copy of the userPose, just in case it changed under us.  May want to look into a lock for this...
+    sensorPose localUserPose = _userPose;
+    viewParameters localUserVp;
+
+    computeTangentParametersUser(&localUserPose, &localUserVp);
+    
+    double dotx = (0.0 * localUserVp.at.x);
+    double doty = (1.0 * localUserVp.at.y);
+    
+    double scalar = dotx + doty;
+    double magsq1 = 1.0*1.0 + 0.0*0.0;
+    double magsq2 = localUserVp.at.x * localUserVp.at.x + localUserVp.at.y * localUserVp.at.y;
+    
+    double costheta = (scalar) / sqrt(magsq1 * magsq2);
+    double theta = acos(costheta) * 180.0 / M_PI;
+    if (localUserVp.at.x < 0)
+    {
+        theta = -theta;
+    }
+        
+    relUserHeading = theta;
+    
+    for (FluxImageRenderElement *ire in elementList)
+    {
+        viewParameters vp;
+        
+        [self updateImageMetadataForElement:ire];
+        bool cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp);
+        
+        if (!cansee)
+        {
+            [removeList addObject:ire];
+        }
+        else
+        {
+            ire.tpImageParams = vp;
+            
+            // find intersection with cylindrical screen to calculate relative angle
+            // get intersection point(s)
+            double xi, yi;
+
+            if (vp.at.x != 0.0)
+            {
+                double m = vp.at.y / vp.at.x;
+                double c = vp.origin.y - m * vp.origin.x;
+                double r = _projectionDistance;
+                double A = (m * m) + 1;
+                double B = 2.0 * m * c;
+                double C = ((c * c) - (r * r));
+                
+                double discriminant = ((B * B) - (4.0 * A * C));
+                double sqrtDiscriminant = sqrt(discriminant);
+                
+                if (discriminant > 0.0)
+                {
+                    // two intersections - calc both and figure out which it is based on m (which is based on vp.at)
+                    xi = ((-B + sqrtDiscriminant) / (2 * A));
+                    yi = 0.0;
+                    
+                    if (((xi - vp.at.x) * vp.at.x) < 0.0)
+                    {
+                        // wrong side - find the other root...
+                        xi = ((-B - sqrtDiscriminant) / (2 * A));
+                    }
+                            
+                    yi = m * xi + c;
+                }
+                else
+                {
+                    // vector is tangent to or misses circle - can discard the object
+                    // shouldn't get here since we are already filtering for points outside the circle
+                    [removeList addObject:ire];
+                    continue;
+                }
+            }
+            else
+            {
+                // directly horizontal - intersection is on vp.at.y side of circle
+                xi = 0.0;
+                yi = (vp.at.y > 0.0) ? _projectionDistance : -_projectionDistance;
+            }
+            
+            // calculate angle
+            // first the dot-product
+//            dotx = (xi * localUserVp.at.x);
+//            doty = (yi * localUserVp.at.y);
+//            
+//            scalar = dotx + doty;
+//            magsq1 = xi*xi + yi*yi;
+//            magsq2 = localUserVp.at.x * localUserVp.at.x + localUserVp.at.y * localUserVp.at.y;
+//            
+//            costheta = (scalar) / sqrt(magsq1 * magsq2);
+//            theta = acos(costheta) * 180.0 / M_PI;
+//
+//            if (xi < 0.0)
+//                theta = -theta; // check with radar view to see if this is reversed...
+//            
+//            // store as relative heading
+//            ire.imageMetadata.relHeading = theta;
+            
+            dotx = xi * 0.0;
+            doty = yi * 1.0;
+            
+            scalar = dotx + doty;
+            magsq1 = xi * xi + yi * yi;
+            magsq2 = (-1.0 * -1.0 + (0.0 * 0.0));
+            
+            costheta = (scalar) / sqrt(magsq1 * magsq2);
+            theta = acos(costheta) * 180.0 / M_PI;
+            
+            if (xi < 0.0)
+                theta = -theta;
+            
+            ire.imageMetadata.heading = theta;
+            
+            theta = theta - relUserHeading;
+
+            ire.imageMetadata.relHeading = theta;
+        }
+    }
+    
+    // remove those from nearbyList that can not be seen (too far away)
+    for (FluxImageRenderElement *ire in removeList)
+    {
+//        NSLog(@"image %d: removed", ire.imageMetadata.imageID);
+        [elementList removeObject:ire];
+    }
+    
+}
+
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
 {
     //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
@@ -905,8 +1180,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     element.imagePose->position.y =  locationObject.longitude;
     element.imagePose->position.z =  locationObject.altitude;
     
-    
-    
+    if(locationObject.location_confidence==1.0)
+    {
+        element.imagePose->validECEFEstimate =1;
+        element.imagePose->ecef.x = locationObject.ecefX;
+        element.imagePose->ecef.y = locationObject.ecefY;
+        element.imagePose->ecef.z = locationObject.ecefZ;
+    }
+    else
+    {
+        element.imagePose->validECEFEstimate =0;
+    }
     
     quaternion.x = locationObject.qx;
     quaternion.y = locationObject.qy;
@@ -914,9 +1198,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     quaternion.w = locationObject.qw;
     
     GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
-    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
     element.imagePose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
     //    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+
 }
 
 -(void)updateImageMetaData

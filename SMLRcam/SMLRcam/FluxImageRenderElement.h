@@ -28,6 +28,7 @@
 @property (nonatomic)           FluxImageType imageFetchType;
 @property (nonatomic)           sensorPose *imagePose;
 //@property (nonatomic)           textureIndex;
+@property (nonatomic)           viewParameters tpImageParams;
 
 - (id)initWithImageObject:(FluxScanImageObject *)curImgObj;
 

@@ -9,12 +9,16 @@
 #import "FluxDisplayManager.h"
 #import "FluxScanImageObject.h"
 #import "FluxImageCaptureViewController.h"
+#import "FluxOpenGLViewController.h"
 
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
 
 const int maxRequestCountQuart = 2;
 const int maxRequestCountThumb = 5;
+
+const double minMoveDistanceThreshold = 1.0;
+const NSTimeInterval maxMoveTimeThreshold = 5.0;
 
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
@@ -34,7 +38,17 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     self = [super init];
     if (self)
     {
+        [self createNewLogFiles];
+        
         _locationManager = [FluxLocationServicesSingleton sharedManager];
+
+        lastMotionPose.position.x = 0.0;
+        lastMotionPose.position.y = 0.0;
+        lastMotionPose.position.z = 0.0;
+        lastMotionTime = [NSDate date];
+        
+        [_locationManager WGS84_to_ECEF:&lastMotionPose];
+        
         [self.locationManager startLocating];
         
         _fluxDataManager = [[FluxDataManager alloc] init];
@@ -63,6 +77,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
         _imageRequestCountLock = [[NSLock alloc]init];
         
+        _openGLVC = nil;
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -79,17 +95,17 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     return self;
 }
 
-double getAbsAngle(double angle, double heading)
-{
-    double h1 = fmod((angle + 360.0), 360.0);
-    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
-    if (h1 > 180.0)
-    {
-        h1 = 360.0 - h1;
-    }
-    
-    return h1;
-}
+//double getAbsAngle(double angle, double heading)
+//{
+//    double h1 = fmod((angle + 360.0), 360.0);
+//    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
+//    if (h1 > 180.0)
+//    {
+//        h1 = 360.0 - h1;
+//    }
+//    
+//    return h1;
+//}
 
 
 #pragma mark - Notifications
@@ -110,13 +126,36 @@ double getAbsAngle(double angle, double heading)
 - (void)didUpdateLocation:(NSNotification *)notification{
     // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
     
-//    // HACK - with fixed positioning, only need the first, then can ignore
-//    static int haveFirst = 0;
-//
-//    if (haveFirst ++ > 5)
-//        return;
+    // setup local sensorPose object with new lat/long
+    // calc ECEF
+    // compare to last ECEF
+    //  if > threshold then
+    //      last ECEF = current ECEF,
+    //      request nearby
+    sensorPose newPose;
+    newPose.position.x = self.locationManager.location.coordinate.latitude;
+    newPose.position.y = self.locationManager.location.coordinate.longitude;
+    newPose.position.z = self.locationManager.location.altitude;
     
-    [self requestNearbyItems];
+    [self.locationManager WGS84_to_ECEF:&newPose];
+
+    double dx = newPose.ecef.x - lastMotionPose.ecef.x;
+    double dy = newPose.ecef.y - lastMotionPose.ecef.y;
+    
+    double dist = sqrt(dx * dx + dy * dy);
+    
+    NSDate *now = [NSDate date];
+    NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:lastMotionTime];
+    
+    if ((dist > minMoveDistanceThreshold) || (timeSinceLast > maxMoveTimeThreshold))
+    {
+        lastMotionPose = newPose;
+        lastMotionTime = now;
+        NSString *logstr = [NSString stringWithFormat:@"New request at (%f, %f, %f), (distance=%f)", newPose.position.x, newPose.position.y, newPose.position.z, dist];
+        [self writeLog:logstr];
+        [self requestNearbyItems];
+        
+    }
 }
 
 #pragma mark Filter
@@ -197,7 +236,6 @@ double getAbsAngle(double angle, double heading)
 - (void)calculateTimeAdjustedImageList
 {
     static bool inCalcTimeAdjImageList = false;
-    double localCurrHeading;
 
     if (inCalcTimeAdjImageList)
         return;
@@ -205,8 +243,18 @@ double getAbsAngle(double angle, double heading)
     [_displayListLock lock];
     [_nearbyListLock lock];
     {
+        // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
+        // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
+        // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
+        // hard pressed to see the issues simply because of motion blur.
+        
+        // spin through nearbylist to update...
+        if (self.openGLVC != nil)
+        {
+            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList];
+        }
+        
         inCalcTimeAdjImageList = true;
-        localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
         
         // generate the displayList...
         
@@ -257,17 +305,16 @@ double getAbsAngle(double angle, double heading)
         
         // sort by abs(heading delta with current) asc
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
-// sort based on heading - needs to be reworked to use a proper heading relative to projection plane placement
-//            // get heading deltas relative to current...
-//            
-//            double h1 = floor(getAbsAngle(obj1.imageMetadata.heading, localCurrHeading) / 5.0);
-//            double h2 = floor(getAbsAngle(obj2.imageMetadata.heading, localCurrHeading) / 5.0);
-//
-//            if (h1 != h2)
-//            {
-//                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
-//            }
-//            else
+            // get heading deltas relative to current...
+            
+            double h1 = floor(fabs(obj1.imageMetadata.relHeading) / 5.0);         // 5-degree blocks
+            double h2 = floor(fabs(obj2.imageMetadata.relHeading) / 5.0);
+
+            if (h1 != h2)
+            {
+                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
+            }
+            else
             {
                 return ([obj2.timestamp compare:obj1.timestamp]);   // sort descending timestamp
             }
@@ -289,8 +336,7 @@ double getAbsAngle(double angle, double heading)
 //    i = 0;
 //    for (FluxImageRenderElement *ire in self.displayList)
 //    {
-//        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-//        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
+//        NSLog(@"dl: i=%d, key=%@, headDelta=%f, timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
 //    }
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
@@ -695,15 +741,13 @@ double getAbsAngle(double angle, double heading)
     maxDisplayCount = MIN(maxDisplayCount, maxCount);
 
     [self lockDisplayList];
-    double localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
 
     int count = 0;
     if (count < maxDisplayCount)
     {
         for (FluxImageRenderElement *ire in self.displayList)
         {
-            double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-            if (h1 < 90.0)
+            if (fabs(ire.imageMetadata.relHeading) < 90.0)
             {
                 // make sure a duplicate object isn't there already - need to search for duplicate localIDs.
                 bool dupFound = false;
@@ -726,21 +770,12 @@ double getAbsAngle(double angle, double heading)
     }
     [self unlockDisplayList];
 
-//    if (maxDisplayCount > 0)
-//    {
-//        [self lockDisplayList];
-//        [renderList addObjectsFromArray:[self.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
-//        [self unlockDisplayList];
-//    }
-    
     return renderList;
 }
 
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
 //    NSLog(@"Renderlist Count: %d", renderList.count);
-    // TODO: sort the provided list
-    // based on sorting, current state, availability etc. determine which image resolution to load, fetch it from cache and set renderList[idx].image accordingly
 
     NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: /*[NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],*/
                                 [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
@@ -802,5 +837,37 @@ double getAbsAngle(double angle, double heading)
 //        NSLog(@"render: i=%d, key=%@, headRaw=%f, timestamp=%@, fetchtype=%d, loadtype=%d", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp, ire.imageFetchType, lt);
 //    }
 }
+
+#pragma mark - Logging
+
+- (void) createNewLogFiles
+{
+    NSString *logName = @"Documents/log.txt";
+    
+    NSString *logFilename = [NSHomeDirectory() stringByAppendingPathComponent:logName];
+    [[NSFileManager defaultManager] createFileAtPath:logFilename contents:nil attributes:nil];
+    logFile = [NSFileHandle fileHandleForWritingAtPath:logFilename];
+    
+    logDateFormat = [[NSDateFormatter alloc] init];
+    [logDateFormat setDateFormat:@"yyyy'-'MM'-'dd', 'HH':'mm':'ss'.'SSS', '"];
+}
+
+- (void) writeLog:(NSString *)logmsg
+{
+    if (logFile == nil)
+    {
+        return;
+    }
+    
+    NSDate *curDate = [NSDate date];
+    NSString *curDateString = [logDateFormat stringFromDate:curDate];
+    
+    NSString *outStr = [[curDateString stringByAppendingString:logmsg] stringByAppendingString:@"\n"];
+    
+    [logFile writeData:[outStr dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+
+
 
 @end
