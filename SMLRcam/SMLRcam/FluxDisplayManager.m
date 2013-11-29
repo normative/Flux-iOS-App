@@ -307,8 +307,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
             // get heading deltas relative to current...
             
-            double h1 = floor(fabs(obj1.imageMetadata.heading) / 5.0);         // 5-degree blocks
-            double h2 = floor(fabs(obj2.imageMetadata.heading) / 5.0);
+            double h1 = floor(fabs(obj1.imageMetadata.relHeading) / 5.0);         // 5-degree blocks
+            double h2 = floor(fabs(obj2.imageMetadata.relHeading) / 5.0);
 
             if (h1 != h2)
             {
@@ -747,7 +747,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     {
         for (FluxImageRenderElement *ire in self.displayList)
         {
-            if (fabs(ire.imageMetadata.heading) < 90.0)
+            if (fabs(ire.imageMetadata.relHeading) < 90.0)
             {
                 // make sure a duplicate object isn't there already - need to search for duplicate localIDs.
                 bool dupFound = false;

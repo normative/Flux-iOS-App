@@ -42,6 +42,7 @@ typedef enum FluxImageType : NSUInteger {
 @property (nonatomic) double pitch;
 @property (nonatomic) double roll;
 @property (nonatomic) double heading;
+@property (nonatomic) double relHeading;
 
 // orientation (quaternions)
 @property (nonatomic) double qw;

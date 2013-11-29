@@ -33,7 +33,7 @@
     {
         FluxScanImageObject *imageObject = ire.imageMetadata;
         
-        double h = imageObject.heading;// + 15.0;
+        double h = imageObject.heading;
         int position = (((int)(h + 360) % 360)  / 30);
         [radarStatusArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
     }
@@ -109,9 +109,8 @@
 // heading update from location manager
 - (void)headingUpdated:(NSNotification *)notification
 {
-// no longer need to rotate by current heading - image headings are already current-heading-relative
-//    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading*M_PI/180.0);
-//    radarView.transform = transform;
+    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading*M_PI/180.0);
+    radarView.transform = transform;
 }
 
 #pragma mark - uiview lifecycle
@@ -127,7 +126,7 @@
         locationManager = [FluxLocationServicesSingleton sharedManager];
         if (locationManager != nil)
         {
-//            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
             [self headingUpdated:nil];
         }

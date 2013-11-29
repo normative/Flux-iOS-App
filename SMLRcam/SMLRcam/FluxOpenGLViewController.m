@@ -1025,13 +1025,29 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void) updateImageMetadataForElementList:(NSMutableArray *)elementList
 {
     NSMutableArray *removeList = [[NSMutableArray alloc]init];
+    double relUserHeading;
     
     // first, get a copy of the userPose, just in case it changed under us.  May want to look into a lock for this...
     sensorPose localUserPose = _userPose;
     viewParameters localUserVp;
-    
+
     computeTangentParametersUser(&localUserPose, &localUserVp);
-//    NSLog(@"user: origin:(%f, %f, %f), at:(%f, %f, %f)", localUserVp.origin.x, localUserVp.origin.y, localUserVp.origin.z, localUserVp.at.x, localUserVp.at.y, localUserVp.at.z);
+    
+    double dotx = (0.0 * localUserVp.at.x);
+    double doty = (1.0 * localUserVp.at.y);
+    
+    double scalar = dotx + doty;
+    double magsq1 = 1.0*1.0 + 0.0*0.0;
+    double magsq2 = localUserVp.at.x * localUserVp.at.x + localUserVp.at.y * localUserVp.at.y;
+    
+    double costheta = (scalar) / sqrt(magsq1 * magsq2);
+    double theta = acos(costheta) * 180.0 / M_PI;
+    if (localUserVp.at.x < 0)
+    {
+        theta = -theta;
+    }
+        
+    relUserHeading = theta;
     
     for (FluxImageRenderElement *ire in elementList)
     {
@@ -1095,24 +1111,40 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             
             // calculate angle
             // first the dot-product
-            double dotx = (xi * localUserVp.at.x);
-            double doty = (yi * localUserVp.at.y);
+//            dotx = (xi * localUserVp.at.x);
+//            doty = (yi * localUserVp.at.y);
+//            
+//            scalar = dotx + doty;
+//            magsq1 = xi*xi + yi*yi;
+//            magsq2 = localUserVp.at.x * localUserVp.at.x + localUserVp.at.y * localUserVp.at.y;
+//            
+//            costheta = (scalar) / sqrt(magsq1 * magsq2);
+//            theta = acos(costheta) * 180.0 / M_PI;
+//
+//            if (xi < 0.0)
+//                theta = -theta; // check with radar view to see if this is reversed...
+//            
+//            // store as relative heading
+//            ire.imageMetadata.relHeading = theta;
             
-            double scalar = dotx + doty;
-            double magsq1 = xi*xi + yi*yi;
-            double magsq2 = localUserVp.at.x * localUserVp.at.x + localUserVp.at.y * localUserVp.at.y;
+            dotx = xi * 0.0;
+            doty = yi * 1.0;
             
-            double costheta = (scalar) / sqrt(magsq1 * magsq2);
-            double theta = acos(costheta) * 180.0 / M_PI;
-
-            if (yi > 0.0)
-                theta = -theta; // check with radar view to see if this is reversed...
+            scalar = dotx + doty;
+            magsq1 = xi * xi + yi * yi;
+            magsq2 = (-1.0 * -1.0 + (0.0 * 0.0));
             
-            // store as relative heading
+            costheta = (scalar) / sqrt(magsq1 * magsq2);
+            theta = acos(costheta) * 180.0 / M_PI;
+            
+            if (xi < 0.0)
+                theta = -theta;
+            
             ire.imageMetadata.heading = theta;
+            
+            theta = theta - relUserHeading;
 
-//            NSLog(@"image %d: theta: %f, origin:(%f, %f, %f), at:(%f, %f, %f)", ire.imageMetadata.imageID, theta, vp.origin.x, vp.origin.y, vp.origin.z, vp.at.x, vp.at.y, vp.at.z);
-//            NSLog(@"image %d: theta: %f, at:(%f, %f, %f)", ire.imageMetadata.imageID, theta, vp.at.x, vp.at.y, vp.at.z);
+            ire.imageMetadata.relHeading = theta;
         }
     }
     

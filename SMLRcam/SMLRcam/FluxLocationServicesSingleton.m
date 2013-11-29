@@ -150,20 +150,20 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     // TODO: add in code here to "correct" the current location based on whatever (Kalman, etc.)
     //  Update newLocation and procede
     
-#warning Overriding location with fixed value
-    {
-    // HACK
-    // force location value to eliminate GPS from equation...
-//    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // Burlington office
-    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324722, -79.812943);     // end of driveway
+//#warning Overriding location with fixed value
+//    {
+//    // HACK
+//    // force location value to eliminate GPS from equation...
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // Burlington office
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324722, -79.812943);     // end of driveway
 //    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.65337, -79.40658);     // Normative office
-//    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.325796, -79.813148);   // 20 images for time scroll
-//    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.326796, -79.813148);   // ??
-//    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.327796, -79.813148);   // ??
-    newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:newLocation.altitude
-                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
-                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
-    }
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.325796, -79.813148);   // 20 images for time scroll
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.326796, -79.813148);   // ??
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.327796, -79.813148);   // ??
+//    newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:newLocation.altitude
+//                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+//                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+//    }
     
     self.location = newLocation;
     self.rawlocation = newLocation;
