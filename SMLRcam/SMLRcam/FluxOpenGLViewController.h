@@ -111,6 +111,7 @@
 - (void)setupAVCapture;
 //image capture methods
 - (void)showImageCapture;
+- (void)takeSnapshotAndPresentApproval;
 - (UIImage*)snapshot:(UIView*)eaglview;
 - (UIImage*)takeScreenCap;
 

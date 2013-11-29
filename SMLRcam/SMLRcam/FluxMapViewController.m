@@ -120,13 +120,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     lastRadius = 500.0;
     outstandingRequests = 0;
     
+    filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
+    
     if (currentDataFilter == nil) {
         currentDataFilter = [[FluxDataFilter alloc] init];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
-    //[self.fluxDisplayManager mapViewWillDisplay];
 }
 
 

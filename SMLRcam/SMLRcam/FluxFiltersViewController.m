@@ -206,7 +206,7 @@
             circleLayer.path = path.CGPath;
             circleLayer.strokeColor = [[UIColor whiteColor] CGColor];
             circleLayer.fillColor = nil;
-            circleLayer.lineWidth = 3.0;
+            circleLayer.lineWidth = 2.0;
             [view.layer addSublayer:circleLayer];
             
             //Add count label

@@ -30,20 +30,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What do you see?"]];
     [ImageAnnotationTextView setTheDelegate:self];
     [ImageAnnotationTextView becomeFirstResponder];
-    
-    [usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:usernameLabel.font.pointSize]];
-    [dateLabel setFont:[UIFont fontWithName:@"Akkurat" size:dateLabel.font.pointSize]];
-    
-    [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"Akkurat" size:13.0], NSFontAttributeName, nil] forState:UIControlStateNormal];
-    
-    [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0], NSForegroundColorAttributeName, nil] forState:UIControlStateSelected];
 
-
-    [usernameLabel setText:@"myUsername"];
-    [usernameImageView setImage:[UIImage imageNamed:@"profileImage"]];
+    [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
+    [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
+    [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
     removedImages = [[NSMutableIndexSet alloc]init];
 	// Do any additional setup after loading the view.
@@ -55,11 +47,25 @@
     [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
     [self.view insertSubview:bgView belowSubview:containerView];
     
-    NSDateFormatter *theDateFormat = [[NSDateFormatter alloc] init];
-    [theDateFormat setDateFormat:@"MMM dd, yyyy - h:mma"];
-    [dateLabel setText:[theDateFormat stringFromDate:capturedDate]];
+    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you see here?"]];
+
     
     images = capturedObjects;
+}
+
+- (void)prepareSnapShotViewWithImage:(UIImage*)image withLocation:(NSString*)location andDate:(NSDate*)capturedDate{
+    FluxImageTools*tools = [[FluxImageTools alloc]init];
+    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
+    [self.view insertSubview:bgView belowSubview:containerView];
+    
+    isSnapshot = YES;
+    
+    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you find?"]];
+    [saveButton setEnabled:NO];
+    [saveButton setTintColor:[UIColor lightGrayColor]];
+    
+    images = [NSArray arrayWithObject:image];
 }
 
 #pragma mark - CollectionView Delegate
@@ -80,6 +86,11 @@
     else
     {
         [checkbox setChecked:YES];
+    }
+    if (isSnapshot) {
+        UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
+        imageView.image = [images objectAtIndex:0];
+        return cell;
     }
 
     UIImage *theImg = (UIImage*)[images objectAtIndex:indexPath.row];
@@ -136,10 +147,6 @@
 
 #pragma mark - IB Actions
 
-
-- (IBAction)socialOptionChanged:(id)sender {
-}
-
 - (IBAction)cancelButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:)]) {
         [delegate ImageAnnotationViewDidPop:self];
@@ -149,17 +156,48 @@
 
 - (IBAction)saveButtonAction:(id)sender {
     if (ImageAnnotationTextView.text.length < 141) {
-        if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
-            NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",removedImages, @"removedImages", nil];
-            [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
+        if (isSnapshot) {
+            //do something with the snapshot
+            [self cancelButtonAction:nil];
+        }
+        else{
+            if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
+                NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",removedImages, @"removedImages", nil];
+                [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
+            }
         }
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
+- (IBAction)privacyButtonAction:(id)sender {
+    if (!isSnapshot) {
+        [privacyButton setSelected:!privacyButton.selected];
+    }
+}
 
 - (IBAction)facebookButtonAction:(id)sender {
+    [facebookButton setSelected:!facebookButton.selected];
+    if (isSnapshot) {
+        [self checkPostButton];
+    }
 }
 
 - (IBAction)twitterButtonAction:(id)sender {
+    [twitterButton setSelected:!twitterButton.selected];
+    if (isSnapshot) {
+        [self checkPostButton];
+    }
 }
+
+- (void)checkPostButton{
+    if (facebookButton.isSelected || twitterButton.isSelected) {
+        self.navigationItem.rightBarButtonItem.enabled = YES;
+        [saveButton setTintColor:[UIColor whiteColor]];
+    }
+    else{
+        self.navigationItem.rightBarButtonItem.enabled = NO;
+        [saveButton setTintColor:[UIColor lightGrayColor]];
+    }
+}
+
 @end

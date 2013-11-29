@@ -61,21 +61,24 @@
     static NSString *identifier = @"cell";
     
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+    UIImageView *recipeImageView = (UIImageView *)[cell viewWithTag:100];
+    KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
     if (isEditing) {
         [[cell viewWithTag:200]setHidden:NO];
-        KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
         if ([removedImages containsObject:[NSNumber numberWithInt:indexPath.row]]) {
             [checkbox setChecked:YES];
+            [recipeImageView setAlpha:0.8];
         }
         else{
             [checkbox setChecked:NO];
+            [recipeImageView setAlpha:1.0];
         }
     }
     else{
         [[cell viewWithTag:200]setHidden:YES];
     }
-    UIImageView *recipeImageView = (UIImageView *)[cell viewWithTag:100];
     recipeImageView.image = [(IDMPhoto*)[picturesArray objectAtIndex:indexPath.row]underlyingImage];
+    [recipeImageView setAlpha:1.0];
     
     return cell;
 }

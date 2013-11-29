@@ -43,6 +43,10 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [blackView setHidden:YES];
     [self.view addSubview:blackView];
     
+    snapshotImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [snapshotImageView setAlpha:0.0];
+    [self.view insertSubview:snapshotImageView belowSubview:bottomContainerView];
+    
     capturedImageObjects = [[NSMutableArray alloc]init];
     capturedImages = [[NSMutableArray alloc]init];
     
@@ -103,6 +107,13 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 }
 
 - (IBAction)closeButtonAction:(id)sender {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    if (self.isSnapshot) {
+        [topContainerView setHidden:NO];
+        [bottomContainerView setAlpha:1.0];
+        [approveButton setHidden:YES];
+        [snapshotImageView setAlpha:0.0];
+    }
     [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
     [capturedImages removeAllObjects];
@@ -117,6 +128,9 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 
 - (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithChanges:(NSDictionary *)changes
 {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    [snapshotImageView setAlpha:0.0];
+    
     if ([changes objectForKey:@"removedImages"]) {
         NSIndexSet*removedImages = [changes objectForKey:@"removedImages"];
         [capturedImageObjects removeObjectsAtIndexes:removedImages];
@@ -154,10 +168,16 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     UINavigationController*tmp = segue.destinationViewController;
     FluxImageAnnotationViewController* annotationsVC = (FluxImageAnnotationViewController*)tmp.topViewController;
-    UIImage*bgImage = [(FluxOpenGLViewController*)self.parentViewController snapshot:self.parentViewController.view];
-    [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
+    if (self.isSnapshot) {
+        [annotationsVC prepareSnapShotViewWithImage:snapshotImage withLocation:locationManager.subadministativearea andDate:[NSDate date]];
+    }
+    else{
+        UIImage*bgImage = [(FluxOpenGLViewController*)self.parentViewController snapshot:self.parentViewController.view];
+        [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
+    }
     [annotationsVC setDelegate:self];
 }
 
@@ -189,12 +209,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     
     
     //black Animation
-    [blackView setHidden:NO];
-    [UIView animateWithDuration:0.09 animations:^{
-        [blackView setAlpha:0.9];
-    }completion:^(BOOL finished){
-        
-    }];
+    [self showFlash:[UIColor blackColor]];
     
     // Collect position and orientation information prior to copying image
     CLLocation *location = locationManager.rawlocation;
@@ -281,16 +296,46 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
              [self saveImageObject:capturedImageObject];
              [self incrementCountLabel];
              
-             //UI Updates
-             [UIView animateWithDuration:0.09 animations:^{
-                 [blackView setAlpha:0.0];
-             } completion:^(BOOL finished) {
-                 [blackView setHidden:YES];
-             }];
+             //UI updates
              [approveButton setHidden:NO];
              [undoButton setHidden:NO];
          }
      }];
+}
+
+-(void)presentSnapshot:(UIImage *)snapshot{
+    self.isSnapshot = YES;
+    snapshotImage = snapshot;
+    [snapshotImageView setImage:snapshot];
+    [self showFlash:[UIColor whiteColor]];
+    [topContainerView setHidden:YES];
+    [bottomContainerView setAlpha:0.8];
+    [approveButton setHidden:NO];
+   
+}
+
+- (void)showFlash:(UIColor*)color{
+    [blackView setHidden:NO];
+    [blackView setBackgroundColor:color];
+    [UIView animateWithDuration:0.09 animations:^{
+        [blackView setAlpha:0.9];
+    } completion:^(BOOL finished) {
+        if (self.isSnapshot) {
+            [UIView animateWithDuration:0.09 animations:^{
+                [snapshotImageView setAlpha:1.0];
+                [blackView setAlpha:0.0];
+            } completion:^(BOOL finished) {
+                [blackView setHidden:YES];
+            }];
+        }
+        else{
+            [UIView animateWithDuration:0.09 animations:^{
+                [blackView setAlpha:0.0];
+            } completion:^(BOOL finished) {
+                [blackView setHidden:YES];
+            }];
+        }
+    }];
 }
 
 - (void)saveImageObject:(FluxScanImageObject*)newImageObject
