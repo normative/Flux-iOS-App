@@ -273,7 +273,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                 if (image != nil)
                 {
                     ire.image = image;
-                    ire.imageType = rtype;
+                    ire.imageRenderType = rtype;
                 }
                 else if (_isScanMode)
                 {
@@ -284,7 +284,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.image = image;
-                        ire.imageType = thumb;
+                        ire.imageRenderType = thumb;
                         ire.imageFetchType = none;
                         [self updateImageMetadataForElement:ire];
                         
@@ -420,7 +420,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
     FluxImageRenderElement *ire = [[FluxImageRenderElement alloc]initWithImageObject:newImageObject];
     ire.image = newImage;
-    ire.imageType = full_res;
+    ire.imageRenderType = full_res;
     ire.localCaptureTime = ire.timestamp;
     [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
     [_nearbyCamList addObject:ire];
@@ -519,7 +519,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                             curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
                             curImgRenderObj.textureMapElement = localImgRenderObj.textureMapElement;
                             curImgRenderObj.image = localImgRenderObj.image;
-                            curImgRenderObj.imageType = localImgRenderObj.imageType;
+                            curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
 
                         }
                         else
@@ -790,7 +790,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
             // look to see if can trigger load of higher resolution
             for (FluxImageRenderElement *ire in renderList)
             {
-                if ((ire.imageFetchType == none) && (ire.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
+                if ((ire.imageFetchType == none) && (ire.textureMapElement != nil) && (ire.textureMapElement.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
                 {
                     // fetch the quart for this element
                     ire.imageFetchType = quarterhd;
@@ -804,7 +804,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.imageFetchType = none;
-                        ire.imageType = quarterhd;
+                        ire.imageRenderType = quarterhd;
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                             object:self userInfo:nil];
@@ -825,7 +825,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         // only load thumbs if loading required
         for (FluxImageRenderElement *ire in renderList)
         {
-            ire.imageType = thumb;
+            ire.imageRenderType = thumb;
         }
     }
 
@@ -833,8 +833,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 //    int i = 0;
 //    for (FluxImageRenderElement *ire in renderList)
 //    {
-//        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
-//        NSLog(@"render: i=%d, key=%@, headRaw=%f, timestamp=%@, fetchtype=%d, loadtype=%d", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp, ire.imageFetchType, lt);
+////        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
+//        NSLog(@"render: i: %d, key: %@, abs head: %f, rel head: %f", i++, ire.localID, ire.imageMetadata.absHeading, ire.imageMetadata.relHeading);
 //    }
 }
 

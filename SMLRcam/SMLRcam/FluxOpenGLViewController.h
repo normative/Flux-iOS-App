@@ -20,20 +20,21 @@
 #import "FluxTextureToImageMapElement.h"
 #import "FluxImageRenderElement.h"
 
+const int MAX_TEXTURES = 8;
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix4 _tBiasMVP[8];
+    GLKMatrix4 _tBiasMVP[MAX_TEXTURES];
     float _projectionDistance;
     
-    int _validMetaData[8];
+    int _validMetaData[MAX_TEXTURES];
     float _rotation;
     GLKVector2 _testparams;
     GLuint _vertexArray;
     GLuint _vertexBuffer;
-    GLKTextureInfo* _texture[8];
+    GLKTextureInfo* _texture[MAX_TEXTURES];
     
 //    int _opengltexturesset;
     

@@ -1037,6 +1037,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void) updateImageMetadataForElementList:(NSMutableArray *)elementList
 {
     NSMutableArray *removeList = [[NSMutableArray alloc]init];
+    double absUserHeading;
     double relUserHeading;
     
     // first, get a copy of the userPose, just in case it changed under us.  May want to look into a lock for this...
@@ -1044,22 +1045,34 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     viewParameters localUserVp;
 
     computeTangentParametersUser(&localUserPose, &localUserVp);
-    
-    double dotx = (0.0 * localUserVp.at.x);
-    double doty = (1.0 * localUserVp.at.y);
+//    double xu = 0.0;
+//    double yu = 1.0;
+    double x1 = 0.0;
+    double y1 = 1.0;
+    double x2 = localUserVp.at.x;
+    double y2 = localUserVp.at.y;
+    double dotx = (x1 * x2);
+    double doty = (y1 * y2);
     
     double scalar = dotx + doty;
-    double magsq1 = 1.0*1.0 + 0.0*0.0;
-    double magsq2 = localUserVp.at.x * localUserVp.at.x + localUserVp.at.y * localUserVp.at.y;
+    double magsq1 = x1 * x1 + y1 * y1;
+    double magsq2 = x2 * x2 + y2 * y2;
     
     double costheta = (scalar) / sqrt(magsq1 * magsq2);
     double theta = acos(costheta) * 180.0 / M_PI;
-    if (localUserVp.at.x < 0)
+    
+    if (x2 < 0)
     {
         theta = -theta;
     }
-        
+
     relUserHeading = theta;
+    absUserHeading = self.fluxDisplayManager.locationManager.heading;
+
+//    while (relUserHeading < 0.0)
+//        relUserHeading += 360.0;
+    
+//    NSLog(@"Relative User Heading: %f, gps user heading: %f", relUserHeading, self.fluxDisplayManager.locationManager.heading);
     
     for (FluxImageRenderElement *ire in elementList)
     {
@@ -1098,7 +1111,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     xi = ((-B + sqrtDiscriminant) / (2 * A));
                     yi = 0.0;
                     
-                    if (((xi - vp.at.x) * vp.at.x) < 0.0)
+                    if (((xi - vp.origin.x) * vp.at.x) < 0.0)
                     {
                         // wrong side - find the other root...
                         xi = ((-B - sqrtDiscriminant) / (2 * A));
@@ -1120,9 +1133,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 xi = 0.0;
                 yi = (vp.at.y > 0.0) ? _projectionDistance : -_projectionDistance;
             }
-            
-            // calculate angle
-            // first the dot-product
+
+//            // calculate angle
+//            // first the dot-product
 //            dotx = (xi * localUserVp.at.x);
 //            doty = (yi * localUserVp.at.y);
 //            
@@ -1139,24 +1152,68 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //            // store as relative heading
 //            ire.imageMetadata.relHeading = theta;
             
-            dotx = xi * 0.0;
-            doty = yi * 1.0;
+            x1 = 0.0;
+            y1 = 1.0;
+            x2 = xi;
+            y2 = yi;
+            dotx = x2 * x1;
+            doty = y2 * y1;
             
             scalar = dotx + doty;
-            magsq1 = xi * xi + yi * yi;
-            magsq2 = (-1.0 * -1.0 + (0.0 * 0.0));
+            magsq1 = x2 * x2 + y2 * y2;
+            magsq2 = (x1 * x1) + (y1 * y1);
             
             costheta = (scalar) / sqrt(magsq1 * magsq2);
             theta = acos(costheta) * 180.0 / M_PI;
             
-            if (xi < 0.0)
+            if (x2 < 0.0)
                 theta = -theta;
             
-            ire.imageMetadata.heading = theta;
+            ire.imageMetadata.absHeading = theta;
             
-            theta = theta - relUserHeading;
+            while (ire.imageMetadata.absHeading < 0.0)
+                ire.imageMetadata.absHeading += 360.0;
+            
+            while (absUserHeading < 0.0)
+                absUserHeading += 360.0;
+            
+            theta = theta - absUserHeading;
+
 
             ire.imageMetadata.relHeading = theta;
+            
+            
+//            if (ire.imageMetadata.imageID == 921)
+//            {
+//                NSLog(@"localid: %@, id: %d, rel head: %f, abs head: %f, gps head: %f, ruhead: %f, auhead: %f, guhead: %f", ire.localID, ire.imageMetadata.imageID,
+//                                        ire.imageMetadata.relHeading, ire.imageMetadata.absHeading, ire.imageMetadata.heading, relUserHeading, absUserHeading, self.fluxDisplayManager.locationManager.heading);
+//            }
+            
+//            if (fabs(ire.imageMetadata.absHeading - ire.imageMetadata.heading) > 5.0)
+//            {
+//                NSLog(@"headings out of whack for %@: abs: %f, gps: %f", ire.localID, ire.imageMetadata.absHeading, ire.imageMetadata.heading);
+//            }
+
+            
+//            double ah = ire.imageMetadata.heading;
+//            while (ah < 0.0)
+//                ah += 360.0;
+//            
+//            double rh = ah - absUserHeading;
+//            
+//            while (rh > 180.0)
+//                rh -= 360.0;
+//            
+//            while (rh < -180.0)
+//                rh += 360.0;
+//            
+//            if (ire.imageMetadata.imageID == 921)
+//            {
+//                NSLog(@"grh: %f, orh: %f, gah: %f, oah: %f, guh: %f, ouh: %f",
+//                      rh, ire.imageMetadata.relHeading, ah, ire.imageMetadata.absHeading, absUserHeading, relUserHeading);
+//            }
+            
+
         }
     }
     
@@ -1211,13 +1268,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKMatrix4 tMVP;
     float distance = _projectionDistance;
     
+    // null out the valid bits...
+    for (int i = 0; i < MAX_TEXTURES; i++)
+        _validMetaData[i] = 0;
+    
     for (FluxImageRenderElement *ire in self.renderList)
     {
         if (ire.textureMapElement != nil)
         {
             int idx = ire.textureMapElement.textureIndex;
         
-            _validMetaData[idx] = 0;
+//            _validMetaData[idx] = 0;
             _validMetaData[idx] = (computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage) *
                                  self.fluxDisplayManager.locationManager.notMoving);
             
@@ -1462,7 +1523,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         if (ire.textureMapElement != nil)
         {
-            if (ire.textureMapElement.localID == ire.localID)
+            if ([ire.textureMapElement.localID isEqualToString:ire.localID])
             {
                 ire.textureMapElement.used = true;
             }
@@ -1484,56 +1545,75 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if (ire.textureMapElement == nil)
         {
             // find a new texture and load it up...
+            FluxTextureToImageMapElement *newTel = nil;
             for (FluxTextureToImageMapElement *tel in self.textureMap)
             {
                 if (tel.used == false)
                 {
-                    // not found so always load lowest resolution (thumb typically)
-                    FluxImageType rtype = none;
-                    UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
-                    
-                    if (image != nil)
+                    newTel = tel;
+                    if ((tel.localID != nil) && ([tel.localID isEqual:ire.localID]))
                     {
+                        // have a match - can just link it up and continue on...
+                        tel.used = true;
                         textureIndex = tel.textureIndex;
-//                        NSError *error = [self loadTexture:textureIndex withImage:ire.image];
-                        NSError *error = [self loadTexture:textureIndex withImage:image];
-                        
-                        if (error)
-                        {
-                            textureIndex = -1;
-                        }
-                        else
-                        {
-                                // found one - set it up...
-                                
-                            if (tel.localID != nil)
-                            {
-                                // break link from old ire to tel - need to search and update it.
-                                FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-                                if (tire != nil)
-                                {
-                                    tire.textureMapElement = nil;
-                                }
-                            }
-                            
-                            ire.textureMapElement = tel;
-                            ire.imageType = rtype;
-                            ire.image = image;
-                            tel.imageType = rtype;
-                            tel.used = true;
-                            tel.localID = ire.localID;
-                            justLoaded = true;
-                            int width = CGImageGetWidth(image.CGImage);
-                            int height = CGImageGetWidth(image.CGImage);
-
-                            NSLog(@"Loaded Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, tel.imageType, width, height);
-                        }
+                        ire.textureMapElement = tel;
+                        newTel = nil;
                         break;
+                    }
+                }
+            }
+            
+            if (newTel != nil)
+            {
+                // not found so always load lowest resolution (thumb typically)
+                FluxImageType rtype = none;
+                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
+                
+                if (image != nil)
+                {
+                    textureIndex = newTel.textureIndex;
+//                        NSError *error = [self loadTexture:textureIndex withImage:ire.image];
+                    NSError *error = [self loadTexture:textureIndex withImage:image];
+                    
+                    if (error)
+                    {
+                        textureIndex = -1;
                     }
                     else
                     {
-                        NSLog(@"GLVC:UpdateTextures: lowest_res texture not found in cache");
+                            // found one - set it up...
+                            
+                        if (newTel.localID != nil)
+                        {
+                            // break link from old ire to tel - need to search and update it.
+                            FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:newTel.localID];
+                            if (tire != nil)
+                            {
+                                tire.textureMapElement = nil;
+                            }
+                            
+                            // free the old texture before dumping in the new one
+                            [self deleteImageTextureIdx:newTel.textureIndex];
+
+                        }
+                        
+                        ire.textureMapElement = newTel;
+                        ire.imageRenderType = rtype;
+                        ire.image = image;
+                        newTel.imageType = rtype;
+                        newTel.used = true;
+                        newTel.localID = ire.localID;
+                        justLoaded = true;
+//                        int width = CGImageGetWidth(image.CGImage);
+//                        int height = CGImageGetWidth(image.CGImage);
+//
+//                        NSLog(@"Loaded Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, newTel.imageType, width, height);
                     }
+                    break;
+                }
+                else
+                {
+                    NSLog(@"GLVC:UpdateTextures: lowest_res texture not found in cache");
                 }
             }
         }
@@ -1545,11 +1625,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
         if ((textureIndex >= 0) && (!justLoaded) && (!loadedOneHiRes))
         {
-            if (ire.textureMapElement.imageType < ire.imageType)
+            if (ire.textureMapElement.imageType < ire.imageRenderType)
             {
                 // new one is bigger - load it up... if need to load up...
                 FluxImageType rtype = none;
-                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageType returnSize:&rtype];
+                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageRenderType returnSize:&rtype];
 
                 if (image != nil)
                 {
@@ -1564,14 +1644,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     {
                         FluxTextureToImageMapElement *tel = ire.textureMapElement;
                         tel.imageType = rtype;
-                        ire.imageType = rtype;
+                        ire.imageRenderType = rtype;
                         ire.image = image;
                         loadedOneHiRes = true;
                         
-                        int width = CGImageGetWidth(image.CGImage);
-                        int height = CGImageGetWidth(image.CGImage);
-
-                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageType, width, height);
+//                        int width = CGImageGetWidth(image.CGImage);
+//                        int height = CGImageGetWidth(image.CGImage);
+//
+//                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
                     }
                 }
                 else
@@ -1593,9 +1673,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
                 tire.textureMapElement = nil;
             }
-            tel.localID = nil;
-            tel.imageType = none;
-            [self deleteImageTextureIdx:tel.textureIndex];
+//            tel.localID = nil;
+//            tel.imageType = none;
+//
+//            [self deleteImageTextureIdx:tel.textureIndex];
         }
     }
     
@@ -1791,44 +1872,55 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     int c = 0;
     for (FluxImageRenderElement *ire in revEnumerator)
     {
-        int i = ire.textureMapElement.textureIndex;
-        glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
+        if (ire.textureMapElement)
+        {
+            int i = ire.textureMapElement.textureIndex;
 
-        if ((_texture[i] != nil) && (_validMetaData[i]==1))
-        {
-//            NSLog(@"binding texture %d, id %@, timestamp %@ to gltexture %d", i, ire.localID, ire.timestamp, c);
-
-            glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
-            glActiveTexture(GL_TEXTURE0 + c);
-            glBindTexture(_texture[i].target, _texture[i].name);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
-        }
-        else
-        {
-            glActiveTexture(GL_TEXTURE0 + c);
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],0);
-        }
-        c++;
-    }
-    
-    for (int i = 0; i < number_textures; i++)
-    {
-        FluxTextureToImageMapElement *tim = _textureMap[i];
-        if (tim)
-        {
-            if (!tim.used)
+            if ((ire.textureMapElement.used) && (_texture[i] != nil) && (_validMetaData[i]==1))
             {
+//                NSLog(@"    binding texture from slot %d, id %@, to gltexture %d", i, ire.localID, c);
+
                 glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
-//              NSLog(@"un-rendering texture %d", i);
+
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
                 glActiveTexture(GL_TEXTURE0 + c);
-                glBindTexture(GL_TEXTURE_2D, 0);
-                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0 + c],0);
+                glBindTexture(_texture[i].target, _texture[i].name);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
                 c++;
             }
+            else
+            {
+//                NSLog(@"Not binding texture from slot %d, id %@, to gltexture %d, used? %@, texture? %@, valid? %@", i, ire.localID, c, (ire.textureMapElement.used)?@"YES":@"NO", (_texture[i]!=nil)?@"YES":@"NO", (_validMetaData[i])?@"YES":@"NO");
+//                glActiveTexture(GL_TEXTURE0 + c);
+//                glBindTexture(GL_TEXTURE_2D, 0);
+//                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],0);
+            }
+//            c++;
         }
+    }
+    
+    for ( ; c < number_textures; c++)
+    {
+//        NSLog(@"Blank binding unused gltexture %d", c);
+        glActiveTexture(GL_TEXTURE0 + c);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],0);
+        
+//        FluxTextureToImageMapElement *tim = _textureMap[i];
+//        if (tim)
+//        {
+//            if (!tim.used)
+//            {
+//                glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
+////              NSLog(@"un-rendering texture %d", i);
+//                glActiveTexture(GL_TEXTURE0 + c);
+//                glBindTexture(GL_TEXTURE_2D, 0);
+//                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0 + c],0);
+//                c++;
+//            }
+//        }
     }
 
     /*
