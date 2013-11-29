@@ -35,6 +35,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     
     UIImage*snapshotImage;
     UIImageView*snapshotImageView;
+    IBOutlet UIImageView *topGradientView;
 
     IBOutlet UIView *imageCaptureSquareView;
     IBOutlet UILabel *imageCountLabel;

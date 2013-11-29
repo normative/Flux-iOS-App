@@ -45,7 +45,8 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     
     snapshotImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
     [snapshotImageView setAlpha:0.0];
-    [self.view insertSubview:snapshotImageView belowSubview:bottomContainerView];
+    [snapshotImageView setBackgroundColor:[UIColor blackColor]];
+    [self.view insertSubview:snapshotImageView belowSubview:topContainerView];
     
     capturedImageObjects = [[NSMutableArray alloc]init];
     capturedImages = [[NSMutableArray alloc]init];
@@ -57,6 +58,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
     [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosLabel.font.pointSize]];
     [undoButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:undoButton.titleLabel.font.pointSize]];
+    [approveButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:approveButton.titleLabel.font.pointSize]];
     
     motionManager = [FluxMotionManagerSingleton sharedManager];
     locationManager = [FluxLocationServicesSingleton sharedManager];
@@ -109,8 +111,9 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 - (IBAction)closeButtonAction:(id)sender {
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     if (self.isSnapshot) {
-        [topContainerView setHidden:NO];
-        [bottomContainerView setAlpha:1.0];
+        [bottomContainerView setHidden:NO];
+        [topContainerView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.5]];
+        [topGradientView setHidden:YES];
         [approveButton setHidden:YES];
         [snapshotImageView setAlpha:0.0];
     }
@@ -308,8 +311,9 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     snapshotImage = snapshot;
     [snapshotImageView setImage:snapshot];
     [self showFlash:[UIColor whiteColor]];
-    [topContainerView setHidden:YES];
-    [bottomContainerView setAlpha:0.8];
+    [topGradientView setHidden:NO];
+    [bottomContainerView setHidden:YES];
+    [topContainerView setBackgroundColor:[UIColor clearColor]];
     [approveButton setHidden:NO];
    
 }
@@ -412,6 +416,33 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
         imageCountLabel.transform = CGAffineTransformMakeScale(1, 1);
         [imageCountLabel setCenter:center];
     } completion:nil];
+}
+
+
+- (void) dumpViews:(UIView*) view label:(NSString *) text indent:(NSString*) indent{
+    Class cl = [view class];
+    NSString *classDescription = [cl description];
+    while ([cl superclass]) {
+        cl = [cl superclass];
+        classDescription = [classDescription stringByAppendingFormat:@":%@", [cl description]];
+    }
+    
+    if ([text compare:@""] == NSOrderedSame) {
+        NSLog(@"%@ %@, Alpha:%.2f", classDescription, NSStringFromCGRect(view.frame),view.alpha);
+    } else {
+        NSLog(@"%@ %@ %@, Alpha:%.2f", text, classDescription, NSStringFromCGRect(view.frame),view.alpha);
+    }
+    for (NSUInteger i = 0; i < [view.subviews count]; i++)
+    {
+        UIView *subView = [view.subviews objectAtIndex:i];
+        NSString *newIndent = [[NSString alloc] initWithFormat:@"  %@", indent];
+        NSString *msg = [[NSString alloc] initWithFormat:@"%@%d:", newIndent, i];
+        [self dumpViews:subView label:msg indent:newIndent];
+    }
+}
+
+- (void) dumpViews:(UIView*) view {
+    [self dumpViews:view label:@"" indent:@""];
 }
 
 @end

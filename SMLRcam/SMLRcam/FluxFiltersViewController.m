@@ -193,7 +193,7 @@
             [label setCenter:CGPointMake(label.center.x, label.center.y)];
             [view addSubview:label];
             
-            CGPoint countCenter = CGPointMake(view.frame.size.width-45, view.center.y);
+            CGPoint countCenter = CGPointMake(view.frame.size.width-34, view.center.y);
             
             //Add a circle
             UIBezierPath *path = [UIBezierPath bezierPath];
@@ -206,15 +206,17 @@
             circleLayer.path = path.CGPath;
             circleLayer.strokeColor = [[UIColor whiteColor] CGColor];
             circleLayer.fillColor = nil;
-            circleLayer.lineWidth = 2.0;
+            circleLayer.lineWidth = 1.0;
             [view.layer addSublayer:circleLayer];
             
             //Add count label
             imageCountLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 2, 50, 50)];
             [imageCountLabel setCenter:countCenter];
             imageCountLabel.textColor = [UIColor whiteColor];
-            [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:19]];
+            [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:17]];
             imageCountLabel.text = [NSString stringWithFormat:@"%i", imageCount.intValue];
+            [imageCountLabel setAdjustsFontSizeToFitWidth:YES];
+            [imageCountLabel setMinimumScaleFactor:0.7];
             imageCountLabel.backgroundColor = [UIColor clearColor];
             imageCountLabel.textAlignment = NSTextAlignmentCenter;
             [view addSubview:imageCountLabel];
@@ -248,7 +250,7 @@
             
             //disable for now
             [self.tagsSearchBar setUserInteractionEnabled:NO];
-            [self.tagsSearchBar setAlpha:0.7];
+            [self.tagsSearchBar setAlpha:0.8];
             
             [view addSubview:self.tagsSearchBar];
         }
@@ -302,7 +304,6 @@
             //set the cell properties to the array elements declared above
             [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
-            [cell.descriptorIconImageView setImage:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]titleImage]];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             return cell;
         }
@@ -322,6 +323,14 @@
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
+            
+            if ([[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]) {
+                [cell.countLabel setAlpha:1.0];
+            }
+            else{
+                [cell.countLabel setAlpha:0.5];
+            }
+            
             return cell;
         }
 
@@ -373,6 +382,13 @@
         if (cell == checkCell) {
             NSIndexPath *path = [self.filterTableView indexPathForCell:cell];
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
+            if ([[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] isChecked]) {
+                [cell.countLabel setAlpha:1.0];
+            }
+            else{
+                [cell.countLabel setAlpha:0.5];
+            }
+            break;
         }
     }
 }

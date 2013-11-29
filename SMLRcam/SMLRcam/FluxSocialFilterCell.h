@@ -19,7 +19,6 @@
     BOOL active;
     id __unsafe_unretained delegate;
 }
-@property (weak, nonatomic) IBOutlet UIImageView *descriptorIconImageView;
 @property (weak, nonatomic) IBOutlet UILabel *descriptorLabel;
 @property (weak, nonatomic) NSString*dbTitle;
 @property (weak, nonatomic) IBOutlet KTCheckboxButton *checkbox;
