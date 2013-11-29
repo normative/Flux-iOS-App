@@ -54,6 +54,7 @@
 		AA14BB2A17E797BB007F6764 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */; };
 		AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2B17E797C2007F6764 /* CoreData.framework */; };
 		AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2D17E79938007F6764 /* libz.dylib */; };
+		AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA17D18118494178004B0095 /* FluxEditProfileViewController.m */; };
 		AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */; };
 		AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA25515E18355A6400DCA62F /* FluxSocialManager.m */; };
 		AA255166183577D900DCA62F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA255165183577D900DCA62F /* Social.framework */; };
@@ -209,6 +210,8 @@
 		AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		AA14BB2B17E797C2007F6764 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		AA14BB2D17E79938007F6764 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		AA17D18018494178004B0095 /* FluxEditProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxEditProfileViewController.h; sourceTree = "<group>"; };
+		AA17D18118494178004B0095 /* FluxEditProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxEditProfileViewController.m; sourceTree = "<group>"; };
 		AA1BCE3D17D0CBA300136EFF /* FluxAVCameraSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxAVCameraSingleton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxAVCameraSingleton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA25515D18355A6400DCA62F /* FluxSocialManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialManager.h; sourceTree = "<group>"; };
@@ -873,6 +876,8 @@
 				173BF3E117D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m */,
 				AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */,
 				AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */,
+				AA17D18018494178004B0095 /* FluxEditProfileViewController.h */,
+				AA17D18118494178004B0095 /* FluxEditProfileViewController.m */,
 				22335E43181B07380098F205 /* FluxSettingsViewController.h */,
 				22335E44181B07380098F205 /* FluxSettingsViewController.m */,
 				AA69DA9D18313B9E00B0BEED /* FluxCountTableViewCell.h */,
@@ -1136,6 +1141,7 @@
 				AA61527D1822DC9300B8F2C8 /* FluxImageTools.m in Sources */,
 				AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */,
 				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
+				AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */,
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */,

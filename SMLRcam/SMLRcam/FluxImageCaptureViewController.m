@@ -418,31 +418,4 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     } completion:nil];
 }
 
-
-- (void) dumpViews:(UIView*) view label:(NSString *) text indent:(NSString*) indent{
-    Class cl = [view class];
-    NSString *classDescription = [cl description];
-    while ([cl superclass]) {
-        cl = [cl superclass];
-        classDescription = [classDescription stringByAppendingFormat:@":%@", [cl description]];
-    }
-    
-    if ([text compare:@""] == NSOrderedSame) {
-        NSLog(@"%@ %@, Alpha:%.2f", classDescription, NSStringFromCGRect(view.frame),view.alpha);
-    } else {
-        NSLog(@"%@ %@ %@, Alpha:%.2f", text, classDescription, NSStringFromCGRect(view.frame),view.alpha);
-    }
-    for (NSUInteger i = 0; i < [view.subviews count]; i++)
-    {
-        UIView *subView = [view.subviews objectAtIndex:i];
-        NSString *newIndent = [[NSString alloc] initWithFormat:@"  %@", indent];
-        NSString *msg = [[NSString alloc] initWithFormat:@"%@%d:", newIndent, i];
-        [self dumpViews:subView label:msg indent:newIndent];
-    }
-}
-
-- (void) dumpViews:(UIView*) view {
-    [self dumpViews:view label:@"" indent:@""];
-}
-
 @end

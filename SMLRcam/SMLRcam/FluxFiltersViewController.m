@@ -70,7 +70,9 @@
     FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
     FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Favourites" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
     
-    startImageCount = count;
+    if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+        startImageCount = count;
+    }
     imageCount = [NSNumber numberWithInt:count];
     
     socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, favouritesFilterObject, nil];

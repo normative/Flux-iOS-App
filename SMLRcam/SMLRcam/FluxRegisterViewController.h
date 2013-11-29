@@ -31,6 +31,7 @@
     IBOutlet UITextField *emailField;
     IBOutlet UIView *loginElementsContainerView;
     IBOutlet UILabel *loginTogglePromptLabel;
+    IBOutlet UILabel *signInOptionsLabel;
     IBOutlet UIButton *loginToggleButton;
     IBOutlet UIButton *twitterButton;
     IBOutlet UIButton *facebookButton;

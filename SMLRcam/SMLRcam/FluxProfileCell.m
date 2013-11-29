@@ -38,6 +38,7 @@
     
     [self.usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.usernameLabel.font.pointSize]];
     self.bioLabel.font = self.imageCountLabel.font = [UIFont fontWithName:@"Akkurat" size:self.imageCountLabel.font.pointSize];
+
 }
 
 @end
