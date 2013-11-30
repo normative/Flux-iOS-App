@@ -188,15 +188,15 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
 - (void)timeBracketWillBeginScrolling
 {
-    NSLog(@"DisplayManager start scrolling");
+//    NSLog(@"DisplayManager start scrolling");
 //    _isScrubAnimating = true;
 }
 
 - (void)timeBracketDidEndScrolling
 {
-    NSLog(@"DisplayManager end scrolling");
+//    NSLog(@"DisplayManager end scrolling");
 //    _isScrubAnimating = false;
-    
+//    [self calculateTimeAdjustedImageList];
 }
 
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
@@ -759,6 +759,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                 if (!dupFound)
                 {
                     [renderList addObject:ire];
+//                    NSLog(@"id: %@ added, idx: %d, relHeading: %f", ire.localID, count, ire.imageMetadata.relHeading);
                     count++;
                     if (count >= maxDisplayCount)
                     {
@@ -766,6 +767,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                     }
                 }
             }
+//            NSLog(@"id: %@ not included, relHeading: %f", ire.localID, ire.imageMetadata.relHeading);
         }
     }
     [self unlockDisplayList];

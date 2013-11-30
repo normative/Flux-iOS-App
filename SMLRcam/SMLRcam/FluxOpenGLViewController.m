@@ -1178,7 +1178,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 absUserHeading += 360.0;
             
             theta = theta - absUserHeading;
-
+            
+            while (theta < -180.0)
+                theta += 360.0;
+            
+            while (theta > 180.0)
+                theta -= 360.0;
 
             ire.imageMetadata.relHeading = theta;
             
@@ -1546,11 +1551,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             // find a new texture and load it up...
             FluxTextureToImageMapElement *newTel = nil;
+            double rhead = -1.0;
             for (FluxTextureToImageMapElement *tel in self.textureMap)
             {
                 if (tel.used == false)
                 {
-                    newTel = tel;
+                    // find a match...
                     if ((tel.localID != nil) && ([tel.localID isEqual:ire.localID]))
                     {
                         // have a match - can just link it up and continue on...
@@ -1559,6 +1565,26 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         ire.textureMapElement = tel;
                         newTel = nil;
                         break;
+                    }
+                    
+                    // ... or the farthest away to use for the new image
+                    FluxImageRenderElement *lire = nil;
+                    if (tel.localID != nil)
+                        lire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+                    
+                    if (lire == nil)
+                    {
+                        newTel = tel;
+                        break;
+                    }
+                    else if (lire.imageMetadata.relHeading > rhead)
+                    {
+                        newTel = tel;
+                        rhead = fabs(lire.imageMetadata.relHeading);
+                    }
+                    else if (newTel == nil)
+                    {
+                        newTel = tel;
                     }
                 }
             }
