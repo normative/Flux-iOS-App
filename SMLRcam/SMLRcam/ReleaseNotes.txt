@@ -1,8 +1,20 @@
 Release Notes:
 
-- added in sort by relative heading to minimize / eliminate image popping in and out of visibility.
-- sort also allowed clean-up and correction of image counts for scan view.  Filter view needs to be verified.
-- added in location update and content request filtering based on movement and time since last request.
+******************************************
+
+V0.13 B09
+
+Released: 2013-11-29 20:15:00
+
+General:
+- added in location update and content request filtering based on movement and time since last request
+   - fewer requests up to cloud looking for content = lower bandwidth consumed
+
+Rendering:
+- added in orientation-based absolute and relative heading calculations
+   - relative heading is used to minimize / eliminate image popping in and out of visibility.
+   - absolute heading is used to clean-up compass view
+- clean-up and correction of image counts for scan view
 
 RegistrationView:
 - Social icons
