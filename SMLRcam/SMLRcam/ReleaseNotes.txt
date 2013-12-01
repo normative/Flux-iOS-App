@@ -1,5 +1,18 @@
 Release Notes:
 
+
+******************************************
+
+V0.13 B11
+
+Released: 2013-12-01 09:15:00
+
+Release Notes:
+
+- fix issue with images not rendering
+    - includes new images in capture mode and may impact images in scan mode as well
+    - please revisit all outstanding rendering issues
+
 ******************************************
 
 V0.13 B10
