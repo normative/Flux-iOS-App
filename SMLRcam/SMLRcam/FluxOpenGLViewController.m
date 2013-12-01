@@ -832,7 +832,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     [self cleanUpTextures];
-    
+    if([connection isVideoStabilizationEnabled] ==NO )
+    {
+        if([connection isVideoStabilizationSupported])
+        {
+            NSLog(@"Stablization supported, enabling");
+            [connection setEnablesVideoStabilizationWhenAvailable:YES];
+            
+        }
+    }
     // CVOpenGLESTextureCacheCreateTextureFromImage will create GLES texture
     // optimally from CVImageBufferRef.
     
