@@ -1598,7 +1598,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 if (image != nil)
                 {
                     textureIndex = newTel.textureIndex;
-//                        NSError *error = [self loadTexture:textureIndex withImage:ire.image];
+                    if (newTel.localID != nil)
+                    {
+                        // break link from old ire to tel - need to search and update it.
+                        FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:newTel.localID];
+                        if (tire != nil)
+                        {
+                            tire.textureMapElement = nil;
+                        }
+                        
+                        // free the old texture before dumping in the new one
+                        [self deleteImageTextureIdx:newTel.textureIndex];
+                        
+                    }
+
                     NSError *error = [self loadTexture:textureIndex withImage:image];
                     
                     if (error)
@@ -1607,22 +1620,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     }
                     else
                     {
-                            // found one - set it up...
-                            
-                        if (newTel.localID != nil)
-                        {
-                            // break link from old ire to tel - need to search and update it.
-                            FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:newTel.localID];
-                            if (tire != nil)
-                            {
-                                tire.textureMapElement = nil;
-                            }
-                            
-                            // free the old texture before dumping in the new one
-                            [self deleteImageTextureIdx:newTel.textureIndex];
-
-                        }
-                        
+                        // found one - set it up...
                         ire.textureMapElement = newTel;
                         ire.imageRenderType = rtype;
                         ire.image = image;

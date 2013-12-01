@@ -67,7 +67,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
         dataFilter = [[FluxDataFilter alloc]init];
         
-        currHeading = 0.0;  // due North until told otherwise...
+//        currHeading = 0.0;  // due North until told otherwise...
         
         _isScrubAnimating = false;
         _isScanMode = true;
@@ -119,7 +119,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
 - (void)didUpdateHeading:(NSNotification *)notification{
     // first normalize to (0 <= heading < 360.0)
-    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
+//    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
     [self calculateTimeAdjustedImageList];
 }
 

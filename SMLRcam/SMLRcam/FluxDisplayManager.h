@@ -44,7 +44,7 @@ extern NSString* const FluxOpenGLShouldRender;
     
     CLLocation*previousMapViewLocation;
     
-    float currHeading;
+//    float currHeading;
     
     bool _isScrubAnimating;
     bool _isScanMode;
