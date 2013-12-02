@@ -459,6 +459,10 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         
         [dataRequest setNearbyListReady:^(NSArray *imageList)
         {
+            // ignore the request response if we are in camera capture mode
+            if (!_isScanMode)
+                return;
+            
             // process request using nearbyList:
             //  copy local-only objects (imageid < 0) into localList
             NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];

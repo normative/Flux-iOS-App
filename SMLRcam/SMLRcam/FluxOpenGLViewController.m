@@ -1577,7 +1577,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         newTel = tel;
                         break;
                     }
-                    else if (lire.imageMetadata.relHeading > rhead)
+                    else if (fabs(lire.imageMetadata.relHeading) > rhead)
                     {
                         newTel = tel;
                         rhead = fabs(lire.imageMetadata.relHeading);
@@ -1606,10 +1606,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         {
                             tire.textureMapElement = nil;
                         }
-                        
-                        // free the old texture before dumping in the new one
-                        [self deleteImageTextureIdx:newTel.textureIndex];
-                        
                     }
 
                     NSError *error = [self loadTexture:textureIndex withImage:image];
@@ -1671,6 +1667,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         ire.imageRenderType = rtype;
                         ire.image = image;
                         loadedOneHiRes = true;
+                        tel.used = true;
+                        justLoaded = true;
                         
 //                        int width = CGImageGetWidth(image.CGImage);
 //                        int height = CGImageGetWidth(image.CGImage);
@@ -1906,22 +1904,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
                 glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
 
-                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+i],1);
+                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],1);
                 glActiveTexture(GL_TEXTURE0 + c);
                 glBindTexture(_texture[i].target, _texture[i].name);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + i], i);
+                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + c], c);
                 c++;
             }
-            else
-            {
-//                NSLog(@"Not binding texture from slot %d, id %@, to gltexture %d, used? %@, texture? %@, valid? %@", i, ire.localID, c, (ire.textureMapElement.used)?@"YES":@"NO", (_texture[i]!=nil)?@"YES":@"NO", (_validMetaData[i])?@"YES":@"NO");
-//                glActiveTexture(GL_TEXTURE0 + c);
-//                glBindTexture(GL_TEXTURE_2D, 0);
-//                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],0);
-            }
-//            c++;
         }
     }
     
@@ -1931,40 +1921,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         glActiveTexture(GL_TEXTURE0 + c);
         glBindTexture(GL_TEXTURE_2D, 0);
         glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],0);
-        
-//        FluxTextureToImageMapElement *tim = _textureMap[i];
-//        if (tim)
-//        {
-//            if (!tim.used)
-//            {
-//                glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
-////              NSLog(@"un-rendering texture %d", i);
-//                glActiveTexture(GL_TEXTURE0 + c);
-//                glBindTexture(GL_TEXTURE_2D, 0);
-//                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0 + c],0);
-//                c++;
-//            }
-//        }
     }
 
-    /*
-     glActiveTexture(GL_TEXTURE7);
-     glBindTexture(_texture[7].target, _texture[7].name);
-     
-     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);*/
-    
-    /*
-    if(_videotexture != NULL)
-    {
-        glActiveTexture(GL_TEXTURE7);
-        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
-    }
-    */
     glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
 }
 
