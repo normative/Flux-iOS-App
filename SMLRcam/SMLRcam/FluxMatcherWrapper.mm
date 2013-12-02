@@ -170,7 +170,7 @@
 
 - (void) computeNextOrthonormal
 {
-    //column major
+    //column major for lapack
 }
 
 - (int) computeTransformsFromHomography
