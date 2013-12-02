@@ -550,7 +550,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _kfdebug.gpsx = kfMeasureX;
     _kfdebug.gpsy = kfMeasureY;
     _kfdebug.filterx = kfilter.positionX;
-    _kfdebug.filterx = kfilter.positionY;
+    _kfdebug.filtery = kfilter.positionY;
     
     
     
