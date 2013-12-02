@@ -603,6 +603,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 -(void)viewWillAppear:(BOOL)animated{
     [CameraButton removeFromSuperview];
     [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [CameraButton setFrame:CGRectMake(0, 0, CameraButton.frame.size.width, CameraButton.frame.size.height)];
+    [CameraButton setCenter:CGPointMake(self.view.center.x, self.leftDrawerButton.center.y)];
     [self.view addSubview:CameraButton];
 }
 

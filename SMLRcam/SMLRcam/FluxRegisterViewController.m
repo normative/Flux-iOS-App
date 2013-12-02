@@ -14,6 +14,14 @@
 
 #import <FacebookSDK/FacebookSDK.h>
 
+
+
+#define ERROR_TITLE_MSG @"Whoa, there cowboy"
+#define ERROR_NO_ACCOUNTS @"You must add a Twitter account in Settings app to use this demo."
+#define ERROR_PERM_ACCESS @"We weren't granted access to the user's accounts"
+#define ERROR_NO_KEYS @"You need to add your Twitter app keys to Info.plist to use this demo.\nPlease see README.md for more info."
+#define ERROR_OK @"OK"
+
 @interface FluxRegisterViewController ()
 
 @end
@@ -66,6 +74,11 @@
     [logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
 
     self.screenName = @"Registation View";
+    
+    self.accountStore = [[ACAccountStore alloc] init];
+    self.apiManager = [[TWAPIManager alloc] init];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(twitterChanged) name:ACAccountStoreDidChangeNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -188,8 +201,21 @@
 }
 
 #pragma mark - Login/Signup
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
 
+- (void)checkCurrentLoginState{
+    NSString *username = [UICKeyChainStore stringForKey:@"username" service:@"com.flux"];
+    NSString *password = [UICKeyChainStore stringForKey:@"password" service:@"com.flux"];
+    NSString *token = [UICKeyChainStore stringForKey:@"token" service:@"com.flux"];
+    
+    [self checkFBLoginStatus];
+    [self checkTWloginStatus];
+    
+    if (username && token && password) {
+        [self fadeOutLogin];
+    }
+    else{
+        [self showContainerViewAnimated:YES];
+    }
 }
 
 - (void)fadeOutLogin
@@ -209,9 +235,103 @@
     [alert show];
 }
 
+#pragma mark Twitter
+
+-(void)twitterChanged{
+    if (![TWAPIManager hasAppKeys]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_KEYS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
+        [alert show];
+    }
+    else if (![TWAPIManager isLocalTwitterAccountAvailable]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_ACCOUNTS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
+        [alert show];
+    }
+    else {
+        [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (granted) {
+                    //still cool.
+                }
+                else {
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_PERM_ACCESS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
+                    [alert show];
+                    NSLog(@"You were not granted access to the Twitter accounts.");
+                }
+            });
+        }];
+    }
+}
+
 - (IBAction)twitterSignInAction:(id)sender {
+    [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (granted) {
+                if (_accounts.count > 1) {
+                    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Choose an Account" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+                    for (ACAccount *acct in _accounts) {
+                        [sheet addButtonWithTitle:acct.username];
+                    }
+                    sheet.cancelButtonIndex = [sheet addButtonWithTitle:@"Cancel"];
+                    [sheet showInView:self.view];
+                }
+                else{
+                    [self loginWithTwitterForAccountIndex:0];
+                }
+            }
+            else {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_PERM_ACCESS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
+                [alert show];
+                NSLog(@"You were not granted access to the Twitter accounts.");
+            }
+        });
+    }];
+}
+
+- (void)loginWithTwitterForAccountIndex:(int)index{
+    [_apiManager performReverseAuthForAccount:_accounts[index] withHandler:^(NSData *responseData, NSError *error) {
+        if (responseData) {
+            NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+            
+            NSLog(@"Reverse Auth process returned: %@", responseStr);
+            
+            NSArray *parts = [responseStr componentsSeparatedByString:@"&"];
+            NSString *lined = [parts componentsJoinedByString:@"\n"];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:lined delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+            });
+        }
+        else {
+            NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
+        }
+    }];
+}
+
+- (void)checkTWloginStatus
+{
+    NSLog(@"Refreshing Twitter Accounts \n");
+    
     
 }
+
+- (void)obtainAccessToAccountsWithBlock:(void (^)(BOOL))block
+{
+    ACAccountType *twitterType = [_accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    
+    ACAccountStoreRequestAccessCompletionHandler handler = ^(BOOL granted, NSError *error) {
+        if (granted) {
+            self.accounts = [_accountStore accountsWithAccountType:twitterType];
+        }
+        
+        block(granted);
+    };
+    
+    //  This method changed in iOS6. If the new version isn't available, fall back to the original (which means that we're running on iOS5+).
+    [_accountStore requestAccessToAccountsWithType:twitterType options:nil completion:handler];
+}
+
+#pragma mark Facebook
 
 - (IBAction)facebookSignInAction:(id)sender {
     if (!FBSession.activeSession.isOpen) {
@@ -273,6 +393,70 @@
          }];
     }
 }
+
+- (void)checkFBLoginStatus{
+    if (!FBSession.activeSession) {
+        // create a fresh session object
+        FBSession.activeSession = [[FBSession alloc] init];
+        [FBSession setActiveSession: FBSession.activeSession];
+        
+        // if we don't have a cached token, a call to open here would cause UX for login to
+        // occur; we don't want that to happen unless the user clicks the login button, and so
+        // we check here to make sure we have a token before calling open
+        if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+            // even though we had a cached token, we need to login to make the session usable
+            NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
+            [FBSession openActiveSessionWithReadPermissions:permissions
+                                               allowLoginUI:YES
+                                          completionHandler:
+             ^(FBSession *session,
+               FBSessionState state, NSError *error) {
+                 if (!error) {
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
+                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                         [alert show];
+                     });
+                 }
+                 else{
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                         [alert show];
+                     });
+                 }
+             }];
+        }
+    }
+    //    else{
+    //        if (![FBSession.activeSession.permissions containsObject:@"email"]) {
+    //            NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
+    //            [FBSession openActiveSessionWithReadPermissions:permissions
+    //                                               allowLoginUI:YES
+    //                                          completionHandler:
+    //             ^(FBSession *session,
+    //               FBSessionState state, NSError *error) {
+    //                 if (!error) {
+    //                     dispatch_async(dispatch_get_main_queue(), ^{
+    //                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
+    //                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    //                         [alert show];
+    //
+    //                     });
+    //                 }
+    //                 else{
+    //                     dispatch_async(dispatch_get_main_queue(), ^{
+    //                         NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+    //                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    //                         [alert show];
+    //                     });
+    //                 }
+    //             }];
+    //        }
+    //    }
+}
+
+#pragma mark Pin
 
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
@@ -369,87 +553,6 @@
     }
 }
 
-- (void)checkCurrentLoginState{
-    NSString *username = [UICKeyChainStore stringForKey:@"username" service:@"com.flux"];
-    NSString *password = [UICKeyChainStore stringForKey:@"password" service:@"com.flux"];
-    NSString *token = [UICKeyChainStore stringForKey:@"token" service:@"com.flux"];
-    
-    [self checkFBLoginStatus];
-    
-    if (username && token && password) {
-        [self fadeOutLogin];
-    }
-    else{
-        [self showContainerViewAnimated:YES];
-    }
-}
-
-- (void)checkFBLoginStatus{
-    if (!FBSession.activeSession) {
-        // create a fresh session object
-        FBSession.activeSession = [[FBSession alloc] init];
-        [FBSession setActiveSession: FBSession.activeSession];
-        
-        // if we don't have a cached token, a call to open here would cause UX for login to
-        // occur; we don't want that to happen unless the user clicks the login button, and so
-        // we check here to make sure we have a token before calling open
-        if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
-            // even though we had a cached token, we need to login to make the session usable
-            NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
-            [FBSession openActiveSessionWithReadPermissions:permissions
-                                               allowLoginUI:YES
-                                          completionHandler:
-             ^(FBSession *session,
-               FBSessionState state, NSError *error) {
-                 if (!error) {
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
-                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                         [alert show];
-                     });
-                 }
-                 else{
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                         [alert show];
-                     });
-                 }
-             }];
-        }
-    }
-//    else{
-//        if (![FBSession.activeSession.permissions containsObject:@"email"]) {
-//            NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
-//            [FBSession openActiveSessionWithReadPermissions:permissions
-//                                               allowLoginUI:YES
-//                                          completionHandler:
-//             ^(FBSession *session,
-//               FBSessionState state, NSError *error) {
-//                 if (!error) {
-//                     dispatch_async(dispatch_get_main_queue(), ^{
-//                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
-//                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//                         [alert show];
-//                         
-//                     });
-//                 }
-//                 else{
-//                     dispatch_async(dispatch_get_main_queue(), ^{
-//                         NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-//                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-//                         [alert show];
-//                     });
-//                 }
-//             }];
-//        }
-//    }
-}
-
-- (void)checkTWloginStatus{
-    
-}
-
 - (IBAction)loginSignupToggleAction:(id)sender {
     if (isInSignUp) {
         isInSignUp = NO;
@@ -487,6 +590,15 @@
             [facebookButton setAlpha:1.0];
             [topSeparator setAlpha:1.0];
         } completion:nil];
+    }
+}
+
+#pragma mark - UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex != actionSheet.cancelButtonIndex) {
+        [self loginWithTwitterForAccountIndex:buttonIndex];
     }
 }
 

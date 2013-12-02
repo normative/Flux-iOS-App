@@ -97,6 +97,13 @@
 		AA984F1618088923007F33B1 /* MIZoomOutTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = AA984F0A18088923007F33B1 /* MIZoomOutTransition.m */; };
 		AA984F1718088923007F33B1 /* MITransitionFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = AA984F0C18088923007F33B1 /* MITransitionFactory.m */; };
 		AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9CC94917D80858006AF61F /* FluxCameraButton.m */; };
+		AA9D0E8D184D392E0004823E /* TWAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E8A184D392E0004823E /* TWAPIManager.m */; };
+		AA9D0E8E184D392E0004823E /* TWSignedRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E8C184D392E0004823E /* TWSignedRequest.m */; };
+		AA9D0E95184D39510004823E /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E90184D39510004823E /* NSData+Base64.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E92184D39510004823E /* OAuth+Additions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		AA9D0E97184D39510004823E /* OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E94184D39510004823E /* OAuthCore.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		AA9D0E9A184D3A340004823E /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9D0E99184D3A330004823E /* Twitter.framework */; };
+		AA9D0E9C184D3AC30004823E /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9D0E9B184D3AC30004823E /* Accounts.framework */; };
 		AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265A617E89EAE003AE787 /* FluxTagObject.m */; };
 		AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAA265B717EA00E4003AE787 /* libTestFlight.a */; };
 		AAA265BE17EA00E5003AE787 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AAA265B817EA00E4003AE787 /* README.md */; };
@@ -299,6 +306,18 @@
 		AA984F0C18088923007F33B1 /* MITransitionFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITransitionFactory.m; sourceTree = "<group>"; };
 		AA9CC94817D80858006AF61F /* FluxCameraButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxCameraButton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA9CC94917D80858006AF61F /* FluxCameraButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxCameraButton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		AA9D0E89184D392E0004823E /* TWAPIManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWAPIManager.h; sourceTree = "<group>"; };
+		AA9D0E8A184D392E0004823E /* TWAPIManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWAPIManager.m; sourceTree = "<group>"; };
+		AA9D0E8B184D392E0004823E /* TWSignedRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWSignedRequest.h; sourceTree = "<group>"; };
+		AA9D0E8C184D392E0004823E /* TWSignedRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWSignedRequest.m; sourceTree = "<group>"; };
+		AA9D0E8F184D39510004823E /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
+		AA9D0E90184D39510004823E /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Base64.m"; sourceTree = "<group>"; };
+		AA9D0E91184D39510004823E /* OAuth+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "OAuth+Additions.h"; sourceTree = "<group>"; };
+		AA9D0E92184D39510004823E /* OAuth+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "OAuth+Additions.m"; sourceTree = "<group>"; };
+		AA9D0E93184D39510004823E /* OAuthCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OAuthCore.h; sourceTree = "<group>"; };
+		AA9D0E94184D39510004823E /* OAuthCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OAuthCore.m; sourceTree = "<group>"; };
+		AA9D0E99184D3A330004823E /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
+		AA9D0E9B184D3AC30004823E /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		AAA265A517E89EAE003AE787 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
 		AAA265A617E89EAE003AE787 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
 		AAA265B717EA00E4003AE787 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
@@ -358,6 +377,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA9D0E9C184D3AC30004823E /* Accounts.framework in Frameworks */,
+				AA9D0E9A184D3A340004823E /* Twitter.framework in Frameworks */,
 				AA255166183577D900DCA62F /* Social.framework in Frameworks */,
 				89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */,
 				AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */,
@@ -423,6 +444,8 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AA9D0E9B184D3AC30004823E /* Accounts.framework */,
+				AA9D0E99184D3A330004823E /* Twitter.framework */,
 				AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */,
 				AA255165183577D900DCA62F /* Social.framework */,
 				89A513631829AED800E25AA1 /* Accelerate.framework */,
@@ -588,6 +611,11 @@
 		AA25516018355A6800DCA62F /* TwitterOauth */ = {
 			isa = PBXGroup;
 			children = (
+				AA9D0E89184D392E0004823E /* TWAPIManager.h */,
+				AA9D0E8A184D392E0004823E /* TWAPIManager.m */,
+				AA9D0E8B184D392E0004823E /* TWSignedRequest.h */,
+				AA9D0E8C184D392E0004823E /* TWSignedRequest.m */,
+				AA9D0E98184D395C0004823E /* ABOAuthCore */,
 			);
 			name = TwitterOauth;
 			sourceTree = "<group>";
@@ -826,6 +854,19 @@
 				AA984F0A18088923007F33B1 /* MIZoomOutTransition.m */,
 			);
 			path = Inherited;
+			sourceTree = "<group>";
+		};
+		AA9D0E98184D395C0004823E /* ABOAuthCore */ = {
+			isa = PBXGroup;
+			children = (
+				AA9D0E8F184D39510004823E /* NSData+Base64.h */,
+				AA9D0E90184D39510004823E /* NSData+Base64.m */,
+				AA9D0E91184D39510004823E /* OAuth+Additions.h */,
+				AA9D0E92184D39510004823E /* OAuth+Additions.m */,
+				AA9D0E93184D39510004823E /* OAuthCore.h */,
+				AA9D0E94184D39510004823E /* OAuthCore.m */,
+			);
+			name = ABOAuthCore;
 			sourceTree = "<group>";
 		};
 		AAA265B517EA00A5003AE787 /* TestFlight SDK */ = {
@@ -1089,16 +1130,19 @@
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */,
+				AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */,
 				AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */,
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
 				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
 				17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */,
+				AA9D0E8D184D392E0004823E /* TWAPIManager.m in Sources */,
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
+				AA9D0E8E184D392E0004823E /* TWSignedRequest.m in Sources */,
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,
 				AAA265C617EA02F6003AE787 /* TestFlight+OpenFeedback.m in Sources */,
 				AA984F0D18088923007F33B1 /* MIAnnotation.m in Sources */,
@@ -1132,6 +1176,7 @@
 				AAC1BF0B1811AF67001D3C01 /* ProgressHUD.m in Sources */,
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */,
+				AA9D0E97184D39510004823E /* OAuthCore.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA3BAF2C18468083009D4FAC /* FluxProfileCell.m in Sources */,
@@ -1143,6 +1188,7 @@
 				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
 				AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */,
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
+				AA9D0E95184D39510004823E /* NSData+Base64.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,
