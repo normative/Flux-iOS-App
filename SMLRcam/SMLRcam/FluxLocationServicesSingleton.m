@@ -498,32 +498,33 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
 }
 
-/*
+
  
- - (void)computePedDisplacementKFilter:(int) step
- {
+ - (void)registerPedDisplacementKFilter {
  
- double heading;
- double enuHeadingRad;
- //int count = motionManager.pedometerCount;
- double stepsize =0.73;
+     NSLog(@"disp registered");
+    // return;
+    
+     double enuHeadingRad;
+     //int count = motionManager.pedometerCount;
+     double stepsize =0.73;
  
- stepcount += step;
- heading =self.fluxDisplayManager.locationManager.heading ;
+     
+    // heading =self.fluxDisplayManager.locationManager.heading ;
  
- enuHeadingRad = (90.0 - heading)/180.0 *PI;
+     enuHeadingRad = (90.0 - self.heading)/180.0 *PI;
  
- kfXDisp = stepsize * cos(enuHeadingRad) * (double)step;
- kfYDisp = stepsize * sin(enuHeadingRad) * (double)step;
+     kfXDisp = stepsize * cos(enuHeadingRad);
+     kfYDisp = stepsize * sin(enuHeadingRad);
  
- NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
+     //NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
  
  //[motionManager resetPedometer];
  
  
  
  }
- */
+
 - (void) computeFilteredECEF
 {
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
@@ -550,7 +551,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _kfdebug.gpsx = kfMeasureX;
     _kfdebug.gpsy = kfMeasureY;
     _kfdebug.filterx = kfilter.positionX;
-    _kfdebug.filterx = kfilter.positionY;
+    _kfdebug.filtery = kfilter.positionY;
     
     
     

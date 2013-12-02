@@ -53,7 +53,7 @@ ViewController *viewcontroller = nil;
         [self setupMotionManager];
         [self setupLogging];
     }
-    
+    flocation = [FluxLocationServicesSingleton sharedManager];
     return self;
 }
 
@@ -752,9 +752,13 @@ ViewController *viewcontroller = nil;
                                   initWithObjectsAndKeys:n, @"stepDirection",
                                   nil];
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxPedometerDidTakeStep
-                                                        object:self userInfo:userInfoDict];
-        
+  //  [[NSNotificationCenter defaultCenter] postNotificationName:FluxPedometerDidTakeStep
+  //                                                      object:self userInfo:userInfoDict];
+    if (flocation !=nil)
+    {
+        [flocation registerPedDisplacementKFilter];
+    }
+    
     return true;
 
 }

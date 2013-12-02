@@ -10,7 +10,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import <CoreLocation/CoreLocation.h>
 #include <Accelerate/Accelerate.h>
-
+#import "FluxLocationServicesSingleton.h"
 #define MAXSAMPLES  512
 
 typedef enum _walkdir {
@@ -30,7 +30,7 @@ extern NSString* const FluxPedometerDidTakeStep;
 @interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
     CMMotionManager *motionManager;
     NSTimer* motionUpdateTimer;
-    
+    FluxLocationServicesSingleton *flocation;
     int loopcount;
     
     int stepCount;
