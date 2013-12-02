@@ -255,18 +255,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 -(void)userIsTimeSliding{
-    if (dateRangeLabel.alpha == 0) {
-        [UIView animateWithDuration:0.2 animations:^{
-            [dateRangeLabel setAlpha:1.0];
-        }];
-    }
     NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
     NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
-    [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
-    
-    [dateRangeLabelHideTimer invalidate];
-    dateRangeLabelHideTimer = nil;
-    dateRangeLabelHideTimer = [NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(hideDateRangeLabel) userInfo:nil repeats:NO];
+    if (startDate && endDate) {
+        [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        
+        //set it visible
+        if (dateRangeLabel.alpha == 0) {
+            [UIView animateWithDuration:0.2 animations:^{
+                [dateRangeLabel setAlpha:1.0];
+            }];
+        }
+        
+        //update hide timer
+        [dateRangeLabelHideTimer invalidate];
+        dateRangeLabelHideTimer = nil;
+        dateRangeLabelHideTimer = [NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(hideDateRangeLabel) userInfo:nil repeats:NO];
+    }
 }
 
 #pragma mark - Tapping images
