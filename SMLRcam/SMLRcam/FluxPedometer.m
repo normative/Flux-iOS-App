@@ -235,7 +235,7 @@ ViewController *viewcontroller = nil;
     return outaccels;
 }
 
-
+//Math in here modified from what was originally intended ... not sure what is being computed in here anymore - Arjun
 - (CMAcceleration *)reorientAccels:(CMAcceleration *)outaccels
 {
     // do whatever needs to be done to transform existing device motion / accels
@@ -1252,6 +1252,35 @@ ViewController *viewcontroller = nil;
 
 }
 
+#pragma --- Kalman filter specific code ---
+//PLEASE DO NOT MODIFY unless you are absolutely sure of what you are doing - Arjun
+
+- (void)computeParametersForKalmanFilter:(CMDeviceMotion *)devM
+{
+    
+    if (devM != nil)
+    {
+        double gMagnitude; //
+        CMAcceleration vecOrthogonalGravity, tmpvec;
+        
+        
+        gMagnitude = devM.gravity.x * devM.userAcceleration.x + devM.gravity.y * devM.userAcceleration.y + devM.gravity.z * devM.userAcceleration.z;
+        
+        
+        tmpvec.x = gMagnitude * devM.gravity.x;
+        tmpvec.y = gMagnitude  * devM.gravity.y;
+        tmpvec.z = gMagnitude * devM.gravity.z;
+        
+        vecOrthogonalGravity.x = (devM.userAcceleration.x - tmpvec.x);
+        vecOrthogonalGravity.y = (devM.userAcceleration.y - tmpvec.y);
+        vecOrthogonalGravity.z = (devM.userAcceleration.z - tmpvec.z);
+        
+    }
+    
+    
+}
+
 @end
+
 
 
