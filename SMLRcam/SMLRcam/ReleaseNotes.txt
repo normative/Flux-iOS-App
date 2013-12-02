@@ -3,6 +3,15 @@ Release Notes:
 
 ******************************************
 
+V0.13 B12
+
+Released: 2013-12-01 21:30:00
+
+Release Notes:
+- fixed significant (and long-standing but unseen) issue with rendering affecting capture and scan-view image rendering
+
+******************************************
+
 V0.13 B11
 
 Released: 2013-12-01 09:15:00
