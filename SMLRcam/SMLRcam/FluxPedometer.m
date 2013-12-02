@@ -257,13 +257,17 @@ ViewController *viewcontroller = nil;
         accelZ.y = (devM.userAcceleration.y - tmpvec.y);
         accelZ.z = (devM.userAcceleration.z - tmpvec.z);
         
+        double z_gravity = devM.gravity.z * outaccels->z;
+        double new_z_vector = outaccels->z - z_gravity;
+        
 //        accelerationZ = sqrt(accelZ.x * accelZ.x + accelZ.y * accelZ.y + accelZ.z * accelZ.z);
         accelerationZ = accelZ.z;
         
         outaccels->x = sqrt(accelZ.x * accelZ.x + accelZ.y * accelZ.y + accelZ.z * accelZ.z) * ((devM.userAcceleration.z > 0.0) ? 1.0 : -1.0);
         outaccels->y = -accelerationY;
 //        outaccels->z = accelerationZ * ((devM.userAcceleration.z > 0.0) ? 1.0 : -1.0);
-        outaccels->z = accelerationZ;
+        //        outaccels->z = accelerationZ;
+        outaccels->z = new_z_vector;
     }
     
     NSString *logStr2 = [NSString stringWithFormat:@"%d,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
