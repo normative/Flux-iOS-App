@@ -245,29 +245,36 @@ ViewController *viewcontroller = nil;
     
     if ((outaccels != nil) && (devM != nil))
     {
-        double accelerationY = devM.gravity.x * outaccels->x + devM.gravity.y * outaccels->y + devM.gravity.z * outaccels->z;
-        CMAcceleration accelZ, tmpvec;
-        double accelerationZ;
-        tmpvec.x = accelerationY * devM.gravity.x;
-        tmpvec.y = accelerationY * devM.gravity.y;
-        tmpvec.z = accelerationY * devM.gravity.z;
+        // Assumptions for frame transformation
+        // - a is the acceleration (ignoring gravity) in the phone's reference frame
+        // - dot product of perpendicular vectors is 0
+        // - component of a vector in the direction of another vector is |a| * |b| * cos(theta)
+        // - we want the component of a (user acceleration) in the direction of g as transformed_y
+        // - we want any vector perpendicular to g, pointing in the direction of the z-axis as transformed_z
+        // - transformed_x can be 0
         
-        // need to pass this too, averaged across a step
-        accelZ.x = (devM.userAcceleration.x - tmpvec.x);
-        accelZ.y = (devM.userAcceleration.y - tmpvec.y);
-        accelZ.z = (devM.userAcceleration.z - tmpvec.z);
+        // f is a unit vector perpendicular to g and pointing in the direction of the z-axis (therefore f_x = 0, pick f_y = 1.0)
+        // use relation with f dot g = 0, since perpendicular, to calculate f_z
         
-        double z_gravity = devM.gravity.z * outaccels->z;
-        double new_z_vector = outaccels->z - z_gravity;
+        double dot_prod_g = devM.gravity.x * outaccels->x + devM.gravity.y * outaccels->y + devM.gravity.z * outaccels->z;
+        // use dot product divided by magnitude of g to get component of a in direction of g
+        double magnitude_g = sqrt(devM.gravity.x * devM.gravity.x + devM.gravity.y * devM.gravity.y + devM.gravity.z * devM.gravity.z);
+        double y_component_g = dot_prod_g / magnitude_g;
         
-//        accelerationZ = sqrt(accelZ.x * accelZ.x + accelZ.y * accelZ.y + accelZ.z * accelZ.z);
-        accelerationZ = accelZ.z;
+        double f[3];
+        f[0] = 0.0;
+        f[1] = 1.0;
+        f[2] = -devM.gravity.y / devM.gravity.z;
+        double magnitude_f = sqrt(f[0] * f[0] + f[1] * f[1] + f[2] * f[2]);
+        f[0] = f[0] / magnitude_f;
+        f[1] = f[1] / magnitude_f;
+        f[2] = f[2] / magnitude_f;
+        // again, rely on dot product divided by magnitude of f to get component of a in direction of f
+        double dot_prod_f = f[0] * outaccels->x + f[1] * outaccels->y + f[2] * outaccels->z;
         
-        outaccels->x = sqrt(accelZ.x * accelZ.x + accelZ.y * accelZ.y + accelZ.z * accelZ.z) * ((devM.userAcceleration.z > 0.0) ? 1.0 : -1.0);
-        outaccels->y = -accelerationY;
-//        outaccels->z = accelerationZ * ((devM.userAcceleration.z > 0.0) ? 1.0 : -1.0);
-        //        outaccels->z = accelerationZ;
-        outaccels->z = new_z_vector;
+        outaccels->x = 0.0;
+        outaccels->y = -y_component_g;
+        outaccels->z = -dot_prod_f;
     }
     
     NSString *logStr2 = [NSString stringWithFormat:@"%d,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
