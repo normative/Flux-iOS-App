@@ -952,9 +952,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     //set debug labels to hidden by default
     gpsX.hidden= YES;
-    gpsY.hidden=YES;
+    gpsY.hidden= YES;
     kX.hidden = YES;
-    kY.hidden =YES;
+    kY.hidden = YES;
     delta.hidden = YES;
     pedometerL.hidden = YES;
     
@@ -1812,7 +1812,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.ecef.y =  self.fluxDisplayManager.locationManager.kflocation.y;
         _userPose.ecef.z =  self.fluxDisplayManager.locationManager.kflocation.z;
         
-        // [self printDebugInfo];
+        //[self printDebugInfo];
        
     }
 

@@ -512,12 +512,11 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
      
     // heading =self.fluxDisplayManager.locationManager.heading ;
  
-     enuHeadingRad = (90.0 - self.heading)/180.0 *PI;
- 
+     enuHeadingRad = (90.0 +(360- self.heading))/180.0 *PI;
+     
      kfXDisp = stepsize * cos(enuHeadingRad);
      kfYDisp = stepsize * sin(enuHeadingRad);
- 
-     //NSLog(@" pedometer count: %d heading = %f",motionManager.pedometerCount, heading);
+
  
  //[motionManager resetPedometer];
  
@@ -577,7 +576,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     kfilter = [[FluxKalmanFilter alloc] init];
     stepcount = 0;
     _lastvalue =0;
-    _resetThreshold = 20.0; //in meters;
+    _resetThreshold = 10.0; //in meters;
     _validCurrentLocationData = -1;
     _validInitLocationData = -1;
     //[self testKalman];
@@ -666,7 +665,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
     //tests here for tangent plane
     
-    [self printDebugInfo];
+    //[self printDebugInfo];
     // [self ecefToWGS84KF];
 }
 
