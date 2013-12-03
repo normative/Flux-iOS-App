@@ -105,8 +105,8 @@ ViewController *viewcontroller = nil;
     
     // Sustained threshold filter parameters (frequency domain)
 
-    sustained_threshold_y = 0.8;
-    sustained_threshold_z = 1.0;
+    sustained_threshold_y = 1.0;
+    sustained_threshold_z = 1.2;
     sustained_count = 20;
     
     // Filter parameters (frequency to time conversion)
@@ -117,8 +117,8 @@ ViewController *viewcontroller = nil;
 
     accel_y_step_threshold_pos = 0.05;
     accel_y_step_threshold_neg = -0.05;
-    accel_y_step_max_threshold_pos = 0.25;
-    accel_y_step_max_threshold_neg = -0.25;
+    accel_y_step_max_threshold_pos = 0.20;
+    accel_y_step_max_threshold_neg = -0.20;
     peak_valley_time_tolerance = 0.2;
     min_peak_to_valley_time = 0.3;
     max_peak_to_valley_time = 1.0;
