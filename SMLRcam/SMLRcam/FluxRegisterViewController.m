@@ -16,10 +16,9 @@
 
 
 
-#define ERROR_TITLE_MSG @"Whoa, there cowboy"
-#define ERROR_NO_ACCOUNTS @"You must add a Twitter account in Settings app to use this demo."
-#define ERROR_PERM_ACCESS @"We weren't granted access to the user's accounts"
-#define ERROR_NO_KEYS @"You need to add your Twitter app keys to Info.plist to use this demo.\nPlease see README.md for more info."
+#define ERROR_TITLE_MSG @"Uh oh..."
+#define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the settings app to sign in with Twitter"
+#define ERROR_PERM_ACCESS @"We weren't granted access your twitter accounts"
 #define ERROR_OK @"OK"
 
 @interface FluxRegisterViewController ()
@@ -238,31 +237,36 @@
 #pragma mark Twitter
 
 -(void)twitterChanged{
-    if (![TWAPIManager hasAppKeys]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_KEYS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
-        [alert show];
-    }
-    else if (![TWAPIManager isLocalTwitterAccountAvailable]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_ACCOUNTS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
-        [alert show];
-    }
-    else {
-        [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (granted) {
-                    //still cool.
-                }
-                else {
-                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_PERM_ACCESS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
-                    [alert show];
-                    NSLog(@"You were not granted access to the Twitter accounts.");
-                }
-            });
-        }];
-    }
+#warning check if user is logged in and if they are, confirm the registered account still exists.
+//    if (isLoggedIn) {
+//        if (![TWAPIManager isLocalTwitterAccountAvailable]) {
+//            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_ACCOUNTS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
+//            [alert show];
+//        }
+//        else {
+//            [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
+//                dispatch_async(dispatch_get_main_queue(), ^{
+//                    if (granted) {
+//                        //still cool.
+//                    }
+//                    else {
+//                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_PERM_ACCESS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
+//                        [alert show];
+//                        NSLog(@"You were not granted access to the Twitter accounts.");
+//                    }
+//                });
+//            }];
+//        }
+//    }
+
 }
 
 - (IBAction)twitterSignInAction:(id)sender {
+    if (![TWAPIManager isLocalTwitterAccountAvailable]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_ACCOUNTS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
     [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
         [self hideContainerViewAnimated:YES];
         dispatch_async(dispatch_get_main_queue(), ^{
