@@ -171,23 +171,4 @@
     }
 }
 
-//- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-//{
-//    NSLog(@"%f", scrollView.contentOffset.y);
-//}
-//
-//- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-//{
-//    CGSize tableViewScrollSize = self.tableView.contentSize;
-//    
-//    if ((scrollView.contentOffset.y >= 100) && (tableViewScrollSize.height == self.view.bounds.size.height))
-//    {
-//        self.tableView.contentSize = CGSizeMake(tableViewScrollSize.width, 150 + tableViewScrollSize.height);
-//    }
-//    else if ((scrollView.contentOffset.y < 100) && (tableViewScrollSize.height > self.view.bounds.size.height))
-//    {
-//        self.tableView.contentSize = CGSizeMake(tableViewScrollSize.width, self.view.bounds.size.height);
-//    }
-//}
-
 @end

@@ -597,11 +597,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 }
 
 
-
-
 #pragma mark  - Other
-
-
 
 - (void)deleteLocations
 {
@@ -619,8 +615,16 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
 
-    NSURLConnection *sConnection = [NSURLConnection connectionWithRequest:request delegate:nil];
-    [sConnection start];
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               if (!error) {
+                                   NSLog(@"Everthing went great, bombs away!");
+                               }
+                               else{
+                                   NSLog(@"Nuke error: %@",[error localizedDescription]);
+                               }
+                           }];
 }
 
 @end
