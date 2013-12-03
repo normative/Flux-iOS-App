@@ -199,7 +199,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     if (self.location != nil)
     {
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self];
-        [self reverseGeocodeLocation:self.location];
+        //[self reverseGeocodeLocation:self.location];
     }
 }
 

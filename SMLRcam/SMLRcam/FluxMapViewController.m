@@ -99,7 +99,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     lastSynchedLocation = fluxMapView.centerCoordinate;
     lastRadius = screenDistance/2;
     
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:fluxMapView.visibleMapRect]count]] forState:UIControlStateNormal];
+    MKMapRect narrowedScreenRect = fluxMapView.visibleMapRect;
+    MKOverlayRenderer*tmpRenderer = [[MKOverlayRenderer alloc]init];
+    CGRect narowedRect = [tmpRenderer rectForMapRect:narrowedScreenRect];
+    NSLog(@"Norm: %@",NSStringFromCGRect(narowedRect));
+    narowedRect = CGRectInset(narowedRect, narowedRect.size.width*.15, narowedRect.size.width*.15);
+    narrowedScreenRect = [tmpRenderer mapRectForRect:narowedRect];
+    NSLog(@"Small: %@",NSStringFromCGRect(narowedRect));
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
 }
 
 
@@ -148,7 +155,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [super viewDidLoad];
     
     [self setupLocationManager];
-    [self setupMapView];
     
     currentDataFilter = [[FluxDataFilter alloc] init];
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
@@ -158,6 +164,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self.view addSubview:transitionFadeView];
     
     self.screenName = @"Map View";
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    if (![self.presentingViewController isKindOfClass:[FluxFiltersViewController class]]) {
+        [self setupMapView];
+    }
 }
 
 #pragma mark Transitions
