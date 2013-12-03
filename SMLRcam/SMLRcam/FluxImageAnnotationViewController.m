@@ -158,6 +158,12 @@
     if (ImageAnnotationTextView.text.length < 141) {
         if (isSnapshot) {
             //do something with the snapshot
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
+            if (savelocally)
+            {
+                UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
+            }
             [self cancelButtonAction:nil];
         }
         else{
