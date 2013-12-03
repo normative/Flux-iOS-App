@@ -500,16 +500,18 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 
 
  
- - (void)registerPedDisplacementKFilter {
+- (void)registerPedDisplacementKFilter:(int)direction {
  
      NSLog(@"disp registered");
     // return;
-    
+    stepcount++;
      double enuHeadingRad;
      //int count = motionManager.pedometerCount;
      double stepsize =0.73;
  
-     
+    if(direction == -1)
+        self.heading +=180.0;
+    
     // heading =self.fluxDisplayManager.locationManager.heading ;
  
      enuHeadingRad = (90.0 +(360- self.heading))/180.0 *PI;
@@ -552,7 +554,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _kfdebug.filterx = kfilter.positionX;
     _kfdebug.filtery = kfilter.positionY;
     
-    
+    _kfdebug.filterx = (double)stepcount;
     
     
     
@@ -569,7 +571,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 {
     kfStarted =false;
     kfValidData = false;
-    kfDt = 1.0/60.0;
+    kfDt = 1.0/10.0;
     kfNoiseX = 0.0;
     kfNoiseY = 0.0;
     

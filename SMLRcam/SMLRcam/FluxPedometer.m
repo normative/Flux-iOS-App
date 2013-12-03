@@ -742,14 +742,18 @@ ViewController *viewcontroller = nil;
 - (bool)didTakeStep
 {
     NSNumber *n;
+    int direction =0;
     switch (walkingDirection) {
         case FORWARDS:
             n = [NSNumber numberWithInt:1];
+            direction =1;
             break;
         case BACKWARDS:
+            direction =-1;
             n = [NSNumber numberWithInt:-1];
             break;
         default:
+            direction = 0;
             n = [NSNumber numberWithInt:0];
             break;
     }
@@ -766,7 +770,7 @@ ViewController *viewcontroller = nil;
   //                                                      object:self userInfo:userInfoDict];
     if (flocation !=nil)
     {
-        [flocation registerPedDisplacementKFilter];
+        [flocation registerPedDisplacementKFilter:direction];
     }
     
     return true;
