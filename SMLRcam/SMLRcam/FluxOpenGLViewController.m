@@ -702,6 +702,9 @@ void init(){
 //        }
 //    }
     
+    NSLog(@"received notificationdxc65 y");
+    
+    
 }
     
 
@@ -909,7 +912,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadAlphaTexture) name:@"maskChange" object:nil];
     
     [super viewDidLoad];
@@ -949,9 +952,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     //set debug labels to hidden by default
     gpsX.hidden= YES;
-    gpsY.hidden=YES;
+    gpsY.hidden= YES;
     kX.hidden = YES;
-    kY.hidden =YES;
+    kY.hidden = YES;
     delta.hidden = YES;
     pedometerL.hidden = YES;
     
@@ -1805,7 +1808,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.ecef.y =  self.fluxDisplayManager.locationManager.kflocation.y;
         _userPose.ecef.z =  self.fluxDisplayManager.locationManager.kflocation.z;
         
-        // [self printDebugInfo];
+        //[self printDebugInfo];
        
     }
 
