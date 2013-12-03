@@ -264,6 +264,7 @@
 
 - (IBAction)twitterSignInAction:(id)sender {
     [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
+        [self hideContainerViewAnimated:YES];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (granted) {
                 if (_accounts.count > 1) {
@@ -282,6 +283,7 @@
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_PERM_ACCESS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
                 [alert show];
                 NSLog(@"You were not granted access to the Twitter accounts.");
+                [self showContainerViewAnimated:YES];
             }
         });
     }];
@@ -300,6 +302,12 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:lined delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                 [alert show];
+
+                if (parts.count>3) {
+                    NSString*username = [[parts objectAtIndex:3] substringFromIndex:12];
+                    [UICKeyChainStore setString:username forKey:@"username" service:@"com.flux"];
+                }
+                [self fadeOutLogin];
             });
         }
         else {
@@ -376,6 +384,7 @@
                                  NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
                                  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                                  [alert show];
+                                 [self showContainerViewAnimated:YES];
                                  });
                              }
                          }];
@@ -608,12 +617,18 @@
     if (animated) {
         [UIView animateWithDuration:0.3  animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
-            [logoImageView setCenter:CGPointMake(logoImageView.center.x, self.view.center.y)];
+            if (self.view.bounds.size.height < 500) {
+                [logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+            }
+            [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
         }];
     }
     else{
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
-        [logoImageView setCenter:CGPointMake(logoImageView.center.x, self.view.center.y)];
+        if (self.view.bounds.size.height < 500) {
+            [logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+        }
+        [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
     }
 }
 
@@ -621,12 +636,24 @@
     if (animated) {
         [UIView animateWithDuration:0.5 animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
-            [logoImageView setCenter:CGPointMake(logoImageView.center.x, 94)];
+            if (self.view.bounds.size.height < 500) {
+                [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2), self.view.center.y, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
+                [logoImageView setCenter:CGPointMake(self.view.center.x, 50)];
+            }
+            else{
+                [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
+            }
         }];
     }
     else{
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
-        [logoImageView setCenter:CGPointMake(logoImageView.center.x, 94)];
+        if (self.view.bounds.size.height < 500) {
+            [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2), self.view.center.y, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
+            [logoImageView setCenter:CGPointMake(self.view.center.x, 50)];
+        }
+        else{
+            [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
+        }
     }
 }
 
