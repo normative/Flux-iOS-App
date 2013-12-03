@@ -8,6 +8,7 @@
 
 #import "IDMCaptionView.h"
 #import "IDMPhoto.h"
+
 #import <QuartzCore/QuartzCore.h>
 
 static const CGFloat labelPadding = 10;
@@ -17,13 +18,15 @@ static const CGFloat labelPadding = 10;
     id<IDMPhoto> _photo;
     UILabel *captionLabel;
     UILabel *timestampLabel;
-    UILabel *usernameLabel;
-    UIImageView *usernameImageView;
+    UIButton *userameButton;
+    UIButton *userProfileImageButton;
     UIImageView *clockImageView;
 }
 @end
 
 @implementation IDMCaptionView
+
+@synthesize delegate;
 
 - (id)initWithPhoto:(id<IDMPhoto>)photo {
     CGRect screenBound = [[UIScreen mainScreen] bounds];
@@ -53,19 +56,7 @@ static const CGFloat labelPadding = 10;
     NSAttributedString* theText = captionLabel.attributedText;
     maxHeight = captionLabel.font.leading*captionLabel.numberOfLines;
     CGRect rectSize = [theText boundingRectWithSize:CGSizeMake(self.bounds.size.width, maxHeight) options:NSStringDrawingUsesLineFragmentOrigin context:NULL];
-    NSLog(@"Size Returned: %.2f, %.2f",rectSize.size.width,rectSize.size.height);
     return CGSizeMake(rectSize.size.width, rectSize.size.height+labelPadding * 2 + 40);
-
-
-    
-    //
-//    
-//    
-//
-//    CGSize textSize = [captionLabel.text sizeWithFont:captionLabel.font
-//                              constrainedToSize:CGSizeMake(size.width - labelPadding*2, maxHeight)
-//                                  lineBreakMode:captionLabel.lineBreakMode];
-//    return CGSizeMake(size.width, textSize.height + labelPadding * 2 + 40);
 }
 
 - (void)setupCaption {
@@ -89,20 +80,22 @@ static const CGFloat labelPadding = 10;
     }
     [self addSubview:captionLabel];
     
-    usernameLabel = [[UILabel alloc]initWithFrame:CGRectMake(37, self.bounds.size.height, 145, 20)];
-    usernameLabel.backgroundColor = [UIColor clearColor];
-    usernameLabel.textAlignment = NSTextAlignmentLeft;
-    usernameLabel.textColor = [UIColor whiteColor];
-    [usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+    userameButton = [[UIButton alloc]initWithFrame:CGRectMake(37, self.bounds.size.height, 145, 20)];
+    userameButton.backgroundColor = [UIColor clearColor];
+    userameButton.titleLabel.textAlignment = NSTextAlignmentLeft;
+    userameButton.titleLabel.textColor = [UIColor whiteColor];
+    [userameButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:14]];
     if ([_photo respondsToSelector:@selector(username)]) {
-        usernameLabel.text = [_photo username] ? [_photo username] : @" ";
+        userameButton.titleLabel.text = [_photo username] ? [_photo username] : @" ";
     }
-    [self addSubview:usernameLabel];
+    [userameButton addTarget:self action:@selector(profileTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:userameButton];
     
-    usernameImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, self.bounds.size.height, 20, 20)];
-    [usernameImageView setImage:[UIImage imageNamed:@"checkbox_checked"]];
-    [usernameImageView setCenter:CGPointMake(usernameImageView.center.x, usernameLabel.center.y)];
-    [self addSubview:usernameImageView];
+    userProfileImageButton = [[UIButton alloc]initWithFrame:CGRectMake(10, self.bounds.size.height, 20, 20)];
+    [userProfileImageButton setBackgroundImage:[UIImage imageNamed:@"checkbox_checked"]forState:UIControlStateNormal];
+    [userProfileImageButton setCenter:CGPointMake(userProfileImageButton.center.x, userameButton.center.y)];
+    [userProfileImageButton addTarget:self action:@selector(profileTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self addSubview:userProfileImageButton];
     
     timestampLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.bounds.size.width-168, self.bounds.size.height, 158, 20)];
     timestampLabel.backgroundColor = [UIColor clearColor];
@@ -116,10 +109,8 @@ static const CGFloat labelPadding = 10;
     
     clockImageView = [[UIImageView alloc]initWithFrame:CGRectMake(timestampLabel.frame.origin.x-15, self.bounds.size.height, 20, 20)];
     [clockImageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
-    [clockImageView setCenter:CGPointMake(clockImageView.center.x, usernameLabel.center.y)];
+    [clockImageView setCenter:CGPointMake(clockImageView.center.x, userameButton.center.y)];
     [self addSubview:clockImageView];
-    
-    NSLog(@"Frames: \ntextBox: %.2f,%.2f,%.2f,%.2f. \nrest: %.2f",captionLabel.frame.origin.x,captionLabel.frame.origin.y,captionLabel.frame.size.width,captionLabel.frame.size.height,clockImageView.frame.origin.y);
 }
 
 - (void)setBackground {
@@ -130,6 +121,13 @@ static const CGFloat labelPadding = 10;
     [fadeView.layer insertSublayer:gradient atIndex:0];
     fadeView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight; //UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
     [self addSubview:fadeView];
+}
+
+- (void)profileTapped{
+    NSLog(@"Totally tapped it");
+    if ([delegate respondsToSelector:@selector(CaptionView:sidSelectUsername:andProfileImage:)]) {
+        [delegate CaptionView:self sidSelectUsername:[_photo username] ? [_photo username] : @"" andProfileImage:nil];
+    }
 }
 
 @end

@@ -11,6 +11,8 @@
 #import "IDMZoomingScrollView.h"
 #import "SVProgressHUD.h"
 
+#import "FluxPublicProfileViewController.h"
+
 // Private
 @interface IDMPhotoBrowser () {
 	// Data
@@ -732,7 +734,7 @@
     }
     
     // Close button
-    if(_displayDoneButton && !self.navigationController.navigationBar)
+    if(_displayDoneButton)
         [self.view addSubview:_doneButton];
     
     // Toolbar items & navigation
@@ -943,10 +945,27 @@
             // Add caption
             IDMCaptionView *captionView = [self captionViewForPhotoAtIndex:index];
             captionView.frame = [self frameForCaptionView:captionView atIndex:index];
+            [captionView setDelegate:self];
             [_pagingScrollView addSubview:captionView];
             page.captionView = captionView;
 		}
 	}
+}
+
+- (void)CaptionView:(IDMCaptionView *)captionView sidSelectUsername:(NSString *)username andProfileImage:(UIImage *)profPic{
+    [self cancelControlHiding];
+    
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+    
+    
+    
+    // setup the opengl controller
+    // first get an instance from storyboard
+    FluxPublicProfileViewController*profileView = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
+    [profileView view];
+    [profileView prepareViewWithUser:[[FluxUserObject alloc]init]];
+    [self.navigationController pushViewController:profileView animated:YES];
 }
 
 - (BOOL)isDisplayingPageForIndex:(NSUInteger)index {
@@ -1164,6 +1183,10 @@
 - (void)setControlsHidden:(BOOL)hidden animated:(BOOL)animated permanent:(BOOL)permanent {
     // Cancel any timers
     [self cancelControlHiding];
+    
+    if (!self.view.window) {
+        return;
+    }
     
     if (self.wantsFullScreenLayout) {
         // Status Bar

@@ -23,7 +23,7 @@
         _image = nil;
         _dirty = true;
         _matched = false;
-        _imageType = none;
+        _imageRenderType = none;
         _imageFetchType = none;
         _imagePose = malloc(sizeof(sensorPose));
     }
@@ -47,7 +47,7 @@
             _image = nil;
             _dirty = true;
             _matched = false;
-            _imageType = none;
+            _imageRenderType = none;
             _imagePose = malloc(sizeof(sensorPose));
         }
     }

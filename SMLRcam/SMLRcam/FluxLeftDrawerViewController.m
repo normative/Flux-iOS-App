@@ -9,7 +9,8 @@
 #import "FluxLeftDrawerViewController.h"
 #import "TestFlight.h"
 #import "TestFlight+OpenFeedback.h"
-#import "FluxLeftMenuCell.h"
+#import "FluxCountTableViewCell.h"
+#import "FluxProfileCell.h"
 #import "UICKeyChainStore.h"
 
 #import "FluxSettingsViewController.h"
@@ -44,8 +45,12 @@
     NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
     tableViewArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
     
-    NSString *versionString = [NSString stringWithFormat:@"Version %@", [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
-    [self.versionLbl setText:versionString];
+    NSString * version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString * build = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *)kCFBundleVersionKey];
+    
+    [self.versionLbl setText:[NSString stringWithFormat:@"Flux v.%@ (%@)",version,build]];
+    [self.versionLbl setFont:[UIFont fontWithName:@"Akkurat" size:self.versionLbl.font.pointSize]];
+    [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.feedbackButton.titleLabel.font.pointSize]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -70,25 +75,30 @@
     if (indexPath.row>0) {
         return 44.0;
     }
-    return 94.0;
+    return 120.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *cellIdentifier = @"standardLeftCell";
-    FluxLeftMenuCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
-        cell = [[FluxLeftMenuCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+        cell = [[FluxCountTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
     [cell initCell];
     if (indexPath.row == 0) {
         NSString *username = [UICKeyChainStore stringForKey:@"username" service:@"com.flux"];
         
         NSString *cellIdentifier = @"profileCell";
-        UITableViewCell * profileCell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        FluxProfileCell * profileCell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         if (!profileCell) {
-            profileCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+            profileCell = [[FluxProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
         }
+        [profileCell.bioLabel setText:@"CmdrTaco basically runs the internet. This is a short bio about how awesome he is."];
+        [profileCell.usernameLabel setText:@"CmdrTaco"];
+        [profileCell.profileImageView setImage:[UIImage imageNamed:@"profileImage"]];
+        [profileCell initCell];
+        [profileCell hideCamStats];
         return profileCell;
     }
     else if (indexPath.row == tableViewArray.count){

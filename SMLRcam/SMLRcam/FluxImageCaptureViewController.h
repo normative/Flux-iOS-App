@@ -26,15 +26,24 @@
 extern NSString* const FluxImageCaptureDidPop;
 extern NSString* const FluxImageCaptureDidPush;
 extern NSString* const FluxImageCaptureDidCaptureImage;
+extern NSString* const FluxImageCaptureDidUndoCapture;
 
 @interface FluxImageCaptureViewController : GAITrackedViewController<ImageAnnotationDelegate>{
     UIImageView *gridView;
     UIImage *capturedImage;
     UIView *blackView;
+    
+    UIImage*snapshotImage;
+    UIImageView*snapshotImageView;
+    IBOutlet UIImageView *topGradientView;
+
     IBOutlet UIView *imageCaptureSquareView;
     IBOutlet UILabel *imageCountLabel;
     IBOutlet UIButton *approveButton;
     IBOutlet UILabel *photosLabel;
+    IBOutlet UIButton *undoButton;
+    IBOutlet UIView *topContainerView;
+    IBOutlet UIView *bottomContainerView;
     
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
@@ -50,6 +59,7 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
     
 }
 @property (strong, nonatomic) IBOutlet UIButton *closeButton;
+@property (nonatomic) BOOL isSnapshot;
 
 // TS: no longer needed - should get list(s) from DisplayManager directly
 //@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
@@ -57,6 +67,7 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
 
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 
+- (IBAction)undoButtonAction:(id)sender;
 
 - (IBAction)closeButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
@@ -66,4 +77,5 @@ extern NSString* const FluxImageCaptureDidCaptureImage;
 - (void)setHidden:(BOOL)hidden;
 
 - (void)takePicture;
+- (void)presentSnapshot:(UIImage*)snapshot;
 @end

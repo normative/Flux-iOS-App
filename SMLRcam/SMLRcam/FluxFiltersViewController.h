@@ -15,6 +15,8 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxDataFilter.h"
 
+#import "GAITrackedViewController.h"
+
 @class FluxFiltersViewController;
 @protocol FiltersTableViewDelegate <NSObject>
 @optional
@@ -22,7 +24,7 @@
 @end
 
 
-@interface FluxFiltersViewController : UIViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
+@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;
@@ -32,7 +34,8 @@
     
     UIImage*bgImage;
     
-    int imageCount;
+    UILabel*imageCountLabel;
+    int startImageCount;
     
     FluxDataFilter *dataFilter;
     FluxDataFilter *previousDataFilter;
@@ -46,10 +49,12 @@
 @property (strong, nonatomic) IBOutlet UIImageView *backgroundImageView;
 @property (strong, nonatomic) IBOutlet UITableView *filterTableView;
 
+@property (strong, nonatomic) IBOutlet NSNumber *imageCount;
+
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)doneButtonAction:(id)sender;
 
-- (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter;
+- (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count;
 - (void)setBackgroundView:(UIImage*)image;
 
 @end

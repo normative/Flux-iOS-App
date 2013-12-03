@@ -14,6 +14,8 @@
 @optional
 - (void)PlaceholderTextViewReturnButtonWasPressed:(KTPlaceholderTextView *)placeholderTextView;
 - (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView*)placeholderTextView;
+- (void)PlaceholderTextViewDidGoBeyondMax:(KTPlaceholderTextView*)placeholderTextView;
+- (void)PlaceholderTextViewDidReturnWithinMax:(KTPlaceholderTextView*)placeholderTextView;
 @end
 
 @interface KTPlaceholderTextView : UITextView <UITextViewDelegate> {
@@ -21,6 +23,7 @@
     NSString*placeholderString;
     UILabel *placeholderLabel;
     UILabel*charCount;
+    int maxCount;
     id __unsafe_unretained delegate;
 }
 

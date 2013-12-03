@@ -14,6 +14,7 @@
 NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
 NSString* const FluxImageCaptureDidPush = @"FluxImageCaptureDidPush";
 NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureImage";
+NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCapture";
 
 @interface FluxImageCaptureViewController ()
 
@@ -36,19 +37,16 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     [self.view setAlpha:0.0];
     [self.view setHidden:YES];
     
-    //add gridlines
-    gridView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"CameraGridlines.png"]];
-    [gridView setFrame:self.view.bounds];
-    [gridView setHidden:YES];
-    [gridView setAlpha:0.0];
-    [gridView setContentMode:UIViewContentModeScaleAspectFill];
-    [self.view addSubview:gridView];
-    
     blackView = [[UIView alloc]initWithFrame:imageCaptureSquareView.frame];
     [blackView setBackgroundColor:[UIColor blackColor]];
     [blackView setAlpha:0.0];
     [blackView setHidden:YES];
     [self.view addSubview:blackView];
+    
+    snapshotImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [snapshotImageView setAlpha:0.0];
+    [snapshotImageView setBackgroundColor:[UIColor blackColor]];
+    [self.view insertSubview:snapshotImageView belowSubview:topContainerView];
     
     capturedImageObjects = [[NSMutableArray alloc]init];
     capturedImages = [[NSMutableArray alloc]init];
@@ -58,7 +56,9 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     self.screenName = @"Image Capture View";
     
     [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
-    [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
+    [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosLabel.font.pointSize]];
+    [undoButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:undoButton.titleLabel.font.pointSize]];
+    [approveButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:approveButton.titleLabel.font.pointSize]];
     
     motionManager = [FluxMotionManagerSingleton sharedManager];
     locationManager = [FluxLocationServicesSingleton sharedManager];
@@ -74,6 +74,8 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 - (void)setHidden:(BOOL)hidden{
     if (!hidden) {
         [self.view setHidden:NO];
+        [approveButton setHidden:YES];
+        [undoButton setHidden:YES];
         [UIView animateWithDuration:0.3f
                          animations:^{
                              [self.view setAlpha:1.0];
@@ -92,7 +94,29 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     }
 }
 
+- (IBAction)undoButtonAction:(id)sender {
+    NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                  initWithObjectsAndKeys:[(FluxScanImageObject*)[capturedImageObjects lastObject]localID], @"localID",nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidUndoCapture
+                                                        object:self userInfo:userInfoDict];
+    [capturedImageObjects removeLastObject];
+    [capturedImages removeLastObject];
+    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
+    if (capturedImageObjects.count == 0) {
+        [approveButton setHidden:YES];
+        [undoButton setHidden:YES];
+    }
+}
+
 - (IBAction)closeButtonAction:(id)sender {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    if (self.isSnapshot) {
+        [bottomContainerView setHidden:NO];
+        [topContainerView setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.5]];
+        [topGradientView setHidden:YES];
+        [approveButton setHidden:YES];
+        [snapshotImageView setAlpha:0.0];
+    }
     [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
     [capturedImages removeAllObjects];
@@ -107,6 +131,9 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 
 - (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithChanges:(NSDictionary *)changes
 {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    [snapshotImageView setAlpha:0.0];
+    
     if ([changes objectForKey:@"removedImages"]) {
         NSIndexSet*removedImages = [changes objectForKey:@"removedImages"];
         [capturedImageObjects removeObjectsAtIndexes:removedImages];
@@ -139,15 +166,21 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
 
 - (IBAction)approveImageAction:(id)sender
 {        
-
+    
 }
 
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     UINavigationController*tmp = segue.destinationViewController;
     FluxImageAnnotationViewController* annotationsVC = (FluxImageAnnotationViewController*)tmp.topViewController;
-    UIImage*bgImage = [(FluxOpenGLViewController*)self.parentViewController snapshot:self.parentViewController.view];
-    [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
+    if (self.isSnapshot) {
+        [annotationsVC prepareSnapShotViewWithImage:snapshotImage withLocation:locationManager.subadministativearea andDate:[NSDate date]];
+    }
+    else{
+        UIImage*bgImage = [(FluxOpenGLViewController*)self.parentViewController snapshot:self.parentViewController.view];
+        [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
+    }
     [annotationsVC setDelegate:self];
 }
 
@@ -179,15 +212,11 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
     
     
     //black Animation
-    [blackView setHidden:NO];
-    [UIView animateWithDuration:0.09 animations:^{
-        [blackView setAlpha:0.9];
-    }completion:^(BOOL finished){
-        
-    }];
+    [self showFlash:[UIColor blackColor]];
     
     // Collect position and orientation information prior to copying image
-    CLLocation *location = locationManager.location;
+    CLLocation *location = locationManager.rawlocation;
+    //CLLocation *bestlocation = locationManager.location;
     CMAttitude *att = motionManager.attitude;
     CLLocationDirection heading = locationManager.heading;
     
@@ -270,15 +299,47 @@ NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureIm
              [self saveImageObject:capturedImageObject];
              [self incrementCountLabel];
              
-             //UI Updates
-             [UIView animateWithDuration:0.09 animations:^{
-                 [blackView setAlpha:0.0];
-             } completion:^(BOOL finished) {
-                 [blackView setHidden:YES];
-             }];
+             //UI updates
              [approveButton setHidden:NO];
+             [undoButton setHidden:NO];
          }
      }];
+}
+
+-(void)presentSnapshot:(UIImage *)snapshot{
+    self.isSnapshot = YES;
+    snapshotImage = snapshot;
+    [snapshotImageView setImage:snapshot];
+    [self showFlash:[UIColor whiteColor]];
+    [topGradientView setHidden:NO];
+    [bottomContainerView setHidden:YES];
+    [topContainerView setBackgroundColor:[UIColor clearColor]];
+    [approveButton setHidden:NO];
+   
+}
+
+- (void)showFlash:(UIColor*)color{
+    [blackView setHidden:NO];
+    [blackView setBackgroundColor:color];
+    [UIView animateWithDuration:0.09 animations:^{
+        [blackView setAlpha:0.9];
+    } completion:^(BOOL finished) {
+        if (self.isSnapshot) {
+            [UIView animateWithDuration:0.09 animations:^{
+                [snapshotImageView setAlpha:1.0];
+                [blackView setAlpha:0.0];
+            } completion:^(BOOL finished) {
+                [blackView setHidden:YES];
+            }];
+        }
+        else{
+            [UIView animateWithDuration:0.09 animations:^{
+                [blackView setAlpha:0.0];
+            } completion:^(BOOL finished) {
+                [blackView setHidden:YES];
+            }];
+        }
+    }];
 }
 
 - (void)saveImageObject:(FluxScanImageObject*)newImageObject

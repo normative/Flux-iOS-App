@@ -60,12 +60,12 @@ ViewController *viewcontroller = nil;
     samplecount = 0;
     vertAccelTrend = FLAT;
     
-    [self setupMotionManager];
-    
-    if ((motionData == nil) || (motionData.count == 0))
-    {
-        [self setupLogging];
-    }
+//    [self setupMotionManager];
+//    
+//    if ((motionData == nil) || (motionData.count == 0))
+//    {
+//        [self setupLogging];
+//    }
 
 //    isPaused = NO;
     

@@ -9,7 +9,16 @@
 #import <UIKit/UIKit.h>
 #import "IDMPhotoProtocol.h"
 
-@interface IDMCaptionView : UIView
+@class IDMCaptionView;
+@protocol IDMCaptionViewDelegate <NSObject>
+@optional
+- (void)CaptionView:(IDMCaptionView *)captionView sidSelectUsername:(NSString*)username andProfileImage:(UIImage*)profPic;
+@end
+
+@interface IDMCaptionView : UIView{
+    id __unsafe_unretained delegate;
+}
+@property (unsafe_unretained) id <IDMCaptionViewDelegate> delegate;
 
 // Init
 - (id)initWithPhoto:(id<IDMPhoto>)photo;

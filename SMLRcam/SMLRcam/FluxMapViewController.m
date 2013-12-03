@@ -33,12 +33,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
         currentDataFilter = [dataFilter copy];
-        [self.fluxDisplayManager requestMapPinsForFilter:currentDataFilter];
+        [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:lastRadius andFilter:currentDataFilter];
+        outstandingRequests++;
     }
 }
 
 - (void)didUpdateMapPins:(NSNotification*)notification{
     if (self.fluxDisplayManager.fluxMapContentMetadata) {
+        outstandingRequests--;
         [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxMapContentMetadata.count] forState:UIControlStateNormal];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^
        {
@@ -75,6 +77,30 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
 }
 
+-(void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated{
+    
+    MKCoordinateRegion region = mapView.region;
+    CLLocationCoordinate2D centerCoordinate = mapView.centerCoordinate;
+    CLLocation * newLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.latitude+region.span.latitudeDelta longitude:centerCoordinate.longitude];
+    CLLocation * centerLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.latitude longitude:centerCoordinate.longitude];
+    CLLocationDistance screenDistance = [centerLocation distanceFromLocation:newLocation]; // in meters
+    
+    MKMapPoint p1 = MKMapPointForCoordinate(fluxMapView.centerCoordinate);
+    MKMapPoint p2 = MKMapPointForCoordinate(lastSynchedLocation);
+    CLLocationDistance distanceFromLastSync = MKMetersBetweenMapPoints(p1, p2);
+    BOOL distanceFlag = (distanceFromLastSync)>lastRadius;
+    BOOL radiusFlag = (screenDistance/2)>lastRadius;
+    
+    if (distanceFlag || radiusFlag) {
+        [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:screenDistance/2 andFilter:currentDataFilter];
+        outstandingRequests++;
+    }
+
+    lastSynchedLocation = fluxMapView.centerCoordinate;
+    lastRadius = screenDistance/2;
+    
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:fluxMapView.visibleMapRect]count]] forState:UIControlStateNormal];
+}
 
 
 - (void)setupLocationManager
@@ -90,6 +116,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
     [fluxMapView setTheUserLocation:locationManager.location];
+    lastSynchedLocation = locationManager.location.coordinate;
+    lastRadius = 500.0;
+    outstandingRequests = 0;
+    
+    filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
     
     if (currentDataFilter == nil) {
         currentDataFilter = [[FluxDataFilter alloc] init];
@@ -97,7 +128,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
-    [self.fluxDisplayManager mapViewWillDisplay];
 }
 
 
@@ -138,7 +168,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-    [filtersVC prepareViewWithFilter:currentDataFilter];
+    [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.fluxMapContentMetadata.count];
     [self animationPushBackScaleDown];
         [filtersVC setRadius:500.0];
 }

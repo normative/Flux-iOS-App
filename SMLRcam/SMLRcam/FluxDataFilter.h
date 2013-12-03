@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 
+typedef enum
+FluxFilterType: NSUInteger {
+    social_filterType = 0,
+    tags_filterType = 0,
+} FluxFilterType;
+
 @interface FluxDataFilter : NSObject
 {
     

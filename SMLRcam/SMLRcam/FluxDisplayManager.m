@@ -9,12 +9,16 @@
 #import "FluxDisplayManager.h"
 #import "FluxScanImageObject.h"
 #import "FluxImageCaptureViewController.h"
+#import "FluxOpenGLViewController.h"
 
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
 
 const int maxRequestCountQuart = 2;
 const int maxRequestCountThumb = 5;
+
+const double minMoveDistanceThreshold = 1.0;
+const NSTimeInterval maxMoveTimeThreshold = 5.0;
 
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
@@ -34,7 +38,17 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     self = [super init];
     if (self)
     {
+        [self createNewLogFiles];
+        
         _locationManager = [FluxLocationServicesSingleton sharedManager];
+
+        lastMotionPose.position.x = 0.0;
+        lastMotionPose.position.y = 0.0;
+        lastMotionPose.position.z = 0.0;
+        lastMotionTime = [NSDate date];
+        
+        [_locationManager WGS84_to_ECEF:&lastMotionPose];
+        
         [self.locationManager startLocating];
         
         _fluxDataManager = [[FluxDataManager alloc] init];
@@ -53,7 +67,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
         dataFilter = [[FluxDataFilter alloc]init];
         
-        currHeading = 0.0;  // due North until told otherwise...
+//        currHeading = 0.0;  // due North until told otherwise...
         
         _isScrubAnimating = false;
         _isScanMode = true;
@@ -62,6 +76,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         _imageRequestCountQuart = 0;
 
         _imageRequestCountLock = [[NSLock alloc]init];
+        
+        _openGLVC = nil;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -73,22 +89,23 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStartCameraMode:) name:FluxImageCaptureDidPush object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
     }
     
     return self;
 }
 
-double getAbsAngle(double angle, double heading)
-{
-    double h1 = fmod((angle + 360.0), 360.0);
-    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
-    if (h1 > 180.0)
-    {
-        h1 = 360.0 - h1;
-    }
-    
-    return h1;
-}
+//double getAbsAngle(double angle, double heading)
+//{
+//    double h1 = fmod((angle + 360.0), 360.0);
+//    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
+//    if (h1 > 180.0)
+//    {
+//        h1 = 360.0 - h1;
+//    }
+//    
+//    return h1;
+//}
 
 
 #pragma mark - Notifications
@@ -102,20 +119,43 @@ double getAbsAngle(double angle, double heading)
 
 - (void)didUpdateHeading:(NSNotification *)notification{
     // first normalize to (0 <= heading < 360.0)
-    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
+//    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
     [self calculateTimeAdjustedImageList];
 }
 
 - (void)didUpdateLocation:(NSNotification *)notification{
     // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
-//    // HACK - with fixed positioning, only need the first, then can ignore
-//    static bool haveFirst = false;
-//
-//    if (haveFirst)
-//        return;
-//    
-//    haveFirst = true;
-    [self requestNearbyItems];
+    
+    // setup local sensorPose object with new lat/long
+    // calc ECEF
+    // compare to last ECEF
+    //  if > threshold then
+    //      last ECEF = current ECEF,
+    //      request nearby
+    sensorPose newPose;
+    newPose.position.x = self.locationManager.location.coordinate.latitude;
+    newPose.position.y = self.locationManager.location.coordinate.longitude;
+    newPose.position.z = self.locationManager.location.altitude;
+    
+    [self.locationManager WGS84_to_ECEF:&newPose];
+
+    double dx = newPose.ecef.x - lastMotionPose.ecef.x;
+    double dy = newPose.ecef.y - lastMotionPose.ecef.y;
+    
+    double dist = sqrt(dx * dx + dy * dy);
+    
+    NSDate *now = [NSDate date];
+    NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:lastMotionTime];
+    
+    if ((dist > minMoveDistanceThreshold) || (timeSinceLast > maxMoveTimeThreshold))
+    {
+        lastMotionPose = newPose;
+        lastMotionTime = now;
+        NSString *logstr = [NSString stringWithFormat:@"New request at (%f, %f, %f), (distance=%f)", newPose.position.x, newPose.position.y, newPose.position.z, dist];
+        [self writeLog:logstr];
+        [self requestNearbyItems];
+        
+    }
 }
 
 #pragma mark Filter
@@ -148,15 +188,15 @@ double getAbsAngle(double angle, double heading)
 
 - (void)timeBracketWillBeginScrolling
 {
-    NSLog(@"DisplayManager start scrolling");
+//    NSLog(@"DisplayManager start scrolling");
 //    _isScrubAnimating = true;
 }
 
 - (void)timeBracketDidEndScrolling
 {
-    NSLog(@"DisplayManager end scrolling");
+//    NSLog(@"DisplayManager end scrolling");
 //    _isScrubAnimating = false;
-    
+//    [self calculateTimeAdjustedImageList];
 }
 
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
@@ -196,7 +236,6 @@ double getAbsAngle(double angle, double heading)
 - (void)calculateTimeAdjustedImageList
 {
     static bool inCalcTimeAdjImageList = false;
-    double localCurrHeading;
 
     if (inCalcTimeAdjImageList)
         return;
@@ -204,8 +243,18 @@ double getAbsAngle(double angle, double heading)
     [_displayListLock lock];
     [_nearbyListLock lock];
     {
+        // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
+        // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
+        // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
+        // hard pressed to see the issues simply because of motion blur.
+        
+        // spin through nearbylist to update...
+        if (self.openGLVC != nil)
+        {
+            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList];
+        }
+        
         inCalcTimeAdjImageList = true;
-        localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
         
         // generate the displayList...
         
@@ -224,7 +273,7 @@ double getAbsAngle(double angle, double heading)
                 if (image != nil)
                 {
                     ire.image = image;
-                    ire.imageType = rtype;
+                    ire.imageRenderType = rtype;
                 }
                 else if (_isScanMode)
                 {
@@ -235,7 +284,7 @@ double getAbsAngle(double angle, double heading)
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.image = image;
-                        ire.imageType = thumb;
+                        ire.imageRenderType = thumb;
                         ire.imageFetchType = none;
                         [self updateImageMetadataForElement:ire];
                         
@@ -256,17 +305,16 @@ double getAbsAngle(double angle, double heading)
         
         // sort by abs(heading delta with current) asc
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
-// sort based on heading - needs to be reworked to use a proper heading relative to projection plane placement
-//            // get heading deltas relative to current...
-//            
-//            double h1 = floor(getAbsAngle(obj1.imageMetadata.heading, localCurrHeading) / 5.0);
-//            double h2 = floor(getAbsAngle(obj2.imageMetadata.heading, localCurrHeading) / 5.0);
-//
-//            if (h1 != h2)
-//            {
-//                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
-//            }
-//            else
+            // get heading deltas relative to current...
+            
+            double h1 = floor(fabs(obj1.imageMetadata.relHeading) / 5.0);         // 5-degree blocks
+            double h2 = floor(fabs(obj2.imageMetadata.relHeading) / 5.0);
+
+            if (h1 != h2)
+            {
+                return (h1 < h2) ? NSOrderedAscending : NSOrderedDescending;
+            }
+            else
             {
                 return ([obj2.timestamp compare:obj1.timestamp]);   // sort descending timestamp
             }
@@ -288,8 +336,7 @@ double getAbsAngle(double angle, double heading)
 //    i = 0;
 //    for (FluxImageRenderElement *ire in self.displayList)
 //    {
-//        double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-//        NSLog(@"dl: i=%d, key=%@, headRaw=%f headDelta=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, h1, ire.timestamp);
+//        NSLog(@"dl: i=%d, key=%@, headDelta=%f, timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
 //    }
     
     NSDictionary *userInfoDict = [[NSDictionary alloc]
@@ -373,10 +420,20 @@ double getAbsAngle(double angle, double heading)
     UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
     FluxImageRenderElement *ire = [[FluxImageRenderElement alloc]initWithImageObject:newImageObject];
     ire.image = newImage;
-    ire.imageType = full_res;
+    ire.imageRenderType = full_res;
     ire.localCaptureTime = ire.timestamp;
     [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
     [_nearbyCamList addObject:ire];
+    [self requestNearbyItems];
+}
+
+- (void)didUndoCapture:(NSNotification *)notification
+{
+    [_fluxNearbyMetadata removeObjectForKey: [[notification userInfo] objectForKey:@"localID"]];
+    if (_nearbyCamList.count > 0) {
+        [_nearbyCamList removeObjectAtIndex:0];
+    }
+    
     [self requestNearbyItems];
 }
 
@@ -402,13 +459,34 @@ double getAbsAngle(double angle, double heading)
         
         [dataRequest setNearbyListReady:^(NSArray *imageList)
         {
+            // ignore the request response if we are in camera capture mode
+            if (!_isScanMode)
+                return;
+            
             // process request using nearbyList:
             //  copy local-only objects (imageid < 0) into localList
             NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];
             
             [_nearbyListLock lock];
             {
-                // Iterate over the list and clear out anything that is not local-only
+//                for (int oidx = 0; oidx < (imageList.count-1); oidx++)
+//                {
+//                    FluxScanImageObject *oObj = [imageList objectAtIndex:oidx];
+//                    for (int iidx = oidx + 1; iidx < imageList.count; iidx++)
+//                    {
+//                        FluxScanImageObject *iObj = [imageList objectAtIndex:iidx];
+//                        if ((iObj != nil) && (oObj != nil))
+//                        {
+//                            if ([iObj.localID isEqualToString:oObj.localID])
+//                            {
+//                                NSLog(@"Duplicated image IDs in received image list: %@, %@, %d, %d", oObj.localID, iObj.localID, oObj.imageID, iObj.imageID);
+//                            }
+//                        }
+//                    }
+//                    
+//                }
+
+                // Iterate over the current nearbylist and clear out anything that is not local-only
                 for (FluxImageRenderElement *ire in self.nearbyList)
                 {
                     if (ire.imageMetadata.imageID < 0)
@@ -419,7 +497,7 @@ double getAbsAngle(double angle, double heading)
                 
                 //  clean nearbyList (empty)
                 [self.nearbyList removeAllObjects];
-
+                
                 //  for each item in response
                 for (FluxScanImageObject *curImgObj in imageList)
                 {
@@ -445,7 +523,7 @@ double getAbsAngle(double angle, double heading)
                             curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
                             curImgRenderObj.textureMapElement = localImgRenderObj.textureMapElement;
                             curImgRenderObj.image = localImgRenderObj.image;
-                            curImgRenderObj.imageType = localImgRenderObj.imageType;
+                            curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
 
                         }
                         else
@@ -466,7 +544,22 @@ double getAbsAngle(double angle, double heading)
                     }
                     
                     // copy to nearbyList
-                    [self.nearbyList addObject:curImgRenderObj];
+// list dup elimination
+//                    bool found = false;
+//                    for (FluxImageRenderElement *ire in self.nearbyList)
+//                    {
+//                        if (ire.imageMetadata.imageID == curImgRenderObj.imageMetadata.imageID)
+//                        {
+//                            found = true;
+//                            NSLog(@"Found ID %d in nearby list already!!", ire.imageMetadata.imageID);
+//                        }
+//                    }
+//                    
+//                    if (!found)
+//                    if ([self.nearbyList indexOfObject:curImgRenderObj] == NSNotFound)
+                    {
+                        [self.nearbyList addObject:curImgRenderObj];
+                    }
                 }
                 
                 //  for each remaining item in localOnlyObjects list
@@ -495,6 +588,31 @@ double getAbsAngle(double angle, double heading)
                                                                             nil];
                 
                 [self.nearbyList sortUsingDescriptors:sortDescriptors];
+                
+                // spin through list and remove duplicates - shouldn't be any but given the fits the GL rendering sub-system throws if they are present, better safe than sorry...
+                // NOTE: elements should be right next to each other (same timestamp) - this allows us to do neighbour comparisons rather than full-list checks.
+                NSMutableArray *duplist = [[NSMutableArray alloc]init];
+                FluxImageRenderElement *prevIre = nil;
+                int c = 0;
+                for (FluxImageRenderElement *ire in self.nearbyList)
+                {
+                    if (prevIre != nil)
+                    {
+                        if (prevIre.imageMetadata.imageID == ire.imageMetadata.imageID)
+                        {
+                            // have a duplicate - kill the first one
+                            [duplist addObject:[NSNumber numberWithInteger:c]];
+                        }
+                    }
+                    c++;
+                    prevIre = ire;
+                }
+                
+                // remove in reverse order (bottom up) so indexes aren't messed up
+                for (NSNumber *idx in [duplist reverseObjectEnumerator])
+                {
+                    [self.nearbyList removeObjectAtIndex:[idx intValue]];
+                }
 
                 [self calculateTimeAdjustedImageList];
             }
@@ -537,15 +655,15 @@ double getAbsAngle(double angle, double heading)
     //if we have items already, check if it's worth pulling again
     if (self.fluxMapContentMetadata && previousMapViewLocation) {
         if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50) {
-            [self requestMapPinsForFilter:nil];
+            [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
         }
     }
     else{
-        [self requestMapPinsForFilter:nil];
+        [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
     }
 }
 
-- (void)requestMapPinsForFilter:(FluxDataFilter*)mapDataFilter{
+- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter *)mapDataFilter{
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     
@@ -563,7 +681,8 @@ double getAbsAngle(double angle, double heading)
     
     [dataRequest setWideAreaListReady:^(NSArray *imageList){
         self.fluxMapContentMetadata = imageList;
-        previousMapViewLocation = self.locationManager.location;
+        CLLocation*temp = [[CLLocation alloc]initWithLatitude:location.latitude longitude:location.longitude];
+        previousMapViewLocation = temp;
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateMapPinList
                                                             object:self userInfo:nil];
     }];
@@ -574,7 +693,7 @@ double getAbsAngle(double angle, double heading)
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidFailToUpdateMapPinList
                                                             object:self userInfo:userInfoDict];
     }];
-    [self.fluxDataManager requestMapImageListAtLocation:self.locationManager.location.coordinate withRadius:500.0 withDataRequest:dataRequest];
+    [self.fluxDataManager requestMapImageListAtLocation:location withRadius:radius withDataRequest:dataRequest];
 }
 
 #pragma mark - List Management Support
@@ -626,44 +745,43 @@ double getAbsAngle(double angle, double heading)
     maxDisplayCount = MIN(maxDisplayCount, maxCount);
 
     [self lockDisplayList];
-    double localCurrHeading = currHeading;      // use a local copy to prevent issues when currHeading changes without needing a lock for currHeading
 
     int count = 0;
     if (count < maxDisplayCount)
     {
         for (FluxImageRenderElement *ire in self.displayList)
         {
-//        for (int idx = 0; idx < maxDisplayCount; idx++)
-//        {
-            double h1 = getAbsAngle(ire.imageMetadata.heading, localCurrHeading);
-            if (h1 < 90.0)
+            if (fabs(ire.imageMetadata.relHeading) < 90.0)
             {
-                [renderList addObject:ire];
-                count++;
-                if (count >= maxDisplayCount)
+                // make sure a duplicate object isn't there already - need to search for duplicate localIDs.
+                bool dupFound = false;
+                for (FluxImageRenderElement *lire in renderList)
                 {
-                    break;
+                    dupFound = dupFound || ([lire.localID isEqualToString:ire.localID]);
+                }
+                
+                if (!dupFound)
+                {
+                    [renderList addObject:ire];
+//                    NSLog(@"id: %@ added, idx: %d, relHeading: %f", ire.localID, count, ire.imageMetadata.relHeading);
+                    count++;
+                    if (count >= maxDisplayCount)
+                    {
+                        break;
+                    }
                 }
             }
+//            NSLog(@"id: %@ not included, relHeading: %f", ire.localID, ire.imageMetadata.relHeading);
         }
     }
     [self unlockDisplayList];
 
-//    if (maxDisplayCount > 0)
-//    {
-//        [self lockDisplayList];
-//        [renderList addObjectsFromArray:[self.displayList subarrayWithRange:NSMakeRange(0, maxDisplayCount)]];
-//        [self unlockDisplayList];
-//    }
-    
     return renderList;
 }
 
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
 //    NSLog(@"Renderlist Count: %d", renderList.count);
-    // TODO: sort the provided list
-    // based on sorting, current state, availability etc. determine which image resolution to load, fetch it from cache and set renderList[idx].image accordingly
 
     NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: /*[NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],*/
                                 [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
@@ -678,7 +796,7 @@ double getAbsAngle(double angle, double heading)
             // look to see if can trigger load of higher resolution
             for (FluxImageRenderElement *ire in renderList)
             {
-                if ((ire.imageFetchType == none) && (ire.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
+                if ((ire.imageFetchType == none) && (ire.textureMapElement != nil) && (ire.textureMapElement.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
                 {
                     // fetch the quart for this element
                     ire.imageFetchType = quarterhd;
@@ -692,7 +810,7 @@ double getAbsAngle(double angle, double heading)
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.imageFetchType = none;
-                        ire.imageType = quarterhd;
+                        ire.imageRenderType = quarterhd;
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                             object:self userInfo:nil];
@@ -713,7 +831,7 @@ double getAbsAngle(double angle, double heading)
         // only load thumbs if loading required
         for (FluxImageRenderElement *ire in renderList)
         {
-            ire.imageType = thumb;
+            ire.imageRenderType = thumb;
         }
     }
 
@@ -721,9 +839,41 @@ double getAbsAngle(double angle, double heading)
 //    int i = 0;
 //    for (FluxImageRenderElement *ire in renderList)
 //    {
-//        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
-//        NSLog(@"render: i=%d, key=%@, headRaw=%f, timestamp=%@, fetchtype=%d, loadtype=%d", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp, ire.imageFetchType, lt);
+////        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
+//        NSLog(@"render: i: %d, key: %@, abs head: %f, rel head: %f", i++, ire.localID, ire.imageMetadata.absHeading, ire.imageMetadata.relHeading);
 //    }
 }
+
+#pragma mark - Logging
+
+- (void) createNewLogFiles
+{
+    NSString *logName = @"Documents/log.txt";
+    
+    NSString *logFilename = [NSHomeDirectory() stringByAppendingPathComponent:logName];
+    [[NSFileManager defaultManager] createFileAtPath:logFilename contents:nil attributes:nil];
+    logFile = [NSFileHandle fileHandleForWritingAtPath:logFilename];
+    
+    logDateFormat = [[NSDateFormatter alloc] init];
+    [logDateFormat setDateFormat:@"yyyy'-'MM'-'dd', 'HH':'mm':'ss'.'SSS', '"];
+}
+
+- (void) writeLog:(NSString *)logmsg
+{
+    if (logFile == nil)
+    {
+        return;
+    }
+    
+    NSDate *curDate = [NSDate date];
+    NSString *curDateString = [logDateFormat stringFromDate:curDate];
+    
+    NSString *outStr = [[curDateString stringByAppendingString:logmsg] stringByAppendingString:@"\n"];
+    
+    [logFile writeData:[outStr dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+
+
 
 @end
