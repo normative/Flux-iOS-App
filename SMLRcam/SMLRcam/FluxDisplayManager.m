@@ -20,6 +20,8 @@ const int maxRequestCountThumb = 5;
 const double minMoveDistanceThreshold = 1.0;
 const NSTimeInterval maxMoveTimeThreshold = 5.0;
 
+const double maxIncidentThreshold = 30;
+
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
 NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDidUpdateImageTexture";
@@ -248,13 +250,13 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
         // hard pressed to see the issues simply because of motion blur.
         
-        // spin through nearbylist to update...
+        inCalcTimeAdjImageList = true;
+        
+        // spin through nearbylist to update metadata and nearbylist...
         if (self.openGLVC != nil)
         {
-            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList];
+            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList andMaxIncidentThreshold:maxIncidentThreshold];
         }
-        
-        inCalcTimeAdjImageList = true;
         
         // generate the displayList...
         
@@ -339,6 +341,9 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 //        NSLog(@"dl: i=%d, key=%@, headDelta=%f, timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
 //    }
     
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
+                                                        object:self userInfo:nil];
+
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:self.displayList, @"displayList" , nil];
 
@@ -618,8 +623,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
             }
             [_nearbyListLock unlock];
 
-            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
-                                                                object:self userInfo:nil];
+//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
+//                                                                object:self userInfo:nil];
 
         }];
         
@@ -643,8 +648,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         }
         [_nearbyListLock unlock];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
-                                                            object:self userInfo:nil];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
+//                                                            object:self userInfo:nil];
 
     }
 }

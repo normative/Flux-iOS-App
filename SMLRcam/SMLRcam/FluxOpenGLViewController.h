@@ -122,7 +122,7 @@ const int MAX_TEXTURES = 8;
 - (void)render;
 //- (void)updateImageMetadataForElement:(FluxImageRenderElement*)element;
 - (void)stepperChangedWithValue:(double)v;
-- (void)updateImageMetadataForElementList:(NSMutableArray *)elementList;
+- (void)updateImageMetadataForElementList:(NSMutableArray *)elementList andMaxIncidentThreshold:(double)maxIncidentThreshold;
 
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
