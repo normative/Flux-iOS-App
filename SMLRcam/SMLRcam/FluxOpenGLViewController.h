@@ -20,7 +20,8 @@
 #import "FluxTextureToImageMapElement.h"
 #import "FluxImageRenderElement.h"
 
-const int MAX_TEXTURES = 8;
+#define MAX_TEXTURES 8
+
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;

@@ -15,9 +15,15 @@
 
 #import "GAITrackedViewController.h"
 
+#import <Accounts/Accounts.h>
+#import <Twitter/Twitter.h>
+#import "OAuth+Additions.h"
+#import "TWAPIManager.h"
+#import "TWSignedRequest.h"
 
 
-@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate>{
+
+@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     
@@ -42,6 +48,11 @@
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
+
+@property (nonatomic, strong) ACAccountStore *accountStore;
+@property (nonatomic, strong) TWAPIManager *apiManager;
+@property (nonatomic, strong) NSArray *accounts;
+
 - (void)hideKeyboard;
 - (IBAction)createAccountButtonAction:(id)sender;
 - (IBAction)twitterSignInAction:(id)sender;

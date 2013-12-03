@@ -255,18 +255,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 -(void)userIsTimeSliding{
-    if (dateRangeLabel.alpha == 0) {
-        [UIView animateWithDuration:0.2 animations:^{
-            [dateRangeLabel setAlpha:1.0];
-        }];
-    }
     NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
     NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
-    [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
-    
-    [dateRangeLabelHideTimer invalidate];
-    dateRangeLabelHideTimer = nil;
-    dateRangeLabelHideTimer = [NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(hideDateRangeLabel) userInfo:nil repeats:NO];
+    if (startDate && endDate) {
+        [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        
+        //set it visible
+        if (dateRangeLabel.alpha == 0) {
+            [UIView animateWithDuration:0.2 animations:^{
+                [dateRangeLabel setAlpha:1.0];
+            }];
+        }
+        
+        //update hide timer
+        [dateRangeLabelHideTimer invalidate];
+        dateRangeLabelHideTimer = nil;
+        dateRangeLabelHideTimer = [NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(hideDateRangeLabel) userInfo:nil repeats:NO];
+    }
 }
 
 #pragma mark - Tapping images
@@ -581,29 +586,26 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     self.screenName = @"Scan View";
     
-    
-    
-    [CameraButton addObserver:self forKeyPath:@"frame" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"bounds" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"transform" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"position" options:NSKeyValueObservingOptionNew context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"zPosition" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"anchorPoint" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"anchorPointZ" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"zPosition" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"frame" options:0 context:NULL];
-    [CameraButton.layer addObserver:self forKeyPath:@"transform" options:0 context:NULL];
-}
-
--(void)viewWillAppear:(BOOL)animated{
     [CameraButton removeFromSuperview];
     [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
     [self.view addSubview:CameraButton];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    NSLog(@"View changed its geometry");
+-(void)viewWillLayoutSubviews{
+    
+}
+
+- (void)viewDidLayoutSubviews{
+
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [CameraButton setFrame:CGRectMake(0, 0, CameraButton.frame.size.width, CameraButton.frame.size.height)];
+    [CameraButton setCenter:CGPointMake(self.view.center.x, self.leftDrawerButton.center.y)];
 }
 
 
