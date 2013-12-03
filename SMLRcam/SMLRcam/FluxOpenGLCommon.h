@@ -12,6 +12,11 @@
 #import <GLKit/GLKit.h>
 
 typedef struct{
+    double rotation[9];
+    double translation[3];
+} transform;
+
+typedef struct{
     int valid;
     double x;
     double y;

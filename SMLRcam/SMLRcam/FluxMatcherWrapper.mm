@@ -9,7 +9,7 @@
 #import "FluxMatcherWrapper.h"
 #import "FluxMatcher.h"
 #import "UIImage+OpenCV.h"
-
+#import <Accelerate/Accelerate.h>
 @interface FluxMatcherWrapper ()
 {
     // Convert to grayscale before populating for performance improvement
@@ -170,7 +170,31 @@
 
 - (void) computeNextOrthonormal
 {
+    long m = 3;
+    long n = 3;
+    long lda= 3;
+    
     //column major for lapack
+    double s[3];
+    double u[9];
+    double vt[9];
+    double workSize;
+    double *work = &workSize;
+    long lwork = -1;
+    long iwork[24];
+    long info = 0;
+    char jobz[1];
+    jobz[0] = 'A';
+    dgesdd_(jobz, &m, &n, &_t.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
+    NSLog(@"workSize = %f", workSize);
+    lwork = workSize;
+    work =(double*) malloc(lwork *sizeof(double));
+    dgesdd_(jobz, &m, &n, &_t.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
+    
+    
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, u, 3, vt, 3, 1.0, _t.rotation, 3);
+    
+    free(work);
 }
 
 - (int) computeTransformsFromHomography
@@ -217,14 +241,21 @@
     r[7] = r[2] * r[3] - r[0] * r[5];
     r[8] = r[0] * r[4] - r[1] * r[3];
 
-    translation[0] = invC[0] * h[6] + invC[1] * h[7] + invC[2]*  h[8];
-    translation[1] = invC[3] * h[6] + invC[4] * h[7] + invC[5] * h[8];
-    translation[2] = invC[6] * h[6] + invC[7] * h[7] + invC[8] * h[8];
+    _t.translation[0] = invC[0] * h[6] + invC[1] * h[7] + invC[2]*  h[8];
+    _t.translation[1] = invC[3] * h[6] + invC[4] * h[7] + invC[5] * h[8];
+    _t.translation[2] = invC[6] * h[6] + invC[7] * h[7] + invC[8] * h[8];
     
-    for(i = 0; i<9; i++)
-    {
-        rotation[0] = r[0];
-    }
+    //column major ordering
+    _t.rotation[0] = r[0];
+    _t.rotation[1] = r[3];
+    _t.rotation[2] = r[6];
+    _t.rotation[3] = r[1];
+    _t.rotation[4] = r[4];
+    _t.rotation[5] = r[7];
+    _t.rotation[6] = r[2];
+    _t.rotation[7] = r[5];
+    _t.rotation[8] = r[8];
+    
     
     
     //Transform rotation matrix into next orthonormal matrix (Frobenius)
