@@ -82,7 +82,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 - (void)endLocating;
 - (void)orientationChanged:(NSNotification *)notification;
 - (void)WGS84_to_ECEF:(sensorPose *)sp;
-
+- (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 
 @end
