@@ -571,7 +571,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 {
     kfStarted =false;
     kfValidData = false;
-    kfDt = 1.0/10.0;
+    kfDt = 1.0/60.0;
     kfNoiseX = 0.0;
     kfNoiseY = 0.0;
     
