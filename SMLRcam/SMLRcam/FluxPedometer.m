@@ -235,7 +235,6 @@ ViewController *viewcontroller = nil;
     return outaccels;
 }
 
-//Math in here modified from what was originally intended ... not sure what is being computed in here anymore - Arjun
 - (CMAcceleration *)reorientAccels:(CMAcceleration *)outaccels
 {
     // do whatever needs to be done to transform existing device motion / accels
@@ -1267,7 +1266,7 @@ ViewController *viewcontroller = nil;
 
 }
 
-#pragma --- Kalman filter specific code ---
+#pragma mark - Kalman Filter
 //PLEASE DO NOT MODIFY unless you are absolutely sure of what you are doing - Arjun
 
 - (void)computeParametersForKalmanFilter:(CMDeviceMotion *)devM
