@@ -306,7 +306,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
             }
         }
     }
-                                                                                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+    failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
@@ -319,14 +319,13 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     // monitor upload progress
     if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
     {
-        [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {            
             if (totalBytesExpectedToWrite > 0 && totalBytesExpectedToWrite < NSUIntegerMax) {
-                [delegate NetworkServices:self uploadProgress:(long long)totalBytesWritten
+                [delegate NetworkServices:self uploadProgress:(long long)bytesWritten
                      ofExpectedPacketSize:(long long)totalBytesExpectedToWrite andRequestID:requestID];
             }
         }];
     }
-    
 }
 
 

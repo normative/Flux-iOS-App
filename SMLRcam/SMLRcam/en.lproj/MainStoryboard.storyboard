@@ -943,7 +943,7 @@
                     </connections>
                 </pinchGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2344" y="-321"/>
+            <point key="canvasLocation" x="2273" y="-339"/>
         </scene>
         <!--Flux Register View Controller - Register-->
         <scene sceneID="5te-EV-YwT">

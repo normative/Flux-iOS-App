@@ -501,8 +501,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                     ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID
 {
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request setCurrentUploadSize:bytesSent];
-    [request setTotalUploadSize:size];
+    [request setBytesUploaded:bytesSent];
+    [request setTotalByteSize:size];
     [request whenUploadInProgress:[fluxDataStore getMetadataWithLocalID:request.uploadLocalID] withDataRequest:request];
 }
 
@@ -540,19 +540,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     {
         FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
         [self completeRequestWithDataRequest:curRequest];
-        [[uploadQueueReceivers objectForKey:updatedImageObject.localID] removeObject:curRequestID];
     }
     
-    if ([[uploadQueueReceivers objectForKey:updatedImageObject.localID] count] == 0)
-    {
-        [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
-    }
-    else
-    {
-        NSLog(@"%s: Upload Queue Receiver list not empty following upload of ID %@. Should never happen.",
-              __func__, updatedImageObject.localID);
-    }
-
+    [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray *)imageList andRequestID:(NSUUID *)requestID
