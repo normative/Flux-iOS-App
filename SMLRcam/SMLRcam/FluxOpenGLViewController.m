@@ -1731,16 +1731,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
 
                         // Queue up image for feature matching with background camera feed
-                        
-                        // TODO: Add additional checks to see if we actually need to perform a match operation
-                        
-                        // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                        
-                        // TODO: Need to set a callback function that does something with the updated metadata
-                        // Easiest way is to give DisplayManager the updated ImageRenderElement (or portion of)
-                        // and tell it to notify OpenGL VC that list changed.
-                        
-                        [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+                        if (!ire.matched)
+                        {
+                            // Only add object image + metadata to queue - scene object will be grabbed by matcher
+                            [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+                        }
                     }
                 }
                 else
