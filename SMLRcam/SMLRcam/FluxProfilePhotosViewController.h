@@ -17,6 +17,7 @@
     
     NSMutableArray*removedImages;
     IBOutlet UICollectionView*theCollectionView;
+    IBOutlet UIBarButtonItem *editBarButton;
     BOOL isEditing;
 }
 - (IBAction)garbageButtonAction:(id)sender;

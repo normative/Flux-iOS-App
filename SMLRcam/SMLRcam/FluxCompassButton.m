@@ -33,11 +33,8 @@
     {
         FluxScanImageObject *imageObject = ire.imageMetadata;
         
-        //float deltaLat = imageObject.coordinate.latitude - locationManager.location.coordinate.latitude;
-        //float deltaLong = imageObject.coordinate.longitude - locationManager.location.coordinate.longitude;
-        //float degree = atan2f(deltaLat, deltaLong) * 180.0f / M_PI;
-        
-        int position = abs(imageObject.heading / 30);
+        double h = imageObject.absHeading;
+        int position = (((int)(h + 360) % 360)  / 30);
         [radarStatusArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
     }
     [self updateRadarImageView];
@@ -72,14 +69,15 @@
     
     onImg = [UIImage imageNamed:@"radarSegmentOn"];
     
-    for (int i = 0; i<12; i++)
+    for (int i = 0; i < 12; i++)
     {
         [radarStatusArray addObject:[NSNumber numberWithInt:0]];
         UIImageView *radarImageView = [[UIImageView alloc] initWithImage:onImg];
         [radarImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         [radarImageView setContentMode:UIViewContentModeScaleAspectFit];
-        float rotateDegree = i*30;
+        float rotateDegree = (i * 30);
         radarImageView.transform = CGAffineTransformMakeRotation(rotateDegree * M_PI/180);
+        [radarImageView setHidden:YES];
         
         [radarView addSubview:radarImageView];
         [radarImagesArray addObject:radarImageView];

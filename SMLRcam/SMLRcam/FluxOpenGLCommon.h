@@ -23,6 +23,18 @@ typedef struct{
     double z;
 }kfECEF;
 
+
+
+
+typedef struct{
+    double latitude;
+    double longitude;
+    double altitude;
+}Geolocation;
+
+
+
+
 typedef struct{
     
     float gpsx;

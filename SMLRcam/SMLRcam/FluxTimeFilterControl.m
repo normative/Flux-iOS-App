@@ -7,6 +7,7 @@
 //
 
 #import "FluxTimeFilterControl.h"
+#import <QuartzCore/QuartzCore.h>
 
 #define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
 
@@ -27,7 +28,7 @@
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        clockContainerView = [[UIView alloc]initWithFrame:CGRectMake(0, 45, 60, 60)];
+        clockContainerView = [[UIView alloc]initWithFrame:CGRectMake(0, 38, 70, 70)];
         [clockContainerView setCenter:CGPointMake(self.center.x, clockContainerView.center.y)];
         
         timeGaugeImageView = [[UIImageView alloc]initWithFrame:clockContainerView.bounds];
@@ -42,6 +43,7 @@
         rotatedView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(90));
         
         circularScrollerView = [[UIView alloc]initWithFrame:clockContainerView.bounds];
+        circularScrollerView.transform = CGAffineTransformMakeScale(1.05, 1.05);
         [rotatedView addSubview:circularScrollerView];
         
         [clockContainerView addSubview:rotatedView];
@@ -109,6 +111,12 @@
     circleLayer.strokeColor = [UIColor whiteColor].CGColor;
     circleLayer.lineWidth = 2;
     
+    circleLayer.shadowColor = [[UIColor whiteColor] CGColor];
+    circleLayer.shadowRadius = 4.0f;
+    circleLayer.shadowOpacity = .9;
+    circleLayer.shadowOffset = CGSizeZero;
+    circleLayer.masksToBounds = NO;
+    
     // Add to parent layer
     if ([circularScrollerView.layer sublayers].count == 0) {
         [circularScrollerView.layer insertSublayer:circleLayer atIndex:0];
@@ -133,15 +141,13 @@
     if ((scrollView.contentOffset.y < scrollView.contentSize.height - scrollView.frame.size.height) && scrollView.contentOffset.y > 0) {
         if (self.fluxDisplayManager && self.fluxDisplayManager.nearbyListCount > 5) {
             [self.fluxDisplayManager timeBracketDidChange:(scrollView.contentOffset.y/scrollView.contentSize.height)];
+            
         }
     }
     
     int numberOfDegrees = -(scrollView.contentOffset.y/scrollView.contentSize.height)*320;
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
-    
-//    float angleToMove = DEGREES_TO_RADIANS(((oldScrollPos-scrollView.contentOffset.y)/(scrollView.contentSize.height))*300);
-//    timeGaugeClockView.transform = CGAffineTransformRotate(timeGaugeClockView.transform, angleToMove*17);
-
+    circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
     
     oldScrollPos = scrollView.contentOffset.y;
 }

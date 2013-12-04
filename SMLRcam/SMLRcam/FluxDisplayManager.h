@@ -44,7 +44,7 @@ extern NSString* const FluxOpenGLShouldRender;
     
     CLLocation*previousMapViewLocation;
     
-    float currHeading;
+//    float currHeading;
     
     bool _isScrubAnimating;
     bool _isScanMode;
@@ -53,11 +53,18 @@ extern NSString* const FluxOpenGLShouldRender;
     int _imageRequestCountQuart;
     NSLock *_imageRequestCountLock;
     
+    sensorPose lastMotionPose;
+    NSDate *lastMotionTime;
+    
+    NSDateFormatter *logDateFormat;
+    NSFileHandle *logFile;
+    
 }
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxLocationServicesSingleton *locationManager;
 @property (nonatomic, strong) NSArray *fluxMapContentMetadata;
+@property (nonatomic, strong) GLKViewController *openGLVC;
 
 @property (readonly, nonatomic, strong) NSMutableArray *nearbyList;
 @property (readonly, nonatomic, strong) NSMutableArray *displayList;
@@ -68,7 +75,7 @@ extern NSString* const FluxOpenGLShouldRender;
 - (void)timeBracketDidChange:(float)value;
 
 - (void)mapViewWillDisplay;
-- (void)requestMapPinsForFilter:(FluxDataFilter*)mapDataFilter;
+- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter*)mapDataFilter;
 
 - (void)lockDisplayList;
 - (void)unlockDisplayList;

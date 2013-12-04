@@ -37,13 +37,20 @@
     [self.checkbox setChecked:active];
 }
 
+-(void)cellWasTapped{
+    [self CheckBoxButtonWasTapped:self.checkbox andChecked:!active];
+}
+
 //the checkbox was tapped
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
     [self setIsActive:checked];
     if ([delegate respondsToSelector:@selector(SocialCell:boxWasChecked:)]) {
         [delegate SocialCell:self boxWasChecked:checked];
     }
-    
+}
+
+-(BOOL)isChecked{
+    return active;
 }
 
 @end

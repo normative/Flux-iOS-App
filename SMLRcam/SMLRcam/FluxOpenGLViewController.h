@@ -22,20 +22,22 @@
 #import "FluxFeatureMatchingQueue.h"
 #import "FluxCameraFrameElement.h"
 
+#define MAX_TEXTURES 8
+
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;
     
     GLKMatrix4 _modelViewProjectionMatrix;
-    GLKMatrix4 _tBiasMVP[8];
+    GLKMatrix4 _tBiasMVP[MAX_TEXTURES];
     float _projectionDistance;
     
-    int _validMetaData[8];
+    int _validMetaData[MAX_TEXTURES];
     float _rotation;
     GLKVector2 _testparams;
     GLuint _vertexArray;
     GLuint _vertexBuffer;
-    GLKTextureInfo* _texture[8];
+    GLKTextureInfo* _texture[MAX_TEXTURES];
     
 //    int _opengltexturesset;
     
@@ -103,7 +105,7 @@
 - (void)updateBuffers;
 - (void)setupGL;
 - (void)tearDownGL;
-- (void) checkShaderLimitations;
+- (void)checkShaderLimitations;
 - (BOOL)loadShaders;
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type file:(NSString *)file;
 - (BOOL)linkProgram:(GLuint)prog;
@@ -117,18 +119,23 @@
 - (void)setupAVCapture;
 //image capture methods
 - (void)showImageCapture;
+- (void)takeSnapshotAndPresentApproval;
 - (UIImage*)snapshot:(UIView*)eaglview;
--(UIImage*)takeScreenCap;
+- (UIImage*)takeScreenCap;
 
 - (void)didUpdateImageList:(NSNotification *)notification;
 //- (void)updateImageTexture:(NSNotification *)notification;
 
 - (void)render;
--(void) stepperChangedWithValue:(double)v;
+//- (void)updateImageMetadataForElement:(FluxImageRenderElement*)element;
+- (void)stepperChangedWithValue:(double)v;
+- (void)updateImageMetadataForElementList:(NSMutableArray *)elementList;
+
 //image tap
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
 
 - (void) requestCameraFrame:(FluxCameraFrameElement *)frameRequest;
+
 
 
 @end

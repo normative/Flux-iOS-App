@@ -25,10 +25,11 @@
 @property (nonatomic)           bool dirty;
 @property (nonatomic)           bool matched;
 @property (nonatomic, weak)     UIImage *image;
-@property (nonatomic)           FluxImageType imageType;
+@property (nonatomic)           FluxImageType imageRenderType;
 @property (nonatomic)           FluxImageType imageFetchType;
 @property (nonatomic)           sensorPose *imagePose;
 //@property (nonatomic)           textureIndex;
+@property (nonatomic)           viewParameters tpImageParams;
 
 - (id)initWithImageObject:(FluxScanImageObject *)curImgObj;
 

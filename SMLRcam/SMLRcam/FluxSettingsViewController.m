@@ -7,6 +7,8 @@
 //
 
 #import "FluxSettingsViewController.h"
+#import "UICKeyChainStore.h"
+#import <FacebookSDK/FacebookSDK.h>
 
 @interface FluxSettingsViewController ()
 
@@ -78,7 +80,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 4;
+    return 5;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -102,7 +104,8 @@
             self.maskSlider.value = [[defaults objectForKey:@"Mask"] floatValue];
             [self.maskLabel setText:[NSString stringWithFormat:@"%i",[[defaults objectForKey:@"Mask"] integerValue]]];
         }
-            
+            break;
+        default:
             break;
             
     }
@@ -132,6 +135,15 @@
     [defaults synchronize];
     [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
     [self.maskSlider setValue:(float)discreteValue];
+}
+
+- (IBAction)logoutButtonAction:(id)sender {
+    [self.parentViewController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
+        [UICKeyChainStore removeAllItems];
+        if (FBSession.activeSession.isOpen) {
+            [FBSession.activeSession closeAndClearTokenInformation];
+        }
+    }];
 }
 
 - (IBAction)onAreaResetBtn:(id)sender

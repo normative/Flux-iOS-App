@@ -10,7 +10,6 @@
 
 #import "KTPlaceholderTextView.h"
 #import "FluxCheckboxCell.h"
-#import "FluxEditCaptureSetViewController.h"
 
 #import "FluxLocationServicesSingleton.h"
 
@@ -22,38 +21,34 @@
 @end
 
 
-@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, EditCaptureSetViewDelegate>{
+@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, UICollectionViewDataSource, UICollectionViewDelegate>{
     __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
     __weak IBOutlet UIView *photoAnnotationContainerView;
     
     __weak id <ImageAnnotationDelegate> delegate;
     IBOutlet UIView *containerView;
-    IBOutlet UILabel *imageCountLabel;
-    IBOutlet UIButton *imageStackButton;
-    IBOutlet UIImageView *usernameImageView;
-    IBOutlet UILabel *usernameLabel;
-    IBOutlet UILabel *dateLabel;
-    IBOutlet UILabel *locationLabel;
+    IBOutlet UICollectionView *imageCollectionView;
     
-    IBOutlet UILabel *socialDescriptionLabel;
-    IBOutlet UILabel *socialOptionLabel;
-    IBOutlet KTCheckboxButton *socialOptionCheckbox;
-    IBOutlet UILabel *shareOnLabel;
-    IBOutlet UILabel *twitterLabel;
-    IBOutlet UILabel *facebookLabel;
-    IBOutlet KTCheckboxButton *twitterCheckbox;
-    IBOutlet KTCheckboxButton *facebookCheckbox;
+    BOOL isSnapshot;
+ 
+    IBOutlet UIButton *privacyButton;
+    IBOutlet UIBarButtonItem *saveButton;
+    IBOutlet UIButton *facebookButton;
+    IBOutlet UIButton *twitterButton;
     NSArray*images;
-    NSIndexSet*removedImages;
-    NSMutableArray*imagesToBeDeleted;
+    NSMutableIndexSet*removedImages;
 }
 
 
 @property (nonatomic, weak) id <ImageAnnotationDelegate> delegate;
+- (IBAction)privacyButtonAction:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)saveButtonAction:(id)sender;
+- (IBAction)facebookButtonAction:(id)sender;
+- (IBAction)twitterButtonAction:(id)sender;
 
 - (void)prepareViewWithBGImage:(UIImage*)image andCapturedImages:(NSMutableArray*)capturedObjects withLocation:(NSString*)location andDate:(NSDate*)capturedDate;
+- (void)prepareSnapShotViewWithImage:(UIImage*)image withLocation:(NSString*)location andDate:(NSDate*)capturedDate;
 
 
 

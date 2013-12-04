@@ -31,22 +31,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
 }
 
-- (void)didUpdateDisplayImageList:(NSNotification *)notification
-{
-    if (dateRangeLabel.alpha == 0) {
-        [UIView animateWithDuration:0.2 animations:^{
-            [dateRangeLabel setAlpha:1.0];
-        }];
-    }
-    NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
-    NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
-    [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
-    
-    [dateRangeLabelHideTimer invalidate];
-    dateRangeLabelHideTimer = nil;
-    dateRangeLabelHideTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(hideDateRangeLabel) userInfo:nil repeats:NO];
-}
-
 #pragma mark - Location Manager
 
 -(void)didUpdatePlacemark:(NSNotification *)notification
@@ -106,7 +90,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 
 - (IBAction)annotationsButtonAction:(id)sender {
-    [CameraButton setEnabled:YES];
     if ([annotationsTableView isHidden]) {
         if (self.fluxDisplayManager.nearbyListCount > 0) {
             [annotationsTableView reloadData];
@@ -271,6 +254,28 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [timeFilterControl.timeScrollView setTapDelegate:self];
 }
 
+-(void)userIsTimeSliding{
+    NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
+    NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
+    if (startDate && endDate) {
+        [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        
+        //set it visible
+        if (dateRangeLabel.alpha == 0) {
+            [UIView animateWithDuration:0.2 animations:^{
+                [dateRangeLabel setAlpha:1.0];
+            }];
+        }
+        
+        //update hide timer
+        [dateRangeLabelHideTimer invalidate];
+        dateRangeLabelHideTimer = nil;
+        dateRangeLabelHideTimer = [NSTimer scheduledTimerWithTimeInterval:0.7 target:self selector:@selector(hideDateRangeLabel) userInfo:nil repeats:NO];
+    }
+}
+
+#pragma mark - Tapping images
+
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     
     FluxScanImageObject*tappedImageObject;
@@ -300,7 +305,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [browser setDelegate:self];
     [browser setDisplayToolbar:NO];
     [browser setDisplayDoneButtonBackgroundImage:NO];
-    [self presentViewController:browser animated:YES completion:nil];
+    UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
+    [nav setNavigationBarHidden:YES];
+    [self presentViewController:nav animated:YES completion:nil];
 }
 //
 //- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
@@ -332,6 +339,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [dateFormatter setDateFormat:@"MMM dd, yyyy"];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
+    filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
+    
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:15]];
     [dateRangeLabel setTextColor:[UIColor whiteColor]];
     [dateRangeLabel setTextAlignment:NSTextAlignmentCenter];
@@ -349,6 +358,33 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     else{
         [openGLController.imageCaptureViewController takePicture];
     }
+}
+
+- (void)activateSnapshotView{
+    [UIView animateWithDuration:0.3f
+                     animations:^{
+                         [ScanUIContainerView setAlpha:0.0];
+                         [CameraButton setAlpha:0.0];
+                     }
+                     completion:^(BOOL finished){
+                         //stops drawing them
+                         [ScanUIContainerView setHidden:YES];
+                         [self startDeviceMotion];
+                         imageCaptureIsActive = YES;
+                     }];
+}
+
+- (void)deactivateSnapshotView{
+    [ScanUIContainerView setHidden:NO];
+    
+    [UIView animateWithDuration:0.3f
+                     animations:^{
+                         [ScanUIContainerView setAlpha:1.0];
+                         [CameraButton setAlpha:1.0];
+                     }
+                     completion:^(BOOL finished){
+                     }];
+    imageCaptureIsActive = NO;
 }
 
 - (void)activateImageCapture{
@@ -461,7 +497,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
 
     }
-    [self deactivateImageCapture];
+    if (openGLController.imageCaptureViewController.isSnapshot) {
+        [self deactivateSnapshotView];
+        openGLController.imageCaptureViewController.isSnapshot = NO;
+    }
+    else{
+        [self deactivateImageCapture];
+    }
 }
 
 -(void)hideProgressView{
@@ -476,6 +518,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (IBAction)shareButtonAction:(id)sender {
+    [self activateSnapshotView];
+    [openGLController takeSnapshotAndPresentApproval];    
 }
 
 - (IBAction)stepper:(id)sender {
@@ -522,11 +566,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
     
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateDisplayImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
     
     [self setupCameraView];
     [self setupMotionManager];
@@ -541,7 +585,29 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     currentDataFilter = [[FluxDataFilter alloc] init];
 
     self.screenName = @"Scan View";
+    
+    [CameraButton removeFromSuperview];
+    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view addSubview:CameraButton];
 }
+
+-(void)viewWillLayoutSubviews{
+    
+}
+
+- (void)viewDidLayoutSubviews{
+
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [CameraButton setFrame:CGRectMake(0, 0, CameraButton.frame.size.width, CameraButton.frame.size.height)];
+    [CameraButton setCenter:CGPointMake(self.view.center.x, self.leftDrawerButton.center.y)];
+}
+
 
 - (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
     [self animationPopFrontScaleUp];
@@ -572,10 +638,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [filtersVC setDelegate:self];
         [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-        [filtersVC prepareViewWithFilter:currentDataFilter];
+        [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
         
-        UIImage*capture = [openGLController takeScreenCap];
-        [filtersVC setBackgroundView:capture];
+        UIImage*bgImage = [openGLController snapshot:openGLController.view];
+        [filtersVC setBackgroundView:bgImage];
         
         [self animationPushBackScaleDown];
     }

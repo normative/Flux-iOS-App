@@ -65,6 +65,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
 }
 @property (nonatomic) CLLocation* location;
+@property (nonatomic) CLLocation* rawlocation;
 @property (nonatomic) CLLocationDirection heading;
 @property (nonatomic) CLPlacemark* placemark;
 
@@ -80,6 +81,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 - (void)startLocating;
 - (void)endLocating;
 - (void)orientationChanged:(NSNotification *)notification;
+- (void)WGS84_to_ECEF:(sensorPose *)sp;
 
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 

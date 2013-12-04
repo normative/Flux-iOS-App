@@ -25,16 +25,27 @@
     if(self = [super initWithCoder:aDecoder]) {
         [self setBackgroundColor:[UIColor clearColor]];
         [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
+        [self.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.countLabel.font.pointSize]];
         [self.descriptorLabel setTextColor:[UIColor whiteColor]];
+        [self.countLabel setTextColor:[UIColor whiteColor]];
         [self.checkbox setDelegate:self];
     }
     return self;
 }
 
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+//    [self setIsActive:!active];
+//    [self CheckBoxButtonWasTapped:self.checkbox andChecked:active];
+//}
+
 //for now setting the cell active just makes it bold, checks the checkmark
 -(void)setIsActive:(BOOL)bActive{
     active = bActive;
     [self.checkbox setChecked:active];
+}
+
+-(void)cellWasTapped{
+    [self CheckBoxButtonWasTapped:self.checkbox andChecked:!active];
 }
 
 //the checkbox was tapped
@@ -43,7 +54,10 @@
     if ([delegate respondsToSelector:@selector(checkboxCell:boxWasChecked:)]) {
         [delegate checkboxCell:self boxWasChecked:checked];
     }
+}
 
+-(BOOL)isChecked{
+    return active;
 }
 
 @end
