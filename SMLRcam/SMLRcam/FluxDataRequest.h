@@ -70,8 +70,8 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 
 // Upload properties
 @property (nonatomic, weak) FluxLocalID *uploadLocalID;
-@property (nonatomic) long long totalUploadSize;
-@property (nonatomic) long long currentUploadSize;
+@property (nonatomic) long long totalByteSize;
+@property (nonatomic) long long bytesUploaded;
 
 // Callback for single image retrieved (either from cache or download)
 @property (strong) ImageReadyBlock imageReady;
