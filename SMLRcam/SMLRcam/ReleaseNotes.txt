@@ -1,13 +1,23 @@
 Release Notes:
 
+
+******************************************
+
+V0.13 B14
+
+Released: 2013-12-04 16:30:00
+
+Release Notes:
 - Progress view now works
 - MapView crash resolved
 - Image upload crash resolved
 - latency on first launch resolved - images should now appear much faster on ap launch.
 
+******************************************
+
 V0.13 B13
 
-Released: 2013-12-01 21:30:00
+Released: 2013-12-03 20:10:00
 
 Release Notes:
 - Integrated new pedometer code into Kalman Filter. Tuned and tested. This completes the first stage of user localization
