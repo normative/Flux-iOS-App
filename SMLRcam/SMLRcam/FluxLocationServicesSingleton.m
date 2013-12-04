@@ -55,8 +55,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         }
     }
     self.notMoving = 1;
-    [self initKFilter];
-    [self startKFilter];
+    kfilterInitialized = 0;
     return self;
 }
 
@@ -193,7 +192,13 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
       newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
                                           course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
-    self.location = newLocation;
+    
+    if (isnan(newLocation.coordinate.latitude) || isnan(newLocation.coordinate.longitude)) {
+        self.location = self.rawlocation;
+    }
+    else{
+        self.location = newLocation;
+    }
     
     // Notify observers of updated position
     if (self.location != nil)
