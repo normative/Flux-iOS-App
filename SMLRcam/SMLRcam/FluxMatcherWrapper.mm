@@ -266,7 +266,18 @@
 }
 - (void)testTransformsFromHomography
 {
+    //assuming row major
+    homography[0] = 5.404;
+    homography[1] = 0.0;
+    homography[2] = 4.436;
+    homography[3] = 0.0;
+    homography[4] = 4.0;
+    homography[5] = 0.0;
+    homography[6] = -1.236;
+    homography[7] = 0.0;
+    homography[8] = 3.804;
     
+    //singular values {7.197, 4.000, 3.619} Pg 138
 }
 
 
