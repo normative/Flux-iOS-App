@@ -20,7 +20,7 @@ const int maxRequestCountThumb = 5;
 const double minMoveDistanceThreshold = 1.0;
 const NSTimeInterval maxMoveTimeThreshold = 5.0;
 
-const double maxIncidentThreshold = 30;
+const double maxIncidentThreshold = 360.0;
 
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
