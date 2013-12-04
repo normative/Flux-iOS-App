@@ -982,6 +982,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     sensorPose localUserPose = _userPose;
     viewParameters localUserVp;
 
+    // calculate angle between user's viewpoint and North
     computeTangentParametersUser(&localUserPose, &localUserVp);
     double x1 = 0.0;
     double y1 = 1.0;
@@ -1088,6 +1089,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //            // store as relative heading
 //            ire.imageMetadata.relHeading = theta;
             
+            // calculate the angle between the vectors (user position -> North) and (user position -> image's intersection point on the cylindrical screen)
             x1 = 0.0;
             y1 = 1.0;
             x2 = xi;
@@ -1868,6 +1870,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + c], c);
                 c++;
             }
+//            else
+//            {
+//                NSLog(@"Not binding texture from slot %d, id %@", i, ire.localID);
+//            }
         }
     }
     
