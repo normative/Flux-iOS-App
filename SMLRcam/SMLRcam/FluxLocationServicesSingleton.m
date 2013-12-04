@@ -181,40 +181,30 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);
+  
     
-    if(kfilterInitialized ==1)
-    {
-        [self setMeasurementWithLocation:self.location];
-        [self ComputeGeodecticFromkfECEF:&kfgeolocation];
-    
+    [self setMeasurementWithLocation:self.location];
+    [self ComputeGeodecticFromkfECEF:&kfgeolocation];
     
     
-        CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
-        newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
+    
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
+      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
                                           course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
-        self.location = newLocation;
     
-        // Notify observers of updated position
-        if (self.location != nil)
-        {
-            [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self];
-            //[self reverseGeocodeLocation:self.location];
-        }
+    if (isnan(newLocation.coordinate.latitude) || isnan(newLocation.coordinate.longitude)) {
+        self.location = self.rawlocation;
     }
-    else
+    else{
+        self.location = newLocation;
+    }
+    
+    // Notify observers of updated position
+    if (self.location != nil)
     {
-        if (self.location != nil)
-        {
-            [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self];
-            //[self reverseGeocodeLocation:self.location];
-        }
-        
-        [self initializeKFilter];
-        [self setMeasurementWithLocation:self.location];
-        [self ComputeGeodecticFromkfECEF:&kfgeolocation];
-        
-        kfilterInitialized =1;
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self];
+        //[self reverseGeocodeLocation:self.location];
     }
 }
 
@@ -290,11 +280,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 }
 
 #pragma mark - Filtering
-- (void) initializeKFilter
-{
-    [self initKFilter];
-    [self startKFilter];
-}
+
 -(void) WGS84_to_ECEF:(sensorPose *)sp{
     double normal;
     double eccentricity;
