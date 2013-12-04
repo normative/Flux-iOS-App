@@ -8,6 +8,12 @@ Release Notes:
 - Integrated new pedometer code into Kalman Filter. Tuned and tested. This completes the first stage of user localization
   improvements done on the device.
 
+- Change timing of list update notifications to ensure all list changes are notified and can be reflected in compass and counts
+
+- mapview updates
+
+- snapshot saving
+
 ******************************************
 
 V0.13 B12
