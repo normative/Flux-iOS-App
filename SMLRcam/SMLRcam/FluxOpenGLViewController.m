@@ -359,50 +359,21 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
     
     //NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
-    //normal plane
-//    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-//    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((usp->rotationMatrix), planeNormalI);
-    //intersection with plane
-//    GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
-    
-//    float vd = GLKVector3DotProduct(N,V);
-//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-//    float t = v0/vd;
-//    
-//    if(vd==0)
-//    {
-//        // NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-//        return -1;
-//    }
-//    if(t < 0)
-//    {
-//        
-//        // NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-//        return -1;
-//    }
-    
-//    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-//    viewP.at = V;
-//    viewP.up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     
     (*vp).origin = GLKVector3Add(positionTP, P0);
     (*vp).at = V;
     (*vp).up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     
-    //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
-    
     return 0;
 }
-
 
 // compute the tangent plane location and direction vector for an image
 bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp)
 {
     bool retval = true;
     
-//    viewParameters viewP;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
@@ -410,12 +381,6 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
-    //normal plane
-//    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-//    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((userPose.rotationMatrix), planeNormalI);
-    
-    //intersection with plane
-//    GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
@@ -435,23 +400,6 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     
     P0 = positionTP;
     
-//    float vd = GLKVector3DotProduct(N,V);
-//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-//    float t = v0/vd;
-//    
-//    if (vd == 0)
-//    {
-//        //    NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-//        return 0;
-//    }
-//
-//    if (t < 0)
-//    {
-//        
-//        // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-//        retval = 0;
-//    }
-    
     float _distanceToUser = GLKVector3Length(P0);
     
     if (_distanceToUser > MAX_IMAGE_RADIUS)
@@ -459,12 +407,6 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
         //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
         retval = false;
     }
-    
-//    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));  // viewP.at would be the point of intersection of image camera LOS with projection plane
-//    viewP.at = GLKVector3Add(P0, V);  // at would = point
-
-//    viewP.at = V;       // viewP.at = raw directional vector of image camera LOS
-//    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     
     (*vp).origin = P0;
     (*vp).at = V;
@@ -596,21 +538,13 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     //    viewP.up = GLKVector3Normalize(viewP.up);
     
-    
     (*vp).origin =  P0;
     //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
     (*vp).at =viewP.at;
     (*vp).up = viewP.up;
-    
 
-    
     return 1;
-    
-    
-    
-    
-
 }
 
 
@@ -1038,7 +972,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
-- (void) updateImageMetadataForElementList:(NSMutableArray *)elementList
+- (void) updateImageMetadataForElementList:(NSMutableArray *)elementList andMaxIncidentThreshold:(double)maxIncidentThreshold
 {
     NSMutableArray *removeList = [[NSMutableArray alloc]init];
     double absUserHeading;
@@ -1049,8 +983,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     viewParameters localUserVp;
 
     computeTangentParametersUser(&localUserPose, &localUserVp);
-//    double xu = 0.0;
-//    double yu = 1.0;
     double x1 = 0.0;
     double y1 = 1.0;
     double x2 = localUserVp.at.x;
@@ -1190,7 +1122,27 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 theta -= 360.0;
 
             ire.imageMetadata.relHeading = theta;
+
+            // now calculate incident angle of camera to projection cylinder and filter if outside threshold
+            x1 = vp.origin.x - xi;
+            y2 = vp.origin.y - yi;
+            x2 = -xi;
+            y2 = -yi;
             
+            dotx = x2 * x1;
+            doty = y2 * y1;
+            
+            scalar = dotx + doty;
+            magsq1 = x2 * x2 + y2 * y2;
+            magsq2 = (x1 * x1) + (y1 * y1);
+            
+            costheta = (scalar) / sqrt(magsq1 * magsq2);
+            theta = acos(costheta) * 180.0 / M_PI;
+
+            if (theta > maxIncidentThreshold)
+            {
+                [removeList addObject:ire];
+            }
             
 //            if (ire.imageMetadata.imageID == 921)
 //            {
