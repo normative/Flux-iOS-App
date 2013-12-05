@@ -1004,10 +1004,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 
     relUserHeading = theta;
-    absUserHeading = self.fluxDisplayManager.locationManager.heading;
 
-//    while (relUserHeading < 0.0)
-//        relUserHeading += 360.0;
+    while (relUserHeading < 0.0)
+        relUserHeading += 360.0;
+
+    absUserHeading = relUserHeading;
+//    absUserHeading = self.fluxDisplayManager.locationManager.heading;
     
 //    NSLog(@"Relative User Heading: %f, gps user heading: %f", relUserHeading, self.fluxDisplayManager.locationManager.heading);
     
@@ -1872,7 +1874,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
 //            else
 //            {
-//                NSLog(@"Not binding texture from slot %d, id %@", i, ire.localID);
+//                NSLog(@"Not binding texture from slot %d, id %@, used: %@, texture!=nil: %@, valid meta=(1): %d", i, ire.localID, ire.textureMapElement.used?@"Yes":@"No",(_texture[i]!=nil)?@"Yes":@"No", _validMetaData[i] );
 //            }
         }
     }

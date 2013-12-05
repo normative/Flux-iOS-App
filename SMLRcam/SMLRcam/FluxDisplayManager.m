@@ -146,6 +146,9 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     
     double dist = sqrt(dx * dx + dy * dy);
     
+//    NSLog(@"New location: lat: %f, lon: %f, alt: %f, dist from last: %f", newPose.position.x, newPose.position.y, newPose.position.z, dist);
+//    NSLog(@"New location: lat: %f, lon: %f, alt: %f", newPose.position.x, newPose.position.y, newPose.position.z);
+    
     NSDate *now = [NSDate date];
     NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:lastMotionTime];
     
