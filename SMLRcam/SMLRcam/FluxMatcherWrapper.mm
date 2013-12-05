@@ -24,7 +24,7 @@
 
 //C++ class from FluxMatcher.cpp
 @property (nonatomic, assign) FluxMatcher *wrappedMatcher;
-@property (nonatomic) transform_R_t t_from_H;
+@property (nonatomic) transformRt t_from_H;
 
 @end
 
