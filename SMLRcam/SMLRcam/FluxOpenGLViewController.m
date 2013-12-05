@@ -859,8 +859,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         CGImageRelease(videoImage);
         videoImage = nil;
         
-        // TODO: also copy frame metadata
-        
+        // Copy frame metadata
         frameGrabRequest.cameraFrameDate = currentDate;
         frameGrabRequest.cameraPose = _userPose;
         frameGrabRequest.cameraProjectionDistance = _projectionDistance;
