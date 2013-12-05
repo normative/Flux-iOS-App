@@ -61,6 +61,11 @@
             {
                 self.matchRecord.ire.imageMetadata.imageHomographyPose.rotation[i] = rotation[i];
             }
+            
+            // Convert camera pose in WGS-84 coordinate system into camera pose in local tangent plane at time of frame capture
+            self.matchRecord.ire.imageMetadata.userHomographyPose.translation[0] = self.matchRecord.cfe.cameraPose.position.x;
+            self.matchRecord.ire.imageMetadata.userHomographyPose.translation[1] = self.matchRecord.cfe.cameraPose.position.y;
+            self.matchRecord.ire.imageMetadata.userHomographyPose.translation[2] = self.matchRecord.cfe.cameraPose.position.z;
         
             self.matchRecord.ire.imageMetadata.matched = YES;
             self.matchRecord.matched = YES;
