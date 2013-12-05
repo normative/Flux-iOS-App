@@ -1297,16 +1297,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     element.imagePose->position.y =  locationObject.longitude;
     element.imagePose->position.z =  locationObject.altitude;
     
-    if(locationObject.location_confidence==1.0)
+    if(locationObject.location_data_type == location_data_valid_ecef)
     {
-        element.imagePose->validECEFEstimate =1;
+        element.imagePose->validECEFEstimate = 1;
         element.imagePose->ecef.x = locationObject.ecefX;
         element.imagePose->ecef.y = locationObject.ecefY;
         element.imagePose->ecef.z = locationObject.ecefZ;
     }
     else
     {
-        element.imagePose->validECEFEstimate =0;
+        element.imagePose->validECEFEstimate = 0;
     }
     
     quaternion.x = locationObject.qx;
@@ -1731,7 +1731,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
 
                         // Queue up image for feature matching with background camera feed
-                        if (!ire.matched)
+                        if (!ire.imageMetadata.matched)
                         {
                             // Only add object image + metadata to queue - scene object will be grabbed by matcher
                             [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];

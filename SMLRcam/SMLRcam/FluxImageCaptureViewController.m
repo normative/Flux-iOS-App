@@ -288,7 +288,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
              //set estimated location
              if(locationManager.kflocation.valid ==1)
              {
-                 capturedImageObject.location_confidence =1.0;
+                 capturedImageObject.location_data_type = location_data_valid_ecef;
                  capturedImageObject.ecefX = locationManager.kflocation.x;
                  capturedImageObject.ecefY = locationManager.kflocation.y;
                  capturedImageObject.ecefZ = locationManager.kflocation.z;

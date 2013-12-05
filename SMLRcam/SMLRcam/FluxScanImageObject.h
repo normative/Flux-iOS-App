@@ -23,6 +23,12 @@ typedef enum FluxImageType : NSUInteger {
     highest_res = 5     // keep this at highest allowable resultion + 1
 } FluxImageType;
 
+typedef enum LocationDataType : NSUInteger {
+    location_data_default = 0,
+    location_data_valid_ecef = 1,
+    location_data_from_homography = 2
+} LocationDataType;
+
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
 //location
@@ -54,7 +60,7 @@ typedef enum FluxImageType : NSUInteger {
 // position accuracy and confidence levels
 @property (nonatomic) double horiz_accuracy;
 @property (nonatomic) double vert_accuracy;
-@property (nonatomic) double location_confidence; //modify this for live
+@property (nonatomic) LocationDataType location_data_type; //type of location data (default, live, matched)
 
 //other
 @property (nonatomic, strong) NSString* timestampString;
@@ -70,6 +76,8 @@ typedef enum FluxImageType : NSUInteger {
 @property (nonatomic) int imageID;
 @property (nonatomic) FluxImageID userID;
 @property (nonatomic) FluxLocalID *localID;
+
+@property (nonatomic) bool matched;
 
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr

@@ -14,7 +14,7 @@
 typedef struct{
     double rotation[9];
     double translation[3];
-} transform;
+} transform_R_t;
 
 typedef struct{
     int valid;

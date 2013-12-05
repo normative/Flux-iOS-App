@@ -210,16 +210,20 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     element.imagePose->position.y =  locationObject.longitude;
     element.imagePose->position.z =  locationObject.altitude;
     
-    if(locationObject.location_confidence==1.0)
+    if (locationObject.location_data_type == location_data_valid_ecef)
     {
         element.imagePose->validECEFEstimate =1;
         element.imagePose->ecef.x = locationObject.ecefX;
         element.imagePose->ecef.y = locationObject.ecefY;
         element.imagePose->ecef.z = locationObject.ecefZ;
     }
+    else if (locationObject.location_data_type == location_data_from_homography)
+    {
+        // Use rotation and translation calculated from homography from feature matching
+    }
     else
     {
-        element.imagePose->validECEFEstimate =0;
+        element.imagePose->validECEFEstimate = 0;
     }
     
     quaternion.x = locationObject.qx;
