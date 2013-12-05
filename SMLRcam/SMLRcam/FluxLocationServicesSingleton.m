@@ -55,7 +55,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         }
     }
     self.notMoving = 1;
-    kfilterInitialized = 0;
+    [self initKFilter];
+    [self startKFilter];
     return self;
 }
 
