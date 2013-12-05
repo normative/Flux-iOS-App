@@ -135,21 +135,19 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     //      last ECEF = current ECEF,
     //      request nearby
     sensorPose newPose;
+    double dist;
+    
     newPose.position.x = self.locationManager.location.coordinate.latitude;
     newPose.position.y = self.locationManager.location.coordinate.longitude;
     newPose.position.z = self.locationManager.location.altitude;
     
-    [self.locationManager WGS84_to_ECEF:&newPose];
-
-    double dx = newPose.ecef.x - lastMotionPose.ecef.x;
-    double dy = newPose.ecef.y - lastMotionPose.ecef.y;
-    
-    double dist = sqrt(dx * dx + dy * dy);
+    dist = [self haversineBetweenPosition1:newPose andPosition2:lastMotionPose];
+    //[self testHaversine];
     
     NSDate *now = [NSDate date];
     NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:lastMotionTime];
     
-    if ((dist > minMoveDistanceThreshold) || (timeSinceLast > maxMoveTimeThreshold))
+    if ((fabs(dist) > minMoveDistanceThreshold) || (timeSinceLast > maxMoveTimeThreshold))
     {
         lastMotionPose = newPose;
         lastMotionTime = now;
@@ -878,7 +876,57 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     [logFile writeData:[outStr dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
+// @brief The usual PI/180 constant
+static const double DEG_TO_RAD = 0.017453292519943295769236907684886;
+/// @brief Earth's quatratic mean radius for WGS-84
+static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
+
+/** @brief Computes the arc, in radian, between two WGS-84 positions.
+ *
+ * The result is equal to <code>Distance(from,to)/EARTH_RADIUS_IN_METERS</code>
+ *    <code>= 2*asin(sqrt(h(d/EARTH_RADIUS_IN_METERS )))</code>
+ *
+ * where:<ul>
+ *    <li>d is the distance in meters between 'from' and 'to' positions.</li>
+ *    <li>h is the haversine function: <code>h(x)=sin²(x/2)</code></li>
+ * </ul>
+ *
+ * The haversine formula gives:
+ *    <code>h(d/R) = h(from.lat-to.lat)+h(from.lon-to.lon)+cos(from.lat)*cos(to.lat)</code>
+ *
+ * @sa http://en.wikipedia.org/wiki/Law_of_haversines
+ */
 
 
+- (double) haversineBetweenPosition1:(sensorPose) p1 andPosition2:(sensorPose) p2
+{
+    double arcInRadians = 0.0;
+    double latitudeArc  = (p1.position.x - p2.position.x) * DEG_TO_RAD;
+    double longitudeArc = (p1.position.y - p2.position.y) * DEG_TO_RAD;
+    double latitudeH = sin(latitudeArc * 0.5);
+    latitudeH *= latitudeH;
+    double lontitudeH = sin(longitudeArc * 0.5);
+    lontitudeH *= lontitudeH;
+    double tmp = cos(p1.position.x*DEG_TO_RAD) * cos(p2.position.y*DEG_TO_RAD);
+    arcInRadians = 2.0 * asin(sqrt(latitudeH + tmp*lontitudeH));
+    return EARTH_RADIUS_IN_METERS * arcInRadians;
+
+}
+
+-  (void)testHaversine
+{
+    sensorPose p1;
+    sensorPose p2;
+    double distance;
+    p1.position.x = 43.654113;
+    p1.position.y = -79.383400;
+    p2.position.x =43.653527;
+    p2.position.y = -79.383189;
+    
+    
+    distance = [self haversineBetweenPosition1:p1 andPosition2:p2];
+    NSLog(@"distance = %f", distance);
+
+}
 
 @end
