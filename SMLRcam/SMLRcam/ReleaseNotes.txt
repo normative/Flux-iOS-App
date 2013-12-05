@@ -1,5 +1,14 @@
 Release Notes:
 
+******************************************
+
+V0.13 B15
+
+Released: 2013-12-05 17:30:00
+
+Release Notes:
+- Fixed distance calculation for minMoveDistance to use haversine computed distance.
+- Re-enable Kalman filter.
 
 ******************************************
 
