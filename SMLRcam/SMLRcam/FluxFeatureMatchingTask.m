@@ -49,9 +49,9 @@
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
         [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage];
         
-//        [self.matcherEngine matchFeatures];
-        UIImage *testImage = [self.matcherEngine matchAndDrawFeatures];
-        UIImageWriteToSavedPhotosAlbum(testImage, nil, nil, nil);
+        double rotation[9];
+        double translation[3];
+        [self.matcherEngine matchAndCalculateTransformsWithRotation:rotation withTranslation:translation];
 
         // TODO: this does nothing yet until the IRE propagates back to the OpenGL VC
         self.matchRecord.ire.imageMetadata.matched = YES;
