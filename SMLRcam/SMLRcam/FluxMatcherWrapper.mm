@@ -8,17 +8,23 @@
 
 #import "FluxMatcherWrapper.h"
 #import "FluxMatcher.h"
+#import "FluxOpenGLCommon.h"
 #import "UIImage+OpenCV.h"
 #import <Accelerate/Accelerate.h>
+
 @interface FluxMatcherWrapper ()
 {
     // Convert to grayscale before populating for performance improvement
     cv::Mat object_img;
     cv::Mat scene_img;
+    
+    double intrinsicsInverse[9];
+    double homography[9];
 }
 
 //C++ class from FluxMatcher.cpp
 @property (nonatomic, assign) FluxMatcher *wrappedMatcher;
+@property (nonatomic) transform_R_t t_from_H;
 
 @end
 
@@ -32,11 +38,13 @@
     if (self)
     {
         _wrappedMatcher = new FluxMatcher();
+        
+        [self computeInverseCameraIntrinsics];
     }
     return self;
 }
 
--(void)matchFeatures
+- (void)matchFeatures
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
@@ -52,7 +60,7 @@
 }
 
 // Object images are downloaded content to be matched
--(void)setObjectImage:(UIImage *)objectImage
+- (void)setObjectImage:(UIImage *)objectImage
 {
     cv::Mat inputImage = [objectImage CVGrayscaleMat];
     
@@ -60,7 +68,7 @@
 }
 
 // Scene images are the background camera feed to match against
--(void)setSceneImage:(UIImage *)sceneImage
+- (void)setSceneImage:(UIImage *)sceneImage
 {
     cv::Mat inputImage = [sceneImage CVGrayscaleMat];
     
@@ -70,7 +78,7 @@
     scene_img = inputImage;
 }
 
--(UIImage *)matchAndDrawFeatures
+- (int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
@@ -78,7 +86,66 @@
     cv::Mat descriptors_object, descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
-    int i;
+
+    int result = 0;
+    result = self.wrappedMatcher->match(object_img, scene_img, matches,
+                                        keypoints_object, keypoints_scene,
+                                        descriptors_object, descriptors_scene,
+                                        fundamental);
+
+    if (result == 0)
+    {
+        // Calculate homography using matches
+        std::vector<cv::Point2f> obj;
+        std::vector<cv::Point2f> scene;
+        
+        for( size_t i = 0; i < matches.size(); i++ )
+        {
+            //-- Get the keypoints from the good matches
+            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt );
+            scene.push_back( keypoints_scene[ matches[i].trainIdx ].pt );
+        }
+        
+        cv::Mat H = cv::findHomography( obj, scene, CV_LMEDS );
+        
+        for (int i=0; i < 3; i++)
+        {
+            for (int j=0; j < 3; j++)
+            {
+                homography[i + 3*j] = H.at<float>(i,j);
+                NSLog(@"Homography:%d %f", i+3*j, homography[i+3*j]);
+            }
+        }
+        
+        // Calculate transform_from_H
+        result = [self computeTransformsFromHomography];
+        
+        // Extract transforms (R and t)
+        if (result == 0)
+        {
+            for (int i=0; i < 3; i++)
+            {
+                t[i] = self.t_from_H.translation[i];
+                for (int j=0; j < 3; j++)
+                {
+                    R[i + 3*j] = self.t_from_H.rotation[i + 3*j];
+                }
+            }
+        }
+    }
+    
+    return result;
+}
+
+- (UIImage *)matchAndDrawFeatures
+{
+    // Check if object_img and scene_img are valid/set was performed higher up the stack
+    std::vector<cv::DMatch> matches;
+    std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
+    cv::Mat descriptors_object, descriptors_scene;
+    cv::Mat fundamental;
+    cv::Mat dst;
+
     int result = 0;
     result = self.wrappedMatcher->match(object_img, scene_img, matches,
                                keypoints_object, keypoints_scene,
@@ -99,21 +166,6 @@
         }
         
         cv::Mat H = cv::findHomography( obj, scene, CV_LMEDS );
-        
-        homography[0] = H.at<float>(0,0);
-        homography[1] = H.at<float>(0,1);
-        homography[2] = H.at<float>(0,2);
-        homography[3] = H.at<float>(1,0);
-        homography[4] = H.at<float>(1,1);
-        homography[5] = H.at<float>(1,2);
-        homography[6] = H.at<float>(2,1);
-        homography[7] = H.at<float>(2,2);
-        homography[8] = H.at<float>(2,3);
-        
-        for(i =0;i < 9; i++)
-        {
-            NSLog(@"Homography:%d %f",i,homography[i]);
-        }
         
         // Draw box around video image in destination image
         scene_img.copyTo(dst);
@@ -143,7 +195,7 @@
 }
 
 //Needs to be at least one set for each camera model
-- (void) computeInverseCameraIntrinsics
+- (void)computeInverseCameraIntrinsics
 {
     double pixel = 0.0000014; //1.4 microns Pixel Size for iPhone5
     double fx, fy;
@@ -168,7 +220,7 @@
     
 }
 
-- (void) computeNextOrthonormal
+- (void)computeNextOrthonormal
 {
     long m = 3;
     long n = 3;
@@ -185,19 +237,18 @@
     long info = 0;
     char jobz[1];
     jobz[0] = 'A';
-    dgesdd_(jobz, &m, &n, &_t.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
+    dgesdd_(jobz, &m, &n, &self.t_from_H.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
     NSLog(@"workSize = %f", workSize);
     lwork = workSize;
     work =(double*) malloc(lwork *sizeof(double));
-    dgesdd_(jobz, &m, &n, &_t.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
+    dgesdd_(jobz, &m, &n, &self.t_from_H.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
     
-    
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, u, 3, vt, 3, 1.0, _t.rotation, 3);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, u, 3, vt, 3, 1.0, self.t_from_H.rotation, 3);
     
     free(work);
 }
 
-- (int) computeTransformsFromHomography
+- (int)computeTransformsFromHomography
 {
     double h[9]; //convenience matrix;
     double r[9];
@@ -241,26 +292,23 @@
     r[7] = r[2] * r[3] - r[0] * r[5];
     r[8] = r[0] * r[4] - r[1] * r[3];
 
-    _t.translation[0] = invC[0] * h[6] + invC[1] * h[7] + invC[2]*  h[8];
-    _t.translation[1] = invC[3] * h[6] + invC[4] * h[7] + invC[5] * h[8];
-    _t.translation[2] = invC[6] * h[6] + invC[7] * h[7] + invC[8] * h[8];
+    self.t_from_H.translation[0] = invC[0] * h[6] + invC[1] * h[7] + invC[2]*  h[8];
+    self.t_from_H.translation[1] = invC[3] * h[6] + invC[4] * h[7] + invC[5] * h[8];
+    self.t_from_H.translation[2] = invC[6] * h[6] + invC[7] * h[7] + invC[8] * h[8];
     
     //column major ordering
-    _t.rotation[0] = r[0];
-    _t.rotation[1] = r[3];
-    _t.rotation[2] = r[6];
-    _t.rotation[3] = r[1];
-    _t.rotation[4] = r[4];
-    _t.rotation[5] = r[7];
-    _t.rotation[6] = r[2];
-    _t.rotation[7] = r[5];
-    _t.rotation[8] = r[8];
-    
-    
+    self.t_from_H.rotation[0] = r[0];
+    self.t_from_H.rotation[1] = r[3];
+    self.t_from_H.rotation[2] = r[6];
+    self.t_from_H.rotation[3] = r[1];
+    self.t_from_H.rotation[4] = r[4];
+    self.t_from_H.rotation[5] = r[7];
+    self.t_from_H.rotation[6] = r[2];
+    self.t_from_H.rotation[7] = r[5];
+    self.t_from_H.rotation[8] = r[8];
     
     //Transform rotation matrix into next orthonormal matrix (Frobenius)
     [self computeNextOrthonormal];
-    
     
     return 0;
 }

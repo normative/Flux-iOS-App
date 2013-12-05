@@ -7,16 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "FluxOpenGLCommon.h"
 @interface FluxMatcherWrapper : NSObject
-{
-    double intrinsicsInverse[9];
-    double homography[9];
-   
-}
-
-@property (nonatomic) transform t;
-
 
 // Wrapper to set object_image for matching
 -(void)setObjectImage:(UIImage*)objectImage;
@@ -26,6 +17,10 @@
 
 // Wrapper for: FluxMatcher::match()
 -(void)matchFeatures;
+
+// Wrapper for: FluxMatcher::match() with transforms computed from H
+// Returns 0 for success
+-(int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t;
 
 // Wrapper for: FluxMatcher::match() with matched box drawn
 -(UIImage *)matchAndDrawFeatures;
