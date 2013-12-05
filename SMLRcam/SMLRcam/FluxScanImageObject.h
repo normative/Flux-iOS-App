@@ -71,6 +71,8 @@ typedef enum FluxImageType : NSUInteger {
 @property (nonatomic) FluxImageID userID;
 @property (nonatomic) FluxLocalID *localID;
 
+@property (nonatomic) bool matched;
+
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr
         andCameraID:(int)camID

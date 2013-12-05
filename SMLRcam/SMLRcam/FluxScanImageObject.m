@@ -78,6 +78,7 @@ withDescriptionString:(NSString*)description
         self.horiz_accuracy = horiz_accuracy;
         self.vert_accuracy = vert_accuracy;
         self.localID = [self generateUniqueStringID];
+        self.matched = NO;
     }
     
     return self;

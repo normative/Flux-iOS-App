@@ -54,7 +54,7 @@
         UIImageWriteToSavedPhotosAlbum(testImage, nil, nil, nil);
 
         // TODO: this does nothing yet until the IRE propagates back to the OpenGL VC
-        self.matchRecord.ire.matched = YES;
+        self.matchRecord.ire.imageMetadata.matched = YES;
         self.matchRecord.matched = YES;
         
         NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
