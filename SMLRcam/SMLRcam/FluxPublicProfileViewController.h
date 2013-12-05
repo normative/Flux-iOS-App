@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "FluxUserObject.h"
+#import "FluxDataManager.h"
 
 @interface FluxPublicProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>{
     
@@ -18,6 +19,8 @@
     UIButton *followButton;
     UIButton *addFriendButton;
 }
+@property (nonatomic, strong)FluxDataManager*fluxDataManager;
+
 - (void)prepareViewWithUser:(FluxUserObject*)user;
 
 @end

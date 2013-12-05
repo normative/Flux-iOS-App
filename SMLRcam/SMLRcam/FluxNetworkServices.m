@@ -328,7 +328,6 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     }
 }
 
-
 #pragma mark  - Users
 
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID
@@ -407,12 +406,12 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
      }];
 }
 
-- (void)getUserForID:(int)userID
+- (void)getUserForID:(int)userID withRequestID:(NSUUID *)requestID
 {
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/users/%i.json",userID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getProfile.json?userid=%i",userID]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -421,14 +420,15 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-//        NSLog(@"Found %i Results",[result count]);
-//        if ([result count]>0)
-//        {
-//            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMetadata:andRequestID:)])
-//            {
-//                [delegate NetworkServices:self didreturnImageMetadata:[result firstObject] andRequestID:requestID];
-//            }
-//        }
+        NSLog(@"Found %i Results",[result count]);
+        if ([result count]>0)
+        {
+            FluxUserObject*userObj = [result firstObject];
+            if ([delegate respondsToSelector:@selector(NetworkServices:didReturnUser:andRequestID:)])
+            {
+                [delegate NetworkServices:self didReturnUser:userObj andRequestID:requestID];
+            }
+        }
     }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
@@ -438,6 +438,30 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
             [delegate NetworkServices:self didFailWithError:error andRequestID:nil];
         }
     }];
+    [operation start];
+}
+
+- (void)getUserProfilePicForID:(int)userID withStringSize:(NSString *)sizeString withRequestID:(NSUUID *)requestID{
+    NSString*url = [NSString stringWithFormat:@"%@users/%i/image?size=%@",objectManager.baseURL,userID,sizeString];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
+                                                                              imageProcessingBlock:nil
+       success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
+      {
+          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnProfileImage:forUserID:andRequestID:)])
+          {
+              [delegate NetworkServices:self didReturnProfileImage:image forUserID:userID andRequestID:requestID];
+          }
+      }
+       failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
+      {
+          NSLog(@"Failed with error: %@", [error localizedDescription]);
+          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+          {
+              [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+          }
+      }];
     [operation start];
 }
 

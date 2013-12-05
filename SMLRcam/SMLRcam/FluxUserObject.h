@@ -18,6 +18,18 @@
 @property (nonatomic, strong) NSString*bio;
 @property (nonatomic, strong) NSString*auth_token;
 @property (nonatomic, strong) UIImage*profilePic;
+@property (nonatomic, strong) NSDate*memberSince;
+@property (nonatomic) int imageCount;
+@property (nonatomic) int friendCount;
+@property (nonatomic) int followingCount;
+@property (nonatomic) int followerCount;
+@property (nonatomic) BOOL isFriends;
+@property (nonatomic) BOOL isFollower;
+@property (nonatomic) BOOL isFollowing;
+@property (nonatomic) BOOL hasProfilePic;
+
+
+
 
 
 @end

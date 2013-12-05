@@ -38,6 +38,8 @@ typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
 typedef void (^LoginUserCompleteBlock)(NSString*, FluxDataRequest *);
+typedef void (^UserReadyBlock)(FluxUserObject*, FluxDataRequest *);
+typedef void (^UserProfilePicReadyBlock)(UIImage*,int, FluxDataRequest *);
 typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 
@@ -100,6 +102,12 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 // Callback for successful user login
 @property (strong) LoginUserCompleteBlock loginUserComplete;
 
+// Callback for successful user profile returned
+@property (strong) UserReadyBlock userReady;
+
+// Callback for successful user profile pic returned
+@property (strong) UserProfilePicReadyBlock userPicReady;
+
 // Callback for list of tags retrieved
 @property (strong) TagsReadyBlock tagsReady;
 
@@ -115,6 +123,8 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenLoginUserComplete:(NSString *)token withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUserProfilePicReady:(UIImage *)profilePic forUserID:(int)userID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenErrorOccurred:(NSError *)e withDataRequest:(FluxDataRequest *)errorDataRequest;
 
