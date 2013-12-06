@@ -13,7 +13,9 @@
 
 @protocol FluxFeatureMatchingTaskDelegate;
 
-@interface FluxFeatureMatchingTask : NSOperation
+@interface FluxFeatureMatchingTask : NSOperation{
+    GLKMatrix4 inverseRotation_teM;
+}
 
 @property (nonatomic, strong) FluxFeatureMatchingRecord *matchRecord;
 @property (nonatomic, strong) FluxMatcherWrapper *matcherEngine;

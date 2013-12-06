@@ -614,6 +614,9 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
 }
 
 
+
+
+
 void init(){
     
     
@@ -632,6 +635,87 @@ void init(){
 
 
 @implementation FluxOpenGLViewController
+
+//stored userPose ecef and image ecef
+-(int) computeProjectionParametersMatchedImageWithImagePose:(sensorPose *)sp userHomographyPose:(sensorPose) uhpose planeNormal:(GLKVector3 *)pN Distance: (float) distance currentUserPose:(sensorPose) uPose viewParamters:(viewParameters *)vp
+{
+    viewParameters viewP;
+	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    
+    if(distance <0.0)
+    {
+        NSLog(@"distance is a scalar, setting to positive");
+        distance =  -1.0 *distance;
+    }
+    
+    
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    zRay = GLKVector3Normalize(zRay);
+    
+    GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uhpose.rotationMatrix, zRay);
+    GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, vuhp);
+    
+    //normal plane
+    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((uPose.rotationMatrix), planeNormalI);
+    
+    //intersection with plane
+    GLKVector3 N = planeNormalRotated;
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(v);
+    
+   
+    
+    positionTP.x = sp->ecef.x - uPose.ecef.x;
+    positionTP.y = sp->ecef.y - uPose.ecef.y;
+    positionTP.z = sp->ecef.z - uPose.ecef.z;
+    
+    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
+    P0 = positionTP;
+    V = GLKVector3Normalize(v);
+    //  V = v;
+    
+    float vd = GLKVector3DotProduct(N,V);
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+    float t = v0/vd;
+    
+    if(vd==0)
+    {
+        //    NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        return 0;
+    }
+    if(t < 0)
+    {
+        
+        // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        return 0;
+    }
+    
+    //    if(distancetoPlane > (distance + 3))
+    float _distanceToUser = GLKVector3Length(P0);
+    
+    if(_distanceToUser > MAX_IMAGE_RADIUS)
+    {
+        
+        //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
+        return 0;
+    }
+    
+    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    
+    (*vp).origin =  P0;
+    (*vp).at =viewP.at;
+    (*vp).up = viewP.up;
+    
+    return 1;
+    
+}
+
+
+
+
+
 
 #pragma mark - Display Manager Notifications
 
@@ -1326,20 +1410,32 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
     float distance = _projectionDistance;
-    
+    FluxScanImageObject *scanimageobject;
+    sensorPose imagehomographyPose;
     // null out the valid bits...
     for (int i = 0; i < MAX_TEXTURES; i++)
         _validMetaData[i] = 0;
     
     for (FluxImageRenderElement *ire in self.renderList)
     {
+        scanimageobject = ire.imageMetadata;
+        imagehomographyPose = scanimageobject.imageHomographyPose;
         if (ire.textureMapElement != nil)
         {
             int idx = ire.textureMapElement.textureIndex;
-        
-//            _validMetaData[idx] = 0;
-            _validMetaData[idx] = (computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage) *
-                                 self.fluxDisplayManager.locationManager.notMoving);
+            
+//
+            ;
+            if(scanimageobject.location_data_type == location_data_from_homography)
+            {
+                _validMetaData[idx] = [self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose userHomographyPose:scanimageobject.userHomographyPose planeNormal:&planeNormal Distance:distance currentUserPose:_userPose viewParamters:&vpimage]*
+                                 self.fluxDisplayManager.locationManager.notMoving ;
+            }
+            else
+            {
+                _validMetaData[idx] = (computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage) *
+                                       self.fluxDisplayManager.locationManager.notMoving);
+            }
             
             tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
                                                vpimage.at.x, vpimage.at.y, vpimage.at.z,
