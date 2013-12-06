@@ -148,7 +148,15 @@
 
 - (IBAction)onAreaResetBtn:(id)sender
 {
-    [self.fluxDataManager deleteLocations];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"WARNING" message:@"This will perminentally delete all images for this location."  delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles: @"Make It Happen", nil];
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 1)
+    {
+        [self.fluxDataManager deleteLocations];
+    }
 }
 
 @end

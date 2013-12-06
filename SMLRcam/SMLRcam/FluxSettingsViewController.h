@@ -10,7 +10,7 @@
 
 #import "FluxDataManager.h"
 
-@interface FluxSettingsViewController : UITableViewController{
+@interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate>{
     int initialMask;
 }
 
