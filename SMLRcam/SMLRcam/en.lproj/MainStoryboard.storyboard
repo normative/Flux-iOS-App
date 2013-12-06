@@ -1665,8 +1665,8 @@
         <image name="profileMenuButton" width="140" height="140"/>
         <image name="shareButton" width="140" height="140"/>
         <image name="shareEveryone_on" width="340" height="80"/>
-        <image name="shareFacebook_off" width="76" height="80"/>
-        <image name="shareTwitter_off" width="75" height="80"/>
+        <image name="shareFacebook_off" width="80" height="80"/>
+        <image name="shareTwitter_off" width="80" height="80"/>
         <image name="twitter_mini" width="220" height="50"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

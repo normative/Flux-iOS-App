@@ -42,8 +42,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated{
-    UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Read This"
-                                                      message:@"Login / Signup is now implemented, please try it out. To save time in future launches, tap the flux logo to skip."
+    UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
+                                                      message:@"Login / Signup is now partially implemented, please try it out. To save time in future launches, tap the flux logo to skip."
                                                      delegate:nil
                                             cancelButtonTitle:@"OK"
                                             otherButtonTitles:nil];
@@ -204,13 +204,12 @@
 - (void)checkCurrentLoginState{
     NSString *username = [UICKeyChainStore stringForKey:@"username" service:@"com.flux"];
     NSString *userID = [UICKeyChainStore stringForKey:@"userID" service:@"com.flux"];
-    NSString *password = [UICKeyChainStore stringForKey:@"password" service:@"com.flux"];
     NSString *token = [UICKeyChainStore stringForKey:@"token" service:@"com.flux"];
     
     [self checkFBLoginStatus];
     [self checkTWloginStatus];
     
-    if (username && token && password) {
+    if (username && token && userID) {
         [self fadeOutLogin];
     }
     else{
@@ -225,14 +224,22 @@
 }
 
 - (IBAction)createAccountButtonAction:(id)sender {
-    [self hideContainerViewAnimated:YES];
-    [self performSelector:@selector(fadeOutLogin) withObject:nil afterDelay:0.5];
-    return;
-    
     UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome!" message:@"Thanks for taking the time to look into Flux. At the moment, Flux is still in beta, and requires a pin to continue. If you're one of the lucky ones, please enter your pin below." delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles:@"Activate Pin", nil];
     alert.alertViewStyle = UIAlertViewStylePlainTextInput;
     [alert becomeFirstResponder];
     [alert show];
+}
+
+#pragma mark - 3rd Party Social
+
+- (void)socialPartner:(NSString*)partner didAuthenticateWithToken:(NSString*)token andUserInfo:(NSDictionary*)userInfo{
+    
+    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome Friend" message:[NSString stringWithFormat:@"You (%@) successfully logged in with %@.",[userInfo objectForKey:@"username"],partner]  delegate:self cancelButtonTitle:@"Coool" otherButtonTitles: nil];
+    [alert becomeFirstResponder];
+    [alert show];
+    
+    
+    [self performSelector:@selector(fadeOutLogin) withObject:nil afterDelay:0.5];
 }
 
 #pragma mark Twitter
@@ -269,7 +276,7 @@
         return;
     }
     [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
-        [self hideContainerViewAnimated:YES];
+        [self performSelector:@selector(hideContainerViewAnimated:) withObject:[NSNumber numberWithBool:YES] afterDelay:0.0];
         dispatch_async(dispatch_get_main_queue(), ^{
             if (granted) {
                 if (_accounts.count > 1) {
@@ -302,18 +309,9 @@
             NSLog(@"Reverse Auth process returned: %@", responseStr);
             
             NSArray *parts = [responseStr componentsSeparatedByString:@"&"];
-            NSString *lined = [parts componentsJoinedByString:@"\n"];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:lined delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alert show];
-
-                if (parts.count>3) {
-                    NSString*username = [[parts objectAtIndex:3] substringFromIndex:12];
-                    [UICKeyChainStore setString:username forKey:@"username" service:@"com.flux"];
-                }
-                [self fadeOutLogin];
-            });
+            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username", nil];
+            [self socialPartner:@"Twitter" didAuthenticateWithToken:[parts objectAtIndex:0] andUserInfo:userInfo];
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
@@ -363,27 +361,16 @@
            FBSessionState state, NSError *error) {
              if (!error) {
                  dispatch_async(dispatch_get_main_queue(), ^{
-                     NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
-                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                     [alert show];
+                     NSLog(@"Token: %@",FBSession.activeSession.accessTokenData.accessToken);
                      
                      if (FBSession.activeSession.isOpen) {
                          [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
                          if (!error) {
-                             dispatch_async(dispatch_get_main_queue(), ^{
-                             NSString * userString = [NSString stringWithFormat:@"Name: %@ \nUsername: %@ \nEmail: %@",user.name, user.username,[user objectForKey:@"email"]];
-                             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:userString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                             [alert show];
-                         });
-                         NSLog(@"Name: %@",user.name);
-                         NSLog(@"Username: %@",user.username);
-                         NSLog(@"Email: %@",[user objectForKey:@"email"]);
                              
-                         [UICKeyChainStore setString:user.username forKey:@"username" service:@"com.flux"];
-                         
-                         socialOauthPin = FBSession.activeSession.accessTokenData.accessToken;
-                         [self fadeOutLogin];
+                             NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:user.username, @"username", nil];
+                             [self socialPartner:@"Twitter" didAuthenticateWithToken:FBSession.activeSession.accessTokenData.accessToken andUserInfo:userInfo];
                          }
+
                          else{
                              dispatch_async(dispatch_get_main_queue(), ^{
                                  NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
@@ -608,6 +595,9 @@
 }
 
 - (IBAction)backdoorButtonAction:(id)sender {
+    [(UIButton*)sender setEnabled:NO];
+    [self hideContainerViewAnimated:YES];
+    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
 }
 
 #pragma mark - UIActionSheetDelegate
