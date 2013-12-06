@@ -108,14 +108,15 @@
         
         cv::Mat H = cv::findHomography( obj, scene, CV_LMEDS );
         
-        for (int i=0; i < 3; i++)
-        {
-            for (int j=0; j < 3; j++)
-            {
-                homography[i + 3*j] = H.at<float>(i,j);
-                NSLog(@"Homography:%d %f", i+3*j, homography[i+3*j]);
-            }
-        }
+        homography[0] = H.at<float>(0,0);
+        homography[1] = H.at<float>(0,1);
+        homography[2] = H.at<float>(0,2);
+        homography[3] = H.at<float>(1,0);
+        homography[4] = H.at<float>(1,1);
+        homography[5] = H.at<float>(1,2);
+        homography[6] = H.at<float>(2,1);
+        homography[7] = H.at<float>(2,2);
+        homography[8] = H.at<float>(2,3);
         
         // Check if homography calculated represents a valid match
         if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
@@ -300,22 +301,23 @@
     r[6] = r[1] * r[5] - r[2] * r[4];
     r[7] = r[2] * r[3] - r[0] * r[5];
     r[8] = r[0] * r[4] - r[1] * r[3];
+    
+    transformRt tempRt;
+    tempRt.translation[0] = invC[0] * h[6] + invC[1] * h[7] + invC[2]*  h[8];
+    tempRt.translation[1] = invC[3] * h[6] + invC[4] * h[7] + invC[5] * h[8];
+    tempRt.translation[2] = invC[6] * h[6] + invC[7] * h[7] + invC[8] * h[8];
 
-    self.t_from_H.translation[0] = invC[0] * h[6] + invC[1] * h[7] + invC[2]*  h[8];
-    self.t_from_H.translation[1] = invC[3] * h[6] + invC[4] * h[7] + invC[5] * h[8];
-    self.t_from_H.translation[2] = invC[6] * h[6] + invC[7] * h[7] + invC[8] * h[8];
-    
-    //column major ordering
-    self.t_from_H.rotation[0] = r[0];
-    self.t_from_H.rotation[1] = r[3];
-    self.t_from_H.rotation[2] = r[6];
-    self.t_from_H.rotation[3] = r[1];
-    self.t_from_H.rotation[4] = r[4];
-    self.t_from_H.rotation[5] = r[7];
-    self.t_from_H.rotation[6] = r[2];
-    self.t_from_H.rotation[7] = r[5];
-    self.t_from_H.rotation[8] = r[8];
-    
+    tempRt.rotation[0] = r[0];
+    tempRt.rotation[1] = r[3];
+    tempRt.rotation[2] = r[6];
+    tempRt.rotation[3] = r[1];
+    tempRt.rotation[4] = r[4];
+    tempRt.rotation[5] = r[7];
+    tempRt.rotation[6] = r[2];
+    tempRt.rotation[7] = r[5];
+    tempRt.rotation[8] = r[8];
+    self.t_from_H = tempRt;
+
     //Transform rotation matrix into next orthonormal matrix (Frobenius)
     [self computeNextOrthonormal];
     
