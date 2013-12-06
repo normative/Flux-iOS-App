@@ -48,8 +48,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     double _estimateDelta;
     double _resetThreshold;
     
-    int kfilterInitialized;
-    
     BOOL camIsOn;
     BOOL imageCaptured;
     
