@@ -14,6 +14,7 @@
 #import "UICKeyChainStore.h"
 
 #import "FluxSettingsViewController.h"
+#import "FluxProfilePhotosViewController.h"
 
 @interface FluxLeftDrawerViewController ()
 
@@ -168,6 +169,10 @@
     {
         FluxSettingsViewController* leftDrawerSettingsViewController = (FluxSettingsViewController*)segue.destinationViewController;
         leftDrawerSettingsViewController.fluxDataManager = self.fluxDataManager;
+    }
+    if ([[segue identifier] isEqualToString:@"pushPhotosSegue"]){
+        [(FluxProfilePhotosViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
+        [(FluxProfilePhotosViewController*)segue.destinationViewController prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:@"userID" service:@"com.flux"].intValue];
     }
 }
 

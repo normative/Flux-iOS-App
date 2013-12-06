@@ -383,7 +383,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 - (FluxRequestID *) requestUserProfileForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = data_upload_request;
+    dataRequest.requestType = profile_request;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
     [networkServices getUserForID:userID withRequestID:requestID];
@@ -392,10 +392,19 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 - (FluxRequestID *) requestUserProfilePicForID:(int)userID andSize:(NSString *)size withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = data_upload_request;
+    dataRequest.requestType = profile_pic_request;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
     [networkServices getUserProfilePicForID:userID withStringSize:size withRequestID:requestID];
+    return requestID;
+}
+
+- (FluxRequestID *) requestImageListForUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = profile_images_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getImagesListForUserWithID:userID withRequestID:requestID];
     return requestID;
 }
 
@@ -630,6 +639,14 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnProfileImage:(UIImage *)image forUserID:(int)user andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenUserProfilePicReady:image forUserID:user withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray *)images andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserImagesReady:images withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

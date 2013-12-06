@@ -104,6 +104,7 @@
 		AA9D0E97184D39510004823E /* OAuthCore.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E94184D39510004823E /* OAuthCore.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		AA9D0E9A184D3A340004823E /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9D0E99184D3A330004823E /* Twitter.framework */; };
 		AA9D0E9C184D3AC30004823E /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9D0E9B184D3AC30004823E /* Accounts.framework */; };
+		AA9D0E9F1851318C0004823E /* FluxProfileImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */; };
 		AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265A617E89EAE003AE787 /* FluxTagObject.m */; };
 		AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAA265B717EA00E4003AE787 /* libTestFlight.a */; };
 		AAA265BE17EA00E5003AE787 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AAA265B817EA00E4003AE787 /* README.md */; };
@@ -318,6 +319,8 @@
 		AA9D0E94184D39510004823E /* OAuthCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OAuthCore.m; sourceTree = "<group>"; };
 		AA9D0E99184D3A330004823E /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		AA9D0E9B184D3AC30004823E /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
+		AA9D0E9D1851318C0004823E /* FluxProfileImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfileImageObject.h; sourceTree = "<group>"; };
+		AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfileImageObject.m; sourceTree = "<group>"; };
 		AAA265A517E89EAE003AE787 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
 		AAA265A617E89EAE003AE787 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
 		AAA265B717EA00E4003AE787 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
@@ -721,6 +724,8 @@
 				AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */,
 				AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */,
 				AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */,
+				AA9D0E9D1851318C0004823E /* FluxProfileImageObject.h */,
+				AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */,
 			);
 			name = "Data Objects";
 			sourceTree = "<group>";
@@ -1182,6 +1187,7 @@
 				AA3BAF2C18468083009D4FAC /* FluxProfileCell.m in Sources */,
 				AA984F0F18088923007F33B1 /* MIPointList.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
+				AA9D0E9F1851318C0004823E /* FluxProfileImageObject.m in Sources */,
 				17891FC3181D6C840064B2F9 /* FluxImageRenderElement.m in Sources */,
 				AA61527D1822DC9300B8F2C8 /* FluxImageTools.m in Sources */,
 				AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */,

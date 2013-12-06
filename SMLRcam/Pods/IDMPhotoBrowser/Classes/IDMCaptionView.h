@@ -19,6 +19,7 @@
     id __unsafe_unretained delegate;
 }
 @property (unsafe_unretained) id <IDMCaptionViewDelegate> delegate;
+@property (nonatomic) BOOL displaysProfileInfo;
 
 // Init
 - (id)initWithPhoto:(id<IDMPhoto>)photo;
@@ -38,5 +39,6 @@
 // custom caption view. With width property is ignored and the caption is displayed
 // the full width of the screen
 - (CGSize)sizeThatFits:(CGSize)size;
+
 
 @end

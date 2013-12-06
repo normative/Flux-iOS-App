@@ -76,9 +76,11 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) loginUser:(FluxUserObject *)userObject
                   withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestUserProfileForID:(int)userID
-              withDataRequest:(FluxDataRequest *)dataRequest;
+                    withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestUserProfilePicForID:(int)userID andSize:(NSString*)size
-                            withDataRequest:(FluxDataRequest *)dataRequest;
+                    withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) requestImageListForUserWithID:(int)userID
+                    withDataRequest:(FluxDataRequest *)dataRequest;
 
 - (void)deleteLocations;
 

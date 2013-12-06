@@ -117,7 +117,7 @@
 @implementation IDMPhotoBrowser
 
 // Properties
-@synthesize displayDoneButton = _displayDoneButton, displayDoneButtonBackgroundImage = _displayDoneButtonBackgroundImage,  displayToolbar = _displayToolbar, displayActionButton = _displayActionButton, displayCounterLabel = _displayCounterLabel, useWhiteBackgroundColor = _useWhiteBackgroundColor, doneButtonImage = _doneButtonImage;
+@synthesize displayDoneButton = _displayDoneButton, displaysProfileInfo = _displaysProfileInfo, displayDoneButtonBackgroundImage = _displayDoneButtonBackgroundImage,  displayToolbar = _displayToolbar, displayActionButton = _displayActionButton, displayCounterLabel = _displayCounterLabel, useWhiteBackgroundColor = _useWhiteBackgroundColor, doneButtonImage = _doneButtonImage;
 @synthesize leftArrowImage = _leftArrowImage, rightArrowImage = _rightArrowImage, leftArrowSelectedImage = _leftArrowSelectedImage, rightArrowSelectedImage = _rightArrowSelectedImage;
 @synthesize displayArrowButton = _displayArrowButton, actionButtonTitles = _actionButtonTitles;
 @synthesize actionsSheet = _actionsSheet, activityViewController = _activityViewController;
@@ -141,6 +141,7 @@
         _displayToolbar = YES;
         _autoHide = YES;
         _displayDoneButton = YES;
+        _displaysProfileInfo = YES;
         _displayActionButton = YES;
         _displayDoneButtonBackgroundImage = YES;
         _displayArrowButton = YES;
@@ -839,6 +840,7 @@
         }
     }
     captionView.alpha = [self areControlsHidden] ? 0 : 1; // Initial alpha
+    captionView.displaysProfileInfo = self.displaysProfileInfo;
 
     return captionView;
 }
@@ -946,6 +948,7 @@
             IDMCaptionView *captionView = [self captionViewForPhotoAtIndex:index];
             captionView.frame = [self frameForCaptionView:captionView atIndex:index];
             [captionView setDelegate:self];
+            captionView.displaysProfileInfo = self.displaysProfileInfo;
             [_pagingScrollView addSubview:captionView];
             page.captionView = captionView;
 		}

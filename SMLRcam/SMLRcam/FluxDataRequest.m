@@ -104,6 +104,12 @@
     }
 }
 
+- (void)whenUserImagesReady:(NSArray *)profileImageObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userImagesReady) {
+        self.userImagesReady(profileImageObjects, completeDataRequest);
+    }
+}
+
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.tagsReady)

@@ -203,6 +203,7 @@
 
 - (void)checkCurrentLoginState{
     NSString *username = [UICKeyChainStore stringForKey:@"username" service:@"com.flux"];
+    NSString *userID = [UICKeyChainStore stringForKey:@"userID" service:@"com.flux"];
     NSString *password = [UICKeyChainStore stringForKey:@"password" service:@"com.flux"];
     NSString *token = [UICKeyChainStore stringForKey:@"token" service:@"com.flux"];
     

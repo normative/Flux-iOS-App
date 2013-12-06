@@ -465,6 +465,40 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     [operation start];
 }
 
+- (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getImageListForUser?userID=%i",userID]
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Results",[result count]);
+         if ([result count]>0)
+         {
+             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnImageListForUser:andRequestID:)])
+             {
+                 [delegate NetworkServices:self didReturnImageListForUser:result.array andRequestID:requestID];
+             }
+         }
+     }
+    failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
 
 #pragma mark  - Tags
 

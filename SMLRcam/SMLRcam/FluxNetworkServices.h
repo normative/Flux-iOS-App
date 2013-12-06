@@ -46,6 +46,8 @@ extern NSString* const FluxProductionServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnProfileImage:(UIImage *)image forUserID:(int)user
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray*)images
+           andRequestID:(FluxRequestID *)requestID;
 
 //tags
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
@@ -114,6 +116,9 @@ extern NSString* const FluxProductionServerURL;
 
 //return's a profile image for a given userID and size
 - (void)getUserProfilePicForID:(int)userID withStringSize:(NSString *)sizeString withRequestID:(NSUUID *)requestID;
+
+//return's a user's image list for a given userID
+- (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 #pragma mark  - Tags
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;
