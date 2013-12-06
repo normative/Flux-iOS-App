@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 #import <GLKit/GLKit.h>
+#import "FluxOpenGLCommon.h"
 
 typedef NSString FluxLocalID;
 typedef int FluxImageID;
