@@ -165,6 +165,10 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
 - (void)didMatchImage:(NSNotification *)notification
 {
+    NSDictionary *userInfoDict = [notification userInfo];
+    FluxLocalID *localID = userInfoDict[@"matchedLocalID"];
+    FluxScanImageObject *imageObject = userInfoDict[@"matchedImageObject"];
+
     [self calculateTimeAdjustedImageList];
 }
 

@@ -107,7 +107,9 @@
     if (record.matched)
     {
         // Send notification to trigger new data to trickle into OpenGL View Controller
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidMatchImage object:self];
+        NSDictionary *userInfoDict = @{@"matchedLocalID" : record.ire.localID, @"matchedImageObject" : record.ire.imageMetadata};
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidMatchImage object:self userInfo:userInfoDict];
     }
     
     [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
