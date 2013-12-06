@@ -58,6 +58,7 @@
 - (IBAction)twitterSignInAction:(id)sender;
 - (IBAction)facebookSignInAction:(id)sender;
 - (IBAction)loginSignupToggleAction:(id)sender;
+- (IBAction)backdoorButtonAction:(id)sender;
 
 
 @end

@@ -42,8 +42,8 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated{
-    UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
-                                                      message:@"In order to bypass the signup flow, just tap on the create account button, or the sign in button."
+    UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Read This"
+                                                      message:@"Login / Signup is now implemented, please try it out. To save time in future launches, tap the flux logo to skip."
                                                      delegate:nil
                                             cancelButtonTitle:@"OK"
                                             otherButtonTitles:nil];
@@ -605,6 +605,9 @@
             [topSeparator setAlpha:1.0];
         } completion:nil];
     }
+}
+
+- (IBAction)backdoorButtonAction:(id)sender {
 }
 
 #pragma mark - UIActionSheetDelegate
