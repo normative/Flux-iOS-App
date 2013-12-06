@@ -18,6 +18,7 @@ extern NSString* const FluxDisplayManagerDidUpdateNearbyList;
 extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
 extern NSString* const FluxDisplayManagerDidUpdateMapPinList;
 extern NSString* const FluxDisplayManagerDidFailToUpdateMapPinList;
+extern NSString* const FluxDisplayManagerDidMatchImage;
 
 extern NSString* const FluxOpenGLShouldRender;
 

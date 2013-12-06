@@ -11,6 +11,7 @@
 #import "FluxFeatureMatchingRecord.h"
 
 #import "FluxOpenGLViewController.h"
+#import "FluxDisplayManager.h"
 
 
 @implementation FluxFeatureMatchingQueue
@@ -102,10 +103,12 @@
 - (void)featureMatchingTaskDidFinish:(FluxFeatureMatchingTask *)featureMatcher
 {
     FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
-    
-    // Update object in Display Manager/Data Store with new metadata, setting proper completion flags
-    
-    // Send notification to trigger new data to trickle into OpenGL View Controller
+
+    if (record.matched)
+    {
+        // Send notification to trigger new data to trickle into OpenGL View Controller
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidMatchImage object:self];
+    }
     
     [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
 }

@@ -117,18 +117,27 @@
             }
         }
         
-        // Calculate transform_from_H
-        result = [self computeTransformsFromHomography];
-        
-        // Extract transforms (R and t)
-        if (result == 0)
+        // Check if homography calculated represents a valid match
+        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
         {
-            for (int i=0; i < 3; i++)
+            result = -1;
+            
+        }
+        else
+        {
+            // Calculate transform_from_H
+            result = [self computeTransformsFromHomography];
+            
+            // Extract transforms (R and t)
+            if (result == 0)
             {
-                t[i] = self.t_from_H.translation[i];
-                for (int j=0; j < 3; j++)
+                for (int i=0; i < 3; i++)
                 {
-                    R[i + 3*j] = self.t_from_H.rotation[i + 3*j];
+                    t[i] = self.t_from_H.translation[i];
+                    for (int j=0; j < 3; j++)
+                    {
+                        R[i + 3*j] = self.t_from_H.rotation[i + 3*j];
+                    }
                 }
             }
         }
@@ -312,6 +321,60 @@
     
     return 0;
 }
+
+- (bool)isHomographyValid:(cv::Mat &)H withRows:(int)rows withCols:(int)cols
+{
+    bool isValid = NO;
+    
+    //-- Get the corners from the object image ( the object to be "detected" )
+    std::vector<cv::Point2f> obj_corners(4);
+    obj_corners[0] = cvPoint(0,0);
+    obj_corners[1] = cvPoint( cols, 0 );
+    obj_corners[2] = cvPoint( cols, rows );
+    obj_corners[3] = cvPoint( 0, rows );
+    std::vector<cv::Point2f> scene_corners(4);
+    
+    // Calculate "box" representing matched image in current camera frame
+    cv::perspectiveTransform( obj_corners, scene_corners, H );
+    
+    // Determine if box is valid (if diagonal segments intersect then a convex quadrilateral)
+    if ([self doLinesIntersectWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[2] withEndpointB1:scene_corners[1] withEndpointB2:scene_corners[3]])
+    {
+        // TODO: We may also want to check the size of the box. If it is too small, it may be a garbage match
+        isValid = YES;
+    }
+    
+    return isValid;
+}
+
+// Determine if line segment (A1,A2) and line segment (B1,B2) intersect
+- (bool)doLinesIntersectWithEndpointA1:(CvPoint)A1 withEndpointA2:(CvPoint)A2 withEndpointB1:(CvPoint)B1 withEndpointB2:(CvPoint)B2
+{
+    // Line1 made with endpoints (A1, A2) and Line2 made with endpoints (B1,B2)
+    // If and only if endpoints A1,A2 are on opposite sides of the line (B1,B2)
+    // and endpoints B1,B2 are on opposite sides of the line (A1,A2)
+    // then the line segments intersect.
+    // Can use counter-clockwise relationship of sets of points to test for this
+    if ([self ccwWithPointA:A1 withPointB:B1 withPointC:B2] == [self ccwWithPointA:A2 withPointB:B1 withPointC:B2])
+    {
+        return NO;
+    }
+    else if ([self ccwWithPointA:A1 withPointB:A2 withPointC:B1] == [self ccwWithPointA:A1 withPointB:A2 withPointC:B2])
+    {
+        return NO;
+    }
+    
+    return YES;
+}
+
+// Determine if sequence of points (A,B,C) form a counter-clockwise hull
+- (bool)ccwWithPointA:(CvPoint)A withPointB:(CvPoint)B withPointC:(CvPoint)C
+{
+    float slope_AB = (B.y - A.y) / (B.x - A.x);
+    float slope_AC = (C.y - A.y) / (C.x - A.x);
+    return slope_AB < slope_AC;
+}
+
 - (void)testTransformsFromHomography
 {
     //assuming row major

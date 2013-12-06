@@ -25,6 +25,8 @@ NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidU
 NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDidUpdateImageTexture";
 NSString* const FluxDisplayManagerDidUpdateMapPinList = @"FluxDisplayManagerDidUpdateMapPinList";
 NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManagerDidFailToUpdateMapPinList";
+NSString* const FluxDisplayManagerDidMatchImage = @"FluxDisplayManagerDidMatchImage";
+
 
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
@@ -90,6 +92,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
     }
     
     return self;
@@ -158,7 +161,14 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     }
 }
 
-#pragma mark Filter
+#pragma mark - Matching
+
+- (void)didMatchImage:(NSNotification *)notification
+{
+    [self calculateTimeAdjustedImageList];
+}
+
+#pragma mark - Filter
 
 - (void)didChangeFilter:(NSNotification*)notification{
     dataFilter = [notification.userInfo objectForKey:@"filter"];
