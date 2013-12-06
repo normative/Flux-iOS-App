@@ -44,8 +44,8 @@ typedef enum LocationDataType : NSUInteger {
 @property (nonatomic) double ecefZ;
 
 //
-@property (nonatomic) transformRt imageHomographyPose;
-@property (nonatomic) transformRt userHomographyPose;
+@property (nonatomic) sensorPose imageHomographyPose;
+@property (nonatomic) sensorPose userHomographyPose;
 
 //orientation (euler angles)
 @property (nonatomic) double yaw;
