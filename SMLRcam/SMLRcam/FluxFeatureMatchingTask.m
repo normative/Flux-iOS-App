@@ -67,8 +67,16 @@
             self.matchRecord.ire.imageMetadata.userHomographyPose.translation[1] = self.matchRecord.cfe.cameraPose.position.y;
             self.matchRecord.ire.imageMetadata.userHomographyPose.translation[2] = self.matchRecord.cfe.cameraPose.position.z;
         
-            self.matchRecord.ire.imageMetadata.matched = YES;
-            self.matchRecord.matched = YES;
+            // Update match information
+            self.matchRecord.ire.imageMetadata.matched = YES;   // This one goes in the FluxDataStore cache
+            self.matchRecord.matched = YES;                     // This one is just quick access for the record
+        }
+        else
+        {
+            // Matching failed. Need to try again later.
+            self.matchRecord.failed = YES;
+            self.matchRecord.ire.imageMetadata.matchFailed = YES;
+            self.matchRecord.ire.imageMetadata.matchFailureTime = [NSDate date];
         }
         
         NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);

@@ -82,6 +82,8 @@ typedef enum LocationDataType : NSUInteger {
 @property (nonatomic) FluxLocalID *localID;
 
 @property (nonatomic) bool matched;
+@property (nonatomic) bool matchFailed;
+@property (nonatomic, strong) NSDate* matchFailureTime;
 
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr

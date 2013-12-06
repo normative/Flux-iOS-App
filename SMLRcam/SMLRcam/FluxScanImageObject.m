@@ -79,6 +79,7 @@ withDescriptionString:(NSString*)description
         self.vert_accuracy = vert_accuracy;
         self.localID = [self generateUniqueStringID];
         self.matched = NO;
+        self.matchFailed = NO;
     }
     
     return self;
