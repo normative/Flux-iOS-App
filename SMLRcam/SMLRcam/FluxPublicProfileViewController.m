@@ -17,6 +17,8 @@
 
 @implementation FluxPublicProfileViewController
 
+#pragma mark - View Init
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -43,8 +45,24 @@
 
 - (void)prepareViewWithUser:(FluxUserObject*)user{
     theUser = user;
+    
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [request setUserReady:^(FluxUserObject*userObject, FluxDataRequest*completedRequest){
+        theUser = userObject;
+        [profileTableView reloadData];
+        if (theUser.hasProfilePic) {
+            FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
+            [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
+                [profileTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+            }];
+            [self.fluxDataManager requestUserProfilePicForID:user.userID andSize:@"" withDataRequest:picRequest];
+        }
+    }];
+    
+    [self.fluxDataManager requestUserProfileForID:user.userID withDataRequest:request];
 }
 
+#pragma mark - TableView Methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
     return 3;
@@ -75,15 +93,15 @@
     [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:13.0]];
     [socialStatusLabel setTextColor:[UIColor colorWithRed:44/255.0 green:53/255.0 blue:59/255.0 alpha:1.0]];
     [socialStatusLabel setBackgroundColor:[UIColor clearColor]];
-    [socialStatusLabel setText:@"CmdrTaco is not following you"];
+    [socialStatusLabel setText:(theUser.isFollower) ? [NSString stringWithFormat:@"%@ is following you",theUser.username] : [NSString stringWithFormat:@"%@ is not following you",theUser.username]];
     [socialStatusLabel setTextAlignment:NSTextAlignmentCenter];
     [footerView addSubview:socialStatusLabel];
     
     followButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 57, 30)];
-    [followButton setTitle:@"Follow" forState:UIControlStateNormal];
+    [followButton setTitle:(theUser.isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
     [followButton setCenter:CGPointMake(socialStatusLabel.center.x, socialStatusLabel.center.y+(socialStatusLabel.frame.size.height/2)+15+15)];
     addFriendButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
-    [addFriendButton setTitle:@"Add Friend" forState:UIControlStateNormal];
+    [addFriendButton setTitle:(theUser.isFriends) ? @"Friends" : @"Add Friend" forState:UIControlStateNormal];
     [addFriendButton setCenter:CGPointMake(socialStatusLabel.center.x, followButton.center.y+(followButton.frame.size.height/2)+15+15)];
     followButton.titleLabel.font = addFriendButton.titleLabel.font = [UIFont fontWithName:@"Akkurat-Bold" size:addFriendButton.titleLabel.font.pointSize];
     [addFriendButton addTarget:self action:@selector(addFriendButtonAction) forControlEvents:UIControlEventTouchUpInside];
@@ -108,9 +126,10 @@
             cell = [[FluxProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
         }
         //HACK
-        [cell.bioLabel setText:@"CmdrTaco basically runs the internet. This is a short bio about how awesome he is."];
-        [cell.usernameLabel setText:@"CmdrTaco"];
-        [cell.profileImageView setImage:[UIImage imageNamed:@"profileImage"]];
+        [cell.bioLabel setText:theUser.bio];
+        [cell.usernameLabel setText:theUser.username];
+        [cell.profileImageView setImage: (theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"]];
+        [cell.imageCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
         [cell initCell];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
         return cell;
@@ -123,7 +142,7 @@
         }
         [cell initCell];
         [cell.titleLabel setText:@"Following"];
-        [cell.countLabel setText:@"117"];
+        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
         
         [cell.titleLabel setEnabled:NO];
         [cell.countLabel setEnabled:NO];
@@ -137,7 +156,7 @@
         }
         [cell initCell];
         [cell.titleLabel setText:@"Followers"];
-        [cell.countLabel setText:@"23"];
+        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
         
         [cell.titleLabel setEnabled:NO];
         [cell.countLabel setEnabled:NO];
@@ -155,6 +174,8 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+#pragma mark - IB Actions
 
 - (void)followButtonAction {
 }

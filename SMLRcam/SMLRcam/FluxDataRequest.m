@@ -90,6 +90,26 @@
     }
 }
 
+-(void)whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userReady)
+    {
+        self.userReady(userObject,completeDataRequest);
+    }
+}
+
+-(void)whenUserProfilePicReady:(UIImage *)profilePic forUserID:(int)userID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userPicReady)
+    {
+        self.userPicReady(profilePic, userID, completeDataRequest);
+    }
+}
+
+- (void)whenUserImagesReady:(NSArray *)profileImageObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userImagesReady) {
+        self.userImagesReady(profileImageObjects, completeDataRequest);
+    }
+}
+
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.tagsReady)

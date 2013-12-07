@@ -1071,6 +1071,16 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qIq-VB-T5L">
+                                <rect key="frame" x="120" y="20" width="80" height="80"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="backdoorButtonAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="xAb-ud-2Cz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.91764705882352937" green="0.24705882352941178" blue="0.24705882352941178" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
@@ -1655,8 +1665,8 @@
         <image name="profileMenuButton" width="140" height="140"/>
         <image name="shareButton" width="140" height="140"/>
         <image name="shareEveryone_on" width="340" height="80"/>
-        <image name="shareFacebook_off" width="76" height="80"/>
-        <image name="shareTwitter_off" width="75" height="80"/>
+        <image name="shareFacebook_off" width="80" height="80"/>
+        <image name="shareTwitter_off" width="80" height="80"/>
         <image name="twitter_mini" width="220" height="50"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
