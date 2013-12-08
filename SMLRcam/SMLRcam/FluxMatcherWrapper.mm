@@ -20,11 +20,15 @@
     
     double intrinsicsInverse[9];
     double homography[9];
+    transformRtn result1;
+    transformRtn result2;
+    double ci[9];
+    double ciinverse[9];
 }
 
 //C++ class from FluxMatcher.cpp
 @property (nonatomic, assign) FluxMatcher *wrappedMatcher;
-@property (nonatomic) transformRt t_from_H;
+@property (nonatomic) transformRtn t_from_H;
 
 @end
 
@@ -38,8 +42,6 @@
     if (self)
     {
         _wrappedMatcher = new FluxMatcher();
-        
-        [self computeInverseCameraIntrinsics];
     }
     return self;
 }
@@ -99,6 +101,8 @@
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
+        [self setCameraIntrinsicsWithRows:scene_img.rows andColums:scene_img.cols];
+        
         for( size_t i = 0; i < matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches
@@ -109,14 +113,14 @@
         cv::Mat H = cv::findHomography( obj, scene, CV_LMEDS );
         
         homography[0] = H.at<float>(0,0);
-        homography[1] = H.at<float>(0,1);
-        homography[2] = H.at<float>(0,2);
-        homography[3] = H.at<float>(1,0);
+        homography[1] = H.at<float>(1,0);
+        homography[2] = H.at<float>(2,0);
+        homography[3] = H.at<float>(0,1);
         homography[4] = H.at<float>(1,1);
-        homography[5] = H.at<float>(1,2);
-        homography[6] = H.at<float>(2,1);
-        homography[7] = H.at<float>(2,2);
-        homography[8] = H.at<float>(2,3);
+        homography[5] = H.at<float>(2,1);
+        homography[6] = H.at<float>(0,2);
+        homography[7] = H.at<float>(1,2);
+        homography[8] = H.at<float>(2,2);
         
         // Check if homography calculated represents a valid match
         if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
@@ -127,7 +131,7 @@
         else
         {
             // Calculate transform_from_H
-            result = [self computeTransformsFromHomography];
+            result = [self computeRTFromHomography:homography];
             
             // Extract transforms (R and t)
             if (result == 0)
@@ -211,41 +215,65 @@
 }
 
 //Needs to be at least one set for each camera model
-- (void)computeInverseCameraIntrinsics
+
+//using column major ordering
+
+-(int) invertCameraIntrinsics
+{
+    int dim = 3;
+    long lWork = dim * dim;
+    long info = -1;
+    long n = dim;
+    
+    long * ipiv = (long *)malloc((dim +1) *sizeof (long));
+    double *work = (double*) malloc(dim * dim *sizeof(double));
+    int i;
+    for(i=0;i <9;i++)
+        ciinverse[i] = ci[i];
+    
+    dgetrf_(&n, &n,ciinverse, &n, ipiv, &info);
+    dgetri_(&n, ciinverse, &n, ipiv, work, &lWork,&info );
+    
+    
+    
+    return info;
+}
+
+- (void)setCameraIntrinsicsWithRows:(int)rows andColums:(int)cols
 {
     double pixel = 0.0000014; //1.4 microns Pixel Size for iPhone5
     double fx, fy;
-    double cx, cy;
+    double ox, oy;
     
     float focalL = 0.0041; //4.10 mm iPhone5
     
     fx = focalL/pixel;
     fy = focalL/pixel;
-    cx = 0.0;
-    cy = 0.0;
+    ox = ((double)rows)/2.0; //quarter hd
+    oy = ((double)cols)/2.0; //quarter hd
     
-    intrinsicsInverse[0] = 1.0/fx;
-    intrinsicsInverse[1] = 0.0;
-    intrinsicsInverse[2] = -1.0 * cx/fx;
-    intrinsicsInverse[3] = 0.0;
-    intrinsicsInverse[4] = 1.0/fy;
-    intrinsicsInverse[5] = -1.0 * cy/fy;
-    intrinsicsInverse[6] = 0.0;
-    intrinsicsInverse[7] = 0.0;
-    intrinsicsInverse[8] = 1.0;
+    ci[0] = -1.0 * fx;
+    ci[1] = 0.0;
+    ci[2] = 0.0;
+    ci[3] = 0.0;
+    ci[4] = -1.0 * fy;
+    ci[5] = 0.0;
+    ci[6] = ox;
+    ci[7] = oy;
+    ci[8] = 1.0;
+    
+    [self invertCameraIntrinsics];
     
 }
 
-- (void)computeNextOrthonormal
+- (void)computeSVD33: (double*)a U:(double*)u S:(double*)s vT:(double*) vt
 {
     long m = 3;
     long n = 3;
     long lda= 3;
     
     //column major for lapack
-    double s[3];
-    double u[9];
-    double vt[9];
+    
     double workSize;
     double *work = &workSize;
     long lwork = -1;
@@ -253,82 +281,201 @@
     long info = 0;
     char jobz[1];
     jobz[0] = 'A';
-    dgesdd_(jobz, &m, &n, &self.t_from_H.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
+    dgesdd_(jobz, &m, &n, &a[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
     NSLog(@"workSize = %f", workSize);
     lwork = workSize;
     work =(double*) malloc(lwork *sizeof(double));
-    dgesdd_(jobz, &m, &n, &self.t_from_H.rotation[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
-    
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, u, 3, vt, 3, 1.0, self.t_from_H.rotation, 3);
+    dgesdd_(jobz, &m, &n, &a[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
     
     free(work);
 }
 
-- (int)computeTransformsFromHomography
+//u X v
+-(void) crossProductVec1:(double*) u Vec2:(double*) v vecResult:(double *) r
 {
-    double h[9]; //convenience matrix;
-    double r[9];
-    double invC[9]; //convenience matrix;
+    r[0] = u[1]*v[2] - u[2] * v[1];
+    r[1] = u[2]*v[0] - u[0] * v[2];
+    r[2] = u[0]*v[1] - u[1] * v[0];
+}
+
+
+-(int) computeRTFromHomography:(double *) pH
+{
+    //double pH[9]; //projective homography set this in OpenCV
+    double tmpMat[9];
+    double eH[9]; //Euclidean Homography
+    double HtH[9];
+    double s[3];
+    double u[9];
+    double vt[9];
+    double scale;
+    double scaleSq;
+    double tmp3;
+    double tmp1Vec[3];
+    double tmp2Vec[3];
+    double tmp3Vec[3];
     int i;
-    double invH[3];
-    double lambda;
+    double u1[3], u2[3], v1[3], v2[3], v3[3];
+    double U1[9], U2[9], W1[9], W2[9];
+    double sign = 1.0;
     
-    for(i = 0; i<9; i++)
+    
+    
+    
+    //calculate euclidean homography
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, ciinverse, 3, pH, 3, 0.0, tmpMat, 3);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3 , 3, 1.0, tmpMat, 3, ci, 3, 0.0, eH, 3);
+    //test
+    /*
+    eH[0] = 1.53205;
+    eH[1] =1.0;
+    eH[2] = 0.0;
+    eH[3] = -0.5;
+    eH[4] = 0.866025;
+    eH[5] = -1.73205;
+    eH[6] = -0.866025;
+    eH[7] = 1.5;
+    eH[8] = 1.0;
+    */
+    cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 3, 3, 3, 1.0, eH, 3, eH, 3, 0.0, HtH, 3);
+    [self computeSVD33: &HtH[0] U:&u[0] S:&s[0] vT:&vt[0]];
+    NSLog(@"SVD s:[%.4f %.4f %.4f ]",s[0], s[1], s[2]);
+    
+    if(s[0]-s[2]< 1e-5)
     {
-        h[i] = homography[i];
-        invC[i] = intrinsicsInverse[i];
+        NSLog(@"cannot compute transfroms no relative motion");
+        return -1;
     }
     
-    invH[0] = invC[0] * h[0] + invC[1] * h[1] + invC[2] * h[2];
-    invH[1] = invC[3] * h[0] + invC[4] * h[1] + invC[5] * h[2];
-    invH[2] = invC[6] * h[0] + invC[7] * h[1] + invC[8] * h[2];
+    scaleSq = 1.0/s[1];
+    scale = sqrt(scaleSq);
     
-    lambda = sqrt(invH[0] * invH[0] + invH[1] * invH[1] + invH[2] * invH[2] );
+    for(i = 0; i <3; i++)
+        s[i]*=scaleSq;
     
-    if (lambda == 0)
-        return -1;
+    for(i=0; i <3; i++)
+    {
+        v1[i] = vt[i];
+        v2[i] = vt[i+3];
+        v3[i] = vt[i+6];
+    }
     
-    lambda = 1.0/lambda;
+    for(i=0; i <3; i++)
+    {
+        tmp1Vec[i] = v1[i] * sqrt(1.0 -s[2]);
+        tmp2Vec[i] = v3[i] * sqrt(s[0] -1.0);
+        
+    }
     
-    for(i = 0; i <9 ; i++)
-        invC[i] *= lambda;
+    tmp3 = 1.0/(sqrt(s[0]-s[2]));
     
-    //Nomalized R1 & R2
-    r[0] = invC[0] * h[0] + invC[1] * h[1] + invC[2]*  h[2];
-    r[1] = invC[3] * h[0] + invC[4] * h[1] + invC[5] * h[2];
-    r[2] = invC[6] * h[0] + invC[7] * h[1] + invC[8] * h[2];
+    for(i=0; i <3; i++)
+    {
+        u1[i] = tmp3 * (tmp1Vec[i] + tmp2Vec[i]);
+        u2[i] = tmp3 * (tmp1Vec[i] - tmp2Vec[i]);
+    }
     
-
-    r[3] = invC[0] * h[3] + invC[1] * h[4] + invC[2]*  h[5];
-    r[4] = invC[3] * h[3] + invC[4] * h[4] + invC[5] * h[5];
-    r[5] = invC[6] * h[3] + invC[7] * h[4] + invC[8] * h[5];
+    //Set U1
+    [self crossProductVec1:v2 Vec2:u1 vecResult:tmp1Vec];
+    for(i=0; i<3; i++)
+    {
+        U1[i] = v2[i];
+        U1[i+3] = u1[i];
+        U1[i+6] = tmp1Vec[i];
+    }
     
-    //R3 orthonormal to R1 and R2
-    r[6] = r[1] * r[5] - r[2] * r[4];
-    r[7] = r[2] * r[3] - r[0] * r[5];
-    r[8] = r[0] * r[4] - r[1] * r[3];
+    //Set U2
+    [self crossProductVec1:v2 Vec2:u2 vecResult:tmp1Vec];
+    for(i=0; i<3; i++)
+    {
+        U2[i] = v2[i];
+        U2[i+3] = u2[i];
+        U2[i+6] = tmp1Vec[i];
+    }
     
-    transformRt tempRt;
-    tempRt.translation[0] = invC[0] * h[6] + invC[1] * h[7] + invC[2]*  h[8];
-    tempRt.translation[1] = invC[3] * h[6] + invC[4] * h[7] + invC[5] * h[8];
-    tempRt.translation[2] = invC[6] * h[6] + invC[7] * h[7] + invC[8] * h[8];
-
-    tempRt.rotation[0] = r[0];
-    tempRt.rotation[1] = r[3];
-    tempRt.rotation[2] = r[6];
-    tempRt.rotation[3] = r[1];
-    tempRt.rotation[4] = r[4];
-    tempRt.rotation[5] = r[7];
-    tempRt.rotation[6] = r[2];
-    tempRt.rotation[7] = r[5];
-    tempRt.rotation[8] = r[8];
-    self.t_from_H = tempRt;
-
-    //Transform rotation matrix into next orthonormal matrix (Frobenius)
-    [self computeNextOrthonormal];
+    //Set W1
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, v2, 3, 0.0, tmp1Vec, 3);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u1, 3, 0.0, tmp2Vec, 3);
+    [self crossProductVec1:tmp1Vec Vec2:tmp2Vec vecResult:tmp3Vec];
+    for(i=0; i<3; i++)
+    {
+        W1[i] = tmp1Vec[i];
+        W1[i+3] = tmp2Vec[i];
+        W1[i+6] = tmp3Vec[i];
+    }
+    
+    //Set W2
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u2, 3, 0.0, tmp2Vec, 3);
+    [self crossProductVec1:tmp1Vec Vec2:tmp2Vec vecResult:tmp3Vec];
+    for(i=0; i<3; i++)
+    {
+        W2[i] = tmp1Vec[i];
+        W2[i+3] = tmp2Vec[i];
+        W2[i+6] = tmp3Vec[i];
+    }
+    
+    //Result 1
+    [self crossProductVec1:v2 Vec2:u1 vecResult:result1.normal];
+    (result1.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W1, 3, U1, 3, 1.0, result1.rotation, 3);
+    
+    for(i=0; i<3; i++)
+        result1.normal[i] *=sign;
+    for(i=0; i<9; i++)
+        tmpMat[i] = scale* eH[i] - result1.rotation[i];
+    
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result1.normal, 3, 0.0, result1.translation, 3);
+    
+    //Result2
+    [self crossProductVec1:v2 Vec2:u2 vecResult:result2.normal];
+    (result2.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W2, 3, U2, 3, 1.0, result2.rotation, 3);
+    
+    for(i=0; i<3; i++)
+        result2.normal[i] *=sign;
+    for(i=0; i<9; i++)
+        tmpMat[i] = scale* eH[i] - result2.rotation[i];
+    
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result2.normal, 3, 0.0, result2.translation, 3);
+    
+    /*
+    NSLog(@"v1 [%.6f %.6f %.6f]", v1[0], v1[1], v1[2]);
+    NSLog(@"v2 [%.6f %.6f %.6f]", v2[0], v2[1], v2[2]);
+    NSLog(@"v3 [%.6f %.6f %.6f]", v3[0], v3[1], v3[2]);
+    NSLog(@"u1 [%.6f %.6f %.6f]", u1[0], u1[1], u1[2]);
+    NSLog(@"u2 [%.6f %.6f %.6f]", u2[0], u2[1], u2[2]);
+    */
+    
+    self.t_from_H = result1;
+    
     
     return 0;
 }
+
+/*
+-(void) testTransforms
+{
+    
+    NSLog(@"---------------------------------");
+    NSLog(@"normal [%.6f %.6f %.6f]", result1.normal[0], result1.normal[1], result1.normal[2]);
+    NSLog(@"translation [%.6f %.6f %.6f]", result1.translation[0], result1.translation[1], result1.translation[2]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[0], result1.rotation[3], result1.rotation[6]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[1], result1.rotation[4], result1.rotation[7]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[2], result1.rotation[5], result1.rotation[8]);
+    
+    NSLog(@"---------------------------------");
+    NSLog(@"normal [%.6f %.6f %.6f]", result2.normal[0], result2.normal[1], result2.normal[2]);
+    NSLog(@"translation [%.6f %.6f %.6f]", result2.translation[0], result2.translation[1], result2.translation[2]);
+    
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[0], result2.rotation[3], result2.rotation[6]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[1], result2.rotation[4], result2.rotation[7]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[2], result2.rotation[5], result2.rotation[8]);
+    
+    
+}
+
+*/
+
 
 - (bool)isHomographyValid:(cv::Mat &)H withRows:(int)rows withCols:(int)cols
 {
