@@ -63,9 +63,15 @@
         }
     }
     // Don't overwrite if it exists
-    if (![fluxMetadata objectForKey:metadata.localID])
+    FluxScanImageObject *imageObject = [fluxMetadata objectForKey:metadata.localID];
+    if (!imageObject)
     {
         [fluxMetadata setValue:metadata forKey:metadata.localID];
+    }
+    else if (imageObject.imageID < 0 && metadata.imageID >= 0)
+    {
+        // Server has returned a previously local-only metadata object (assigning an imageID). Update.
+        imageObject.imageID = metadata.imageID;
     }
     
     if ((metadata.imageID >= 0) && ([imageIDMapping objectForKey:[NSString stringWithFormat:@"%d",metadata.imageID]] == nil))
