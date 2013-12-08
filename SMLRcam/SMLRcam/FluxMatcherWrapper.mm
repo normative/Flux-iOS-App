@@ -122,15 +122,15 @@
         
         cv::Mat H = cv::findHomography( obj, scene, CV_LMEDS );
         
-        homography[0] = H.at<float>(0,0);
-        homography[1] = H.at<float>(1,0);
-        homography[2] = H.at<float>(2,0);
-        homography[3] = H.at<float>(0,1);
-        homography[4] = H.at<float>(1,1);
-        homography[5] = H.at<float>(2,1);
-        homography[6] = H.at<float>(0,2);
-        homography[7] = H.at<float>(1,2);
-        homography[8] = H.at<float>(2,2);
+        homography[0] = H.at<double>(0,0);
+        homography[1] = H.at<double>(1,0);
+        homography[2] = H.at<double>(2,0);
+        homography[3] = H.at<double>(0,1);
+        homography[4] = H.at<double>(1,1);
+        homography[5] = H.at<double>(2,1);
+        homography[6] = H.at<double>(0,2);
+        homography[7] = H.at<double>(1,2);
+        homography[8] = H.at<double>(2,2);
         
         // Check if homography calculated represents a valid match
         if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
