@@ -816,10 +816,10 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
             // look to see if can trigger load of higher resolution
             for (FluxImageRenderElement *ire in renderList)
             {
-                if ((ire.imageFetchType == none) && (ire.textureMapElement != nil) && (ire.textureMapElement.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
+                if ((ire.imageFetchType == none) && (ire.textureMapElement != nil) && (ire.textureMapElement.imageType < full_res))        // only fetch if we aren't fetching and aren't already showing...
                 {
                     // fetch the quart for this element
-                    ire.imageFetchType = quarterhd;
+                    ire.imageFetchType = full_res;
 
                     [_imageRequestCountLock lock];
                     _imageRequestCountQuart++;
@@ -830,7 +830,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                     dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.imageFetchType = none;
-                        ire.imageRenderType = quarterhd;
+                        ire.imageRenderType = full_res;
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                             object:self userInfo:nil];
@@ -838,7 +838,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                         _imageRequestCountQuart--;
                         [_imageRequestCountLock unlock];
                     };
-                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:quarterhd];
+                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
                     
                     // only request one at a time
                     break;
