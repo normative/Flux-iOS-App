@@ -22,6 +22,9 @@
     double homography[9];
     transformRtn result1;
     transformRtn result2;
+    
+    long ipiv[9];
+    double work[9];
     double ci[9];
     double ciinverse[9];
 }
@@ -225,16 +228,17 @@
     long info = -1;
     long n = dim;
     
-    long * ipiv = (long *)malloc((dim +1) *sizeof (long));
-    double *work = (double*) malloc(dim * dim *sizeof(double));
+    //long * ipiv = (long *)malloc((5 +1) *sizeof (long));
+    //double *work = (double*) malloc(3 * 3 *sizeof(double));
     int i;
     for(i=0;i <9;i++)
         ciinverse[i] = ci[i];
     
-    dgetrf_(&n, &n,ciinverse, &n, ipiv, &info);
-    dgetri_(&n, ciinverse, &n, ipiv, work, &lWork,&info );
+    dgetrf_(&n, &n,ciinverse, &n, &ipiv[0], &info);
+    dgetri_(&n, ciinverse, &n, &ipiv[0], &work[0], &lWork,&info );
     
-    
+    //free(ipiv);
+    //free(work);
     
     return info;
 }
@@ -249,8 +253,8 @@
     
     fx = focalL/pixel;
     fy = focalL/pixel;
-    ox = ((double)rows)/2.0; //quarter hd
-    oy = ((double)cols)/2.0; //quarter hd
+    ox = ((double)cols)/2.0; //quarter hd
+    oy = ((double)rows)/2.0; //quarter hd
     
     ci[0] = -1.0 * fx;
     ci[1] = 0.0;
