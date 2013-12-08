@@ -133,12 +133,12 @@
         homography[8] = H.at<float>(2,2);
         
         // Check if homography calculated represents a valid match
-//        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
-//        {
-//            result = -1;
-//            
-//        }
-//        else
+        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
+        {
+            result = -1;
+            
+        }
+        else
         {
             // Calculate transform_from_H
             result = [self computeRTFromHomography:homography];
@@ -508,31 +508,39 @@
 }
 
 // Determine if line segment (A1,A2) and line segment (B1,B2) intersect
-- (bool)doLinesIntersectWithEndpointA1:(CvPoint)A1 withEndpointA2:(CvPoint)A2 withEndpointB1:(CvPoint)B1 withEndpointB2:(CvPoint)B2
+- (bool)doLinesIntersectWithEndpointA1:(cv::Point2f)A1 withEndpointA2:(cv::Point2f)A2 withEndpointB1:(cv::Point2f)B1 withEndpointB2:(cv::Point2f)B2
 {
-    // Line1 made with endpoints (A1, A2) and Line2 made with endpoints (B1,B2)
-    // If and only if endpoints A1,A2 are on opposite sides of the line (B1,B2)
-    // and endpoints B1,B2 are on opposite sides of the line (A1,A2)
-    // then the line segments intersect.
-    // Can use counter-clockwise relationship of sets of points to test for this
-    if ([self ccwWithPointA:A1 withPointB:B1 withPointC:B2] == [self ccwWithPointA:A2 withPointB:B1 withPointC:B2])
-    {
-        return NO;
-    }
-    else if ([self ccwWithPointA:A1 withPointB:A2 withPointC:B1] == [self ccwWithPointA:A1 withPointB:A2 withPointC:B2])
-    {
-        return NO;
-    }
+    // Use equation of line y=mx+b for each line
+    // Solve for slope and b
+    float m1 = [self slopeOfLineABWithPointA:A1 withPointB:A2];
+    float m2 = [self slopeOfLineABWithPointA:B1 withPointB:B2];
     
-    return YES;
+    // Use one endpoint to calculate b
+    float b1 = A1.y - m1*A1.x;
+    float b2 = B1.y - m2*B1.x;
+    
+    float intersection_x = -(b2 - b1)/(m2 - m1);
+
+    // No guarantee on ordering of A1, A2, B1, and B2. Get lower x coord and upper x coord.
+    float A_x_low = fmin(A1.x, A2.x);
+    float A_x_high = fmax(A1.x, A2.x);
+    float B_x_low = fmin(B1.x, B2.x);
+    float B_x_high = fmax(B1.x, B2.x);
+
+    if ((intersection_x > A_x_low) && (intersection_x < A_x_high) &&
+        (intersection_x > B_x_low) && (intersection_x < B_x_high))
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
 }
 
-// Determine if sequence of points (A,B,C) form a counter-clockwise hull
-- (bool)ccwWithPointA:(CvPoint)A withPointB:(CvPoint)B withPointC:(CvPoint)C
+- (float)slopeOfLineABWithPointA:(cv::Point2f)A withPointB:(cv::Point2f)B
 {
-    float slope_AB = (B.y - A.y) / (B.x - A.x);
-    float slope_AC = (C.y - A.y) / (C.x - A.x);
-    return slope_AB < slope_AC;
+    return (B.y - A.y) / (B.x - A.x);
 }
 
 - (void)testTransformsFromHomography
