@@ -1965,7 +1965,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
-   
+    
+    [self computeRTFromHomography];
+    [self testTransforms];
+    
+
     
     if(self.fluxDisplayManager.locationManager.kflocation.valid ==1)
     {
@@ -1975,7 +1979,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.ecef.z =  self.fluxDisplayManager.locationManager.kflocation.z;
         
         // [self printDebugInfo];
-       
     }
 
 //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
@@ -2392,8 +2395,6 @@ double ciinverse[9];
     work =(double*) malloc(lwork *sizeof(double));
     dgesdd_(jobz, &m, &n, &a[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
    
-    
-    
     free(work);
 }
 
@@ -2435,11 +2436,23 @@ homographyRTn result1, result2;
     double U1[9], U2[9], W1[9], W2[9];
     double sign = 1.0;
     
+    
+    
+    
     //calculate euclidean homography
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, ciinverse, 3, pH, 3, 0.0, tmpMat, 3);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3 , 3, 1.0, tmpMat, 3, ci, 3, 0.0, eH, 3);
-    
-    cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 3, 3, 3, 1.0, eH, 3, eH, 3, 1.0, HtH, 3);
+    //test
+    eH[0] = 1.53205;
+    eH[1] =1.0;
+    eH[2] = 0.0;
+    eH[3] = -0.5;
+    eH[4] = 0.866025;
+    eH[5] = -1.73205;
+    eH[6] = -0.866025;
+    eH[7] = 1.5;
+    eH[8] = 1.0;
+    cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 3, 3, 3, 1.0, eH, 3, eH, 3, 0.0, HtH, 3);
     [self computeSVD33: &HtH[0] U:&u[0] S:&s[0] vT:&vt[0]];
     NSLog(@"SVD s:[%.4f %.4f %.4f ]",s[0], s[1], s[2]);
     
@@ -2453,13 +2466,13 @@ homographyRTn result1, result2;
     scale = sqrt(scaleSq);
     
     for(i = 0; i <3; i++)
-        s[0]*=scaleSq;
+        s[i]*=scaleSq;
     
     for(i=0; i <3; i++)
     {
-        v1[i] = u[i];
-        v2[i] = u[i+3];
-        v3[i] = u[i+6];
+        v1[i] = vt[i];
+        v2[i] = vt[i+3];
+        v3[i] = vt[i+6];
     }
     
     for(i=0; i <3; i++)
@@ -2496,8 +2509,8 @@ homographyRTn result1, result2;
     }
     
     //Set W1
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, v2, 1, 0.0, tmp1Vec, 1);
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u1, 1, 0.0, tmp2Vec, 1);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, v2, 3, 0.0, tmp1Vec, 3);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u1, 3, 0.0, tmp2Vec, 3);
     [self crossProductVec1:tmp1Vec Vec2:tmp2Vec vecResult:tmp3Vec];
     for(i=0; i<3; i++)
     {
@@ -2507,7 +2520,7 @@ homographyRTn result1, result2;
     }
     
     //Set W2
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u2, 1, 0.0, tmp2Vec, 1);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u2, 3, 0.0, tmp2Vec, 3);
     [self crossProductVec1:tmp1Vec Vec2:tmp2Vec vecResult:tmp3Vec];
     for(i=0; i<3; i++)
     {
@@ -2519,26 +2532,37 @@ homographyRTn result1, result2;
     //Result 1
     [self crossProductVec1:v2 Vec2:u1 vecResult:result1.normal];
     (result1.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
-    cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, 3, 3, 3, 1.0, W1, 3, U1, 3, 1.0, result1.rotation, 3);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W1, 3, U1, 3, 1.0, result1.rotation, 3);
     
     for(i=0; i<3; i++)
         result1.normal[i] *=sign;
     for(i=0; i<9; i++)
         tmpMat[i] = scale* eH[i] - result1.rotation[i];
     
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result1.normal, 1, 0.0, result1.translation, 1);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result1.normal, 3, 0.0, result1.translation, 3);
     
     //Result2
     [self crossProductVec1:v2 Vec2:u2 vecResult:result2.normal];
     (result2.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
-    cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, 3, 3, 3, 1.0, W2, 3, U2, 3, 1.0, result2.rotation, 3);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W2, 3, U2, 3, 1.0, result2.rotation, 3);
     
     for(i=0; i<3; i++)
         result2.normal[i] *=sign;
     for(i=0; i<9; i++)
         tmpMat[i] = scale* eH[i] - result2.rotation[i];
     
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result2.normal, 1, 0.0, result2.translation, 1);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result2.normal, 3, 0.0, result2.translation, 3);
+    
+    
+    NSLog(@"v1 [%.6f %.6f %.6f]", v1[0], v1[1], v1[2]);
+    NSLog(@"v2 [%.6f %.6f %.6f]", v2[0], v2[1], v2[2]);
+    NSLog(@"v3 [%.6f %.6f %.6f]", v3[0], v3[1], v3[2]);
+    NSLog(@"u1 [%.6f %.6f %.6f]", u1[0], u1[1], u1[2]);
+    NSLog(@"u2 [%.6f %.6f %.6f]", u2[0], u2[1], u2[2]);
+    
+    
+    
+    
     
     return 0;
 }
@@ -2548,9 +2572,21 @@ homographyRTn result1, result2;
 {
 
     NSLog(@"---------------------------------");
-    NSLog(@"normal [%.2f %.2f %.f]", result1.normal[0], result1.normal[1], result1.normal[2]);
-    NSLog(@"translation [%.2f %.2f %.f]", result1.translation[0], result1.translation[1], result1.translation[2]);
-   
+    NSLog(@"normal [%.6f %.6f %.6f]", result1.normal[0], result1.normal[1], result1.normal[2]);
+    NSLog(@"translation [%.6f %.6f %.6f]", result1.translation[0], result1.translation[1], result1.translation[2]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[0], result1.rotation[3], result1.rotation[6]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[1], result1.rotation[4], result1.rotation[7]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[2], result1.rotation[5], result1.rotation[8]);
+
+    NSLog(@"---------------------------------");
+    NSLog(@"normal [%.6f %.6f %.6f]", result2.normal[0], result2.normal[1], result2.normal[2]);
+    NSLog(@"translation [%.6f %.6f %.6f]", result2.translation[0], result2.translation[1], result2.translation[2]);
+
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[0], result2.rotation[3], result2.rotation[6]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[1], result2.rotation[4], result2.rotation[7]);
+    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[2], result2.rotation[5], result2.rotation[8]);
+    
+
 }
 
 - (IBAction)stepperChanged:(id)sender {
