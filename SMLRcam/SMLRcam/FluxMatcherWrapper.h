@@ -14,6 +14,7 @@
 
 // Wrapper to set scene_image for matching
 -(void)setSceneImage:(UIImage *)sceneImage;
+-(void)setSceneImageNoOrientationChange:(UIImage *)sceneImage;
 
 // Wrapper for: FluxMatcher::match()
 -(void)matchFeatures;

@@ -80,6 +80,13 @@
     scene_img = inputImage;
 }
 
+- (void)setSceneImageNoOrientationChange:(UIImage *)sceneImage
+{
+    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+    
+    scene_img = inputImage;
+}
+
 - (int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
