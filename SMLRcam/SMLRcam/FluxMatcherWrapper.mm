@@ -178,14 +178,8 @@
         for( size_t i = 0; i < matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches
-            cv::Point2f tempObj = keypoints_object[ matches[i].queryIdx ].pt;
-            cv::Point2f tempScene = keypoints_scene[ matches[i].trainIdx ].pt;
-            tempObj.x = tempObj.x - object_img.cols/2;
-            tempObj.y = tempObj.y - object_img.rows/2;
-            tempScene.x = tempScene.x - scene_img.cols/2;
-            tempScene.y = tempScene.y - scene_img.rows/2;
-            obj.push_back( tempObj );
-            scene.push_back( tempScene );
+            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt );
+            scene.push_back( keypoints_scene[ matches[i].trainIdx ].pt );
         }
         
         cv::Mat H = cv::findHomography( obj, scene, CV_LMEDS );
