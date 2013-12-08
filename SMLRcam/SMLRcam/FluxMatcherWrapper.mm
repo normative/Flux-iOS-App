@@ -133,12 +133,12 @@
         homography[8] = H.at<float>(2,2);
         
         // Check if homography calculated represents a valid match
-        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
-        {
-            result = -1;
-            
-        }
-        else
+//        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
+//        {
+//            result = -1;
+//            
+//        }
+//        else
         {
             // Calculate transform_from_H
             result = [self computeRTFromHomography:homography];
