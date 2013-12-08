@@ -44,6 +44,9 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 //used for image capture
 - (void) addCameraDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image;
 
+// non-blocking calls for local cache metadata operations
+- (FluxScanImageObject *) getMetadataObjectFromCacheWithLocalID:(FluxLocalID *)localID;
+
 // Returns the Request ID if request is successful, otherwise nil
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate
                                     withRadius:(float)radius

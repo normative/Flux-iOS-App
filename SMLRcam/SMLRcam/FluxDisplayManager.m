@@ -528,7 +528,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                         if (curImgRenderObj == nil)
                         {
                             // still not found so add new entry
-                            curImgRenderObj = [[FluxImageRenderElement alloc]initWithImageObject:curImgObj];
+                            FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
+                            curImgRenderObj = [[FluxImageRenderElement alloc]initWithImageObject:cachedMetadata];
                             [_fluxNearbyMetadata setObject:curImgRenderObj forKey:curImgObj.localID];
                         }
                     }
@@ -558,7 +559,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                     {
                         // update lastrefd time, metadata, set dirty
                         curImgRenderObj.lastReferenced = [[NSDate alloc]init];
-                        curImgRenderObj.imageMetadata = curImgObj;
+                        FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
+                        curImgRenderObj.imageMetadata = cachedMetadata;
                     }
                     
                     // copy to nearbyList

@@ -160,6 +160,10 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return nil;
 }
 
+- (FluxScanImageObject *) getMetadataObjectFromCacheWithLocalID:(NSString *)localID
+{
+    return [fluxDataStore getMetadataWithLocalID:localID];
+}
 
 
 #pragma mark - Image Queries
