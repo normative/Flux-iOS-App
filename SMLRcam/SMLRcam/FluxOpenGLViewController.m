@@ -10,7 +10,7 @@
 #import "FluxScanViewController.h"
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
-
+#import <Accelerate/Accelerate.h>
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #pragma mark - OpenGL globals and types
@@ -2320,6 +2320,238 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
 }
 
+double ci[9];
+double ciinverse[9];
+//using column major ordering
+
+-(int) invertCameraIntrinsics
+{
+    int dim = 3;
+    long lWork = dim * dim;
+    long info = -1;
+    long n = dim;
+   
+    long * ipiv = malloc((dim +1) *sizeof (long));
+     double *work = malloc(dim * dim *sizeof(double));    int i;
+    for(i=0;i <9;i++)
+        ciinverse[i] = ci[i];
+    
+    dgetrf_(&n, &n,ciinverse, &n, ipiv, &info);
+    dgetri_(&n, ciinverse, &n, ipiv, work, &lWork,&info );
+    
+   
+    
+    return info;
+}
+
+- (void)setCameraIntrinsics
+{
+    double pixel = 0.0000014; //1.4 microns Pixel Size for iPhone5
+    double fx, fy;
+    double ox, oy;
+    
+    float focalL = 0.0041; //4.10 mm iPhone5
+    
+    fx = focalL/pixel;
+    fy = focalL/pixel;
+    ox = 1080.0/2.0; //quarter hd
+    oy = 1920.0/2.0; //quarter hd
+    
+    ci[0] = -1.0 * fx;
+    ci[1] = 0.0;
+    ci[2] = 0.0;
+    ci[3] = 0.0;
+    ci[4] = -1.0 * fy;
+    ci[5] = 0.0;
+    ci[6] = ox;
+    ci[7] = oy;
+    ci[8] = 1.0;
+    
+    [self invertCameraIntrinsics];
+    
+}
+
+- (void)computeSVD33: (double*)a U:(double*)u S:(double*)s vT:(double*) vt
+{
+    long m = 3;
+    long n = 3;
+    long lda= 3;
+    
+    //column major for lapack
+    
+    double workSize;
+    double *work = &workSize;
+    long lwork = -1;
+    long iwork[24];
+    long info = 0;
+    char jobz[1];
+    jobz[0] = 'A';
+    dgesdd_(jobz, &m, &n, &a[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
+    NSLog(@"workSize = %f", workSize);
+    lwork = workSize;
+    work =(double*) malloc(lwork *sizeof(double));
+    dgesdd_(jobz, &m, &n, &a[0], &lda, s, u, &m, vt, &n, work, &lwork, iwork, &info);
+   
+    
+    
+    free(work);
+}
+
+//u X v
+-(void) crossProductVec1:(double*) u Vec2:(double*) v vecResult:(double *) r
+{
+    r[0] = u[1]*v[2] - u[2] * v[1];
+    r[1] = u[2]*v[0] - u[0] * v[2];
+    r[2] = u[0]*v[1] - u[1] * v[0];
+}
+
+typedef struct
+{
+    double normal[3];
+    double translation[3];
+    double rotation[9];//col major
+}homographyRTn;
+
+homographyRTn result1, result2;
+
+
+-(int) computeRTFromHomography
+{
+    double pH[9]; //projective homography set this in OpenCV
+    double tmpMat[9];
+    double eH[9]; //Euclidean Homography
+    double HtH[9];
+    double s[3];
+    double u[9];
+    double vt[9];
+    double scale;
+    double scaleSq;
+    double tmp3;
+    double tmp1Vec[3];
+    double tmp2Vec[3];
+    double tmp3Vec[3];
+    int i;
+    double u1[3], u2[3], v1[3], v2[3], v3[3];
+    double U1[9], U2[9], W1[9], W2[9];
+    double sign = 1.0;
+    
+    //calculate euclidean homography
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, ciinverse, 3, pH, 3, 0.0, tmpMat, 3);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3 , 3, 1.0, tmpMat, 3, ci, 3, 0.0, eH, 3);
+    
+    cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 3, 3, 3, 1.0, eH, 3, eH, 3, 1.0, HtH, 3);
+    [self computeSVD33: &HtH[0] U:&u[0] S:&s[0] vT:&vt[0]];
+    NSLog(@"SVD s:[%.4f %.4f %.4f ]",s[0], s[1], s[2]);
+    
+    if(s[0]-s[2]< 1e-5)
+    {
+        NSLog(@"cannot compute transfroms no relative motion");
+        return -1;
+    }
+        
+    scaleSq = 1.0/s[1];
+    scale = sqrt(scaleSq);
+    
+    for(i = 0; i <3; i++)
+        s[0]*=scaleSq;
+    
+    for(i=0; i <3; i++)
+    {
+        v1[i] = u[i];
+        v2[i] = u[i+3];
+        v3[i] = u[i+6];
+    }
+    
+    for(i=0; i <3; i++)
+    {
+        tmp1Vec[i] = v1[i] * sqrt(1.0 -s[2]);
+        tmp2Vec[i] = v3[i] * sqrt(s[0] -1.0);
+        
+    }
+    
+    tmp3 = 1.0/(sqrt(s[0]-s[2]));
+    
+    for(i=0; i <3; i++)
+    {
+      u1[i] = tmp3 * (tmp1Vec[i] + tmp2Vec[i]);
+      u2[i] = tmp3 * (tmp1Vec[i] - tmp2Vec[i]);
+    }
+    
+    //Set U1
+    [self crossProductVec1:v2 Vec2:u1 vecResult:tmp1Vec];
+    for(i=0; i<3; i++)
+    {
+        U1[i] = v2[i];
+        U1[i+3] = u1[i];
+        U1[i+6] = tmp1Vec[i];
+    }
+    
+    //Set U2
+    [self crossProductVec1:v2 Vec2:u2 vecResult:tmp1Vec];
+    for(i=0; i<3; i++)
+    {
+        U2[i] = v2[i];
+        U2[i+3] = u2[i];
+        U2[i+6] = tmp1Vec[i];
+    }
+    
+    //Set W1
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, v2, 1, 0.0, tmp1Vec, 1);
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u1, 1, 0.0, tmp2Vec, 1);
+    [self crossProductVec1:tmp1Vec Vec2:tmp2Vec vecResult:tmp3Vec];
+    for(i=0; i<3; i++)
+    {
+        W1[i] = tmp1Vec[i];
+        W1[i+3] = tmp2Vec[i];
+        W1[i+6] = tmp3Vec[i];
+    }
+    
+    //Set W2
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, scale, eH, 3, u2, 1, 0.0, tmp2Vec, 1);
+    [self crossProductVec1:tmp1Vec Vec2:tmp2Vec vecResult:tmp3Vec];
+    for(i=0; i<3; i++)
+    {
+        W2[i] = tmp1Vec[i];
+        W2[i+3] = tmp2Vec[i];
+        W2[i+6] = tmp3Vec[i];
+    }
+    
+    //Result 1
+    [self crossProductVec1:v2 Vec2:u1 vecResult:result1.normal];
+    (result1.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, 3, 3, 3, 1.0, W1, 3, U1, 3, 1.0, result1.rotation, 3);
+    
+    for(i=0; i<3; i++)
+        result1.normal[i] *=sign;
+    for(i=0; i<9; i++)
+        tmpMat[i] = scale* eH[i] - result1.rotation[i];
+    
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result1.normal, 1, 0.0, result1.translation, 1);
+    
+    //Result2
+    [self crossProductVec1:v2 Vec2:u2 vecResult:result2.normal];
+    (result2.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    cblas_dgemm(CblasColMajor, CblasTrans, CblasTrans, 3, 3, 3, 1.0, W2, 3, U2, 3, 1.0, result2.rotation, 3);
+    
+    for(i=0; i<3; i++)
+        result2.normal[i] *=sign;
+    for(i=0; i<9; i++)
+        tmpMat[i] = scale* eH[i] - result2.rotation[i];
+    
+    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result2.normal, 1, 0.0, result2.translation, 1);
+    
+    return 0;
+}
+
+
+-(void) testTransforms
+{
+
+    NSLog(@"---------------------------------");
+    NSLog(@"normal [%.2f %.2f %.f]", result1.normal[0], result1.normal[1], result1.normal[2]);
+    NSLog(@"translation [%.2f %.2f %.f]", result1.translation[0], result1.translation[1], result1.translation[2]);
+   
+}
 
 - (IBAction)stepperChanged:(id)sender {
     
