@@ -34,8 +34,6 @@
         fluxMatcherEngine = [[FluxMatcherWrapper alloc] init];
     }
     
-    [self testMatchingRoutine];
-
     return self;
 }
 
@@ -57,25 +55,7 @@
     
     if ([fluxMatcherEngine matchAndCalculateTransformsWithRotation:rotation withTranslation:translation] == 0)
     {
-//        self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
-//        
-//        sensorPose imagePose = self.matchRecord.ire.imageMetadata.imageHomographyPose;
-//        
-//        [self computeImagePoseInECEF:&imagePose
-//                            userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
-//                        hTranslation: translation
-//                           hRotation: rotation];
-//        
-//        self.matchRecord.ire.imageMetadata.imageHomographyPose = imagePose;
-//        
-//        // Flag to use homography for rendering of image
-//        self.matchRecord.ire.imageMetadata.location_data_type = location_data_from_homography;
-//        
-//        // Update match information
-//        self.matchRecord.ire.imageMetadata.matched = YES;   // This one goes in the FluxDataStore cache
-//        self.matchRecord.matched = YES;                     // This one is just quick access for the record
     }
-
 }
 
 - (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview
