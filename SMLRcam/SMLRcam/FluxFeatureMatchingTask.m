@@ -64,6 +64,8 @@
             
             self.matchRecord.ire.imageMetadata.imageHomographyPose = imagePose;
             
+            // Flag to use homography for rendering of image
+            self.matchRecord.ire.imageMetadata.location_data_type = location_data_from_homography;
         
             // Update match information
             self.matchRecord.ire.imageMetadata.matched = YES;   // This one goes in the FluxDataStore cache
