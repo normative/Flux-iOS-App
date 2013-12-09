@@ -2,6 +2,22 @@ Release Notes:
 
 ******************************************
 
+V0.13 B16
+
+Released: 2013-12-06 22:15:00
+
+Release Notes:
+- Add check to ensure new metadata records don’t overwrite existing records.
+- Re-enable incident angle checks with a threshold value of 45 degrees.
+- data filter icon bug fix
+- selected tags crash fix
+- Added an alert on BOOM button hit.
+- image for User, app icon, profile for user, some assets updated
+- Change compass to use locationManager.orientationHeading rather than raw GPS heading.
+- Add user pose and orientation-based device heading to LocationSingleton.
+
+******************************************
+
 V0.13 B15
 
 Released: 2013-12-05 17:30:00

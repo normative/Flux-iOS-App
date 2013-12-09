@@ -62,7 +62,12 @@
             NSLog(@"%s: Shouldn't get here. imageID has invalid value and localID not set.", __func__);
         }
     }
-    [fluxMetadata setValue:metadata forKey:metadata.localID];
+    
+    // check cache first to see if exists.  If does, then do nothing else add to cache
+    if ([fluxMetadata objectForKey:metadata.localID] == nil)
+    {
+        [fluxMetadata setObject:metadata forKey:metadata.localID];
+    }
     
     if ((metadata.imageID >= 0) && ([imageIDMapping objectForKey:[NSString stringWithFormat:@"%d",metadata.imageID]] == nil))
     {

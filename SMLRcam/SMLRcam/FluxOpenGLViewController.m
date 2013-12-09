@@ -1004,10 +1004,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 
     relUserHeading = theta;
-    absUserHeading = self.fluxDisplayManager.locationManager.heading;
 
-//    while (relUserHeading < 0.0)
-//        relUserHeading += 360.0;
+    while (relUserHeading < 0.0)
+        relUserHeading += 360.0;
+
+    absUserHeading = relUserHeading;
+//    absUserHeading = self.fluxDisplayManager.locationManager.heading;
+
     
 //    NSLog(@"Relative User Heading: %f, gps user heading: %f", relUserHeading, self.fluxDisplayManager.locationManager.heading);
     
@@ -1125,9 +1128,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
             ire.imageMetadata.relHeading = theta;
 
-            // now calculate incident angle of camera to projection cylinder and filter if outside threshold
+            // now calculate angle between camera LOS and perpendicular to cylinder at camera LOS intersection point
             x1 = vp.origin.x - xi;
-            y2 = vp.origin.y - yi;
+            y1 = vp.origin.y - yi;
             x2 = -xi;
             y2 = -yi;
             
@@ -1143,6 +1146,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
             if (theta > maxIncidentThreshold)
             {
+//                NSLog(@"Removing id %@, incident angle %f > threshold, rh: %f, uh: %f", ire.localID, theta, ire.imageMetadata.relHeading, absUserHeading);
+//                NSLog(@"cam origin:(%f, %f), cam at: (%f, %f), cam intersect: %f, %f)", vp.origin.x, vp.origin.y, vp.at.x, vp.at.y, xi, yi);
+//                NSLog(@"1: (%f, %f), 2: (%f, %f)", x1, y1, x2, y2);
                 [removeList addObject:ire];
             }
             
@@ -1872,7 +1878,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             }
 //            else
 //            {
-//                NSLog(@"Not binding texture from slot %d, id %@", i, ire.localID);
+//                NSLog(@"Not binding texture from slot %d, id %@, used: %@, texture!=nil: %@, valid meta=(1): %d", i, ire.localID, ire.textureMapElement.used?@"Yes":@"No",(_texture[i]!=nil)?@"Yes":@"No", _validMetaData[i] );
 //            }
         }
     }

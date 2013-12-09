@@ -20,7 +20,7 @@ const int maxRequestCountThumb = 5;
 const double minMoveDistanceThreshold = 1.0;
 const NSTimeInterval maxMoveTimeThreshold = 5.0;
 
-const double maxIncidentThreshold = 360.0;
+const double maxIncidentThreshold = 45.0;
 
 NSString* const FluxDisplayManagerDidUpdateDisplayList = @"FluxDisplayManagerDidUpdateDisplayList";
 NSString* const FluxDisplayManagerDidUpdateNearbyList = @"FluxDisplayManagerDidUpdateNearbyList";
@@ -31,7 +31,6 @@ NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManag
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
 const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image requesting
-
 
 
 @implementation FluxDisplayManager
@@ -143,6 +142,9 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     
     dist = [self haversineBetweenPosition1:newPose andPosition2:lastMotionPose];
     //[self testHaversine];
+    
+//    NSLog(@"New location: lat: %f, lon: %f, alt: %f, dist from last: %f", newPose.position.x, newPose.position.y, newPose.position.z, dist);
+//    NSLog(@"New location: lat: %f, lon: %f, alt: %f", newPose.position.x, newPose.position.y, newPose.position.z);
     
     NSDate *now = [NSDate date];
     NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:lastMotionTime];

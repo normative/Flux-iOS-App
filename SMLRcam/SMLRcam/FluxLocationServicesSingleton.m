@@ -7,6 +7,7 @@
 //
 
 #import "FluxLocationServicesSingleton.h"
+#import "FluxMotionManagerSingleton.h"
 
 NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
@@ -96,6 +97,30 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     locationManager.headingOrientation = orientation;
 }
 
+- (void)updateUserPose
+{
+    sensorPose localUserPose;
+    FluxMotionManagerSingleton *motionManager = [FluxMotionManagerSingleton sharedManager];
+    
+    CMAttitude *att = motionManager.attitude;
+    
+    GLKQuaternion quat = GLKQuaternionMake(att.quaternion.x, att.quaternion.y, att.quaternion.z, att.quaternion.w);
+    localUserPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
+    
+    //_userPose.rotationMatrix = att.rotationMatrix;
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
+    localUserPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, localUserPose.rotationMatrix);
+    
+    localUserPose.position.x =self.location.coordinate.latitude;
+    localUserPose.position.y =self.location.coordinate.longitude;
+    localUserPose.position.z =self.location.altitude;
+    
+    [self WGS84_to_ECEF:&localUserPose];
+    
+    _userPose = localUserPose;
+    
+}
+
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations{
     // Grab last entry for now, since we should be getting all of them
@@ -155,8 +180,9 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 //    // HACK
 //    // force location value to eliminate GPS from equation...
 ////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324796, -79.813148);   // Burlington office
+//    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324841, -79.81314);   // Burlington office
 ////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.324722, -79.812943);     // end of driveway
-//    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.65337, -79.40658);     // Normative office
+////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.65337, -79.40658);     // Normative office
 ////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.325796, -79.813148);   // 20 images for time scroll
 ////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.326796, -79.813148);   // ??
 ////    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(43.327796, -79.813148);   // ??
@@ -187,8 +213,6 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     [self setMeasurementWithLocation:self.location];
     [self ComputeGeodecticFromkfECEF:&kfgeolocation];
     
-    
-    
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
       newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
@@ -201,6 +225,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         self.location = newLocation;
     }
     
+    [self updateUserPose];
+    
     // Notify observers of updated position
     if (self.location != nil)
     {
@@ -209,11 +235,46 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading {
+- (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
+{
     if (newHeading.headingAccuracy < 0)
         return;
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
+
+    // now compute orientationHeading based on current device orientation
+    [self updateUserPose];
+    sensorPose localUserPose = _userPose;
+    
+    viewParameters localUserVp;
+    
+    // calculate angle between user's viewpoint and North
+    [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
+    
+    
+    double x1 = 0.0;
+    double y1 = 1.0;
+    double x2 = localUserVp.at.x;
+    double y2 = localUserVp.at.y;
+    double dotx = (x1 * x2);
+    double doty = (y1 * y2);
+    
+    double scalar = dotx + doty;
+    double magsq1 = x1 * x1 + y1 * y1;
+    double magsq2 = x2 * x2 + y2 * y2;
+    
+    double costheta = (scalar) / sqrt(magsq1 * magsq2);
+    double theta = acos(costheta) * 180.0 / M_PI;
+    
+    if (x2 < 0)
+    {
+        theta = -theta;
+    }
+    
+    while (theta < 0.0)
+        theta += 360.0;
+    
+    self.orientationHeading = theta;
     
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
@@ -676,6 +737,36 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     //[self printDebugInfo];
     // [self ecefToWGS84KF];
 }
+
+- (int) computeTangentParametersForUserPose:(sensorPose *)usp toViewParameters:(viewParameters *)vp
+{
+    //    viewParameters viewP;
+	GLKVector3 positionTP;
+    positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    
+//    setParametersTP(usp->position);   // empty function
+    
+    [self WGS84_to_ECEF:usp];
+    
+//    tangentplaneRotation(usp);        // teM result not used here
+    
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    zRay = GLKVector3Normalize(zRay);
+    
+    GLKVector3 v = GLKMatrix4MultiplyVector3(usp->rotationMatrix, zRay);
+    
+    //NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
+    
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(v);
+    
+    (*vp).origin = GLKVector3Add(positionTP, P0);
+    (*vp).at = V;
+    (*vp).up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    
+    return 0;
+}
+
 
 #pragma mark - test and debug filter
 

@@ -61,11 +61,14 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     int _validInitLocationData;
     
     double _horizontalAccuracy;
+    
+    sensorPose _userPose;
 
 }
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocation* rawlocation;
 @property (nonatomic) CLLocationDirection heading;
+@property (nonatomic) CLLocationDirection orientationHeading;
 @property (nonatomic) CLPlacemark* placemark;
 
 @property (nonatomic) NSString* sublocality;
