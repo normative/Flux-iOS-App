@@ -83,10 +83,17 @@
     }
 }
 
--(void)whenLoginUserComplete:(NSString *)token withDataRequest:(FluxDataRequest *)completeDataRequest{
+-(void)whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.loginUserComplete)
     {
-        self.loginUserComplete(token,completeDataRequest);
+        self.loginUserComplete(userObject,completeDataRequest);
+    }
+}
+
+-(void)whenCameraPostCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.postCameraComplete)
+    {
+        self.postCameraComplete(completeDataRequest);
     }
 }
 

@@ -14,6 +14,7 @@
 #import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxCameraObject.h"
 
 extern NSString* const FluxDataManagerDidAcquireNewImage;
 extern NSString* const FluxDataManagerDidDownloadImage;
@@ -75,6 +76,8 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                    withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) loginUser:(FluxUserObject *)userObject
                   withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) postCamera:(FluxCameraObject *)cameraObject
+              withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestUserProfileForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestUserProfilePicForID:(int)userID andSize:(NSString*)size

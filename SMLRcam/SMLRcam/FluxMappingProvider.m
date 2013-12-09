@@ -85,6 +85,18 @@
     return mapping;
 }
 
++ (RKObjectMapping *)cameraPostMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"userID":            @"user_id",
+                                                  @"deviceID":   @"deviceid",
+                                                  @"model":    @"model"
+                                                  }];
+    
+    return mapping;
+}
+
 #pragma mark - Tag Mapping
 
 + (RKObjectMapping *)tagGetMapping{

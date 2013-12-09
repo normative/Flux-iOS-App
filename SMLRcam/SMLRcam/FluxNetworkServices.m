@@ -57,10 +57,10 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                                statusCodes:statusCodes];
         
         
-//        RKRequestDescriptor *userRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
-//                                                                                           objectClass:[FluxUserObject class]
-//                                                                                           rootKeyPath:nil
-//                                                                                                method:RKRequestMethodPOST];
+        RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
+                                                                                           objectClass:[FluxCameraObject class]
+                                                                                           rootKeyPath:@"camera"
+                                                                                                method:RKRequestMethodPOST];
         
         RKRequestDescriptor *userRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPOSTMapping]
                                                                                            objectClass:[FluxUserObject class]
@@ -70,7 +70,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
         
         
         [objectManager addRequestDescriptor:userRequestDescriptor];
-        //[objectManager addRequestDescriptor:userRequestDescriptor];
+        [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
         
@@ -389,10 +389,31 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
          {
              FluxUserObject*userObj = [result firstObject];
              NSLog(@"Successfuly logged in with token %@",userObj.auth_token);
-             if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUserWithtoken:andRequestID:)])
+             if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUser:andRequestID:)])
              {
-                 [delegate NetworkServices:self didLoginUserWithtoken:userObj.auth_token andRequestID:requestID];
+                 [delegate NetworkServices:self didLoginUser:userObj andRequestID:requestID];
              }
+         }
+     }
+        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+         }
+     }];
+}
+
+- (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID{
+    [[RKObjectManager sharedManager] postObject:cameraObject path:@"/cameras" parameters:nil
+     
+        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithRequestID:)])
+         {
+             [delegate NetworkServices:self didPostCameraWithRequestID:requestID];
          }
      }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
