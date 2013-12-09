@@ -47,6 +47,9 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 // non-blocking calls for local cache metadata operations
 - (FluxScanImageObject *) getMetadataObjectFromCacheWithLocalID:(FluxLocalID *)localID;
 
+// Reset all cached feature matching quantities
+- (void)resetAllFeatureMatches;
+
 // Returns the Request ID if request is successful, otherwise nil
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate
                                     withRadius:(float)radius

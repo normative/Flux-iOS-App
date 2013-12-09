@@ -8,9 +8,11 @@
 
 #import "FluxLocationServicesSingleton.h"
 
+NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
 NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
 NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocationServicesSingletonDidUpdatePlacemark";
+
 #define PI M_PI
 #define a_WGS84 6378137.0
 #define b_WGS84 6356752.3142
@@ -618,6 +620,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 {
     
 }
+
 -(void) resetKFilter
 {
     _kfInit.position.x = _kfMeasure.position.x;
@@ -627,7 +630,11 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     kfStarted = true;
     [self computeKInitKFilter];
     [kfilter resetKalmanFilter];
+    
+    // Post notification of Kalman reset
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidResetKalmanFilter object:self];
 }
+
 -(void) updateKFilter
 {
     //NSString *stepS = [NSString stringWithFormat:@"%d",stepcount];

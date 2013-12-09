@@ -93,6 +93,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
     }
     
     return self;
@@ -161,7 +162,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     }
 }
 
-#pragma mark - Matching
+#pragma mark - Feature Matching
 
 - (void)didMatchImage:(NSNotification *)notification
 {
@@ -170,6 +171,12 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     FluxScanImageObject *imageObject = userInfoDict[@"matchedImageObject"];
 
     [self calculateTimeAdjustedImageList];
+}
+
+- (void)didResetKalmanFilter:(NSNotification *)notification
+{
+    NSLog(@"Kalman Reset: All cached quantities being reset.");
+    [self.fluxDataManager resetAllFeatureMatches];
 }
 
 #pragma mark - Filter
