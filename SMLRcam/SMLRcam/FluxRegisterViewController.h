@@ -31,6 +31,7 @@
     
     NSMutableArray*textInputElements;
     BOOL isInSignUp;
+    BOOL shouldErase;
     
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;

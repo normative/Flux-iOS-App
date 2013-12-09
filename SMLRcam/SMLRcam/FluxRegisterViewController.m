@@ -17,7 +17,7 @@
 
 
 #define ERROR_TITLE_MSG @"Uh oh..."
-#define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the settings app to sign in with Twitter"
+#define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the Settings app to sign in with Twitter"
 #define ERROR_PERM_ACCESS @"We weren't granted access your twitter accounts"
 #define ERROR_OK @"OK"
 
@@ -196,6 +196,9 @@
     cell.textField.textAlignment = NSTextAlignmentCenter;
     [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
     [cell.textLabel setTextColor:[UIColor whiteColor]];
+    if (shouldErase) {
+        [cell.textField setText:@""];
+    }
     return cell;
 }
 
@@ -234,7 +237,7 @@
 
 - (void)socialPartner:(NSString*)partner didAuthenticateWithToken:(NSString*)token andUserInfo:(NSDictionary*)userInfo{
     
-    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome Friend" message:[NSString stringWithFormat:@"You (%@) successfully logged in with %@.",[userInfo objectForKey:@"username"],partner]  delegate:self cancelButtonTitle:@"Coool" otherButtonTitles: nil];
+    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome Friend" message:[NSString stringWithFormat:@"You (%@) successfully logged in with %@.",[userInfo objectForKey:@"username"],partner]  delegate:nil cancelButtonTitle:@"Coool" otherButtonTitles: nil];
     [alert becomeFirstResponder];
     [alert show];
     
@@ -368,7 +371,7 @@
                          if (!error) {
                              
                              NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:user.username, @"username", nil];
-                             [self socialPartner:@"Twitter" didAuthenticateWithToken:FBSession.activeSession.accessTokenData.accessToken andUserInfo:userInfo];
+                             [self socialPartner:@"Facebook" didAuthenticateWithToken:FBSession.activeSession.accessTokenData.accessToken andUserInfo:userInfo];
                          }
 
                          else{
@@ -555,6 +558,12 @@
 }
 
 - (IBAction)loginSignupToggleAction:(id)sender {
+    
+    if (![createLoginButton translatesAutoresizingMaskIntoConstraints]) {
+        [createLoginButton removeFromSuperview];
+        [createLoginButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+        [loginElementsContainerView addSubview:createLoginButton];
+    }
     if (isInSignUp) {
         isInSignUp = NO;
         [textInputElements removeObjectAtIndex:2];
@@ -562,16 +571,22 @@
         [self performSelector:@selector(reloadTheRow) withObject:nil afterDelay:0.0];
         [loginTogglePromptLabel setText:@"Don't have an acount yet?"];
         [loginToggleButton setTitle:@"Sign up!" forState:UIControlStateNormal];
+        [loginToggleButton setEnabled:NO];
         
         [UIView setAnimationsEnabled:NO];
         [createLoginButton setTitle:@"Sign in" forState:UIControlStateNormal];
         [UIView setAnimationsEnabled:YES];
         
-        [UIView animateWithDuration:0.2 animations:^{
+        
+        
+        [UIView animateWithDuration:0.3 animations:^{
             [twitterButton setAlpha:0.0];
             [facebookButton setAlpha:0.0];
             [topSeparator setAlpha:0.0];
-        } completion:nil];
+            [signInOptionsLabel setAlpha:0.0];
+        } completion:^(BOOL finished){
+            [loginToggleButton setEnabled:YES];
+        }];
     }
     else{
         isInSignUp = YES;
@@ -580,17 +595,21 @@
         [self performSelector:@selector(reloadTheRow) withObject:nil afterDelay:0.0];
         [loginTogglePromptLabel setText:@"Already have an Account?"];
         [loginToggleButton setTitle:@"Sign in!" forState:UIControlStateNormal];
+        [loginToggleButton setEnabled:NO];
         
         [UIView setAnimationsEnabled:NO];
         [createLoginButton setTitle:@"Create Account" forState:UIControlStateNormal];
         [UIView setAnimationsEnabled:YES];
 
         
-        [UIView animateWithDuration:0.2 animations:^{
+        [UIView animateWithDuration:0.3 animations:^{
             [twitterButton setAlpha:1.0];
             [facebookButton setAlpha:1.0];
             [topSeparator setAlpha:1.0];
-        } completion:nil];
+            [signInOptionsLabel setAlpha:1.0];
+        } completion:^(BOOL finished){
+            [loginToggleButton setEnabled:YES];
+        }];
     }
 }
 
@@ -616,17 +635,21 @@
         [UIView animateWithDuration:0.3  animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             if (self.view.bounds.size.height < 500) {
-                [logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+                [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
             }
-            [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+            else{
+                [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+            }
         }];
     }
     else{
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         if (self.view.bounds.size.height < 500) {
-            [logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+            [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
         }
-        [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+        else{
+            [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+        }
     }
 }
 
@@ -635,8 +658,7 @@
         [UIView animateWithDuration:0.5 animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             if (self.view.bounds.size.height < 500) {
-                [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2), self.view.center.y, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
-                [logoImageView setCenter:CGPointMake(self.view.center.x, 50)];
+                [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
             }
             else{
                 [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
@@ -646,8 +668,7 @@
     else{
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         if (self.view.bounds.size.height < 500) {
-            [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2), self.view.center.y, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
-            [logoImageView setCenter:CGPointMake(self.view.center.x, 50)];
+            [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
         }
         else{
             [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
@@ -705,6 +726,16 @@
     }
 }
 
+- (BOOL)keyboardIsVisible{
+    for (int i = 0; i<textInputElements.count; i++) {
+        FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        if ([cell.textField isFirstResponder]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 -(BOOL) NSStringIsValidEmail:(NSString *)checkString
 {
     BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
@@ -716,7 +747,9 @@
 }
 
 - (void)reloadTheRow{
+    shouldErase = YES;
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    shouldErase = NO;
 }
 
 @end
