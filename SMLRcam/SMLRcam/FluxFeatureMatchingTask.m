@@ -143,8 +143,21 @@
     rotation44[15]= 1.0;
 
     iPose->rotationMatrix = GLKMatrix4MakeWithArray(rotation44);
-
-    //position
+    
+    //reference frame crap
+    
+//    GLKMatrix4 matrixRZ = GLKMatrix4MakeRotation(M_PI/2, 0.0,0.0, 1.0);
+//    GLKMatrix4 matrixRY = GLKMatrix4MakeRotation(M_PI, 0.0,1.0, 0.0);
+//    GLKMatrix4 matrixRYZ = GLKMatrix4Multiply(matrixRY, matrixRZ);
+//    //t plane
+//    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
+//
+//    GLKMatrix4 matrixTPYZ = GLKMatrix4Multiply(matrixRYZ, matrixTP);
+//    
+//    matrixTPYZ =GLKMatrix4Identity;
+//    
+//    iPose->rotationMatrix = GLKMatrix4Multiply(matrixTPYZ, iPose->rotationMatrix);
+    
     
     [self computeInverseRotationMatrixFromPose:&upose];
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
@@ -152,6 +165,8 @@
     positionTP.x = translation[0];
     positionTP.y = translation[1];
     positionTP.z = translation[2];
+    
+//    positionTP = GLKMatrix4MultiplyVector3(matrixTPYZ, positionTP);
     positionTP = GLKMatrix4MultiplyVector3(inverseRotation_teM, positionTP);
  
     iPose->ecef.x = upose.ecef.x + positionTP.x;
