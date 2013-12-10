@@ -1858,18 +1858,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
     }
     
-    // Spin through list of elements and see if any are failed matches. Retry.
-    for (FluxImageRenderElement *ire in self.renderList)
-    {
-        if (ire.imageMetadata.matchFailed && [[NSDate date] timeIntervalSinceDate:ire.imageMetadata.matchFailureTime] > 2.0)
-        {
-            // Reset failure state so it doesn't get queued up again until matching is complete or fails again
-            ire.imageMetadata.matchFailed = NO;
-
-            // Only add object image + metadata to queue - scene object will be grabbed by matcher
-            [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
-        }
-    }
+    [self retryFailedMatches];
     
     for (FluxTextureToImageMapElement *tel in self.textureMap)
     {
