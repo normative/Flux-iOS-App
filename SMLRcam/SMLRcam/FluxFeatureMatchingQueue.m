@@ -53,7 +53,7 @@
     UIImage *test = [fluxMatcherEngine matchAndDrawFeatures];
     UIImageWriteToSavedPhotosAlbum(test, nil, nil, nil);
     
-    if ([fluxMatcherEngine matchAndCalculateTransformsWithRotation:rotation withTranslation:translation] == 0)
+    if ([fluxMatcherEngine matchAndCalculateTransformsWithRotation:rotation withTranslation:translation withDebugImage:NO] == 0)
     {
     }
 }

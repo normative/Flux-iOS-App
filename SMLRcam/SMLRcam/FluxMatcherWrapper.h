@@ -21,7 +21,7 @@
 
 // Wrapper for: FluxMatcher::match() with transforms computed from H
 // Returns 0 for success
--(int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t;
+-(int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t withDebugImage:(bool)outputImage;
 
 // Wrapper for: FluxMatcher::match() with matched box drawn
 -(UIImage *)matchAndDrawFeatures;

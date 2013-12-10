@@ -51,7 +51,9 @@
         
         double rotation[9];
         double translation[3];
-        if ([self.matcherEngine matchAndCalculateTransformsWithRotation:rotation withTranslation:translation] == 0)
+        if ([self.matcherEngine matchAndCalculateTransformsWithRotation:rotation
+                                                        withTranslation:translation
+                                                         withDebugImage:NO] == 0)
         {
             self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
             

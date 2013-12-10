@@ -90,7 +90,7 @@
     scene_img = inputImage;
 }
 
-- (int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t
+- (int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t withDebugImage:(bool)outputImage
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
@@ -132,14 +132,18 @@
         homography[7] = H.at<double>(1,2);
         homography[8] = H.at<double>(2,2);
         
+        bool validHomographyFound = NO;
+        
         // Check if homography calculated represents a valid match
-//        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
-//        {
-//            result = -1;
-//            
-//        }
-//        else
+        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
         {
+            result = -1;
+            
+        }
+        else
+        {
+            validHomographyFound = YES;
+
              // Calculate transform_from_H
             result = [self computeRTFromHomography:homography];
             
@@ -155,6 +159,38 @@
                     }
                 }
             }
+        }
+        
+        // Debugging code to output image
+        if (outputImage)
+        {
+            // Draw box around video image in destination image
+            scene_img.copyTo(dst);
+            
+            // Will be a green box if homography is deemed valid, black otherwise
+            if (validHomographyFound)
+            {
+                cv::cvtColor(dst, dst, CV_GRAY2RGB);
+            }
+            
+            //-- Get the corners from the object image ( the object to be "detected" )
+            std::vector<cv::Point2f> obj_corners(4);
+            obj_corners[0] = cvPoint(0,0);
+            obj_corners[1] = cvPoint( object_img.cols, 0 );
+            obj_corners[2] = cvPoint( object_img.cols, object_img.rows );
+            obj_corners[3] = cvPoint( 0, object_img.rows );
+            std::vector<cv::Point2f> scene_corners(4);
+            
+            cv::perspectiveTransform( obj_corners, scene_corners, H );
+            
+            //-- Draw lines between the corners (the mapped object in the scene - image_2 )
+            line( dst, scene_corners[0], scene_corners[1], cv::Scalar( 0, 255, 0), 4 );
+            line( dst, scene_corners[1], scene_corners[2], cv::Scalar( 0, 255, 0), 4 );
+            line( dst, scene_corners[2], scene_corners[3], cv::Scalar( 0, 255, 0), 4 );
+            line( dst, scene_corners[3], scene_corners[0], cv::Scalar( 0, 255, 0), 4 );
+            
+            UIImage *outputImg = [UIImage imageWithCVMat:dst];
+            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
         }
     }
     
