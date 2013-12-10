@@ -13,6 +13,7 @@
 #import "FluxOpenGLViewController.h"
 #import "FluxDisplayManager.h"
 
+const double reuseCameraFrameTimeInterval = 2.0;
 
 @implementation FluxFeatureMatchingQueue
 
@@ -53,7 +54,7 @@
         NSDate *recentDate = [[[self.pendingOperations.cameraFrameGrabInProgress allKeys] sortedArrayUsingSelector:@selector(compare:)] lastObject];
 
         // Find reference to most recent frame, if one exists
-        if (recentDate && ([recentDate timeIntervalSinceNow] > -3.0))
+        if (recentDate && ([recentDate timeIntervalSinceNow] > -reuseCameraFrameTimeInterval))
         {
             dependency = [self.pendingOperations.cameraFrameGrabInProgress objectForKey:recentDate];
             matchRecord.cfe = dependency.cameraRecord;
