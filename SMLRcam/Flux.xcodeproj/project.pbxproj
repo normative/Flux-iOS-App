@@ -148,9 +148,6 @@
 		F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */; };
 		F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */; };
 		F2ED424D183F8A19007A825A /* FluxCameraFrameElement.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED424C183F8A19007A825A /* FluxCameraFrameElement.m */; };
-		F2F532851855083D00F4CC4D /* photo_match_2.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F2F532821855083D00F4CC4D /* photo_match_2.jpeg */; };
-		F2F532861855083D00F4CC4D /* photo_match_1.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F2F532831855083D00F4CC4D /* photo_match_1.jpeg */; };
-		F2F532871855083D00F4CC4D /* photo_match_3.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = F2F532841855083D00F4CC4D /* photo_match_3.jpeg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -411,9 +408,6 @@
 		F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingRecord.m; sourceTree = "<group>"; };
 		F2ED424B183F8A19007A825A /* FluxCameraFrameElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraFrameElement.h; sourceTree = "<group>"; };
 		F2ED424C183F8A19007A825A /* FluxCameraFrameElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraFrameElement.m; sourceTree = "<group>"; };
-		F2F532821855083D00F4CC4D /* photo_match_2.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = photo_match_2.jpeg; sourceTree = "<group>"; };
-		F2F532831855083D00F4CC4D /* photo_match_1.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = photo_match_1.jpeg; sourceTree = "<group>"; };
-		F2F532841855083D00F4CC4D /* photo_match_3.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = photo_match_3.jpeg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1042,9 +1036,6 @@
 		F2B2C1E8183D55B800D32084 /* Matcher */ = {
 			isa = PBXGroup;
 			children = (
-				F2F532821855083D00F4CC4D /* photo_match_2.jpeg */,
-				F2F532831855083D00F4CC4D /* photo_match_1.jpeg */,
-				F2F532841855083D00F4CC4D /* photo_match_3.jpeg */,
 				F2B2C1F2183E39DC00D32084 /* FluxMatcher.cpp */,
 				F2B2C1F3183E39DC00D32084 /* FluxMatcher.h */,
 				F2B2C1F5183E41CE00D32084 /* FluxMatcherWrapper.h */,
@@ -1149,13 +1140,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F2F532861855083D00F4CC4D /* photo_match_1.jpeg in Resources */,
 				AAF1BCFD183C173900909AFF /* 0.png in Resources */,
 				AAA265BF17EA00E5003AE787 /* release_notes.md in Resources */,
 				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
-				F2F532871855083D00F4CC4D /* photo_match_3.jpeg in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
@@ -1166,7 +1155,6 @@
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
 				AAF1BD01183C173900909AFF /* 4.png in Resources */,
-				F2F532851855083D00F4CC4D /* photo_match_2.jpeg in Resources */,
 				AAF1BD00183C173900909AFF /* 3.png in Resources */,
 				F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */,
 				AAA265BE17EA00E5003AE787 /* README.md in Resources */,
@@ -1246,7 +1234,6 @@
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */,
-				AA61528C18282AE200B8F2C8 /* FluxLoginViewController.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
 				AA9D0E8E184D392E0004823E /* TWSignedRequest.m in Sources */,
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,

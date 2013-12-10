@@ -37,27 +37,6 @@
     return self;
 }
 
-- (void)testMatchingRoutine
-{
-    double rotation[9];
-    double translation[3];
-    
-    NSString *fileLocation1 = [[NSBundle mainBundle] pathForResource:@"photo_match_2" ofType:@"jpeg"];
-    UIImage* matchImage1 = [[UIImage alloc] initWithContentsOfFile:fileLocation1];
-    NSString *fileLocation2 = [[NSBundle mainBundle] pathForResource:@"photo_match_1" ofType:@"jpeg"];
-    UIImage* matchImage2 = [[UIImage alloc] initWithContentsOfFile:fileLocation2];
-
-    [fluxMatcherEngine setObjectImage:matchImage1];
-    [fluxMatcherEngine setSceneImageNoOrientationChange:matchImage2];
-
-    UIImage *test = [fluxMatcherEngine matchAndDrawFeatures];
-    UIImageWriteToSavedPhotosAlbum(test, nil, nil, nil);
-    
-    if ([fluxMatcherEngine matchAndCalculateTransformsWithRotation:rotation withTranslation:translation withDebugImage:NO] == 0)
-    {
-    }
-}
-
 - (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview
 {
     // Check to see if already feature match in progress. If so, ignore it.

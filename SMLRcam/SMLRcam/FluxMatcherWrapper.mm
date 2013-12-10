@@ -31,7 +31,8 @@
 
 //C++ class from FluxMatcher.cpp
 @property (nonatomic, assign) FluxMatcher *wrappedMatcher;
-@property (nonatomic) transformRtn t_from_H;
+@property (nonatomic) transformRtn t_from_H1;
+@property (nonatomic) transformRtn t_from_H2;
 
 @end
 
@@ -90,7 +91,7 @@
     scene_img = inputImage;
 }
 
-- (int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t withDebugImage:(bool)outputImage
+- (int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withDebugImage:(bool)outputImage
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
@@ -153,10 +154,14 @@
             {
                 for (int i=0; i < 3; i++)
                 {
-                    t[i] = self.t_from_H.translation[i];
+                    t1[i] = self.t_from_H1.translation[i];
+                    t2[i] = self.t_from_H2.translation[i];
+                    n1[i] = self.t_from_H1.normal[i];
+                    n2[i] = self.t_from_H2.normal[i];
                     for (int j=0; j < 3; j++)
                     {
-                        R[i + 3*j] = self.t_from_H.rotation[i + 3*j];
+                        R1[i + 3*j] = self.t_from_H1.rotation[i + 3*j];
+                        R2[i + 3*j] = self.t_from_H2.rotation[i + 3*j];
                     }
                 }
             }
@@ -371,18 +376,7 @@
     //calculate euclidean homography
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, ciinverse, 3, pH, 3, 0.0, tmpMat, 3);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3 , 3, 1.0, tmpMat, 3, ci, 3, 0.0, eH, 3);
-    //test
-    /*
-    eH[0] = 1.53205;
-    eH[1] =1.0;
-    eH[2] = 0.0;
-    eH[3] = -0.5;
-    eH[4] = 0.866025;
-    eH[5] = -1.73205;
-    eH[6] = -0.866025;
-    eH[7] = 1.5;
-    eH[8] = 1.0;
-    */
+   
     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 3, 3, 3, 1.0, eH, 3, eH, 3, 0.0, HtH, 3);
     [self computeSVD33: &HtH[0] U:&u[0] S:&s[0] vT:&vt[0]];
     NSLog(@"SVD s:[%.4f %.4f %.4f ]",s[0], s[1], s[2]);
@@ -493,8 +487,8 @@
     */
     
         
-    self.t_from_H = result1;
-    
+    self.t_from_H1 = result1;
+    self.t_from_H2 = result2;
     
     return 0;
 }

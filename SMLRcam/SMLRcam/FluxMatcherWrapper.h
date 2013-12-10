@@ -28,8 +28,8 @@ enum feature_matching_error_codes {
 
 // Wrapper for: FluxMatcher::match() with transforms computed from H
 // Returns 0 for success
--(int)matchAndCalculateTransformsWithRotation:(double[])R withTranslation:(double[])t withDebugImage:(bool)outputImage;
 
+-(int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withDebugImage:(bool)outputImage;
 // Wrapper for: FluxMatcher::match() with matched box drawn
 -(UIImage *)matchAndDrawFeatures;
 

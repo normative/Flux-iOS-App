@@ -15,6 +15,9 @@ const double retryTimeIfInvalidHomography = 2.0;
 // If feature matching fails, it means we likely don't have the same features in the current FOV
 const double retryTimeIfInvalidMatch = 10.0;
 
+enum {SOLUTION1 =0, SOLUTION2};
+
+
 @implementation FluxFeatureMatchingTask
 
 @synthesize delegate = _delegate;
@@ -55,12 +58,20 @@ const double retryTimeIfInvalidMatch = 10.0;
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
         [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage];
         
-        double rotation[9];
-        double translation[3];
+        double rotation1[9];
+        double translation1[3];
+        double normal1[3];
+        double rotation2[9];
+        double translation2[3];
+        double normal2[3];
         
-        int result = [self.matcherEngine matchAndCalculateTransformsWithRotation:rotation
-                                                                 withTranslation:translation
-                                                                  withDebugImage:NO];
+        int result = [self.matcherEngine matchAndCalculateTransformsWithRotationSoln1:rotation1
+                                                                 withTranslationSoln1:translation1
+                                                                      withNormalSoln1:normal1
+                                                                    withRotationSoln2:rotation2
+                                                                 withTranslationSoln2:translation2
+                                                                      withNormalSoln2:normal2
+                                                                       withDebugImage:NO];
         
         if (feature_matching_success == result)
         {
@@ -70,8 +81,12 @@ const double retryTimeIfInvalidMatch = 10.0;
             
             [self computeImagePoseInECEF:&imagePose
                                 userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
-                            hTranslation: translation
-                               hRotation: rotation];
+                            hTranslation1: translation1
+                              hRotation1: rotation1
+                                hNormal1: normal1
+                           hTranslation2:translation2
+                              hRotation2:rotation2
+                                hNormal2:normal2];
             
             self.matchRecord.ire.imageMetadata.imageHomographyPose = imagePose;
             
@@ -133,11 +148,51 @@ const double retryTimeIfInvalidMatch = 10.0;
     
 }
 
+- (int) solutionBasedOnNormalWithNormal1:(double *) normal1 withNormal2:(double*)normal2 withPlaneNormal:(GLKVector3) planeNormal
+{
+    double dotProduct1 = planeNormal.x * normal1[0] + planeNormal.y * normal1[1] + planeNormal.z * normal1[2];
+    double dotProduct2 = planeNormal.x * normal2[0] + planeNormal.y * normal2[1] + planeNormal.z * normal2[2];
+    
+    return (dotProduct1 > dotProduct2) ? SOLUTION2:SOLUTION1;
+}
 
 
-- (void) computeImagePoseInECEF:(sensorPose*)iPose userPose:(sensorPose)upose hTranslation:(double*)translation hRotation:(double *)rotation
+- (void) computeImagePoseInECEF:(sensorPose*)iPose userPose:(sensorPose)upose hTranslation1:(double*)translation1 hRotation1:(double *)rotation1 hNormal1:(double *)normal1 hTranslation2:(double*)translation2 hRotation2:(double *)rotation2 hNormal2:(double *)normal2
 {
     float rotation44[16];
+    
+    double rotation[9];
+    double translation[3];
+    int solution = 0;
+    int i;
+    
+    GLKMatrix4 matrixTP1 = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
+    GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP1, upose.rotationMatrix);
+    //normal plane
+    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planeRMatrix, planeNormalI);
+
+    solution = [self solutionBasedOnNormalWithNormal1:normal1
+                                          withNormal2:normal2
+                                      withPlaneNormal:planeNormalRotated];
+    
+    if(solution ==SOLUTION1)
+    {
+        for(i=0; i<9;  i++)
+            rotation[0] = rotation1[0];
+    
+        for(i=0; i<3; i++)
+            translation[0] = translation1[0];
+    }
+    else
+    {
+        for(i=0; i<9;  i++)
+            rotation[0] = rotation2[0];
+        
+        for(i=0; i<3; i++)
+            translation[0] = translation2[0];
+    }
+    
     //rotation
     rotation44[0] = rotation[0];
     rotation44[1] = rotation[1];
@@ -163,20 +218,6 @@ const double retryTimeIfInvalidMatch = 10.0;
     tmprotMatrix = GLKMatrix4Multiply(rotmat, upose.rotationMatrix);
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
    iPose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, tmprotMatrix);
-    //reference frame crap
-    
-//    GLKMatrix4 matrixRZ = GLKMatrix4MakeRotation(M_PI/2, 0.0,0.0, 1.0);
-//    GLKMatrix4 matrixRY = GLKMatrix4MakeRotation(M_PI, 0.0,1.0, 0.0);
-//    GLKMatrix4 matrixRYZ = GLKMatrix4Multiply(matrixRY, matrixRZ);
-//    //t plane
-//    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI/2, 0.0,0.0, 1.0);
-//
-//    GLKMatrix4 matrixTPYZ = GLKMatrix4Multiply(matrixRYZ, matrixTP);
-//    
-//    matrixTPYZ =GLKMatrix4Identity;
-//    
-//    iPose->rotationMatrix = GLKMatrix4Multiply(matrixTPYZ, iPose->rotationMatrix);
-    
     
     [self computeInverseRotationMatrixFromPose:&upose];
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
