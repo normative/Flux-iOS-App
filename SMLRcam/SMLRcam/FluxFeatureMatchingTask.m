@@ -141,9 +141,14 @@
     rotation44[13]= 0.0;
     rotation44[14]= 0.0;
     rotation44[15]= 1.0;
-
-    iPose->rotationMatrix = GLKMatrix4MakeWithArray(rotation44);
+    GLKMatrix4 rotmat;
+    GLKMatrix4 tmprotMatrix;
     
+    
+    rotmat = GLKMatrix4MakeWithArray(rotation44);
+    tmprotMatrix = GLKMatrix4Multiply(rotmat, upose.rotationMatrix);
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
+   iPose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, tmprotMatrix);
     //reference frame crap
     
 //    GLKMatrix4 matrixRZ = GLKMatrix4MakeRotation(M_PI/2, 0.0,0.0, 1.0);

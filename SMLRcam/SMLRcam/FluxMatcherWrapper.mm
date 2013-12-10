@@ -257,11 +257,11 @@
     ox = ((double)cols)/2.0; //quarter hd
     oy = ((double)rows)/2.0; //quarter hd
     
-    ci[0] = -1.0 * fx;
+    ci[0] = 1.0 * fx;
     ci[1] = 0.0;
     ci[2] = 0.0;
     ci[3] = 0.0;
-    ci[4] = -1.0 * fy;
+    ci[4] = 1.0 * fy;
     ci[5] = 0.0;
     ci[6] = ox;
     ci[7] = oy;

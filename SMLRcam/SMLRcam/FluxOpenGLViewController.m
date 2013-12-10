@@ -652,8 +652,8 @@ void init(){
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
-    GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uhpose.rotationMatrix, zRay);
-    GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, vuhp);
+   // GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uhpose.rotationMatrix, zRay);
+    GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
@@ -945,6 +945,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         // Copy frame metadata
         frameGrabRequest.cameraFrameDate = currentDate;
+        _userPose.rotationMatrix = _userRotationRaw;
         frameGrabRequest.cameraPose = _userPose;
         frameGrabRequest.cameraProjectionDistance = _projectionDistance;
         
@@ -1844,7 +1845,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Spin through list of elements and see if any are failed matches. Retry.
     for (FluxImageRenderElement *ire in self.renderList)
     {
-        if (ire.imageMetadata.matchFailed && [[NSDate date] timeIntervalSinceDate:ire.imageMetadata.matchFailureTime] > 10.0)
+        if (ire.imageMetadata.matchFailed && [[NSDate date] timeIntervalSinceDate:ire.imageMetadata.matchFailureTime] > 2.0)
         {
             // Reset failure state so it doesn't get queued up again until matching is complete or fails again
             ire.imageMetadata.matchFailed = NO;
@@ -1946,7 +1947,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    _userPose.rotationMatrix.m33 = 1.0;
     GLKQuaternion quat = GLKQuaternionMake(att.quaternion.x, att.quaternion.y, att.quaternion.z, att.quaternion.w);
    _userPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
-    
+    _userRotationRaw = _userPose.rotationMatrix;
     //_userPose.rotationMatrix = att.rotationMatrix;
   GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
     _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);

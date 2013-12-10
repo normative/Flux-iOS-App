@@ -44,7 +44,7 @@
     GLuint _positionVBO;
     GLuint _texcoordVBO;
     GLuint _indexVBO;
-    
+    GLKMatrix4 _userRotationRaw;
     sensorPose _userPose;
 //    sensorPose _imagePose[8];
     
