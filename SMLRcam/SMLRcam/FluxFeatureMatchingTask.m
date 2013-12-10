@@ -7,7 +7,13 @@
 //
 
 #import "FluxFeatureMatchingTask.h"
-#define PI M_PI
+
+// Time interval after which to retry feature matching
+
+// If homography fails, it means we had good correspondence with features, but no valid matched box
+const double retryTimeIfInvalidHomography = 2.0;
+// If feature matching fails, it means we likely don't have the same features in the current FOV
+const double retryTimeIfInvalidMatch = 10.0;
 
 @implementation FluxFeatureMatchingTask
 
@@ -51,9 +57,12 @@
         
         double rotation[9];
         double translation[3];
-        if ([self.matcherEngine matchAndCalculateTransformsWithRotation:rotation
-                                                        withTranslation:translation
-                                                         withDebugImage:NO] == 0)
+        
+        int result = [self.matcherEngine matchAndCalculateTransformsWithRotation:rotation
+                                                                 withTranslation:translation
+                                                                  withDebugImage:NO];
+        
+        if (feature_matching_success == result)
         {
             self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
             
@@ -78,7 +87,10 @@
             // Matching failed. Need to try again later.
             self.matchRecord.failed = YES;
             self.matchRecord.ire.imageMetadata.matchFailed = YES;
-            self.matchRecord.ire.imageMetadata.matchFailureTime = [NSDate date];
+            
+            // Set the next retry time (depends if homography or match failure)
+            self.matchRecord.ire.imageMetadata.matchFailureRetryTime = [NSDate dateWithTimeIntervalSinceNow:
+                    ((feature_matching_homography_error == result) ? retryTimeIfInvalidHomography : retryTimeIfInvalidMatch)];
         }
         
         NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
@@ -96,8 +108,8 @@
     
     GLKVector3 lla_rad; //latitude, longitude, altitude
     
-    lla_rad.x = sp->position.x*PI/180.0;
-    lla_rad.y = sp->position.y*PI/180.0;
+    lla_rad.x = sp->position.x*M_PI/180.0;
+    lla_rad.y = sp->position.y*M_PI/180.0;
     lla_rad.z = sp->position.z;
     
     rotation_te[0] = -1.0 * sin(lla_rad.y);
@@ -157,7 +169,7 @@
 //    GLKMatrix4 matrixRY = GLKMatrix4MakeRotation(M_PI, 0.0,1.0, 0.0);
 //    GLKMatrix4 matrixRYZ = GLKMatrix4Multiply(matrixRY, matrixRZ);
 //    //t plane
-//    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
+//    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI/2, 0.0,0.0, 1.0);
 //
 //    GLKMatrix4 matrixTPYZ = GLKMatrix4Multiply(matrixRYZ, matrixTP);
 //    

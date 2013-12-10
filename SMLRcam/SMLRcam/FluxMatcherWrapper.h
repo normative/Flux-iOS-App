@@ -7,6 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+
+enum feature_matching_error_codes {
+  feature_matching_success = 0,
+  feature_matching_match_error = -1,
+  feature_matching_homography_error = -2
+};
+    
 @interface FluxMatcherWrapper : NSObject
 
 // Wrapper to set object_image for matching

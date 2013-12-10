@@ -210,7 +210,7 @@
     {
         imageObject.matched = NO;
         imageObject.matchFailed = NO;
-        imageObject.matchFailureTime = nil;
+        imageObject.matchFailureRetryTime = nil;
         
         // Just set the location_data_type to default. Other quantities will be ignored if this is not set.
         imageObject.location_data_type = location_data_default;

@@ -1102,7 +1102,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Spin through list of elements and see if any are failed matches. Retry.
     for (FluxImageRenderElement *ire in self.renderList)
     {
-        if (ire.imageMetadata.matchFailed && [[NSDate date] timeIntervalSinceDate:ire.imageMetadata.matchFailureTime] > 10.0)
+        if (ire.imageMetadata.matchFailed &&
+            ([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending)
         {
             // Reset failure state so it doesn't get queued up again until matching is complete or fails again
             ire.imageMetadata.matchFailed = NO;

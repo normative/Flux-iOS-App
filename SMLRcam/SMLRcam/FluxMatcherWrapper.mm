@@ -100,12 +100,13 @@
     cv::Mat dst;
 
     int result = 0;
+    
     result = self.wrappedMatcher->match(object_img, scene_img, matches,
                                         keypoints_object, keypoints_scene,
                                         descriptors_object, descriptors_scene,
                                         fundamental);
 
-    if (result == 0)
+    if (result == feature_matching_success)
     {
         // Calculate homography using matches
         std::vector<cv::Point2f> obj;
@@ -137,7 +138,7 @@
         // Check if homography calculated represents a valid match
         if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
         {
-            result = -1;
+            result = feature_matching_homography_error;
             
         }
         else
@@ -193,7 +194,11 @@
             UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
         }
     }
-    
+    else
+    {
+        result = feature_matching_match_error;
+    }
+
     return result;
 }
 
