@@ -203,4 +203,18 @@
     }
 }
 
+- (void)resetAllFeatureMatches
+{
+    // Rests all matched quantities
+    for (FluxScanImageObject *imageObject in [fluxMetadata allValues])
+    {
+        imageObject.matched = NO;
+        imageObject.matchFailed = NO;
+        imageObject.matchFailureTime = nil;
+        
+        // Just set the location_data_type to default. Other quantities will be ignored if this is not set.
+        imageObject.location_data_type = location_data_default;
+    }
+}
+
 @end

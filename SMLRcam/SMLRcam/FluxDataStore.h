@@ -29,5 +29,6 @@
 - (FluxScanImageObject *) getMetadataWithImageID:(FluxImageID)imageID;
 - (FluxScanImageObject *) getMetadataWithLocalID:(FluxLocalID *)localID;
 - (void) setImageIDMapping:(FluxImageID)imageID forLocalID:(FluxLocalID *)localID;
+- (void)resetAllFeatureMatches;
 
 @end

@@ -165,6 +165,10 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return [fluxDataStore getMetadataWithLocalID:localID];
 }
 
+- (void)resetAllFeatureMatches
+{
+    [fluxDataStore resetAllFeatureMatches];
+}
 
 #pragma mark - Image Queries
 
