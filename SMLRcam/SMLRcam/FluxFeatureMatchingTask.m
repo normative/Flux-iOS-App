@@ -153,7 +153,7 @@ enum {SOLUTION1 =0, SOLUTION2};
     double dotProduct1 = planeNormal.x * normal1[0] + planeNormal.y * normal1[1] + planeNormal.z * normal1[2];
     double dotProduct2 = planeNormal.x * normal2[0] + planeNormal.y * normal2[1] + planeNormal.z * normal2[2];
     
-    return (dotProduct1 > dotProduct2) ? SOLUTION2:SOLUTION1;
+    return (dotProduct1 > dotProduct2) ? SOLUTION1:SOLUTION2;
 }
 
 
@@ -179,18 +179,18 @@ enum {SOLUTION1 =0, SOLUTION2};
     if(solution ==SOLUTION1)
     {
         for(i=0; i<9;  i++)
-            rotation[0] = rotation1[0];
+            rotation[i] = rotation1[i];
     
         for(i=0; i<3; i++)
-            translation[0] = translation1[0];
+            translation[i] = translation1[i];
     }
     else
     {
         for(i=0; i<9;  i++)
-            rotation[0] = rotation2[0];
+            rotation[i] = rotation2[i];
         
         for(i=0; i<3; i++)
-            translation[0] = translation2[0];
+            translation[i] = translation2[i];
     }
     
     //rotation
