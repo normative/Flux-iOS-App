@@ -11,6 +11,7 @@
 #import "FluxUserObject.h"
 #import "FluxTagObject.h"
 #import "FluxMapImageObject.h"
+#import "FluxCameraObject.h"
 #import "FluxProfileImageObject.h"
 
 @implementation FluxMappingProvider
@@ -94,6 +95,18 @@
                                                   @"model":    @"model"
                                                   }];
     
+    return mapping;
+}
+
++ (RKObjectMapping *)cameraGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxCameraObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":            @"userID",
+                                                  @"deviceid":   @"deviceID",
+                                                  @"model":    @"model",
+                                                  @"id":        @"cameraID"
+                                                  }];
     return mapping;
 }
 

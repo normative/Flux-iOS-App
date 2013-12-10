@@ -351,9 +351,9 @@
     }];
 }
 
+//this doesn't need to be implemented. If we've logged in previously, check the chainStore. If not, normal twiter login. We don't need to update keys for twitter because it's baked in the OS.
 - (void)checkTWloginStatus
 {
-    NSLog(@"Refreshing Twitter Accounts \n");
 }
 
 - (void)obtainAccessToAccountsWithBlock:(void (^)(BOOL))block
@@ -442,14 +442,15 @@
 }
 
 - (void)checkFBLoginStatus{
-    if (!FBSession.activeSession) {
-        // create a fresh session object
-        FBSession.activeSession = [[FBSession alloc] init];
-        [FBSession setActiveSession: FBSession.activeSession];
-        
+    if (FBSession.activeSession) {
+//        // create a fresh session object
+//        FBSession.activeSession = [[FBSession alloc] init];
+//        [FBSession setActiveSession: FBSession.activeSession];
+    
         // if we don't have a cached token, a call to open here would cause UX for login to
         // occur; we don't want that to happen unless the user clicks the login button, and so
         // we check here to make sure we have a token before calling open
+        NSLog(@"State Info: %i",FBSession.activeSession.state);
         if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
             // even though we had a cached token, we need to login to make the session usable
             NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
@@ -459,11 +460,9 @@
              ^(FBSession *session,
                FBSessionState state, NSError *error) {
                  if (!error) {
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
-                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                         [alert show];
-                     });
+                     NSString *userID = [UICKeyChainStore stringForKey:@"userID" service:@"com.flux"];
+                     [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:@"token" service:[NSString stringWithFormat:@"com.%@",@"Facebook"]];
+                     [self didLoginSuccessfullyWithUserID:1];
                  }
                  else{
                      dispatch_async(dispatch_get_main_queue(), ^{

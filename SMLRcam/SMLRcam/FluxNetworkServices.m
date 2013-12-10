@@ -56,6 +56,12 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                                    keyPath:nil
                                                                                                statusCodes:statusCodes];
         
+        RKResponseDescriptor *cameraCreationResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider cameraGETMapping]
+                                                                                                         method:RKRequestMethodAny
+                                                                                                    pathPattern:@"cameras"
+                                                                                                        keyPath:nil
+                                                                                                    statusCodes:statusCodes];
+        
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -73,6 +79,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
+        [objectManager addResponseDescriptor:cameraCreationResponseDescriptor];
         
         //and again for image-related calls
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]

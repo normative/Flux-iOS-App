@@ -259,7 +259,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
     NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
     if (startDate && endDate) {
-        [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        if ([startDate isEqualToString:endDate]) {
+            [dateRangeLabel setText:[NSString stringWithFormat:@"%@",startDate] animated:YES];
+        }
+        else{
+            [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        }
+        
         
         //set it visible
         if (dateRangeLabel.alpha == 0) {

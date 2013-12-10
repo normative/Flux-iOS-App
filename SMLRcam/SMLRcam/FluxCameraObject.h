@@ -13,6 +13,7 @@
 @property (nonatomic, strong)NSString*deviceID;
 @property (nonatomic, strong)NSString*model;
 @property (nonatomic)int userID;
+@property (nonatomic)int cameraID;
 
 - (id)initWithdeviceID:(NSString*)theDeviceID
    model:(NSString*)theModel
