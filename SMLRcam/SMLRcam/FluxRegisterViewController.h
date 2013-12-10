@@ -10,6 +10,7 @@
 
 #import "FluxLeftDrawerViewController.h"
 #import "FluxScanViewController.h"
+#import "FluxRegisterEmailViewController.h"
 
 #import "FluxDataManager.h"
 
@@ -23,7 +24,7 @@
 
 
 
-@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>{
+@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, FluxRegisterEmailViewDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     
@@ -32,6 +33,7 @@
     NSMutableArray*textInputElements;
     BOOL isInSignUp;
     BOOL shouldErase;
+    BOOL firstCheck;
     
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;

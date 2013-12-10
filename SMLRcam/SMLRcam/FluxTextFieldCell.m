@@ -81,6 +81,17 @@
         }
             break;
             
+        case 3:
+        {
+            CALayer *roundBorderLayer = [CALayer layer];
+            roundBorderLayer.cornerRadius = 5;
+            roundBorderLayer.borderWidth = 0.5;
+            roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+            roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
+            [self.layer addSublayer:roundBorderLayer];
+        }
+            break;
+            
         default:
             break;
     }

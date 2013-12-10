@@ -13,6 +13,7 @@
 #import "FluxTextFieldCell.h"
 #import "UICKeyChainStore.h"
 
+
 #import <FacebookSDK/FacebookSDK.h>
 #import <sys/utsname.h>
 
@@ -43,15 +44,18 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated{
-    UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
-                                                      message:@"Login / Signup is now partially implemented, please try it out. To save time in future launches, tap the flux logo to skip."
-                                                     delegate:nil
-                                            cancelButtonTitle:@"OK"
-                                            otherButtonTitles:nil];
-    [message show];
-    
-
-    [self checkCurrentLoginState];
+    if (!firstCheck) {
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
+                                                          message:@"Login / Signup is now partially implemented, please try it out. To save time in future launches, tap the flux logo to skip."
+                                                         delegate:nil
+                                                cancelButtonTitle:@"OK"
+                                                otherButtonTitles:nil];
+        [message show];
+        
+        
+        [self checkCurrentLoginState];
+        firstCheck = YES;
+    }
 }
 
 - (void)viewDidLoad
@@ -291,6 +295,8 @@
 }
 
 - (IBAction)twitterSignInAction:(id)sender {
+    
+    
     if (![TWAPIManager isLocalTwitterAccountAvailable]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_ACCOUNTS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
         [alert show];
@@ -331,8 +337,13 @@
             
             NSArray *parts = [responseStr componentsSeparatedByString:@"&"];
             
-            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username", nil];
-            [self socialPartner:@"Twitter" didAuthenticateWithToken:[parts objectAtIndex:0] andUserInfo:userInfo];
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle: nil];
+            FluxRegisterEmailViewController*emailVC = [storyboard instantiateViewControllerWithIdentifier:@"registerEmailView"];
+
+            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", nil];
+            emailVC.userInfo = [userInfo mutableCopy];
+            [emailVC setDelegate:self];
+            [self.navigationController pushViewController:emailVC animated:YES];
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
@@ -343,8 +354,6 @@
 - (void)checkTWloginStatus
 {
     NSLog(@"Refreshing Twitter Accounts \n");
-    
-    
 }
 
 - (void)obtainAccessToAccountsWithBlock:(void (^)(BOOL))block
@@ -361,6 +370,22 @@
     
     //  This method changed in iOS6. If the new version isn't available, fall back to the original (which means that we're running on iOS5+).
     [_accountStore requestAccessToAccountsWithType:twitterType options:nil completion:handler];
+}
+
+- (void)RegisterEmailView:(FluxRegisterEmailViewController *)emailView didAcceptAddEmailToUserInfo:(NSMutableDictionary *)userInfo{
+    if (userInfo) {
+        if ([userInfo objectForKey:@"token"]) {
+            [self socialPartner:@"Twitter" didAuthenticateWithToken:[userInfo objectForKey:@"token"] andUserInfo:userInfo];
+        }
+        // **should** never occur
+        else{
+            [ProgressHUD showError:@"Unknown error occurred"];
+        }
+    }
+    else{
+        [ProgressHUD showError:@"Email is required for signup"];
+        [self showContainerViewAnimated:YES];
+    }
 }
 
 #pragma mark Facebook
@@ -649,6 +674,16 @@
 }
 
 - (void)showContainerViewAnimated:(BOOL)animated{
+    if (![loginElementsContainerView translatesAutoresizingMaskIntoConstraints]) {
+        [loginElementsContainerView removeFromSuperview];
+        [loginElementsContainerView setTranslatesAutoresizingMaskIntoConstraints:YES];
+        [self.view addSubview:loginElementsContainerView];
+        
+        [logoImageView removeFromSuperview];
+        [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
+        [self.view addSubview:logoImageView];
+    }
+
     if (animated) {
         [UIView animateWithDuration:0.5 animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];

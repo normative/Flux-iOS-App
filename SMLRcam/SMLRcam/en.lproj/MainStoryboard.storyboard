@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="3Bp-zf-jwd">
     <dependencies>
-        <deployment defaultVersion="1792" identifier="iOS"/>
+        <deployment defaultVersion="1552" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
@@ -945,10 +945,10 @@
             </objects>
             <point key="canvasLocation" x="2273" y="-339"/>
         </scene>
-        <!--Flux Register View Controller - Register-->
+        <!--Flux Register View Controller-->
         <scene sceneID="5te-EV-YwT">
             <objects>
-                <viewController title="Register" id="ODM-aT-N2z" customClass="FluxRegisterViewController" sceneMemberID="viewController">
+                <viewController id="ODM-aT-N2z" customClass="FluxRegisterViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="onk-W5-bmM"/>
                         <viewControllerLayoutGuide type="bottom" id="MtI-Vo-2De"/>
@@ -1084,7 +1084,7 @@
                         </subviews>
                         <color key="backgroundColor" red="0.91764705882352937" green="0.24705882352941178" blue="0.24705882352941178" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Register" id="kOI-MA-uNB"/>
+                    <navigationItem key="navigationItem" id="kOI-MA-uNB"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="createLoginButton" destination="gmj-NV-NCp" id="SeB-4D-4Xy"/>
@@ -1098,11 +1098,88 @@
                         <outlet property="topSeparator" destination="mf9-MM-b8u" id="UUT-Po-sQE"/>
                         <outlet property="twitterButton" destination="Kbc-JC-R0G" id="GxA-lw-7OO"/>
                         <segue destination="2" kind="modal" identifier="pushScanView" modalTransitionStyle="crossDissolve" id="YOZ-ZI-zAe"/>
+                        <segue destination="71W-0H-05H" kind="push" identifier="" id="SrP-Jh-RBO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eG1-Af-oLG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1049" y="-321"/>
+        </scene>
+        <!--Flux Register Email View Controller - Add Email-->
+        <scene sceneID="fZV-R3-iKV">
+            <objects>
+                <viewController storyboardIdentifier="registerEmailView" id="71W-0H-05H" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="vzf-U5-ahO"/>
+                        <viewControllerLayoutGuide type="bottom" id="tzI-hz-6dx"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="2Ie-6x-Cvg">
+                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="fill" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AoE-H3-qLA">
+                                <rect key="frame" x="96" y="300" width="129" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <state key="normal" title="Create Account">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="createAccountButtonAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="ZJH-FL-c0J"/>
+                                    <action selector="createAccountButtonAction:" destination="71W-0H-05H" eventType="touchUpInside" id="iOr-m1-JCH"/>
+                                </connections>
+                            </button>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="QN7-Gg-5Ou">
+                                <rect key="frame" x="10" y="183" width="300" height="89"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="textFieldCell" rowHeight="50" id="4d3-9g-0aC" customClass="FluxTextFieldCell">
+                                        <rect key="frame" x="0.0" y="55" width="300" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4d3-9g-0aC" id="KQ0-2p-HBx">
+                                            <rect key="frame" x="0.0" y="0.0" width="300" height="49"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cVI-yb-Wbj">
+                                                    <rect key="frame" x="265" y="17" width="15" height="15"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outlet property="checkImageView" destination="cVI-yb-Wbj" id="KG3-hl-Rfy"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="71W-0H-05H" id="pxf-qQ-upp"/>
+                                    <outlet property="delegate" destination="71W-0H-05H" id="f2w-q7-3XS"/>
+                                </connections>
+                            </tableView>
+                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="1zQ-mf-Xwj">
+                                <rect key="frame" x="114" y="78" width="93" height="108"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Add Email" id="XCB-G7-a94">
+                        <barButtonItem key="backBarButtonItem" title="Cancel" id="bHT-wI-9U7"/>
+                    </navigationItem>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <connections>
+                        <outlet property="createAccountButton" destination="AoE-H3-qLA" id="G56-g8-kS6"/>
+                        <outlet property="emailTableView" destination="QN7-Gg-5Ou" id="lWd-rS-jJG"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Wrn-tU-EFT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1479" y="-870"/>
         </scene>
         <!--Flux Map View Controller-->
         <scene sceneID="JdW-hK-6ai">

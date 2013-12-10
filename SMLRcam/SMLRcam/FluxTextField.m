@@ -14,6 +14,7 @@
 int const FluxTextFieldPositionTop = 0;
 int const FluxTextFieldPositionMiddle = 1;
 int const FluxTextFieldPositionBottom = 2;
+int const FluxTextFieldPositionTopBottom = 3;
 
 @implementation FluxTextField
 
