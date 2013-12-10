@@ -406,11 +406,11 @@
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="pCz-38-tt7">
-                            <rect key="frame" x="0.0" y="250" width="320" height="192"/>
+                            <rect key="frame" x="0.0" y="250" width="320" height="165"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oYY-Vs-Dgh">
-                                    <rect key="frame" x="106" y="113" width="108" height="30"/>
+                                    <rect key="frame" x="106" y="114" width="108" height="30"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="30" id="0ln-rs-FgD"/>
@@ -426,11 +426,11 @@
                                     </connections>
                                 </button>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eTl-Gu-teW">
-                                    <rect key="frame" x="102" y="137" width="117" height="21"/>
+                                    <rect key="frame" x="77" y="138" width="166" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="21" id="bCe-8p-TqD"/>
-                                        <constraint firstAttribute="width" constant="117" id="dlV-OD-GIu"/>
+                                        <constraint firstAttribute="width" constant="166" id="dlV-OD-GIu"/>
                                     </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                     <color key="textColor" red="0.17254901959999999" green="0.20784313730000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -440,7 +440,7 @@
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             <constraints>
                                 <constraint firstAttribute="centerX" secondItem="eTl-Gu-teW" secondAttribute="centerX" id="1dp-U0-k8i"/>
-                                <constraint firstAttribute="bottom" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="49" id="EPG-JY-jlc"/>
+                                <constraint firstAttribute="bottom" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="21" id="EPG-JY-jlc"/>
                                 <constraint firstItem="eTl-Gu-teW" firstAttribute="top" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="-6" id="NAG-u5-yZU"/>
                                 <constraint firstAttribute="centerX" secondItem="oYY-Vs-Dgh" secondAttribute="centerX" id="QfM-pN-Vpx"/>
                             </constraints>
@@ -943,7 +943,7 @@
                     </connections>
                 </pinchGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2344" y="-321"/>
+            <point key="canvasLocation" x="2273" y="-339"/>
         </scene>
         <!--Flux Register View Controller - Register-->
         <scene sceneID="5te-EV-YwT">
@@ -1071,6 +1071,16 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qIq-VB-T5L" userLabel="Backdoor Button">
+                                <rect key="frame" x="120" y="20" width="80" height="115"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="backdoorButtonAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="xAb-ud-2Cz"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.91764705882352937" green="0.24705882352941178" blue="0.24705882352941178" alpha="1" colorSpace="calibratedRGB"/>
                     </view>
@@ -1655,8 +1665,8 @@
         <image name="profileMenuButton" width="140" height="140"/>
         <image name="shareButton" width="140" height="140"/>
         <image name="shareEveryone_on" width="340" height="80"/>
-        <image name="shareFacebook_off" width="76" height="80"/>
-        <image name="shareTwitter_off" width="75" height="80"/>
+        <image name="shareFacebook_off" width="80" height="80"/>
+        <image name="shareTwitter_off" width="80" height="80"/>
         <image name="twitter_mini" width="220" height="50"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

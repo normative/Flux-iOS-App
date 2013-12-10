@@ -17,6 +17,8 @@
 
 + (RKObjectMapping *)userGETMapping;
 + (RKObjectMapping *)userPOSTMapping;
++ (RKObjectMapping *)cameraPostMapping;
++ (RKObjectMapping *)userImagesGetMapping;
 
 + (RKObjectMapping *)tagGetMapping;
 

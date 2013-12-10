@@ -31,6 +31,7 @@
     
     NSMutableArray*textInputElements;
     BOOL isInSignUp;
+    BOOL shouldErase;
     
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;
@@ -58,6 +59,7 @@
 - (IBAction)twitterSignInAction:(id)sender;
 - (IBAction)facebookSignInAction:(id)sender;
 - (IBAction)loginSignupToggleAction:(id)sender;
+- (IBAction)backdoorButtonAction:(id)sender;
 
 
 @end

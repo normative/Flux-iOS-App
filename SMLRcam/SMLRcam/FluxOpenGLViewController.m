@@ -359,50 +359,21 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
     
     //NSLog(@"Projection vector: [%f, %f, %f]", v.x, v.y, v.z);
     
-    //normal plane
-//    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-//    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((usp->rotationMatrix), planeNormalI);
-    //intersection with plane
-//    GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
-    
-//    float vd = GLKVector3DotProduct(N,V);
-//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-//    float t = v0/vd;
-//    
-//    if(vd==0)
-//    {
-//        // NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-//        return -1;
-//    }
-//    if(t < 0)
-//    {
-//        
-//        // NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-//        return -1;
-//    }
-    
-//    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-//    viewP.at = V;
-//    viewP.up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     
     (*vp).origin = GLKVector3Add(positionTP, P0);
     (*vp).at = V;
     (*vp).up = GLKMatrix4MultiplyVector3(usp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     
-    //setupRenderingPlane(positionTP, usp->rotationMatrix, distance);
-    
     return 0;
 }
-
 
 // compute the tangent plane location and direction vector for an image
 bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp)
 {
     bool retval = true;
     
-//    viewParameters viewP;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
@@ -410,12 +381,6 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
-    //normal plane
-//    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-//    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((userPose.rotationMatrix), planeNormalI);
-    
-    //intersection with plane
-//    GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
@@ -435,23 +400,6 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     
     P0 = positionTP;
     
-//    float vd = GLKVector3DotProduct(N,V);
-//    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
-//    float t = v0/vd;
-//    
-//    if (vd == 0)
-//    {
-//        //    NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
-//        return 0;
-//    }
-//
-//    if (t < 0)
-//    {
-//        
-//        // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
-//        retval = 0;
-//    }
-    
     float _distanceToUser = GLKVector3Length(P0);
     
     if (_distanceToUser > MAX_IMAGE_RADIUS)
@@ -459,12 +407,6 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
         //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
         retval = false;
     }
-    
-//    viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));  // viewP.at would be the point of intersection of image camera LOS with projection plane
-//    viewP.at = GLKVector3Add(P0, V);  // at would = point
-
-//    viewP.at = V;       // viewP.at = raw directional vector of image camera LOS
-//    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     
     (*vp).origin = P0;
     (*vp).at = V;
@@ -596,21 +538,13 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     //    viewP.up = GLKVector3Normalize(viewP.up);
     
-    
     (*vp).origin =  P0;
     //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
     (*vp).at =viewP.at;
     (*vp).up = viewP.up;
-    
 
-    
     return 1;
-    
-    
-    
-    
-
 }
 
 
@@ -785,6 +719,9 @@ void init(){
 //                break;
 //        }
 //    }
+    
+    NSLog(@"received notificationdxc65 y");
+    
     
 }
     
@@ -1044,7 +981,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadAlphaTexture) name:@"maskChange" object:nil];
     
     [super viewDidLoad];
@@ -1084,9 +1021,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     //set debug labels to hidden by default
     gpsX.hidden= YES;
-    gpsY.hidden=YES;
+    gpsY.hidden= YES;
     kX.hidden = YES;
-    kY.hidden =YES;
+    kY.hidden = YES;
     delta.hidden = YES;
     pedometerL.hidden = YES;
     
@@ -1189,7 +1126,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
-- (void) updateImageMetadataForElementList:(NSMutableArray *)elementList
+- (void) updateImageMetadataForElementList:(NSMutableArray *)elementList andMaxIncidentThreshold:(double)maxIncidentThreshold
 {
     NSMutableArray *removeList = [[NSMutableArray alloc]init];
     double absUserHeading;
@@ -1199,9 +1136,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     sensorPose localUserPose = _userPose;
     viewParameters localUserVp;
 
+    // calculate angle between user's viewpoint and North
     computeTangentParametersUser(&localUserPose, &localUserVp);
-//    double xu = 0.0;
-//    double yu = 1.0;
     double x1 = 0.0;
     double y1 = 1.0;
     double x2 = localUserVp.at.x;
@@ -1222,10 +1158,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 
     relUserHeading = theta;
-    absUserHeading = self.fluxDisplayManager.locationManager.heading;
 
-//    while (relUserHeading < 0.0)
-//        relUserHeading += 360.0;
+    while (relUserHeading < 0.0)
+        relUserHeading += 360.0;
+
+    absUserHeading = relUserHeading;
+//    absUserHeading = self.fluxDisplayManager.locationManager.heading;
+
     
 //    NSLog(@"Relative User Heading: %f, gps user heading: %f", relUserHeading, self.fluxDisplayManager.locationManager.heading);
     
@@ -1307,6 +1246,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //            // store as relative heading
 //            ire.imageMetadata.relHeading = theta;
             
+            // calculate the angle between the vectors (user position -> North) and (user position -> image's intersection point on the cylindrical screen)
             x1 = 0.0;
             y1 = 1.0;
             x2 = xi;
@@ -1341,7 +1281,30 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 theta -= 360.0;
 
             ire.imageMetadata.relHeading = theta;
+
+            // now calculate angle between camera LOS and perpendicular to cylinder at camera LOS intersection point
+            x1 = vp.origin.x - xi;
+            y1 = vp.origin.y - yi;
+            x2 = -xi;
+            y2 = -yi;
             
+            dotx = x2 * x1;
+            doty = y2 * y1;
+            
+            scalar = dotx + doty;
+            magsq1 = x2 * x2 + y2 * y2;
+            magsq2 = (x1 * x1) + (y1 * y1);
+            
+            costheta = (scalar) / sqrt(magsq1 * magsq2);
+            theta = acos(costheta) * 180.0 / M_PI;
+
+            if (theta > maxIncidentThreshold)
+            {
+//                NSLog(@"Removing id %@, incident angle %f > threshold, rh: %f, uh: %f", ire.localID, theta, ire.imageMetadata.relHeading, absUserHeading);
+//                NSLog(@"cam origin:(%f, %f), cam at: (%f, %f), cam intersect: %f, %f)", vp.origin.x, vp.origin.y, vp.at.x, vp.at.y, xi, yi);
+//                NSLog(@"1: (%f, %f), 2: (%f, %f)", x1, y1, x2, y2);
+                [removeList addObject:ire];
+            }
             
 //            if (ire.imageMetadata.imageID == 921)
 //            {
@@ -1506,7 +1469,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     init();
     
-    _projectionDistance = 20.0;
+    _projectionDistance = 15.0;
     glEnable(GL_DEPTH_TEST);
     
     
@@ -1980,7 +1943,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.ecef.y =  self.fluxDisplayManager.locationManager.kflocation.y;
         _userPose.ecef.z =  self.fluxDisplayManager.locationManager.kflocation.z;
         
-        // [self printDebugInfo];
+        //[self printDebugInfo];
     }
 
 //    float aspect = fabsf(self.view.bounds.size.width / self.view.bounds.size.height);
@@ -2086,6 +2049,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + c], c);
                 c++;
             }
+//            else
+//            {
+//                NSLog(@"Not binding texture from slot %d, id %@, used: %@, texture!=nil: %@, valid meta=(1): %d", i, ire.localID, ire.textureMapElement.used?@"Yes":@"No",(_texture[i]!=nil)?@"Yes":@"No", _validMetaData[i] );
+//            }
         }
     }
     

@@ -38,6 +38,16 @@
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
     removedImages = [[NSMutableIndexSet alloc]init];
+    
+    CALayer *roundBorderLayer = [CALayer layer];
+    roundBorderLayer.borderWidth = 0.5;
+    roundBorderLayer.opacity = 0.4;
+    roundBorderLayer.cornerRadius = 5;
+    roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+    roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
+    [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
+    
+    
 	// Do any additional setup after loading the view.
 }
 

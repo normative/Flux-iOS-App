@@ -49,7 +49,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     double _estimateDelta;
     double _resetThreshold;
     
-    
     BOOL camIsOn;
     BOOL imageCaptured;
     
@@ -63,11 +62,14 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     int _validInitLocationData;
     
     double _horizontalAccuracy;
+    
+    sensorPose _userPose;
 
 }
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocation* rawlocation;
 @property (nonatomic) CLLocationDirection heading;
+@property (nonatomic) CLLocationDirection orientationHeading;
 @property (nonatomic) CLPlacemark* placemark;
 
 @property (nonatomic) NSString* sublocality;
@@ -83,7 +85,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 - (void)endLocating;
 - (void)orientationChanged:(NSNotification *)notification;
 - (void)WGS84_to_ECEF:(sensorPose *)sp;
-
+- (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 
 @end

@@ -12,6 +12,7 @@
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxImageRenderElement.h"
+#import <malloc/malloc.h>
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -454,9 +455,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         uploadsCompleted = 0;
         totalUploads = objectsArr.count;
+        NSMutableArray*requestsArray = [[NSMutableArray alloc]init];
+        __block float totalBytes = 0;
+        __block float progress = 0;
         
         for (int i = 0; i<objectsArr.count; i++) {
             // Add the image and metadata to the local cache
+            
             FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
             [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
                 FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:updatedImageObject.localID];
@@ -466,14 +471,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                     ire.imageMetadata = updatedImageObject;
                 }
                 uploadsCompleted++;
-                progressView.progress = uploadsCompleted/totalUploads;
+                float doneTest = uploadsCompleted/totalUploads;
                 
-                if (progressView.progress == 1) {
+                if (doneTest == 1) {
+                    [progressView setProgress:1.0 animated:YES];
                     [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
                 }
             }];
             [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
+                if (requestsArray.count < totalUploads) {
+                    if (![requestsArray containsObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]]) {
+                        totalBytes += inProgressDataRequest.totalByteSize;
+                        [requestsArray addObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]];
+                    }
+                }
                 
+                progress+=inProgressDataRequest.bytesUploaded;
+                [progressView setProgress:(float)progress/totalBytes-0.10 animated:YES];
             }];
             [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]]
@@ -491,11 +505,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                      progressView.progress = 0;
                                  }];
             }];
-                        
             [self.fluxDisplayManager.fluxDataManager addDataToStore:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
         }
-        
-
     }
     if (openGLController.imageCaptureViewController.isSnapshot) {
         [self deactivateSnapshotView];
@@ -617,7 +628,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
         currentDataFilter = [dataFilter copy];
     }
-    if ([dataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
     }
     else{

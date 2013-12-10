@@ -8,12 +8,16 @@
 
 #import "FluxProfilePhotosViewController.h"
 #import "KTCheckboxButton.h"
+#import "FluxProfileImageObject.h"
+#import "FluxNetworkServices.h"
 
 @interface FluxProfilePhotosViewController ()
 
 @end
 
 @implementation FluxProfilePhotosViewController
+
+#pragma mark - View Init
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -30,16 +34,18 @@
     removedImages = [[NSMutableArray alloc]init];
     
     picturesArray = [[NSMutableArray alloc]init];
-    for (int i = 0; i<9; i++) {
-        IDMPhoto *photo = [[IDMPhoto alloc]initWithImage:[UIImage imageNamed:@"Image"]];
-        [picturesArray addObject:photo];
-    }
     
     [self setTitle:@"My Photos"];
     
     [garbageButton setEnabled:NO];
+    [editBarButton setEnabled:NO];
+    [editBarButton setTintColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
     
 	// Do any additional setup after loading the view.
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -52,33 +58,56 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)prepareViewWithImagesUserID:(int)userID{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [request setUserImagesReady:^(NSArray * imageList, FluxDataRequest*completedDataRequest){
+        picturesArray = [imageList mutableCopy];
+        if (picturesArray.count > 0) {
+            [theCollectionView reloadData];
+            [editBarButton setEnabled:YES];
+        }
+        
+    }];
+    [self.fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
+}
+
+#pragma mark - CollectionView
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return picturesArray.count;
 }
-
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *identifier = @"cell";
     
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-    UIImageView *recipeImageView = (UIImageView *)[cell viewWithTag:100];
+    UIImageView *theImageView = (UIImageView *)[cell viewWithTag:100];
     KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
     if (isEditing) {
         [[cell viewWithTag:200]setHidden:NO];
         if ([removedImages containsObject:[NSNumber numberWithInt:indexPath.row]]) {
             [checkbox setChecked:YES];
-            [recipeImageView setAlpha:0.8];
+            [theImageView setAlpha:0.8];
         }
         else{
             [checkbox setChecked:NO];
-            [recipeImageView setAlpha:1.0];
+            [theImageView setAlpha:1.0];
         }
     }
     else{
         [[cell viewWithTag:200]setHidden:YES];
     }
-    recipeImageView.image = [(IDMPhoto*)[picturesArray objectAtIndex:indexPath.row]underlyingImage];
-    [recipeImageView setAlpha:1.0];
+    if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID]]]];
+        [theImageView setImageWithURLRequest:request
+                  placeholderImage:[UIImage imageNamed:@"nothing"]
+                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                               [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
+                           }
+                           failure:NULL];
+    }
+    theImageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
+    [theImageView setAlpha:1.0];
     
     return cell;
 }
@@ -100,7 +129,13 @@
 
     }
     else{
-        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:picturesArray animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
+        NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
+        for (int i = 0; i<picturesArray.count; i++) {
+            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,[[picturesArray objectAtIndex:i]imageID]];
+            [photoURLs addObject:urlString];
+        }
+        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
+        [browser setDisplaysProfileInfo:NO];
         [browser setInitialPageIndex:indexPath.row];
         [browser setDelegate:self];
         [self presentViewController:browser animated:YES completion:nil];
@@ -110,6 +145,8 @@
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     
 }
+
+#pragma mark - IB Actions
 
 - (IBAction)garbageButtonAction:(id)sender {
     NSMutableArray *indexPaths = [[NSMutableArray alloc]initWithCapacity:removedImages.count];

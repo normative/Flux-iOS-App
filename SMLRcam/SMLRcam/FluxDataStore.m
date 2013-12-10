@@ -66,7 +66,7 @@
     FluxScanImageObject *imageObject = [fluxMetadata objectForKey:metadata.localID];
     if (!imageObject)
     {
-        [fluxMetadata setValue:metadata forKey:metadata.localID];
+        [fluxMetadata setObject:metadata forKey:metadata.localID];
     }
     else if (imageObject.imageID < 0 && metadata.imageID >= 0)
     {

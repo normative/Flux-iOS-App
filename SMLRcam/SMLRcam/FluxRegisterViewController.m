@@ -9,15 +9,16 @@
 #import "FluxRegisterViewController.h"
 #import "ProgressHUD.h"
 #import "FluxUserObject.h"
+#import "FluxCameraObject.h"
 #import "FluxTextFieldCell.h"
 #import "UICKeyChainStore.h"
 
 #import <FacebookSDK/FacebookSDK.h>
-
+#import <sys/utsname.h>
 
 
 #define ERROR_TITLE_MSG @"Uh oh..."
-#define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the settings app to sign in with Twitter"
+#define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the Settings app to sign in with Twitter"
 #define ERROR_PERM_ACCESS @"We weren't granted access your twitter accounts"
 #define ERROR_OK @"OK"
 
@@ -43,7 +44,7 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
-                                                      message:@"In order to bypass the signup flow, just tap on the create account button, or the sign in button."
+                                                      message:@"Login / Signup is now partially implemented, please try it out. To save time in future launches, tap the flux logo to skip."
                                                      delegate:nil
                                             cancelButtonTitle:@"OK"
                                             otherButtonTitles:nil];
@@ -196,6 +197,9 @@
     cell.textField.textAlignment = NSTextAlignmentCenter;
     [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
     [cell.textLabel setTextColor:[UIColor whiteColor]];
+    if (shouldErase) {
+        [cell.textField setText:@""];
+    }
     return cell;
 }
 
@@ -203,14 +207,14 @@
 
 - (void)checkCurrentLoginState{
     NSString *username = [UICKeyChainStore stringForKey:@"username" service:@"com.flux"];
-    NSString *password = [UICKeyChainStore stringForKey:@"password" service:@"com.flux"];
+    NSString *userID = [UICKeyChainStore stringForKey:@"userID" service:@"com.flux"];
     NSString *token = [UICKeyChainStore stringForKey:@"token" service:@"com.flux"];
     
     [self checkFBLoginStatus];
     [self checkTWloginStatus];
     
-    if (username && token && password) {
-        [self fadeOutLogin];
+    if (username && token && userID) {
+        [self didLoginSuccessfullyWithUserID:userID.intValue];
     }
     else{
         [self showContainerViewAnimated:YES];
@@ -224,14 +228,39 @@
 }
 
 - (IBAction)createAccountButtonAction:(id)sender {
-    [self hideContainerViewAnimated:YES];
-    [self performSelector:@selector(fadeOutLogin) withObject:nil afterDelay:0.5];
-    return;
-    
     UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome!" message:@"Thanks for taking the time to look into Flux. At the moment, Flux is still in beta, and requires a pin to continue. If you're one of the lucky ones, please enter your pin below." delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles:@"Activate Pin", nil];
     alert.alertViewStyle = UIAlertViewStylePlainTextInput;
     [alert becomeFirstResponder];
     [alert show];
+}
+
+- (void)didLoginSuccessfullyWithUserID:(int)userID{
+    FluxCameraObject*camObj = [[FluxCameraObject alloc]initWithdeviceID:[[[UIDevice currentDevice]identifierForVendor]UUIDString] model:[self deviceName] forUserID:userID];
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setPostCameraComplete:^(FluxDataRequest*completedRequest){
+        [self fadeOutLogin];
+    }];
+    [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+        [self showContainerViewAnimated:YES];
+        NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    [self.fluxDataManager postCamera:camObj withDataRequest:dataRequest];
+}
+
+#pragma mark - 3rd Party Social
+
+- (void)socialPartner:(NSString*)partner didAuthenticateWithToken:(NSString*)token andUserInfo:(NSDictionary*)userInfo{
+    
+    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome Friend" message:[NSString stringWithFormat:@"You (%@) successfully logged in with %@.",[userInfo objectForKey:@"username"],partner]  delegate:nil cancelButtonTitle:@"Coool" otherButtonTitles: nil];
+    [alert becomeFirstResponder];
+    [alert show];
+    
+    [UICKeyChainStore setString:token forKey:@"token" service:[NSString stringWithFormat:@"com.%@",partner]];
+    
+    //perform flux login, then post camera to the db to move forward.
+    //for now just post the cam with default userID
+    [self didLoginSuccessfullyWithUserID:1];
 }
 
 #pragma mark Twitter
@@ -268,8 +297,7 @@
         return;
     }
     [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
-        [self hideContainerViewAnimated:YES];
-        dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             if (granted) {
                 if (_accounts.count > 1) {
                     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Choose an Account" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
@@ -291,6 +319,7 @@
             }
         });
     }];
+    [self hideContainerViewAnimated:YES];
 }
 
 - (void)loginWithTwitterForAccountIndex:(int)index{
@@ -301,18 +330,9 @@
             NSLog(@"Reverse Auth process returned: %@", responseStr);
             
             NSArray *parts = [responseStr componentsSeparatedByString:@"&"];
-            NSString *lined = [parts componentsJoinedByString:@"\n"];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:lined delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                [alert show];
-
-                if (parts.count>3) {
-                    NSString*username = [[parts objectAtIndex:3] substringFromIndex:12];
-                    [UICKeyChainStore setString:username forKey:@"username" service:@"com.flux"];
-                }
-                [self fadeOutLogin];
-            });
+            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username", nil];
+            [self socialPartner:@"Twitter" didAuthenticateWithToken:[parts objectAtIndex:0] andUserInfo:userInfo];
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
@@ -362,27 +382,16 @@
            FBSessionState state, NSError *error) {
              if (!error) {
                  dispatch_async(dispatch_get_main_queue(), ^{
-                     NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
-                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                     [alert show];
+                     NSLog(@"Token: %@",FBSession.activeSession.accessTokenData.accessToken);
                      
                      if (FBSession.activeSession.isOpen) {
                          [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
                          if (!error) {
-                             dispatch_async(dispatch_get_main_queue(), ^{
-                             NSString * userString = [NSString stringWithFormat:@"Name: %@ \nUsername: %@ \nEmail: %@",user.name, user.username,[user objectForKey:@"email"]];
-                             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:userString delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                             [alert show];
-                         });
-                         NSLog(@"Name: %@",user.name);
-                         NSLog(@"Username: %@",user.username);
-                         NSLog(@"Email: %@",[user objectForKey:@"email"]);
                              
-                         [UICKeyChainStore setString:user.username forKey:@"username" service:@"com.flux"];
-                         
-                         socialOauthPin = FBSession.activeSession.accessTokenData.accessToken;
-                         [self fadeOutLogin];
+                             NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:user.username, @"username", nil];
+                             [self socialPartner:@"Facebook" didAuthenticateWithToken:FBSession.activeSession.accessTokenData.accessToken andUserInfo:userInfo];
                          }
+
                          else{
                              dispatch_async(dispatch_get_main_queue(), ^{
                                  NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
@@ -441,32 +450,6 @@
              }];
         }
     }
-    //    else{
-    //        if (![FBSession.activeSession.permissions containsObject:@"email"]) {
-    //            NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
-    //            [FBSession openActiveSessionWithReadPermissions:permissions
-    //                                               allowLoginUI:YES
-    //                                          completionHandler:
-    //             ^(FBSession *session,
-    //               FBSessionState state, NSError *error) {
-    //                 if (!error) {
-    //                     dispatch_async(dispatch_get_main_queue(), ^{
-    //                         NSString * string = [NSString stringWithFormat:@"Token: %@",FBSession.activeSession.accessTokenData.accessToken];
-    //                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:string delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    //                         [alert show];
-    //
-    //                     });
-    //                 }
-    //                 else{
-    //                     dispatch_async(dispatch_get_main_queue(), ^{
-    //                         NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-    //                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    //                         [alert show];
-    //                     });
-    //                 }
-    //             }];
-    //        }
-    //    }
 }
 
 #pragma mark Pin
@@ -507,9 +490,14 @@
         [newUser setEmail:email];
         
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setUploadUserComplete:^(FluxUserObject*uploadedUserObject, FluxDataRequest *completedDataRequest){
+        [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
+            [UICKeyChainStore setString:createdUserObject.username forKey:@"username" service:@"com.flux"];
+            [UICKeyChainStore setString:[NSString stringWithFormat:@"%i",createdUserObject.userID] forKey:@"userID" service:@"com.flux"];
+            [UICKeyChainStore setString:createdUserObject.auth_token forKey:@"token" service:@"com.flux"];
+            
             [ProgressHUD showSuccess:@"Account Created!"];
-            [self performSelector:@selector(fadeOutLogin) withObject:nil afterDelay:0.3];
+            [self didLoginSuccessfullyWithUserID:createdUserObject.userID];
+
         }];
         [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
             [self.navigationItem.leftBarButtonItem setEnabled:YES];
@@ -534,17 +522,15 @@
         [newUser setPassword:password];
         
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setLoginUserComplete:^(NSString*token, FluxDataRequest * completedDataRequest){
-            [UICKeyChainStore setString:username forKey:@"username" service:@"com.flux"];
-            [UICKeyChainStore setString:password forKey:@"password" service:@"com.flux"];
-            [UICKeyChainStore setString:token forKey:@"token" service:@"com.flux"];
+        [dataRequest setLoginUserComplete:^(FluxUserObject*userObject, FluxDataRequest * completedDataRequest){
+            [UICKeyChainStore setString:userObject.username forKey:@"username" service:@"com.flux"];
+            [UICKeyChainStore setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:@"userID" service:@"com.flux"];
+            [UICKeyChainStore setString:userObject.auth_token forKey:@"token" service:@"com.flux"];
             
             [ProgressHUD showSuccess:@"Login Successful"];
-            [self performSelector:@selector(fadeOutLogin) withObject:nil afterDelay:0.3];
+            [self didLoginSuccessfullyWithUserID:userObject.userID];
         }];
         [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
-            [self.navigationItem.leftBarButtonItem setEnabled:YES];
-            [self.navigationItem.rightBarButtonItem setEnabled:YES];
             [self showContainerViewAnimated:YES];
             if ([e.userInfo objectForKey:@"NSLocalizedRecoverySuggestion"]) {
                 if ([(NSString*)[e.userInfo objectForKey:@"NSLocalizedRecoverySuggestion"]length] < 30) {
@@ -567,6 +553,12 @@
 }
 
 - (IBAction)loginSignupToggleAction:(id)sender {
+    
+    if (![createLoginButton translatesAutoresizingMaskIntoConstraints]) {
+        [createLoginButton removeFromSuperview];
+        [createLoginButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+        [loginElementsContainerView addSubview:createLoginButton];
+    }
     if (isInSignUp) {
         isInSignUp = NO;
         [textInputElements removeObjectAtIndex:2];
@@ -574,16 +566,22 @@
         [self performSelector:@selector(reloadTheRow) withObject:nil afterDelay:0.0];
         [loginTogglePromptLabel setText:@"Don't have an acount yet?"];
         [loginToggleButton setTitle:@"Sign up!" forState:UIControlStateNormal];
+        [loginToggleButton setEnabled:NO];
         
         [UIView setAnimationsEnabled:NO];
         [createLoginButton setTitle:@"Sign in" forState:UIControlStateNormal];
         [UIView setAnimationsEnabled:YES];
         
-        [UIView animateWithDuration:0.2 animations:^{
+        
+        
+        [UIView animateWithDuration:0.3 animations:^{
             [twitterButton setAlpha:0.0];
             [facebookButton setAlpha:0.0];
             [topSeparator setAlpha:0.0];
-        } completion:nil];
+            [signInOptionsLabel setAlpha:0.0];
+        } completion:^(BOOL finished){
+            [loginToggleButton setEnabled:YES];
+        }];
     }
     else{
         isInSignUp = YES;
@@ -592,18 +590,28 @@
         [self performSelector:@selector(reloadTheRow) withObject:nil afterDelay:0.0];
         [loginTogglePromptLabel setText:@"Already have an Account?"];
         [loginToggleButton setTitle:@"Sign in!" forState:UIControlStateNormal];
+        [loginToggleButton setEnabled:NO];
         
         [UIView setAnimationsEnabled:NO];
         [createLoginButton setTitle:@"Create Account" forState:UIControlStateNormal];
         [UIView setAnimationsEnabled:YES];
 
         
-        [UIView animateWithDuration:0.2 animations:^{
+        [UIView animateWithDuration:0.3 animations:^{
             [twitterButton setAlpha:1.0];
             [facebookButton setAlpha:1.0];
             [topSeparator setAlpha:1.0];
-        } completion:nil];
+            [signInOptionsLabel setAlpha:1.0];
+        } completion:^(BOOL finished){
+            [loginToggleButton setEnabled:YES];
+        }];
     }
+}
+
+- (IBAction)backdoorButtonAction:(id)sender {
+    [(UIButton*)sender setEnabled:NO];
+    [self hideContainerViewAnimated:YES];
+    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -622,17 +630,21 @@
         [UIView animateWithDuration:0.3  animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             if (self.view.bounds.size.height < 500) {
-                [logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+                [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
             }
-            [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+            else{
+                [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+            }
         }];
     }
     else{
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         if (self.view.bounds.size.height < 500) {
-            [logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+            [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
         }
-        [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+        else{
+            [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+        }
     }
 }
 
@@ -641,8 +653,7 @@
         [UIView animateWithDuration:0.5 animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             if (self.view.bounds.size.height < 500) {
-                [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2), self.view.center.y, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
-                [logoImageView setCenter:CGPointMake(self.view.center.x, 50)];
+                [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
             }
             else{
                 [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
@@ -652,8 +663,7 @@
     else{
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         if (self.view.bounds.size.height < 500) {
-            [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2), self.view.center.y, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
-            [logoImageView setCenter:CGPointMake(self.view.center.x, 50)];
+            [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
         }
         else{
             [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
@@ -711,6 +721,16 @@
     }
 }
 
+- (BOOL)keyboardIsVisible{
+    for (int i = 0; i<textInputElements.count; i++) {
+        FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        if ([cell.textField isFirstResponder]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 -(BOOL) NSStringIsValidEmail:(NSString *)checkString
 {
     BOOL stricterFilter = YES; // Discussion http://blog.logichigh.com/2010/09/02/validating-an-e-mail-address/
@@ -721,8 +741,19 @@
     return [emailTest evaluateWithObject:checkString];
 }
 
+- (NSString*)deviceName
+{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    return [NSString stringWithCString:systemInfo.machine
+                              encoding:NSUTF8StringEncoding];
+}
+
 - (void)reloadTheRow{
+    shouldErase = YES;
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    shouldErase = NO;
 }
 
 @end

@@ -11,6 +11,7 @@
 #import "FluxUserObject.h"
 #import "FluxTagObject.h"
 #import "FluxMapImageObject.h"
+#import "FluxProfileImageObject.h"
 
 @implementation FluxMappingProvider
 
@@ -72,6 +73,26 @@
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
     [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token"]];
+    
+    return mapping;
+}
+
++ (RKObjectMapping *)userImagesGetMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxProfileImageObject class]];
+    
+    [mapping addAttributeMappingsFromArray:@[@"imageID", @"description"]];
+    
+    return mapping;
+}
+
++ (RKObjectMapping *)cameraPostMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"userID":            @"user_id",
+                                                  @"deviceID":   @"deviceid",
+                                                  @"model":    @"model"
+                                                  }];
     
     return mapping;
 }

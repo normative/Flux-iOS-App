@@ -389,6 +389,42 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return requestID;
 }
 
+- (FluxRequestID*)postCamera:(FluxCameraObject *)cameraObject withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = data_upload_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices postCamera:cameraObject withRequestID:requestID];
+    return requestID;
+}
+
+- (FluxRequestID *) requestUserProfileForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = profile_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getUserForID:userID withRequestID:requestID];
+    return requestID;
+}
+
+- (FluxRequestID *) requestUserProfilePicForID:(int)userID andSize:(NSString *)size withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = profile_pic_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getUserProfilePicForID:userID withStringSize:size withRequestID:requestID];
+    return requestID;
+}
+
+- (FluxRequestID *) requestImageListForUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = profile_images_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getImagesListForUserWithID:userID withRequestID:requestID];
+    return requestID;
+}
+
 #pragma mark - Request Queries
 
 // General support for managing outstanding requests (i.e. see which images in bulk request are complete)
@@ -406,6 +442,19 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     networkServices = [[FluxNetworkServices alloc]init];
     [networkServices setDelegate:self];
 }
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e andRequestID:(NSUUID *)requestID
+{
+    // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenErrorOccurred:e withDataRequest:request];
+    
+    // Clean up request
+    [self completeRequestWithDataRequest:request];
+}
+
+
+#pragma mark Images
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageList:(NSArray *)imageList
            andRequestID:(FluxRequestID *)requestID
@@ -509,8 +558,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                     ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID
 {
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request setCurrentUploadSize:bytesSent];
-    [request setTotalUploadSize:size];
+    [request setBytesUploaded:bytesSent];
+    [request setTotalByteSize:size];
     [request whenUploadInProgress:[fluxDataStore getMetadataWithLocalID:request.uploadLocalID] withDataRequest:request];
 }
 
@@ -548,20 +597,12 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     {
         FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
         [self completeRequestWithDataRequest:curRequest];
-        [[uploadQueueReceivers objectForKey:updatedImageObject.localID] removeObject:curRequestID];
     }
     
-    if ([[uploadQueueReceivers objectForKey:updatedImageObject.localID] count] == 0)
-    {
-        [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
-    }
-    else
-    {
-        NSLog(@"%s: Upload Queue Receiver list not empty following upload of ID %@. Should never happen.",
-              __func__, updatedImageObject.localID);
-    }
-
+    [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
 }
+
+#pragma mark Map
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray *)imageList andRequestID:(NSUUID *)requestID
 {
@@ -573,6 +614,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
+#pragma mark Tags
+
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList andRequestID:(NSUUID *)requestID
 {
     // Call callback of requestor
@@ -583,6 +626,8 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
+#pragma mark Users
+
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject *)userObject andRequestID:(NSUUID *)requestID{
     // Call callback of requestor
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
@@ -592,24 +637,47 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
--(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUserWithtoken:(NSString *)authToken andRequestID:(NSUUID *)requestID{
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject *)userObject andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenLoginUserComplete:authToken withDataRequest:request];
+    [request whenLoginUserComplete:userObject withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e andRequestID:(NSUUID *)requestID
-{
-    // Call callback of requestor
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenErrorOccurred:e withDataRequest:request];
+    [request whenCameraPostCompleteWithDataRequest:request];
     
-    // Clean up request
+    // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
 
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUser:(FluxUserObject *)user andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserReady:user withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnProfileImage:(UIImage *)image forUserID:(int)user andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserProfilePicReady:image forUserID:user withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray *)images andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserImagesReady:images withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+#pragma mark Other
 
 - (void)deleteLocations
 {

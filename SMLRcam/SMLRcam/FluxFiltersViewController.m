@@ -117,12 +117,13 @@
         topTagsArray = tagList;
         [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:topTagsArray];
         if ([selectedTags count]>0) {
-            for (NSString*str in selectedTags)
-            {
+            NSMutableIndexSet * removalSet = [[NSMutableIndexSet alloc]init];
+            for (int i = 0; i<selectedTags.count; i++) {
+                NSString*str = [selectedTags objectAtIndex:i];
                 FluxTagObject*tmp = [[FluxTagObject alloc]init];
                 [tmp setTagText:str];
                 if (![topTagsArray containsObject:tmp]) {
-                    [selectedTags removeObject:str];
+                    [removalSet addIndex:i];
                 }
                 // set it selected
                 else{
@@ -130,6 +131,7 @@
                     [[[rightDrawerTableViewArray objectAtIndex:1] objectAtIndex:subArrayIndex] setIsActive:YES];
                 }
             }
+            [selectedTags removeObjectsAtIndexes:removalSet];
             
         }
         [self.filterTableView reloadData];

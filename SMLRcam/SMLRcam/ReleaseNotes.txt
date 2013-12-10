@@ -1,5 +1,58 @@
 Release Notes:
 
+******************************************
+
+V0.13 B16
+
+Released: 2013-12-06 22:15:00
+
+Release Notes:
+- Add check to ensure new metadata records don’t overwrite existing records.
+- Re-enable incident angle checks with a threshold value of 45 degrees.
+- data filter icon bug fix
+- selected tags crash fix
+- Added an alert on BOOM button hit.
+- image for User, app icon, profile for user, some assets updated
+- Change compass to use locationManager.orientationHeading rather than raw GPS heading.
+- Add user pose and orientation-based device heading to LocationSingleton.
+
+******************************************
+
+V0.13 B15
+
+Released: 2013-12-05 17:30:00
+
+Release Notes:
+- Fixed distance calculation for minMoveDistance to use haversine computed distance.
+- Re-enable Kalman filter.
+
+******************************************
+
+V0.13 B14
+
+Released: 2013-12-04 16:30:00
+
+Release Notes:
+- Progress view now works
+- MapView crash resolved
+- Image upload crash resolved
+- latency on first launch resolved - images should now appear much faster on ap launch.
+
+******************************************
+
+V0.13 B13
+
+Released: 2013-12-03 20:10:00
+
+Release Notes:
+- Integrated new pedometer code into Kalman Filter. Tuned and tested. This completes the first stage of user localization
+  improvements done on the device.
+
+- Change timing of list update notifications to ensure all list changes are notified and can be reflected in compass and counts
+
+- mapview updates
+
+- snapshot saving
 
 ******************************************
 

@@ -9,7 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxCameraObject.h"
 #import <CoreLocation/CoreLocation.h>
+#import "RKObjectManager.h"
 
 typedef NSUUID FluxRequestID;
 
@@ -39,7 +41,14 @@ extern NSString* const FluxProductionServerURL;
 //users
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUserWithtoken:(NSString*)authToken
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject*)userObject
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUser:(FluxUserObject *)user
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnProfileImage:(UIImage *)image forUserID:(int)user
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray*)images
            andRequestID:(FluxRequestID *)requestID;
 
 //tags
@@ -100,12 +109,20 @@ extern NSString* const FluxProductionServerURL;
 #pragma mark  - Users
 
 //returns user for a given userID
-- (void)getUserForID:(int)userID;
+- (void)getUserForID:(int)userID withRequestID:(FluxRequestID *)requestID;
 
 - (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
 
+- (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID;
+
 //creates a user with the given object
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
+
+//return's a profile image for a given userID and size
+- (void)getUserProfilePicForID:(int)userID withStringSize:(NSString *)sizeString withRequestID:(NSUUID *)requestID;
+
+//return's a user's image list for a given userID
+- (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 #pragma mark  - Tags
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;
