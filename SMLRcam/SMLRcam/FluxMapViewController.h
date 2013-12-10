@@ -26,6 +26,7 @@
     CLLocationCoordinate2D lastSynchedLocation;
      double lastRadius;
     int outstandingRequests;
+    BOOL firstRunDone;
     
     // Map View
     __weak IBOutlet MIMapView *fluxMapView;

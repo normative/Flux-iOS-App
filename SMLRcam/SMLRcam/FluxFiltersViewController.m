@@ -32,7 +32,6 @@
     if (dataFilter == nil) {
         dataFilter = [[FluxDataFilter alloc] init];
     }
-    self.radius = 15;
     FluxImageTools*imageTools = [[FluxImageTools alloc]init];
     
     [self.backgroundImageView setImage:[imageTools blurImage:bgImage withBlurLevel:0.6]];
@@ -65,6 +64,7 @@
     [self sendTagRequest];
 }
 
+//must be called from presenting VC
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andDBTitle:@"myPhotos" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"myPhotos"]];
     FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
@@ -74,6 +74,7 @@
         startImageCount = count;
     }
     imageCount = [NSNumber numberWithInt:count];
+    self.radius = 15;
     
     socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, favouritesFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
@@ -367,7 +368,6 @@
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
-    //[self sendTagRequest];
 }
 
 - (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{

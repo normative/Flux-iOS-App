@@ -119,12 +119,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void) setupMapView
 {
     [fluxMapView setShowsUserLocation:YES];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 1050, 1050);
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
     [fluxMapView setTheUserLocation:locationManager.location];
     lastSynchedLocation = locationManager.location.coordinate;
-    lastRadius = 500.0;
+    lastRadius = 75.0;
     outstandingRequests = 0;
     
     filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
@@ -167,8 +167,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    if (![self.presentingViewController isKindOfClass:[FluxFiltersViewController class]]) {
+    if (!firstRunDone) {
         [self setupMapView];
+        firstRunDone = YES;
     }
 }
 
@@ -182,7 +183,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
     [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.fluxMapContentMetadata.count];
     [self animationPushBackScaleDown];
-        [filtersVC setRadius:500.0];
+    [filtersVC setRadius:lastRadius];
 }
 
 #pragma mark Transition Animations
