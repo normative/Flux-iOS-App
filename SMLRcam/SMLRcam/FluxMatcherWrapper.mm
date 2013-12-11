@@ -113,12 +113,14 @@
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
+        double scale_factor = scene_img.rows / object_img.rows;
+        
         [self setCameraIntrinsicsWithRows:scene_img.rows andColums:scene_img.cols];
         
         for( size_t i = 0; i < matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches
-            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt );
+            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt * scale_factor );
             scene.push_back( keypoints_scene[ matches[i].trainIdx ].pt );
         }
         
