@@ -618,7 +618,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 
 - (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
-    [self animationPopFrontScaleUp];
+    //[self animationPopFrontScaleUp];
     
     if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
         NSDictionary *userInfoDict = @{@"filter" : dataFilter};
@@ -651,7 +651,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         UIImage*bgImage = [openGLController snapshot:openGLController.view];
         [filtersVC setBackgroundView:bgImage];
         
-        [self animationPushBackScaleDown];
+        //[self animationPushBackScaleDown];
     }
     else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
         FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];

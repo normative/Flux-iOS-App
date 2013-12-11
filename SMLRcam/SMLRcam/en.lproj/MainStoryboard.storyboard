@@ -231,7 +231,7 @@
             </objects>
             <point key="canvasLocation" x="2287" y="-1735"/>
         </scene>
-        <!--Flux Image Annotation View Controller - New Capture-->
+        <!--Flux Image Annotation View Controller-->
         <scene sceneID="ius-dq-IxH">
             <objects>
                 <viewController id="eyG-qJ-3R4" customClass="FluxImageAnnotationViewController" sceneMemberID="viewController">
@@ -259,7 +259,7 @@
                                             <size key="itemSize" width="110" height="110"/>
                                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                            <inset key="sectionInset" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                            <inset key="sectionInset" minX="10" minY="0.0" maxX="10" maxY="0.0"/>
                                         </collectionViewFlowLayout>
                                         <cells>
                                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="Ky8-Cb-gqZ">
@@ -288,21 +288,20 @@
                                             <outlet property="delegate" destination="eyG-qJ-3R4" id="B7z-Ov-X3R"/>
                                         </connections>
                                     </collectionView>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PY6-5W-SRh" customClass="KTPlaceholderTextView">
-                                        <rect key="frame" x="10" y="140" width="300" height="72"/>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PY6-5W-SRh" customClass="KTPlaceholderTextView">
+                                        <rect key="frame" x="10" y="133" width="300" height="85"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="300" id="icb-bg-lHm"/>
-                                            <constraint firstAttribute="height" priority="385" constant="72" id="jzG-2I-9Gp"/>
+                                            <constraint firstAttribute="height" priority="385" constant="85" id="jzG-2I-9Gp"/>
                                         </constraints>
-                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" keyboardType="twitter"/>
                                     </textView>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j2M-HY-wij" userLabel="Label Container">
-                                        <rect key="frame" x="10" y="232" width="300" height="40"/>
+                                        <rect key="frame" x="10" y="228" width="300" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bl2-6N-0xZ">
@@ -338,7 +337,7 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I50-pt-ooA">
+                                    <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I50-pt-ooA">
                                         <rect key="frame" x="0.0" y="288" width="320" height="216"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -350,7 +349,7 @@
                                 </subviews>
                                 <color key="backgroundColor" red="0.18431372549019609" green="0.18431372549019609" blue="0.18431372549019609" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstItem="PY6-5W-SRh" firstAttribute="top" secondItem="Cit-Ms-vJp" secondAttribute="bottom" constant="7" id="7xB-f9-PFS"/>
+                                    <constraint firstItem="PY6-5W-SRh" firstAttribute="top" secondItem="Cit-Ms-vJp" secondAttribute="bottom" id="7xB-f9-PFS"/>
                                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="PY6-5W-SRh" secondAttribute="bottom" constant="220" id="D63-C2-f7i"/>
                                     <constraint firstAttribute="centerX" secondItem="PY6-5W-SRh" secondAttribute="centerX" id="FjP-Vn-tBn"/>
                                     <constraint firstItem="Cit-Ms-vJp" firstAttribute="leading" secondItem="Hpz-QJ-bJr" secondAttribute="leading" id="Qpc-9c-OKH"/>
@@ -368,7 +367,7 @@
                             <constraint firstAttribute="bottom" secondItem="Hpz-QJ-bJr" secondAttribute="bottom" id="jLo-vB-8Fc"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="New Capture" id="5j5-3S-Ygm">
+                    <navigationItem key="navigationItem" id="5j5-3S-Ygm">
                         <barButtonItem key="leftBarButtonItem" title="Cancel" id="K9D-zu-mw8">
                             <connections>
                                 <action selector="cancelButtonAction:" destination="eyG-qJ-3R4" id="Gvc-yL-vje"/>

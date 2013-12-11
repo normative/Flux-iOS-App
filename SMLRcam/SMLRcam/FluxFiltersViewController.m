@@ -68,7 +68,7 @@
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andDBTitle:@"myPhotos" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"myPhotos"]];
     FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
-    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Favourites" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
+    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
@@ -310,6 +310,7 @@
             [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
+            [cell.descriptorLabel setEnabled:NO];
             return cell;
         }
         //it's a tag

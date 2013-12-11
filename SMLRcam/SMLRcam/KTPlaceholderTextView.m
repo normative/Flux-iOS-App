@@ -31,6 +31,8 @@ static size_t const kDashedCount            = (2.0f);
     [self setFont:[UIFont fontWithName:@"Akkurat" size:self.font.pointSize]];
     [self setTextColor:[UIColor whiteColor]];
     
+    self.layoutManager.delegate = self;
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(isEditing:) name:UITextViewTextDidChangeNotification object:self];
     placeholderLabel = [[UILabel alloc]initWithFrame:CGRectMake(12, -22, self.frame.size.width, 75)];
@@ -111,6 +113,19 @@ static size_t const kDashedCount            = (2.0f);
         [theDelegate PlaceholderTextViewDidBeginEditing:self];
     }
     return YES;
+}
+
+- (CGRect)caretRectForPosition:(UITextPosition *)position
+{
+    CGRect originalRect = [super caretRectForPosition:position];
+    // Resize the rect. For example make it 75% by height:
+    originalRect.size.height = self.font.lineHeight;
+    return originalRect;
+}
+
+- (CGFloat)layoutManager:(NSLayoutManager *)layoutManager lineSpacingAfterGlyphAtIndex:(NSUInteger)glyphIndex withProposedLineFragmentRect:(CGRect)rect
+{
+    return 4;
 }
 
 

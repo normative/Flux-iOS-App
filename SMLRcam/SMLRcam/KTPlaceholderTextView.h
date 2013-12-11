@@ -18,7 +18,7 @@
 - (void)PlaceholderTextViewDidReturnWithinMax:(KTPlaceholderTextView*)placeholderTextView;
 @end
 
-@interface KTPlaceholderTextView : UITextView <UITextViewDelegate> {
+@interface KTPlaceholderTextView : UITextView <UITextViewDelegate, NSLayoutManagerDelegate> {
     
     NSString*placeholderString;
     UILabel *placeholderLabel;
