@@ -91,6 +91,8 @@
     scene_img = inputImage;
 }
 
+
+
 - (int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withDebugImage:(bool)outputImage
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
@@ -113,12 +115,14 @@
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
+         double scale_factor = scene_img.rows / object_img.rows;
+        
         [self setCameraIntrinsicsWithRows:scene_img.rows andColums:scene_img.cols];
         
         for( size_t i = 0; i < matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches
-            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt );
+            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt * scale_factor);
             scene.push_back( keypoints_scene[ matches[i].trainIdx ].pt );
         }
         
