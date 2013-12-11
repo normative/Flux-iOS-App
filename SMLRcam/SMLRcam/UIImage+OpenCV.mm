@@ -23,8 +23,8 @@
 -(cv::Mat)CVMat
 {
     CGColorSpaceRef colorSpace = CGImageGetColorSpace(self.CGImage);
-    CGFloat cols = self.size.width;
-    CGFloat rows = self.size.height;
+    CGFloat cols = self.size.width * self.scale;
+    CGFloat rows = self.size.height * self.scale;
     
     cv::Mat cvMat(rows, cols, CV_8UC4); // 8 bits per component, 4 channels
     
@@ -54,8 +54,8 @@
 -(cv::Mat)CVGrayscaleMat
 {
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
-    CGFloat cols = self.size.width;
-    CGFloat rows = self.size.height;
+    CGFloat cols = self.size.width * self.scale;
+    CGFloat rows = self.size.height * self.scale;
     
     cv::Mat cvMat(rows, cols, CV_8UC1); // 8 bits per component, 1 channels
     
