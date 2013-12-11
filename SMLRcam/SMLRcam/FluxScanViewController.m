@@ -285,46 +285,37 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     
-    FluxScanImageObject*tappedImageObject;
-    
-    if (IS_RETINA) {
-        tappedImageObject = [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
-    }
-    else{
-        tappedImageObject = [openGLController imageTappedAtPoint:point];
-    }
-    
-    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
-    IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
-    photo.userID = tappedImageObject.userID;
-    photo.caption = tappedImageObject.descriptionString;
-    NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
-    [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
-    photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
-    NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
-    
-    if (!photoViewerPlacementView) {
-        photoViewerPlacementView = [[UIView alloc]init];
-    }
-    [ScanUIContainerView addSubview:photoViewerPlacementView];
-    [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
-    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
-    [browser setDelegate:self];
-    [browser setDisplayToolbar:NO];
-    [browser setDisplayDoneButtonBackgroundImage:NO];
-    UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
-    [nav setNavigationBarHidden:YES];
-    [self presentViewController:nav animated:YES completion:nil];
+//    FluxScanImageObject*tappedImageObject;
+//    
+//    if (IS_RETINA) {
+//        tappedImageObject = [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
+//    }
+//    else{
+//        tappedImageObject = [openGLController imageTappedAtPoint:point];
+//    }
+//    
+//    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
+//    IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
+//    photo.userID = tappedImageObject.userID;
+//    photo.caption = tappedImageObject.descriptionString;
+//    NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
+//    [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
+//    photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
+//    NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
+//    
+//    if (!photoViewerPlacementView) {
+//        photoViewerPlacementView = [[UIView alloc]init];
+//    }
+//    [ScanUIContainerView addSubview:photoViewerPlacementView];
+//    [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
+//    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
+//    [browser setDelegate:self];
+//    [browser setDisplayToolbar:NO];
+//    [browser setDisplayDoneButtonBackgroundImage:NO];
+//    UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
+//    [nav setNavigationBarHidden:YES];
+//    [self presentViewController:nav animated:YES completion:nil];
 }
-//
-//- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
-//    IDMPhoto*photo = [[IDMPhoto alloc]initWithURL:photoBrowser.currentPhoto.photoURL];
-//    photo.userID = 1;
-//    photo.caption = @"JESUS";
-//
-//    FluxBrowserCaptionView *captionView = [[FluxBrowserCaptionView alloc] initWithPhoto:photo];
-//    return captionView;
-//}
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [photoViewerPlacementView removeFromSuperview];
