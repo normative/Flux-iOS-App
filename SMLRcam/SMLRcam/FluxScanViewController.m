@@ -346,7 +346,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [dateFormatter setDateFormat:@"MMM dd, yyyy"];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
-    filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
+    filterButton.contentEdgeInsets = UIEdgeInsetsMake(0.0, 1.0, 0.0, 0.0);
     
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:15]];
     [dateRangeLabel setTextColor:[UIColor whiteColor]];

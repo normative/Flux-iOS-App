@@ -90,6 +90,13 @@
     }
 }
 
+-(void)whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString *)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.usernameUniquenessComplete)
+    {
+        self.usernameUniquenessComplete(unique, suggestion, completeDataRequest);
+    }
+}
+
 -(void)whenCameraPostCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.postCameraComplete)
     {

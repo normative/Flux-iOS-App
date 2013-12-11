@@ -31,9 +31,11 @@
     NSString*socialOauthPin;
     
     NSMutableArray*textInputElements;
+    
     BOOL isInSignUp;
     BOOL shouldErase;
     BOOL firstCheck;
+    BOOL showUernamePrompt;
     
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;
@@ -47,6 +49,7 @@
     IBOutlet UIButton *createLoginButton;
     IBOutlet UIView *topSeparator;
     IBOutlet UIImageView *logoImageView;
+    UIMenuController *menuController;
 }
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;

@@ -43,6 +43,8 @@ extern NSString* const FluxProductionServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString*)suggestion
+           andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUser:(FluxUserObject *)user
            andRequestID:(FluxRequestID *)requestID;
@@ -112,6 +114,8 @@ extern NSString* const FluxProductionServerURL;
 - (void)getUserForID:(int)userID withRequestID:(FluxRequestID *)requestID;
 
 - (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
+
+- (void)checkUsernameUniqueness:(NSString*)username withRequestID:(FluxRequestID *)requestID;
 
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID;
 

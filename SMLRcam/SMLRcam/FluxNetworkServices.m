@@ -413,6 +413,36 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
      }];
 }
 
+- (void)checkUsernameUniqueness:(NSString *)username withRequestID:(NSUUID *)requestID{
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful);
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/users/checkUnique.json?username=%@",objectManager.baseURL,username]]];
+    
+    [NSURLConnection sendAsynchronousRequest:request
+                                       queue:[NSOperationQueue mainQueue]
+                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                               NSInteger responseCode = [(NSHTTPURLResponse *)response statusCode];
+                               if (!error && [statusCodes containsIndex:responseCode]) {
+                                   NSLog(@"Response needs to be parsed: %@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+                                   if ([delegate respondsToSelector:@selector(NetworkServices:didCheckUsernameUniqueness:andSuggestion:andRequestID:)])
+                                   {
+                                       [delegate NetworkServices:self didCheckUsernameUniqueness:NO andSuggestion:@"" andRequestID:requestID];
+                                   }
+                               }
+                               else{
+                                   if (error) {
+                                       NSLog(@"uniquenss error: %@",[error localizedDescription]);
+                                   }
+                                   else{
+                                       NSLog(@"uniquenss error code: %i",responseCode);
+                                   }
+                                   if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+                                   {
+                                       [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+                                   }
+                               }
+                           }];
+}
+
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID{
     [[RKObjectManager sharedManager] postObject:cameraObject path:@"/cameras" parameters:nil
      

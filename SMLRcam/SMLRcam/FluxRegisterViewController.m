@@ -14,6 +14,7 @@
 #import "UICKeyChainStore.h"
 
 
+
 #import <FacebookSDK/FacebookSDK.h>
 #import <sys/utsname.h>
 
@@ -121,6 +122,56 @@
     return YES;
 }
 
+- (void)textFieldDidEndEditing:(UITextField *)textField{
+    if (textField.tag == 88) {
+        FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+        [cell setLoading:YES];
+        
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setUsernameUniquenessComplete:^(BOOL unique, NSString*suggestion, FluxDataRequest*completedRequest){
+            [cell setLoading:NO];
+            if (unique) {
+                [cell setChecked:YES];
+                if (showUernamePrompt) {
+                    showUernamePrompt = NO;
+                    [self.tableView beginUpdates];
+                    [self.tableView endUpdates];
+                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                }
+                
+            }
+            
+            else{
+//                if (suggestion.length > 0) {
+//                    UIMenuItem*suggestionItem = [[UIMenuItem alloc]initWithTitle:suggestion action:@selector(setUsernameToSuggestion:)];
+//                    UIMenuController *menu = [UIMenuController sharedMenuController];
+//                    [menu setTargetRect:cell.frame inView:self.view];
+//                    [menu setMenuItems:[NSArray arrayWithObject:suggestionItem]];
+//                    [menu setMenuVisible:YES animated:YES];
+//                }
+                
+                FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+                showUernamePrompt = YES;
+                [self.tableView beginUpdates];
+                [self.tableView endUpdates];
+                NSString*username = cell.textField.text;
+                [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+                [cell.textField setText:username];
+            }
+        }];
+         [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+             [cell setLoading:NO];
+             NSLog(@"Unique lookup failed with error %d", (int)[e code]);
+        }];
+        [self.fluxDataManager checkUsernameUniqueness:textField.text withDataRequest:dataRequest];
+    }
+}
+
+- (void)setUsernameToSuggestion:(id)sender{
+    FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    [cell.textField setText:[(UIButton*)sender titleLabel].text];
+}
+
 #pragma mark - TableView Methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -133,6 +184,11 @@
 }
 
 - (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if (showUernamePrompt) {
+        if (indexPath.row == 0) {
+            return 70;
+        }
+    }
     return 50.0;
 }
 
@@ -152,6 +208,24 @@
                 [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
                 [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
                 [cell.textField setReturnKeyType:UIReturnKeyNext];
+                [cell.textField setTag:88];
+                
+                if (showUernamePrompt) {
+                    if (!cell.warningLabel) {
+                        cell.warningLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, cell.frame.size.width, 25)];
+                        [cell.warningLabel setFont:loginTogglePromptLabel.font];
+                        [cell.warningLabel setTextColor:loginTogglePromptLabel.textColor];
+                        [cell.warningLabel setTextAlignment:NSTextAlignmentCenter];
+                        [cell.warningLabel setText:@"this username has already been taken"];
+                    }
+
+                    [cell addSubview:cell.warningLabel];
+                }
+                else{
+                    if ([cell.warningLabel superview]) {
+                        [cell.warningLabel removeFromSuperview];
+                    }
+                }
             }
                 break;
             case 1:
@@ -690,7 +764,7 @@
                 [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
             }
             else{
-                [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
+                [logoImageView setCenter:CGPointMake(self.view.center.x, 87)];
             }
         }];
     }
@@ -717,6 +791,7 @@
                     case 1:
                     {
                         if (string.length > 5) {
+                            
                             [cell setChecked:YES];
                         }
                         else{
