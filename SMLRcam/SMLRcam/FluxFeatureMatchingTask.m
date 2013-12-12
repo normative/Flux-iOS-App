@@ -15,7 +15,7 @@ const double retryTimeIfInvalidHomography = 2.0;
 // If feature matching fails, it means we likely don't have the same features in the current FOV
 const double retryTimeIfInvalidMatch = 10.0;
 
-enum {SOLUTION1 =0, SOLUTION2};
+enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 
 
 @implementation FluxFeatureMatchingTask
@@ -150,21 +150,110 @@ enum {SOLUTION1 =0, SOLUTION2};
 
 - (int) solutionBasedOnNormalWithNormal1:(double *) normal1 withNormal2:(double*)normal2 withPlaneNormal:(GLKVector3) planeNormal
 {
+    int solution1 = SOLUTION1;
+    int solution2 = SOLUTION2;
     double dotProduct1 = planeNormal.x * normal1[0] + planeNormal.y * normal1[1] + planeNormal.z * normal1[2];
     double dotProduct2 = planeNormal.x * normal2[0] + planeNormal.y * normal2[1] + planeNormal.z * normal2[2];
+
+    //Positive depth constraint to get 2 of the 4 possible solutions;
+    if(dotProduct1 < 0.0)
+    {
+       dotProduct1= planeNormal.x * -1.0* normal1[0] + planeNormal.y * -1.0 * normal1[1] + planeNormal.z * -1.0 *normal1[2];
+       solution1 = SOLUTION1Neg;
+    }
     
-    return (dotProduct1 > dotProduct2) ? SOLUTION1:SOLUTION2;
+    if(dotProduct2 < 0.0)
+    {
+        dotProduct2 = planeNormal.x * -1.0 * normal2[0] + planeNormal.y * -1.0 * normal2[1] + planeNormal.z * -1.0 * normal2[2];
+        solution2 = SOLUTION2Neg;
+    }
+
+    return (dotProduct1 > dotProduct2) ? solution1:solution2;
 }
 
 
+typedef struct
+{
+    GLKVector3 normal;
+    GLKVector3 translation;
+    double rotation[9];
+} rntTransforms;
+
+- (void) arrayDataCopyWithLeft:(double*)left andRight:(double*)right withSize:(int)size withFactor :(double)factor
+{
+    int i;
+    for (i =0; i< size; i++)
+    {
+        left[i] = factor* right[i];
+    }
+    
+}
 - (void) computeImagePoseInECEF:(sensorPose*)iPose userPose:(sensorPose)upose hTranslation1:(double*)translation1 hRotation1:(double *)rotation1 hNormal1:(double *)normal1 hTranslation2:(double*)translation2 hRotation2:(double *)rotation2 hNormal2:(double *)normal2
 {
     float rotation44[16];
     
     double rotation[9];
     double translation[3];
-    int solution = 0;
+    double normal[3];
+    int j;
     int i;
+    GLKVector3 cameraNormal = GLKVector3Make(0.0, 0.0, 1.0);
+    
+    GLKMatrix4 transformMat = GLKMatrix4MakeRotation(M_PI, 1.0, 0.0, 0.0);
+    
+    
+    
+    
+    //DEBUG code
+    rntTransforms transforms[4];
+    
+    transforms[0].translation.x = translation1[0];
+    transforms[0].translation.y = translation1[1];
+    transforms[0].translation.z = translation1[2];
+    
+    transforms[1].translation.x = translation2[0];
+    transforms[1].translation.y = translation2[1];
+    transforms[1].translation.z = translation2[2];
+    
+    transforms[2].translation.x = -1.0*translation1[0];
+    transforms[2].translation.y = -1.0*translation1[1];
+    transforms[2].translation.z = -1.0*translation1[2];
+
+    transforms[3].translation.x = -1.0*translation2[0];
+    transforms[3].translation.y = -1.0*translation2[1];
+    transforms[3].translation.z = -1.0*translation2[2];
+   
+  
+    transforms[0].normal.x =  normal1[0];
+    transforms[0].normal.y =  normal1[1];
+    transforms[0].normal.z =  normal1[2];
+    
+    transforms[1].normal.x =  normal2[0];
+    transforms[1].normal.y =  normal2[1];
+    transforms[1].normal.z =  normal2[2];
+    
+    transforms[2].normal.x =  -1.0 * normal1[0];
+    transforms[2].normal.y =  -1.0 * normal1[1];
+    transforms[2].normal.z =  -1.0 * normal1[2];
+    
+    transforms[3].normal.x =  -1.0 * normal2[0];
+    transforms[3].normal.y =  -1.0 * normal2[1];
+    transforms[3].normal.z =  -1.0 * normal2[2];
+    
+    NSLog(@"breakpoint");
+    for(i=0;i<4;i++)
+    {
+        transforms[i].translation =GLKMatrix4MultiplyVector3(transformMat, transforms[i].translation);
+        transforms[i].normal =GLKMatrix4MultiplyVector3(transformMat, transforms[i].normal);
+    }
+    
+    NSLog(@"breakpoint");
+    //DEBUG ends
+    
+    
+    
+    
+    int solution = 0;
     
     GLKMatrix4 matrixTP1 = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
     GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP1, upose.rotationMatrix);
@@ -174,25 +263,34 @@ enum {SOLUTION1 =0, SOLUTION2};
 
     solution = [self solutionBasedOnNormalWithNormal1:normal1
                                           withNormal2:normal2
-                                      withPlaneNormal:planeNormalRotated];
-    
-    if(solution ==SOLUTION1)
+                                      withPlaneNormal:cameraNormal];
+    switch(solution)
     {
-        for(i=0; i<9;  i++)
-            rotation[i] = rotation1[i];
-    
-        for(i=0; i<3; i++)
-            translation[i] = translation1[i];
+        case SOLUTION1:
+            [self arrayDataCopyWithLeft:rotation andRight:rotation1 withSize:9 withFactor:1.0];
+            [self arrayDataCopyWithLeft:translation andRight:translation1 withSize:3 withFactor:1.0];
+            [self arrayDataCopyWithLeft:normal andRight:normal1 withSize:3 withFactor:1.0];
+            break;
+        case SOLUTION1Neg:
+            [self arrayDataCopyWithLeft:rotation andRight:rotation1 withSize:9 withFactor:1.0];
+            [self arrayDataCopyWithLeft:translation andRight:translation1 withSize:3 withFactor:-1.0];
+            [self arrayDataCopyWithLeft:normal andRight:normal1 withSize:3 withFactor:-1.0];
+            break;
+        case SOLUTION2:
+            [self arrayDataCopyWithLeft:rotation andRight:rotation2 withSize:9 withFactor:1.0];
+            [self arrayDataCopyWithLeft:translation andRight:translation2 withSize:3 withFactor:1.0];
+            [self arrayDataCopyWithLeft:normal andRight:normal2 withSize:3 withFactor:1.0];
+            break;
+        case SOLUTION2Neg:
+            [self arrayDataCopyWithLeft:rotation andRight:rotation2 withSize:9 withFactor:1.0];
+            [self arrayDataCopyWithLeft:translation andRight:translation2 withSize:3 withFactor:-1.0];
+            [self arrayDataCopyWithLeft:normal andRight:normal2 withSize:3 withFactor:-1.0];
+            break;
+            
+   
     }
-    else
-    {
-        for(i=0; i<9;  i++)
-            rotation[i] = rotation2[i];
-        
-        for(i=0; i<3; i++)
-            translation[i] = translation2[i];
-    }
     
+     NSLog(@"breakpoint");
     //rotation
     rotation44[0] = rotation[0];
     rotation44[1] = rotation[1];
@@ -214,33 +312,42 @@ enum {SOLUTION1 =0, SOLUTION2};
     GLKMatrix4 tmprotMatrix;
     GLKMatrix4 rotmat;
     
-    rotmat1 = GLKMatrix4MakeWithArray(rotation44);
-    GLKMatrix4 transformMat = GLKMatrix4MakeRotation(0.0, 1.0, 0.0, 0.0);
+    GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithArray(rotation44);
     
-    rotmat = GLKMatrix4Multiply(transformMat, rotmat1);
+    GLKMatrix4 rotationMatrixT = GLKMatrix4Multiply(transformMat, rotationMatrix);
     
     
-    tmprotMatrix = GLKMatrix4Multiply(rotmat, upose.rotationMatrix);
+    
+    
+    
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
-   iPose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, tmprotMatrix);
+    GLKMatrix4 tpuRotationMatrix =  GLKMatrix4Multiply(matrixTP, tmprotMatrix);
+    iPose->rotationMatrix = GLKMatrix4Multiply(rotationMatrixT, tpuRotationMatrix);
+    
+    
     
     [self computeInverseRotationMatrixFromPose:&upose];
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
-    positionTP.x = translation[0];
-    positionTP.y = translation[1];
-    positionTP.z = translation[2];
+    positionTP.x = 15.0 * translation[0];
+    positionTP.y = 15.0 * translation[1];
+    positionTP.z = 15.0 * translation[2];
     
-    //positionTP = GLKMatrix4MultiplyVector3(transformMat, positionTP);
-    
-//    positionTP = GLKMatrix4MultiplyVector3(matrixTPYZ, positionTP);
+    positionTP = GLKMatrix4MultiplyVector3(transformMat, positionTP);
+    positionTP = GLKMatrix4MultiplyVector3(matrixTP, positionTP);
+
     positionTP = GLKMatrix4MultiplyVector3(inverseRotation_teM, positionTP);
  
     iPose->ecef.x = upose.ecef.x + positionTP.x;
     iPose->ecef.y = upose.ecef.y + positionTP.y;
     iPose->ecef.z = upose.ecef.z + positionTP.z;
     
-   
+    //hacking iPose->position to store normal .. this is baaaad for readability but..
+    iPose->position.x = normal[0];
+    iPose->position.y = normal[0];
+    iPose->position.z = normal[0];
+    
+    iPose->position = GLKMatrix4MultiplyVector3(transformMat, iPose->position);
 }
 
 
