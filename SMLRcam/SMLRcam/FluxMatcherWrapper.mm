@@ -354,11 +354,31 @@
 }
 
 
+
+- (double)computeDeterminant:(double*)detMat
+{
+    
+    //column major
+    double a = detMat[0];
+    double d = detMat[1];
+    double g = detMat[2];
+    double b = detMat[3];
+    double e = detMat[4];
+    double h = detMat[5];
+    double c = detMat[6];
+    double f = detMat[7];
+    double i = detMat[8];
+    
+    return a*e*i+b*f*g +c*d*h - c*e*g - b*d*i - a*f*h;
+    
+}
+
+
 -(int) computeRTFromHomography:(double *) pH
 {
     //double pH[9]; //projective homography set this in OpenCV
     double tmpMat[9];
-    double eH[9]; //Euclidean Homography
+     double eH[9]; //Euclidean Homography
     double HtH[9];
     double s[3];
     double u[9];
@@ -374,16 +394,55 @@
     double U1[9], U2[9], W1[9], W2[9];
     double sign = 1.0;
     
-    
+    double determinant =0.0;
     
     
     //calculate euclidean homography
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3, 3, 1.0, ciinverse, 3, pH, 3, 0.0, tmpMat, 3);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 3 , 3, 1.0, tmpMat, 3, ci, 3, 0.0, eH, 3);
-   
+    
+    /*
+    eH[0] = 5.404;
+    eH[1] = 0.0;
+    eH[2] = -1.236;
+    
+    eH[3] = 0.0;
+    eH[4] = 4.0;
+    eH[5] = 0.0;
+    eH[6] = 4.436;
+    eH[7] = 0.0;
+    eH[8] = 3.804;
+    */
+    
+    
     cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 3, 3, 3, 1.0, eH, 3, eH, 3, 0.0, HtH, 3);
     [self computeSVD33: &HtH[0] U:&u[0] S:&s[0] vT:&vt[0]];
-    NSLog(@"SVD s:[%.4f %.4f %.4f ]",s[0], s[1], s[2]);
+    NSLog(@"SVD s:[%.4f %.4f %.4f ]",sqrt(s[0]), sqrt(s[1]), sqrt(s[2]));
+    
+    
+    double lambda = sqrt(s[1]);
+    
+    //normalize eH
+    for(i=0; i<9;i++)
+        eH[i] = eH[i]/lambda;
+    
+    cblas_dgemm(CblasColMajor, CblasTrans, CblasNoTrans, 3, 3, 3, 1.0, eH, 3, eH, 3, 0.0, HtH, 3);
+    [self computeSVD33: &HtH[0] U:&u[0] S:&s[0] vT:&vt[0]];
+    NSLog(@"SVD 2 s:[%.4f %.4f %.4f ]",(s[0]), (s[1]), (s[2]));
+    
+    
+    determinant =[self computeDeterminant:&u[0]];
+    
+    if((determinant - (-1.0))<1e-5)
+    {
+        for(i=0;i<9;i++)
+        {
+            u[i] = -1.0 * u[i];
+            vt[i]= -1.0*  vt[i];
+            
+        }
+    }
+    
     
     if(s[0]-s[2]< 1e-5)
     {
@@ -391,17 +450,13 @@
         return -1;
     }
     
-    scaleSq = 1.0/s[1];
-    scale = sqrt(scaleSq);
-    
-    for(i = 0; i <3; i++)
-        s[i]*=scaleSq;
-    
+    scale =1.0;
+
     for(i=0; i <3; i++)
     {
-        v1[i] = vt[i];
-        v2[i] = vt[i+3];
-        v3[i] = vt[i+6];
+        v1[i] = u[i];
+        v2[i] = u[i+3];
+        v3[i] = u[i+6];
     }
     
     for(i=0; i <3; i++)
@@ -418,6 +473,9 @@
         u1[i] = tmp3 * (tmp1Vec[i] + tmp2Vec[i]);
         u2[i] = tmp3 * (tmp1Vec[i] - tmp2Vec[i]);
     }
+    
+   // NSLog(@"u1 = [%f %f %f]",u1[0], u1[1], u1[2] );
+   // NSLog(@"u2 = [%f %f %f]",u2[0], u2[1], u2[2] );
     
     //Set U1
     [self crossProductVec1:v2 Vec2:u1 vecResult:tmp1Vec];
@@ -483,12 +541,12 @@
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, 3, 1 , 3, 1.0, tmpMat, 3, result2.normal, 3, 0.0, result2.translation, 3);
     
     /*
-    NSLog(@"v1 [%.6f %.6f %.6f]", v1[0], v1[1], v1[2]);
-    NSLog(@"v2 [%.6f %.6f %.6f]", v2[0], v2[1], v2[2]);
-    NSLog(@"v3 [%.6f %.6f %.6f]", v3[0], v3[1], v3[2]);
-    NSLog(@"u1 [%.6f %.6f %.6f]", u1[0], u1[1], u1[2]);
-    NSLog(@"u2 [%.6f %.6f %.6f]", u2[0], u2[1], u2[2]);
-    */
+     NSLog(@"v1 [%.6f %.6f %.6f]", v1[0], v1[1], v1[2]);
+     NSLog(@"v2 [%.6f %.6f %.6f]", v2[0], v2[1], v2[2]);
+     NSLog(@"v3 [%.6f %.6f %.6f]", v3[0], v3[1], v3[2]);
+     NSLog(@"u1 [%.6f %.6f %.6f]", u1[0], u1[1], u1[2]);
+     NSLog(@"u2 [%.6f %.6f %.6f]", u2[0], u2[1], u2[2]);
+     */
     
         
     self.t_from_H1 = result1;
@@ -498,29 +556,28 @@
 }
 
 /*
--(void) testTransforms
-{
-    
-    NSLog(@"---------------------------------");
-    NSLog(@"normal [%.6f %.6f %.6f]", result1.normal[0], result1.normal[1], result1.normal[2]);
-    NSLog(@"translation [%.6f %.6f %.6f]", result1.translation[0], result1.translation[1], result1.translation[2]);
-    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[0], result1.rotation[3], result1.rotation[6]);
-    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[1], result1.rotation[4], result1.rotation[7]);
-    NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[2], result1.rotation[5], result1.rotation[8]);
-    
-    NSLog(@"---------------------------------");
-    NSLog(@"normal [%.6f %.6f %.6f]", result2.normal[0], result2.normal[1], result2.normal[2]);
-    NSLog(@"translation [%.6f %.6f %.6f]", result2.translation[0], result2.translation[1], result2.translation[2]);
-    
-    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[0], result2.rotation[3], result2.rotation[6]);
-    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[1], result2.rotation[4], result2.rotation[7]);
-    NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[2], result2.rotation[5], result2.rotation[8]);
-    
-    
-}
-
-*/
-
+ -(void) testTransforms
+ {
+ 
+ NSLog(@"---------------------------------");
+ NSLog(@"normal [%.6f %.6f %.6f]", result1.normal[0], result1.normal[1], result1.normal[2]);
+ NSLog(@"translation [%.6f %.6f %.6f]", result1.translation[0], result1.translation[1], result1.translation[2]);
+ NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[0], result1.rotation[3], result1.rotation[6]);
+ NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[1], result1.rotation[4], result1.rotation[7]);
+ NSLog(@"rotation1 [%.6f %.6f %.6f]", result1.rotation[2], result1.rotation[5], result1.rotation[8]);
+ 
+ NSLog(@"---------------------------------");
+ NSLog(@"normal [%.6f %.6f %.6f]", result2.normal[0], result2.normal[1], result2.normal[2]);
+ NSLog(@"translation [%.6f %.6f %.6f]", result2.translation[0], result2.translation[1], result2.translation[2]);
+ 
+ NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[0], result2.rotation[3], result2.rotation[6]);
+ NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[1], result2.rotation[4], result2.rotation[7]);
+ NSLog(@"rotation1 [%.6f %.6f %.6f]", result2.rotation[2], result2.rotation[5], result2.rotation[8]);
+ 
+ 
+ }
+ 
+ */
 
 - (bool)isHomographyValid:(cv::Mat &)H withRows:(int)rows withCols:(int)cols
 {
