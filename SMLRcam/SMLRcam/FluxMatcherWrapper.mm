@@ -115,14 +115,14 @@
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
-         double scale_factor = scene_img.rows / object_img.rows;
+        double scale_factor = scene_img.rows / object_img.rows;
         
         [self setCameraIntrinsicsWithRows:scene_img.rows andColums:scene_img.cols];
         
         for( size_t i = 0; i < matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches
-            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt * scale_factor);
+            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt * scale_factor );
             scene.push_back( keypoints_scene[ matches[i].trainIdx ].pt );
         }
         
@@ -184,12 +184,13 @@
             }
             
             //-- Get the corners from the object image ( the object to be "detected" )
-            std::vector<cv::Point2f> obj_corners(4);
+            std::vector<cv::Point2f> obj_corners(5);
             obj_corners[0] = cvPoint(0,0);
-            obj_corners[1] = cvPoint( object_img.cols, 0 );
-            obj_corners[2] = cvPoint( object_img.cols, object_img.rows );
-            obj_corners[3] = cvPoint( 0, object_img.rows );
-            std::vector<cv::Point2f> scene_corners(4);
+            obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
+            obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
+            obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
+            obj_corners[4] = cvPoint( object_img.cols * scale_factor / 2, object_img.rows * scale_factor / 2 );
+            std::vector<cv::Point2f> scene_corners(5);
             
             cv::perspectiveTransform( obj_corners, scene_corners, H );
             
@@ -198,8 +199,31 @@
             line( dst, scene_corners[1], scene_corners[2], cv::Scalar( 0, 255, 0), 4 );
             line( dst, scene_corners[2], scene_corners[3], cv::Scalar( 0, 255, 0), 4 );
             line( dst, scene_corners[3], scene_corners[0], cv::Scalar( 0, 255, 0), 4 );
+            line( dst, scene_corners[0], scene_corners[2], cv::Scalar( 0, 255, 0), 4 );
+            line( dst, scene_corners[1], scene_corners[3], cv::Scalar( 0, 255, 0), 4 );
             
+            NSString *testOutStr = [NSString stringWithFormat:@"(%f, %f)", scene_corners[4].x, scene_corners[4].y];
+            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+
             UIImage *outputImg = [UIImage imageWithCVMat:dst];
+            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
+            
+            outputImg = [UIImage imageWithCVMat:object_img];
+            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
+
+            outputImg = [UIImage imageWithCVMat:scene_img];
+            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
+            
+            scene_img.copyTo(dst);
+            cv::cvtColor(dst, dst, CV_GRAY2RGB);
+            testOutStr = [NSString stringWithFormat:@"(%f, %f, %f)", homography[0], homography[1], homography[2]];
+            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+            testOutStr = [NSString stringWithFormat:@"(%f, %f, %f)", homography[3], homography[4], homography[5]];
+            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,200), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+            testOutStr = [NSString stringWithFormat:@"(%f, %f, %f)", homography[6], homography[7], homography[8]];
+            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,275), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+            
+            outputImg = [UIImage imageWithCVMat:dst];
             UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
         }
     }
@@ -232,10 +256,12 @@
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
+        double scale_factor = scene_img.rows / object_img.rows;
+        
         for( size_t i = 0; i < matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches
-            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt );
+            obj.push_back( keypoints_object[ matches[i].queryIdx ].pt * scale_factor );
             scene.push_back( keypoints_scene[ matches[i].trainIdx ].pt );
         }
         
@@ -245,12 +271,13 @@
         scene_img.copyTo(dst);
         
         //-- Get the corners from the object image ( the object to be "detected" )
-        std::vector<cv::Point2f> obj_corners(4);
+        std::vector<cv::Point2f> obj_corners(5);
         obj_corners[0] = cvPoint(0,0);
-        obj_corners[1] = cvPoint( object_img.cols, 0 );
-        obj_corners[2] = cvPoint( object_img.cols, object_img.rows );
-        obj_corners[3] = cvPoint( 0, object_img.rows );
-        std::vector<cv::Point2f> scene_corners(4);
+        obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
+        obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
+        obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
+        obj_corners[4] = cvPoint( object_img.cols * scale_factor / 2, object_img.rows * scale_factor / 2 );
+        std::vector<cv::Point2f> scene_corners(5);
         
         cv::perspectiveTransform( obj_corners, scene_corners, H );
         
@@ -259,6 +286,8 @@
         line( dst, scene_corners[1], scene_corners[2], cv::Scalar( 0, 255, 0), 4 );
         line( dst, scene_corners[2], scene_corners[3], cv::Scalar( 0, 255, 0), 4 );
         line( dst, scene_corners[3], scene_corners[0], cv::Scalar( 0, 255, 0), 4 );
+        line( dst, scene_corners[0], scene_corners[2], cv::Scalar( 0, 255, 0), 4 );
+        line( dst, scene_corners[1], scene_corners[3], cv::Scalar( 0, 255, 0), 4 );
     }
     else
     {
