@@ -8,6 +8,10 @@
 
 #import "UICKeyChainStore.h"
 
+NSString* const FluxUsernameKey = @"username";
+NSString* const FluxUserIDKey = @"userID";
+NSString* const FluxTokenKey = @"token";
+
 static NSString *_defaultService;
 
 @interface UICKeyChainStore () {
