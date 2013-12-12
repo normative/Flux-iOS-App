@@ -285,6 +285,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
+//    usp->rotationMatrix = GLKMatrix4Identity;
     
     setParametersTP(usp->position);
     
@@ -294,6 +295,8 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     tangentplaneRotation(usp);
     // rotationMat = rotationMat_t;
+    usp->rotationMatrix = GLKMatrix4Identity;
+    
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
@@ -428,7 +431,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         distance =  -1.0 *distance;
     }
     
-    
+    userPose.rotationMatrix = GLKMatrix4Identity;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
@@ -500,7 +503,9 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
-    
+    positionTP.x = 0.0;
+    positionTP.y = 0.0;
+    positionTP.z = 0.0;
     
     P0 = positionTP;
     V = GLKVector3Normalize(v);
@@ -581,11 +586,11 @@ void init(){
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
-    
+     uPose.rotationMatrix = GLKMatrix4Identity;
     
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
-    
+    GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uPose.rotationMatrix, zRay);
    // GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uhpose.rotationMatrix, zRay);
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
@@ -599,13 +604,10 @@ void init(){
     GLKVector3 V = GLKVector3Normalize(v);
     
    
+    P0.x = sp->position.x;
+    P0.y = sp->position.y;
+    P0.z = sp->position.z;
     
-    positionTP.x = sp->ecef.x - uPose.ecef.x;
-    positionTP.y = sp->ecef.y - uPose.ecef.y;
-    positionTP.z = sp->ecef.z - uPose.ecef.z;
-    
-    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
-    P0 = positionTP;
     V = GLKVector3Normalize(v);
     //  V = v;
     
@@ -615,13 +617,13 @@ void init(){
     
     if(vd==0)
     {
-        //    NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+           NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
         return 0;
     }
     if(t < 0)
     {
         
-        // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+         NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return 0;
     }
     
@@ -631,7 +633,7 @@ void init(){
     if(_distanceToUser > MAX_IMAGE_RADIUS)
     {
         
-        //NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
+//        NSLog(@"too far to render %f -> %f", distancetoPlane, distance);
         return 0;
     }
     
@@ -642,6 +644,9 @@ void init(){
     (*vp).at =viewP.at;
     (*vp).up = viewP.up;
     
+    GLKVector3 atvec = viewP.at;
+    
+    NSLog(@"breakpoint");
     return 1;
     
 }
@@ -865,6 +870,32 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (frameGrabRequested && frameGrabRequest && frameGrabRequest.frameRequested)
     {
+        if(_renderingMatchedImage ==0)
+        {
+            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                               _videoTextureCache,
+                                                               pixelBuffer,
+                                                               NULL,
+                                                               GL_TEXTURE_2D,
+                                                               GL_RGBA,
+                                                               _videoTextureWidth,
+                                                               _videoTextureHeight,
+                                                               GL_BGRA,
+                                                               GL_UNSIGNED_BYTE,
+                                                               0,
+                                                               &_videotexture2);
+            if (err)
+            {
+                NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+            }
+            else
+            {
+                NSLog(@"successfully grabbed CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
+            }
+        }
+        
+        
+
         // Grab copy of frame buffer and notify reciever that it is ready
         CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
 
@@ -882,7 +913,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         // Copy frame metadata
         frameGrabRequest.cameraFrameDate = currentDate;
-        _userPose.rotationMatrix = _userRotationRaw;
+        //_userPose.rotationMatrix = _userRotationRaw;
         frameGrabRequest.cameraPose = _userPose;
         frameGrabRequest.cameraProjectionDistance = _projectionDistance;
         
@@ -1018,7 +1049,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
-    
+    _renderingMatchedImage =0;
     //set debug labels to hidden by default
     gpsX.hidden= YES;
     gpsY.hidden= YES;
@@ -1411,6 +1442,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
                 _validMetaData[idx] = [self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose userHomographyPose:scanimageobject.userHomographyPose planeNormal:&planeNormal Distance:distance currentUserPose:_userPose viewParamters:&vpimage]*
                                  self.fluxDisplayManager.locationManager.notMoving ;
+                _renderingMatchedImage =1;
             }
             else
             {
@@ -1885,6 +1917,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self glkView:(GLKView*)self.view drawInRect:self.view.bounds];
     [(GLKView*)self.view display];
 }
+- (void) computePlaneNormalMatrix
+{
+    
+    //rotate camera onto plane
+    GLKVector3 cameraNormal = GLKVector3Make(0.0,0.0, 1.0);
+    GLKVector3 planeNormal = GLKVector3Make(_userPose.ecef.x, _userPose.ecef.y, _userPose.ecef.z);
+    
+    GLKVector3 axis = GLKVector3CrossProduct(cameraNormal, planeNormal);
+    
+    float dotP = GLKVector3DotProduct(cameraNormal, planeNormal);
+    
+    float l1 = 1.0;
+    float l2 = sqrtf(planeNormal.x *planeNormal.x + planeNormal.y * planeNormal.y + planeNormal.z*planeNormal.z);
+    
+    float angle = acosf(dotP/l1 * l2);
+    
+    _userPose.rotationMatrix = GLKMatrix4MakeRotation(angle, 0.0, 0.0, 1.0);
+}
 
 - (void)update
 {
@@ -1926,12 +1976,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
         _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
   
-    
+       _userPose.rotationMatrix = GLKMatrix4Identity;
     
     GLKVector3 planeNormal;
     float distance = _projectionDistance;
     viewParameters vpuser;
+     [self computePlaneNormalMatrix];
     
+    _userPose.rotationMatrix = GLKMatrix4Identity;
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
     
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
@@ -2012,13 +2064,23 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // draw background first...
     if(_videotexture != NULL)
     {
-        glActiveTexture(GL_TEXTURE7);
-        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
+        if(_renderingMatchedImage ==1 && _videotexture2 != NULL)
+        {
+            glActiveTexture(GL_TEXTURE7);
+            glBindTexture(CVOpenGLESTextureGetTarget(_videotexture2), CVOpenGLESTextureGetName(_videotexture2));
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
+        }
+        else
+        {
+            glActiveTexture(GL_TEXTURE7);
+            glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
+        }
     }
-    
     
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(_texture[5].target, _texture[5].name);

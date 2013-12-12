@@ -202,7 +202,7 @@ typedef struct
     GLKMatrix4 transformMat = GLKMatrix4MakeRotation(M_PI, 1.0, 0.0, 0.0);
     
     
-    
+    transformMat = GLKMatrix4Identity;
     
     //DEBUG code
     rntTransforms transforms[4];
@@ -316,38 +316,46 @@ typedef struct
     
     GLKMatrix4 rotationMatrixT = GLKMatrix4Multiply(transformMat, rotationMatrix);
     
+    iPose->rotationMatrix = rotationMatrixT;
     
     
     
-    
-    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
-    GLKMatrix4 tpuRotationMatrix =  GLKMatrix4Multiply(matrixTP, tmprotMatrix);
-    iPose->rotationMatrix = GLKMatrix4Multiply(rotationMatrixT, tpuRotationMatrix);
+    //GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
+    //GLKMatrix4 tpuRotationMatrix =  GLKMatrix4Multiply(matrixTP, tmprotMatrix);
+    //iPose->rotationMatrix = GLKMatrix4Multiply(rotationMatrixT, tpuRotationMatrix);
     
     
     
     [self computeInverseRotationMatrixFromPose:&upose];
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
-    positionTP.x = 15.0 * translation[0];
-    positionTP.y = 15.0 * translation[1];
-    positionTP.z = 15.0 * translation[2];
+    positionTP.x = translation[0];
+    positionTP.y = translation[1];
+    positionTP.z = translation[2];
     
     positionTP = GLKMatrix4MultiplyVector3(transformMat, positionTP);
-    positionTP = GLKMatrix4MultiplyVector3(matrixTP, positionTP);
+    
+    iPose->position = positionTP;
+    iPose->ecef.x = normal[0];
+    iPose->ecef.y = normal[1];
+    iPose->ecef.z = normal[2];
+    
+    iPose->ecef = GLKMatrix4MultiplyVector3(transformMat, iPose->ecef);
+    
+    //positionTP = GLKMatrix4MultiplyVector3(matrixTP, positionTP);
 
-    positionTP = GLKMatrix4MultiplyVector3(inverseRotation_teM, positionTP);
+    //positionTP = GLKMatrix4MultiplyVector3(inverseRotation_teM, positionTP);
  
-    iPose->ecef.x = upose.ecef.x + positionTP.x;
-    iPose->ecef.y = upose.ecef.y + positionTP.y;
-    iPose->ecef.z = upose.ecef.z + positionTP.z;
+    //iPose->ecef.x = upose.ecef.x + positionTP.x;
+    //iPose->ecef.y = upose.ecef.y + positionTP.y;
+    //iPose->ecef.z = upose.ecef.z + positionTP.z;
     
     //hacking iPose->position to store normal .. this is baaaad for readability but..
-    iPose->position.x = normal[0];
-    iPose->position.y = normal[0];
-    iPose->position.z = normal[0];
+    //iPose->position.x = normal[0];
+    //iPose->position.y = normal[0];
+    //iPose->position.z = normal[0];
     
-    iPose->position = GLKMatrix4MultiplyVector3(transformMat, iPose->position);
+    //iPose->position = GLKMatrix4MultiplyVector3(transformMat, iPose->position);
 }
 
 
