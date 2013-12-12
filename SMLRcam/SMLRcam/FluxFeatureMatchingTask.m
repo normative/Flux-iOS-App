@@ -195,14 +195,14 @@ enum {SOLUTION1 =0, SOLUTION2};
     
     //rotation
     rotation44[0] = rotation[0];
-    rotation44[1] = -1.0 * rotation[1];
-    rotation44[2] = -1.0 * rotation[2];
+    rotation44[1] = rotation[1];
+    rotation44[2] = rotation[2];
     rotation44[3]= 0.0;
-    rotation44[4] = -1.0 * rotation[3];
+    rotation44[4] = rotation[3];
     rotation44[5] = rotation[4];
     rotation44[6] = rotation[5];
     rotation44[7]= 0.0;
-    rotation44[8] = -1.0 *rotation[6];
+    rotation44[8] = rotation[6];
     rotation44[9] = rotation[7];
     rotation44[10] = rotation[8];
     rotation44[11]= 0.0;
@@ -228,8 +228,8 @@ enum {SOLUTION1 =0, SOLUTION2};
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
     positionTP.x = translation[0];
-    positionTP.y = -1.0 *translation[1];
-    positionTP.z = -1.0 * translation[2];
+    positionTP.y = translation[1];
+    positionTP.z = translation[2];
     
     //positionTP = GLKMatrix4MultiplyVector3(transformMat, positionTP);
     
