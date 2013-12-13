@@ -1056,7 +1056,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     view.contentScaleFactor = [UIScreen mainScreen].scale;
     
     _sessionPreset = AVCaptureSessionPreset640x480;
-    [self transformTesting];
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
@@ -2383,29 +2382,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
 }
 
-- (void) transformTesting
-{
-    
-    //rotate camera onto plane
-    GLKVector3 cameraNormal = GLKVector3Make(0.0,0.0, 1.0);
-    GLKVector3 planeNormal = GLKVector3Make(1.0,0.0, 1.0);
-    planeNormal = GLKVector3Normalize(planeNormal);
-    GLKVector3 axis = GLKVector3CrossProduct(cameraNormal, planeNormal);
-    axis = GLKVector3Normalize(axis);
-    float dotP = GLKVector3DotProduct(cameraNormal, planeNormal);
-    bool invertible;
-    float l1 = 1.0;
-    float l2 = sqrtf(planeNormal.x *planeNormal.x + planeNormal.y * planeNormal.y + planeNormal.z*planeNormal.z);
-    
-    float angle = acosf(dotP/l1 * l2);
-    GLKMatrix4 result = GLKMatrix4MakeRotation(angle, axis.x, axis.y, axis.z);
-    
-    result = GLKMatrix4Invert(result, &invertible);
-    GLKVector3 resVec = GLKMatrix4MultiplyVector3(result, planeNormal);
-   NSLog(@"dotP:%f l2:%f angle:%f axis vector [%.2f %.2f %.2f]",dotP, l2, angle*180/M_PI, axis.x, axis.y, axis.z);
-    NSLog(@"rotated vector [%.2f %.2f %.2f]", resVec.x, resVec.y, resVec.z);
-    
-}
 - (IBAction)stepperChanged:(id)sender {
     
     }
