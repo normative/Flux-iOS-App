@@ -256,11 +256,7 @@ rntTransforms rntResult;
     
     int solution = 0;
     
-    GLKMatrix4 matrixTP1 = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
-    GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP1, upose.rotationMatrix);
-    //normal plane
-    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planeRMatrix, planeNormalI);
+   
 
     solution = [self solutionBasedOnNormalWithNormal1:normal1
                                           withNormal2:normal2
@@ -323,7 +319,6 @@ rntTransforms rntResult;
     
     
     
-    [self computeInverseRotationMatrixFromPose:&upose];
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
     positionTP.x = 15.0*translation[0];
@@ -336,13 +331,31 @@ rntTransforms rntResult;
     iPose->ecef.x = normal[0];
     iPose->ecef.y = normal[1];
     iPose->ecef.z = normal[2];
-    
-    
-    GLKMatrix4 normalR = [self computePlaneMatrixwithNormal:iPose->ecef];
+ 
    // normalR = GLKMatrix4Invert(normalR, &invertible);
     GLKMatrix4 rotationMatrixT = GLKMatrix4Multiply(transformMat, rotationMatrix);
     
     iPose->rotationMatrix = rotationMatrixT;
+    //normal changed to 0, 0, 1.
+    GLKMatrix4 normalR = [self computeNormalTransformMatrix:normal];
+    
+    iPose->position = GLKMatrix4MultiplyVector3(normalR, positionTP);
+    iPose->rotationMatrix = GLKMatrix4Multiply(normalR, iPose->rotationMatrix);
+    
+    
+    //User pose matrix in tangent plane
+    GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
+    GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP, upose.rotationMatrix);
+    
+    iPose->rotationMatrix =GLKMatrix4Multiply(rotationMatrixT, planeRMatrix);
+    iPose->position =GLKMatrix4MultiplyVector3(matrixTP, iPose->position);
+    
+    //ecef
+    
+    [self computeInverseRotationMatrixFromPose:&upose];
+    iPose->position = GLKMatrix4MultiplyVector3(inverseRotation_teM, iPose->position);
+    iPose->ecef = iPose->position;
+    
     
     
     
@@ -366,12 +379,16 @@ rntTransforms rntResult;
    
 }
 
-- (GLKMatrix4) computePlaneMatrixwithNormal:(GLKVector3)normal
+- (GLKMatrix4) computeNormalTransformMatrix:(double*)normal
 {
     
     //rotate camera onto plane
     GLKVector3 cameraNormal = GLKVector3Make(0.0,0.0, 1.0);
-    GLKVector3 planeNormal = normal;
+    GLKVector3 planeNormal = GLKVector3Make (normal[0], normal[1], normal[2]);
+    
+    planeNormal = GLKVector3Normalize(planeNormal);
+    
+    
     GLKVector3 axis = GLKVector3CrossProduct(cameraNormal, planeNormal);
     axis = GLKVector3Normalize(axis);
     float dotP = GLKVector3DotProduct(cameraNormal, planeNormal);
@@ -381,7 +398,14 @@ rntTransforms rntResult;
     
     float angle = acosf(dotP/l1 * l2);
     
-    return GLKMatrix4MakeRotation(angle, axis.x,axis.y, axis.z);
+    bool invertible;
+    
+    GLKMatrix4 result =  GLKMatrix4MakeRotation(angle, axis.x,axis.y, axis.z);
+    result = GLKMatrix4Invert(result, &invertible);
+    
+    return result;
+    
+    
 }
 
 
