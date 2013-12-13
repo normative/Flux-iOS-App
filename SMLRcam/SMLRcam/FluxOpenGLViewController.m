@@ -128,6 +128,10 @@ float iPhone5_focalLength = 0.0041; //4.10 mm
 int iPhone5_topcrop;
 int iPhone5_bottomcrop;
 
+GLKVector3 _tmptNormal;
+int _tmptSet =0;
+
+
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
 
@@ -306,9 +310,15 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+    
+    
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((usp->rotationMatrix), planeNormalI);
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
+    
+    if(_tmptSet ==1)
+        N = _tmptNormal;
+    
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
@@ -588,18 +598,19 @@ void init(){
     }
      uPose.rotationMatrix = GLKMatrix4Identity;
     
-    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, 1.0);
     zRay = GLKVector3Normalize(zRay);
-    GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uPose.rotationMatrix, zRay);
+    //GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uPose.rotationMatrix, zRay);
    // GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uhpose.rotationMatrix, zRay);
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((uPose.rotationMatrix), planeNormalI);
+ //   GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((uPose.rotationMatrix), planeNormalI);
     
     //intersection with plane
-    GLKVector3 N = planeNormalRotated;
+    GLKVector3 N = planeNormalI;
+    N = sp->ecef;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
@@ -638,7 +649,7 @@ void init(){
     }
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, -1.0, 0.0));
     
     (*vp).origin =  P0;
     (*vp).at =viewP.at;
@@ -1050,6 +1061,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self setupAVCapture];
     [self setupCameraView];
     _renderingMatchedImage =0;
+    _tpSet = 0;
+    _tpNormal = GLKVector3Make(0.0, 0.0, 0.0);
     //set debug labels to hidden by default
     gpsX.hidden= YES;
     gpsY.hidden= YES;
@@ -1443,6 +1456,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 _validMetaData[idx] = [self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose userHomographyPose:scanimageobject.userHomographyPose planeNormal:&planeNormal Distance:distance currentUserPose:_userPose viewParamters:&vpimage]*
                                  self.fluxDisplayManager.locationManager.notMoving ;
                 _renderingMatchedImage =1;
+                _tpNormal = imagehomographyPose.ecef;
             }
             else
             {
@@ -1917,14 +1931,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self glkView:(GLKView*)self.view drawInRect:self.view.bounds];
     [(GLKView*)self.view display];
 }
-- (void) computePlaneNormalMatrix
+- (GLKMatrix4) computePlaneNormalMatrix
 {
     
     //rotate camera onto plane
     GLKVector3 cameraNormal = GLKVector3Make(0.0,0.0, 1.0);
-    GLKVector3 planeNormal = GLKVector3Make(_userPose.ecef.x, _userPose.ecef.y, _userPose.ecef.z);
+    GLKVector3 planeNormal = GLKVector3Make(_tpNormal.x, _tpNormal.y, _tpNormal.z);
     
     GLKVector3 axis = GLKVector3CrossProduct(cameraNormal, planeNormal);
+    axis = GLKVector3Normalize(axis);
     
     float dotP = GLKVector3DotProduct(cameraNormal, planeNormal);
     
@@ -1933,7 +1948,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     float angle = acosf(dotP/l1 * l2);
     
-    _userPose.rotationMatrix = GLKMatrix4MakeRotation(angle, 0.0, 0.0, 1.0);
+     return GLKMatrix4MakeRotation(angle, axis.x, axis.y, axis.z);
 }
 
 - (void)update
@@ -1981,11 +1996,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKVector3 planeNormal;
     float distance = _projectionDistance;
     viewParameters vpuser;
-     [self computePlaneNormalMatrix];
+    
     
     _userPose.rotationMatrix = GLKMatrix4Identity;
-    setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
-    
+    if(_renderingMatchedImage ==0)
+    {
+        setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
+    }
+    else
+    {
+        if(_tpSet ==0)
+        {
+            GLKMatrix4 matchMatrix =[self computePlaneNormalMatrix];
+            setupRenderingPlane(planeNormal, matchMatrix, distance);
+            _tpSet =1;
+            _tmptNormal = _tpNormal;
+            _tmptSet =1;
+        }
+    }
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
     
     

@@ -66,6 +66,8 @@
     FluxCameraFrameElement *frameGrabRequest;
     bool frameGrabRequested;
     int _renderingMatchedImage;
+    int _tpSet;
+    GLKVector3 _tpNormal;
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
     

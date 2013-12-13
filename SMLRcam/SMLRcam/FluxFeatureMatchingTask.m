@@ -188,6 +188,7 @@ typedef struct
     }
     
 }
+rntTransforms rntResult;
 - (void) computeImagePoseInECEF:(sensorPose*)iPose userPose:(sensorPose)upose hTranslation1:(double*)translation1 hRotation1:(double *)rotation1 hNormal1:(double *)normal1 hTranslation2:(double*)translation2 hRotation2:(double *)rotation2 hNormal2:(double *)normal2
 {
     float rotation44[16];
@@ -202,7 +203,7 @@ typedef struct
     GLKMatrix4 transformMat = GLKMatrix4MakeRotation(M_PI, 1.0, 0.0, 0.0);
     
     
-    transformMat = GLKMatrix4Identity;
+    //transformMat = GLKMatrix4Identity;
     
     //DEBUG code
     rntTransforms transforms[4];
@@ -311,13 +312,9 @@ typedef struct
     GLKMatrix4 rotmat1;
     GLKMatrix4 tmprotMatrix;
     GLKMatrix4 rotmat;
-    
+        bool invertible;
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithArray(rotation44);
-    
-    GLKMatrix4 rotationMatrixT = GLKMatrix4Multiply(transformMat, rotationMatrix);
-    
-    iPose->rotationMatrix = rotationMatrixT;
-    
+   // rotationMatrix =GLKMatrix4Invert(rotationMatrix, &invertible);
     
     
     //GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
@@ -329,9 +326,9 @@ typedef struct
     [self computeInverseRotationMatrixFromPose:&upose];
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
-    positionTP.x = translation[0];
-    positionTP.y = translation[1];
-    positionTP.z = translation[2];
+    positionTP.x = 15.0*translation[0];
+    positionTP.y = 15.0*translation[1];
+    positionTP.z = 15.0 *translation[2];
     
     positionTP = GLKMatrix4MultiplyVector3(transformMat, positionTP);
     
@@ -340,7 +337,17 @@ typedef struct
     iPose->ecef.y = normal[1];
     iPose->ecef.z = normal[2];
     
-    iPose->ecef = GLKMatrix4MultiplyVector3(transformMat, iPose->ecef);
+    
+    GLKMatrix4 normalR = [self computePlaneMatrixwithNormal:iPose->ecef];
+   // normalR = GLKMatrix4Invert(normalR, &invertible);
+    GLKMatrix4 rotationMatrixT = GLKMatrix4Multiply(transformMat, rotationMatrix);
+    
+    iPose->rotationMatrix = rotationMatrixT;
+    
+    
+    
+    
+    //iPose->ecef = GLKMatrix4MultiplyVector3(transformMat, iPose->ecef);
     
     //positionTP = GLKMatrix4MultiplyVector3(matrixTP, positionTP);
 
@@ -356,6 +363,25 @@ typedef struct
     //iPose->position.z = normal[0];
     
     //iPose->position = GLKMatrix4MultiplyVector3(transformMat, iPose->position);
+   
+}
+
+- (GLKMatrix4) computePlaneMatrixwithNormal:(GLKVector3)normal
+{
+    
+    //rotate camera onto plane
+    GLKVector3 cameraNormal = GLKVector3Make(0.0,0.0, 1.0);
+    GLKVector3 planeNormal = normal;
+    GLKVector3 axis = GLKVector3CrossProduct(cameraNormal, planeNormal);
+    axis = GLKVector3Normalize(axis);
+    float dotP = GLKVector3DotProduct(cameraNormal, planeNormal);
+    
+    float l1 = 1.0;
+    float l2 = sqrtf(planeNormal.x *planeNormal.x + planeNormal.y * planeNormal.y + planeNormal.z*planeNormal.z);
+    
+    float angle = acosf(dotP/l1 * l2);
+    
+    return GLKMatrix4MakeRotation(angle, axis.x,axis.y, axis.z);
 }
 
 
