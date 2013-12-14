@@ -203,7 +203,7 @@ rntTransforms rntResult;
     GLKMatrix4 transformMat = GLKMatrix4MakeRotation(M_PI, 1.0, 0.0, 0.0);
     
     
-    //transformMat = GLKMatrix4Identity;
+    transformMat = GLKMatrix4Identity;
     
     //DEBUG code
     rntTransforms transforms[4];
@@ -328,33 +328,38 @@ rntTransforms rntResult;
     positionTP = GLKMatrix4MultiplyVector3(transformMat, positionTP);
     
     iPose->position = positionTP;
-    iPose->ecef.x = normal[0];
-    iPose->ecef.y = normal[1];
-    iPose->ecef.z = normal[2];
+    //iPose->ecef.x = normal[0];
+    //iPose->ecef.y = normal[1];
+    //iPose->ecef.z = normal[2];
  
    // normalR = GLKMatrix4Invert(normalR, &invertible);
     GLKMatrix4 rotationMatrixT = GLKMatrix4Multiply(transformMat, rotationMatrix);
     
     iPose->rotationMatrix = rotationMatrixT;
     //normal changed to 0, 0, 1.
-    GLKMatrix4 normalR = [self computeNormalTransformMatrix:normal];
+    //GLKMatrix4 normalR = [self computeNormalTransformMatrix:normal];
     
-    iPose->position = GLKMatrix4MultiplyVector3(normalR, positionTP);
-    iPose->rotationMatrix = GLKMatrix4Multiply(normalR, iPose->rotationMatrix);
+    //normalR = GLKMatrix4Identity;
+    //iPose->position = GLKMatrix4MultiplyVector3(normalR, positionTP);
+    //iPose->rotationMatrix = GLKMatrix4Multiply(normalR, iPose->rotationMatrix);
     
     
     //User pose matrix in tangent plane
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
+    //matrixTP = GLKMatrix4Identity;
     GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP, upose.rotationMatrix);
     
     iPose->rotationMatrix =GLKMatrix4Multiply(rotationMatrixT, planeRMatrix);
+    
+    matrixTP = GLKMatrix4Identity;
+    
     iPose->position =GLKMatrix4MultiplyVector3(matrixTP, iPose->position);
     
     //ecef
     
     [self computeInverseRotationMatrixFromPose:&upose];
     iPose->position = GLKMatrix4MultiplyVector3(inverseRotation_teM, iPose->position);
-    iPose->ecef = iPose->position;
+    iPose->ecef = GLKVector3Add(upose.ecef, iPose->position);
     
     
     

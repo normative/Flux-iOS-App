@@ -54,7 +54,7 @@
     CGFloat _screenHeight;
     size_t _videoTextureWidth;
     size_t _videoTextureHeight;
-    CVOpenGLESTextureRef _videotexture, _videotexture2;
+    CVOpenGLESTextureRef _videotexture;
     NSString *_sessionPreset;
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
@@ -66,8 +66,7 @@
     FluxCameraFrameElement *frameGrabRequest;
     bool frameGrabRequested;
     int _renderingMatchedImage;
-    int _tpSet;
-    GLKVector3 _tpNormal;
+    
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
     

@@ -128,10 +128,6 @@ float iPhone5_focalLength = 0.0041; //4.10 mm
 int iPhone5_topcrop;
 int iPhone5_bottomcrop;
 
-GLKVector3 _tmptNormal;
-int _tmptSet =0;
-
-
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
 
@@ -289,7 +285,6 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
-//    usp->rotationMatrix = GLKMatrix4Identity;
     
     setParametersTP(usp->position);
     
@@ -299,8 +294,6 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     tangentplaneRotation(usp);
     // rotationMat = rotationMat_t;
-    usp->rotationMatrix = GLKMatrix4Identity;
-    
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
@@ -310,15 +303,9 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    
-    
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((usp->rotationMatrix), planeNormalI);
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
-    
-    if(_tmptSet ==1)
-        N = _tmptNormal;
-    
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
@@ -441,7 +428,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         distance =  -1.0 *distance;
     }
     
-    userPose.rotationMatrix = GLKMatrix4Identity;
+    
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
     
@@ -513,9 +500,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
-    positionTP.x = 0.0;
-    positionTP.y = 0.0;
-    positionTP.z = 0.0;
+   
     
     P0 = positionTP;
     V = GLKVector3Normalize(v);
@@ -596,29 +581,31 @@ void init(){
         NSLog(@"distance is a scalar, setting to positive");
         distance =  -1.0 *distance;
     }
-     uPose.rotationMatrix = GLKMatrix4Identity;
     
-    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, 1.0);
+    
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
-    //GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uPose.rotationMatrix, zRay);
-   // GLKVector3 vuhp = GLKMatrix4MultiplyVector3(uhpose.rotationMatrix, zRay);
+   
+  
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
- //   GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((uPose.rotationMatrix), planeNormalI);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((uPose.rotationMatrix), planeNormalI);
     
     //intersection with plane
-    GLKVector3 N = planeNormalI;
-    N = sp->ecef;
+    GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
    
-    P0.x = sp->position.x;
-    P0.y = sp->position.y;
-    P0.z = sp->position.z;
     
+    positionTP.x = sp->ecef.x - uPose.ecef.x;
+    positionTP.y = sp->ecef.y - uPose.ecef.y;
+    positionTP.z = sp->ecef.z - uPose.ecef.z;
+    
+    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
+    P0 = positionTP;
     V = GLKVector3Normalize(v);
     //  V = v;
     
@@ -649,15 +636,12 @@ void init(){
     }
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, -1.0, 0.0));
+    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
     
-    (*vp).origin =  P0;
-    (*vp).at =viewP.at;
+    (*vp).origin =   P0;
+    (*vp).at = viewP.at;
     (*vp).up = viewP.up;
     
-    GLKVector3 atvec = viewP.at;
-    
-    NSLog(@"breakpoint");
     return 1;
     
 }
@@ -881,32 +865,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (frameGrabRequested && frameGrabRequest && frameGrabRequest.frameRequested)
     {
-        if(_renderingMatchedImage ==0)
-        {
-            err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                               _videoTextureCache,
-                                                               pixelBuffer,
-                                                               NULL,
-                                                               GL_TEXTURE_2D,
-                                                               GL_RGBA,
-                                                               _videoTextureWidth,
-                                                               _videoTextureHeight,
-                                                               GL_BGRA,
-                                                               GL_UNSIGNED_BYTE,
-                                                               0,
-                                                               &_videotexture2);
-            if (err)
-            {
-                NSLog(@"Error at CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-            }
-            else
-            {
-                NSLog(@"successfully grabbed CVOpenGLESTextureCacheCreateTextureFromImage %d", err);
-            }
-        }
-        
-        
-
         // Grab copy of frame buffer and notify reciever that it is ready
         CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
 
@@ -924,7 +882,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         // Copy frame metadata
         frameGrabRequest.cameraFrameDate = currentDate;
-        //_userPose.rotationMatrix = _userRotationRaw;
+        _userPose.rotationMatrix = _userRotationRaw;
         frameGrabRequest.cameraPose = _userPose;
         frameGrabRequest.cameraProjectionDistance = _projectionDistance;
         
@@ -1056,12 +1014,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     view.contentScaleFactor = [UIScreen mainScreen].scale;
     
     _sessionPreset = AVCaptureSessionPreset640x480;
+    
     [self setupGL];
     [self setupAVCapture];
     [self setupCameraView];
     _renderingMatchedImage =0;
-    _tpSet = 0;
-    _tpNormal = GLKVector3Make(0.0, 0.0, 0.0);
     //set debug labels to hidden by default
     gpsX.hidden= YES;
     gpsY.hidden= YES;
@@ -1455,7 +1412,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 _validMetaData[idx] = [self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose userHomographyPose:scanimageobject.userHomographyPose planeNormal:&planeNormal Distance:distance currentUserPose:_userPose viewParamters:&vpimage]*
                                  self.fluxDisplayManager.locationManager.notMoving ;
                 _renderingMatchedImage =1;
-                _tpNormal = imagehomographyPose.ecef;
             }
             else
             {
@@ -1930,25 +1886,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self glkView:(GLKView*)self.view drawInRect:self.view.bounds];
     [(GLKView*)self.view display];
 }
-- (GLKMatrix4) computePlaneNormalMatrix
-{
-    
-    //rotate camera onto plane
-    GLKVector3 cameraNormal = GLKVector3Make(0.0,0.0, 1.0);
-    GLKVector3 planeNormal = GLKVector3Make(_tpNormal.x, _tpNormal.y, _tpNormal.z);
-    
-    GLKVector3 axis = GLKVector3CrossProduct(cameraNormal, planeNormal);
-    axis = GLKVector3Normalize(axis);
-    
-    float dotP = GLKVector3DotProduct(cameraNormal, planeNormal);
-    
-    float l1 = 1.0;
-    float l2 = sqrtf(planeNormal.x *planeNormal.x + planeNormal.y * planeNormal.y + planeNormal.z*planeNormal.z);
-    
-    float angle = acosf(dotP/l1 * l2);
-    
-     return GLKMatrix4MakeRotation(angle, axis.x, axis.y, axis.z);
-}
 
 - (void)update
 {
@@ -1990,29 +1927,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         _userPose.position.y =self.fluxDisplayManager.locationManager.location.coordinate.longitude;
         _userPose.position.z =self.fluxDisplayManager.locationManager.location.altitude;
   
-       _userPose.rotationMatrix = GLKMatrix4Identity;
+    
     
     GLKVector3 planeNormal;
     float distance = _projectionDistance;
     viewParameters vpuser;
     
-    
-    _userPose.rotationMatrix = GLKMatrix4Identity;
-    if(_renderingMatchedImage ==0)
-    {
-        setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
-    }
-    else
-    {
-        if(_tpSet ==0)
-        {
-            GLKMatrix4 matchMatrix =[self computePlaneNormalMatrix];
-            setupRenderingPlane(planeNormal, matchMatrix, distance);
-            _tpSet =1;
-            _tmptNormal = _tpNormal;
-            _tmptSet =1;
-        }
-    }
+    setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
+   
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
     
     
@@ -2091,23 +2013,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // draw background first...
     if(_videotexture != NULL)
     {
-        if(_renderingMatchedImage ==1 && _videotexture2 != NULL)
-        {
-            glActiveTexture(GL_TEXTURE7);
-            glBindTexture(CVOpenGLESTextureGetTarget(_videotexture2), CVOpenGLESTextureGetName(_videotexture2));
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
-        }
-        else
-        {
             glActiveTexture(GL_TEXTURE7);
             glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
-        }
     }
+    
     
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(_texture[5].target, _texture[5].name);
@@ -2381,6 +2293,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
 }
+
 
 - (IBAction)stepperChanged:(id)sender {
     
