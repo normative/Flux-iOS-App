@@ -280,7 +280,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         // spin through nearbylist to update metadata and nearbylist...
         if (self.openGLVC != nil)
         {
-//            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList andMaxIncidentThreshold:maxIncidentThreshold];
+            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList andMaxIncidentThreshold:maxIncidentThreshold];
         }
         
         // generate the displayList...
