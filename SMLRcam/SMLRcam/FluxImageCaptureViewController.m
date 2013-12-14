@@ -10,8 +10,6 @@
 #import "FluxOpenGLViewController.h"
 #import "FluxScanViewController.h"
 
-#import "UICKeyChainStore.h"
-
 
 NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
 NSString* const FluxImageCaptureDidPush = @"FluxImageCaptureDidPush";
@@ -258,10 +256,8 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
              outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
              NSString *dateString = [outDateFormat stringFromDate:startTime];
              
-             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-             
-             int userID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:@"com.flux"]integerValue];
-             int cameraID = [(NSString*)[defaults objectForKey:@"cameraID"]integerValue];
+             int userID = 1;
+             int cameraID = 1;
              int categoryID = 1;
              
 

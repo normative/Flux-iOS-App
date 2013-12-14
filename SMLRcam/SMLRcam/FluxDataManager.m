@@ -662,9 +662,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
--(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithID:(int)camID andRequestID:(NSUUID *)requestID{
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenCameraPostCompleteWithID:camID andDataRequest:request];
+    [request whenCameraPostCompleteWithDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

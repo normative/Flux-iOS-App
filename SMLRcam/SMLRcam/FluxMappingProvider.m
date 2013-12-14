@@ -57,9 +57,13 @@
 + (RKObjectMapping *)userGETMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxUserObject class]];
     
-    [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":            @"userID"
-                                                 }];
+//    [mapping addAttributeMappingsFromDictionary:@{
+//                                                  @"id":            @"userID",
+//                                                  @"firstname":     @"firstName",
+//                                                  @"lastname":      @"lastName",
+//                                                  @"nickname":      @"userName",
+//                                                  @"created_at":    @"dateCreated"
+//                                                 }];
     
     [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token"]];
     

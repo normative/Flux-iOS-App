@@ -97,10 +97,10 @@
     }
 }
 
--(void)whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest{
+-(void)whenCameraPostCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.postCameraComplete)
     {
-        self.postCameraComplete(cameraID, completeDataRequest);
+        self.postCameraComplete(completeDataRequest);
     }
 }
 
