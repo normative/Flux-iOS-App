@@ -1467,7 +1467,7 @@
 				);
 				OTHER_LDFLAGS = (
 					"-force_load",
-					"$(TARGET_BUILD_DIR)/libPods.a",
+					"$(BUILT_PRODUCTS_DIR)/libPods.a",
 				);
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
