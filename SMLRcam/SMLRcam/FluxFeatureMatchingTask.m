@@ -346,8 +346,8 @@ rntTransforms rntResult;
     
     //matrixTP = GLKMatrix4Identity;
     
-    iPose->position =GLKMatrix4MultiplyVector3(matrixTP, iPose->position);
-    
+    //iPose->position =GLKMatrix4MultiplyVector3(matrixTP, iPose->position);
+     iPose->position = GLKMatrix4MultiplyVector3(planeRMatrix, iPose->position);
     //ecef
     
     [self computeInverseRotationMatrixFromPose:&upose];
