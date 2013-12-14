@@ -37,24 +37,22 @@
 
 - (void)setupForPosition:(int)position andPlaceholder:(NSString *)placeholder{
     self.clipsToBounds = YES;
-    
-    
-    
-    
-    //[self.layer addSublayer:rightBorder];
+    [self.activityIndicator setHidden:YES];
 
     switch (position) {
+            //top
         case 0:
         {
             CALayer *roundBorderLayer = [CALayer layer];
             roundBorderLayer.cornerRadius = 5;
             roundBorderLayer.borderWidth = 0.5;
             roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
-            roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame)+10);
+            roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame)+90);
             [self.layer addSublayer:roundBorderLayer];
         }
             
             break;
+            //sides + top
         case 1:
         {
             CALayer *roundBorderLayer = [CALayer layer];
@@ -64,6 +62,8 @@
             [self.layer addSublayer:roundBorderLayer];
         }
             break;
+            
+            //sides + top separator
         case 2:
         {
             CALayer *roundBorderLayer = [CALayer layer];
@@ -80,6 +80,32 @@
             [self.layer addSublayer:topLineLayer];
         }
             break;
+            
+            //top+bottom
+        case 3:
+        {
+            CALayer *roundBorderLayer = [CALayer layer];
+            roundBorderLayer.cornerRadius = 5;
+            roundBorderLayer.borderWidth = 0.5;
+            roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+            roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
+            [self.layer addSublayer:roundBorderLayer];
+        }
+            break;
+            
+            //middle no top/bottom
+        case 4:
+        {
+            CALayer *roundBorderLayer = [CALayer layer];
+            roundBorderLayer.cornerRadius = 5;
+            roundBorderLayer.borderWidth = 0.5;
+            roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+            roundBorderLayer.frame = CGRectMake(0, -10, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame)+10);
+            [self.layer addSublayer:roundBorderLayer];
+        }
+            break;
+
+            
             
         default:
             break;
@@ -103,6 +129,18 @@
     }
     else{
         [self.checkImageView setHidden:YES];
+    }
+}
+
+- (void)setLoading:(BOOL)loading{
+    if (loading) {
+        [self setChecked:NO];
+        [self.activityIndicator setHidden:NO];
+        [self.activityIndicator startAnimating];
+    }
+    else{
+        [self.activityIndicator setHidden:YES];
+        [self.activityIndicator stopAnimating];
     }
 }
 

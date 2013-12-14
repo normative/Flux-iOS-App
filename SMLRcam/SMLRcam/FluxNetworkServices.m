@@ -56,6 +56,12 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                                    keyPath:nil
                                                                                                statusCodes:statusCodes];
         
+        RKResponseDescriptor *cameraCreationResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider cameraGETMapping]
+                                                                                                         method:RKRequestMethodAny
+                                                                                                    pathPattern:@"cameras"
+                                                                                                        keyPath:nil
+                                                                                                    statusCodes:statusCodes];
+        
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -73,6 +79,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
+        [objectManager addResponseDescriptor:cameraCreationResponseDescriptor];
         
         //and again for image-related calls
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
@@ -340,10 +347,10 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                         parameters:nil
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
                                     {
-//                                        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
-//                                                                    name:@"image[image]"
-//                                                                fileName:@"photo.jpeg"
-//                                                                mimeType:@"image/jpeg"];
+                                        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
+                                                                    name:@"image[image]"
+                                                                fileName:@"photo.jpeg"
+                                                                mimeType:@"image/jpeg"];
                                     }];
     
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
@@ -406,14 +413,45 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
      }];
 }
 
+- (void)checkUsernameUniqueness:(NSString *)username withRequestID:(NSUUID *)requestID{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",objectManager.baseURL,username]]];
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                         
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        
+            NSString* suggestion = [(NSArray*)[JSON valueForKeyPath:@"suggested_name"]firstObject];
+            BOOL unique = [(NSString*)[(NSArray*)[JSON valueForKeyPath:@"isunique"]firstObject] boolValue];
+            
+            
+            if ([delegate respondsToSelector:@selector(NetworkServices:didCheckUsernameUniqueness:andSuggestion:andRequestID:)])
+            {
+               [delegate NetworkServices:self didCheckUsernameUniqueness:unique andSuggestion:suggestion andRequestID:requestID];
+            }
+        
+
+    }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+            
+            NSLog(@"Request Failed with Error: %@, %@", error, error.userInfo);
+            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+            {
+                [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+            }
+    }];
+    
+    [operation start];
+}
+
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID{
     [[RKObjectManager sharedManager] postObject:cameraObject path:@"/cameras" parameters:nil
      
         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithRequestID:)])
+         FluxCameraObject*cambject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithID:andRequestID:)])
          {
-             [delegate NetworkServices:self didPostCameraWithRequestID:requestID];
+             [delegate NetworkServices:self didPostCameraWithID:cambject.cameraID andRequestID:requestID];
          }
      }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
@@ -456,7 +494,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
         NSLog(@"Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error andRequestID:nil];
+            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
         }
     }];
     [operation start];
@@ -491,7 +529,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getImageListForUser?userID=%i",userID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getimagelisforuser?userID=%i",userID]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     

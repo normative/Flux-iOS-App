@@ -10,6 +10,7 @@
 
 #import "FluxLeftDrawerViewController.h"
 #import "FluxScanViewController.h"
+#import "FluxRegisterEmailViewController.h"
 
 #import "FluxDataManager.h"
 
@@ -23,15 +24,18 @@
 
 
 
-@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate>{
+@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, FluxRegisterEmailViewDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     
     NSString*socialOauthPin;
     
     NSMutableArray*textInputElements;
+    
     BOOL isInSignUp;
     BOOL shouldErase;
+    BOOL firstCheck;
+    BOOL showUernamePrompt;
     
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;
@@ -45,6 +49,7 @@
     IBOutlet UIButton *createLoginButton;
     IBOutlet UIView *topSeparator;
     IBOutlet UIImageView *logoImageView;
+    UIMenuController *menuController;
 }
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;

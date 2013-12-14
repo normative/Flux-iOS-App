@@ -12,6 +12,7 @@
 #import <MessageUI/MFMailComposeViewController.h>
 
 #import "FluxDataManager.h"
+#import "FluxUserObject.h"
 
 @interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate>{
     NSMutableArray*tableViewArray;

@@ -29,6 +29,7 @@ typedef enum FluxDataRequestType : NSUInteger {
     profile_images_request = 10,
     profile_pic_request = 11,
     userCamera_request = 12,
+    usernameUniqueness_request = 13,
 } FluxDataRequestType;
 
 @class FluxDataRequest;
@@ -42,7 +43,8 @@ typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
 typedef void (^LoginUserCompleteBlock)(FluxUserObject*, FluxDataRequest *);
-typedef void (^PostCameraCompleteBlock)(FluxDataRequest *);
+typedef void (^UsernameUniquenessCompleteBlock)(BOOL, NSString*, FluxDataRequest *);
+typedef void (^PostCameraCompleteBlock)(int, FluxDataRequest *);
 typedef void (^UserReadyBlock)(FluxUserObject*, FluxDataRequest *);
 typedef void (^UserProfilePicReadyBlock)(UIImage*,int, FluxDataRequest *);
 typedef void (^UserImagesReadyBlock)(NSArray *, FluxDataRequest *);
@@ -108,7 +110,10 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 // Callback for successful user login
 @property (strong) LoginUserCompleteBlock loginUserComplete;
 
-// Callback for successful user login
+// Callback for successful usernameUniqueness check
+@property (strong) UsernameUniquenessCompleteBlock usernameUniquenessComplete;
+
+// Callback for successful user camera registration
 @property (strong) PostCameraCompleteBlock postCameraComplete;
 
 // Callback for successful user profile returned
@@ -135,7 +140,8 @@ typedef void (^ErrorBlock)(NSError *, FluxDataRequest *);
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
-- (void) whenCameraPostCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString*)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserProfilePicReady:(UIImage *)profilePic forUserID:(int)userID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserImagesReady:(NSArray *)profileImageObjects withDataRequest:(FluxDataRequest *)completeDataRequest;

@@ -11,6 +11,8 @@
 extern int const FluxTextFieldPositionTop;
 extern int const FluxTextFieldPositionMiddle;
 extern int const FluxTextFieldPositionBottom;
+extern int const FluxTextFieldPositionTopBottom;
+extern int const FluxTextFieldPositionMiddleNoSep;
 
 @interface FluxTextField : UITextField
 

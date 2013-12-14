@@ -14,6 +14,8 @@
 int const FluxTextFieldPositionTop = 0;
 int const FluxTextFieldPositionMiddle = 1;
 int const FluxTextFieldPositionBottom = 2;
+int const FluxTextFieldPositionTopBottom = 3;
+int const FluxTextFieldPositionMiddleNoSep = 4;
 
 @implementation FluxTextField
 
@@ -39,5 +41,9 @@ int const FluxTextFieldPositionBottom = 2;
     return self;
 }
 
+
+- (BOOL) canPerformAction:(SEL)action withSender:(id)sender{
+    return NO;
+}
 
 @end

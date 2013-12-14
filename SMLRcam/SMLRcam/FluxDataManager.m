@@ -389,6 +389,15 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return requestID;
 }
 
+- (FluxRequestID*)checkUsernameUniqueness:(NSString *)username withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = data_upload_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices checkUsernameUniqueness:username withRequestID:requestID];
+    return requestID;
+}
+
 - (FluxRequestID*)postCamera:(FluxCameraObject *)cameraObject withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = data_upload_request;
@@ -645,9 +654,17 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
--(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithRequestID:(NSUUID *)requestID{
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString *)suggestion andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenCameraPostCompleteWithDataRequest:request];
+    [request whenUsernameCheckComplete:unique andSuggestion:suggestion withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithID:(int)camID andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenCameraPostCompleteWithID:camID andDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

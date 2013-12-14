@@ -21,10 +21,13 @@
     id __unsafe_unretained delegate;
 }
 @property (nonatomic, strong) FluxTextField*textField;
+@property (nonatomic, strong) UILabel*warningLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *checkImageView;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @property (unsafe_unretained) id <FluxTextFieldCellDelegate> delegate;
 
 - (void)setupForPosition:(int)position andPlaceholder:(NSString*)placeholder;
 - (void)setChecked:(BOOL)checked;
+- (void)setLoading:(BOOL)loading;
 
 @end

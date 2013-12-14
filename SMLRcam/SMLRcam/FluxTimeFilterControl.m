@@ -83,8 +83,8 @@
     CGFloat circleEndAngle;
     
     if (count <= CELLS_PER_VIEW) {
-        circleStartAngle = 340;
-        circleEndAngle = 20;
+        circleStartAngle = 0;
+        circleEndAngle = 0;
     }
     else{
         circleStartAngle = 340;

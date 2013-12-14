@@ -106,6 +106,7 @@
 		AA9D0E9C184D3AC30004823E /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA9D0E9B184D3AC30004823E /* Accounts.framework */; };
 		AA9D0E9F1851318C0004823E /* FluxProfileImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */; };
 		AA9D0EA2185646DB0004823E /* FluxCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0EA1185646DB0004823E /* FluxCameraObject.m */; };
+		AA9D0EA5185664570004823E /* FluxRegisterEmailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0EA4185664570004823E /* FluxRegisterEmailViewController.m */; };
 		AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265A617E89EAE003AE787 /* FluxTagObject.m */; };
 		AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAA265B717EA00E4003AE787 /* libTestFlight.a */; };
 		AAA265BE17EA00E5003AE787 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AAA265B817EA00E4003AE787 /* README.md */; };
@@ -336,6 +337,8 @@
 		AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfileImageObject.m; sourceTree = "<group>"; };
 		AA9D0EA0185646DB0004823E /* FluxCameraObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraObject.h; sourceTree = "<group>"; };
 		AA9D0EA1185646DB0004823E /* FluxCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraObject.m; sourceTree = "<group>"; };
+		AA9D0EA3185664570004823E /* FluxRegisterEmailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRegisterEmailViewController.h; sourceTree = "<group>"; };
+		AA9D0EA4185664570004823E /* FluxRegisterEmailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegisterEmailViewController.m; sourceTree = "<group>"; };
 		AAA265A517E89EAE003AE787 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
 		AAA265A617E89EAE003AE787 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
 		AAA265B717EA00E4003AE787 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
@@ -589,6 +592,8 @@
 			children = (
 				AA6152861827F80B00B8F2C8 /* FluxRegisterViewController.h */,
 				AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */,
+				AA9D0EA3185664570004823E /* FluxRegisterEmailViewController.h */,
+				AA9D0EA4185664570004823E /* FluxRegisterEmailViewController.m */,
 				AA69DA9A182D647900B0BEED /* FluxTextFieldCell.h */,
 				AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */,
 			);
@@ -1218,6 +1223,7 @@
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
 				F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */,
+				AA9D0EA5185664570004823E /* FluxRegisterEmailViewController.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */,
 				AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */,

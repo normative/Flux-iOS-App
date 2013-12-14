@@ -259,7 +259,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
     NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
     if (startDate && endDate) {
-        [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        if ([startDate isEqualToString:endDate]) {
+            [dateRangeLabel setText:[NSString stringWithFormat:@"%@",startDate] animated:YES];
+        }
+        else{
+            [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        }
+        
         
         //set it visible
         if (dateRangeLabel.alpha == 0) {
@@ -279,46 +285,37 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     
-    FluxScanImageObject*tappedImageObject;
-    
-    if (IS_RETINA) {
-        tappedImageObject = [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
-    }
-    else{
-        tappedImageObject = [openGLController imageTappedAtPoint:point];
-    }
-    
-    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
-    IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
-    photo.userID = tappedImageObject.userID;
-    photo.caption = tappedImageObject.descriptionString;
-    NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
-    [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
-    photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
-    NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
-    
-    if (!photoViewerPlacementView) {
-        photoViewerPlacementView = [[UIView alloc]init];
-    }
-    [ScanUIContainerView addSubview:photoViewerPlacementView];
-    [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
-    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
-    [browser setDelegate:self];
-    [browser setDisplayToolbar:NO];
-    [browser setDisplayDoneButtonBackgroundImage:NO];
-    UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
-    [nav setNavigationBarHidden:YES];
-    [self presentViewController:nav animated:YES completion:nil];
+//    FluxScanImageObject*tappedImageObject;
+//    
+//    if (IS_RETINA) {
+//        tappedImageObject = [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
+//    }
+//    else{
+//        tappedImageObject = [openGLController imageTappedAtPoint:point];
+//    }
+//    
+//    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
+//    IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
+//    photo.userID = tappedImageObject.userID;
+//    photo.caption = tappedImageObject.descriptionString;
+//    NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
+//    [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
+//    photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
+//    NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
+//    
+//    if (!photoViewerPlacementView) {
+//        photoViewerPlacementView = [[UIView alloc]init];
+//    }
+//    [ScanUIContainerView addSubview:photoViewerPlacementView];
+//    [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
+//    IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
+//    [browser setDelegate:self];
+//    [browser setDisplayToolbar:NO];
+//    [browser setDisplayDoneButtonBackgroundImage:NO];
+//    UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
+//    [nav setNavigationBarHidden:YES];
+//    [self presentViewController:nav animated:YES completion:nil];
 }
-//
-//- (IDMCaptionView*)photoBrowser:(IDMPhotoBrowser *)photoBrowser captionViewForPhotoAtIndex:(NSUInteger)index{
-//    IDMPhoto*photo = [[IDMPhoto alloc]initWithURL:photoBrowser.currentPhoto.photoURL];
-//    photo.userID = 1;
-//    photo.caption = @"JESUS";
-//
-//    FluxBrowserCaptionView *captionView = [[FluxBrowserCaptionView alloc] initWithPhoto:photo];
-//    return captionView;
-//}
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [photoViewerPlacementView removeFromSuperview];
@@ -340,7 +337,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [dateFormatter setDateFormat:@"MMM dd, yyyy"];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
-    filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
+    filterButton.contentEdgeInsets = UIEdgeInsetsMake(0.0, 1.0, 0.0, 0.0);
     
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:15]];
     [dateRangeLabel setTextColor:[UIColor whiteColor]];
@@ -621,7 +618,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 
 - (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
-    [self animationPopFrontScaleUp];
+    //[self animationPopFrontScaleUp];
     
     if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
         NSDictionary *userInfoDict = @{@"filter" : dataFilter};
@@ -654,7 +651,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         UIImage*bgImage = [openGLController snapshot:openGLController.view];
         [filtersVC setBackgroundView:bgImage];
         
-        [self animationPushBackScaleDown];
+        //[self animationPushBackScaleDown];
     }
     else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
         FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];

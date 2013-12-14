@@ -43,7 +43,9 @@ extern NSString* const FluxProductionServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString*)suggestion
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithID:(int)camID andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUser:(FluxUserObject *)user
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnProfileImage:(UIImage *)image forUserID:(int)user
@@ -65,16 +67,24 @@ extern NSString* const FluxProductionServerURL;
 
 #pragma mark - image methods
 
-//returns the raw image given an imageID
+/**
+ returns the raw image given an imageID
+ **/
 - (void)getImageForID:(int)imageID withStringSize:(NSString *)sizeString andRequestID:(FluxRequestID *)requestID;
 
-//returns an image object given an imageID
+/**
+ returns an image object given an imageID
+ **/
 - (void)getImageMetadataForID:(int)imageID andRequestID:(FluxRequestID *)requestID;
 
-//returns an NSDictionary list of images at a given location within a given radius
+/**
+ returns an NSDictionary list of images at a given location within a given radius
+ **/
 - (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andRequestID:(FluxRequestID *)requestID;
 
-//returns an NSDictionary list of images filtered based on provided details
+/**
+ returns an NSDictionary list of images filtered based on provided details
+ **/
 - (void)getImagesForLocationFiltered:(CLLocationCoordinate2D)location
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
@@ -87,7 +97,9 @@ extern NSString* const FluxProductionServerURL;
                          andMaxCount:(int)maxCount
                         andRequestID:(FluxRequestID *)requestID;
 
-//returns an NSDictionary list of images for mapView filtered based on provided details
+/**
+ returns an NSDictionary list of images for mapView filtered based on provided details
+ **/
 - (void)getMapImagesForLocationFiltered:(CLLocationCoordinate2D)location
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
@@ -103,25 +115,46 @@ extern NSString* const FluxProductionServerURL;
 // execute the request
 - (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor andRequestID:(FluxRequestID *)requestID;
 
-//uploads an image. All account info is stored within the FluxScanImageObject
+/**
+ uploads an image. All account info is stored within the FluxScanImageObject
+ **/
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
 
 #pragma mark  - Users
 
-//returns user for a given userID
+/**
+returns a complete userObject for a given userID
+ **/
 - (void)getUserForID:(int)userID withRequestID:(FluxRequestID *)requestID;
 
+/**
+Logs in a given userObject and returns an access token
+ **/
 - (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
 
+/**
+checks the 'uniqueness' of a given username and returns a BOOL along with a suggested alternate
+ **/
+- (void)checkUsernameUniqueness:(NSString*)username withRequestID:(FluxRequestID *)requestID;
+
+/**
+ Posts a given camera object to the database.
+**/
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID;
 
-//creates a user with the given object
-- (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
+/**
+ creates a user with the given object
+**/
+ - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
 
-//return's a profile image for a given userID and size
+/**
+return's a profile image for a given userID and size
+ **/
 - (void)getUserProfilePicForID:(int)userID withStringSize:(NSString *)sizeString withRequestID:(NSUUID *)requestID;
 
-//return's a user's image list for a given userID
+/**
+ return's a user's image list for a given userID
+ **/
 - (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 #pragma mark  - Tags
@@ -143,6 +176,9 @@ extern NSString* const FluxProductionServerURL;
 
 
 #pragma mark  - Other
+/**
+ Deletes 100m radius around a given location
+ **/
 - (void)deleteLocations;
 
 

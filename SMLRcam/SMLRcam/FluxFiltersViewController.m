@@ -32,7 +32,6 @@
     if (dataFilter == nil) {
         dataFilter = [[FluxDataFilter alloc] init];
     }
-    self.radius = 15;
     FluxImageTools*imageTools = [[FluxImageTools alloc]init];
     
     [self.backgroundImageView setImage:[imageTools blurImage:bgImage withBlurLevel:0.6]];
@@ -65,15 +64,17 @@
     [self sendTagRequest];
 }
 
+//must be called from presenting VC
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andDBTitle:@"myPhotos" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"myPhotos"]];
     FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
-    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Favourites" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
+    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
     }
     imageCount = [NSNumber numberWithInt:count];
+    self.radius = 15;
     
     socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, favouritesFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
@@ -309,6 +310,7 @@
             [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
+            [cell.descriptorLabel setEnabled:NO];
             return cell;
         }
         //it's a tag
@@ -367,7 +369,6 @@
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
-    //[self sendTagRequest];
 }
 
 - (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{

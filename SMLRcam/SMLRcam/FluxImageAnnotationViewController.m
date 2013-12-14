@@ -57,7 +57,7 @@
     [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
     [self.view insertSubview:bgView belowSubview:containerView];
     
-    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you see here?"]];
+    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you capture?"]];
 
     
     images = capturedObjects;
@@ -71,7 +71,7 @@
     
     isSnapshot = YES;
     
-    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you find?"]];
+    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
     [saveButton setEnabled:NO];
     [saveButton setTintColor:[UIColor lightGrayColor]];
     

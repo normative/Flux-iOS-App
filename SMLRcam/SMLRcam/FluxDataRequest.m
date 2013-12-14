@@ -90,10 +90,17 @@
     }
 }
 
--(void)whenCameraPostCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
+-(void)whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString *)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.usernameUniquenessComplete)
+    {
+        self.usernameUniquenessComplete(unique, suggestion, completeDataRequest);
+    }
+}
+
+-(void)whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.postCameraComplete)
     {
-        self.postCameraComplete(completeDataRequest);
+        self.postCameraComplete(cameraID, completeDataRequest);
     }
 }
 
