@@ -1182,8 +1182,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
         else
         {
-            ire.tpImageParams = vp;
-            
             // find intersection with cylindrical screen to calculate relative angle
             // get intersection point(s)
             double xi, yi;
