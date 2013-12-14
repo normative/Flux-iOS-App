@@ -1,5 +1,17 @@
 Release Notes:
 
+Release Notes:
+- feature matching (now includes OpenCV framework)
+- UI updates
+- restricted to only run on iOS7
+- disable snapshot feature until implemented
+- disable tapping images from scan view
+- added unique username lookup
+- filter bug fix (previously resulted in application crash)
+- change map view default zoom to be immediate vicinity
+- add email entry for Twitter beta testers
+- registration view bug fixes
+
 ******************************************
 
 V0.13 B16
