@@ -11,9 +11,9 @@
 // Time interval after which to retry feature matching
 
 // If homography fails, it means we had good correspondence with features, but no valid matched box
-const double retryTimeIfInvalidHomography = 3.0;
+const double retryTimeIfInvalidHomography = 1.5;
 // If feature matching fails, it means we likely don't have the same features in the current FOV
-const double retryTimeIfInvalidMatch = 8.0;
+const double retryTimeIfInvalidMatch = 3.0;
 
 enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 

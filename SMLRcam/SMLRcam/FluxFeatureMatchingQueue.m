@@ -13,7 +13,7 @@
 #import "FluxOpenGLViewController.h"
 #import "FluxDisplayManager.h"
 
-const double reuseCameraFrameTimeInterval = 2.0;
+const double reuseCameraFrameTimeInterval = 1.0;
 
 @implementation FluxFeatureMatchingQueue
 
