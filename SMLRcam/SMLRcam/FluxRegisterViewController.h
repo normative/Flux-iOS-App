@@ -31,11 +31,13 @@
     NSString*socialOauthPin;
     
     NSMutableArray*textInputElements;
+    NSMutableArray*registrationOKArray;
     
     BOOL isInSignUp;
     BOOL shouldErase;
     BOOL firstCheck;
     BOOL showUernamePrompt;
+    NSString*tempUsername;
     
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;
@@ -60,6 +62,7 @@
 @property (nonatomic, strong) NSArray *accounts;
 
 - (void)hideKeyboard;
+- (void)userDidLogOut;
 - (IBAction)createAccountButtonAction:(id)sender;
 - (IBAction)twitterSignInAction:(id)sender;
 - (IBAction)facebookSignInAction:(id)sender;

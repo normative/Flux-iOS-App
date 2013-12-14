@@ -7,6 +7,7 @@
 //
 
 #import "FluxSettingsViewController.h"
+#import "FluxRegisterViewController.h"
 #import "UICKeyChainStore.h"
 #import <FacebookSDK/FacebookSDK.h>
 
@@ -138,17 +139,23 @@
 }
 
 - (IBAction)logoutButtonAction:(id)sender {
+    [UICKeyChainStore removeAllItemsForService:FluxService];
+    [UICKeyChainStore removeAllItemsForService:FacebookService];
+    [UICKeyChainStore removeAllItemsForService:TwitterService];
+    
+    if (FBSession.activeSession.isOpen) {
+        [FBSession.activeSession closeAndClearTokenInformation];
+    }
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];
     [self.parentViewController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
-        [UICKeyChainStore removeAllItems];
-        if (FBSession.activeSession.isOpen) {
-            [FBSession.activeSession closeAndClearTokenInformation];
-        }
+        
     }];
 }
 
 - (IBAction)onAreaResetBtn:(id)sender
 {
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"WARNING" message:@"This will perminentally delete all images for this location."  delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles: @"Make It Happen", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"WARNING" message:@"This will permanentally delete all images for this location."  delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles: @"Make It Happen", nil];
     [alert show];
 }
 

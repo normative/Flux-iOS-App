@@ -89,4 +89,7 @@ extern NSString* const FluxOpenGLShouldRender;
 - (void)timeBracketWillBeginScrolling;
 - (void)timeBracketDidEndScrolling;
 
+- (void) writeLog:(NSString *)logmsg;
+
+
 @end

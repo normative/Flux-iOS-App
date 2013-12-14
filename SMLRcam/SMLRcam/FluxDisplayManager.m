@@ -125,6 +125,10 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 - (void)didUpdateHeading:(NSNotification *)notification{
     // first normalize to (0 <= heading < 360.0)
 //    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
+
+//    NSString *logstr = [NSString stringWithFormat:@"DM.didUpdateHeading: New heading at gps.heading: %f, or.heading: %f, delta: %f", self.locationManager.heading, self.locationManager.orientationHeading, (self.locationManager.heading - self.locationManager.orientationHeading) ];
+//    [self writeLog:logstr];
+
     [self calculateTimeAdjustedImageList];
 }
 
@@ -157,8 +161,8 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     {
         lastMotionPose = newPose;
         lastMotionTime = now;
-        NSString *logstr = [NSString stringWithFormat:@"New request at (%f, %f, %f), (distance=%f)", newPose.position.x, newPose.position.y, newPose.position.z, dist];
-        [self writeLog:logstr];
+//        NSString *logstr = [NSString stringWithFormat:@"New request at (%f, %f, %f), (distance=%f)", newPose.position.x, newPose.position.y, newPose.position.z, dist];
+//        [self writeLog:logstr];
         [self requestNearbyItems];
         
     }
@@ -718,7 +722,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateMapPinList
                                                             object:self userInfo:nil];
     }];
-    [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         NSString*errorString = @"Unknown network error occured";
         NSDictionary *userInfoDict = [[NSDictionary alloc]
                                       initWithObjectsAndKeys:errorString, @"errorString" , nil];

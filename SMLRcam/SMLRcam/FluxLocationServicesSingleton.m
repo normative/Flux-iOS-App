@@ -54,7 +54,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         locationMeasurements = [[NSMutableArray alloc] init];
         
         if ([CLLocationManager headingAvailable]) {
-            locationManager.headingFilter = 5;
+            locationManager.headingFilter = 1.0;
         }
     }
     self.notMoving = 1;
@@ -122,6 +122,45 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _userPose = localUserPose;
     
 }
+
+- (CLLocationDirection)orientationHeading
+{
+    CLLocationDirection newHeading = 0.0;
+    [self updateUserPose];
+    sensorPose localUserPose = _userPose;
+    
+    viewParameters localUserVp;
+    
+    // calculate angle between user's viewpoint and North
+    [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
+    
+    
+    double x1 = 0.0;
+    double y1 = 1.0;
+    double x2 = localUserVp.at.x;
+    double y2 = localUserVp.at.y;
+    double dotx = (x1 * x2);
+    double doty = (y1 * y2);
+    
+    double scalar = dotx + doty;
+    double magsq1 = x1 * x1 + y1 * y1;
+    double magsq2 = x2 * x2 + y2 * y2;
+    
+    double costheta = (scalar) / sqrt(magsq1 * magsq2);
+    double theta = acos(costheta) * 180.0 / M_PI;
+    
+    if (x2 < 0)
+    {
+        theta = -theta;
+    }
+    
+    while (theta < 0.0)
+        theta += 360.0;
+    
+    newHeading = theta;
+    return newHeading;
+}
+
 
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations{
@@ -241,42 +280,43 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 {
     if (newHeading.headingAccuracy < 0)
         return;
+    
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
 
     // now compute orientationHeading based on current device orientation
-    [self updateUserPose];
-    sensorPose localUserPose = _userPose;
-    
-    viewParameters localUserVp;
-    
-    // calculate angle between user's viewpoint and North
-    [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
-    
-    
-    double x1 = 0.0;
-    double y1 = 1.0;
-    double x2 = localUserVp.at.x;
-    double y2 = localUserVp.at.y;
-    double dotx = (x1 * x2);
-    double doty = (y1 * y2);
-    
-    double scalar = dotx + doty;
-    double magsq1 = x1 * x1 + y1 * y1;
-    double magsq2 = x2 * x2 + y2 * y2;
-    
-    double costheta = (scalar) / sqrt(magsq1 * magsq2);
-    double theta = acos(costheta) * 180.0 / M_PI;
-    
-    if (x2 < 0)
-    {
-        theta = -theta;
-    }
-    
-    while (theta < 0.0)
-        theta += 360.0;
-    
-    self.orientationHeading = theta;
+//    [self updateUserPose];
+//    sensorPose localUserPose = _userPose;
+//    
+//    viewParameters localUserVp;
+//    
+//    // calculate angle between user's viewpoint and North
+//    [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
+//    
+//    
+//    double x1 = 0.0;
+//    double y1 = 1.0;
+//    double x2 = localUserVp.at.x;
+//    double y2 = localUserVp.at.y;
+//    double dotx = (x1 * x2);
+//    double doty = (y1 * y2);
+//    
+//    double scalar = dotx + doty;
+//    double magsq1 = x1 * x1 + y1 * y1;
+//    double magsq2 = x2 * x2 + y2 * y2;
+//    
+//    double costheta = (scalar) / sqrt(magsq1 * magsq2);
+//    double theta = acos(costheta) * 180.0 / M_PI;
+//    
+//    if (x2 < 0)
+//    {
+//        theta = -theta;
+//    }
+//    
+//    while (theta < 0.0)
+//        theta += 360.0;
+//    
+//    self.orientationHeading = theta;
     
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location

@@ -1,4 +1,10 @@
 Release Notes:
+- Disables Social login
+- Disables Snapshot functionality
+- Multiple minor UI tweaks
+- Automatic camera registration supported (both databases)
+- Registration / Login now supported on Test database
+- All network calls now authenticated on Test database
 
 Release Notes:
 - feature matching (now includes OpenCV framework)

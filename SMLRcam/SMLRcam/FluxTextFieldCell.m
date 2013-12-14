@@ -124,6 +124,7 @@
 }
 
 - (void)setChecked:(BOOL)checked{
+    self.isChecked = checked;
     if (checked) {
         [self.checkImageView setHidden:NO];
     }

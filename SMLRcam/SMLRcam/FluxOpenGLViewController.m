@@ -185,7 +185,8 @@ void init_camera_model()
 #define a_WGS84 6378137.0
 #define b_WGS84 6356752.3142
 
-GLKMatrix4 rotation_teM;
+GLKMatrix4 rotation_teM_proj;
+GLKMatrix4 rotation_teM_tan;
 
 
 void WGS84_to_ECEF(sensorPose *sp){
@@ -211,7 +212,7 @@ void WGS84_to_ECEF(sensorPose *sp){
     
 }
 
-void tangentplaneRotation(sensorPose *sp){
+void tangentplaneRotation(sensorPose *sp, GLKMatrix4 rot_M){
     
     float rotation_te[16];
     
@@ -238,7 +239,7 @@ void tangentplaneRotation(sensorPose *sp){
     rotation_te[14]= 0.0;
     rotation_te[15]= 1.0;
     
-    rotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
+    rot_M = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
     
 }
 
@@ -290,9 +291,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     WGS84_to_ECEF(usp);
     
-   
-    
-    tangentplaneRotation(usp);
+    tangentplaneRotation(usp, rotation_teM_proj);
     // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -346,11 +345,11 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
 	GLKVector3 positionTP;
     positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
-    setParametersTP(usp->position);
+//    setParametersTP(usp->position);
     
     WGS84_to_ECEF(usp);
     
-    tangentplaneRotation(usp);
+    tangentplaneRotation(usp, rotation_teM_tan);
 
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -396,7 +395,7 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     positionTP.y = sp->ecef.y -userPose.ecef.y;
     positionTP.z = sp->ecef.z -userPose.ecef.z;
     
-    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
+    positionTP = GLKMatrix4MultiplyVector3(rotation_teM_tan, positionTP);
     
     P0 = positionTP;
     
@@ -484,7 +483,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     //    positionTP.z = sp->ecef.z -userPose.ecef.z;
     //    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
-    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
+    positionTP = GLKMatrix4MultiplyVector3(rotation_teM_proj, positionTP);
     //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
    // viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
@@ -604,7 +603,7 @@ void init(){
     positionTP.y = sp->ecef.y - uPose.ecef.y;
     positionTP.z = sp->ecef.z - uPose.ecef.z;
     
-    positionTP = GLKMatrix4MultiplyVector3(rotation_teM, positionTP);
+    positionTP = GLKMatrix4MultiplyVector3(rotation_teM_proj, positionTP);
     P0 = positionTP;
     V = GLKVector3Normalize(v);
     //  V = v;
@@ -1165,6 +1164,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         relUserHeading += 360.0;
 
     absUserHeading = relUserHeading;
+    
+//    NSString *logstr = [NSString stringWithFormat:@"OGLVC.updateImageMetadataForElementList: Local calc heading: %f, locMgr orHeading: %f", absUserHeading, self.fluxDisplayManager.locationManager.orientationHeading];
+//    [self.fluxDisplayManager writeLog:logstr];
+
+//    absUserHeading = self.fluxDisplayManager.locationManager.orientationHeading;
 //    absUserHeading = self.fluxDisplayManager.locationManager.heading;
 
     
@@ -1631,6 +1635,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self deleteImageTextureIdx:tIndex];
 
     // Load the new texture
+//    NSLog(@"Loading texture of size (%f, %f) with scale %f", image.size.width, image.size.height, image.scale);
+    
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
     _texture[tIndex] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];

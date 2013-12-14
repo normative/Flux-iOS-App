@@ -24,6 +24,7 @@
         _dirty = true;
         _imageRenderType = none;
         _imageFetchType = none;
+        // TODO: this allocation needs to be de-allocated at object destruction time....
         _imagePose = malloc(sizeof(sensorPose));
     }
     

@@ -11,6 +11,7 @@
 #import "FluxTagObject.h"
 #import "FluxMappingProvider.h"
 #import "FluxLocationServicesSingleton.h"
+#import "UICKeyChainStore.h"
 
 
 
@@ -25,6 +26,18 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 
 @synthesize delegate;
 
+- (NSString *)get_token
+{
+    if (_token == nil)
+    {
+        _token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+        NSLog(@"Fetching token key from key chain store");
+        if (_token == nil)
+            _token = @"";
+    }
+    
+    return _token;
+}
 
 - (id)init
 {
@@ -56,6 +69,12 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                                    keyPath:nil
                                                                                                statusCodes:statusCodes];
         
+        RKResponseDescriptor *cameraCreationResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider cameraGETMapping]
+                                                                                                         method:RKRequestMethodAny
+                                                                                                    pathPattern:@"cameras"
+                                                                                                        keyPath:nil
+                                                                                                    statusCodes:statusCodes];
+        
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -73,6 +92,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
+        [objectManager addResponseDescriptor:cameraCreationResponseDescriptor];
         
         //and again for image-related calls
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
@@ -91,6 +111,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+        
         [RKObjectMapping addDefaultDateFormatter:dateFormatter];
         
         //general init
@@ -119,7 +140,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 //returns the raw image given an image ID
 - (void)getImageForID:(int)imageID withStringSize:(NSString *)sizeString andRequestID:(FluxRequestID *)requestID
 {
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?size=%@",objectManager.baseURL,imageID,sizeString];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?auth_token='%@'&size=%@",objectManager.baseURL,imageID,self.token,sizeString];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
@@ -134,20 +155,21 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                            failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
-        }
-    }];
+            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+        }    }];
     [operation start];
 }
 
 - (void)getImageMetadataForID:(int)imageID andRequestID:(FluxRequestID *)requestID
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/images/%i.json",imageID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"/images/%i.json?auth_token='%@'",imageID,self.token]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -170,16 +192,16 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
-        }
-    }];
+            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+        }    }];
     [operation start];
 }
 
 - (void)getImagesForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andRequestID:(FluxRequestID *)requestID
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
 
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
@@ -188,7 +210,10 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:
+                                                          [NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&auth_token='%@'",
+                                                                                    objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                                    location.latitude, location.longitude, radius, self.token]]];
     
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
 }
@@ -207,6 +232,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                         andRequestID:(FluxRequestID *)requestID;
 
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
 
 //    example initialization:
@@ -229,12 +255,12 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d&auth_token='%@'",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, cats, maxCount]]];
+                                                                               hashTags, users, cats, maxCount,self.token]]];
 
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
     
@@ -248,7 +274,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"%s: Found %i Results",__func__,[result count]);
+        NSLog(@"%s: Found %i Standard Images",__func__,[result count]);
         
         if ([result count] > 0)
         {
@@ -267,22 +293,23 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
-        }
-    }];
+            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+        }    }];
     [operation start];
 }
 
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+
     NSLog(@"Uploading image with positional accuracy: %f, %f", theImageObject.horiz_accuracy, theImageObject.vert_accuracy);
     
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject
                                                                                             method:RKRequestMethodPOST
-                                                                                              path:@"/images"
+                                                                                              path:[NSString stringWithFormat:@"/images?auth_token='%@'",self.token]
                                                                                         parameters:nil
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
     {
@@ -306,14 +333,14 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
             }
         }
     }
+                                           
     failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
-        }
-    }];
+            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+        }    }];
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
     
     // monitor upload progress
@@ -332,18 +359,19 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:userObject
                                                                                             method:RKRequestMethodPOST
-                                                                                              path:@"/users"
+                                                                                              path:[NSString stringWithFormat:@"/users?auth_token='%@'",self.token]
                                                                                         parameters:nil
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
                                     {
-//                                        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
-//                                                                    name:@"image[image]"
-//                                                                fileName:@"photo.jpeg"
-//                                                                mimeType:@"image/jpeg"];
+                                        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
+                                                                    name:@"image[image]"
+                                                                fileName:@"photo.jpeg"
+                                                                mimeType:@"image/jpeg"];
                                     }];
     
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
@@ -362,9 +390,9 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
                                            {
                                                NSLog(@"Failed with error: %@", [error localizedDescription]);
-                                               if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+                                               if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                                                {
-                                                   [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+                                                   [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
                                                }
                                            }];
   
@@ -388,7 +416,7 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
          if ([result count]>0)
          {
              FluxUserObject*userObj = [result firstObject];
-             NSLog(@"Successfuly logged in with token %@",userObj.auth_token);
+             NSLog(@"Successfuly logged in with userID %i and token %@",userObj.userID,userObj.auth_token);
              if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUser:andRequestID:)])
              {
                  [delegate NetworkServices:self didLoginUser:userObj andRequestID:requestID];
@@ -399,70 +427,73 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
      {
          
          NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
-             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
 }
 
 - (void)checkUsernameUniqueness:(NSString *)username withRequestID:(NSUUID *)requestID{
-    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful);
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/users/checkUnique.json?username=%@",objectManager.baseURL,username]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",objectManager.baseURL,username]]];
     
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                               NSInteger responseCode = [(NSHTTPURLResponse *)response statusCode];
-                               if (!error && [statusCodes containsIndex:responseCode]) {
-                                   NSLog(@"Response needs to be parsed: %@",[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-                                   if ([delegate respondsToSelector:@selector(NetworkServices:didCheckUsernameUniqueness:andSuggestion:andRequestID:)])
-                                   {
-                                       [delegate NetworkServices:self didCheckUsernameUniqueness:NO andSuggestion:@"" andRequestID:requestID];
-                                   }
-                               }
-                               else{
-                                   if (error) {
-                                       NSLog(@"uniquenss error: %@",[error localizedDescription]);
-                                   }
-                                   else{
-                                       NSLog(@"uniquenss error code: %i",responseCode);
-                                   }
-                                   if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
-                                   {
-                                       [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
-                                   }
-                               }
-                           }];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                         
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        
+            NSString* suggestion = [(NSArray*)[JSON valueForKeyPath:@"suggested_name"]firstObject];
+            BOOL unique = [(NSString*)[(NSArray*)[JSON valueForKeyPath:@"isunique"]firstObject] boolValue];
+            
+            
+            if ([delegate respondsToSelector:@selector(NetworkServices:didCheckUsernameUniqueness:andSuggestion:andRequestID:)])
+            {
+               [delegate NetworkServices:self didCheckUsernameUniqueness:unique andSuggestion:suggestion andRequestID:requestID];
+            }
+        
+
+    }
+        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+            
+            NSLog(@"Request Failed with Error: %@, %@", error, error.userInfo);
+            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+            {
+                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+            }
+    }];
+    
+    [operation start];
 }
 
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID{
-    [[RKObjectManager sharedManager] postObject:cameraObject path:@"/cameras" parameters:nil
-     
-        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    [[RKObjectManager sharedManager] postObject:cameraObject path:[NSString stringWithFormat:@"/cameras?auth_token='%@'",self.token] parameters:nil
+     success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithRequestID:)])
+         FluxCameraObject*cambject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithID:andRequestID:)])
          {
-             [delegate NetworkServices:self didPostCameraWithRequestID:requestID];
+             [delegate NetworkServices:self didPostCameraWithID:cambject.cameraID andRequestID:requestID];
          }
      }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
          NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
-             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
 }
 
 - (void)getUserForID:(int)userID withRequestID:(NSUUID *)requestID
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getProfile.json?userid=%i",userID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"/users/profile/%i?auth_token='%@'",userID, _token]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -484,16 +515,17 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error andRequestID:nil];
-        }
-    }];
+            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+        }    }];
     [operation start];
 }
 
 - (void)getUserProfilePicForID:(int)userID withStringSize:(NSString *)sizeString withRequestID:(NSUUID *)requestID{
-    NSString*url = [NSString stringWithFormat:@"%@users/%i/image?size=%@",objectManager.baseURL,userID,sizeString];
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSString*url = [NSString stringWithFormat:@"%@users/%i/image?size=%@&auth_token='%@'",objectManager.baseURL,userID,sizeString,self.token];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
@@ -508,20 +540,21 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
       {
           NSLog(@"Failed with error: %@", [error localizedDescription]);
-          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
           {
-              [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
           }
       }];
     [operation start];
 }
 
 - (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getImageListForUser?userID=%i",userID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getimagelisforuser?userID=%i&auth_token='%@'",userID,self.token]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -542,9 +575,9 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
-             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
     [operation start];
@@ -556,6 +589,8 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount
               andRequestID:(FluxRequestID *)requestID
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider tagGetMapping]
@@ -564,7 +599,9 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&maxrows=%i",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius, maxCount]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&maxrows=%i&auth_token='%@'",
+                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               location.latitude, location.longitude, radius, maxCount, self.token]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -583,9 +620,9 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
-             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
     [operation start];
@@ -603,6 +640,8 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                        andMaxCount:(int)maxCount
                       andRequestID:(FluxRequestID *)requestID;
 {
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider tagGetMapping]
@@ -618,12 +657,12 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d&auth_token='%@'",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, cats, maxCount]]];
+                                                                               hashTags, users, cats, maxCount,self.token]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -642,9 +681,9 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
-             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
     [operation start];
@@ -665,6 +704,9 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                             andMaxCount:(int)maxCount
                            andRequestID:(FluxRequestID *)requestID{
     
+//    NSString*token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -676,12 +718,12 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d&auth_token='%@'",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, cats, maxCount]]];
+                                                                               hashTags, users, cats, maxCount,self.token]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -696,9 +738,9 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
-             [delegate NetworkServices:self didFailWithError:error andRequestID:requestID];
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
     [operation start];
@@ -733,6 +775,30 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
                                    NSLog(@"Nuke error: %@",[error localizedDescription]);
                                }
                            }];
+}
+
+#pragma mark - Error Handling
+-(NSString*)readableStringFromError:(NSError*)error{
+    id localizedRecoverySuggestionDict = [error.userInfo objectForKey:@"NSLocalizedRecoverySuggestion"];
+    if (localizedRecoverySuggestionDict)
+    {
+        if ([localizedRecoverySuggestionDict isKindOfClass:[NSDictionary class]])
+        {
+            NSString*string = [(NSDictionary *)localizedRecoverySuggestionDict objectForKey:@"error"];
+            if (string) {
+                return [string capitalizedString];
+            }
+            else{
+                return @"An unknown error occured";
+            }
+        }
+        else if ([localizedRecoverySuggestionDict isKindOfClass:[NSString class]])
+        {
+            NSString*string = (NSString *)localizedRecoverySuggestionDict;
+            return [string capitalizedString];
+        }
+    }
+    return @"An unknown error occured";
 }
 
 @end

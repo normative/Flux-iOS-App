@@ -192,7 +192,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         [details setValue:[NSString stringWithFormat:@"Requested ImageID %d does not exist.", imageID] forKey:NSLocalizedDescriptionKey];
         NSError *e = [NSError errorWithDomain:@"Flux" code:200 userInfo:details];
         
-        [dataRequest whenErrorOccurred:e withDataRequest:dataRequest];
+        [dataRequest whenErrorOccurred:e withDescription:[NSString stringWithFormat:@"Requested ImageID %d does not exist.", imageID] withDataRequest:dataRequest];
     }
 }
 
@@ -452,11 +452,11 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [networkServices setDelegate:self];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e andRequestID:(NSUUID *)requestID
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e andNaturalString:(NSString *)string andRequestID:(NSUUID *)requestID
 {
     // Call callback of requestor
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenErrorOccurred:e withDataRequest:request];
+    [request whenErrorOccurred:e withDescription:string withDataRequest:request];
     
     // Clean up request
     [self completeRequestWithDataRequest:request];
@@ -662,9 +662,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
--(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithRequestID:(NSUUID *)requestID{
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithID:(int)camID andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenCameraPostCompleteWithDataRequest:request];
+    [request whenCameraPostCompleteWithID:camID andDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

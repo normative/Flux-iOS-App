@@ -480,7 +480,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                 progress+=inProgressDataRequest.bytesUploaded;
                 [progressView setProgress:(float)progress/totalBytes-0.10 animated:YES];
             }];
-            [dataRequest setErrorOccurred:^(NSError *e, FluxDataRequest *errorDataRequest){
+            [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                 UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]]
                                                                     message:[e localizedDescription]
                                                                    delegate:nil

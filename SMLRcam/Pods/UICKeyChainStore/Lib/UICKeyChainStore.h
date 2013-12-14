@@ -10,6 +10,13 @@
 
 @interface UICKeyChainStore : NSObject
 
+extern NSString* const FluxUsernameKey;
+extern NSString* const FluxUserIDKey;
+extern NSString* const FluxTokenKey;
+extern NSString* const FluxService;
+extern NSString* const FacebookService;
+extern NSString* const TwitterService;
+
 @property (nonatomic, readonly) NSString *service;
 @property (nonatomic, readonly) NSString *accessGroup;
 

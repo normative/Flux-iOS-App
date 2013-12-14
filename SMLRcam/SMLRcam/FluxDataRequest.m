@@ -97,10 +97,10 @@
     }
 }
 
--(void)whenCameraPostCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
+-(void)whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.postCameraComplete)
     {
-        self.postCameraComplete(completeDataRequest);
+        self.postCameraComplete(cameraID, completeDataRequest);
     }
 }
 
@@ -132,11 +132,10 @@
     }
 }
 
-- (void) whenErrorOccurred:(NSError *)e withDataRequest:(FluxDataRequest *)errorDataRequest
-{
+- (void) whenErrorOccurred:(NSError *)e withDescription:(NSString *)description withDataRequest:(FluxDataRequest *)errorDataRequest{
     if (self.errorOccurred)
     {
-        self.errorOccurred(e, errorDataRequest);
+        self.errorOccurred(e,description, errorDataRequest);
     }
 }
 

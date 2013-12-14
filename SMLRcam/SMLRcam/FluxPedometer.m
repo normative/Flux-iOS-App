@@ -51,7 +51,7 @@ ViewController *viewcontroller = nil;
         [self configureFilterParameters];
         [self init_FFT];
         [self setupMotionManager];
-        [self setupLogging];
+//        [self setupLogging];
     }
     flocation = [FluxLocationServicesSingleton sharedManager];
     return self;
