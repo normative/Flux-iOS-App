@@ -241,14 +241,12 @@ rntTransforms rntResult;
     transforms[3].normal.y =  -1.0 * normal2[1];
     transforms[3].normal.z =  -1.0 * normal2[2];
     
-    NSLog(@"breakpoint");
     for(i=0;i<4;i++)
     {
         transforms[i].translation =GLKMatrix4MultiplyVector3(transformMat, transforms[i].translation);
         transforms[i].normal =GLKMatrix4MultiplyVector3(transformMat, transforms[i].normal);
     }
     
-    NSLog(@"breakpoint");
     //DEBUG ends
     
     
@@ -287,7 +285,6 @@ rntTransforms rntResult;
    
     }
     
-     NSLog(@"breakpoint");
     //rotation
     rotation44[0] = rotation[0];
     rotation44[1] = rotation[1];
