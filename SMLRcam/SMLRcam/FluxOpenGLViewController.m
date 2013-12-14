@@ -583,7 +583,7 @@ void init(){
     }
     
     
-    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, 1.0);
     zRay = GLKVector3Normalize(zRay);
    
   
@@ -636,7 +636,7 @@ void init(){
     }
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, -1.0, 0.0));
     
     (*vp).origin =   P0;
     (*vp).at = viewP.at;
@@ -882,8 +882,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         // Copy frame metadata
         frameGrabRequest.cameraFrameDate = currentDate;
-        _userPose.rotationMatrix = _userRotationRaw;
+        //_userPose.rotationMatrix = _userRotationRaw;
         frameGrabRequest.cameraPose = _userPose;
+        
         frameGrabRequest.cameraProjectionDistance = _projectionDistance;
         
         // Signal requesting thread that frame is ready

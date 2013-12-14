@@ -203,8 +203,6 @@ rntTransforms rntResult;
     GLKMatrix4 transformMat = GLKMatrix4MakeRotation(M_PI, 1.0, 0.0, 0.0);
     
     
-    transformMat = GLKMatrix4Identity;
-    
     //DEBUG code
     rntTransforms transforms[4];
     
@@ -302,10 +300,8 @@ rntTransforms rntResult;
     rotation44[13]= 0.0;
     rotation44[14]= 0.0;
     rotation44[15]= 1.0;
-    GLKMatrix4 rotmat1;
-    GLKMatrix4 tmprotMatrix;
-    GLKMatrix4 rotmat;
-        bool invertible;
+    
+
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithArray(rotation44);
    // rotationMatrix =GLKMatrix4Invert(rotationMatrix, &invertible);
     
@@ -343,12 +339,12 @@ rntTransforms rntResult;
     
     //User pose matrix in tangent plane
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
-    //matrixTP = GLKMatrix4Identity;
+    matrixTP = GLKMatrix4Identity;
     GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP, upose.rotationMatrix);
     
-    iPose->rotationMatrix =GLKMatrix4Multiply(rotationMatrixT, planeRMatrix);
+    iPose->rotationMatrix =GLKMatrix4Multiply(planeRMatrix, rotationMatrixT);
     
-    matrixTP = GLKMatrix4Identity;
+    //matrixTP = GLKMatrix4Identity;
     
     iPose->position =GLKMatrix4MultiplyVector3(matrixTP, iPose->position);
     
@@ -409,7 +405,6 @@ rntTransforms rntResult;
     
     
 }
-
 
 
 @end
