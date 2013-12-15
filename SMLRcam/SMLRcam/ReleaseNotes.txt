@@ -2,10 +2,21 @@ Release Notes:
 
 ******************************************
 
+V0.13 B19
+
+Released: 2013-12-15 13:55:00
+
+Release Notes:
+- Improve feature matching performance by changing location of retry call (happens more frequently)
+- Reduce resolution to 1/4 HD from HD to reduce latency and speed up matching
+
+******************************************
+
 V0.13 B18
 
 Released: 2013-12-14 23:15:00
 
+Release Notes:
 - Disables Social login
 - Disables Snapshot functionality
 - Multiple minor UI tweaks

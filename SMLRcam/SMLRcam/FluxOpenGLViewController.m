@@ -1828,8 +1828,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         }
     }
     
-    [self retryFailedMatches];
-    
     for (FluxTextureToImageMapElement *tel in self.textureMap)
     {
         if ((!tel.used) && (tel.localID != nil))
@@ -1898,6 +1896,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         [self fixRenderList];
     }
+    
+    // Check for matching retries
+    [self retryFailedMatches];
     
     CMAttitude *att = motionManager.attitude;
     
