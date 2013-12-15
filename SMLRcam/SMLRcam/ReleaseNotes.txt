@@ -6,13 +6,18 @@ Release Notes:
 - Registration / Login now supported on Test database
 - All network calls now authenticated on Test database
 
+******************************************
+
+V0.13 B17
+
+Released: 2013-12-14 06:15:00
+
 Release Notes:
 - feature matching (now includes OpenCV framework)
 - UI updates
 - restricted to only run on iOS7
 - disable snapshot feature until implemented
 - disable tapping images from scan view
-- added unique username lookup
 - filter bug fix (previously resulted in application crash)
 - change map view default zoom to be immediate vicinity
 - add email entry for Twitter beta testers
