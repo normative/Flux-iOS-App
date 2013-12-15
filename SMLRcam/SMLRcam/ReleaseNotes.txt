@@ -1,4 +1,11 @@
 Release Notes:
+
+******************************************
+
+V0.13 B18
+
+Released: 2013-12-14 23:15:00
+
 - Disables Social login
 - Disables Snapshot functionality
 - Multiple minor UI tweaks
