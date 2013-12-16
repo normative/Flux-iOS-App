@@ -1,5 +1,6 @@
 Release Notes:
-
+- Kalman filter resets at a 5 metre difference between the raw GPS and the Kalman computed value.
+- Unmatched images now rendered transparent (instead of with a sepia tone). Matched are opaque coloured. 
 - use homography to properly calculate compass heading on matched images
 - RegistrationView bug fixes
 - Logout crashes resolved
