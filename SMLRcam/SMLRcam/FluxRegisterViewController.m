@@ -76,6 +76,13 @@
     registrationOKArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], nil];
     [createLoginButton setEnabled:NO];
     
+    loadingActivityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0, 0, 37, 37)];
+    [loadingActivityIndicator setCenter:CGPointMake(self.view.center.x, self.view.center.y+100)];
+    [loadingActivityIndicator startAnimating];
+    [loadingActivityIndicator setAlpha:0.0];
+    [self.view addSubview:loadingActivityIndicator];
+    
+    
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
     
     
@@ -220,7 +227,9 @@
                 [cell setupForPosition:FluxTextFieldPositionTop andPlaceholder:[textInputElements objectAtIndex:indexPath.row]];
                 [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
                 [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+                [cell.textField setKeyboardType:UIKeyboardTypeDefault];
                 [cell.textField setReturnKeyType:UIReturnKeyNext];
+                [cell.textField setSecureTextEntry:NO];
                 [cell.textField setTag:88];
                 
                 
@@ -254,9 +263,11 @@
                 [cell setupForPosition:FluxTextFieldPositionMiddle andPlaceholder:[textInputElements objectAtIndex:indexPath.row]];
                 [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
                 [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+                [cell.textField setKeyboardType:UIKeyboardTypeDefault];
                 [cell.textField setSecureTextEntry:YES];
                 [cell.textField setReturnKeyType:UIReturnKeyNext];
                 [cell.textField setTag:10];
+                [cell.warningLabel removeFromSuperview];
             }
                 break;
             case 2:
@@ -265,7 +276,9 @@
                 [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
                 [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
                 [cell.textField setKeyboardType:UIKeyboardTypeEmailAddress];
+                [cell.textField setSecureTextEntry:NO];
                 [cell.textField setReturnKeyType:UIReturnKeyJoin];
+                [cell.warningLabel removeFromSuperview];
             }
                 break;
         }
@@ -278,7 +291,9 @@
                     [cell setupForPosition:FluxTextFieldPositionTop andPlaceholder:[textInputElements objectAtIndex:indexPath.row]];
                     [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
                     [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
+                    [cell.textField setKeyboardType:UIKeyboardTypeDefault];
                     [cell.textField setReturnKeyType:UIReturnKeyNext];
+                    [cell.textField setSecureTextEntry:NO];
                     [cell.textField setTag:10];
                 }
                 break;
@@ -288,6 +303,7 @@
                     [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
                     [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
                     [cell.textField setSecureTextEntry:YES];
+                    [cell.textField setKeyboardType:UIKeyboardTypeDefault];
                     [cell.textField setReturnKeyType:UIReturnKeyGo];
                     [cell.textField setTag:10];
                 }
@@ -300,6 +316,7 @@
     [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
     [cell.textLabel setTextColor:[UIColor whiteColor]];
     if (shouldErase) {
+        [cell setChecked:NO];
         [cell.textField setText:@""];
     }
     return cell;
@@ -710,6 +727,7 @@
     }
     if (isInSignUp) {
         isInSignUp = NO;
+        showUernamePrompt = NO;
         [textInputElements removeObjectAtIndex:2];
         [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
         [self performSelector:@selector(reloadTheRow) withObject:nil afterDelay:0.0];
@@ -793,6 +811,7 @@
             else{
                 [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
             }
+            [loadingActivityIndicator setAlpha:1.0];
         }];
     }
     else{
@@ -826,6 +845,7 @@
             else{
                 [logoImageView setCenter:CGPointMake(self.view.center.x, 87)];
             }
+            [loadingActivityIndicator setAlpha:0.0];
         }];
     }
     else{
@@ -836,6 +856,7 @@
         else{
             [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
         }
+        [loadingActivityIndicator setAlpha:0.0];
     }
 }
 
@@ -944,7 +965,7 @@
 
 - (void)reloadTheRow{
     shouldErase = YES;
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:1 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForRow:0 inSection:0],[NSIndexPath indexPathForRow:1 inSection:0], nil] withRowAnimation:UITableViewRowAnimationFade];
     shouldErase = NO;
 }
 
@@ -953,7 +974,15 @@
     if (!isInSignUp) {
         [self loginSignupToggleAction:nil];
     }
+    
+    for (int i = 0; i<[self.tableView numberOfRowsInSection:0]; i++) {
+        FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        cell.textField.text = @"";
+    }
+    
     [self showContainerViewAnimated:YES];
+    
+    
 }
 
 @end

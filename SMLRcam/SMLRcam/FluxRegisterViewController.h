@@ -39,6 +39,7 @@
     BOOL showUernamePrompt;
     NSString*tempUsername;
     
+    
     IBOutlet UITextField *usernameField;
     IBOutlet UITextField *passwordField;
     IBOutlet UITextField *emailField;
@@ -52,6 +53,8 @@
     IBOutlet UIView *topSeparator;
     IBOutlet UIImageView *logoImageView;
     UIMenuController *menuController;
+    
+    UIActivityIndicatorView * loadingActivityIndicator;
 }
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;

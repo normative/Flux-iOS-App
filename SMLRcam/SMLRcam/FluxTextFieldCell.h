@@ -19,6 +19,8 @@
 @interface FluxTextFieldCell : UITableViewCell{
     
     id __unsafe_unretained delegate;
+    CALayer*roundBorderLayer;
+    CALayer*topLineLayer;
 }
 @property (nonatomic, strong) FluxTextField*textField;
 @property (nonatomic, strong) UILabel*warningLabel;
