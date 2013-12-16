@@ -16,6 +16,7 @@
 typedef NSUUID FluxRequestID;
 
 extern NSString* const FluxProductionServerURL;
+extern NSString* const FluxTestServerURL;
 
 @class FluxNetworkServices;
 @protocol NetworkServicesDelegate <NSObject>

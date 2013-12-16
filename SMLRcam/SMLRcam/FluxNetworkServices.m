@@ -16,6 +16,8 @@
 
 
 NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
+NSString* const FluxTestServerURL = @"http://54.221.222.71/";
+
 //serverURL
 //#define externServerURL @"http://54.221.222.71/"
 #define productionServerURL @"http://54.221.254.230/"
@@ -554,11 +556,11 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/users/getimagelisforuser?userID=%i&auth_token='%@'",userID,self.token]
+                                                                                       pathPattern:@"/images/getimagelistforuser.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token='%@'",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],userID,self.token]]];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)

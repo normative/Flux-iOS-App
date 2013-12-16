@@ -10,6 +10,9 @@
 #import "KTCheckboxButton.h"
 #import "FluxProfileImageObject.h"
 #import "FluxNetworkServices.h"
+#import "UICKeyChainStore.h"
+
+#import "ProgressHUD.h"
 
 @interface FluxProfilePhotosViewController ()
 
@@ -68,6 +71,10 @@
         }
         
     }];
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSString*str = [NSString stringWithFormat:@"Images failed to load failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
     [self.fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
 }
 
@@ -98,11 +105,16 @@
         [[cell viewWithTag:200]setHidden:YES];
     }
     if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID]]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=quarterhd&auth_token='%@'",FluxTestServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],[UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
         [theImageView setImageWithURLRequest:request
                   placeholderImage:[UIImage imageNamed:@"nothing"]
                            success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                               [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
+                               CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*2, image.size.width*2));
+                               // or use the UIImage wherever you like
+                               UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+                               CGImageRelease(imageRef);
+                               [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
+                               [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
                            }
                            failure:NULL];
     }
@@ -149,24 +161,31 @@
 #pragma mark - IB Actions
 
 - (IBAction)garbageButtonAction:(id)sender {
-    NSMutableArray *indexPaths = [[NSMutableArray alloc]initWithCapacity:removedImages.count];
-    NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc]init];
-    for (int i = 0; i<removedImages.count; i++) {
-        int index = [picturesArray indexOfObject:[picturesArray objectAtIndex:[[removedImages objectAtIndex:i]integerValue]]];
+    UIActionSheet *areYouSureSheet = [[UIActionSheet alloc]initWithTitle:(removedImages.count > 1 ? @"Are you sure you'd like to delete these images? This action cannot be undone." : @"Are you sure you'd like to delete this image? This action cannot be undone.") delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles: nil];
+    [areYouSureSheet showInView:self.view];
+}
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0) {
+        NSMutableArray *indexPaths = [[NSMutableArray alloc]initWithCapacity:removedImages.count];
+        NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc]init];
+        for (int i = 0; i<removedImages.count; i++) {            
+            NSIndexPath*indexPath = [NSIndexPath indexPathForRow:[[removedImages objectAtIndex:i]integerValue] inSection:0];
+            [indexPaths addObject:indexPath];
+            [indexSet addIndex:indexPath.row];
+        }
+        [picturesArray removeObjectsAtIndexes:indexSet];
+        [removedImages removeAllObjects];
         
-        NSIndexPath*indexPath = [NSIndexPath indexPathForRow:[[removedImages objectAtIndex:i]integerValue] inSection:0];
-        [indexPaths addObject:indexPath];
-        [indexSet addIndex:indexPath.row];
+        [self.collectionView performBatchUpdates:^{
+            [self.collectionView deleteItemsAtIndexPaths:indexPaths];
+            
+        } completion:^(BOOL finished) {
+            [self swapEditModes];
+        }];
+
     }
-    [picturesArray removeObjectsAtIndexes:indexSet];
-    [removedImages removeAllObjects];
-    
-    [self.collectionView performBatchUpdates:^{
-        [self.collectionView deleteItemsAtIndexPaths:indexPaths];
-        
-    } completion:^(BOOL finished) {
-        [self swapEditModes];
-    }];
 }
 
 - (IBAction)editButtonAction:(id)sender {

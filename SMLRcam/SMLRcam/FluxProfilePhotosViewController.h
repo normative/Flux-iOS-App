@@ -10,7 +10,7 @@
 #import "IDMPhotoBrowser.h"
 #import "FluxDataManager.h"
 
-@interface FluxProfilePhotosViewController : UICollectionViewController<IDMPhotoBrowserDelegate>{
+@interface FluxProfilePhotosViewController : UICollectionViewController<IDMPhotoBrowserDelegate, UIActionSheetDelegate>{
     NSMutableArray*picturesArray;
     NSMutableArray*idmPhotos;
     
