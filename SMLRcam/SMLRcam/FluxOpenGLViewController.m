@@ -66,6 +66,12 @@ enum
     UNIFORM_CROP_TOPIMAGE,
     UNIFORM_CROP_BOTTOMIMAGE,
     
+    UNIFORM_SET_SEPIA0,
+    UNIFORM_SET_SEPIA1,
+    UNIFORM_SET_SEPIA2,
+    UNIFORM_SET_SEPIA3,
+    UNIFORM_SET_SEPIA4,
+    
     NUM_UNIFORMS
 };
 
@@ -1993,6 +1999,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
+    FluxScanImageObject *sio;
+    float sepia;
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -2046,7 +2054,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             if ((ire.textureMapElement.used) && (_texture[i] != nil) && (_validMetaData[i]==1))
             {
 //                NSLog(@"    binding texture from slot %d, id %@, to gltexture %d", i, ire.localID, c);
-
+                sio = ire.imageMetadata;
+                sepia = (sio.location_data_type ==location_data_from_homography) ? 0.0:1.0;
+                glUniform1f(uniforms[UNIFORM_SET_SEPIA0+c],sepia);
                 glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
 
                 glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],1);
@@ -2170,6 +2180,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     uniforms[UNIFORM_RENDER_ENABLE5] = glGetUniformLocation(_program, "renderEnable[5]");
     uniforms[UNIFORM_RENDER_ENABLE6] = glGetUniformLocation(_program, "renderEnable[6]");
     uniforms[UNIFORM_RENDER_ENABLE7] = glGetUniformLocation(_program, "renderEnable[7]");
+    
+    uniforms[UNIFORM_SET_SEPIA0] = glGetUniformLocation(_program, "sepiaEnable[0]");
+    uniforms[UNIFORM_SET_SEPIA1] = glGetUniformLocation(_program, "sepiaEnable[1]");
+    uniforms[UNIFORM_SET_SEPIA2] = glGetUniformLocation(_program, "sepiaEnable[2]");
+    uniforms[UNIFORM_SET_SEPIA3] = glGetUniformLocation(_program, "sepiaEnable[3]");
+    uniforms[UNIFORM_SET_SEPIA4] = glGetUniformLocation(_program, "sepiaEnable[4]");
+
 
     
     // Release vertex and fragment shaders.
