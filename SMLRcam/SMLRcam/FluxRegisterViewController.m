@@ -362,7 +362,7 @@
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         [self showContainerViewAnimated:YES];
-        NSString*str = [NSString stringWithFormat:@"Camera Registration failed with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Camera registration failed with error %d", (int)[e code]];
         [ProgressHUD showError:str];
     }];
     [self.fluxDataManager postCamera:camObj withDataRequest:dataRequest];

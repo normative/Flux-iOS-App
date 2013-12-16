@@ -125,11 +125,7 @@
 		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
 		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
 		AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */; };
-		AAF1BCFD183C173900909AFF /* 0.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCF8183C173900909AFF /* 0.png */; };
-		AAF1BCFE183C173900909AFF /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCF9183C173900909AFF /* 1.png */; };
 		AAF1BCFF183C173900909AFF /* 2.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFA183C173900909AFF /* 2.png */; };
-		AAF1BD00183C173900909AFF /* 3.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFB183C173900909AFF /* 3.png */; };
-		AAF1BD01183C173900909AFF /* 4.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFC183C173900909AFF /* 4.png */; };
 		AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */; };
 		AAFB4DC418159F2500EB8DBA /* FluxTimeFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */; };
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
@@ -371,11 +367,7 @@
 		AAD2DFF917BD54BA00D572A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AAF1BCEF183A73A300909AFF /* BBCyclingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBCyclingLabel.h; sourceTree = "<group>"; };
 		AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBCyclingLabel.m; sourceTree = "<group>"; };
-		AAF1BCF8183C173900909AFF /* 0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 0.png; sourceTree = "<group>"; };
-		AAF1BCF9183C173900909AFF /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
 		AAF1BCFA183C173900909AFF /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
-		AAF1BCFB183C173900909AFF /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
-		AAF1BCFC183C173900909AFF /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
 		AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		AAFB4DC218159F2500EB8DBA /* FluxTimeFilterScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterScrollView.h; sourceTree = "<group>"; };
 		AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterScrollView.m; sourceTree = "<group>"; };
@@ -670,11 +662,7 @@
 		AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */ = {
 			isa = PBXGroup;
 			children = (
-				AAF1BCF8183C173900909AFF /* 0.png */,
-				AAF1BCF9183C173900909AFF /* 1.png */,
 				AAF1BCFA183C173900909AFF /* 2.png */,
-				AAF1BCFB183C173900909AFF /* 3.png */,
-				AAF1BCFC183C173900909AFF /* 4.png */,
 				AA349A2217C3BF4000C72E24 /* FluxOpenGLViewController.h */,
 				AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */,
 				AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */,
@@ -1145,7 +1133,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AAF1BCFD183C173900909AFF /* 0.png in Resources */,
 				AAA265BF17EA00E5003AE787 /* release_notes.md in Resources */,
 				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
@@ -1153,14 +1140,11 @@
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
-				AAF1BCFE183C173900909AFF /* 1.png in Resources */,
 				AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */,
 				AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
-				AAF1BD01183C173900909AFF /* 4.png in Resources */,
-				AAF1BD00183C173900909AFF /* 3.png in Resources */,
 				F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */,
 				AAA265BE17EA00E5003AE787 /* README.md in Resources */,
 				AAF1BCFF183C173900909AFF /* 2.png in Resources */,

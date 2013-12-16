@@ -1,6 +1,10 @@
 Release Notes:
 
 - use homography to properly calculate compass heading on matched images
+- RegistrationView bug fixes
+- Logout crashes resolved
+- Mask setting removed and set to “2”
+
 
 ******************************************
 
