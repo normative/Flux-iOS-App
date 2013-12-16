@@ -100,6 +100,21 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
     return self;
 }
 
+- (void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"FluxFilterViewDidChangeFilter" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPush object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidUndoCapture object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
+}
+
 //double getAbsAngle(double angle, double heading)
 //{
 //    double h1 = fmod((angle + 360.0), 360.0);
@@ -270,7 +285,10 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 
     if (inCalcTimeAdjImageList)
         return;
-  
+    
+    self.earliestDisplayDate = nil;
+    self.latestDisplayDate = nil;
+    
     [_displayListLock lock];
     [_nearbyListLock lock];
     {
@@ -331,6 +349,23 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
                 [self.displayList addObject:ire];
+                
+                
+                //to get display date range
+                NSDate *date = [ire timestamp]; 
+                if (self.earliestDisplayDate == nil && self.latestDisplayDate == nil)
+                {
+                    self.earliestDisplayDate = date;
+                    self.latestDisplayDate = date;
+                }
+                if ([date compare:self.earliestDisplayDate] == NSOrderedAscending)
+                {
+                    self.earliestDisplayDate = date;
+                }
+                if ([date compare:self.latestDisplayDate] == NSOrderedDescending)
+                {
+                    self.latestDisplayDate = date;
+                }
             }
         }
         

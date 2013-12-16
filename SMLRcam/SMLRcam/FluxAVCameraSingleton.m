@@ -49,7 +49,6 @@
             
             // Make a still image output
             self.stillImageOutput = [AVCaptureStillImageOutput new];
-            //[stillImageOutput addObserver:self forKeyPath:@"capturingStillImage" options:NSKeyValueObservingOptionNew context:(__bridge void *)(AVCaptureStillImageIsCapturingStillImageContext)];
             if ( [self.session canAddOutput:self.stillImageOutput] )
                 [self.session addOutput:self.stillImageOutput];
             

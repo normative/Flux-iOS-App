@@ -70,6 +70,9 @@ extern NSString* const FluxOpenGLShouldRender;
 @property (readonly, nonatomic, strong) NSMutableArray *nearbyList;
 @property (readonly, nonatomic, strong) NSMutableArray *displayList;
 
+@property(nonatomic, strong)NSDate* earliestDisplayDate;
+@property(nonatomic, strong)NSDate* latestDisplayDate;
+
 @property (readonly, nonatomic) int nearbyListCount;     // what externals use to get the current count for the nearby list (formerly fluxNearbyMetadata.count)
 @property (readonly, nonatomic) int displayListCount;    // what externals use to get the current count for the display list (formerly fluxNearbyMetadata.count)
 

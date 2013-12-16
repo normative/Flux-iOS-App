@@ -134,4 +134,9 @@
     return self;
 }
 
+-(void)dealloc{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateDisplayList object:nil];
+}
+
 @end
