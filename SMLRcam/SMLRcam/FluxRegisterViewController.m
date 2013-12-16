@@ -316,7 +316,12 @@
     [self checkTWloginStatus];
     
     if (username && token && userID) {
-        [self didLoginSuccessfullyWithUserID:userID.integerValue];
+        if (username.length > 0 && userID.length > 0 && token.length > 0) {
+            [self didLoginSuccessfullyWithUserID:userID.integerValue];
+        }
+        else{
+            [self showContainerViewAnimated:YES];
+        }
     }
     else{
         [self showContainerViewAnimated:YES];

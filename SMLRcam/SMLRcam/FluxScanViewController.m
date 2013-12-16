@@ -23,6 +23,7 @@
 NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
 NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
 
+
 @implementation FluxScanViewController
 
 @synthesize timeFilterControl;
@@ -30,12 +31,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)didUpdateNearbyImageList:(NSNotification *)notification{
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.nearbyListCount] forState:UIControlStateNormal];
     [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
-}
-
-#pragma mark - Location Manager
-
--(void)didUpdatePlacemark:(NSNotification *)notification
-{
 }
 
 #pragma mark - Motion Methods
@@ -256,10 +251,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 -(void)userIsTimeSliding{
-    NSString*startDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList firstObject]timestamp]];
-    NSString *endDate = [dateFormatter stringFromDate:[(FluxImageRenderElement*)[self.fluxDisplayManager.displayList lastObject]timestamp]];
+    NSString*startDate = [dateFormatter stringFromDate:[self.fluxDisplayManager earliestDisplayDate]];
+    NSString*endDate = [dateFormatter stringFromDate:[self.fluxDisplayManager latestDisplayDate]];
     if (startDate && endDate) {
-        [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",endDate, startDate] animated:YES];
+        if ([startDate isEqualToString:endDate]) {
+            [dateRangeLabel setText:[NSString stringWithFormat:@"%@", startDate] animated:YES];
+        }
+        else{
+            [dateRangeLabel setText:[NSString stringWithFormat:@"%@ - %@",startDate, endDate] animated:YES];
+        }
         
         //set it visible
         if (dateRangeLabel.alpha == 0) {
@@ -569,9 +569,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
     
     [self setupCameraView];
@@ -654,7 +652,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -667,6 +665,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     [locationManager endLocating];
     locationManager = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateNearbyList object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
 }
 
 

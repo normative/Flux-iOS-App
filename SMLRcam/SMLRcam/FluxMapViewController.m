@@ -115,29 +115,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     locationManager = [FluxLocationServicesSingleton sharedManager];
 }
 
-// initialize and allocate memory to the map view object
-- (void) setupMapView
-{
-    [fluxMapView setShowsUserLocation:YES];
-    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 150, 150);
-    MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
-    [fluxMapView setRegion:adjustedRegion animated:YES];
-    [fluxMapView setTheUserLocation:locationManager.location];
-    lastSynchedLocation = locationManager.location.coordinate;
-    lastRadius = 75.0;
-    outstandingRequests = 0;
-    
-    filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
-    
-    if (currentDataFilter == nil) {
-        currentDataFilter = [[FluxDataFilter alloc] init];
-    }
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
-}
-
-
 #pragma mark - IBActions
 
 //mapKit uses openGL, this clears the context for our openGlView
@@ -171,6 +148,34 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         [self setupMapView];
         firstRunDone = YES;
     }
+}
+
+// initialize and allocate memory to the map view object
+- (void) setupMapView
+{
+    [fluxMapView setShowsUserLocation:YES];
+    MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 150, 150);
+    MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
+    [fluxMapView setRegion:adjustedRegion animated:YES];
+    [fluxMapView setTheUserLocation:locationManager.location];
+    lastSynchedLocation = locationManager.location.coordinate;
+    lastRadius = 75.0;
+    outstandingRequests = 0;
+    
+    filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
+    
+    if (currentDataFilter == nil) {
+        currentDataFilter = [[FluxDataFilter alloc] init];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateMapPinList object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
 }
 
 #pragma mark Transitions
