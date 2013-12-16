@@ -1,9 +1,11 @@
 Release Notes:
+
+
 ******************************************
 
 V0.13 B20
 
-Released: 2013-12-15 13:55:00
+Released: 2013-12-15 22:15:00
 
 Release Notes:
 - Unmatched photos rendered in Sepia tone. Matched full color.
