@@ -375,27 +375,39 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
 }
 
 // compute the tangent plane location and direction vector for an image
-bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp)
+bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp, LocationDataType ldt)
 {
     bool retval = true;
     
+    GLKVector3 zRay;
+    GLKVector3 upRay;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
-    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    if (ldt == location_data_from_homography)
+    {
+        zRay = GLKVector3Make(0.0, 0.0, 1.0);
+        upRay = GLKVector3Make(0.0, -1.0, 0.0);
+    }
+    else
+    {
+        zRay = GLKVector3Make(0.0, 0.0, -1.0);
+        upRay = GLKVector3Make(0.0, 1.0, 0.0);
+
+        //assumption that the point of image acquisition and the user lie in the same plane.
+        sp->position.z = userPose.position.z;
+        
+        if (sp->validECEFEstimate != 1)
+        {
+            WGS84_to_ECEF(sp);
+        }
+    }
+    
     zRay = GLKVector3Normalize(zRay);
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
-    
-    //assumption that the point of image acquisition and the user lie in the same plane.
-    sp->position.z = userPose.position.z;
-    
-    if (sp->validECEFEstimate != 1)
-    {
-        WGS84_to_ECEF(sp);
-    }
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
@@ -415,7 +427,7 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     
     (*vp).origin = P0;
     (*vp).at = V;
-    (*vp).up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    (*vp).up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, upRay);
     
     return retval;
 }
@@ -1183,9 +1195,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (FluxImageRenderElement *ire in elementList)
     {
         viewParameters vp;
+        sensorPose imPose;
+        
+        //
+        if (ire.imageMetadata.location_data_type == location_data_from_homography)
+        {
+            imPose = ire.imageMetadata.imageHomographyPose;
+        }
+        else
+        {
+            imPose = *ire.imagePose;
+        }
         
         [self updateImageMetadataForElement:ire];
-        bool cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp);
+//        bool cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp);
+        bool cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
         
         if (!cansee)
         {
