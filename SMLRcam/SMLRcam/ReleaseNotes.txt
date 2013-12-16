@@ -1,5 +1,6 @@
 Release Notes:
 
+- use homography to properly calculate compass heading on matched images
 
 ******************************************
 
