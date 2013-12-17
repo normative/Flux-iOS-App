@@ -1214,7 +1214,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         viewParameters vp;
         bool cansee = false;
         
-        //
+        [self updateImageMetadataForElement:ire];
         
         if (ire.imageMetadata.location_data_type == location_data_from_homography)
         {
@@ -1226,9 +1226,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp, ire.imageMetadata.location_data_type);
         }
-        
-        [self updateImageMetadataForElement:ire];
-//        bool cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp);
         
         if (!cansee)
         {
