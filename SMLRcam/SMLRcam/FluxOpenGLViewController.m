@@ -383,12 +383,12 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     GLKVector3 upRay;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
-//    if (ldt == location_data_from_homography)
-//    {
-//        zRay = GLKVector3Make(0.0, 0.0, 1.0);
-//        upRay = GLKVector3Make(0.0, -1.0, 0.0);
-//    }
-//    else
+    if (ldt == location_data_from_homography)
+    {
+        zRay = GLKVector3Make(0.0, 0.0, 1.0);
+        upRay = GLKVector3Make(0.0, -1.0, 0.0);
+    }
+    else
     {
         zRay = GLKVector3Make(0.0, 0.0, -1.0);
         upRay = GLKVector3Make(0.0, 1.0, 0.0);
@@ -1215,7 +1215,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         bool cansee = false;
         
         //
-        if ((ire.imageMetadata.location_data_type == location_data_from_homography) && (!camIsOn))
+        
+        if (ire.imageMetadata.location_data_type == location_data_from_homography)
         {
             sensorPose imPose = ire.imageMetadata.imageHomographyPose;
             cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);

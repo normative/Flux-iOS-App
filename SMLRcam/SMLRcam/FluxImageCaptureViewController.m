@@ -302,6 +302,10 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
                  capturedImageObject.ecefZ = locationManager.kflocation.z;
                             
              }
+             else
+             {
+                 capturedImageObject.location_data_type = location_data_default;
+             }
              
              
              [self saveImageObject:capturedImageObject];
