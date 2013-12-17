@@ -9,6 +9,7 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 
+NSString* const FluxLocationServicesSingletonDidInitKalmanFilter = @"FluxLocationServicesSingletonDidInitKalmanFilter";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
 NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
@@ -710,7 +711,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _kfMeasure.position.z = location.altitude;
     
     
-    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0)
+    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0 && locationManager.heading.headingAccuracy >= 0.0)
     {
         _validCurrentLocationData = 0;
         _validInitLocationData = 0;
@@ -765,6 +766,9 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         [self computeKInitKFilter];
         //set pedometer count to zero
         
+        // Post notification of Kalman initialization (now safe to use)
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidInitKalmanFilter object:self];
+        
         return;
     }
     
@@ -814,6 +818,10 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     return 0;
 }
 
+- (bool)isKalmanSolutionValid
+{
+    return kfStarted;
+}
 
 #pragma mark - test and debug filter
 

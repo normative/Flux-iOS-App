@@ -998,6 +998,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addUnmatchedImageRenderElements) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
     
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadAlphaTexture) name:@"maskChange" object:nil];
@@ -1015,6 +1016,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self.textureMap addObject:ime];
     }
 
+    self.fluxLocationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMotionManager];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -1126,6 +1128,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             // Reset failure state so it doesn't get queued up again until matching is complete or fails again
             ire.imageMetadata.matchFailed = NO;
             
+            // Only add object image + metadata to queue - scene object will be grabbed by matcher
+            [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+        }
+    }
+}
+
+// Adds any currently rendered FluxImageRenderElements to the match queue. Triggered by a Kalman initialization.
+- (void)addUnmatchedImageRenderElements
+{
+    // Spin through list of elements and queue up unmatched, high-resolution images.
+    // Add operation will ignore this request if localID is already queued.
+    for (FluxImageRenderElement *ire in self.renderList)
+    {
+        if (!ire.imageMetadata.matched && (ire.textureMapElement.imageType >= quarterhd))
+        {
             // Only add object image + metadata to queue - scene object will be grabbed by matcher
             [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
         }
@@ -1844,7 +1861,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
 
                         // Queue up image for feature matching with background camera feed
-                        if (!ire.imageMetadata.matched)
+                        if (!ire.imageMetadata.matched && [self.fluxLocationManager isKalmanSolutionValid])
                         {
                             // Only add object image + metadata to queue - scene object will be grabbed by matcher
                             [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
