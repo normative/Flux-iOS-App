@@ -312,6 +312,9 @@
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
             
+            //disable the cell for now
+            [cell setUserInteractionEnabled:NO];
+            
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             
