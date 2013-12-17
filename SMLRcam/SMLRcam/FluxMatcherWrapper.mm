@@ -665,8 +665,8 @@ const double minLengthHomographyDiagonal = 50.0;
     float B_x_low = fmin(B1.x, B2.x);
     float B_x_high = fmax(B1.x, B2.x);
 
-    if ((intersection_x > A_x_low) && (intersection_x < A_x_high) &&
-        (intersection_x > B_x_low) && (intersection_x < B_x_high))
+    if ((intersection_x >= A_x_low) && (intersection_x <= A_x_high) &&
+        (intersection_x >= B_x_low) && (intersection_x <= B_x_high))
     {
         return YES;
     }
