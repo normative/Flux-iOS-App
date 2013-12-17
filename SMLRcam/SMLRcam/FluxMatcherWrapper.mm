@@ -666,6 +666,11 @@
 
 - (float)slopeOfLineABWithPointA:(cv::Point2f)A withPointB:(cv::Point2f)B
 {
+    if (fabs(B.x - A.x) < 0.00001)
+    {
+        // Ugly - fix in the future, but handles case of vertical lines
+        return (B.y > A.y) ? 99999.0 : -99999.0;
+    }
     return (B.y - A.y) / (B.x - A.x);
 }
 
