@@ -13,6 +13,7 @@
 #include "FluxKalmanFilter.h"
 #include "FluxOpenGLCommon.h"
 
+extern NSString* const FluxLocationServicesSingletonDidInitKalmanFilter;
 extern NSString* const FluxLocationServicesSingletonDidResetKalmanFilter;
 extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
 extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
@@ -87,5 +88,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 - (void)WGS84_to_ECEF:(sensorPose *)sp;
 - (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
+- (bool)isKalmanSolutionValid;
 
 @end
