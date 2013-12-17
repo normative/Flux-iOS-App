@@ -383,12 +383,12 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     GLKVector3 upRay;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
-    if (ldt == location_data_from_homography)
-    {
-        zRay = GLKVector3Make(0.0, 0.0, 1.0);
-        upRay = GLKVector3Make(0.0, -1.0, 0.0);
-    }
-    else
+//    if (ldt == location_data_from_homography)
+//    {
+//        zRay = GLKVector3Make(0.0, 0.0, 1.0);
+//        upRay = GLKVector3Make(0.0, -1.0, 0.0);
+//    }
+//    else
     {
         zRay = GLKVector3Make(0.0, 0.0, -1.0);
         upRay = GLKVector3Make(0.0, 1.0, 0.0);
@@ -1212,21 +1212,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (FluxImageRenderElement *ire in elementList)
     {
         viewParameters vp;
-        sensorPose imPose;
+        bool cansee = false;
         
         //
-        if (ire.imageMetadata.location_data_type == location_data_from_homography)
+        if ((ire.imageMetadata.location_data_type == location_data_from_homography) && (!camIsOn))
         {
-            imPose = ire.imageMetadata.imageHomographyPose;
+            sensorPose imPose = ire.imageMetadata.imageHomographyPose;
+            cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+            ire.imageMetadata.imageHomographyPose = imPose;
         }
         else
         {
-            imPose = *ire.imagePose;
+            cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp, ire.imageMetadata.location_data_type);
         }
         
         [self updateImageMetadataForElement:ire];
 //        bool cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp);
-        bool cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
         
         if (!cansee)
         {
