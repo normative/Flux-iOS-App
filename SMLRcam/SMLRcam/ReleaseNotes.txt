@@ -1,4 +1,11 @@
 Release Notes:
+
+******************************************
+
+V0.13 B22
+
+Released: 2013-12-16 07:45:00
+
 - Kalman does not initialize without valid heading
 - feature matching not performed until Kalman initialized
 
