@@ -1,4 +1,6 @@
 Release Notes:
+- Kalman does not initialize without valid heading
+- feature matching not performed until Kalman initialized
 
 ******************************************
 
