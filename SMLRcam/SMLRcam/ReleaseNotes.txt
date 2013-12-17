@@ -5,6 +5,8 @@ Release Notes:
 - fix Kalman reset logic to re-attempt to match images
 - change Kalman reset distance back to 10.0 m
 - disables social filter cells
+- increase image search radius to 15.0 m
+- increase image download resolution to HD
 
 ******************************************
 
