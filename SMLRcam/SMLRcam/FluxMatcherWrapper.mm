@@ -547,7 +547,7 @@
     
     //Result 1
     [self crossProductVec1:v2 Vec2:u1 vecResult:result1.normal];
-    (result1.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    (result1.normal[2] < 0) ? (sign = 1.0) : (sign = 1.0);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W1, 3, U1, 3, 1.0, result1.rotation, 3);
     
     for(i=0; i<3; i++)
@@ -559,7 +559,7 @@
     
     //Result2
     [self crossProductVec1:v2 Vec2:u2 vecResult:result2.normal];
-    (result2.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    (result2.normal[2] < 0) ? (sign = 1.0) : (sign = 1.0);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W2, 3, U2, 3, 1.0, result2.rotation, 3);
     
     for(i=0; i<3; i++)
