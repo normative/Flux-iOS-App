@@ -46,12 +46,14 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     if (!firstCheck) {
-        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
-                                                          message:@"Login / Signup is now partially implemented, please try it out. To save time in future launches, tap the flux logo to skip."
-                                                         delegate:nil
-                                                cancelButtonTitle:@"OK"
-                                                otherButtonTitles:nil];
-        [message show];
+        //dev alert
+        
+//        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
+//                                                          message:@"Login / Signup is now partially implemented, please try it out. To save time in future launches, tap the flux logo to skip."
+//                                                         delegate:nil
+//                                                cancelButtonTitle:@"OK"
+//                                                otherButtonTitles:nil];
+//        [message show];
         
         
         [self checkCurrentLoginState];
