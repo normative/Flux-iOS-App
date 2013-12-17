@@ -12,4 +12,8 @@
 
 -(UIImage*)blurImage:(UIImage *)img withBlurLevel:(float)blurLevel;
 
+
+- (UIImage *)resizedImage:(UIImage*)image toSize:(CGSize)newSize
+     interpolationQuality:(CGInterpolationQuality)quality;
+
 @end
