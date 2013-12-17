@@ -744,6 +744,10 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
     // Post notification of Kalman reset
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidResetKalmanFilter object:self];
+    
+    // Since already intiialized, now post notification of Kalman init
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidInitKalmanFilter object:self];
+
 }
 
 -(void) updateKFilter

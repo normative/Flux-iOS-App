@@ -1,6 +1,9 @@
 Release Notes:
 
 - disables social login again
+- minor tweaks to check if homography is valid during feature matching
+- fix Kalman reset logic to re-attempt to match images
+- change Kalman reset distance back to 10.0 m
 
 ******************************************
 

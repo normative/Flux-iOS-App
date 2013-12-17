@@ -12,6 +12,8 @@
 #import "UIImage+OpenCV.h"
 #import <Accelerate/Accelerate.h>
 
+const double minLengthHomographyDiagonal = 50.0;
+
 @interface FluxMatcherWrapper ()
 {
     // Convert to grayscale before populating for performance improvement
@@ -626,11 +628,21 @@
     // Determine if box is valid (if diagonal segments intersect then a convex quadrilateral)
     if ([self doLinesIntersectWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[2] withEndpointB1:scene_corners[1] withEndpointB2:scene_corners[3]])
     {
-        // TODO: We may also want to check the size of the box. If it is too small, it may be a garbage match
-        isValid = YES;
+        // Also check the size of the box. If it is too small, it may be a garbage match
+        if (([self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[2]] > minLengthHomographyDiagonal) &&
+            ([self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[3]] > minLengthHomographyDiagonal))
+        {
+            isValid = YES;
+        }
     }
     
     return isValid;
+}
+
+// Determine length of line segment (A1,A2)
+- (float)lengthOfLineSegmentWithEndpointA1:(cv::Point2f)A1 withEndpointA2:(cv::Point2f)A2
+{
+    return sqrtf(powf(A2.x - A1.x, 2) + powf(A2.y - A1.y, 2));
 }
 
 // Determine if line segment (A1,A2) and line segment (B1,B2) intersect
@@ -653,8 +665,8 @@
     float B_x_low = fmin(B1.x, B2.x);
     float B_x_high = fmax(B1.x, B2.x);
 
-    if ((intersection_x > A_x_low) && (intersection_x < A_x_high) &&
-        (intersection_x > B_x_low) && (intersection_x < B_x_high))
+    if ((intersection_x >= A_x_low) && (intersection_x <= A_x_high) &&
+        (intersection_x >= B_x_low) && (intersection_x <= B_x_high))
     {
         return YES;
     }
@@ -666,6 +678,11 @@
 
 - (float)slopeOfLineABWithPointA:(cv::Point2f)A withPointB:(cv::Point2f)B
 {
+    if (fabs(B.x - A.x) < 0.00001)
+    {
+        // Ugly - fix in the future, but handles case of vertical lines
+        return (B.y > A.y) ? 99999.0 : -99999.0;
+    }
     return (B.y - A.y) / (B.x - A.x);
 }
 
