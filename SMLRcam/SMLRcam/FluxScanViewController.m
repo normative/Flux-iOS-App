@@ -59,6 +59,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
 }
 
+#pragma mark - Location Services
+- (void)kalmanDidInit{
+    [CameraButton setEnabled:YES];
+    NSLog(@"Kalman is Init");
+}
+
 #pragma mark - Drawer Methods
 
 // Left Drawer
@@ -571,6 +577,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanDidInit) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
     
     [self setupCameraView];
     [self setupMotionManager];
@@ -589,6 +596,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [CameraButton removeFromSuperview];
     [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
     [self.view addSubview:CameraButton];
+    
+    if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid]) {
+        [CameraButton setEnabled:NO];
+    }
 }
 
 -(void)viewWillLayoutSubviews{
@@ -668,6 +679,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
 }
 
 
