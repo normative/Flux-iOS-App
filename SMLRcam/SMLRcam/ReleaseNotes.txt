@@ -1,5 +1,13 @@
 Release Notes:
 
+
+******************************************
+
+V0.13 B24
+
+Released: 2013-12-17 19:00:00
+
+Release Notes:
 - disables social login again
 - minor tweaks to check if homography is valid during feature matching
 - fix Kalman reset logic to re-attempt to match images
@@ -12,7 +20,7 @@ Release Notes:
 
 V0.13 B23
 
-Released: 2013-12-16 16:10:00
+Released: 2013-12-17 16:10:00
 
 Release Notes:
 - fix image capture rendering
@@ -22,7 +30,7 @@ Release Notes:
 
 V0.13 B22
 
-Released: 2013-12-16 07:45:00
+Released: 2013-12-17 07:45:00
 
 Release Notes:
 - Kalman does not initialize without valid heading
