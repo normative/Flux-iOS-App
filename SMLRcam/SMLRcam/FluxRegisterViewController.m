@@ -96,6 +96,10 @@
     self.accountStore = [[ACAccountStore alloc] init];
     self.apiManager = [[TWAPIManager alloc] init];
     
+    [twitterButton setEnabled:NO];
+    [facebookButton setEnabled:NO];
+    [signInOptionsLabel setAlpha:0.3];    
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(twitterChanged) name:ACAccountStoreDidChangeNotification object:nil];
 }
 
