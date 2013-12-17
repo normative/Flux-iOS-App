@@ -100,8 +100,8 @@
     [self bringSubviewToFront:radarHeadingImageView];
     
     //setup true north
-    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)45.0 * (M_PI / 180.0));
-    radarView.transform = transform;
+//    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)45.0 * (M_PI / 180.0));
+//    radarView.transform = transform;
 }
 
 #pragma mark - location notification
@@ -128,7 +128,6 @@
         {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
-            [self headingUpdated:nil];
         }
     }
     return self;
