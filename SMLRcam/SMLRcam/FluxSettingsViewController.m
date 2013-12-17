@@ -81,7 +81,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 5;
+    return 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -100,11 +100,6 @@
             break;
         case 2:
             self.connectServerSegmentedControl.selectedSegmentIndex = [[defaults objectForKey:@"Server Location"] intValue];
-            break;
-        case 3:{
-            self.maskSlider.value = [[defaults objectForKey:@"Mask"] floatValue];
-            [self.maskLabel setText:[NSString stringWithFormat:@"%i",[[defaults objectForKey:@"Mask"] integerValue]]];
-        }
             break;
         default:
             break;

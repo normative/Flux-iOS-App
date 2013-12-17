@@ -77,7 +77,11 @@
 + (RKObjectMapping *)userImagesGetMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxProfileImageObject class]];
     
-    [mapping addAttributeMappingsFromArray:@[@"imageID", @"description"]];
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"id":  @"imageID"
+                                                  }];
+    
+    [mapping addAttributeMappingsFromArray:@[@"description"]];
     
     return mapping;
 }
