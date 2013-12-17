@@ -1016,7 +1016,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self.textureMap addObject:ime];
     }
 
-    self.fluxLocationManager = [[FluxLocationServicesSingleton alloc] init];
+    self.fluxLocationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMotionManager];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
