@@ -7,6 +7,7 @@
 //
 
 #import "FluxEditProfileViewController.h"
+#import "FluxImageTools.h"
 
 @interface FluxEditProfileViewController ()
 
@@ -163,58 +164,96 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    switch (indexPath.row) {
+        case 0:
+        {
+            if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+                
+            {
+                [self actionSheet:nil clickedButtonAtIndex:1];
+            }
+            else{
+                UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Select a source"
+                                                                         delegate:self
+                                                                cancelButtonTitle:@"Cancel"
+                                                           destructiveButtonTitle:nil
+                                                                otherButtonTitles:@"Camera", @"Select from Library", nil];
+                //actionSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+                [actionSheet showInView:self.view];
+            }
+        }
+        break;
+            
+        default:
+            break;
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a story board-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+    int i = buttonIndex;
+    switch(i)
+    {
+        case 0:
+        {
+            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+            [picker setDelegate:self];
+            picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            [picker setAllowsEditing:YES];
+            [self presentViewController:picker animated:YES completion:^{}];
+        }
+            break;
+        case 1:
+        {
+            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+            [picker setDelegate:self];
+            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            [picker setAllowsEditing:YES];
+            [self presentViewController:picker animated:YES completion:^{}];
+        }
+        default:
+            break;
+    }
 }
 
- */
+#pragma - Image Picker Deleagte
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    // Picking Image from Camera/ Library
+    [picker dismissViewControllerAnimated:YES completion:^{}];
+    UIImage*newProfileImage = info[UIImagePickerControllerEditedImage];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        // Set desired maximum height and calculate width
+        CGFloat height = 140.0;  // or whatever you need
+        CGFloat width = 140.0;
+        
+        FluxImageTools*imageTools = [[FluxImageTools alloc]init];
+        
+        // Resize the image
+        UIImage * image =  [imageTools resizedImage:newProfileImage toSize:CGSizeMake(width, height) interpolationQuality:kCGInterpolationDefault];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //set the image in here.
+        });           
+    });
+    
+    if (!newProfileImage)
+    {
+        return;
+    }
+    
+    // Adjusting Image Orientation
+//    NSData *data = UIImagePNGRepresentation(newProfileImage);
+//    UIImage *tmp = [UIImage imageWithData:data];
+//    UIImage *fixed = [UIImage imageWithCGImage:tmp.CGImage
+//                                         scale:newProfileImage.scale
+//                                   orientation:newProfileImage.imageOrientation];
+//    newProfileImage = fixed;
+    
+}
 
 @end

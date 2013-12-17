@@ -2,10 +2,21 @@ Release Notes:
 
 ******************************************
 
+V0.13 B23
+
+Released: 2013-12-16 16:10:00
+
+Release Notes:
+- fix image capture rendering
+- make un-matched images more opaque
+
+******************************************
+
 V0.13 B22
 
 Released: 2013-12-16 07:45:00
 
+Release Notes:
 - Kalman does not initialize without valid heading
 - feature matching not performed until Kalman initialized
 
@@ -15,6 +26,7 @@ V0.13 B21
 
 Released: 2013-12-16 17:45:00
 
+Release Notes:
 - Kalman filter resets at a 5 metre difference between the raw GPS and the Kalman computed value.
 - Unmatched images now rendered transparent (instead of with a sepia tone). Matched are opaque coloured. 
 - use homography to properly calculate compass heading on matched images
