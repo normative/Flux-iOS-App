@@ -25,6 +25,5 @@
     UIView *radarView;
     UIView*selectionView;
 }
-- (void)updateImageList:(NSNotification*)notification;
 
 @end

@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FluxEditProfileViewController : UITableViewController
+@interface FluxEditProfileViewController : UITableViewController<UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @end
