@@ -1212,21 +1212,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (FluxImageRenderElement *ire in elementList)
     {
         viewParameters vp;
-        sensorPose imPose;
+        bool cansee = false;
         
-        //
+        [self updateImageMetadataForElement:ire];
+        
         if (ire.imageMetadata.location_data_type == location_data_from_homography)
         {
-            imPose = ire.imageMetadata.imageHomographyPose;
+            sensorPose imPose = ire.imageMetadata.imageHomographyPose;
+            cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+            ire.imageMetadata.imageHomographyPose = imPose;
         }
         else
         {
-            imPose = *ire.imagePose;
+            cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp, ire.imageMetadata.location_data_type);
         }
-        
-        [self updateImageMetadataForElement:ire];
-//        bool cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp);
-        bool cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
         
         if (!cansee)
         {

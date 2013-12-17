@@ -711,7 +711,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _kfMeasure.position.z = location.altitude;
     
     
-    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0 && locationManager.heading.headingAccuracy >= 0.0)
+    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0 &&
+       locationManager.heading.headingAccuracy >= 0.0 && locationManager.heading.trueHeading >= 0)
     {
         _validCurrentLocationData = 0;
         _validInitLocationData = 0;

@@ -197,7 +197,7 @@ const double scanImageRequestRadius = 10.0;     // 10.0m radius for scan image r
 - (void)didResetKalmanFilter:(NSNotification *)notification
 {
     NSLog(@"Kalman Reset: All cached quantities being reset.");
-//    [self.fluxDataManager resetAllFeatureMatches];
+    [self.fluxDataManager resetAllFeatureMatches];
 }
 
 #pragma mark - Filter
