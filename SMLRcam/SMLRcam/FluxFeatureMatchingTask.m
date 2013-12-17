@@ -71,7 +71,7 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
                                                                     withRotationSoln2:rotation2
                                                                  withTranslationSoln2:translation2
                                                                       withNormalSoln2:normal2
-                                                                       withDebugImage:YES];//Debugging of images
+                                                                       withDebugImage:NO];//Debugging of images
         
         if (feature_matching_success == result)
         {
