@@ -1,5 +1,7 @@
 Release Notes:
 
+- disables social login again
+
 ******************************************
 
 V0.13 B23
