@@ -21,6 +21,7 @@
 #import "FluxImageRenderElement.h"
 #import "FluxFeatureMatchingQueue.h"
 #import "FluxCameraFrameElement.h"
+#import "FluxLocationServicesSingleton.h"
 
 #define MAX_TEXTURES 8
 
@@ -90,6 +91,8 @@
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
+@property (nonatomic, strong) FluxLocationServicesSingleton *fluxLocationManager;
+
 //	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 //@property (nonatomic, strong)NSMutableArray *nearbyList;
 //@property (nonatomic, strong)NSMutableArray *renderedTextures;
