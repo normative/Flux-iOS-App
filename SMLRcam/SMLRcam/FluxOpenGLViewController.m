@@ -2080,7 +2080,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
 //                NSLog(@"    binding texture from slot %d, id %@, to gltexture %d", i, ire.localID, c);
                 sio = ire.imageMetadata;
-                sepia = (sio.location_data_type ==location_data_from_homography) ? 0.0:1.0;
+                sepia = (sio.location_data_type ==location_data_from_homography || sio.location_data_type ==location_data_valid_ecef) ? 0.0:1.0;
                 glUniform1f(uniforms[UNIFORM_SET_SEPIA0+c],sepia);
                 glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
 
