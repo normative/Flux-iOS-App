@@ -688,7 +688,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     kfilter = [[FluxKalmanFilter alloc] init];
     stepcount = 0;
     _lastvalue =0;
-    _resetThreshold = 5.0; //in meters;
+    _resetThreshold = 10.0; //in meters;
     _validCurrentLocationData = -1;
     _validInitLocationData = -1;
     //[self testKalman];
