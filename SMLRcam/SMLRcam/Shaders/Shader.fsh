@@ -32,7 +32,7 @@ void main()
     highp float alpha;
     highp vec2 projCoord;
     lowp float s;
-    lowp float opacity = 0.65;
+    lowp float opacity = 0.802;
     if(flag==0)
     {
         projCoord = texCoordVarying[7].st/ texCoordVarying[7].q;
