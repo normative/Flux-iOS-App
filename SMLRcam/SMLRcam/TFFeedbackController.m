@@ -7,6 +7,8 @@
 //
 
 #import "TFFeedbackController.h"
+#import "UICKeyChainStore.h"
+#import <sys/utsname.h>
 
 
 
@@ -53,9 +55,27 @@
 
 - (IBAction)submit:(id)sender
 {
-    NSString *feedbackText = _textView.text;
+    NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
+    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+    NSString *feedbackText;
+    
+    if (userID && username) {
+        feedbackText = [NSString stringWithFormat:@"%@ -(%@), %@: %@",username,userID,[self deviceName],_textView.text];
+    }
+    else{
+        feedbackText = _textView.text;
+    }
     [TestFlight submitFeedback:feedbackText];
     [self dismiss];
+}
+
+- (NSString*)deviceName
+{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    return [NSString stringWithCString:systemInfo.machine
+                              encoding:NSUTF8StringEncoding];
 }
 
 - (void)dismiss
