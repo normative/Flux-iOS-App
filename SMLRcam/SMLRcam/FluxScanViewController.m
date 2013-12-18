@@ -527,7 +527,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (IBAction)shareButtonAction:(id)sender {
     [self activateSnapshotView];
-    [openGLController takeSnapshotAndPresentApproval];    
+    [openGLController setSnapShotFlag];
 }
 
 - (IBAction)stepper:(id)sender {
