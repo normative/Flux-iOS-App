@@ -51,6 +51,8 @@
     
     demoImage *demoimage;
     
+    int _takesnapshot;
+    
     CGFloat _screenWidth;
     CGFloat _screenHeight;
     size_t _videoTextureWidth;
@@ -123,7 +125,8 @@
 - (void)setupAVCapture;
 //image capture methods
 - (void)showImageCapture;
-- (void)takeSnapshotAndPresentApproval;
+//- (void)takeSnapshotAndPresentApproval;
+- (void)setSnapShotFlag;
 - (UIImage*)snapshot:(UIView*)eaglview;
 - (UIImage*)takeScreenCap;
 
