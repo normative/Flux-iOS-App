@@ -21,6 +21,8 @@
     return self;
 }
 
+#pragma mark - Images
+
 - (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.imageReady)
@@ -76,6 +78,15 @@
     }
 }
 
+- (void)whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.deleteImageCompleteBlock)
+    {
+        self.deleteImageCompleteBlock(imageID, completeDataRequest);
+    }
+}
+
+#pragma mark - Users
+
 - (void)whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.uploadUserComplete)
     {
@@ -123,6 +134,8 @@
         self.userImagesReady(profileImageObjects, completeDataRequest);
     }
 }
+
+#pragma mark - Other
 
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
 {

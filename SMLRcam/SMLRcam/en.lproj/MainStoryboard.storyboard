@@ -445,7 +445,7 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileCell" rowHeight="120" id="iiI-aT-Mc7" customClass="FluxProfileCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileCell" rowHeight="120" id="iiI-aT-Mc7" customClass="FluxProfileCell">
                                 <rect key="frame" x="0.0" y="86" width="320" height="120"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iiI-aT-Mc7" id="7nY-Tv-0yf">
@@ -463,34 +463,31 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="bio" lineBreakMode="wordWrap" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="192" translatesAutoresizingMaskIntoConstraints="NO" id="cJw-eG-xju">
-                                            <rect key="frame" x="108" y="49" width="192" height="51"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="bio" lineBreakMode="wordWrap" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="136" translatesAutoresizingMaskIntoConstraints="NO" id="cJw-eG-xju">
+                                            <rect key="frame" x="108" y="49" width="136" height="51"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <color key="textColor" red="0.17254901959999999" green="0.20784313730000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hCZ-6k-eJq">
-                                            <rect key="frame" x="275" y="23" width="25" height="15"/>
+                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tFf-ZM-VfY">
+                                            <rect key="frame" x="286" y="45" width="30" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                            <color key="textColor" red="0.17254901959999999" green="0.20784313730000001" blue="0.23137254900000001" alpha="1" colorSpace="calibratedRGB"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Dce-a0-MmP">
-                                            <rect key="frame" x="252" y="23" width="15" height="15"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        </imageView>
+                                            <state key="normal" title="!">
+                                                <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="editProfileAction:" destination="iEx-Eu-CFI" eventType="touchUpInside" id="dwO-aw-4dj"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="bioLabel" destination="cJw-eG-xju" id="7jj-NT-m5m"/>
-                                    <outlet property="cameraImageView" destination="Dce-a0-MmP" id="NNR-uV-F05"/>
-                                    <outlet property="imageCountLabel" destination="hCZ-6k-eJq" id="LVp-56-Sig"/>
                                     <outlet property="profileImageView" destination="sQh-0v-Iz5" id="bUV-nM-JdA"/>
                                     <outlet property="usernameLabel" destination="dgw-RX-FNB" id="LYI-OD-Vm9"/>
-                                    <segue destination="xKy-QX-7Vb" kind="push" id="zq4-m2-Gu5"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="standardLeftCell" id="fmO-7U-VRH" customClass="FluxCountTableViewCell">
@@ -501,7 +498,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Photos" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bbe-Kg-hMQ">
-                                            <rect key="frame" x="20" y="11" width="173" height="21"/>
+                                            <rect key="frame" x="53" y="11" width="159" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -514,11 +511,16 @@
                                             <color key="textColor" red="0.17254901960784313" green="0.20784313725490194" blue="0.23137254901960785" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Xfk-ow-jX7">
+                                            <rect key="frame" x="20" y="9" width="25" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        </imageView>
                                     </subviews>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="countLabel" destination="A3j-1X-7Oj" id="v1a-nV-U1O"/>
+                                    <outlet property="imageView" destination="Xfk-ow-jX7" id="yuu-Ya-rgb"/>
                                     <outlet property="titleLabel" destination="bbe-Kg-hMQ" id="c3P-6x-upr"/>
                                 </connections>
                             </tableViewCell>
@@ -542,6 +544,7 @@
                         <outlet property="versionLbl" destination="eTl-Gu-teW" id="Q0O-vq-FZx"/>
                         <segue destination="0Hb-dd-ez9" kind="push" identifier="pushSettingsSegue" id="bTt-Mn-4jt"/>
                         <segue destination="Hk4-y1-dJH" kind="push" identifier="pushPhotosSegue" id="5Gp-6F-wwh"/>
+                        <segue destination="xKy-QX-7Vb" kind="push" identifier="pushEditProfileSegue" id="zpI-GX-aE4"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E2w-Yv-OWW" userLabel="First Responder" sceneMemberID="firstResponder"/>

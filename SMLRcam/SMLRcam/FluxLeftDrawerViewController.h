@@ -25,6 +25,7 @@
 
 - (IBAction)onSendFeedBackBtn:(id)sender;
 - (IBAction)doneButtonAction:(id)sender;
+- (IBAction)editProfileAction:(id)sender;
 
 
 @end

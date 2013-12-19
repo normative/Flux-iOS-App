@@ -34,6 +34,8 @@ extern NSString* const FluxTestServerURL;
             ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e andNaturalString:(NSString*)string
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
+           andRequestID:(FluxRequestID *)requestID;
 
 //maps
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray*)imageList
@@ -122,6 +124,11 @@ extern NSString* const FluxTestServerURL;
  uploads an image. All account info is stored within the FluxScanImageObject
  **/
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
+
+/**
+ Removes an image from the Flux DB given an imageID.
+ **/
+- (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID;
 
 #pragma mark  - Users
 

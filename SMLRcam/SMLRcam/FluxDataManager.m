@@ -42,29 +42,22 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [fluxDataStore addMetadataObject:metadata];
     [fluxDataStore addImageToStore:image withLocalID:metadata.localID withSize:full_res];
     
-    // Check if upload is enabled
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    bool pushToCloud = [[defaults objectForKey:@"Network Services"]boolValue];
+    [dataRequest setUploadLocalID:metadata.localID];
 
-    if (pushToCloud)
+    [currentRequests setObject:dataRequest forKey:requestID];
+    if ([uploadQueueReceivers objectForKey:metadata.localID] == nil)
     {
-        [dataRequest setUploadLocalID:metadata.localID];
-
-        [currentRequests setObject:dataRequest forKey:requestID];
-        if ([uploadQueueReceivers objectForKey:metadata.localID] == nil)
-        {
-            [uploadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:metadata.localID];
-        }
-        else
-        {
-            [[uploadQueueReceivers objectForKey:metadata.localID] addObject:requestID];
-        }
-        
-        // Begin upload of image to server
-        [networkServices uploadImage:metadata andImage:image andRequestID:requestID];
-        
-        // Set up global upload progress count (add new image to overall total)
+        [uploadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:metadata.localID];
     }
+    else
+    {
+        [[uploadQueueReceivers objectForKey:metadata.localID] addObject:requestID];
+    }
+    
+    // Begin upload of image to server
+    [networkServices uploadImage:metadata andImage:image andRequestID:requestID];
+    
+    // Set up global upload progress count (add new image to overall total)
     
     // Notify any observers of new content
     NSDictionary *userInfoDict = @{FluxDataManagerKeyNewImageLocalID : metadata.localID};
@@ -434,6 +427,15 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return requestID;
 }
 
+- (FluxRequestID *) deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = profile_images_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices deleteImageWithID:imageID andRequestID:requestID];
+    return requestID;
+}
+
 #pragma mark - Request Queries
 
 // General support for managing outstanding requests (i.e. see which images in bulk request are complete)
@@ -609,6 +611,14 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     }
     
     [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
+}
+
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenDeleteImageComplete:imageID withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
 }
 
 #pragma mark Map

@@ -9,6 +9,7 @@
 #import "UICKeyChainStore.h"
 
 NSString* const FluxUsernameKey = @"username";
+NSString* const FluxPasswordKey = @"password";
 NSString* const FluxUserIDKey = @"userID";
 NSString* const FluxTokenKey = @"token";
 NSString* const FluxService = @"com.flux";

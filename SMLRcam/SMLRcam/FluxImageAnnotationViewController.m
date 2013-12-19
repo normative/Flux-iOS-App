@@ -72,8 +72,8 @@
     isSnapshot = YES;
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
-    [saveButton setEnabled:NO];
-    [saveButton setTintColor:[UIColor lightGrayColor]];
+    //[saveButton setEnabled:NO];
+    //[saveButton setTintColor:[UIColor lightGrayColor]];
     
     images = [NSArray arrayWithObject:image];
 }

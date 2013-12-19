@@ -62,6 +62,7 @@
 }
 
 -(void)prepareViewWithImagesUserID:(int)userID{
+    theUserID = userID;
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     [request setUserImagesReady:^(NSArray * imageList, FluxDataRequest*completedDataRequest){
         picturesArray = [imageList mutableCopy];
@@ -76,6 +77,61 @@
         [ProgressHUD showError:str];
     }];
     [self.fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
+}
+
+- (void)deleteImages{
+    [ProgressHUD show:@"Deleting..."];
+    [self.view setUserInteractionEnabled:NO];
+    deletedImages = 0;
+    
+    for (int i = 0; i<removedImages.count; i++) {
+        FluxDataRequest*request = [[FluxDataRequest alloc]init];
+        [request setDeleteImageCompleteBlock:^(int imageID, FluxDataRequest*completedRequest){
+            [self addToDeleteQueue];
+        }];
+        
+        [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            [self swapEditModes];
+            [self prepareViewWithImagesUserID:theUserID];
+            NSString*str = [NSString stringWithFormat:@"Failed to delete one or more images"];
+            [ProgressHUD showError:str];
+            [self unfreezeUI];
+        }];
+        int index = [(NSNumber*)[removedImages objectAtIndex:i]integerValue];
+        int imageID = [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] imageID];
+        [self.fluxDataManager deleteImageWithImageID:imageID  withDataRequest:request];
+    }
+}
+
+- (void)addToDeleteQueue{
+    deletedImages++;
+    if (deletedImages == removedImages.count) {
+        [ProgressHUD showSuccess:@"Deleted"];
+        [self unfreezeUI];
+        
+        
+        NSMutableArray *indexPaths = [[NSMutableArray alloc]initWithCapacity:removedImages.count];
+        NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc]init];
+        for (int i = 0; i<removedImages.count; i++) {
+            NSIndexPath*indexPath = [NSIndexPath indexPathForRow:[[removedImages objectAtIndex:i]integerValue] inSection:0];
+            [indexPaths addObject:indexPath];
+            [indexSet addIndex:indexPath.row];
+        }
+        [picturesArray removeObjectsAtIndexes:indexSet];
+        [removedImages removeAllObjects];
+        
+        [self.collectionView performBatchUpdates:^{
+            [self.collectionView deleteItemsAtIndexPaths:indexPaths];
+            
+        } completion:^(BOOL finished) {
+            [self swapEditModes];
+        }];
+        
+    }
+}
+
+-(void)unfreezeUI{
+    [self.view setUserInteractionEnabled:YES];
 }
 
 #pragma mark - CollectionView
@@ -161,30 +217,14 @@
 #pragma mark - IB Actions
 
 - (IBAction)garbageButtonAction:(id)sender {
-    UIActionSheet *areYouSureSheet = [[UIActionSheet alloc]initWithTitle:(removedImages.count > 1 ? @"Are you sure you'd like to delete these images? This action cannot be undone." : @"Are you sure you'd like to delete this image? This action cannot be undone.") delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles: nil];
+    UIActionSheet *areYouSureSheet = [[UIActionSheet alloc]initWithTitle:(removedImages.count > 1 ? @"Are you sure you want to delete these images from Flux? This action cannot be undone." : @"Are you sure you'd like to delete this image? This action cannot be undone.") delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles: nil];
     [areYouSureSheet showInView:self.view];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 0) {
-        NSMutableArray *indexPaths = [[NSMutableArray alloc]initWithCapacity:removedImages.count];
-        NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc]init];
-        for (int i = 0; i<removedImages.count; i++) {            
-            NSIndexPath*indexPath = [NSIndexPath indexPathForRow:[[removedImages objectAtIndex:i]integerValue] inSection:0];
-            [indexPaths addObject:indexPath];
-            [indexSet addIndex:indexPath.row];
-        }
-        [picturesArray removeObjectsAtIndexes:indexSet];
-        [removedImages removeAllObjects];
-        
-        [self.collectionView performBatchUpdates:^{
-            [self.collectionView deleteItemsAtIndexPaths:indexPaths];
-            
-        } completion:^(BOOL finished) {
-            [self swapEditModes];
-        }];
-
+        [self deleteImages];
     }
 }
 

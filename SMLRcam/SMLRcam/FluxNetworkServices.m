@@ -139,6 +139,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     return self;
 }
 
+#pragma mark - Images
+
 //returns the raw image given an image ID
 - (void)getImageForID:(int)imageID withStringSize:(NSString *)sizeString andRequestID:(FluxRequestID *)requestID
 {
@@ -357,6 +359,31 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     }
 }
 
+- (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID
+{
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
+                                                            path:[NSString stringWithFormat:@"%@images/%i?auth_token='%@'",objectManager.baseURL,imageID, self.token]
+                                                      parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        // Print the response body in text
+        NSLog(@"Response: %@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+        if ([delegate respondsToSelector:@selector(NetworkServices:didDeleteImageWithID:andRequestID:)])
+        {
+            [delegate NetworkServices:self didDeleteImageWithID:imageID andRequestID:requestID];
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+        {
+            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+        }
+    }];
+    [operation start];
+}
+
 #pragma mark  - Users
 
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID
@@ -494,8 +521,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
-                                                                                            method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/users/profile/%i?auth_token='%@'",userID, _token]
+                                                                                            method:RKRequestMethodGET
+                                                                                       pathPattern:[NSString stringWithFormat:@"/users/%i/profile?auth_token='%@'",userID, _token]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -520,7 +547,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-        }    }];
+        }
+    }];
     [operation start];
 }
 

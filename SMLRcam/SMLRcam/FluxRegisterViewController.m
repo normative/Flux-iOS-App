@@ -332,15 +332,18 @@
 
 - (void)checkCurrentLoginState{
     NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
-    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    NSString *password = [UICKeyChainStore stringForKey:FluxPasswordKey service:FluxService];
+
     
     [self checkFBLoginStatus];
     [self checkTWloginStatus];
     
-    if (username && token && userID) {
-        if (username.length > 0 && userID.length > 0 && token.length > 0) {
-            [self didLoginSuccessfullyWithUserID:userID.integerValue];
+    if (username && password) {
+        if (username.length > 0 && password.length) {
+            FluxUserObject *signingInUser = [[FluxUserObject alloc]init];
+            [signingInUser setUsername:username];
+            [signingInUser setPassword:password];
+            [self loginWithUserObject:signingInUser andDidJustRegister:NO];
         }
         else{
             [self showContainerViewAnimated:YES];
@@ -665,6 +668,7 @@
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setLoginUserComplete:^(FluxUserObject*userObject, FluxDataRequest * completedDataRequest){
         [UICKeyChainStore setString:userObject.username forKey:FluxUsernameKey service:FluxService];
+        [UICKeyChainStore setString:userObject.password forKey:FluxPasswordKey service:FluxService];
         [UICKeyChainStore setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey service:FluxService];
         [UICKeyChainStore setString:userObject.auth_token forKey:FluxTokenKey service:FluxService];
         

@@ -178,6 +178,7 @@
         }
         profileCell.profileImageView.layer.cornerRadius = profileCell.profileImageView.frame.size.height/2;
         profileCell.profileImageView.clipsToBounds = YES;
+        [profileCell setSelectionStyle:UITableViewCellSelectionStyleNone];
         
         
         [profileCell initCell];
@@ -199,6 +200,7 @@
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
     }
+    //[cell.imageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
     return cell;
 }
 
@@ -240,6 +242,10 @@
 
 - (IBAction)doneButtonAction:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)editProfileAction:(id)sender {
+    [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:nil];
 }
 
 #pragma mark - delegate
