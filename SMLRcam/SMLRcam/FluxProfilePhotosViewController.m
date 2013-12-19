@@ -38,8 +38,6 @@
     
     picturesArray = [[NSMutableArray alloc]init];
     
-    [self setTitle:@"My Photos"];
-    
     [garbageButton setEnabled:NO];
     [editBarButton setEnabled:NO];
     [editBarButton setTintColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
@@ -69,6 +67,16 @@
         if (picturesArray.count > 0) {
             [theCollectionView reloadData];
             [editBarButton setEnabled:YES];
+        }
+        else{
+            UILabel*noImagesLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 300, 100)];
+            [noImagesLabel setCenter:self.view.center];
+            [noImagesLabel setNumberOfLines:3];
+            [noImagesLabel setText:@"No images yet...\n \nGo snap some!"];
+            [noImagesLabel setTextAlignment:NSTextAlignmentCenter];
+            [noImagesLabel setFont:[UIFont fontWithName:@"Akkurat" size:20.0]];
+            [noImagesLabel setTextColor:[UIColor colorWithRed:74/255.0 green:92/255.0 blue:104/255.0 alpha:1.0]];
+            [self.view addSubview:noImagesLabel];
         }
         
     }];
@@ -196,17 +204,18 @@
         }
 
     }
+    //else present a photo viewer
     else{
-        NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
-        for (int i = 0; i<picturesArray.count; i++) {
-            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,[[picturesArray objectAtIndex:i]imageID]];
-            [photoURLs addObject:urlString];
-        }
-        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
-        [browser setDisplaysProfileInfo:NO];
-        [browser setInitialPageIndex:indexPath.row];
-        [browser setDelegate:self];
-        [self presentViewController:browser animated:YES completion:nil];
+//        NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
+//        for (int i = 0; i<picturesArray.count; i++) {
+//            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,[[picturesArray objectAtIndex:i]imageID]];
+//            [photoURLs addObject:urlString];
+//        }
+//        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
+//        [browser setDisplaysProfileInfo:NO];
+//        [browser setInitialPageIndex:indexPath.row];
+//        [browser setDelegate:self];
+//        [self presentViewController:browser animated:YES completion:nil];
     }
 }
 

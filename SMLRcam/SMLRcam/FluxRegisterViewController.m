@@ -343,6 +343,10 @@
             FluxUserObject *signingInUser = [[FluxUserObject alloc]init];
             [signingInUser setUsername:username];
             [signingInUser setPassword:password];
+            [UIView animateWithDuration:0.2 animations:^{
+                [loadingActivityIndicator setAlpha:1.0];
+            }];
+            
             [self loginWithUserObject:signingInUser andDidJustRegister:NO];
         }
         else{
@@ -671,6 +675,13 @@
         [UICKeyChainStore setString:userObject.password forKey:FluxPasswordKey service:FluxService];
         [UICKeyChainStore setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey service:FluxService];
         [UICKeyChainStore setString:userObject.auth_token forKey:FluxTokenKey service:FluxService];
+        if (userObject.email) {
+            [UICKeyChainStore setString:userObject.email forKey:FluxEmailKey service:FluxService];
+        }
+        else{
+            [UICKeyChainStore setString:@"email@mail.com" forKey:FluxEmailKey service:FluxService];
+        }
+
         
         if (new) {
             [ProgressHUD showSuccess:@"Welcome To Flux!"];
@@ -988,6 +999,7 @@
     for (int i = 0; i<[self.tableView numberOfRowsInSection:0]; i++) {
         FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         cell.textField.text = @"";
+        [cell setChecked:NO];
     }
     
     [self showContainerViewAnimated:YES];

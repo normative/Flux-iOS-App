@@ -7,7 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FluxUserObject.h"
+#import "FluxDataManager.h"
 
-@interface FluxEditProfileViewController : UITableViewController<UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface FluxEditProfileViewController : UITableViewController<UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
+    FluxUserObject*userObject;
+    NSMutableDictionary*editedDictionary;
+}
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
+
+- (void)prepareViewWithUser:(FluxUserObject*)theUserObject;
+- (IBAction)editProfilePictureCell:(id)sender;
+- (IBAction)saveButtonAction:(id)sender;
 
 @end

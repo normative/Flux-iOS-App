@@ -13,9 +13,11 @@
 #import "FluxProfileCell.h"
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
+#import "FluxImageTools.h"
 
 #import "FluxSettingsViewController.h"
 #import "FluxProfilePhotosViewController.h"
+#import "FluxEditProfileViewController.h"
 
 @interface FluxLeftDrawerViewController ()
 
@@ -45,6 +47,12 @@
 {
     [super viewDidLoad];
     tableViewArray = [self tableViewArrayForUser:nil];
+    isEditing = NO;
+    
+    self.navigationItem.rightBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle: @"Done"
+                                                                              style: UIBarButtonItemStylePlain
+                                                                             target: self
+                                                                             action: @selector(doneButtonAction)];
     
     NSString * version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
     NSString * build = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *)kCFBundleVersionKey];
@@ -58,6 +66,7 @@
     if (userID) {
         FluxDataRequest*request = [[FluxDataRequest alloc]init];
         [request setUserReady:^(FluxUserObject*userObject, FluxDataRequest*completedRequest){
+            userObj = userObject;
             tableViewArray = [self tableViewArrayForUser:userObject];
             [self.tableView reloadData];
             if (userObject.hasProfilePic) {
@@ -67,6 +76,7 @@
                 if (![defaults objectForKey:@"profilePic"]) {
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
+                        [userObj setProfilePic:img];
                         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                         [defaults setObject:img forKey:@"profilePic"];
                         [defaults synchronize];
@@ -154,15 +164,17 @@
     }
     [cell initCell];
     if (indexPath.row == 0) {
+        
         NSString *cellIdentifier = @"profileCell";
         FluxProfileCell * profileCell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         if (!profileCell) {
             profileCell = [[FluxProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
         }
+        [profileCell initCellisEditing:isEditing];
         
         NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
         if (username) {
-            [profileCell.usernameLabel setText:@"username"];
+            [profileCell.usernameLabel setText:username];
         }
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -171,24 +183,23 @@
         }
         
         if ([defaults objectForKey:@"profilePic"]) {
-            [profileCell.profileImageView setImage:[defaults objectForKey:@"profilePic"]];
+            [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
         }
         else{
-            [profileCell.profileImageView setImage:[UIImage imageNamed:@"emptyProfileImage"]];
+            [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
         }
-        profileCell.profileImageView.layer.cornerRadius = profileCell.profileImageView.frame.size.height/2;
-        profileCell.profileImageView.clipsToBounds = YES;
-        [profileCell setSelectionStyle:UITableViewCellSelectionStyleNone];
         
         
-        [profileCell initCell];
+
         [profileCell hideCamStats];
         return profileCell;
     }
+    //settings
     else if (indexPath.row == tableViewArray.count){
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
     }
+    //disable social
     else if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4){
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
@@ -196,9 +207,12 @@
         [cell.countLabel setEnabled:NO];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
+    
     else{
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
+        [cell.titleLabel setEnabled:YES];
+        [cell.countLabel setEnabled:YES];
     }
     //[cell.imageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
     return cell;
@@ -240,12 +254,125 @@
     [TestFlight openFeedbackViewFromView:self];
 }
 
-- (IBAction)doneButtonAction:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+- (IBAction)doneButtonAction {
+    if (isEditing) {
+        //save edits
+    }
+    else{
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (IBAction)editProfileAction:(id)sender {
-    [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:nil];
+    [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:self];
+    
+    
+    //if inline
+//    isEditing = YES;
+//    [self setTitle:@"Edit Profile"];
+//    [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
+//    [self.navigationItem.rightBarButtonItem setEnabled:NO];
+//
+//    
+//    self.navigationItem.leftBarButtonItem =  [[UIBarButtonItem alloc] initWithTitle: @"Cancel"
+//                                                                               style: UIBarButtonItemStylePlain
+//                                                                              target: self
+//                                                                              action: @selector(cancelEdit)];
+//    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (IBAction)editProfleImageAction:(id)sender {
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+        
+    {
+        [self actionSheet:nil clickedButtonAtIndex:1];
+    }
+    else{
+        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Select a source"
+                                                                 delegate:self
+                                                        cancelButtonTitle:@"Cancel"
+                                                   destructiveButtonTitle:nil
+                                                        otherButtonTitles:@"Camera", @"Select from Library", nil];
+        //actionSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+        [actionSheet showInView:self.view];
+    }
+}
+
+- (void)cancelEdit{
+    isEditing = NO;
+    [self setTitle:@"Profile"];
+    [self.navigationItem.rightBarButtonItem setTitle:@"Done"];
+    [self.navigationItem.rightBarButtonItem setEnabled:YES];
+    self.navigationItem.leftBarButtonItem = nil;
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+#pragma mark UIActionSheetDelegate
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    int i = buttonIndex;
+    switch(i)
+    {
+        case 0:
+        {
+            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+            [picker setDelegate:self];
+            picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            [picker setAllowsEditing:YES];
+            [self presentViewController:picker animated:YES completion:^{}];
+        }
+            break;
+        case 1:
+        {
+            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+            [picker setDelegate:self];
+            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            [picker setAllowsEditing:YES];
+            [self presentViewController:picker animated:YES completion:^{}];
+        }
+        default:
+            break;
+    }
+}
+
+#pragma - Image Picker Deleagte
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    // Picking Image from Camera/ Library
+    [picker dismissViewControllerAnimated:YES completion:^{}];
+    UIImage*newProfileImage = info[UIImagePickerControllerEditedImage];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        // Set desired maximum height and calculate width
+        CGFloat height = 140.0;  // or whatever you need
+        CGFloat width = 140.0;
+        
+        FluxImageTools*imageTools = [[FluxImageTools alloc]init];
+        
+        // Resize the image
+        UIImage * image =  [imageTools resizedImage:newProfileImage toSize:CGSizeMake(width, height) interpolationQuality:kCGInterpolationDefault];
+        
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            //set the image in here.
+            [[(FluxProfileCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]]profileImageButton]setBackgroundImage:image forState:UIControlStateNormal];
+        });
+    });
+    
+    if (!newProfileImage)
+    {
+        return;
+    }
+    
+    // Adjusting Image Orientation
+    //    NSData *data = UIImagePNGRepresentation(newProfileImage);
+    //    UIImage *tmp = [UIImage imageWithData:data];
+    //    UIImage *fixed = [UIImage imageWithCGImage:tmp.CGImage
+    //                                         scale:newProfileImage.scale
+    //                                   orientation:newProfileImage.imageOrientation];
+    //    newProfileImage = fixed;
+    
 }
 
 #pragma mark - delegate
@@ -253,6 +380,15 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue
                  sender:(id)sender
 {
+    if ([[segue identifier] isEqualToString:@"pushEditProfileSegue"])
+    {
+        FluxEditProfileViewController* editProfileVC = (FluxEditProfileViewController*)segue.destinationViewController;
+        [editProfileVC setFluxDataManager:self.fluxDataManager];
+        NSString *email = [UICKeyChainStore stringForKey:FluxEmailKey service:FluxService];
+        [userObj setEmail:email];
+        [editProfileVC prepareViewWithUser:userObj];
+    }
+
     if ([[segue identifier] isEqualToString:@"pushSettingsSegue"])
     {
         FluxSettingsViewController* leftDrawerSettingsViewController = (FluxSettingsViewController*)segue.destinationViewController;

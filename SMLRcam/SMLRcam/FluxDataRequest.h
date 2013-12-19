@@ -46,6 +46,7 @@ typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
 
 //users
 typedef void (^UploadUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
+typedef void (^UpdateUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
 typedef void (^LoginUserCompleteBlock)(FluxUserObject*, FluxDataRequest *);
 typedef void (^UsernameUniquenessCompleteBlock)(BOOL, NSString*, FluxDataRequest *);
 typedef void (^PostCameraCompleteBlock)(int, FluxDataRequest *);
@@ -115,6 +116,9 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for successful upload of user + image metadata
 @property (strong) UploadUserCompleteBlock uploadUserComplete;
 
+// Callback for successful update of user + image
+@property (strong) UpdateUserCompleteBlock updateUserComplete;
+
 // Callback for successful user login
 @property (strong) LoginUserCompleteBlock loginUserComplete;
 
@@ -152,6 +156,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 //users
 - (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUpdateUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString*)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest;

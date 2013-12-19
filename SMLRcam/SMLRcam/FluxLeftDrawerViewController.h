@@ -13,8 +13,11 @@
 
 #import "FluxDataManager.h"
 
-@interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate>{
+@interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate,UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
     NSMutableArray*tableViewArray;
+    FluxUserObject*userObj;
+    
+    BOOL isEditing;
 }
 
 @property (weak, nonatomic) IBOutlet UIView *copyrightView;
@@ -24,8 +27,8 @@
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 
 - (IBAction)onSendFeedBackBtn:(id)sender;
-- (IBAction)doneButtonAction:(id)sender;
 - (IBAction)editProfileAction:(id)sender;
+- (IBAction)editProfleImageAction:(id)sender;
 
 
 @end

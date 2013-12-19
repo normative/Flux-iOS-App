@@ -94,6 +94,13 @@
     }
 }
 
+- (void)whenUpdateUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.updateUserComplete)
+    {
+        self.updateUserComplete(userObject, completeDataRequest);
+    }
+}
+
 -(void)whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.loginUserComplete)
     {

@@ -128,9 +128,9 @@
         //HACK
         [cell.bioLabel setText:theUser.bio];
         [cell.usernameLabel setText:theUser.username];
-        [cell.profileImageView setImage: (theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"]];
+        [cell.profileImageButton setBackgroundImage:(theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"] forState:UIControlStateNormal];
         [cell.imageCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
-        [cell initCell];
+        [cell initCellisEditing:NO];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
         return cell;
     }

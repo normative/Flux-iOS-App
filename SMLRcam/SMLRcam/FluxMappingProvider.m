@@ -59,10 +59,17 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxUserObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":            @"userID"
+                                                  @"id":                @"userID",
+                                                  @"follower_count":     @"followerCount",
+                                                  @"following_count":    @"followingCount",
+                                                  @"image_count":        @"imageCount",
+                                                  @"friend":             @"isFriends",
+                                                  @"amifollowing":       @"isFollowing",
+                                                  @"aretheyfollowing":   @"isFollower",
+                                                  @"has_pic":            @"hasProfilePic"
                                                  }];
     
-    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token"]];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"bio"]];
     
     return mapping;
 }

@@ -107,6 +107,7 @@
 		AA9D0E9F1851318C0004823E /* FluxProfileImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */; };
 		AA9D0EA2185646DB0004823E /* FluxCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0EA1185646DB0004823E /* FluxCameraObject.m */; };
 		AA9D0EA5185664570004823E /* FluxRegisterEmailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0EA4185664570004823E /* FluxRegisterEmailViewController.m */; };
+		AA9F85E51863994800AB98A7 /* FluxRoundImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F85E41863994800AB98A7 /* FluxRoundImagePickerController.m */; };
 		AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265A617E89EAE003AE787 /* FluxTagObject.m */; };
 		AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAA265B717EA00E4003AE787 /* libTestFlight.a */; };
 		AAA265BE17EA00E5003AE787 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AAA265B817EA00E4003AE787 /* README.md */; };
@@ -335,6 +336,8 @@
 		AA9D0EA1185646DB0004823E /* FluxCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraObject.m; sourceTree = "<group>"; };
 		AA9D0EA3185664570004823E /* FluxRegisterEmailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRegisterEmailViewController.h; sourceTree = "<group>"; };
 		AA9D0EA4185664570004823E /* FluxRegisterEmailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegisterEmailViewController.m; sourceTree = "<group>"; };
+		AA9F85E31863994800AB98A7 /* FluxRoundImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRoundImagePickerController.h; sourceTree = "<group>"; };
+		AA9F85E41863994800AB98A7 /* FluxRoundImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRoundImagePickerController.m; sourceTree = "<group>"; };
 		AAA265A517E89EAE003AE787 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
 		AAA265A617E89EAE003AE787 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
 		AAA265B717EA00E4003AE787 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
@@ -741,6 +744,8 @@
 				AA69DA94182D4DF800B0BEED /* FluxTextField.h */,
 				AA69DA95182D4DF800B0BEED /* FluxTextField.m */,
 				AA85AD7017A995F7003EBC89 /* 3rd Party */,
+				AA9F85E31863994800AB98A7 /* FluxRoundImagePickerController.h */,
+				AA9F85E41863994800AB98A7 /* FluxRoundImagePickerController.m */,
 			);
 			name = "Custom UI Elements";
 			sourceTree = "<group>";
@@ -1255,6 +1260,7 @@
 				AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */,
 				F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */,
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
+				AA9F85E51863994800AB98A7 /* FluxRoundImagePickerController.m in Sources */,
 				AA984F0E18088923007F33B1 /* MKAnnotationView+MIExtension.m in Sources */,
 				173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */,
 				22335E42181ACC610098F205 /* FluxLeftDrawerViewController.m in Sources */,
@@ -1433,7 +1439,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
