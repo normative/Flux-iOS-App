@@ -179,7 +179,10 @@
         }
         else{
             if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
-                NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",removedImages, @"removedImages", nil];
+                NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
+                                                                                removedImages, @"removedImages",
+                                                                                [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
+                                                                                nil];
                 [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
             }
         }
