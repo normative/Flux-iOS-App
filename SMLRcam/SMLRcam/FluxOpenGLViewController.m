@@ -776,6 +776,12 @@ void init(){
                                                         object:self userInfo:nil];
 }
 
+
+- (void)setSnapShotFlag{
+    
+    _takesnapshot =1;
+}
+
 - (void)takeSnapshotAndPresentApproval{
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     UIImage*img = [self snapshot:self.view];
@@ -1523,7 +1529,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _projectionDistance = 15.0;
     glEnable(GL_DEPTH_TEST);
     
-    
+    _takesnapshot =0;
     
     /*
      NSError *error;
@@ -2124,6 +2130,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 
     glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
+    
+    if(_takesnapshot ==1)
+    {
+        [self takeSnapshotAndPresentApproval];
+        _takesnapshot =0;
+    }
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
