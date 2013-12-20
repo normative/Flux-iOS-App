@@ -55,7 +55,7 @@
             [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                 [profileTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
             }];
-            [self.fluxDataManager requestUserProfilePicForID:user.userID andSize:@"" withDataRequest:picRequest];
+            [self.fluxDataManager requestUserProfilePicForID:user.userID andSize:@"thumb" withDataRequest:picRequest];
         }
     }];
     

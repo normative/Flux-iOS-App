@@ -78,7 +78,8 @@
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                         [userObj setProfilePic:img];
                         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                        [defaults setObject:img forKey:@"profilePic"];
+//                        [defaults setObject:img forKey:@"profilePic"];
+                        [defaults setObject:UIImagePNGRepresentation(img) forKey:@"profilePic"];
                         [defaults synchronize];
                         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                     }];
@@ -86,7 +87,7 @@
                         NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
                         [ProgressHUD showError:str];
                     }];
-                    [self.fluxDataManager requestUserProfilePicForID:userID.integerValue andSize:@"" withDataRequest:picRequest];
+                    [self.fluxDataManager requestUserProfilePicForID:userID.integerValue andSize:@"thumb" withDataRequest:picRequest];
                 }
             }
         }];
@@ -183,7 +184,17 @@
         }
         
         if ([defaults objectForKey:@"profilePic"]) {
-            [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
+//            [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
+            NSData *imgData = [defaults objectForKey:@"profilePic"];
+            UIImage *img = [UIImage imageWithData:imgData];
+            if (img)
+            {
+                [profileCell.profileImageButton setBackgroundImage:img forState:UIControlStateNormal];
+            }
+            else
+            {
+                [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
+            }
         }
         else{
             [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];

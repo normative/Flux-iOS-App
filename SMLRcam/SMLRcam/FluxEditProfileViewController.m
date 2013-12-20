@@ -123,9 +123,20 @@
             }
             
             if ([defaults objectForKey:@"profilePic"]) {
-                [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
+//                [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
+                NSData *imgData = [defaults objectForKey:@"profilePic"];
+                UIImage *img = [UIImage imageWithData:imgData];
+                if (img)
+                {
+                [profileCell.profileImageButton setBackgroundImage:img forState:UIControlStateNormal];
+                }
+                else
+                {
+                    [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
+                }
             }
-            else{
+            else
+            {
                 [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
             }
             [profileCell hideCamStats];
@@ -243,7 +254,8 @@
         [request setUpdateUserComplete:^(FluxUserObject*userObject, FluxDataRequest*completedRequest){
             if ([editedDictionary objectForKey:@"profilePic"]) {
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                [defaults setObject:[editedDictionary objectForKey:@"profilePic"] forKey:@"profilePic"];
+//                [defaults setObject:[editedDictionary objectForKey:@"profilePic"] forKey:@"profilePic"];
+                [defaults setObject:UIImagePNGRepresentation([editedDictionary objectForKey:@"profilePic"]) forKey:@"profilePic"];
                 [defaults synchronize];
                 [ProgressHUD showSuccess:@"Done"];
                 [self.navigationController popViewControllerAnimated:YES];

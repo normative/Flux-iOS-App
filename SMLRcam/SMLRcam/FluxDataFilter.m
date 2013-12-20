@@ -20,7 +20,8 @@
         _altMax = MAXFLOAT;
         _hashTags = @"";
         _users = @"";
-        _categories = @"1%20person%20place%20thing%20event";
+//        _categories = @"1%20person%20place%20thing%20event";
+        _categories = @"1 person place thing event";
     }
     return self;
 }
