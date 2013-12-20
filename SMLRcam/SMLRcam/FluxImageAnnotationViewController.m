@@ -71,6 +71,10 @@
     
     isSnapshot = YES;
     
+    [saveButton setTitle:@"Save"];
+    [facebookButton setUserInteractionEnabled:NO];
+    [twitterButton setUserInteractionEnabled:NO];
+    
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
     //[saveButton setEnabled:NO];
     //[saveButton setTintColor:[UIColor lightGrayColor]];
@@ -210,14 +214,14 @@
 }
 
 - (void)checkPostButton{
-    if (facebookButton.isSelected || twitterButton.isSelected) {
-        self.navigationItem.rightBarButtonItem.enabled = YES;
-        [saveButton setTintColor:[UIColor whiteColor]];
-    }
-    else{
-        self.navigationItem.rightBarButtonItem.enabled = NO;
-        [saveButton setTintColor:[UIColor lightGrayColor]];
-    }
+//    if (facebookButton.isSelected || twitterButton.isSelected) {
+//        self.navigationItem.rightBarButtonItem.enabled = YES;
+//        [saveButton setTintColor:[UIColor whiteColor]];
+//    }
+//    else{
+//        self.navigationItem.rightBarButtonItem.enabled = NO;
+//        [saveButton setTintColor:[UIColor lightGrayColor]];
+//    }
 }
 
 @end
