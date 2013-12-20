@@ -3,6 +3,19 @@ Release Notes:
 
 ******************************************
 
+V0.14 B03
+
+Released: 2013-12-20 17:45:00
+
+Release Notes:
+- remove PIN
+- remove login override (icon tap)
+- remove user profile editing
+- remove user profile picture
+- fix to Snapshot flash bug
+
+******************************************
+
 V0.14 B02
 
 Released: 2013-12-20 01:45:00
