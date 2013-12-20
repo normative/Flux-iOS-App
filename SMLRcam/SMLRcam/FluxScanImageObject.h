@@ -73,6 +73,8 @@ typedef enum LocationDataType : NSUInteger {
 @property (nonatomic, strong) NSString* username;
 @property (nonatomic, strong) NSString* descriptionString;
 
+@property (nonatomic) bool privacy;
+
 @property (nonatomic) GLKQuaternion rotation;
 
 @property (nonatomic) int categoryID;

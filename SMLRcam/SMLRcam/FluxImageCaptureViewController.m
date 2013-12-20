@@ -148,6 +148,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
         
         [imgObject setCategoryID:0];
         [imgObject setDescriptionString:[changes objectForKey:@"annotation"]];
+        imgObject.privacy = [changes objectForKey:@"privacy"];
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
