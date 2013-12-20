@@ -801,14 +801,14 @@
 }
 
 - (IBAction)backdoorButtonAction:(id)sender {
-    // set userid and cameraid to 1 here, trigger a camera registration too.
-    [UICKeyChainStore setString:@"" forKey:FluxUsernameKey service:FluxService];
-    [UICKeyChainStore setString:@"1" forKey:FluxUserIDKey service:FluxService];
-    [UICKeyChainStore setString:@"" forKey:FluxTokenKey service:FluxService];
-    [self didLoginSuccessfullyWithUserID:1];
-    [self hideKeyboard];
-    [self hideContainerViewAnimated:YES];
-    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
+//    // set userid and cameraid to 1 here, trigger a camera registration too.
+//    [UICKeyChainStore setString:@"" forKey:FluxUsernameKey service:FluxService];
+//    [UICKeyChainStore setString:@"1" forKey:FluxUserIDKey service:FluxService];
+//    [UICKeyChainStore setString:@"" forKey:FluxTokenKey service:FluxService];
+//    [self didLoginSuccessfullyWithUserID:1];
+//    [self hideKeyboard];
+//    [self hideContainerViewAnimated:YES];
+//    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
 }
 
 #pragma mark - UIActionSheetDelegate
