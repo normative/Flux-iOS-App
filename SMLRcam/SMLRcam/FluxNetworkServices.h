@@ -69,7 +69,7 @@ extern NSString* const FluxTestServerURL;
     __weak id <NetworkServicesDelegate> delegate;
 }
 @property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
-@property (nonatomic, getter = get_token) NSString *token;
+//@property (nonatomic, getter = get_token) NSString *token;
 
 
 #pragma mark - image methods
