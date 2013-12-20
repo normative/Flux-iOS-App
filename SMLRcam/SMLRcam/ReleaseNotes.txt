@@ -5,13 +5,17 @@ Release Notes:
 
 V0.14 B02
 
-Released: 2013-12-19 23:55:00
+Released: 2013-12-20 01:45:00
 
 Release Notes:
+- Basic Flux User support almost complete
+    - profile editing and profile picture need some work
 - Hide area Nuke and server selection from settings.
 - Add URL encoding to convert invalid URL characters to appropriate percent tags.
 - Fixes to enable profile image downloading, including changes to handling of profile picture in defaults.  
     - Profile images are being pulled but are not displaying.
+- per-upload image privacy setting
+- user-specific image deletion working
 
 ******************************************
 
