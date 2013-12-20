@@ -124,6 +124,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         //show network activity indicator
         [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
         
+        
+        
         //show alert if there is no network connectivity
         [objectManager.HTTPClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             if (status == AFNetworkReachabilityStatusNotReachable) {
@@ -163,7 +165,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-        }    }];
+        }
+    }];
     [operation start];
 }
 

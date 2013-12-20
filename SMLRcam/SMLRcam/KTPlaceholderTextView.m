@@ -55,6 +55,23 @@ static size_t const kDashedCount            = (2.0f);
     [self setDelegate:self];
 }
 
+- (void)setCharCountVisible:(BOOL)visible{
+    if (visible) {
+        if (![charCount superview]) {
+            [self addSubview:charCount];
+            [placeholderLabel setCenter:CGPointMake(placeholderLabel.center.x, placeholderLabel.center.y+2)];
+        }
+    }
+    else{
+        [charCount removeFromSuperview];
+        [placeholderLabel setCenter:CGPointMake(placeholderLabel.center.x, placeholderLabel.center.y-2)];
+    }
+}
+
+- (void)setMaxCharCount:(int)count{
+    maxCount = count;
+}
+
 #pragma mark - setters
 
 - (void)setPlaceholderText:(NSString*)thePlaceholder{

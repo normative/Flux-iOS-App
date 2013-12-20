@@ -147,7 +147,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-//if it's a 4s or before, tap hides the keyboard
+//if it's a non-4" display
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     if ([[UIScreen mainScreen] bounds].size.height < 568.0f)
     {

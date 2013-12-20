@@ -37,15 +37,32 @@
     return self;
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [UIView animateWithDuration:0.2 animations:^{
+        [self.tableView setAlpha:0.0];
+    }];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.tableView setAlpha:1.0];
+    }];
     
 }
 
 - (void)viewDidLoad
 {
+    [self.view setAlpha:0.0];
     [super viewDidLoad];
+    
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+    
+    
     tableViewArray = [self tableViewArrayForUser:nil];
     isEditing = NO;
     
@@ -175,12 +192,12 @@
         
         NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
         if (username) {
-            [profileCell.usernameLabel setText:username];
+            [profileCell setUsernameText:username];
         }
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         if ([defaults objectForKey:@"bio"]) {
-            [profileCell.bioLabel setText:[defaults objectForKey:@"bio"]];
+            [profileCell setBioText:[defaults objectForKey:@"bio"]];
         }
         
         if ([defaults objectForKey:@"profilePic"]) {
@@ -234,7 +251,7 @@
     switch (indexPath.row)
     {
         case 0:
-            //[self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
+            [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:self];
             break;
         case 1:
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
@@ -275,7 +292,7 @@
 }
 
 - (IBAction)editProfileAction:(id)sender {
-    [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:self];
+
     
     
     //if inline

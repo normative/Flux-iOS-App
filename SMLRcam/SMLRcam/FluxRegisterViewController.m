@@ -675,12 +675,7 @@
         [UICKeyChainStore setString:userObject.password forKey:FluxPasswordKey service:FluxService];
         [UICKeyChainStore setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey service:FluxService];
         [UICKeyChainStore setString:userObject.auth_token forKey:FluxTokenKey service:FluxService];
-        if (userObject.email) {
-            [UICKeyChainStore setString:userObject.email forKey:FluxEmailKey service:FluxService];
-        }
-        else{
-            [UICKeyChainStore setString:@"email@mail.com" forKey:FluxEmailKey service:FluxService];
-        }
+        [UICKeyChainStore setString:userObject.email forKey:FluxEmailKey service:FluxService];
 
         
         if (new) {

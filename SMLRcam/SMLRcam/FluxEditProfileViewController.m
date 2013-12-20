@@ -8,7 +8,6 @@
 
 #import "FluxEditProfileViewController.h"
 #import "FluxImageTools.h"
-#import "FluxProfileCell.h"
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
 
@@ -18,24 +17,70 @@
 
 @implementation FluxEditProfileViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+- (void)prepareViewWithUser:(FluxUserObject *)theUserObject{
+    userObject = theUserObject;
+    
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithStyle:style];
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
     }
     return self;
 }
 
-- (void)prepareViewWithUser:(FluxUserObject *)theUserObject{
-    userObject = theUserObject;
-    [self.tableView reloadData];
+- (void)viewWillAppear:(BOOL)animated{
+    if (userObject.profilePic) {
+        [profileImageButton setBackgroundImage:userObject.profilePic forState:UIControlStateNormal];
+    }
+    else{
+        [profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
+    }
+    
+    [usernameLabel setText:userObject.username];
+    if (userObject.bio) {
+        [bioTextField setText:userObject.bio];
+    }
+    [bioTextField becomeFirstResponder];
 }
+
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    editedDictionary = [[NSMutableDictionary alloc]init];
+    
+    UILabel *editLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, profileImageButton.frame.size.height-25, profileImageButton.frame.size.width, 25)];
+    editLabel.textColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
+    [editLabel setTextAlignment:NSTextAlignmentCenter];
+    [editLabel setText:@"Edit"];
+    editLabel.font = [UIFont fontWithName:@"Akkurat" size:13.0];
+    [editLabel setBackgroundColor:[UIColor lightGrayColor]];
+    [editLabel setAlpha:0.5];
+    [profileImageButton addSubview:editLabel];
+    
+    profileImageButton.layer.cornerRadius = profileImageButton.frame.size.height/2;
+    profileImageButton.clipsToBounds = YES;
+    
+    [bioTextField setPlaceholderText:@"Tell others a bit about you"];
+    //[bioTextField setCharCountVisible:NO];
+    [bioTextField setMaxCharCount:90];
+    [bioTextField setTheDelegate:self];
 
+
+    CALayer *roundBorderLayer = [CALayer layer];
+    roundBorderLayer.borderWidth = 0.5;
+    roundBorderLayer.opacity = 0.4;
+    roundBorderLayer.cornerRadius = 5;
+    roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+    roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(bioTextField.frame), CGRectGetHeight(bioTextField.frame));
+    [bioTextField.layer addSublayer:roundBorderLayer];
+    
+    
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -49,129 +94,12 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 2;
+#pragma mark PlaceholderTextView Delegate
+- (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
+    [editedDictionary setObject:placeholderTextView.text forKey:@"bio"];
 }
 
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        return @"Public";
-    }
-    else
-        return @"Private";
-}
-
--(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, [self tableView:tableView heightForHeaderInSection:section])];
-    [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
-    
-    // Create label with section title
-    UILabel*label = [[UILabel alloc] init];
-    label.frame = CGRectMake(20, 2, 150, 20);
-    label.textColor = [UIColor whiteColor];
-    [label setFont:[UIFont fontWithName:@"Akkurat" size:12]];
-    label.text = [self tableView:tableView titleForHeaderInSection:section];
-    label.backgroundColor = [UIColor clearColor];
-    [label setCenter:CGPointMake(label.center.x, label.center.y)];
-    [view addSubview:label];
-    return view;
-}
-
-- (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        return 0;
-    }
-    else
-        return 20.0;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == 0) {
-        return 120.0;
-    }
-    return 44.0;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return 1;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    switch (indexPath.section) {
-        case 0:
-        {
-            NSString *cellIdentifier = @"profileCell";
-            FluxProfileCell * profileCell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-            if (!profileCell) {
-                profileCell = [[FluxProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-            }
-            [profileCell initCellisEditing:YES];
-            
-            NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
-            if (username) {
-                [profileCell.usernameLabel setText:userObject.username];
-            }
-            
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            if ([defaults objectForKey:@"bio"]) {
-                [profileCell.bioLabel setText:[defaults objectForKey:@"bio"]];
-            }
-            
-            if ([defaults objectForKey:@"profilePic"]) {
-//                [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
-                NSData *imgData = [defaults objectForKey:@"profilePic"];
-                UIImage *img = [UIImage imageWithData:imgData];
-                if (img)
-                {
-                [profileCell.profileImageButton setBackgroundImage:img forState:UIControlStateNormal];
-                }
-                else
-                {
-                    [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
-                }
-            }
-            else
-            {
-                [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
-            }
-            [profileCell hideCamStats];
-            [profileCell setSelectionStyle:UITableViewCellSelectionStyleNone];
-            return profileCell;
-        }
-        break;
-        case 1:
-        {
-            static NSString *CellIdentifier = @"textCell";
-            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-            UILabel*titleLabel = (UILabel*)[cell viewWithTag:10];
-            [titleLabel setTextColor:[UIColor whiteColor]];
-            [titleLabel setText:@"Email"];
-            [titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:titleLabel.font.pointSize]];
-            
-            UITextField*textField = (UITextField*)[cell viewWithTag:20];
-            [textField setFont:[UIFont fontWithName:@"Akkurat" size:titleLabel.font.pointSize]];
-            [textField setText:userObject.email];
-            [textField setClearsOnBeginEditing:YES];
-            
-            [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-            return cell;
-        }
-        break;
-            
-        default:
-            return nil;
-            break;
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
 
 #pragma mark UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -220,8 +148,10 @@
         UIImage * image =  [imageTools resizedImage:newProfileImage toSize:CGSizeMake(width, height) interpolationQuality:kCGInterpolationDefault];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[(FluxProfileCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]]profileImageButton]setBackgroundImage:image forState:UIControlStateNormal];
+            [profileImageButton setBackgroundImage:image forState:UIControlStateNormal];
             [editedDictionary setObject:image forKey:@"profilePic"];
+            [bioTextField becomeFirstResponder];
+            
         });
     });
     
@@ -229,6 +159,10 @@
     {
         return;
     }
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+    [bioTextField becomeFirstResponder];
 }
 
 - (IBAction)editProfilePictureCell:(id)sender {
@@ -262,11 +196,12 @@
             }
         }];
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            NSString*str = [NSString stringWithFormat:@"Profile load failed with error %d", (int)[e code]];
+            NSString*str = [NSString stringWithFormat:@"Profile update failed with error %d", (int)[e code]];
             [ProgressHUD showError:str];
         }];
         
         FluxUserObject*new = userObject;
+        [new setPassword:[UICKeyChainStore stringForKey:FluxPasswordKey service:FluxService]];
         if ([editedDictionary objectForKey:@"bio"]) {
             [new setBio:[editedDictionary objectForKey:@"bio"]];
         }
