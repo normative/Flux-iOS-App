@@ -803,20 +803,93 @@ void init(){
 
 #pragma mark - Image Tapping
 
+
+- (int) calcVertexAtPoint:(GLKVector3)point withModelViewProjectionMatrix:(GLKMatrix4)mvp withScreenViewport:(GLKVector4)vp andCalcVertex:(GLKVector3 *) vertex
+{
+    bool isinvertible;
+    GLKMatrix4 invMVP = GLKMatrix4Invert(mvp, &isinvertible);
+    if (isinvertible == false)
+        return -1;
+    GLKVector4 in = GLKVector4Make(point.x, point.y, point.z, 1.0);
+    in.x = (in.x - vp.x) /vp.z;
+    in.y = (in.y - vp.y) /vp.w;
+    
+    in.x = in.x *2.0 - 1.0;
+    in.y = in.y *2.0 - 1.0;
+    in.z = in.z *2.0 - 1.0;
+    
+    GLKVector4 out = GLKMatrix4MultiplyVector4(invMVP, in);
+    if(out.w == 0.0) return -1;
+    
+    out.x /= out.w;
+    out.y /= out.w;
+    out.z /= out.w;
+    
+    vertex->x = out.x;
+    vertex->y = out.y;
+    vertex->z = out.z;
+    
+    return 0;
+}
+
+-(int) isImageTappedAtVertex:(GLKVector3)vertex withMVP:(GLKMatrix4)tMVP
+{
+    int valid=0;
+    GLKVector3 tCoord = GLKMatrix4MultiplyVector3(tMVP, vertex);
+    float s = tCoord.x / tCoord.z;
+    float t = tCoord.y / tCoord.z;
+
+    if(s>=0.0 && s<=1.0 && t>=0.0 && t<=1.0)
+        valid = 1;
+    else
+        valid = 0;
+    
+    return valid;
+}
+
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point
 {
     FluxScanImageObject *touchedObject = nil;
     
-    if (self.renderList.count>0) {
-        FluxImageRenderElement *ire = [self.renderList objectAtIndex:0];
-        if (ire != nil)
+    int valid =-1;
+    GLKVector3 tapPoint;
+    GLKVector3 vertex;
+    GLKVector4 vp;
+    
+    //assuming that this is a retina device
+    vp.x = 0.0;
+    vp.y = 0.0;
+    vp.z = _screenWidth  * 2.0;
+    vp.w = _screenHeight * 2.0;
+    
+    tapPoint.x = point.x;
+    tapPoint.y = point.y;
+    tapPoint.z = 15.0/50.0;
+        valid = [self calcVertexAtPoint:tapPoint
+          withModelViewProjectionMatrix:_modelViewProjectionMatrix
+                     withScreenViewport:vp
+                          andCalcVertex:&vertex];
+        
+    NSLog(@"vertex");
+    
+    int element = 0;
+    int i;
+    int tapped =0;
+    //this is order dependant of course so any time the ordering of items in renderList will change this needs to be updated
+    for(i = 0; i <self.renderList.count;i++)
+    {
+        element = self.renderList.count - i;
+        tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
+        if (tapped ==1)
         {
-            //        FluxScanImageObject *touchedObject = [[FluxScanImageObject alloc]initWithUserID:ire.imageMetadata.userID atTimestampString:nil andCameraID:0 andCategoryID:0 withDescriptionString:ire.imageMetadata.descriptionString andlatitude:0 andlongitude:0 andaltitude:0 andHeading:0 andYaw:0 andPitch:0 andRoll:0 andQW:0 andQX:0 andQY:0 andQZ:0 andHorizAccuracy:0 andVertAccuracy:0];
-            touchedObject = ire.imageMetadata;
+            FluxImageRenderElement *ire = [self.renderList objectAtIndex:i];
+            if (ire != nil)
+            {
+                touchedObject = ire.imageMetadata;
+            }
+            break;
         }
     }
-
-
     return touchedObject;
 }
 
@@ -2019,7 +2092,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     //    NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
     //    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
     
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
+    GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
     
     
