@@ -250,7 +250,7 @@
     switch (indexPath.row)
     {
         case 0:
-            //[self performSegueWithIdentifier:@"pushEditProfileSegue" sender:self];
+            [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:self];
             break;
         case 1:
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];

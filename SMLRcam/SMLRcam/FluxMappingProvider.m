@@ -93,6 +93,15 @@
     return mapping;
 }
 
++ (RKObjectMapping *)userPATCHMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"password": @"current_password"}];
+    
+    [mapping addAttributeMappingsFromArray:@[@"name", @"username", @"email", @"bio"]];
+    
+    return mapping;
+}
+
 + (RKObjectMapping *)cameraPostMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     

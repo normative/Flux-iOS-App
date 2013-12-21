@@ -19,8 +19,8 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 //serverURL
-//#define externServerURL @"http://54.221.222.71/"
-#define productionServerURL @"http://54.221.254.230/"
+//#define productionServerURL @"http://54.221.254.230/"
+#define productionServerURL @"http://54.221.222.71/"
 #define testServerURL @"http://54.221.222.71/"
 //#define productionServerURL @"http://192.168.2.18:3001/"
 
@@ -89,8 +89,14 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                                                                                                 method:RKRequestMethodPOST];
         
         
+        RKRequestDescriptor *userUpdateDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider userPATCHMapping]
+                                                                                           objectClass:[FluxUserObject class]
+                                                                                           rootKeyPath:@"user"
+                                                                                                method:RKRequestMethodPATCH];
+        
         
         [objectManager addRequestDescriptor:userRequestDescriptor];
+        [objectManager addRequestDescriptor:userUpdateDescriptor];
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
@@ -449,12 +455,24 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 - (void)updateUser:(FluxUserObject *)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+userObject.name=@"My Name";
+    NSLog(@"name: %@, user name: %@, email: %@, bio: %@", userObject.name, userObject.username, userObject.email, userObject.bio);
     
+    //  Parameters: {"utf8"=>"✓", "authenticity_token"=>"C19Ggqnw5MQMHxF1SVNYkoHvXa2yDuZaQWw1ogvVWR0=", "user"=>{"username"=>"denis", "name"=>"Denis Delorme", "bio"=>"more something else about myself"}, "commit"=>"Update User", "id"=>"24"}
+    //  Parameters: {"auth_token"=>"Tcv1jxYkLqGSp_iJE49e", "commit"=>"Update User", "id"=>"24", "user"=>{"bio"=>"more something else about myself", "email"=>"denis@smlr.com", "username"=>"denis"}}
+
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:token, @"auth_token",
+                                                                            @"Update User", @"commit",
+                                                [NSNumber numberWithInt:userObject.userID], @"id",
+//                                                                       userObject.password, @"current_password",
+                                                                                            nil];
+
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:userObject
-                                                                                            method:RKRequestMethodPUT
-                                                                                              path:[NSString stringWithFormat:@"/users?auth_token=%@", token]
-                                                                                        parameters:nil
+                                                                                            method:RKRequestMethodPATCH
+//                                                                                              path:[NSString stringWithFormat:@"/users?auth_token=%@", token]
+                                                                                              path:[NSString stringWithFormat:@"/users"]
+                                                                                        parameters:params
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
                                     {
                                         if (theImage) {
@@ -476,6 +494,13 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                    {
                        [delegate NetworkServices:self didUpdateUser:userObject andRequestID:requestID];
                    }
+               }
+               else
+               {
+//                   if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+//                   {
+//                       [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+//                   }
                }
            }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
