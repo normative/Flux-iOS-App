@@ -46,7 +46,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     if (self = [super init])
     {
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        BOOL isremote = [[defaults objectForKey:@"Server Location"]intValue];
+        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
         if (isremote)
         {
             objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:productionServerURL]];
@@ -455,7 +455,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 - (void)updateUser:(FluxUserObject *)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-userObject.name=@"My Name";
+
     NSLog(@"name: %@, user name: %@, email: %@, bio: %@", userObject.name, userObject.username, userObject.email, userObject.bio);
     
     //  Parameters: {"utf8"=>"✓", "authenticity_token"=>"C19Ggqnw5MQMHxF1SVNYkoHvXa2yDuZaQWw1ogvVWR0=", "user"=>{"username"=>"denis", "name"=>"Denis Delorme", "bio"=>"more something else about myself"}, "commit"=>"Update User", "id"=>"24"}
@@ -464,14 +464,13 @@ userObject.name=@"My Name";
     NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:token, @"auth_token",
                                                                             @"Update User", @"commit",
                                                 [NSNumber numberWithInt:userObject.userID], @"id",
-//                                                                       userObject.password, @"current_password",
                                                                                             nil];
 
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:userObject
                                                                                             method:RKRequestMethodPATCH
 //                                                                                              path:[NSString stringWithFormat:@"/users?auth_token=%@", token]
-                                                                                              path:[NSString stringWithFormat:@"/users"]
+                                                                                              path:[NSString stringWithFormat:@"/users/%i", userObject.userID]
                                                                                         parameters:params
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
                                     {
@@ -486,21 +485,14 @@ userObject.name=@"My Name";
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
            {
-               if ([result count]>0)
+//               if ([result count]>0)
                {
-                   FluxUserObject *userObject = [result firstObject];
+//                   FluxUserObject *userObject = [result firstObject];
                    NSLog(@"Successfuly updated user %i ",userObject.userID);
                    if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateUser:andRequestID:)])
                    {
                        [delegate NetworkServices:self didUpdateUser:userObject andRequestID:requestID];
                    }
-               }
-               else
-               {
-//                   if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-//                   {
-//                       [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-//                   }
                }
            }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
