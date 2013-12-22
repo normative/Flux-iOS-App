@@ -12,6 +12,7 @@
 #import "FluxProfileCell.h"
 
 @interface FluxEditProfileViewController : UIViewController<UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, KTPlaceholderTextViewDelegate, UITextFieldDelegate>{
+    BOOL firstTime;
     FluxUserObject*userObject;
     NSMutableDictionary*editedDictionary;
     IBOutlet UIButton *profileImageButton;

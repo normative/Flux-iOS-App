@@ -90,14 +90,19 @@
                 
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 
-                if (![defaults objectForKey:@"profilePic"]) {
+                if (![defaults objectForKey:@"profileImage"]) {
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                         [userObj setProfilePic:img];
-                        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//                        [defaults setObject:img forKey:@"profilePic"];
-                        [defaults setObject:UIImagePNGRepresentation(img) forKey:@"profilePic"];
+                        NSData *pngData = UIImagePNGRepresentation(img);
+                        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                        NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+                        NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
+                        [pngData writeToFile:filePath atomically:YES]; //Write the file
+                        
+                        [defaults setObject:filePath forKey:@"profileImage"];
                         [defaults synchronize];
+                        
                         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                     }];
                     [picRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -105,6 +110,11 @@
                         [ProgressHUD showError:str];
                     }];
                     [self.fluxDataManager requestUserProfilePicForID:userID.integerValue andSize:@"thumb" withDataRequest:picRequest];
+                }
+                else{
+                    NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
+                    UIImage *image = [UIImage imageWithData:pngData];
+                    [userObj setProfilePic:image];
                 }
             }
         }];
@@ -145,12 +155,17 @@
     return newTableArray;
 }
 
-- (BOOL)userMatchesLocal:(FluxUserObject*)user{
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    if (defaults objectForKey:<#(NSString *)#>) {
-//        <#statements#>
-//    }
-    return NO;
+- (void)didUpdateProfileWithChanges:(NSDictionary*)changesDict{
+    
+    //only supports these two for now, and profilePic is loaded from defaults anyway
+    if ([changesDict objectForKey:@"bio"]) {
+        [userObj setBio:[changesDict objectForKey:@"bio"]];
+    }
+    if ([changesDict objectForKey:@"profilePic"]) {
+        [userObj setProfilePic:[changesDict objectForKey:@"profilePic"]];
+    }
+    tableViewArray = [self tableViewArrayForUser:userObj];
+    [self.tableView reloadData];
 }
 
 
@@ -195,18 +210,19 @@
             [profileCell setUsernameText:username];
         }
         
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        if ([defaults objectForKey:@"bio"]) {
-            [profileCell setBioText:[defaults objectForKey:@"bio"]];
+        if (userObj.bio) {
+            [profileCell setBioText:userObj.bio];
         }
         
-        if ([defaults objectForKey:@"profilePic"]) {
-//            [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
-            NSData *imgData = [defaults objectForKey:@"profilePic"];
-            UIImage *img = [UIImage imageWithData:imgData];
-            if (img)
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        if ([defaults objectForKey:@"profileImage"]) {
+            
+            NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
+            UIImage *image = [UIImage imageWithData:pngData];
+            
+            if (image)
             {
-                [profileCell.profileImageButton setBackgroundImage:img forState:UIControlStateNormal];
+                [profileCell.profileImageButton setBackgroundImage:image forState:UIControlStateNormal];
             }
             else
             {

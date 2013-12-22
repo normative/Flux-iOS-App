@@ -13,6 +13,7 @@
 @protocol KTPlaceholderTextViewDelegate <NSObject>
 @optional
 - (void)PlaceholderTextViewReturnButtonWasPressed:(KTPlaceholderTextView *)placeholderTextView;
+- (void)PlaceholderTextViewDidEdit:(KTPlaceholderTextView *)placeholderTextView;
 - (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView*)placeholderTextView;
 - (void)PlaceholderTextViewDidGoBeyondMax:(KTPlaceholderTextView*)placeholderTextView;
 - (void)PlaceholderTextViewDidReturnWithinMax:(KTPlaceholderTextView*)placeholderTextView;

@@ -37,7 +37,7 @@
     [self setSelectedBackgroundView:bgColorView];
     
     [self.usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.usernameLabel.font.pointSize]];
-    self.bioLabel.font = self.imageCountLabel.font = [UIFont fontWithName:@"Akkurat" size:self.imageCountLabel.font.pointSize];
+    [self.bioLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.bioLabel.font.pointSize]];
     
     self.profileImageButton.layer.cornerRadius = self.profileImageButton.frame.size.height/2;
     self.profileImageButton.clipsToBounds = YES;

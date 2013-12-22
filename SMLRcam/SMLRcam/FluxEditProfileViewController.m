@@ -7,6 +7,7 @@
 //
 
 #import "FluxEditProfileViewController.h"
+#import "FluxLeftDrawerViewController.h"
 #import "FluxImageTools.h"
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
@@ -19,7 +20,6 @@
 
 - (void)prepareViewWithUser:(FluxUserObject *)theUserObject{
     userObject = theUserObject;
-    
 }
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -32,17 +32,21 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    if (userObject.profilePic) {
-        [profileImageButton setBackgroundImage:userObject.profilePic forState:UIControlStateNormal];
+    if (firstTime) {
+        firstTime = NO;
+        if (userObject.profilePic) {
+            [profileImageButton setBackgroundImage:userObject.profilePic forState:UIControlStateNormal];
+        }
+        else{
+            [profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
+        }
+        
+        [usernameLabel setText:userObject.username];
+        if (userObject.bio) {
+            [bioTextField setText:userObject.bio];
+        }
     }
-    else{
-        [profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
-    }
-    
-    [usernameLabel setText:userObject.username];
-    if (userObject.bio) {
-        [bioTextField setText:userObject.bio];
-    }
+
     [bioTextField becomeFirstResponder];
 }
 
@@ -50,6 +54,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    firstTime = YES;
     
     editedDictionary = [[NSMutableDictionary alloc]init];
     
@@ -96,7 +101,8 @@
 
 
 #pragma mark PlaceholderTextView Delegate
-- (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView *)placeholderTextView{
+
+- (void)PlaceholderTextViewDidEdit:(KTPlaceholderTextView *)placeholderTextView{
     [editedDictionary setObject:placeholderTextView.text forKey:@"bio"];
 }
 
@@ -187,13 +193,25 @@
         FluxDataRequest*request = [[FluxDataRequest alloc]init];
         [request setUpdateUserComplete:^(FluxUserObject*userObject, FluxDataRequest*completedRequest){
             if ([editedDictionary objectForKey:@"profilePic"]) {
+                //save the image locally
+                NSData *pngData = UIImagePNGRepresentation([editedDictionary objectForKey:@"profilePic"]);
+                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+                NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
+                [pngData writeToFile:filePath atomically:YES]; //Write the file
+                
+                //then save the path to defaults
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//                [defaults setObject:[editedDictionary objectForKey:@"profilePic"] forKey:@"profilePic"];
-                [defaults setObject:UIImagePNGRepresentation([editedDictionary objectForKey:@"profilePic"]) forKey:@"profilePic"];
+                [defaults setObject:filePath forKey:@"profileImage"];
                 [defaults synchronize];
-                [ProgressHUD showSuccess:@"Done"];
-                [self.navigationController popViewControllerAnimated:YES];
+                
+//                //to retrieve the image:
+//                NSData *pngData = [NSData dataWithContentsOfFile:filePath];
+//                UIImage *image = [UIImage imageWithData:pngData];
             }
+            [ProgressHUD showSuccess:@"Done"];
+            [(FluxLeftDrawerViewController*)[self.navigationController.viewControllers objectAtIndex:0]didUpdateProfileWithChanges:editedDictionary];
+            [self.navigationController popViewControllerAnimated:YES];
         }];
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
             NSString*str = [NSString stringWithFormat:@"Profile update failed with error %d", (int)[e code]];

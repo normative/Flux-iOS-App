@@ -94,8 +94,44 @@ static size_t const kDashedCount            = (2.0f);
 #pragma mark - Callbacks
 //called on each keypress. Checks if the textView is blank. If it is, it shows the Placeholder label
 - (void) isEditing:(NSNotification*) notification {
+    
+    if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidEdit:)]) {
+        [theDelegate PlaceholderTextViewDidEdit:self];
+    }
+    
     NSLog(@"Text Length: %i",self.text.length);
     NSLog(@"My Calculated remaining: %i",maxCount-self.text.length);
+    if (![self.text isEqualToString:[NSString stringWithFormat:@""]]) {
+        [placeholderLabel setHidden:YES];
+        [charCount setHidden:NO];
+        
+        if (self.text.length > maxCount) {
+            self.text = [self.text substringToIndex:maxCount];
+            if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidGoBeyondMax:)]) {
+                [theDelegate PlaceholderTextViewDidGoBeyondMax:self];
+            }
+        }
+        else{
+            if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidReturnWithinMax:)]) {
+                [theDelegate PlaceholderTextViewDidReturnWithinMax:self];
+            }
+            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-self.text.length]];
+            if (self.text.length > 135) {
+                [charCount setTextColor:[UIColor redColor]];
+            }
+            else{
+                [charCount setTextColor:[UIColor whiteColor]];
+            }
+        }
+    }
+    else{
+        [placeholderLabel setHidden:NO];
+        [charCount setHidden:YES];
+    }
+}
+
+- (void)setText:(NSString *)text{
+    [super setText:text];
     if (![self.text isEqualToString:[NSString stringWithFormat:@""]]) {
         [placeholderLabel setHidden:YES];
         [charCount setHidden:NO];
