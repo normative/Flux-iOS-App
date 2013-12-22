@@ -19,8 +19,8 @@ NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 //serverURL
-//#define productionServerURL @"http://54.221.254.230/"
-#define productionServerURL @"http://54.221.222.71/"
+#define productionServerURL @"http://54.221.254.230/"
+//#define productionServerURL @"http://54.221.222.71/"
 #define testServerURL @"http://54.221.222.71/"
 //#define productionServerURL @"http://192.168.2.18:3001/"
 
