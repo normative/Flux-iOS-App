@@ -3,6 +3,15 @@ Release Notes:
 
 ******************************************
 
+V0.15 B01
+
+Released: 2013-12-21 12:30:00
+
+Release Notes:
+- enable profile editing including picture loading
+
+******************************************
+
 V0.14 B03
 
 Released: 2013-12-20 17:45:00
