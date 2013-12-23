@@ -633,10 +633,14 @@ const double maxRatioSideLength = 2.0;
         if (([self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[2]] > minLengthHomographyDiagonal) &&
             ([self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[3]] > minLengthHomographyDiagonal))
         {
-            if ([self sideLengthRatioCheckWithSideLengthL1:[self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[1]]
-                                                    withL2:[self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[2]]
-                                                    withL3:[self lengthOfLineSegmentWithEndpointA1:scene_corners[2] withEndpointA2:scene_corners[3]]
-                                                    withL4:[self lengthOfLineSegmentWithEndpointA1:scene_corners[3] withEndpointA2:scene_corners[0]]])
+            if ([self sideLengthRatioCheckWithSideLengthL1:([self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[1]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[0] withEndpointA2:obj_corners[1]])
+                                                    withL2:([self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[2]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[1] withEndpointA2:obj_corners[2]])
+                                                    withL3:([self lengthOfLineSegmentWithEndpointA1:scene_corners[2] withEndpointA2:scene_corners[3]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[2] withEndpointA2:obj_corners[3]])
+                                                    withL4:([self lengthOfLineSegmentWithEndpointA1:scene_corners[3] withEndpointA2:scene_corners[0]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[3] withEndpointA2:obj_corners[0]])])
             {
                 isValid = YES;
             }
