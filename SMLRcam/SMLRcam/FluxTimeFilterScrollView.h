@@ -17,6 +17,7 @@
 @interface FluxTimeFilterScrollView : UIScrollView{
     UIView*subview;
     __weak id <TimeFilterScrollViewTapDelegate> tapDelegate;
+    UITapGestureRecognizer*tapRecognizer;
 }
 @property (nonatomic, weak) id <TimeFilterScrollViewTapDelegate> tapDelegate;
 

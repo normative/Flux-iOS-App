@@ -75,6 +75,9 @@
     float height = [[UIScreen mainScreen] bounds].size.height;
     float heightPerCell = height/CELLS_PER_VIEW;
     self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell*count);
+    if (self.timeScrollView.contentSize.height < self.frame.size.height) {
+        self.timeScrollView.contentSize = CGSizeMake(self.timeScrollView.contentSize.width, self.frame.size.height);
+    }
     
     // Set up the shape of the circle
     circleLayer = [CAShapeLayer layer];

@@ -17,6 +17,11 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        [self setDelaysContentTouches:YES];
+        tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSingleTap:)];
+        [tapRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+        [self addGestureRecognizer:tapRecognizer];
+
     }
     return self;
 }
@@ -26,16 +31,21 @@
     if (self) {
         //custom init
 
+        [self setDelaysContentTouches:YES];
+        
+        tapRecognizer = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(handleSingleTap:)];
+        [tapRecognizer requireGestureRecognizerToFail:self.panGestureRecognizer];
+        [self addGestureRecognizer:tapRecognizer];
     }
     return self;
 }
 
-- (BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view{
-    CGPoint point = [[touches anyObject]locationInView:self.superview];
+- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer
+{
+    CGPoint location = [recognizer locationInView:[recognizer.view self]];
     if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:didTapAtPoint:)]) {
-        [tapDelegate timeFilterScrollView:self didTapAtPoint:point];
+        [tapDelegate timeFilterScrollView:self didTapAtPoint:location];
     }
-    return YES;
 }
 
 -(BOOL)touchesShouldCancelInContentView:(UIView *)view{
