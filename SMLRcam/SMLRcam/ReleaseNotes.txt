@@ -1,5 +1,5 @@
 Release Notes:
-
+- minor improvements to check if feature matching results are valid
 
 ******************************************
 
