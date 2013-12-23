@@ -13,6 +13,7 @@
 #import "FluxTimeFilterControl.h"
 #import "FluxImageRenderElement.h"
 #import <malloc/malloc.h>
+#import "FluxImageTools.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -525,7 +526,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     CameraButton.enabled = enabled;
 }
 
-- (IBAction)shareButtonAction:(id)sender {
+- (IBAction)snapshotButtonAction:(id)sender {
     [self activateSnapshotView];
     [openGLController setSnapShotFlag];
 }
@@ -657,6 +658,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         //[self animationPushBackScaleDown];
     }
     else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
+        UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
+        UIImage*bgImage = [openGLController snapshot:openGLController.view];
+        FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+        bgImage = [imageTools blurImage:bgImage withBlurLevel:0.6];
+        [bgView setImage:bgImage];
+        [bgView setBackgroundColor:[UIColor darkGrayColor]];
+        [[(UINavigationController*)segue.destinationViewController view] insertSubview:bgView atIndex:0];
         FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
     }

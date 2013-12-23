@@ -37,15 +37,32 @@
     return self;
 }
 
+- (void)viewWillDisappear:(BOOL)animated{
+    [UIView animateWithDuration:0.2 animations:^{
+        [self.tableView setAlpha:0.0];
+    }];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.tableView setAlpha:1.0];
+    }];
     
 }
 
 - (void)viewDidLoad
 {
+    [self.view setAlpha:0.0];
     [super viewDidLoad];
+    
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+    
+    
     tableViewArray = [self tableViewArrayForUser:nil];
     isEditing = NO;
     
@@ -73,14 +90,19 @@
                 
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 
-                if (![defaults objectForKey:@"profilePic"]) {
+                if (![defaults objectForKey:@"profileImage"]) {
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                         [userObj setProfilePic:img];
-                        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//                        [defaults setObject:img forKey:@"profilePic"];
-                        [defaults setObject:UIImagePNGRepresentation(img) forKey:@"profilePic"];
+                        NSData *pngData = UIImagePNGRepresentation(img);
+                        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                        NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+                        NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
+                        [pngData writeToFile:filePath atomically:YES]; //Write the file
+                        
+                        [defaults setObject:filePath forKey:@"profileImage"];
                         [defaults synchronize];
+                        
                         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                     }];
                     [picRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -88,6 +110,11 @@
                         [ProgressHUD showError:str];
                     }];
                     [self.fluxDataManager requestUserProfilePicForID:userID.integerValue andSize:@"thumb" withDataRequest:picRequest];
+                }
+                else{
+                    NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
+                    UIImage *image = [UIImage imageWithData:pngData];
+                    [userObj setProfilePic:image];
                 }
             }
         }];
@@ -128,12 +155,17 @@
     return newTableArray;
 }
 
-- (BOOL)userMatchesLocal:(FluxUserObject*)user{
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    if (defaults objectForKey:<#(NSString *)#>) {
-//        <#statements#>
-//    }
-    return NO;
+- (void)didUpdateProfileWithChanges:(NSDictionary*)changesDict{
+    
+    //only supports these two for now, and profilePic is loaded from defaults anyway
+    if ([changesDict objectForKey:@"bio"]) {
+        [userObj setBio:[changesDict objectForKey:@"bio"]];
+    }
+    if ([changesDict objectForKey:@"profilePic"]) {
+        [userObj setProfilePic:[changesDict objectForKey:@"profilePic"]];
+    }
+    tableViewArray = [self tableViewArrayForUser:userObj];
+    [self.tableView reloadData];
 }
 
 
@@ -175,21 +207,22 @@
         
         NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
         if (username) {
-            [profileCell.usernameLabel setText:username];
+            [profileCell setUsernameText:username];
+        }
+        
+        if (userObj.bio) {
+            [profileCell setBioText:userObj.bio];
         }
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        if ([defaults objectForKey:@"bio"]) {
-            [profileCell.bioLabel setText:[defaults objectForKey:@"bio"]];
-        }
-        
-        if ([defaults objectForKey:@"profilePic"]) {
-//            [profileCell.profileImageButton setBackgroundImage:[defaults objectForKey:@"profilePic"] forState:UIControlStateNormal];
-            NSData *imgData = [defaults objectForKey:@"profilePic"];
-            UIImage *img = [UIImage imageWithData:imgData];
-            if (img)
+        if ([defaults objectForKey:@"profileImage"]) {
+            
+            NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
+            UIImage *image = [UIImage imageWithData:pngData];
+            
+            if (image)
             {
-                [profileCell.profileImageButton setBackgroundImage:img forState:UIControlStateNormal];
+                [profileCell.profileImageButton setBackgroundImage:image forState:UIControlStateNormal];
             }
             else
             {
@@ -199,7 +232,6 @@
         else{
             [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
         }
-        
         
 
         [profileCell hideCamStats];
@@ -234,7 +266,7 @@
     switch (indexPath.row)
     {
         case 0:
-            //[self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
+            [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:self];
             break;
         case 1:
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
@@ -275,7 +307,7 @@
 }
 
 - (IBAction)editProfileAction:(id)sender {
-    [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:self];
+
     
     
     //if inline

@@ -62,6 +62,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"maskChange"
                                                             object:self userInfo:nil];
     }
+
 }
 
 - (void)didReceiveMemoryWarning

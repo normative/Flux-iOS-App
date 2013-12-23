@@ -13,6 +13,7 @@
 @protocol KTPlaceholderTextViewDelegate <NSObject>
 @optional
 - (void)PlaceholderTextViewReturnButtonWasPressed:(KTPlaceholderTextView *)placeholderTextView;
+- (void)PlaceholderTextViewDidEdit:(KTPlaceholderTextView *)placeholderTextView;
 - (void)PlaceholderTextViewDidBeginEditing:(KTPlaceholderTextView*)placeholderTextView;
 - (void)PlaceholderTextViewDidGoBeyondMax:(KTPlaceholderTextView*)placeholderTextView;
 - (void)PlaceholderTextViewDidReturnWithinMax:(KTPlaceholderTextView*)placeholderTextView;
@@ -32,6 +33,8 @@
 - (void)setPlaceholderColor:(UIColor*)color;
 - (void)setPlaceholderText:(NSString*)thePlaceholder;
 - (void)resetView;
+- (void)setCharCountVisible:(BOOL)visible;
+- (void)setMaxCharCount:(int)count;
 
 
 @end

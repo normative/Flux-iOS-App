@@ -30,5 +30,7 @@
 - (IBAction)editProfileAction:(id)sender;
 - (IBAction)editProfleImageAction:(id)sender;
 
+- (void)didUpdateProfileWithChanges:(NSDictionary*)changesDict;
+
 
 @end

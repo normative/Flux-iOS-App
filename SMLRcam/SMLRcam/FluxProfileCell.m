@@ -37,7 +37,7 @@
     [self setSelectedBackgroundView:bgColorView];
     
     [self.usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.usernameLabel.font.pointSize]];
-    self.bioLabel.font = self.imageCountLabel.font = [UIFont fontWithName:@"Akkurat" size:self.imageCountLabel.font.pointSize];
+    [self.bioLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.bioLabel.font.pointSize]];
     
     self.profileImageButton.layer.cornerRadius = self.profileImageButton.frame.size.height/2;
     self.profileImageButton.clipsToBounds = YES;
@@ -45,6 +45,7 @@
     
     if (isEditing) {
         if (!editLabel) {
+            //image edit label
             editLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, self.profileImageButton.frame.size.height-25, self.profileImageButton.frame.size.width, 25)];
             editLabel.textColor = self.bioLabel.textColor;
             [editLabel setTextAlignment:NSTextAlignmentCenter];
@@ -52,18 +53,57 @@
             editLabel.font = [UIFont fontWithName:@"Akkurat" size:13.0];
             [editLabel setBackgroundColor:[UIColor lightGrayColor]];
             [editLabel setAlpha:0.5];
+            [self.profileImageButton setUserInteractionEnabled:YES];
+            
+            self.usernameField = [[UITextField alloc]initWithFrame:self.usernameLabel.frame];
+            [self.usernameField setFont:self.usernameLabel.font];
+            [self.usernameField setTextColor:[UIColor whiteColor]];
+            [self.usernameField setBackgroundColor:[UIColor clearColor]];
+            [self.usernameLabel removeFromSuperview];
+            [self addSubview:self.usernameField];
+            
+            //self.bioField = [[KTPlaceholderTextView alloc]initWithFrame:self.bioLabel.frame];
+            [self.bioField setPlaceholderText:@"Tell others a bit about you"];
+            [self.bioField setCharCountVisible:NO];
+            [self.bioField setKeyboardType:UIKeyboardTypeDefault];
+            [self.bioField setMaxCharCount:90];
+            [self.bioLabel removeFromSuperview];
+            //[self addSubview:self.bioField];
+            
+            
+            //disable for now
+            [self.usernameField setUserInteractionEnabled:NO];
+            
+            [self.editButton setHidden:YES];
         }
         if (!editLabel.superview) {
             [self.profileImageButton addSubview:editLabel];
         }
-        [self.editButton setHidden:YES];
-        [self.profileImageButton setUserInteractionEnabled:YES];
     }
     else{
-        [editLabel removeFromSuperview];
-        [self.editButton setHidden:NO];
         [self.profileImageButton setUserInteractionEnabled:NO];
     }
 }
+
+
+- (void)setUsernameText:(NSString*)text{
+    if (editLabel) {
+        [self.usernameField setText:text];
+    }
+    else{
+        [self.usernameLabel setText:text];
+    }
+}
+- (void)setBioText:(NSString*)text{
+    if (editLabel) {
+        [self.bioField setText:text];
+    }
+    else{
+        [self.bioLabel setText:text];
+    }
+}
+
+
+
 
 @end

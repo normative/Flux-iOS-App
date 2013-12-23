@@ -71,6 +71,10 @@
     
     isSnapshot = YES;
     
+    [saveButton setTitle:@"Save"];
+    [facebookButton setUserInteractionEnabled:NO];
+    [twitterButton setUserInteractionEnabled:NO];
+    
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
     //[saveButton setEnabled:NO];
     //[saveButton setTintColor:[UIColor lightGrayColor]];
@@ -147,7 +151,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-//if it's a 4s or before, tap hides the keyboard
+//if it's a non-4" display
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     if ([[UIScreen mainScreen] bounds].size.height < 568.0f)
     {
@@ -210,14 +214,14 @@
 }
 
 - (void)checkPostButton{
-    if (facebookButton.isSelected || twitterButton.isSelected) {
-        self.navigationItem.rightBarButtonItem.enabled = YES;
-        [saveButton setTintColor:[UIColor whiteColor]];
-    }
-    else{
-        self.navigationItem.rightBarButtonItem.enabled = NO;
-        [saveButton setTintColor:[UIColor lightGrayColor]];
-    }
+//    if (facebookButton.isSelected || twitterButton.isSelected) {
+//        self.navigationItem.rightBarButtonItem.enabled = YES;
+//        [saveButton setTintColor:[UIColor whiteColor]];
+//    }
+//    else{
+//        self.navigationItem.rightBarButtonItem.enabled = NO;
+//        [saveButton setTintColor:[UIColor lightGrayColor]];
+//    }
 }
 
 @end

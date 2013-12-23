@@ -675,12 +675,7 @@
         [UICKeyChainStore setString:userObject.password forKey:FluxPasswordKey service:FluxService];
         [UICKeyChainStore setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey service:FluxService];
         [UICKeyChainStore setString:userObject.auth_token forKey:FluxTokenKey service:FluxService];
-        if (userObject.email) {
-            [UICKeyChainStore setString:userObject.email forKey:FluxEmailKey service:FluxService];
-        }
-        else{
-            [UICKeyChainStore setString:@"email@mail.com" forKey:FluxEmailKey service:FluxService];
-        }
+        [UICKeyChainStore setString:userObject.email forKey:FluxEmailKey service:FluxService];
 
         
         if (new) {
@@ -715,10 +710,15 @@
         if (![self canCreateAccount]) {
             return;
         }
-        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome!" message:@"Thanks for your interest in Flux. At the moment, Flux is still in beta, and requires a pin to continue. If you're one of the lucky ones, please enter your pin below." delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles:@"Activate Pin", nil];
-        alert.alertViewStyle = UIAlertViewStylePlainTextInput;
-        [alert show];
-        [alert becomeFirstResponder];
+//        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome!" message:@"Thanks for your interest in Flux. At the moment, Flux is still in beta, and requires a pin to continue. If you're one of the lucky ones, please enter your pin below." delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles:@"Activate Pin", nil];
+//        alert.alertViewStyle = UIAlertViewStylePlainTextInput;
+//        [alert show];
+//        [alert becomeFirstResponder];
+        
+        
+        //skip pin for now
+        [self hideContainerViewAnimated:YES];
+        [self loginSignupWithPin:0];
     }
     else{
         FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
@@ -801,14 +801,14 @@
 }
 
 - (IBAction)backdoorButtonAction:(id)sender {
-    // set userid and cameraid to 1 here, trigger a camera registration too.
-    [UICKeyChainStore setString:@"" forKey:FluxUsernameKey service:FluxService];
-    [UICKeyChainStore setString:@"1" forKey:FluxUserIDKey service:FluxService];
-    [UICKeyChainStore setString:@"" forKey:FluxTokenKey service:FluxService];
-    [self didLoginSuccessfullyWithUserID:1];
-    [self hideKeyboard];
-    [self hideContainerViewAnimated:YES];
-    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
+//    // set userid and cameraid to 1 here, trigger a camera registration too.
+//    [UICKeyChainStore setString:@"" forKey:FluxUsernameKey service:FluxService];
+//    [UICKeyChainStore setString:@"1" forKey:FluxUserIDKey service:FluxService];
+//    [UICKeyChainStore setString:@"" forKey:FluxTokenKey service:FluxService];
+//    [self didLoginSuccessfullyWithUserID:1];
+//    [self hideKeyboard];
+//    [self hideContainerViewAnimated:YES];
+//    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
 }
 
 #pragma mark - UIActionSheetDelegate
