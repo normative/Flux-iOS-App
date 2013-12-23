@@ -170,17 +170,19 @@
     }
     if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=quarterhd&auth_token='%@'",FluxProductionServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],[UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
-        [theImageView setImageWithURLRequest:request
-                  placeholderImage:[UIImage imageNamed:@"nothing"]
-                           success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                               CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*2, image.size.width*2));
-                               // or use the UIImage wherever you like
-                               UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
-                               CGImageRelease(imageRef);
-                               [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
-                               [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
-                           }
-                           failure:NULL];
+        [theImageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
+        [theImageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
+             success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
+                 CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*2, image.size.width*2));
+                 // or use the UIImage wherever you like
+                 UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+                 CGImageRelease(imageRef);
+                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
+                 [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
+             }
+             failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
+                 NSLog(@"failed image loading: %@", error);
+             }];
     }
     theImageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
     [theImageView setAlpha:1.0];
@@ -206,16 +208,18 @@
     }
     //else present a photo viewer
     else{
-//        NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
-//        for (int i = 0; i<picturesArray.count; i++) {
-//            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,[[picturesArray objectAtIndex:i]imageID]];
-//            [photoURLs addObject:urlString];
-//        }
-//        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
-//        [browser setDisplaysProfileInfo:NO];
-//        [browser setInitialPageIndex:indexPath.row];
-//        [browser setDelegate:self];
-//        [self presentViewController:browser animated:YES completion:nil];
+        NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
+        for (int i = 0; i<picturesArray.count; i++) {
+            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,[[picturesArray objectAtIndex:i]imageID]];
+            [photoURLs addObject:urlString];
+        }
+        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
+        //[browser setDisplaysProfileInfo:NO];
+        [browser setDisplayToolbar:NO];
+        [browser setDisplayDoneButtonBackgroundImage:NO];
+        [browser setInitialPageIndex:indexPath.row];
+        [browser setDelegate:self];
+        [self presentViewController:browser animated:YES completion:nil];
     }
 }
 

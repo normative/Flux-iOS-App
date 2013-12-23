@@ -650,7 +650,7 @@
             [ProgressHUD showError:str];
         }];
         [self hideKeyboard];
-        [self.fluxDataManager uploadNewUser:newUser withImage:[UIImage imageNamed:@"emptyProfileImage"] withDataRequest:dataRequest];
+        [self.fluxDataManager uploadNewUser:newUser withImage:[UIImage imageNamed:@"emptyProfileImage_big"] withDataRequest:dataRequest];
     }
     else{
         FluxUserObject *signingInUser = [[FluxUserObject alloc]init];

@@ -226,11 +226,11 @@
             }
             else
             {
-                [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
+                [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage_big"] forState:UIControlStateNormal];
             }
         }
         else{
-            [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
+            [profileCell.profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage_big"] forState:UIControlStateNormal];
         }
         
 

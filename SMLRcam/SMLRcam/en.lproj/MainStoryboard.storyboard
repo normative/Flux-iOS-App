@@ -760,7 +760,7 @@
                                         </connections>
                                     </stepper>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTA-2K-tgO" customClass="FluxCompassButton">
-                                        <rect key="frame" x="35" y="38" width="70" height="70"/>
+                                        <rect key="frame" x="25" y="38" width="70" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                         <constraints>
@@ -768,8 +768,24 @@
                                             <constraint firstAttribute="height" constant="70" id="RqX-AZ-TNy"/>
                                         </constraints>
                                     </view>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bo9-BI-7cK" userLabel="filterbutton">
+                                        <rect key="frame" x="225" y="38" width="70" height="70"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="70" id="grI-tN-lMy"/>
+                                            <constraint firstAttribute="width" constant="70" id="xMz-Ax-y8U"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <state key="normal" title="0" backgroundImage="filterButton">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="maH-yF-aX4"/>
+                                            <segue destination="OPi-Zk-6ZT" kind="modal" identifier="pushFiltersView" modalTransitionStyle="coverVertical" id="VPw-Ht-DPL"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WoV-XC-xK1" userLabel="Profile Button">
-                                        <rect key="frame" x="35" y="485" width="70" height="70"/>
+                                        <rect key="frame" x="20" y="485" width="70" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="E0J-Uu-ljY"/>
@@ -788,24 +804,8 @@
                                             <segue destination="T8N-fK-BYa" kind="modal" identifier="pushSettingsView" modalTransitionStyle="coverVertical" id="pPd-LQ-ivR"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bo9-BI-7cK" userLabel="filterbutton">
-                                        <rect key="frame" x="215" y="38" width="70" height="70"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="70" id="grI-tN-lMy"/>
-                                            <constraint firstAttribute="width" constant="70" id="xMz-Ax-y8U"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <state key="normal" title="0" backgroundImage="filterButton">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="maH-yF-aX4"/>
-                                            <segue destination="OPi-Zk-6ZT" kind="modal" identifier="pushFiltersView" modalTransitionStyle="coverVertical" id="VPw-Ht-DPL"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
-                                        <rect key="frame" x="215" y="486" width="70" height="70"/>
+                                        <rect key="frame" x="230" y="486" width="70" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="70" id="BWO-Y3-kqO"/>
@@ -831,21 +831,21 @@
                                 <constraints>
                                     <constraint firstItem="Jav-fJ-sQd" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="4oR-Ld-br5"/>
                                     <constraint firstItem="UQ2-gX-PYO" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="6Aw-m5-sfw"/>
-                                    <constraint firstItem="QTA-2K-tgO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="35" id="9bm-pI-i65"/>
+                                    <constraint firstItem="QTA-2K-tgO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="25" id="9bm-pI-i65"/>
                                     <constraint firstAttribute="trailing" secondItem="sxZ-KT-aF5" secondAttribute="trailing" id="BWH-59-UAz"/>
                                     <constraint firstAttribute="bottom" secondItem="RP7-i5-SqD" secondAttribute="bottom" id="Dek-4Y-rPh"/>
-                                    <constraint firstAttribute="trailing" secondItem="bo9-BI-7cK" secondAttribute="trailing" constant="35" id="Jlp-aF-brH"/>
-                                    <constraint firstAttribute="trailing" secondItem="h79-G8-U1l" secondAttribute="trailing" constant="35" id="LuB-B7-Ffw"/>
+                                    <constraint firstAttribute="trailing" secondItem="h79-G8-U1l" secondAttribute="trailing" constant="20" id="LuB-B7-Ffw"/>
                                     <constraint firstAttribute="bottom" secondItem="Jav-fJ-sQd" secondAttribute="bottom" id="UD8-Mf-NuE"/>
+                                    <constraint firstItem="bo9-BI-7cK" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="38" id="Ulv-Ea-TiL"/>
                                     <constraint firstAttribute="bottom" secondItem="h79-G8-U1l" secondAttribute="bottom" constant="12" id="bdq-Q2-9eq"/>
                                     <constraint firstItem="sxZ-KT-aF5" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="cF1-bA-VzH"/>
                                     <constraint firstAttribute="bottom" secondItem="WoV-XC-xK1" secondAttribute="bottom" constant="13" id="dWh-hz-Nfh"/>
                                     <constraint firstAttribute="width" constant="320" id="fhw-AM-un3"/>
+                                    <constraint firstAttribute="trailing" secondItem="bo9-BI-7cK" secondAttribute="trailing" constant="25" id="gsC-4Y-XOv"/>
                                     <constraint firstAttribute="bottom" secondItem="sxZ-KT-aF5" secondAttribute="bottom" id="mDS-Cv-WkW"/>
-                                    <constraint firstItem="bo9-BI-7cK" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="38" id="oyO-9C-dca"/>
                                     <constraint firstItem="UQ2-gX-PYO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="svp-0t-M9t"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="38" id="tQm-EJ-5kf"/>
-                                    <constraint firstItem="WoV-XC-xK1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="35" id="uBr-ww-aL1"/>
+                                    <constraint firstItem="WoV-XC-xK1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="20" id="uBr-ww-aL1"/>
                                     <constraint firstItem="RP7-i5-SqD" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="uP2-MJ-Xxw"/>
                                     <constraint firstItem="sxZ-KT-aF5" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="wys-fz-KvJ"/>
                                 </constraints>

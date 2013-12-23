@@ -1,5 +1,5 @@
 platform :ios, '6.0'
 
-pod 'IDMPhotoBrowser', '~> 1.2.6'
-pod 'RestKit'
+
+pod 'RestKit', '~> 0.21.0'
 pod 'UICKeyChainStore'

@@ -38,7 +38,7 @@
             [profileImageButton setBackgroundImage:userObject.profilePic forState:UIControlStateNormal];
         }
         else{
-            [profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage"] forState:UIControlStateNormal];
+            [profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage_big"] forState:UIControlStateNormal];
         }
         
         [usernameLabel setText:userObject.username];
