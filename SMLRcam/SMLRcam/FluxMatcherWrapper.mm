@@ -13,6 +13,7 @@
 #import <Accelerate/Accelerate.h>
 
 const double minLengthHomographyDiagonal = 50.0;
+const double maxRatioSideLength = 2.0;
 
 @interface FluxMatcherWrapper ()
 {
@@ -632,11 +633,26 @@ const double minLengthHomographyDiagonal = 50.0;
         if (([self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[2]] > minLengthHomographyDiagonal) &&
             ([self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[3]] > minLengthHomographyDiagonal))
         {
-            isValid = YES;
+            if ([self sideLengthRatioCheckWithSideLengthL1:[self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[1]]
+                                                    withL2:[self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[2]]
+                                                    withL3:[self lengthOfLineSegmentWithEndpointA1:scene_corners[2] withEndpointA2:scene_corners[3]]
+                                                    withL4:[self lengthOfLineSegmentWithEndpointA1:scene_corners[3] withEndpointA2:scene_corners[0]]])
+            {
+                isValid = YES;
+            }
         }
     }
     
     return isValid;
+}
+
+// Check ratios of lengths of box sides. If ratio between max and min segment lengths is too large, invalid homography
+- (bool)sideLengthRatioCheckWithSideLengthL1:(float)l1 withL2:(float)l2 withL3:(float)l3 withL4:(float)l4
+{
+    double maxLength = fmaxf(fmaxf(fmaxf(l1, l2), l3), l4);
+    double minLength = fminf(fminf(fminf(l1, l2), l3), l4);
+    
+    return ((maxLength / minLength) < maxRatioSideLength);
 }
 
 // Determine length of line segment (A1,A2)
