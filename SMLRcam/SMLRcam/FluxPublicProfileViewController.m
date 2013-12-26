@@ -55,7 +55,7 @@
             [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                 [profileTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
             }];
-            [self.fluxDataManager requestUserProfilePicForID:user.userID andSize:@"" withDataRequest:picRequest];
+            [self.fluxDataManager requestUserProfilePicForID:user.userID andSize:@"thumb" withDataRequest:picRequest];
         }
     }];
     
@@ -128,9 +128,9 @@
         //HACK
         [cell.bioLabel setText:theUser.bio];
         [cell.usernameLabel setText:theUser.username];
-        [cell.profileImageView setImage: (theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"]];
+        [cell.profileImageButton setBackgroundImage:(theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"] forState:UIControlStateNormal];
         [cell.imageCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
-        [cell initCell];
+        [cell initCellisEditing:NO];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
         return cell;
     }

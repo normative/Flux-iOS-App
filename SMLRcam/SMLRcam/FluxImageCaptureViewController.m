@@ -148,6 +148,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
         
         [imgObject setCategoryID:0];
         [imgObject setDescriptionString:[changes objectForKey:@"annotation"]];
+        imgObject.privacy = [changes objectForKey:@"privacy"];
         
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
@@ -214,7 +215,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     
     
     //black Animation
-    [self showFlash:[UIColor blackColor]];
+    [self showFlash:[UIColor blackColor]andFull:NO];
     
     // Collect position and orientation information prior to copying image
     CLLocation *location = locationManager.rawlocation;
@@ -302,6 +303,10 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
                  capturedImageObject.ecefZ = locationManager.kflocation.z;
                             
              }
+             else
+             {
+                 capturedImageObject.location_data_type = location_data_default;
+             }
              
              
              [self saveImageObject:capturedImageObject];
@@ -318,7 +323,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     self.isSnapshot = YES;
     snapshotImage = snapshot;
     [snapshotImageView setImage:snapshot];
-    [self showFlash:[UIColor whiteColor]];
+    [self showFlash:[UIColor blackColor] andFull:YES];
     [topGradientView setHidden:NO];
     [bottomContainerView setHidden:YES];
     [topContainerView setBackgroundColor:[UIColor clearColor]];
@@ -326,7 +331,14 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
    
 }
 
-- (void)showFlash:(UIColor*)color{
+- (void)showFlash:(UIColor*)color andFull:(BOOL)full{
+    if (full) {
+        [blackView setFrame:self.view.frame];
+    }
+    else{
+        [blackView setFrame:imageCaptureSquareView.frame];
+    }
+    
     [blackView setHidden:NO];
     [blackView setBackgroundColor:color];
     [UIView animateWithDuration:0.09 animations:^{

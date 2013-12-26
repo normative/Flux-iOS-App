@@ -27,28 +27,16 @@
     //set settings defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
-    NSNumber * uploadPic = [defaults objectForKey:@"Network Services"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
-    NSNumber * isWalkMode = [defaults objectForKey:@"Walk Mode"];
     
     // do not save locally by default
     if (savePic == nil) {
-        [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Save Pictures"];
-        [defaults synchronize];
-    }
-    // upload by default
-    if (uploadPic == nil) {
-        [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Network Services"];
+        [defaults setObject:[NSNumber numberWithBool:YES] forKey:@"Save Pictures"];
         [defaults synchronize];
     }
     //set local by default
     if (isLocalURL == nil) {
         [defaults setObject:[NSNumber numberWithInt:1] forKey:@"Server Location"];
-        [defaults synchronize];
-    }
-    
-    if (isWalkMode == nil) {
-        [defaults setObject:[NSNumber numberWithBool:NO] forKey:@"Walk Mode"];
         [defaults synchronize];
     }
     

@@ -32,6 +32,7 @@ void main()
     highp float alpha;
     highp vec2 projCoord;
     lowp float s;
+    lowp float opacity = 0.802;
     if(flag==0)
     {
         projCoord = texCoordVarying[7].st/ texCoordVarying[7].q;
@@ -71,8 +72,7 @@ void main()
             s =sepiaEnable[0];
             alpha = texture2D(textureSampler[5], projCoord).a;
             foreground = vec3(texture2D(textureSampler[0], projCoord).rgb);
-            weight = dot(foreground, vec3(0.299, 0.587, 0.114));
-            renderColor = s*(weight * vec3(1.2, 1.0, 0.8)) + (1.0-s)*foreground;
+            renderColor = s*((1.0-opacity)*background + opacity *foreground) + (1.0-s)*foreground;
             transparent = (1.0 -alpha)*background + alpha*renderColor;
             background = transparent;
             gl_FragColor = vec4(transparent.rgb, 1.0);
@@ -89,8 +89,7 @@ void main()
             s = sepiaEnable[1];
             alpha = texture2D(textureSampler[5], projCoord).a;
             foreground = vec3(texture2D(textureSampler[1], projCoord).rgb);
-            weight = dot(foreground, vec3(0.299, 0.587, 0.114));
-            renderColor = s*(weight * vec3(1.2, 1.0, 0.8)) + (1.0-s)*foreground;
+            renderColor = s*((1.0-opacity)*background + opacity *foreground) + (1.0-s)*foreground;
             transparent = (1.0 -alpha)*background + alpha*renderColor;
             background = transparent;
             gl_FragColor = vec4(transparent.rgb, 1.0);
@@ -107,8 +106,7 @@ void main()
             s = sepiaEnable[2];
             alpha = texture2D(textureSampler[5], projCoord).a;
             foreground = vec3(texture2D(textureSampler[2], projCoord).rgb);
-            weight = dot(foreground, vec3(0.299, 0.587, 0.114));
-            renderColor = s*(weight * vec3(1.2, 1.0, 0.8)) + (1.0-s)*foreground;
+            renderColor = s*((1.0-opacity)*background + opacity *foreground)+ (1.0-s)*foreground;
             transparent = (1.0 -alpha)*background + alpha*renderColor;
             background = transparent;
             
@@ -127,8 +125,7 @@ void main()
             s = sepiaEnable[3];
             alpha = texture2D(textureSampler[5], projCoord).a;
             foreground = vec3(texture2D(textureSampler[3], projCoord).rgb);
-            weight = dot(foreground, vec3(0.299, 0.587, 0.114));
-            renderColor = s*(weight * vec3(1.2, 1.0, 0.8)) + (1.0-s)*foreground;
+            renderColor = s*((1.0-opacity)*background + opacity *foreground) + (1.0-s)*foreground;
             transparent = (1.0 -alpha)*background + alpha*renderColor;
             background = transparent;
             gl_FragColor = vec4(transparent.rgb, 1.0);
@@ -145,8 +142,7 @@ void main()
             s = sepiaEnable[4];
             alpha = texture2D(textureSampler[5], projCoord).a;
             foreground = vec3(texture2D(textureSampler[4], projCoord).rgb);
-            weight = dot(foreground, vec3(0.299, 0.587, 0.114));
-            renderColor = s*(weight * vec3(1.2, 1.0, 0.8)) + (1.0-s)*foreground;
+            renderColor = s*((1.0-opacity)*background + opacity *foreground)                                                                                                                                                                + (1.0-s)*foreground;
             transparent = (1.0 -alpha)*background + alpha*renderColor;
             gl_FragColor = vec4(transparent.rgb, 1.0);
         }

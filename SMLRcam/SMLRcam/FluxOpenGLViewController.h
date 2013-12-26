@@ -21,6 +21,7 @@
 #import "FluxImageRenderElement.h"
 #import "FluxFeatureMatchingQueue.h"
 #import "FluxCameraFrameElement.h"
+#import "FluxLocationServicesSingleton.h"
 
 #define MAX_TEXTURES 8
 
@@ -49,6 +50,8 @@
 //    sensorPose _imagePose[8];
     
     demoImage *demoimage;
+    
+    int _takesnapshot;
     
     CGFloat _screenWidth;
     CGFloat _screenHeight;
@@ -90,6 +93,8 @@
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
+@property (nonatomic, strong) FluxLocationServicesSingleton *fluxLocationManager;
+
 //	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 //@property (nonatomic, strong)NSMutableArray *nearbyList;
 //@property (nonatomic, strong)NSMutableArray *renderedTextures;
@@ -120,7 +125,8 @@
 - (void)setupAVCapture;
 //image capture methods
 - (void)showImageCapture;
-- (void)takeSnapshotAndPresentApproval;
+//- (void)takeSnapshotAndPresentApproval;
+- (void)setSnapShotFlag;
 - (UIImage*)snapshot:(UIView*)eaglview;
 - (UIImage*)takeScreenCap;
 

@@ -71,7 +71,7 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
                                                                     withRotationSoln2:rotation2
                                                                  withTranslationSoln2:translation2
                                                                       withNormalSoln2:normal2
-                                                                       withDebugImage:NO];
+                                                                       withDebugImage:NO];//Debugging of images
         
         if (feature_matching_success == result)
         {
@@ -152,10 +152,18 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 {
     int solution1 = SOLUTION1;
     int solution2 = SOLUTION2;
-    double dotProduct1 = planeNormal.x * normal1[0] + planeNormal.y * normal1[1] + planeNormal.z * normal1[2];
-    double dotProduct2 = planeNormal.x * normal2[0] + planeNormal.y * normal2[1] + planeNormal.z * normal2[2];
-
+    
+    GLKVector3 normal1V = GLKVector3Make(normal1[0], normal1[1], normal1[2]);
+    GLKVector3 normal2V = GLKVector3Make(normal2[0], normal2[1], normal2[2]);
+    normal1V    = GLKVector3Normalize(normal1V);
+    normal2V    = GLKVector3Normalize(normal2V);
+    planeNormal = GLKVector3Normalize(planeNormal);
+    
+   // double dotProduct1 = planeNormal.x * normal1[0] + planeNormal.y * normal1[1] + planeNormal.z * normal1[2];
+   // double dotProduct2 = planeNormal.x * normal2[0] + planeNormal.y * normal2[1] + planeNormal.z * normal2[2];
+    
     //Positive depth constraint to get 2 of the 4 possible solutions;
+    /*
     if(dotProduct1 < 0.0)
     {
        dotProduct1= planeNormal.x * -1.0* normal1[0] + planeNormal.y * -1.0 * normal1[1] + planeNormal.z * -1.0 *normal1[2];
@@ -167,7 +175,23 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         dotProduct2 = planeNormal.x * -1.0 * normal2[0] + planeNormal.y * -1.0 * normal2[1] + planeNormal.z * -1.0 * normal2[2];
         solution2 = SOLUTION2Neg;
     }
+    */
+    double dotProduct1 = GLKVector3DotProduct(normal1V, planeNormal);
+    double dotProduct2 = GLKVector3DotProduct(normal2V, planeNormal);
+    if(dotProduct1 <0)
+    {
+        normal1V = GLKVector3Make(-1.0 * normal1V.x, -1.0* normal1V.y, -1.0*normal1V.z);
+        dotProduct1 = GLKVector3DotProduct(normal1V, planeNormal);
+        solution1 = SOLUTION1Neg;
+    }
+    if(dotProduct2 <0)
+    {
+        normal2V = GLKVector3Make(-1.0 * normal2V.x, -1.0* normal2V.y, -1.0*normal2V.z);
+        dotProduct2 = GLKVector3DotProduct(normal2V, planeNormal);
+        solution2 = SOLUTION2Neg;
+    }
 
+    
     return (dotProduct1 > dotProduct2) ? solution1:solution2;
 }
 

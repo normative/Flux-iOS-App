@@ -78,9 +78,13 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 - (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
 
+- (FluxRequestID *)deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest;
+
 //users
 - (FluxRequestID *) uploadNewUser:(FluxUserObject *)userObject withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) updateUser:(FluxUserObject *)userObject withImage:(UIImage *)image
+                  withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) loginUser:(FluxUserObject *)userObject
                   withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) checkUsernameUniqueness:(NSString *)username

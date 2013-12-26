@@ -10,6 +10,7 @@
 #import "FluxFilterDrawerObject.h"
 
 #import "FluxImageTools.h"
+#import "ProgressHUD.h"
 
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -137,6 +138,14 @@
         }
         [self.filterTableView reloadData];
     }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Tags failed to load with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    
+    
     [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:self.radius
                                        andMaxCount:20 withDataRequest:request];
 }
@@ -302,6 +311,9 @@
             }
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
+            
+            //disable the cell for now
+            [cell setUserInteractionEnabled:NO];
             
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];

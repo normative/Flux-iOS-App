@@ -19,6 +19,9 @@ typedef struct{
     double theta3;
 } euler_angles;
 
+const double minLengthHomographyDiagonal = 50.0;
+const double maxRatioSideLength = 2.0;
+
 @interface FluxMatcherWrapper ()
 {
     // Convert to grayscale before populating for performance improvement
@@ -822,7 +825,7 @@ typedef struct{
     
     //Result 1
     [self crossProductVec1:v2 Vec2:u1 vecResult:result1.normal];
-    (result1.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    (result1.normal[2] < 0) ? (sign = 1.0) : (sign = 1.0);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W1, 3, U1, 3, 1.0, result1.rotation, 3);
     
     for(i=0; i<3; i++)
@@ -834,7 +837,7 @@ typedef struct{
     
     //Result2
     [self crossProductVec1:v2 Vec2:u2 vecResult:result2.normal];
-    (result2.normal[2] < 0) ? (sign = -1.0) : (sign = 1.0);
+    (result2.normal[2] < 0) ? (sign = 1.0) : (sign = 1.0);
     cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans, 3, 3, 3, 1.0, W2, 3, U2, 3, 1.0, result2.rotation, 3);
     
     for(i=0; i<3; i++)
@@ -901,11 +904,40 @@ typedef struct{
     // Determine if box is valid (if diagonal segments intersect then a convex quadrilateral)
     if ([self doLinesIntersectWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[2] withEndpointB1:scene_corners[1] withEndpointB2:scene_corners[3]])
     {
-        // TODO: We may also want to check the size of the box. If it is too small, it may be a garbage match
-        isValid = YES;
+        // Also check the size of the box. If it is too small, it may be a garbage match
+        if (([self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[2]] > minLengthHomographyDiagonal) &&
+            ([self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[3]] > minLengthHomographyDiagonal))
+        {
+            if ([self sideLengthRatioCheckWithSideLengthL1:([self lengthOfLineSegmentWithEndpointA1:scene_corners[0] withEndpointA2:scene_corners[1]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[0] withEndpointA2:obj_corners[1]])
+                                                    withL2:([self lengthOfLineSegmentWithEndpointA1:scene_corners[1] withEndpointA2:scene_corners[2]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[1] withEndpointA2:obj_corners[2]])
+                                                    withL3:([self lengthOfLineSegmentWithEndpointA1:scene_corners[2] withEndpointA2:scene_corners[3]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[2] withEndpointA2:obj_corners[3]])
+                                                    withL4:([self lengthOfLineSegmentWithEndpointA1:scene_corners[3] withEndpointA2:scene_corners[0]] /
+                                                            [self lengthOfLineSegmentWithEndpointA1:obj_corners[3] withEndpointA2:obj_corners[0]])])
+            {
+                isValid = YES;
+            }
+        }
     }
     
     return isValid;
+}
+
+// Check ratios of lengths of box sides. If ratio between max and min segment lengths is too large, invalid homography
+- (bool)sideLengthRatioCheckWithSideLengthL1:(float)l1 withL2:(float)l2 withL3:(float)l3 withL4:(float)l4
+{
+    double maxLength = fmaxf(fmaxf(fmaxf(l1, l2), l3), l4);
+    double minLength = fminf(fminf(fminf(l1, l2), l3), l4);
+    
+    return ((maxLength / minLength) < maxRatioSideLength);
+}
+
+// Determine length of line segment (A1,A2)
+- (float)lengthOfLineSegmentWithEndpointA1:(cv::Point2f)A1 withEndpointA2:(cv::Point2f)A2
+{
+    return sqrtf(powf(A2.x - A1.x, 2) + powf(A2.y - A1.y, 2));
 }
 
 // Determine if line segment (A1,A2) and line segment (B1,B2) intersect
@@ -928,8 +960,8 @@ typedef struct{
     float B_x_low = fmin(B1.x, B2.x);
     float B_x_high = fmax(B1.x, B2.x);
 
-    if ((intersection_x > A_x_low) && (intersection_x < A_x_high) &&
-        (intersection_x > B_x_low) && (intersection_x < B_x_high))
+    if ((intersection_x >= A_x_low) && (intersection_x <= A_x_high) &&
+        (intersection_x >= B_x_low) && (intersection_x <= B_x_high))
     {
         return YES;
     }
@@ -941,6 +973,11 @@ typedef struct{
 
 - (float)slopeOfLineABWithPointA:(cv::Point2f)A withPointB:(cv::Point2f)B
 {
+    if (fabs(B.x - A.x) < 0.00001)
+    {
+        // Ugly - fix in the future, but handles case of vertical lines
+        return (B.y > A.y) ? 99999.0 : -99999.0;
+    }
     return (B.y - A.y) / (B.x - A.x);
 }
 

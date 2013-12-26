@@ -12,18 +12,6 @@
 #define COCOAPODS_VERSION_MINOR_AFNetworking 3
 #define COCOAPODS_VERSION_PATCH_AFNetworking 3
 
-// DACircularProgress
-#define COCOAPODS_POD_AVAILABLE_DACircularProgress
-#define COCOAPODS_VERSION_MAJOR_DACircularProgress 2
-#define COCOAPODS_VERSION_MINOR_DACircularProgress 1
-#define COCOAPODS_VERSION_PATCH_DACircularProgress 0
-
-// IDMPhotoBrowser
-#define COCOAPODS_POD_AVAILABLE_IDMPhotoBrowser
-#define COCOAPODS_VERSION_MAJOR_IDMPhotoBrowser 1
-#define COCOAPODS_VERSION_MINOR_IDMPhotoBrowser 2
-#define COCOAPODS_VERSION_PATCH_IDMPhotoBrowser 6
-
 // ISO8601DateFormatterValueTransformer
 #define COCOAPODS_POD_AVAILABLE_ISO8601DateFormatterValueTransformer
 #define COCOAPODS_VERSION_MAJOR_ISO8601DateFormatterValueTransformer 0
@@ -77,12 +65,6 @@
 #define COCOAPODS_VERSION_MAJOR_SOCKit 1
 #define COCOAPODS_VERSION_MINOR_SOCKit 1
 #define COCOAPODS_VERSION_PATCH_SOCKit 0
-
-// SVProgressHUD
-#define COCOAPODS_POD_AVAILABLE_SVProgressHUD
-#define COCOAPODS_VERSION_MAJOR_SVProgressHUD 0
-#define COCOAPODS_VERSION_MINOR_SVProgressHUD 9
-#define COCOAPODS_VERSION_PATCH_SVProgressHUD 0
 
 // TransitionKit
 #define COCOAPODS_POD_AVAILABLE_TransitionKit

@@ -23,7 +23,7 @@
 
 - (id)initWithCoder:(NSCoder *)aDecoder{
     if(self = [super initWithCoder:aDecoder]) {
-        [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"Akkurat" size:13.0], UITextAttributeFont, nil] forState:UIControlStateNormal];
+        [[UISegmentedControl appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIFont fontWithName:@"Akkurat" size:13.0], NSFontAttributeName, nil] forState:UIControlStateNormal];
     }
     return self;
 }

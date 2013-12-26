@@ -34,6 +34,7 @@ typedef enum FluxDataRequestType : NSUInteger {
 
 @class FluxDataRequest;
 
+//images
 typedef void (^ImageReadyBlock)(FluxLocalID *, UIImage *, FluxDataRequest *);
 typedef void (^MetadataReadyBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^NearbyListReadyBlock)(NSArray *);
@@ -41,13 +42,19 @@ typedef void (^WideAreaListReadyBlock)(NSArray *);
 typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
+typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
+
+//users
 typedef void (^UploadUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
+typedef void (^UpdateUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
 typedef void (^LoginUserCompleteBlock)(FluxUserObject*, FluxDataRequest *);
 typedef void (^UsernameUniquenessCompleteBlock)(BOOL, NSString*, FluxDataRequest *);
 typedef void (^PostCameraCompleteBlock)(int, FluxDataRequest *);
 typedef void (^UserReadyBlock)(FluxUserObject*, FluxDataRequest *);
 typedef void (^UserProfilePicReadyBlock)(UIImage*,int, FluxDataRequest *);
 typedef void (^UserImagesReadyBlock)(NSArray *, FluxDataRequest *);
+
+//other
 typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
@@ -104,8 +111,13 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for periodic updates of upload progress
 @property (strong) UploadInProgressBlock uploadInProgress;
 
+@property (strong) DeleteImageCompleteBlock deleteImageCompleteBlock;
+
 // Callback for successful upload of user + image metadata
 @property (strong) UploadUserCompleteBlock uploadUserComplete;
+
+// Callback for successful update of user + image
+@property (strong) UpdateUserCompleteBlock updateUserComplete;
 
 // Callback for successful user login
 @property (strong) LoginUserCompleteBlock loginUserComplete;
@@ -131,6 +143,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for error occurred
 @property (strong) ErrorBlock errorOccurred;
 
+
+//images
 - (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenNearbyListReady:(NSArray *)nearbyList;
@@ -138,13 +152,19 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
+- (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
+
+//users
 - (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUpdateUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString*)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserProfilePicReady:(UIImage *)profilePic forUserID:(int)userID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserImagesReady:(NSArray *)profileImageObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
+
+//other
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenErrorOccurred:(NSError *)e withDescription:(NSString*)description withDataRequest:(FluxDataRequest *)errorDataRequest;
 

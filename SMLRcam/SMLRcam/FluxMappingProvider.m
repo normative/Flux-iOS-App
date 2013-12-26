@@ -48,7 +48,7 @@
                                                   @"userID":             @"user_id"
                                                  }];
     
-    [mapping addAttributeMappingsFromArray:@[@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz", @"horiz_accuracy", @"vert_accuracy"]];
+    [mapping addAttributeMappingsFromArray:@[@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz", @"horiz_accuracy", @"vert_accuracy", @"privacy"]];
     
     return mapping;
 }
@@ -59,10 +59,17 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxUserObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":            @"userID"
+                                                  @"id":                @"userID",
+                                                  @"follower_count":     @"followerCount",
+                                                  @"following_count":    @"followingCount",
+                                                  @"image_count":        @"imageCount",
+                                                  @"friend":             @"isFriends",
+                                                  @"amifollowing":       @"isFollowing",
+                                                  @"aretheyfollowing":   @"isFollower",
+                                                  @"has_pic":            @"hasProfilePic"
                                                  }];
     
-    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token"]];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"bio"]];
     
     return mapping;
 }
@@ -77,7 +84,20 @@
 + (RKObjectMapping *)userImagesGetMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxProfileImageObject class]];
     
-    [mapping addAttributeMappingsFromArray:@[@"imageID", @"description"]];
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"id":  @"imageID"
+                                                  }];
+    
+    [mapping addAttributeMappingsFromArray:@[@"description"]];
+    
+    return mapping;
+}
+
++ (RKObjectMapping *)userPATCHMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"password": @"current_password"}];
+    
+    [mapping addAttributeMappingsFromArray:@[@"name", @"username", @"email", @"bio"]];
     
     return mapping;
 }

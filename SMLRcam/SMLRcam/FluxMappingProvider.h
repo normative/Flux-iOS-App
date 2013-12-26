@@ -17,6 +17,7 @@
 
 + (RKObjectMapping *)userGETMapping;
 + (RKObjectMapping *)userPOSTMapping;
++ (RKObjectMapping *)userPATCHMapping;
 
 + (RKObjectMapping *)cameraPostMapping;
 + (RKObjectMapping *)cameraGETMapping;

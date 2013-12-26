@@ -375,27 +375,39 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
 }
 
 // compute the tangent plane location and direction vector for an image
-bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp)
+bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp, LocationDataType ldt)
 {
     bool retval = true;
     
+    GLKVector3 zRay;
+    GLKVector3 upRay;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
-    GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
+    if (ldt == location_data_from_homography)
+    {
+        zRay = GLKVector3Make(0.0, 0.0, 1.0);
+        upRay = GLKVector3Make(0.0, -1.0, 0.0);
+    }
+    else
+    {
+        zRay = GLKVector3Make(0.0, 0.0, -1.0);
+        upRay = GLKVector3Make(0.0, 1.0, 0.0);
+
+        //assumption that the point of image acquisition and the user lie in the same plane.
+        sp->position.z = userPose.position.z;
+        
+        if (sp->validECEFEstimate != 1)
+        {
+            WGS84_to_ECEF(sp);
+        }
+    }
+    
     zRay = GLKVector3Normalize(zRay);
     
     GLKVector3 v = GLKMatrix4MultiplyVector3(sp->rotationMatrix, zRay);
     
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
-    
-    //assumption that the point of image acquisition and the user lie in the same plane.
-    sp->position.z = userPose.position.z;
-    
-    if (sp->validECEFEstimate != 1)
-    {
-        WGS84_to_ECEF(sp);
-    }
     
     positionTP.x = sp->ecef.x -userPose.ecef.x;
     positionTP.y = sp->ecef.y -userPose.ecef.y;
@@ -415,7 +427,7 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     
     (*vp).origin = P0;
     (*vp).at = V;
-    (*vp).up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
+    (*vp).up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, upRay);
     
     return retval;
 }
@@ -764,6 +776,12 @@ void init(){
                                                         object:self userInfo:nil];
 }
 
+
+- (void)setSnapShotFlag{
+    
+    _takesnapshot =1;
+}
+
 - (void)takeSnapshotAndPresentApproval{
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     UIImage*img = [self snapshot:self.view];
@@ -986,6 +1004,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addUnmatchedImageRenderElements) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
     
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadAlphaTexture) name:@"maskChange" object:nil];
@@ -1003,6 +1022,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self.textureMap addObject:ime];
     }
 
+    self.fluxLocationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMotionManager];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
@@ -1120,6 +1140,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
+// Adds any currently rendered FluxImageRenderElements to the match queue. Triggered by a Kalman initialization.
+- (void)addUnmatchedImageRenderElements
+{
+    // Spin through list of elements and queue up unmatched, high-resolution images.
+    // Add operation will ignore this request if localID is already queued.
+    for (FluxImageRenderElement *ire in self.renderList)
+    {
+        if (!ire.imageMetadata.matched && (ire.textureMapElement.imageType >= quarterhd))
+        {
+            // Only add object image + metadata to queue - scene object will be grabbed by matcher
+            [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+        }
+    }
+}
+
 #pragma mark - OpenGL Texture & Metadata Manipulation
 
 - (void) deleteImageTextureIdx:(int)i
@@ -1183,9 +1218,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (FluxImageRenderElement *ire in elementList)
     {
         viewParameters vp;
+        bool cansee = false;
         
         [self updateImageMetadataForElement:ire];
-        bool cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp);
+        
+        if (ire.imageMetadata.location_data_type == location_data_from_homography)
+        {
+            sensorPose imPose = ire.imageMetadata.imageHomographyPose;
+            cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+            ire.imageMetadata.imageHomographyPose = imPose;
+        }
+        else
+        {
+            cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+        }
         
         if (!cansee)
         {
@@ -1483,7 +1529,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _projectionDistance = 15.0;
     glEnable(GL_DEPTH_TEST);
     
-    
+    _takesnapshot =0;
     
     /*
      NSError *error;
@@ -1524,6 +1570,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     int maskType = [[defaults objectForKey:@"Mask"] integerValue];
+    maskType = 2;
     _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"%i",maskType] ofType:@"png"] options:options error:&error];
     if (error) NSLog(@"Image texture error %@", error);
     
@@ -1819,7 +1866,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
 
                         // Queue up image for feature matching with background camera feed
-                        if (!ire.imageMetadata.matched)
+                        if (!ire.imageMetadata.matched && [self.fluxLocationManager isKalmanSolutionValid])
                         {
                             // Only add object image + metadata to queue - scene object will be grabbed by matcher
                             [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
@@ -2055,7 +2102,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
 //                NSLog(@"    binding texture from slot %d, id %@, to gltexture %d", i, ire.localID, c);
                 sio = ire.imageMetadata;
-                sepia = (sio.location_data_type ==location_data_from_homography) ? 0.0:1.0;
+                sepia = (sio.location_data_type ==location_data_from_homography || sio.location_data_type ==location_data_valid_ecef) ? 0.0:1.0;
                 glUniform1f(uniforms[UNIFORM_SET_SEPIA0+c],sepia);
                 glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
 
@@ -2083,6 +2130,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 
     glDrawElements(GL_TRIANGLES, 6,GL_UNSIGNED_BYTE,0);
+    
+    if(_takesnapshot ==1)
+    {
+        [self takeSnapshotAndPresentApproval];
+        _takesnapshot =0;
+    }
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation

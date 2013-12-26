@@ -71,9 +71,13 @@
     
     isSnapshot = YES;
     
+    [saveButton setTitle:@"Save"];
+    [facebookButton setUserInteractionEnabled:NO];
+    [twitterButton setUserInteractionEnabled:NO];
+    
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
-    [saveButton setEnabled:NO];
-    [saveButton setTintColor:[UIColor lightGrayColor]];
+    //[saveButton setEnabled:NO];
+    //[saveButton setTintColor:[UIColor lightGrayColor]];
     
     images = [NSArray arrayWithObject:image];
 }
@@ -147,7 +151,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-//if it's a 4s or before, tap hides the keyboard
+//if it's a non-4" display
 -(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     if ([[UIScreen mainScreen] bounds].size.height < 568.0f)
     {
@@ -167,18 +171,22 @@
 - (IBAction)saveButtonAction:(id)sender {
     if (ImageAnnotationTextView.text.length < 141) {
         if (isSnapshot) {
-            //do something with the snapshot
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
-            if (savelocally)
-            {
-                UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
-            }
+            //if saving allowed
+//            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//            BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
+//            if (savelocally)
+//            {
+//                UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
+//            }
+            UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
             [self cancelButtonAction:nil];
         }
         else{
             if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
-                NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",removedImages, @"removedImages", nil];
+                NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
+                                                                                removedImages, @"removedImages",
+                                                                                [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
+                                                                                nil];
                 [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
             }
         }
@@ -206,14 +214,14 @@
 }
 
 - (void)checkPostButton{
-    if (facebookButton.isSelected || twitterButton.isSelected) {
-        self.navigationItem.rightBarButtonItem.enabled = YES;
-        [saveButton setTintColor:[UIColor whiteColor]];
-    }
-    else{
-        self.navigationItem.rightBarButtonItem.enabled = NO;
-        [saveButton setTintColor:[UIColor lightGrayColor]];
-    }
+//    if (facebookButton.isSelected || twitterButton.isSelected) {
+//        self.navigationItem.rightBarButtonItem.enabled = YES;
+//        [saveButton setTintColor:[UIColor whiteColor]];
+//    }
+//    else{
+//        self.navigationItem.rightBarButtonItem.enabled = NO;
+//        [saveButton setTintColor:[UIColor lightGrayColor]];
+//    }
 }
 
 @end

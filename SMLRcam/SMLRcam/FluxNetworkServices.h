@@ -16,6 +16,7 @@
 typedef NSUUID FluxRequestID;
 
 extern NSString* const FluxProductionServerURL;
+extern NSString* const FluxTestServerURL;
 
 @class FluxNetworkServices;
 @protocol NetworkServicesDelegate <NSObject>
@@ -33,6 +34,8 @@ extern NSString* const FluxProductionServerURL;
             ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e andNaturalString:(NSString*)string
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
+           andRequestID:(FluxRequestID *)requestID;
 
 //maps
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray*)imageList
@@ -40,6 +43,8 @@ extern NSString* const FluxProductionServerURL;
 
 //users
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateUser:(FluxUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
@@ -64,7 +69,7 @@ extern NSString* const FluxProductionServerURL;
     __weak id <NetworkServicesDelegate> delegate;
 }
 @property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
-@property (nonatomic, getter = get_token) NSString *token;
+//@property (nonatomic, getter = get_token) NSString *token;
 
 
 #pragma mark - image methods
@@ -122,6 +127,11 @@ extern NSString* const FluxProductionServerURL;
  **/
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
 
+/**
+ Removes an image from the Flux DB given an imageID.
+ **/
+- (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID;
+
 #pragma mark  - Users
 
 /**
@@ -148,6 +158,11 @@ checks the 'uniqueness' of a given username and returns a BOOL along with a sugg
  creates a user with the given object
 **/
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
+
+/**
+ updates a a user profile with the supplied object
+ **/
+- (void)updateUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
 
 /**
 return's a profile image for a given userID and size

@@ -95,7 +95,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)filterButtonAction:(id)sender;
 - (void)setCameraButtonEnabled:(BOOL)enabled;
-- (IBAction)shareButtonAction:(id)sender;
+- (IBAction)snapshotButtonAction:(id)sender;
 
 - (IBAction)stepper:(id)sender;
 

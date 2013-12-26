@@ -107,6 +107,17 @@
 		AA9D0E9F1851318C0004823E /* FluxProfileImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */; };
 		AA9D0EA2185646DB0004823E /* FluxCameraObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0EA1185646DB0004823E /* FluxCameraObject.m */; };
 		AA9D0EA5185664570004823E /* FluxRegisterEmailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9D0EA4185664570004823E /* FluxRegisterEmailViewController.m */; };
+		AA9F85E51863994800AB98A7 /* FluxRoundImagePickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F85E41863994800AB98A7 /* FluxRoundImagePickerController.m */; };
+		AA9F86081868AFF600AB98A7 /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F85EA1868AFF600AB98A7 /* DACircularProgressView.m */; };
+		AA9F860D1868AFF600AB98A7 /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AA9F85F61868AFF600AB98A7 /* SVProgressHUD.bundle */; };
+		AA9F860E1868AFF600AB98A7 /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F85F81868AFF600AB98A7 /* SVProgressHUD.m */; };
+		AA9F860F1868AFF600AB98A7 /* IDMCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F85FA1868AFF600AB98A7 /* IDMCaptionView.m */; };
+		AA9F86101868AFF600AB98A7 /* IDMPhoto.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F85FD1868AFF600AB98A7 /* IDMPhoto.m */; };
+		AA9F86111868AFF600AB98A7 /* IDMPhotoBrowser.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AA9F85FE1868AFF600AB98A7 /* IDMPhotoBrowser.bundle */; };
+		AA9F86121868AFF600AB98A7 /* IDMPhotoBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F86001868AFF600AB98A7 /* IDMPhotoBrowser.m */; };
+		AA9F86131868AFF600AB98A7 /* IDMTapDetectingImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F86031868AFF600AB98A7 /* IDMTapDetectingImageView.m */; };
+		AA9F86141868AFF600AB98A7 /* IDMTapDetectingView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F86051868AFF600AB98A7 /* IDMTapDetectingView.m */; };
+		AA9F86151868AFF600AB98A7 /* IDMZoomingScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA9F86071868AFF600AB98A7 /* IDMZoomingScrollView.m */; };
 		AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAA265A617E89EAE003AE787 /* FluxTagObject.m */; };
 		AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAA265B717EA00E4003AE787 /* libTestFlight.a */; };
 		AAA265BE17EA00E5003AE787 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AAA265B817EA00E4003AE787 /* README.md */; };
@@ -125,11 +136,7 @@
 		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
 		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
 		AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */; };
-		AAF1BCFD183C173900909AFF /* 0.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCF8183C173900909AFF /* 0.png */; };
-		AAF1BCFE183C173900909AFF /* 1.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCF9183C173900909AFF /* 1.png */; };
 		AAF1BCFF183C173900909AFF /* 2.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFA183C173900909AFF /* 2.png */; };
-		AAF1BD00183C173900909AFF /* 3.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFB183C173900909AFF /* 3.png */; };
-		AAF1BD01183C173900909AFF /* 4.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFC183C173900909AFF /* 4.png */; };
 		AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */; };
 		AAFB4DC418159F2500EB8DBA /* FluxTimeFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */; };
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
@@ -339,6 +346,28 @@
 		AA9D0EA1185646DB0004823E /* FluxCameraObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraObject.m; sourceTree = "<group>"; };
 		AA9D0EA3185664570004823E /* FluxRegisterEmailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRegisterEmailViewController.h; sourceTree = "<group>"; };
 		AA9D0EA4185664570004823E /* FluxRegisterEmailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegisterEmailViewController.m; sourceTree = "<group>"; };
+		AA9F85E31863994800AB98A7 /* FluxRoundImagePickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRoundImagePickerController.h; sourceTree = "<group>"; };
+		AA9F85E41863994800AB98A7 /* FluxRoundImagePickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRoundImagePickerController.m; sourceTree = "<group>"; };
+		AA9F85E91868AFF600AB98A7 /* DACircularProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DACircularProgressView.h; sourceTree = "<group>"; };
+		AA9F85EA1868AFF600AB98A7 /* DACircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DACircularProgressView.m; sourceTree = "<group>"; };
+		AA9F85F61868AFF600AB98A7 /* SVProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SVProgressHUD.bundle; sourceTree = "<group>"; };
+		AA9F85F71868AFF600AB98A7 /* SVProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVProgressHUD.h; sourceTree = "<group>"; };
+		AA9F85F81868AFF600AB98A7 /* SVProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVProgressHUD.m; sourceTree = "<group>"; };
+		AA9F85F91868AFF600AB98A7 /* IDMCaptionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMCaptionView.h; sourceTree = "<group>"; };
+		AA9F85FA1868AFF600AB98A7 /* IDMCaptionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDMCaptionView.m; sourceTree = "<group>"; };
+		AA9F85FB1868AFF600AB98A7 /* IDMPBConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMPBConstants.h; sourceTree = "<group>"; };
+		AA9F85FC1868AFF600AB98A7 /* IDMPhoto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMPhoto.h; sourceTree = "<group>"; };
+		AA9F85FD1868AFF600AB98A7 /* IDMPhoto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDMPhoto.m; sourceTree = "<group>"; };
+		AA9F85FE1868AFF600AB98A7 /* IDMPhotoBrowser.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = IDMPhotoBrowser.bundle; sourceTree = "<group>"; };
+		AA9F85FF1868AFF600AB98A7 /* IDMPhotoBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMPhotoBrowser.h; sourceTree = "<group>"; };
+		AA9F86001868AFF600AB98A7 /* IDMPhotoBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDMPhotoBrowser.m; sourceTree = "<group>"; };
+		AA9F86011868AFF600AB98A7 /* IDMPhotoProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMPhotoProtocol.h; sourceTree = "<group>"; };
+		AA9F86021868AFF600AB98A7 /* IDMTapDetectingImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMTapDetectingImageView.h; sourceTree = "<group>"; };
+		AA9F86031868AFF600AB98A7 /* IDMTapDetectingImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDMTapDetectingImageView.m; sourceTree = "<group>"; };
+		AA9F86041868AFF600AB98A7 /* IDMTapDetectingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMTapDetectingView.h; sourceTree = "<group>"; };
+		AA9F86051868AFF600AB98A7 /* IDMTapDetectingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDMTapDetectingView.m; sourceTree = "<group>"; };
+		AA9F86061868AFF600AB98A7 /* IDMZoomingScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IDMZoomingScrollView.h; sourceTree = "<group>"; };
+		AA9F86071868AFF600AB98A7 /* IDMZoomingScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IDMZoomingScrollView.m; sourceTree = "<group>"; };
 		AAA265A517E89EAE003AE787 /* FluxTagObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTagObject.h; sourceTree = "<group>"; };
 		AAA265A617E89EAE003AE787 /* FluxTagObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTagObject.m; sourceTree = "<group>"; };
 		AAA265B717EA00E4003AE787 /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
@@ -371,11 +400,7 @@
 		AAD2DFF917BD54BA00D572A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AAF1BCEF183A73A300909AFF /* BBCyclingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBCyclingLabel.h; sourceTree = "<group>"; };
 		AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBCyclingLabel.m; sourceTree = "<group>"; };
-		AAF1BCF8183C173900909AFF /* 0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 0.png; sourceTree = "<group>"; };
-		AAF1BCF9183C173900909AFF /* 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 1.png; sourceTree = "<group>"; };
 		AAF1BCFA183C173900909AFF /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
-		AAF1BCFB183C173900909AFF /* 3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 3.png; sourceTree = "<group>"; };
-		AAF1BCFC183C173900909AFF /* 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 4.png; sourceTree = "<group>"; };
 		AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		AAFB4DC218159F2500EB8DBA /* FluxTimeFilterScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterScrollView.h; sourceTree = "<group>"; };
 		AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterScrollView.m; sourceTree = "<group>"; };
@@ -670,11 +695,7 @@
 		AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */ = {
 			isa = PBXGroup;
 			children = (
-				AAF1BCF8183C173900909AFF /* 0.png */,
-				AAF1BCF9183C173900909AFF /* 1.png */,
 				AAF1BCFA183C173900909AFF /* 2.png */,
-				AAF1BCFB183C173900909AFF /* 3.png */,
-				AAF1BCFC183C173900909AFF /* 4.png */,
 				AA349A2217C3BF4000C72E24 /* FluxOpenGLViewController.h */,
 				AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */,
 				AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */,
@@ -753,6 +774,8 @@
 				AA69DA94182D4DF800B0BEED /* FluxTextField.h */,
 				AA69DA95182D4DF800B0BEED /* FluxTextField.m */,
 				AA85AD7017A995F7003EBC89 /* 3rd Party */,
+				AA9F85E31863994800AB98A7 /* FluxRoundImagePickerController.h */,
+				AA9F85E41863994800AB98A7 /* FluxRoundImagePickerController.m */,
 			);
 			name = "Custom UI Elements";
 			sourceTree = "<group>";
@@ -794,6 +817,7 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
+				AA9F85E61868AFF600AB98A7 /* Image Browser */,
 				AAF1BCF2183A73A900909AFF /* Animated Label */,
 				AAC1BF061811AF67001D3C01 /* ProgressHUD */,
 				AA984EE718088923007F33B1 /* MapIndex */,
@@ -919,6 +943,58 @@
 				AA9D0E94184D39510004823E /* OAuthCore.m */,
 			);
 			name = ABOAuthCore;
+			sourceTree = "<group>";
+		};
+		AA9F85E61868AFF600AB98A7 /* Image Browser */ = {
+			isa = PBXGroup;
+			children = (
+				AA9F85E71868AFF600AB98A7 /* ExternalLibraries */,
+				AA9F85F91868AFF600AB98A7 /* IDMCaptionView.h */,
+				AA9F85FA1868AFF600AB98A7 /* IDMCaptionView.m */,
+				AA9F85FB1868AFF600AB98A7 /* IDMPBConstants.h */,
+				AA9F85FC1868AFF600AB98A7 /* IDMPhoto.h */,
+				AA9F85FD1868AFF600AB98A7 /* IDMPhoto.m */,
+				AA9F85FE1868AFF600AB98A7 /* IDMPhotoBrowser.bundle */,
+				AA9F85FF1868AFF600AB98A7 /* IDMPhotoBrowser.h */,
+				AA9F86001868AFF600AB98A7 /* IDMPhotoBrowser.m */,
+				AA9F86011868AFF600AB98A7 /* IDMPhotoProtocol.h */,
+				AA9F86021868AFF600AB98A7 /* IDMTapDetectingImageView.h */,
+				AA9F86031868AFF600AB98A7 /* IDMTapDetectingImageView.m */,
+				AA9F86041868AFF600AB98A7 /* IDMTapDetectingView.h */,
+				AA9F86051868AFF600AB98A7 /* IDMTapDetectingView.m */,
+				AA9F86061868AFF600AB98A7 /* IDMZoomingScrollView.h */,
+				AA9F86071868AFF600AB98A7 /* IDMZoomingScrollView.m */,
+			);
+			name = "Image Browser";
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		AA9F85E71868AFF600AB98A7 /* ExternalLibraries */ = {
+			isa = PBXGroup;
+			children = (
+				AA9F85E81868AFF600AB98A7 /* DACircularProgress */,
+				AA9F85F51868AFF600AB98A7 /* SVProgressHUD */,
+			);
+			path = ExternalLibraries;
+			sourceTree = "<group>";
+		};
+		AA9F85E81868AFF600AB98A7 /* DACircularProgress */ = {
+			isa = PBXGroup;
+			children = (
+				AA9F85E91868AFF600AB98A7 /* DACircularProgressView.h */,
+				AA9F85EA1868AFF600AB98A7 /* DACircularProgressView.m */,
+			);
+			path = DACircularProgress;
+			sourceTree = "<group>";
+		};
+		AA9F85F51868AFF600AB98A7 /* SVProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				AA9F85F61868AFF600AB98A7 /* SVProgressHUD.bundle */,
+				AA9F85F71868AFF600AB98A7 /* SVProgressHUD.h */,
+				AA9F85F81868AFF600AB98A7 /* SVProgressHUD.m */,
+			);
+			path = SVProgressHUD;
 			sourceTree = "<group>";
 		};
 		AAA265B517EA00A5003AE787 /* TestFlight SDK */ = {
@@ -1145,25 +1221,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AAF1BCFD183C173900909AFF /* 0.png in Resources */,
 				AAA265BF17EA00E5003AE787 /* release_notes.md in Resources */,
+				AA9F860D1868AFF600AB98A7 /* SVProgressHUD.bundle in Resources */,
 				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
-				AAF1BCFE183C173900909AFF /* 1.png in Resources */,
 				AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */,
 				AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
-				AAF1BD01183C173900909AFF /* 4.png in Resources */,
-				AAF1BD00183C173900909AFF /* 3.png in Resources */,
 				F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */,
 				AAA265BE17EA00E5003AE787 /* README.md in Resources */,
 				AAF1BCFF183C173900909AFF /* 2.png in Resources */,
+				AA9F86111868AFF600AB98A7 /* IDMPhotoBrowser.bundle in Resources */,
 				AAA265CD17EA0305003AE787 /* TFFeedbackController_iPad.xib in Resources */,
 				AA08279E17A6AE030079672A /* Media.xcassets in Resources */,
 			);
@@ -1217,6 +1291,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA9F860F1868AFF600AB98A7 /* IDMCaptionView.m in Sources */,
 				AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */,
 				AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */,
 				AA69DA9F18313B9F00B0BEED /* FluxCountTableViewCell.m in Sources */,
@@ -1236,6 +1311,7 @@
 				17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */,
 				AA9D0E8D184D392E0004823E /* TWAPIManager.m in Sources */,
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
+				AA9F86081868AFF600AB98A7 /* DACircularProgressView.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
@@ -1248,11 +1324,13 @@
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
 				F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */,
 				AA984F1718088923007F33B1 /* MITransitionFactory.m in Sources */,
+				AA9F860E1868AFF600AB98A7 /* SVProgressHUD.m in Sources */,
 				AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */,
 				AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */,
 				AA55534217F0C0EA0098C45C /* FluxDisplayManager.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
 				F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */,
+				AA9F86131868AFF600AB98A7 /* IDMTapDetectingImageView.m in Sources */,
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
 				22335E45181B07380098F205 /* FluxSettingsViewController.m in Sources */,
 				AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */,
@@ -1266,21 +1344,26 @@
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
 				AA984F1618088923007F33B1 /* MIZoomOutTransition.m in Sources */,
+				AA9F86151868AFF600AB98A7 /* IDMZoomingScrollView.m in Sources */,
 				AA3BAF251846477E009D4FAC /* FluxPublicProfileViewController.m in Sources */,
 				89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */,
 				AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */,
 				F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */,
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
+				AA9F85E51863994800AB98A7 /* FluxRoundImagePickerController.m in Sources */,
 				AA984F0E18088923007F33B1 /* MKAnnotationView+MIExtension.m in Sources */,
+				AA9F86141868AFF600AB98A7 /* IDMTapDetectingView.m in Sources */,
 				173BF3E217D7AF2600EBD15B /* FluxDrawerButtonTableViewCell.m in Sources */,
 				22335E42181ACC610098F205 /* FluxLeftDrawerViewController.m in Sources */,
 				AAC1BF0B1811AF67001D3C01 /* ProgressHUD.m in Sources */,
+				AA9F86121868AFF600AB98A7 /* IDMPhotoBrowser.m in Sources */,
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */,
 				AA9D0E97184D39510004823E /* OAuthCore.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
 				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA3BAF2C18468083009D4FAC /* FluxProfileCell.m in Sources */,
+				AA9F86101868AFF600AB98A7 /* IDMPhoto.m in Sources */,
 				AA984F0F18088923007F33B1 /* MIPointList.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
 				AA9D0E9F1851318C0004823E /* FluxProfileImageObject.m in Sources */,
@@ -1449,7 +1532,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

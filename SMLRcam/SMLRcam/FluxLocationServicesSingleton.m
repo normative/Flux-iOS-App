@@ -9,6 +9,7 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 
+NSString* const FluxLocationServicesSingletonDidInitKalmanFilter = @"FluxLocationServicesSingletonDidInitKalmanFilter";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
 NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
@@ -234,17 +235,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
     self.location = newLocation;
     self.rawlocation = newLocation;
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSNumber *walkMode = [defaults objectForKey:@"Walk Mode"];
     
-    if (walkMode.intValue == 1)
-    {
-        self.notMoving = (newLocation.speed > 0.75) ? 0 : 1;
-    }
-    else
-    {
-        self.notMoving = 1;
-    }
+    self.notMoving = 1;
    
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
@@ -710,7 +702,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _kfMeasure.position.z = location.altitude;
     
     
-    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0)
+    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0 &&
+       locationManager.heading.headingAccuracy >= 0.0 && locationManager.heading.trueHeading >= 0)
     {
         _validCurrentLocationData = 0;
         _validInitLocationData = 0;
@@ -742,6 +735,10 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     
     // Post notification of Kalman reset
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidResetKalmanFilter object:self];
+    
+    // Since already intiialized, now post notification of Kalman init
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidInitKalmanFilter object:self];
+
 }
 
 -(void) updateKFilter
@@ -764,6 +761,9 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         kfStarted = true;
         [self computeKInitKFilter];
         //set pedometer count to zero
+        
+        // Post notification of Kalman initialization (now safe to use)
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidInitKalmanFilter object:self];
         
         return;
     }
@@ -814,6 +814,10 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     return 0;
 }
 
+- (bool)isKalmanSolutionValid
+{
+    return kfStarted;
+}
 
 #pragma mark - test and debug filter
 
