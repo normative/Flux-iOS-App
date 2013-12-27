@@ -137,7 +137,7 @@ int iPhone5_bottomcrop;
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
 
-
+GLKMatrix4 planeRotationMatrix;
 GLKMatrix4 tProjectionMatrix;
 GLKMatrix4 tViewMatrix;
 GLKMatrix4 tModelMatrix;
@@ -179,7 +179,7 @@ void init_camera_model()
 	float _fov = 2 * atan2(iPhone5_pixelsize*3264.0/2.0, iPhone5_focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
-    camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 25.0f);
+    camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     
     
     //Assume symmetric cropping for now
@@ -218,7 +218,7 @@ void WGS84_to_ECEF(sensorPose *sp){
     
 }
 
-void tangentplaneRotation(sensorPose *sp, GLKMatrix4 rot_M){
+void tangentplaneRotation(sensorPose *sp, GLKMatrix4 *rot_M){
     
     float rotation_te[16];
     
@@ -245,7 +245,7 @@ void tangentplaneRotation(sensorPose *sp, GLKMatrix4 rot_M){
     rotation_te[14]= 0.0;
     rotation_te[15]= 1.0;
     
-    rot_M = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
+    *rot_M = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
     
 }
 
@@ -297,7 +297,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     WGS84_to_ECEF(usp);
     
-    tangentplaneRotation(usp, rotation_teM_proj);
+    tangentplaneRotation(usp, &rotation_teM_proj);
     // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -355,7 +355,7 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
     
     WGS84_to_ECEF(usp);
     
-    tangentplaneRotation(usp, rotation_teM_tan);
+    tangentplaneRotation(usp, &rotation_teM_tan);
 
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -861,17 +861,20 @@ void init(){
     return valid;
 }
 
--(int) calcTappedVertex:(GLKVector3)point
+-(int) calcTappedVertexV0:(GLKVector3)vertex0 V1:(GLKVector3) vertex1 result:(GLKVector3*) vertex
 {
    
     GLKVector3 positionTP;
     positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     float distance = 15.0;
+    
+    GLKVector3 zRay = GLKVector3Subtract(vertex1, vertex0);
+    
     GLKVector3 v = GLKVector3Normalize(zRay);
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planerotationMatrix, planeNormalI);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planeRotationMatrix, planeNormalI);
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
@@ -892,19 +895,19 @@ void init(){
         // NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
-    GLKVector3 at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    *vertex = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     //(*vp).origin = GLKVector3Add(positionTP, P0);
+    
+    
     return 0;
 }
-
-
-- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point
+- (FluxScanImageObject*)imageTappedAtPointFunc:(CGPoint)point
 {
     FluxScanImageObject *touchedObject = nil;
     
     int valid =-1;
     GLKVector3 tapPoint;
-    GLKVector3 vertex;
+    GLKVector3 vertex, vertex1, vertex0, vertexTest;
     GLKVector4 vp;
     
     //assuming that this is a retina device
@@ -915,13 +918,108 @@ void init(){
     
     tapPoint.x = point.x;
     tapPoint.y = point.y;
-    tapPoint.z = 1.;
-        valid = [self calcVertexAtPoint:tapPoint
-          withModelViewProjectionMatrix:_modelViewProjectionMatrix
-                     withScreenViewport:vp
-                          andCalcVertex:&vertex];
-        
+    tapPoint.z =0.0;
+    valid = [self calcVertexAtPoint:tapPoint
+      withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
+                 withScreenViewport:vp
+                      andCalcVertex:&vertex0];
+    
+    
+    tapPoint.x = point.x;
+    tapPoint.y = point.y;
+    tapPoint.z = 1.0;
+    valid = [self calcVertexAtPoint:tapPoint
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+                 withScreenViewport:vp
+                      andCalcVertex:&vertex1];
+    
+    
+    valid = [self calcTappedVertexV0:vertex0 V1:vertex1 result:&vertex];
+    if(valid ==-1)
+        return nil;
+    //test
+    tapPoint.x = point.x;
+    tapPoint.y = point.y;
+    tapPoint.z = 15.0/50.0;
+    valid = [self calcVertexAtPoint:tapPoint
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+                 withScreenViewport:vp
+                      andCalcVertex:&vertexTest];
+    //test ends
     NSLog(@"vertex");
+    
+    
+    //int element = 0;
+    int i;
+    int tapped =0;
+    //this is order dependant of course so any time the ordering of items in renderList will change this needs to be updated
+    for(i = 0; i <self.renderList.count;i++)
+    {
+        //element = self.renderList.count - i;
+        FluxImageRenderElement *ire = [self.renderList objectAtIndex:i];
+        int element = ire.textureMapElement.textureIndex;
+        tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
+        if (tapped ==1)
+        {
+            
+            if (ire != nil)
+            {
+                touchedObject = ire.imageMetadata;
+            }
+            break;
+        }
+    }
+    return touchedObject;
+}
+
+
+- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point
+{
+    FluxScanImageObject *touchedObject = nil;
+    
+    int valid =-1;
+    GLKVector3 tapPoint;
+    GLKVector3 vertex, vertex1, vertex0, vertexTest;
+    GLKVector4 vp;
+    
+    //assuming that this is a retina device
+    vp.x = 0.0;
+    vp.y = 0.0;
+    vp.z = _screenWidth  * 2.0;
+    vp.w = _screenHeight * 2.0;
+    
+    tapPoint.x = point.x;
+    tapPoint.y = point.y;
+    tapPoint.z =0.0;
+    valid = [self calcVertexAtPoint:tapPoint
+          withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
+                     withScreenViewport:vp
+                          andCalcVertex:&vertex0];
+    
+    
+    tapPoint.x = point.x;
+    tapPoint.y = point.y;
+    tapPoint.z = 1.0;
+    valid = [self calcVertexAtPoint:tapPoint
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+                 withScreenViewport:vp
+                      andCalcVertex:&vertex1];
+    
+    
+    valid = [self calcTappedVertexV0:vertex0 V1:vertex1 result:&vertex];
+    if(valid ==-1)
+        return nil;
+    //test
+    tapPoint.x = point.x;
+    tapPoint.y = point.y;
+    tapPoint.z = 15.0/50.0;
+    valid = [self calcVertexAtPoint:tapPoint
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+                 withScreenViewport:vp
+                      andCalcVertex:&vertexTest];
+    //test ends
+    NSLog(@"vertex");
+    
     
     //int element = 0;
     int i;
@@ -2119,7 +2217,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     viewParameters vpuser;
     
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
-   
+    
+    planeRotationMatrix = _userPose.rotationMatrix;
+    
+    
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
     
     
