@@ -179,7 +179,7 @@ void init_camera_model()
 	float _fov = 2 * atan2(iPhone5_pixelsize*3264.0/2.0, iPhone5_focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
-    camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
+    camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 25.0f);
     
     
     //Assume symmetric cropping for now
@@ -835,17 +835,68 @@ void init(){
 -(int) isImageTappedAtVertex:(GLKVector3)vertex withMVP:(GLKMatrix4)tMVP
 {
     int valid=0;
-    GLKVector3 tCoord = GLKMatrix4MultiplyVector3(tMVP, vertex);
-    float s = tCoord.x / tCoord.z;
-    float t = tCoord.y / tCoord.z;
+    GLKVector4 vertex4 = GLKVector4Make(vertex.x, vertex.y, vertex.z, 1.0);
+    
+    GLKVector4 tCoord = GLKMatrix4MultiplyVector4(tMVP, vertex4);
+    GLKVector4 tCoord7= GLKMatrix4MultiplyVector4(_tBiasMVP[7],vertex4);
+    
+    float s7= tCoord7.x / tCoord7.w;
+    float t7 = tCoord7.y / tCoord7.w;
+    
+    if(s7<0.0 ||  s7 >1.0 || t7 <0.0 || t7>1.0)
+    {
+        valid = 0;
+        return valid;
+    }
+    
+    
+    float s = tCoord.x / tCoord.w;
+    float t = tCoord.y / tCoord.w;
 
-    if(s>=0.0 && s<=1.0 && t>=0.0 && t<=1.0)
+    if(s>=0.0 && s<=1.0 && t>=0.25 && t<=75.0 &&tCoord.w >0.0)
         valid = 1;
     else
         valid = 0;
     
     return valid;
 }
+
+-(int) calcTappedVertex:(GLKVector3)point
+{
+   
+    GLKVector3 positionTP;
+    positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    float distance = 15.0;
+    GLKVector3 v = GLKVector3Normalize(zRay);
+    
+    //normal plane
+    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planerotationMatrix, planeNormalI);
+    //intersection with plane
+    GLKVector3 N = planeNormalRotated;
+    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 V = GLKVector3Normalize(v);
+        
+    float vd = GLKVector3DotProduct(N,V);
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+    float t = v0/vd;
+        
+    if(vd==0)
+    {
+        // NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        return -1;
+    }
+    if(t < 0)
+    {
+            
+        // NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        return -1;
+    }
+    GLKVector3 at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    //(*vp).origin = GLKVector3Add(positionTP, P0);
+    return 0;
+}
+
 
 - (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point
 {
@@ -864,7 +915,7 @@ void init(){
     
     tapPoint.x = point.x;
     tapPoint.y = point.y;
-    tapPoint.z = 15.0/50.0;
+    tapPoint.z = 1.;
         valid = [self calcVertexAtPoint:tapPoint
           withModelViewProjectionMatrix:_modelViewProjectionMatrix
                      withScreenViewport:vp
@@ -872,17 +923,19 @@ void init(){
         
     NSLog(@"vertex");
     
-    int element = 0;
+    //int element = 0;
     int i;
     int tapped =0;
     //this is order dependant of course so any time the ordering of items in renderList will change this needs to be updated
     for(i = 0; i <self.renderList.count;i++)
     {
-        element = self.renderList.count - i;
+        //element = self.renderList.count - i;
+        FluxImageRenderElement *ire = [self.renderList objectAtIndex:i];
+        int element = ire.textureMapElement.textureIndex;
         tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
         if (tapped ==1)
         {
-            FluxImageRenderElement *ire = [self.renderList objectAtIndex:i];
+            
             if (ire != nil)
             {
                 touchedObject = ire.imageMetadata;
@@ -2097,6 +2150,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
+     _modelViewProjectionMatrixInOrder = GLKMatrix4Multiply(modelViewMatrix, camera_perspective);
     
     [self updateImageMetaData];
     

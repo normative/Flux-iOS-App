@@ -28,7 +28,7 @@
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;
-    
+    GLKMatrix4 _modelViewProjectionMatrixInOrder;
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix4 _tBiasMVP[MAX_TEXTURES];
     float _projectionDistance;
