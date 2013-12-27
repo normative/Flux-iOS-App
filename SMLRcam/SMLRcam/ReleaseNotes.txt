@@ -1,4 +1,13 @@
 Release Notes:
+- bug fix in calculated image projection parameters (improves projection of rendered images as well as feature-matched images)
+
+******************************************
+
+V0.15 B02
+
+Released: 2013-12-26 08:15:00
+
+Release Notes:
 - minor improvements to check if feature matching results are valid
 
 ******************************************

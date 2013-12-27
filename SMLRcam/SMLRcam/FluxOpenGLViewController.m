@@ -218,7 +218,7 @@ void WGS84_to_ECEF(sensorPose *sp){
     
 }
 
-void tangentplaneRotation(sensorPose *sp, GLKMatrix4 rot_M){
+void tangentplaneRotation(sensorPose *sp, GLKMatrix4 *rot_M){
     
     float rotation_te[16];
     
@@ -245,7 +245,7 @@ void tangentplaneRotation(sensorPose *sp, GLKMatrix4 rot_M){
     rotation_te[14]= 0.0;
     rotation_te[15]= 1.0;
     
-    rot_M = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
+    *rot_M = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
     
 }
 
@@ -297,7 +297,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     WGS84_to_ECEF(usp);
     
-    tangentplaneRotation(usp, rotation_teM_proj);
+    tangentplaneRotation(usp, &rotation_teM_proj);
     // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -355,7 +355,7 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
     
     WGS84_to_ECEF(usp);
     
-    tangentplaneRotation(usp, rotation_teM_tan);
+    tangentplaneRotation(usp, &rotation_teM_tan);
 
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
