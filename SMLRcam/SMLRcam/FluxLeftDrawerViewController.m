@@ -50,7 +50,6 @@
     [UIView animateWithDuration:0.25 animations:^{
         [self.tableView setAlpha:1.0];
     }];
-    
 }
 
 - (void)viewDidLoad

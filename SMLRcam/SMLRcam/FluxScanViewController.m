@@ -70,12 +70,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setSettingsViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
     [openGLController setBackgroundSnapFlag];
 }
 
 
-- (void)setViewBG:(NSNotification*)notification{
+- (void)setSettingsViewBG:(NSNotification*)notification{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
     
     snapshotBGImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
@@ -240,6 +240,19 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (IBAction)filterButtonAction:(id)sender {
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setFiltersViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
+    [openGLController setBackgroundSnapFlag];
+}
+
+- (void)setFiltersViewBG:(NSNotification*)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
+    
+    snapshotBGImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
+    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+    snapshotBGImage = [imageTools blurImage:snapshotBGImage withBlurLevel:0.6];
+    
+    [self performSegueWithIdentifier:@"pushFiltersView" sender:self];
+    
 }
 
 #pragma mark - OpenGLView
@@ -667,8 +680,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
         
-        UIImage*bgImage = [openGLController snapshot:openGLController.view];
-        [filtersVC setBackgroundView:bgImage];
+        [filtersVC setBackgroundView:snapshotBGImage];
         
         //[self animationPushBackScaleDown];
     }

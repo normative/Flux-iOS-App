@@ -781,7 +781,6 @@
                                         </state>
                                         <connections>
                                             <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="maH-yF-aX4"/>
-                                            <segue destination="OPi-Zk-6ZT" kind="modal" identifier="pushFiltersView" modalTransitionStyle="coverVertical" id="VPw-Ht-DPL"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WoV-XC-xK1" userLabel="Profile Button">
@@ -890,6 +889,7 @@
                         <outlet property="timeFilterControl" destination="sxZ-KT-aF5" id="wAK-zm-eyj"/>
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="crossDissolve" id="AGI-r8-OnT"/>
                         <segue destination="T8N-fK-BYa" kind="modal" identifier="pushSettingsView" modalTransitionStyle="coverVertical" id="jXG-Xo-8un"/>
+                        <segue destination="OPi-Zk-6ZT" kind="modal" identifier="pushFiltersView" modalTransitionStyle="coverVertical" id="cDh-QJ-kAL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -1491,6 +1491,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="OPi-Zk-6ZT" sceneMemberID="viewController">
                     <toolbarItems/>
+                    <navigationItem key="navigationItem" id="F6S-wq-GIi"/>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="j8r-UU-X1S">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
@@ -1697,6 +1698,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="VPw-Ht-DPL"/>
+        <segue reference="cDh-QJ-kAL"/>
     </inferredMetricsTieBreakers>
 </document>
