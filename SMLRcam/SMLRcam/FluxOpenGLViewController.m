@@ -778,8 +778,11 @@ void init(){
 
 
 - (void)setSnapShotFlag{
-    
     _takesnapshot =1;
+}
+
+- (void)setBackgroundSnapFlag{
+    _takesnapshot = 2;
 }
 
 - (void)takeSnapshotAndPresentApproval{
@@ -2134,6 +2137,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if(_takesnapshot ==1)
     {
         [self takeSnapshotAndPresentApproval];
+        _takesnapshot =0;
+    }
+    if (_takesnapshot == 2) {
+        UIImage*img = [self snapshot:self.view];
+        NSDictionary *userInfoDict = @{@"snapshot" : img};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didCaptureBackgroundSnapshot"
+                                                            object:self userInfo:userInfoDict];
         _takesnapshot =0;
     }
 }

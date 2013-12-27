@@ -47,7 +47,7 @@
     roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
     [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
     
-    
+    [privacyButton setHidden:YES];
 	// Do any additional setup after loading the view.
 }
 
@@ -75,7 +75,9 @@
     [facebookButton setUserInteractionEnabled:NO];
     [twitterButton setUserInteractionEnabled:NO];
     
+    
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
+    
     //[saveButton setEnabled:NO];
     //[saveButton setTintColor:[UIColor lightGrayColor]];
     

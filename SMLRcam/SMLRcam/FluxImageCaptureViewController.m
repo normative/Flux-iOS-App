@@ -168,9 +168,24 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
 }
 
 - (IBAction)approveImageAction:(id)sender
-{        
-    
+{
+    if (self.isSnapshot) {
+        [self performSegueWithIdentifier:@"annotationSegue" sender:self];
+    }
+    else{
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
+        [(FluxOpenGLViewController*)self.parentViewController setBackgroundSnapFlag];
+    }
 }
+
+- (void)setViewBG:(NSNotification*)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
+    
+    bgImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
+    [self performSegueWithIdentifier:@"annotationSegue" sender:self];
+}
+
+
 
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
@@ -181,7 +196,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
         [annotationsVC prepareSnapShotViewWithImage:snapshotImage withLocation:locationManager.subadministativearea andDate:[NSDate date]];
     }
     else{
-        UIImage*bgImage = [(FluxOpenGLViewController*)self.parentViewController snapshot:self.parentViewController.view];
+        
         [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
     }
     [annotationsVC setDelegate:self];

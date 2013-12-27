@@ -70,8 +70,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
+    [openGLController setBackgroundSnapFlag];
+}
+
+
+- (void)setViewBG:(NSNotification*)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
+    
+    snapshotBGImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
+    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+    snapshotBGImage = [imageTools blurImage:snapshotBGImage withBlurLevel:0.6];
+
+    [self performSegueWithIdentifier:@"pushSettingsView" sender:self];
     
 }
+
+
 
 #pragma mark - Annotations Feed Methods
 
@@ -658,15 +673,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         //[self animationPushBackScaleDown];
     }
     else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
+        
         UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
-        UIImage*bgImage = [openGLController snapshot:openGLController.view];
-        FluxImageTools *imageTools = [[FluxImageTools alloc]init];
-        bgImage = [imageTools blurImage:bgImage withBlurLevel:0.6];
-        [bgView setImage:bgImage];
+        [bgView setImage:snapshotBGImage];
         [bgView setBackgroundColor:[UIColor darkGrayColor]];
         [[(UINavigationController*)segue.destinationViewController view] insertSubview:bgView atIndex:0];
+        
         FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
+        
     }
 }
 

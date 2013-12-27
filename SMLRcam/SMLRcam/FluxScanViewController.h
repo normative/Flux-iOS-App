@@ -44,6 +44,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;
     __weak IBOutlet FluxCompassButton *radarButton;
+    UIImage *snapshotBGImage;
     
     UITableView*annotationsTableView;
     

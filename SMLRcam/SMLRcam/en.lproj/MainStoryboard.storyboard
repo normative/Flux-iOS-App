@@ -124,7 +124,6 @@
                                         </state>
                                         <connections>
                                             <action selector="approveImageAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="ZJm-XU-V9E"/>
-                                            <segue destination="7MI-iQ-4jy" kind="modal" identifier="annotationSegue" modalTransitionStyle="coverVertical" id="9nn-OR-adh"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -225,6 +224,7 @@
                         <outlet property="topContainerView" destination="3hP-Qn-vbY" id="dBJ-m8-LOg"/>
                         <outlet property="topGradientView" destination="bYe-XU-Qb3" id="cdR-pC-1Io"/>
                         <outlet property="undoButton" destination="rsU-2Y-4PW" id="Poq-AA-9Kw"/>
+                        <segue destination="7MI-iQ-4jy" kind="modal" identifier="annotationSegue" modalTransitionStyle="coverVertical" id="TKb-mp-b48"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bsn-pr-Bkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -463,7 +463,7 @@
                                                 <action selector="editProfleImageAction:" destination="iEx-Eu-CFI" eventType="touchUpInside" id="jM0-77-lGH"/>
                                             </connections>
                                         </button>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgw-RX-FNB">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgw-RX-FNB">
                                             <rect key="frame" x="108" y="20" width="136" height="21"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -800,8 +800,7 @@
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <action selector="showLeftDrawer:" destination="2" eventType="touchUpInside" id="fbq-GC-5zU"/>
-                                            <segue destination="T8N-fK-BYa" kind="modal" identifier="pushSettingsView" modalTransitionStyle="coverVertical" id="pPd-LQ-ivR"/>
+                                            <action selector="showLeftDrawer:" destination="2" eventType="touchUpInside" id="IOJ-qU-bqK"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
@@ -890,6 +889,7 @@
                         <outlet property="radarButton" destination="QTA-2K-tgO" id="fZZ-Fu-W7o"/>
                         <outlet property="timeFilterControl" destination="sxZ-KT-aF5" id="wAK-zm-eyj"/>
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="crossDissolve" id="AGI-r8-OnT"/>
+                        <segue destination="T8N-fK-BYa" kind="modal" identifier="pushSettingsView" modalTransitionStyle="coverVertical" id="jXG-Xo-8un"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
