@@ -1,6 +1,13 @@
 Release Notes:
-- bug fix in calculated image projection parameters (improves projection of rendered images as well as feature-matched images)
 
+******************************************
+
+V0.15 B03
+
+Released: 2013-12-27 14:30:00
+
+Release Notes:
+- bug fix in calculated image projection parameters (improves projection of rendered images as well as feature-matched images)
 - bug fix for blurView in profile + image annotationVC
 
 ******************************************
