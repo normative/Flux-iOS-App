@@ -1,5 +1,7 @@
 Release Notes:
 
+-bug fix adds blurView to filtersVC
+
 ******************************************
 
 V0.15 B03
