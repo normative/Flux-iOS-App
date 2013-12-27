@@ -63,6 +63,8 @@
     }
     
     
+    
+    
     tableViewArray = [self tableViewArrayForUser:nil];
     isEditing = NO;
     
@@ -73,6 +75,7 @@
     
     NSString * version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
     NSString * build = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *)kCFBundleVersionKey];
+    
     
     [self.versionLbl setText:[NSString stringWithFormat:@"Flux v.%@ (%@)",version,build]];
     [self.versionLbl setFont:[UIFont fontWithName:@"Akkurat" size:self.versionLbl.font.pointSize]];
@@ -132,6 +135,7 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
 
 #pragma mark - tableView Init
 - (NSMutableArray*)tableViewArrayForUser:(FluxUserObject*)user{
