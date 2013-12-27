@@ -268,11 +268,14 @@ const double maxRatioSideLength = 2.0;
             scene_img.copyTo(dst);
             cv::cvtColor(dst, dst, CV_GRAY2RGB);
             
-            euler_angles test_angles = [self calculateEulerAngles:R_matchcam_origin];
-            testOutStr = [NSString stringWithFormat:@"euler(%f, %f, %f)", test_angles.theta1*180.0/M_PI, test_angles.theta2*180.0/M_PI, test_angles.theta3*180.0/M_PI];
-            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
-            testOutStr = [NSString stringWithFormat:@"t(%f, %f, %f)", t1[0]*15.0, t1[1]*15.0, t1[2]*15.0];
-            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,200), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+            if (validHomographyFound)
+            {
+                euler_angles test_angles = [self calculateEulerAngles:R_matchcam_origin];
+                testOutStr = [NSString stringWithFormat:@"euler(%f, %f, %f)", test_angles.theta1*180.0/M_PI, test_angles.theta2*180.0/M_PI, test_angles.theta3*180.0/M_PI];
+                cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+                testOutStr = [NSString stringWithFormat:@"t(%f, %f, %f)", t1[0]*15.0, t1[1]*15.0, t1[2]*15.0];
+                cv::putText(dst, testOutStr.UTF8String, cvPoint(50,200), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+            }
             
             outputImg = [UIImage imageWithCVMat:dst];
             UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
