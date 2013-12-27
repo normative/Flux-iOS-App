@@ -1,4 +1,5 @@
 Release Notes:
+- bug fix in calculated image projection parameters (improves projection of rendered images as well as feature-matched images)
 
 ******************************************
 
