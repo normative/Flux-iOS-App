@@ -23,7 +23,6 @@
 
 NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
 NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
-NSString* const FluxDidTapImage = @"FluxDidTapImage";
 
 @implementation FluxScanViewController
 
@@ -301,12 +300,8 @@ NSString* const FluxDidTapImage = @"FluxDidTapImage";
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [photoViewerPlacementView removeFromSuperview];
 }
-
--(void)didTapImage:(NSNotification*)notification
+-(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject
 {
-    FluxScanImageObject*tappedImageObject;
-
-    tappedImageObject = (FluxScanImageObject*)[[notification userInfo] objectForKey:@"tappedimage"];
     if(tappedImageObject == nil)
         return;
     
@@ -331,7 +326,7 @@ NSString* const FluxDidTapImage = @"FluxDidTapImage";
     UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
     [nav setNavigationBarHidden:YES];
     [self presentViewController:nav animated:YES completion:nil];
-
+   
 }
 
 #pragma mark Camera View
@@ -590,7 +585,6 @@ NSString* const FluxDidTapImage = @"FluxDidTapImage";
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanDidInit) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapImage) name:FluxDidTapImage object:nil];
     
     [self setupCameraView];
     [self setupMotionManager];
@@ -700,7 +694,6 @@ NSString* const FluxDidTapImage = @"FluxDidTapImage";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDidTapImage object:nil];
 }
 
 

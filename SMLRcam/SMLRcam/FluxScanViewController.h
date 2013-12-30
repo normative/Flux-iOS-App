@@ -35,7 +35,7 @@
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
 extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
-extern NSString* const FluxDidTapImage;
+//extern NSString* const FluxDidTapImage;
 @class FluxRotatingCompassButton;
 
 
@@ -109,4 +109,5 @@ extern NSString* const FluxDidTapImage;
 
 //timeScrolling
 - (void)setupTimeFilterControl;
+- (void) didTapImageFunc:(FluxScanImageObject*) fsio;
 @end
