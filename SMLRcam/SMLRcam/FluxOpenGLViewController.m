@@ -877,7 +877,7 @@ void init(){
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planeRotationMatrix, planeNormalI);
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
-    GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
+    GLKVector3 P0 = vertex0;
     GLKVector3 V = GLKVector3Normalize(v);
         
     float vd = GLKVector3DotProduct(N,V);
@@ -886,19 +886,13 @@ void init(){
         
     if(vd==0)
     {
-        // NSLog(@"UserPose :Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     if(t < 0)
     {
-            
-        // NSLog(@"UserPose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return -1;
     }
     *vertex = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-    //(*vp).origin = GLKVector3Add(positionTP, P0);
-    
-    
     return 0;
 }
 - (FluxScanImageObject*)imageTappedAtPointFunc
@@ -920,13 +914,13 @@ void init(){
     tapPoint.y = _tapPoint.y;
     tapPoint.z =0.0;
     valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+      withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
                  withScreenViewport:vp
                       andCalcVertex:&vertex0];
     
     tapPoint.z = 1.0;
     valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+      withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
                  withScreenViewport:vp
                       andCalcVertex:&vertex1];
     
