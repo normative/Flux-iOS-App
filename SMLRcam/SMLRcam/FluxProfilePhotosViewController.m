@@ -154,7 +154,7 @@
     FluxPhotoCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
     
     if (isEditing) {
-        [[cell viewWithTag:200]setHidden:NO];
+        [cell.checkboxButton setHidden:NO];
         if ([removedImages containsObject:[NSNumber numberWithInt:indexPath.row]]) {
             [cell.checkboxButton setChecked:YES];
             [cell.imageView setAlpha:0.8];
@@ -165,7 +165,7 @@
         }
     }
     else{
-        [[cell viewWithTag:200]setHidden:YES];
+        [cell.checkboxButton setHidden:YES];
     }
     if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=quarterhd&auth_token='%@'",FluxProductionServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],[UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
