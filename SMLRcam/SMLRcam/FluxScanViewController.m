@@ -286,14 +286,28 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     
-   FluxScanImageObject*tappedImageObject;
     
     if (IS_RETINA) {
-        tappedImageObject = [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
+        [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
+        _point = CGPointMake(point.x*2, point.y*2);
     }
     else{
-        tappedImageObject = [openGLController imageTappedAtPoint:point];
+        [openGLController imageTappedAtPoint:point];
+        _point = point;
     }
+    
+}
+
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
+    [photoViewerPlacementView removeFromSuperview];
+}
+
+-(void)didTapImage:(NSNotification*)notification
+{
+    FluxScanImageObject*tappedImageObject;
+
+    if(tappedImageObject == nil)
+        return;
     
     NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=thumb",FluxProductionServerURL,tappedImageObject.imageID];
     IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
@@ -308,7 +322,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         photoViewerPlacementView = [[UIView alloc]init];
     }
     [ScanUIContainerView addSubview:photoViewerPlacementView];
-    [photoViewerPlacementView setFrame:CGRectMake(point.x, point.y, 5, 5)];
+    [photoViewerPlacementView setFrame:CGRectMake(_point.x, _point.y, 5, 5)];
     IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
     [browser setDelegate:self];
     [browser setDisplayToolbar:NO];
@@ -316,12 +330,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
     [nav setNavigationBarHidden:YES];
     [self presentViewController:nav animated:YES completion:nil];
-}
 
-- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
-    [photoViewerPlacementView removeFromSuperview];
 }
-
 
 #pragma mark Camera View
 
@@ -579,6 +589,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanDidInit) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTapImage) name:FluxDidTapImage object:nil];
     
     [self setupCameraView];
     [self setupMotionManager];

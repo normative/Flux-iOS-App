@@ -70,7 +70,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
     //time scrolling
     NSDateFormatter *dateFormatter;
-    
+    CGPoint _point;
     //openGL
     FluxOpenGLViewController*openGLController;
     //map
@@ -80,6 +80,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int totalUploads;
     
     FluxDataFilter *currentDataFilter;
+    
+    
 }
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;

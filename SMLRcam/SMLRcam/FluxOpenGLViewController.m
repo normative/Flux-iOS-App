@@ -901,7 +901,7 @@ void init(){
     
     return 0;
 }
-- (FluxScanImageObject*)imageTappedAtPointFunc:(CGPoint)point
+- (FluxScanImageObject*)imageTappedAtPointFunc
 {
     FluxScanImageObject *touchedObject = nil;
     
@@ -916,17 +916,14 @@ void init(){
     vp.z = _screenWidth  * 2.0;
     vp.w = _screenHeight * 2.0;
     
-    tapPoint.x = point.x;
-    tapPoint.y = point.y;
+    tapPoint.x = _tapPoint.x;
+    tapPoint.y = _tapPoint.y;
     tapPoint.z =0.0;
     valid = [self calcVertexAtPoint:tapPoint
       withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
                  withScreenViewport:vp
                       andCalcVertex:&vertex0];
     
-    
-    tapPoint.x = point.x;
-    tapPoint.y = point.y;
     tapPoint.z = 1.0;
     valid = [self calcVertexAtPoint:tapPoint
       withModelViewProjectionMatrix:_modelViewProjectionMatrix
@@ -938,8 +935,7 @@ void init(){
     if(valid ==-1)
         return nil;
     //test
-    tapPoint.x = point.x;
-    tapPoint.y = point.y;
+  
     tapPoint.z = 15.0/50.0;
     valid = [self calcVertexAtPoint:tapPoint
       withModelViewProjectionMatrix:_modelViewProjectionMatrix
@@ -973,75 +969,12 @@ void init(){
 }
 
 
-- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point
+- (void)imageTappedAtPoint:(CGPoint)point
 {
-    FluxScanImageObject *touchedObject = nil;
     
-    int valid =-1;
-    GLKVector3 tapPoint;
-    GLKVector3 vertex, vertex1, vertex0, vertexTest;
-    GLKVector4 vp;
-    
-    //assuming that this is a retina device
-    vp.x = 0.0;
-    vp.y = 0.0;
-    vp.z = _screenWidth  * 2.0;
-    vp.w = _screenHeight * 2.0;
-    
-    tapPoint.x = point.x;
-    tapPoint.y = point.y;
-    tapPoint.z =0.0;
-    valid = [self calcVertexAtPoint:tapPoint
-          withModelViewProjectionMatrix:_modelViewProjectionMatrix
-                     withScreenViewport:vp
-                          andCalcVertex:&vertex0];
-    
-    
-    tapPoint.x = point.x;
-    tapPoint.y = point.y;
-    tapPoint.z = 1.0;
-    valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrix
-                 withScreenViewport:vp
-                      andCalcVertex:&vertex1];
-    
-    
-    valid = [self calcTappedVertexV0:vertex0 V1:vertex1 result:&vertex];
-    if(valid ==-1)
-        return nil;
-    //test
-    tapPoint.x = point.x;
-    tapPoint.y = point.y;
-    tapPoint.z = 15.0/50.0;
-    valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrix
-                 withScreenViewport:vp
-                      andCalcVertex:&vertexTest];
-    //test ends
-    NSLog(@"vertex");
-    
-    
-    //int element = 0;
-    int i;
-    int tapped =0;
-    //this is order dependant of course so any time the ordering of items in renderList will change this needs to be updated
-    for(i = 0; i <self.renderList.count;i++)
-    {
-        //element = self.renderList.count - i;
-        FluxImageRenderElement *ire = [self.renderList objectAtIndex:i];
-        int element = ire.textureMapElement.textureIndex;
-        tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
-        if (tapped ==1)
-        {
-            
-            if (ire != nil)
-            {
-                touchedObject = ire.imageMetadata;
-            }
-            break;
-        }
-    }
-    return touchedObject;
+    _tapPoint.x = point.x;
+    _tapPoint.y = point.y;
+    _imagetapped = 1;
 }
 
 #pragma mark - AV Capture
@@ -1754,6 +1687,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glEnable(GL_DEPTH_TEST);
     
     _takesnapshot =0;
+    _imagetapped = 0;
     
     /*
      NSError *error;
@@ -2366,9 +2300,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     if (_imagetapped == 1) {
-        UIImage*img = [self snapshot:self.view];
-        NSDictionary *userInfoDict = @{@"snapshot" : img};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"didCaptureBackgroundSnapshot"
+        
+        FluxScanImageObject* fsio = [self imageTappedAtPointFunc];
+        NSDictionary *userInfoDict = @{@"snapshot" : fsio};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxDidTapImage"
                                                             object:self userInfo:userInfoDict];
         _imagetapped =0;
     }
