@@ -23,7 +23,7 @@
 
 NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
 NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
-
+NSString* const FluxDidTapImage = @"FluxDidTapImage";
 
 @implementation FluxScanViewController
 
@@ -306,6 +306,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     FluxScanImageObject*tappedImageObject;
 
+    tappedImageObject = (FluxScanImageObject*)[[notification userInfo] objectForKey:@"tappedimage"];
     if(tappedImageObject == nil)
         return;
     
@@ -699,6 +700,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDidTapImage object:nil];
 }
 
 

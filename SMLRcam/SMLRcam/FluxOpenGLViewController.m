@@ -920,7 +920,7 @@ void init(){
     tapPoint.y = _tapPoint.y;
     tapPoint.z =0.0;
     valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
                  withScreenViewport:vp
                       andCalcVertex:&vertex0];
     
@@ -965,6 +965,7 @@ void init(){
             break;
         }
     }
+     _imagetapped =0;
     return touchedObject;
 }
 
@@ -2302,10 +2303,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if (_imagetapped == 1) {
         
         FluxScanImageObject* fsio = [self imageTappedAtPointFunc];
-        NSDictionary *userInfoDict = @{@"snapshot" : fsio};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxDidTapImage"
+        if(fsio != nil)
+        {
+            NSDictionary *userInfoDict = @{@"tappedimage" : fsio};
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxDidTapImage"
                                                             object:self userInfo:userInfoDict];
-        _imagetapped =0;
+        }
+       
     }
     
 }

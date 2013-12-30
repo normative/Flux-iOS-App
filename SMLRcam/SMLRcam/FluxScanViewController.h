@@ -35,7 +35,7 @@
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
 extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
-
+extern NSString* const FluxDidTapImage;
 @class FluxRotatingCompassButton;
 
 
