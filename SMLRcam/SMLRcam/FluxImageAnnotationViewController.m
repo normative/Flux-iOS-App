@@ -48,6 +48,10 @@
     [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
     
     [privacyButton setHidden:YES];
+    [facebookButton setHidden:YES];
+    [twitterButton setHidden:YES];
+    
+    
 	// Do any additional setup after loading the view.
 }
 
@@ -71,7 +75,7 @@
     
     isSnapshot = YES;
     
-    [saveButton setTitle:@"Save"];
+    [saveButton setTitle:@"Save to Photos"];
     [facebookButton setUserInteractionEnabled:NO];
     [twitterButton setUserInteractionEnabled:NO];
     
@@ -82,12 +86,21 @@
     //[saveButton setTintColor:[UIColor lightGrayColor]];
     
     images = [NSArray arrayWithObject:image];
+    
 }
 
 #pragma mark - CollectionView Delegate
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return images.count;
 }
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
+    if (isSnapshot) {
+        return UIEdgeInsetsMake(0, 105, 0, 0);
+    }
+    return UIEdgeInsetsMake(0, 10, 0,10);
+}
+
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *identifier = @"cell";
@@ -105,7 +118,11 @@
     }
     if (isSnapshot) {
         UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
+        [imageView setContentMode:UIViewContentModeScaleAspectFit];
         imageView.image = [images objectAtIndex:0];
+        [(KTCheckboxButton*)[cell viewWithTag:200] setHidden:YES];
+        [cell setUserInteractionEnabled:NO];
+        
         return cell;
     }
 
@@ -129,6 +146,12 @@
     else{
         [removedImages addIndex:indexPath.row];
         [collectionView reloadData];
+        if (removedImages.count == images.count) {
+            [saveButton setEnabled:NO];
+        }
+        else{
+           [saveButton setEnabled:YES];
+        }
     }
 }
 

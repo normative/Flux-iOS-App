@@ -1,5 +1,9 @@
 Release Notes:
 
+- fixes snapshot annotation bug
+- preliminary fix for profile photos crash
+
+
 ******************************************
 
 V0.15 B04

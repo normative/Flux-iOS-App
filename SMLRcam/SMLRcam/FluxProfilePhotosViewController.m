@@ -11,7 +11,7 @@
 #import "FluxProfileImageObject.h"
 #import "FluxNetworkServices.h"
 #import "UICKeyChainStore.h"
-
+#import "FluxPhotoCollectionCell.h"
 #import "ProgressHUD.h"
 
 @interface FluxProfilePhotosViewController ()
@@ -149,20 +149,19 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *identifier = @"cell";
+    static NSString *identifier = @"myCell";
     
-    UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-    UIImageView *theImageView = (UIImageView *)[cell viewWithTag:100];
-    KTCheckboxButton*checkbox = (KTCheckboxButton*)[cell viewWithTag:200];
+    FluxPhotoCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
+    
     if (isEditing) {
         [[cell viewWithTag:200]setHidden:NO];
         if ([removedImages containsObject:[NSNumber numberWithInt:indexPath.row]]) {
-            [checkbox setChecked:YES];
-            [theImageView setAlpha:0.8];
+            [cell.checkboxButton setChecked:YES];
+            [cell.imageView setAlpha:0.8];
         }
         else{
-            [checkbox setChecked:NO];
-            [theImageView setAlpha:1.0];
+            [cell.checkboxButton setChecked:NO];
+            [cell.imageView setAlpha:1.0];
         }
     }
     else{
@@ -170,8 +169,8 @@
     }
     if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=quarterhd&auth_token='%@'",FluxProductionServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],[UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
-        [theImageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
-        [theImageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
+        [cell.imageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
+        [cell.imageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
                  CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*2, image.size.width*2));
                  // or use the UIImage wherever you like
@@ -184,8 +183,8 @@
                  NSLog(@"failed image loading: %@", error);
              }];
     }
-    theImageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
-    [theImageView setAlpha:1.0];
+    cell.imageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
+    [cell.imageView setAlpha:1.0];
     
     return cell;
 }
