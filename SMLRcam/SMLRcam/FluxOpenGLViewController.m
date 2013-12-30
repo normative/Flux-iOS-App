@@ -992,7 +992,7 @@ void init(){
     tapPoint.y = point.y;
     tapPoint.z =0.0;
     valid = [self calcVertexAtPoint:tapPoint
-          withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
+          withModelViewProjectionMatrix:_modelViewProjectionMatrix
                      withScreenViewport:vp
                           andCalcVertex:&vertex0];
     
@@ -2364,6 +2364,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self takeSnapshotAndPresentApproval];
         _takesnapshot =0;
     }
+    
+    if (_imagetapped == 1) {
+        UIImage*img = [self snapshot:self.view];
+        NSDictionary *userInfoDict = @{@"snapshot" : img};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"didCaptureBackgroundSnapshot"
+                                                            object:self userInfo:userInfoDict];
+        _imagetapped =0;
+    }
+    
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
