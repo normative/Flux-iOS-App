@@ -201,7 +201,6 @@ const double maxRatioSideLength = 2.0;
                         R2[i + 3*j] = R_matchcam_origin.at<double>(j,i); // self.t_from_H2.rotation[i + 3*j];
                     }
                 }
-
             }
             
 //            // Extract transforms (R and t)
@@ -391,7 +390,7 @@ const double maxRatioSideLength = 2.0;
     cv::Rodrigues(R_imageplane_usercam, rvec_imageplane_usercam);
     
     // Center of image plane to camera frame of matched image
-    cv::Mat R_matchcam_imageplane = rotM.t();
+    cv::Mat R_matchcam_imageplane = rotM;
     cv::Mat t_matchcam_imageplane = camera_pos;
     cv::Mat rvec_matchcam_imageplane;
     cv::Rodrigues(R_matchcam_imageplane, rvec_matchcam_imageplane);
