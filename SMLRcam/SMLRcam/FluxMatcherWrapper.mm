@@ -359,7 +359,7 @@ const double maxRatioSideLength = 2.0;
     // Calculate camera position in world reference frame
     cv::Mat rotM;
     cv::Rodrigues(rvec, rotM);
-    cv::Mat camera_pos = -rotM.t() * tvec;
+    cv::Mat camera_pos = -tvec;
     
     std::cout << "camera_pos: " << camera_pos << std::endl;
     std::cout << "camera_mat: " << rotM.t() << std::endl;
