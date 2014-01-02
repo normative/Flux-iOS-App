@@ -197,6 +197,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 - (void)didResetKalmanFilter:(NSNotification *)notification
 {
     NSLog(@"Kalman Reset: All cached quantities being reset.");
+    
+    // Delete all queued matching tasks
+    FluxOpenGLViewController *fluxGLVC = (FluxOpenGLViewController *)self.openGLVC;
+    [fluxGLVC.fluxFeatureMatchingQueue deleteMatchRequests];
+
+    // Reset cached quantities
     [self.fluxDataManager resetAllFeatureMatches];
 }
 

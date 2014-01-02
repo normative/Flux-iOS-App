@@ -1056,7 +1056,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     delta.hidden = YES;
     pedometerL.hidden = YES;
     
-    fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
+    self.fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
     
     frameGrabRequested = NO;
 }
@@ -1151,7 +1151,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 ire.imageMetadata.matchFailed = NO;
                 
                 // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+                [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
             }
             else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil) && (ire.textureMapElement.imageType >= quarterhd))
             {
@@ -1159,7 +1159,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 // This handles cases due to toggling of Kalman state at various points. Duplicate queued items are ignored.
                 
                 // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+                [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
             }
         }
     }
@@ -1180,14 +1180,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             if (!ire.imageMetadata.matched && (ire.textureMapElement.imageType >= quarterhd))
             {
                 // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+                [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
             }
         }
     }
     else
     {
         // Delete any feature matching jobs in the queue (probably not valid).
-        [fluxFeatureMatchingQueue deleteMatchRequests];
+        [self.fluxFeatureMatchingQueue deleteMatchRequests];
     }
 }
 
@@ -1905,7 +1905,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         if (!ire.imageMetadata.matched && [self.fluxLocationManager isKalmanSolutionValid])
                         {
                             // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                            [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+                            [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
                         }
                     }
                 }

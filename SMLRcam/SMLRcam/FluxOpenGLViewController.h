@@ -64,8 +64,6 @@
     FluxMotionManagerSingleton *motionManager;
     FluxAVCameraSingleton *cameraManager;
     
-    FluxFeatureMatchingQueue *fluxFeatureMatchingQueue;
-    
     FluxCameraFrameElement *frameGrabRequest;
     bool frameGrabRequested;
     int _renderingMatchedImage;
@@ -93,6 +91,7 @@
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
+@property (nonatomic, strong) FluxFeatureMatchingQueue *fluxFeatureMatchingQueue;
 @property (nonatomic, strong) FluxLocationServicesSingleton *fluxLocationManager;
 
 //	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
