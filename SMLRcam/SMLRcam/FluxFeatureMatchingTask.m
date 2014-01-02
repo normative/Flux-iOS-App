@@ -43,7 +43,7 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     {
         if (self.isCancelled)
         {
-            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskWasCancelled::) withObject:self waitUntilDone:NO];
+            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskWasCancelled:) withObject:self waitUntilDone:NO];
             return;
         }
 
@@ -121,7 +121,7 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         
         if (self.isCancelled)
         {
-            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskWasCancelled::) withObject:self waitUntilDone:NO];
+            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskWasCancelled:) withObject:self waitUntilDone:NO];
         }
         else
         {

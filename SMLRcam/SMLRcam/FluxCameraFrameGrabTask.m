@@ -38,7 +38,7 @@
     {
         if (self.isCancelled)
         {
-            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(cameraFrameGrabTaskWasCancelled::) withObject:self waitUntilDone:NO];
+            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(cameraFrameGrabTaskWasCancelled:) withObject:self waitUntilDone:NO];
             return;
         }
         
