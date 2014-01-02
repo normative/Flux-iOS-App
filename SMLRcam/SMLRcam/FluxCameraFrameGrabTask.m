@@ -37,7 +37,10 @@
     @autoreleasepool
     {
         if (self.isCancelled)
+        {
+            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(cameraFrameGrabTaskWasCancelled::) withObject:self waitUntilDone:NO];
             return;
+        }
         
         if (self.openGLVC)
         {

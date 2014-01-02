@@ -42,7 +42,10 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     @autoreleasepool
     {
         if (self.isCancelled)
+        {
+            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskWasCancelled::) withObject:self waitUntilDone:NO];
             return;
+        }
 
         NSDate *startTime = [NSDate date];
         
@@ -89,7 +92,13 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
                                 hNormal2:normal2];
             
             self.matchRecord.ire.imageMetadata.imageHomographyPose = imagePose;
-            
+        }
+        
+        // Check again if operation is cancelled after performing feature matching in case location is no longer valid
+        // Doesn't matter if cancelled (since previous values were populated) as nothing happens
+        // until location_data_type is set.
+        if (!self.isCancelled && feature_matching_success == result)
+        {
             // Flag to use homography for rendering of image
             self.matchRecord.ire.imageMetadata.location_data_type = location_data_from_homography;
         
@@ -110,7 +119,14 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         
         NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
         
-        [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskDidFinish:) withObject:self waitUntilDone:NO];
+        if (self.isCancelled)
+        {
+            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskWasCancelled::) withObject:self waitUntilDone:NO];
+        }
+        else
+        {
+            [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskDidFinish:) withObject:self waitUntilDone:NO];
+        }
     }
 }
 

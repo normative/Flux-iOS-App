@@ -61,9 +61,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 #pragma mark - Location Services
-- (void)kalmanDidInit{
-    [CameraButton setEnabled:YES];
-    NSLog(@"Kalman is Init");
+- (void)kalmanStateChange
+{
+    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
+    [CameraButton setEnabled:currentKalmanStateValid];
+    NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
 
 #pragma mark - Drawer Methods
@@ -606,7 +608,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanDidInit) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     
     [self setupCameraView];
     [self setupMotionManager];
@@ -614,10 +616,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupTimeFilterControl];
     [self setupAnnotationsTableView];
 
-    // Start the location manager service which will continue for the life of the app
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-    [locationManager startLocating];
-    
     currentDataFilter = [[FluxDataFilter alloc] init];
 
     self.screenName = @"Scan View";
@@ -709,12 +707,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)dealloc
 {
-    [locationManager endLocating];
-    locationManager = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
 }
 
 

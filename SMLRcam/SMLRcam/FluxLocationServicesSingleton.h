@@ -13,7 +13,7 @@
 #include "FluxKalmanFilter.h"
 #include "FluxOpenGLCommon.h"
 
-extern NSString* const FluxLocationServicesSingletonDidInitKalmanFilter;
+extern NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState;
 extern NSString* const FluxLocationServicesSingletonDidResetKalmanFilter;
 extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
 extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;

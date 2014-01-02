@@ -66,7 +66,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     __weak IBOutlet UIProgressView *progressView;
     
     //Network + Motion
-    FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
 
     //time scrolling

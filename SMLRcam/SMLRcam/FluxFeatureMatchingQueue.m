@@ -99,6 +99,15 @@ const double reuseCameraFrameTimeInterval = 1.0;
     }
 }
 
+- (void)deleteMatchRequests
+{
+    // Cancel match requests first (since they depend on camera frame grab tasks)
+    [self.pendingOperations.featureMatchingQueue cancelAllOperations];
+    
+    // then camera frame grab requests
+    [self.pendingOperations.cameraFrameGrabQueue cancelAllOperations];
+}
+
 #pragma mark - FluxFeatureMatching Delegate
 
 - (void)featureMatchingTaskDidFinish:(FluxFeatureMatchingTask *)featureMatcher
@@ -116,12 +125,24 @@ const double reuseCameraFrameTimeInterval = 1.0;
     [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
 }
 
+- (void)featureMatchingTaskWasCancelled:(FluxFeatureMatchingTask *)featureMatcher
+{
+    FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
+    [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
+}
+
 #pragma mark - FluxCameraFrameGrab Delegate
 
 - (void)cameraFrameGrabTaskDidFinish:(FluxCameraFrameGrabTask *)cameraFrameGrab
 {
     // Don't need to do anything. Leave it in the array so that feature matching tasks can use it.
     // Another will eventually delete it from pendingOperations.cameraFrameGrabInProgress once no one is using it.
+}
+
+- (void)cameraFrameGrabTaskWasCancelled:(FluxCameraFrameGrabTask *)cameraFrameGrab
+{
+    FluxCameraFrameElement *record = cameraFrameGrab.cameraRecord;
+    [self.pendingOperations.cameraFrameGrabInProgress removeObjectForKey:record.cameraRequestDate];
 }
 
 @end

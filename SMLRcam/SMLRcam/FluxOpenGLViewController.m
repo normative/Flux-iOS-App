@@ -1007,7 +1007,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(addUnmatchedImageRenderElements) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStep:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadAlphaTexture) name:@"maskChange" object:nil];
@@ -1079,6 +1079,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     motionManager = nil;
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateDisplayList object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateImageTexture object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"maskChange" object:nil];
+    
     [self tearDownGL];
     
     if ([EAGLContext currentContext] == self.context) {
@@ -1128,33 +1136,50 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)retryFailedMatches
 {
-    // Spin through list of elements and see if any are failed matches. Retry.
-    for (FluxImageRenderElement *ire in self.renderList)
+    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
+
+    // Only attempt retries if Kalman state is valid. Otherwise wait until it is valid (retries will be queued then).
+    if (currentKalmanStateValid)
     {
-        if (ire.imageMetadata.matchFailed &&
-            ([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending)
+        // Spin through list of elements and see if any are failed matches. Retry.
+        for (FluxImageRenderElement *ire in self.renderList)
         {
-            // Reset failure state so it doesn't get queued up again until matching is complete or fails again
-            ire.imageMetadata.matchFailed = NO;
-            
-            // Only add object image + metadata to queue - scene object will be grabbed by matcher
-            [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+            if (ire.imageMetadata.matchFailed &&
+                ([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending)
+            {
+                // Reset failure state so it doesn't get queued up again until matching is complete or fails again
+                ire.imageMetadata.matchFailed = NO;
+                
+                // Only add object image + metadata to queue - scene object will be grabbed by matcher
+                [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+            }
         }
     }
 }
 
-// Adds any currently rendered FluxImageRenderElements to the match queue. Triggered by a Kalman initialization.
-- (void)addUnmatchedImageRenderElements
+// Adds any currently rendered FluxImageRenderElements to the match queue if enabled, or deletes existing tasks if disabled.
+// Triggered by a Kalman state change.
+- (void)featureMatchingKalmanFilterStateChange
 {
-    // Spin through list of elements and queue up unmatched, high-resolution images.
-    // Add operation will ignore this request if localID is already queued.
-    for (FluxImageRenderElement *ire in self.renderList)
+    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
+    
+    if (currentKalmanStateValid)
     {
-        if (!ire.imageMetadata.matched && (ire.textureMapElement.imageType >= quarterhd))
+        // Spin through list of elements and queue up unmatched, high-resolution images.
+        // Add operation will ignore this request if localID is already queued.
+        for (FluxImageRenderElement *ire in self.renderList)
         {
-            // Only add object image + metadata to queue - scene object will be grabbed by matcher
-            [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+            if (!ire.imageMetadata.matched && (ire.textureMapElement.imageType >= quarterhd))
+            {
+                // Only add object image + metadata to queue - scene object will be grabbed by matcher
+                [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+            }
         }
+    }
+    else
+    {
+        // Delete any feature matching jobs in the queue (probably not valid).
+        [fluxFeatureMatchingQueue deleteMatchRequests];
     }
 }
 

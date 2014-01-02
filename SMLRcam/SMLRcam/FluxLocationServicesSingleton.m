@@ -9,7 +9,7 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 
-NSString* const FluxLocationServicesSingletonDidInitKalmanFilter = @"FluxLocationServicesSingletonDidInitKalmanFilter";
+NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
 NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
@@ -18,6 +18,10 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 #define PI M_PI
 #define a_WGS84 6378137.0
 #define b_WGS84 6356752.3142
+
+const double kalmanFilterMinHeadingAccuracy = 20.0;
+const double kalmanFilterMinHorizontalAccuracy = 20.0;
+const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 @implementation FluxLocationServicesSingleton
 
@@ -702,8 +706,11 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     _kfMeasure.position.z = location.altitude;
     
     
-    if(location.horizontalAccuracy >=0.0 && location.verticalAccuracy >= 0.0 &&
-       locationManager.heading.headingAccuracy >= 0.0 && locationManager.heading.trueHeading >= 0)
+    // Check for state changes in validCurrentLocationData. Toggles to true are caught in updateKFilter and resetKFilter.
+    if((location.horizontalAccuracy >=0.0) && (location.horizontalAccuracy <= kalmanFilterMinHorizontalAccuracy) &&
+       (location.verticalAccuracy >= 0.0) && (location.verticalAccuracy <= kalmanFilterMinVerticalAccuracy) &&
+       (locationManager.heading.headingAccuracy >= 0.0) && (locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
+       (locationManager.heading.trueHeading >= 0))
     {
         _validCurrentLocationData = 0;
         _validInitLocationData = 0;
@@ -711,6 +718,11 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     }
     else
     {
+        if (0 == _validCurrentLocationData)
+        {
+            // Previous value was valid. Signal state change.
+            [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
+        }
         _validCurrentLocationData = -1;
     }
     
@@ -737,7 +749,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidResetKalmanFilter object:self];
     
     // Since already intiialized, now post notification of Kalman init
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidInitKalmanFilter object:self];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
 
 }
 
@@ -763,7 +775,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
         //set pedometer count to zero
         
         // Post notification of Kalman initialization (now safe to use)
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidInitKalmanFilter object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         
         return;
     }
@@ -816,7 +828,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 
 - (bool)isKalmanSolutionValid
 {
-    return kfStarted;
+    return kfStarted && (0 == _validCurrentLocationData);
 }
 
 #pragma mark - test and debug filter

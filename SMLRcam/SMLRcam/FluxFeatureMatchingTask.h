@@ -29,5 +29,6 @@
 @protocol FluxFeatureMatchingTaskDelegate <NSObject>
 
 - (void)featureMatchingTaskDidFinish:(FluxFeatureMatchingTask *)featureMatchingTask;
+- (void)featureMatchingTaskWasCancelled:(FluxFeatureMatchingTask *)featureMatchingTask;
 
 @end
