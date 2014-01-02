@@ -128,6 +128,14 @@ const double reuseCameraFrameTimeInterval = 1.0;
 - (void)featureMatchingTaskWasCancelled:(FluxFeatureMatchingTask *)featureMatcher
 {
     FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
+    
+    // Don't treat this as a failure. Will need to be re-queued to try again.
+    record.matched = NO;
+    record.failed = NO;
+    record.ire.imageMetadata.matched = NO;
+    record.ire.imageMetadata.matchFailed = NO;
+    record.ire.imageMetadata.matchFailureRetryTime = nil;
+
     [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
 }
 
