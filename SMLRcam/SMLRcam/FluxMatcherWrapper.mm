@@ -416,7 +416,6 @@ const double maxRatioSideLength = 2.0;
     double u[9];
     double vt[9];
     double scale;
-    double scaleSq;
     double tmp3;
     double tmp1Vec[3];
     double tmp2Vec[3];

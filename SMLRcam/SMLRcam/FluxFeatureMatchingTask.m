@@ -220,7 +220,6 @@ rntTransforms rntResult;
     double rotation[9];
     double translation[3];
     double normal[3];
-    int j;
     int i;
     GLKVector3 cameraNormal = GLKVector3Make(0.0, 0.0, 1.0);
     
