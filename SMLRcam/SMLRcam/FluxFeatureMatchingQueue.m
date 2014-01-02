@@ -103,9 +103,11 @@ const double reuseCameraFrameTimeInterval = 1.0;
 {
     // Cancel match requests first (since they depend on camera frame grab tasks)
     [self.pendingOperations.featureMatchingQueue cancelAllOperations];
+    [self.pendingOperations.featureMatchingInProgress removeAllObjects];
     
     // then camera frame grab requests
     [self.pendingOperations.cameraFrameGrabQueue cancelAllOperations];
+    [self.pendingOperations.cameraFrameGrabInProgress removeAllObjects];
 }
 
 #pragma mark - FluxFeatureMatching Delegate
