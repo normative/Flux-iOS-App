@@ -720,10 +720,11 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     {
         if (0 == _validCurrentLocationData)
         {
+            _validCurrentLocationData = -1;
+
             // Previous value was valid. Signal state change.
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
-        _validCurrentLocationData = -1;
     }
     
 }
