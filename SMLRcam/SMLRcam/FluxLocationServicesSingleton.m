@@ -684,8 +684,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     stepcount = 0;
     _lastvalue =0;
     _resetThreshold = 10.0; //in meters;
-    _validCurrentLocationData = -1;
-    _validInitLocationData = -1;
+    _validCurrentLocationData = NO;
     //[self testKalman];
 }
 - (void) startKFilter
@@ -712,15 +711,25 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
        (locationManager.heading.headingAccuracy >= 0.0) && (locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
        (locationManager.heading.trueHeading >= 0))
     {
-        _validCurrentLocationData = 0;
-        _validInitLocationData = 0;
+        // if kfStarted is false, we haven't started yet, so state changes are handled elsewhere.
+        // Otherwise, handle them here.
+        if (kfStarted && !_validCurrentLocationData)
+        {
+            // This is the case where it was already initialized, but the location data temporarily became bad.
+            // Need to notify state change now that location data is good again.
+            _validCurrentLocationData = YES;
+            [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
+        }
+        _validCurrentLocationData = YES;
         _horizontalAccuracy = location.horizontalAccuracy;
     }
     else
     {
-        if (0 == _validCurrentLocationData)
+        // Bad location information. Kalman state will be reported as disabled until we get good data again.
+        // Notify observers of state change.
+        if (_validCurrentLocationData)
         {
-            _validCurrentLocationData = -1;
+            _validCurrentLocationData = NO;
 
             // Previous value was valid. Signal state change.
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
@@ -762,7 +771,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     if(kfStarted!=true)
     {
-        if(_validCurrentLocationData <0)
+        if(!_validCurrentLocationData)
         {
             NSLog(@"updateKFilter:Invalid location, kf not started");
             return;
@@ -829,7 +838,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 - (bool)isKalmanSolutionValid
 {
-    return kfStarted && (0 == _validCurrentLocationData);
+    return kfStarted && _validCurrentLocationData;
 }
 
 #pragma mark - test and debug filter

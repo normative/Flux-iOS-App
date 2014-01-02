@@ -61,6 +61,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 #pragma mark - Location Services
+
 - (void)kalmanStateChange
 {
     bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];

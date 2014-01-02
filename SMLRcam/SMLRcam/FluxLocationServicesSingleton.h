@@ -59,8 +59,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     int stepcount;
     double _lastvalue;//steppe
     
-    int _validCurrentLocationData;
-    int _validInitLocationData;
+    bool _validCurrentLocationData;
     
     double _horizontalAccuracy;
     

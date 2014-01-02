@@ -1153,6 +1153,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 // Only add object image + metadata to queue - scene object will be grabbed by matcher
                 [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
             }
+            else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil) && (ire.textureMapElement.imageType >= quarterhd))
+            {
+                // Also queue up any items which have not been queueud (not matched, no failure retry time set, valid resolution).
+                // This handles cases due to toggling of Kalman state at various points. Duplicate queued items are ignored.
+                
+                // Only add object image + metadata to queue - scene object will be grabbed by matcher
+                [fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
+            }
         }
     }
 }
