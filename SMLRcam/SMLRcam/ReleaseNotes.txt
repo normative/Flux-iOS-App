@@ -2,7 +2,9 @@ Release Notes:
 
 - fixes snapshot annotation bug
 - preliminary fix for profile photos crash
-
+- camera button and feature matching are disabled if location/orientation is not valid at any time, not just at initialization
+- using stricter parameters to determine if location/orientation is valid
+- current parameters may disable photo-taking in some indoor environments (no GPS or large magnetic interferences)
 
 ******************************************
 
