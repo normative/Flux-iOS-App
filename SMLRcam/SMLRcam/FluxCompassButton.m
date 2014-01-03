@@ -121,19 +121,28 @@
     if (self = [super initWithCoder:aDecoder])
     {
         [self setBackgroundColor:[UIColor clearColor]];
-        [self createRadarView];        
-        
-        locationManager = [FluxLocationServicesSingleton sharedManager];
-        if (locationManager != nil)
-        {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
-        }
+        [self createRadarView];
     }
+    
     return self;
 }
 
--(void)dealloc{
+- (void)awakeFromNib
+{
+    [super awakeFromNib];
+    
+    locationManager = [FluxLocationServicesSingleton sharedManager];
+    if (locationManager != nil)
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
+
+        [self headingUpdated:nil];
+    }
+}
+
+-(void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateDisplayList object:nil];
 }
