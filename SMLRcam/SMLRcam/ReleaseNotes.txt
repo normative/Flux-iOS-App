@@ -1,5 +1,7 @@
 Release Notes:
 
+- fixes which may address Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
+
 ******************************************
 
 V0.16 B01

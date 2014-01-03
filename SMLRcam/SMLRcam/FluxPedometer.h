@@ -24,9 +24,6 @@ typedef enum _fftwalkstate {
     FFT_WALKING = 1
 } fftWalkState;
 
-
-extern NSString* const FluxPedometerDidTakeStep;
-
 @interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
     CMMotionManager *motionManager;
     NSTimer* motionUpdateTimer;

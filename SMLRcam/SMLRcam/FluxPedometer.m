@@ -29,10 +29,6 @@ const int FFT_FREQ_COUNT     = (N/2);
 const int HI_FREQ_HIGH       = (FFT_FREQ_COUNT - (FFT_FREQ_COUNT>>3));
 const int HI_FREQ_LOW        = ((FFT_FREQ_COUNT >> 1) + (FFT_FREQ_COUNT>>3));
 
-
-NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
-
-
 @interface FluxPedometer()
 
 @end
@@ -762,12 +758,6 @@ ViewController *viewcontroller = nil;
     
     NSLog(@"Took a step (%d)", stepCount);
     
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:n, @"stepDirection",
-                                  nil];
-
-  //  [[NSNotificationCenter defaultCenter] postNotificationName:FluxPedometerDidTakeStep
-  //                                                      object:self userInfo:userInfoDict];
     if (flocation !=nil)
     {
         [flocation registerPedDisplacementKFilter:direction];
