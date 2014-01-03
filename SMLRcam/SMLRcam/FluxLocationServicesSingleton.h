@@ -13,7 +13,7 @@
 #include "FluxKalmanFilter.h"
 #include "FluxOpenGLCommon.h"
 
-extern NSString* const FluxLocationServicesSingletonDidInitKalmanFilter;
+extern NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState;
 extern NSString* const FluxLocationServicesSingletonDidResetKalmanFilter;
 extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
 extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
@@ -59,8 +59,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     int stepcount;
     double _lastvalue;//steppe
     
-    int _validCurrentLocationData;
-    int _validInitLocationData;
+    bool _validCurrentLocationData;
     
     double _horizontalAccuracy;
     

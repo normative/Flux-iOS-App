@@ -1,5 +1,34 @@
 Release Notes:
 
+- fixes which may address Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
+
+Release Notes:
+
+- fixes snapshot annotation bug
+- preliminary fix for profile photos crash
+- camera button and feature matching are disabled if location/orientation is not valid at any time, not just at initialization
+- using stricter parameters to determine if location/orientation is valid
+- current parameters may disable photo-taking in some indoor environments (no GPS or large magnetic interferences)
+
+******************************************
+
+V0.15 B04
+
+Released: 2013-12-27 16:10:00
+
+Release Notes:
+-bug fix adds blurView to filtersVC
+
+******************************************
+
+V0.15 B03
+
+Released: 2013-12-27 14:30:00
+
+Release Notes:
+- bug fix in calculated image projection parameters (improves projection of rendered images as well as feature-matched images)
+- bug fix for blurView in profile + image annotationVC
+
 ******************************************
 
 V0.15 B02

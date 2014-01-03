@@ -99,6 +99,17 @@ const double reuseCameraFrameTimeInterval = 1.0;
     }
 }
 
+- (void)deleteMatchRequests
+{
+    // Cancel match requests first (since they depend on camera frame grab tasks)
+    [self.pendingOperations.featureMatchingQueue cancelAllOperations];
+    [self.pendingOperations.featureMatchingInProgress removeAllObjects];
+    
+    // then camera frame grab requests
+    [self.pendingOperations.cameraFrameGrabQueue cancelAllOperations];
+    [self.pendingOperations.cameraFrameGrabInProgress removeAllObjects];
+}
+
 #pragma mark - FluxFeatureMatching Delegate
 
 - (void)featureMatchingTaskDidFinish:(FluxFeatureMatchingTask *)featureMatcher
@@ -116,12 +127,32 @@ const double reuseCameraFrameTimeInterval = 1.0;
     [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
 }
 
+- (void)featureMatchingTaskWasCancelled:(FluxFeatureMatchingTask *)featureMatcher
+{
+    FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
+    
+    // Don't treat this as a failure. Will need to be re-queued to try again.
+    record.matched = NO;
+    record.failed = NO;
+    record.ire.imageMetadata.matched = NO;
+    record.ire.imageMetadata.matchFailed = NO;
+    record.ire.imageMetadata.matchFailureRetryTime = nil;
+
+    [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
+}
+
 #pragma mark - FluxCameraFrameGrab Delegate
 
 - (void)cameraFrameGrabTaskDidFinish:(FluxCameraFrameGrabTask *)cameraFrameGrab
 {
     // Don't need to do anything. Leave it in the array so that feature matching tasks can use it.
     // Another will eventually delete it from pendingOperations.cameraFrameGrabInProgress once no one is using it.
+}
+
+- (void)cameraFrameGrabTaskWasCancelled:(FluxCameraFrameGrabTask *)cameraFrameGrab
+{
+    FluxCameraFrameElement *record = cameraFrameGrab.cameraRecord;
+    [self.pendingOperations.cameraFrameGrabInProgress removeObjectForKey:record.cameraRequestDate];
 }
 
 @end

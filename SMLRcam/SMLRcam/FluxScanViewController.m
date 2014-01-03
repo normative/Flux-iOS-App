@@ -61,17 +61,35 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 #pragma mark - Location Services
-- (void)kalmanDidInit{
-    [CameraButton setEnabled:YES];
-    NSLog(@"Kalman is Init");
+
+- (void)kalmanStateChange
+{
+    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
+    [CameraButton setEnabled:currentKalmanStateValid];
+    NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
 
 #pragma mark - Drawer Methods
 
 // Left Drawer
 - (IBAction)showLeftDrawer:(id)sender {
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setSettingsViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
+    [openGLController setBackgroundSnapFlag];
+}
+
+
+- (void)setSettingsViewBG:(NSNotification*)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
+    
+    snapshotBGImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
+    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+    snapshotBGImage = [imageTools blurImage:snapshotBGImage withBlurLevel:0.6];
+
+    [self performSegueWithIdentifier:@"pushSettingsView" sender:self];
     
 }
+
+
 
 #pragma mark - Annotations Feed Methods
 
@@ -225,6 +243,19 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (IBAction)filterButtonAction:(id)sender {
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setFiltersViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
+    [openGLController setBackgroundSnapFlag];
+}
+
+- (void)setFiltersViewBG:(NSNotification*)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
+    
+    snapshotBGImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
+    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+    snapshotBGImage = [imageTools blurImage:snapshotBGImage withBlurLevel:0.6];
+    
+    [self performSegueWithIdentifier:@"pushFiltersView" sender:self];
+    
 }
 
 #pragma mark - OpenGLView
@@ -574,22 +605,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanDidInit) name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
-    
     [self setupCameraView];
     [self setupMotionManager];
     [self setupOpenGLView];
     [self setupTimeFilterControl];
     [self setupAnnotationsTableView];
 
-    // Start the location manager service which will continue for the life of the app
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-    [locationManager startLocating];
-    
     currentDataFilter = [[FluxDataFilter alloc] init];
 
     self.screenName = @"Scan View";
@@ -598,9 +619,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
     [self.view addSubview:CameraButton];
     
-    if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid]) {
+    if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
+    {
         [CameraButton setEnabled:NO];
     }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
 }
 
 -(void)viewWillLayoutSubviews{
@@ -652,21 +679,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
         
-        UIImage*bgImage = [openGLController snapshot:openGLController.view];
-        [filtersVC setBackgroundView:bgImage];
+        [filtersVC setBackgroundView:snapshotBGImage];
         
         //[self animationPushBackScaleDown];
     }
     else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
+        
         UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
-        UIImage*bgImage = [openGLController snapshot:openGLController.view];
-        FluxImageTools *imageTools = [[FluxImageTools alloc]init];
-        bgImage = [imageTools blurImage:bgImage withBlurLevel:0.6];
-        [bgView setImage:bgImage];
+        [bgView setImage:snapshotBGImage];
         [bgView setBackgroundColor:[UIColor darkGrayColor]];
         [[(UINavigationController*)segue.destinationViewController view] insertSubview:bgView atIndex:0];
+        
         FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
+        
     }
 }
 
@@ -682,12 +708,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)dealloc
 {
-    [locationManager endLocating];
-    locationManager = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidInitKalmanFilter object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
 }
 
 

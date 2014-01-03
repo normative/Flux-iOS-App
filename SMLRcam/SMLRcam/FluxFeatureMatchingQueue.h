@@ -23,5 +23,6 @@
 @property (nonatomic, strong) PendingOperations *pendingOperations;
 
 -(void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview;
+-(void)deleteMatchRequests;
 
 @end

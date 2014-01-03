@@ -44,6 +44,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;
     __weak IBOutlet FluxCompassButton *radarButton;
+    UIImage *snapshotBGImage;
     
     UITableView*annotationsTableView;
     
@@ -65,7 +66,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     __weak IBOutlet UIProgressView *progressView;
     
     //Network + Motion
-    FluxLocationServicesSingleton *locationManager;
     CMMotionManager *motionManager;
 
     //time scrolling
