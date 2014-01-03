@@ -31,6 +31,14 @@
     }
 }
 
+- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSString *)features withDataRequest:(FluxDataRequest *)completeDataRequest
+{
+    if (self.imageFeaturesReady)
+    {
+        self.imageFeaturesReady(localID, features, completeDataRequest);
+    }
+}
+
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.metadataReady)

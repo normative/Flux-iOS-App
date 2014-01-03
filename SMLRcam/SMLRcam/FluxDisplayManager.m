@@ -28,7 +28,7 @@ NSString* const FluxDisplayManagerDidUpdateImageTexture = @"FluxDisplayManagerDi
 NSString* const FluxDisplayManagerDidUpdateMapPinList = @"FluxDisplayManagerDidUpdateMapPinList";
 NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManagerDidFailToUpdateMapPinList";
 NSString* const FluxDisplayManagerDidMatchImage = @"FluxDisplayManagerDidMatchImage";
-
+NSString* const FluxDisplayManagerDidUpdateImageFeatures = @"FluxDisplayManagerDidUpdateImageFeatures";
 
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
@@ -896,6 +896,17 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                         [_imageRequestCountLock unlock];
                     };
                     [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
+
+                    FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
+                    [featuresRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
+                    featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
+                        // assign features into SIO.features...
+                        ire.imageMetadata.features = features;
+                        
+                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageFeatures
+                                                                            object:self userInfo:nil];
+                    };
+                    [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
                     
                     // only request one at a time
                     break;

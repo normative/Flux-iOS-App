@@ -43,6 +43,9 @@ typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
+typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSString *, FluxDataRequest *);
+
+
 
 //users
 typedef void (^UploadUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
@@ -92,6 +95,9 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 // Callback for single image retrieved (either from cache or download)
 @property (strong) ImageReadyBlock imageReady;
+
+// Callback for single image feature set retrieved
+@property (strong) ImageFeaturesReadyBlock imageFeaturesReady;
 
 // Callback for single metadata object retrieved (either from cache or download)
 @property (strong) MetadataReadyBlock metadataReady;
@@ -153,6 +159,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSString *)features withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 //users
 - (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;

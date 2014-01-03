@@ -325,6 +325,62 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return requestID;
 }
 
+#pragma mark Features
+
+- (FluxRequestID *) requestImageFeaturesByLocalID:(FluxDataRequest *)dataRequest
+{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = image_request;
+    FluxImageType imageType = features;
+    dataRequest.imageType = imageType;
+    
+    [currentRequests setObject:dataRequest forKey:requestID];
+    
+    BOOL completedRequest = NO;
+    
+    for (id curLocalID in dataRequest.requestedIDs)
+    {
+        // Now check if request has already been made
+        NSMutableArray *downloadRequestsForID = [downloadQueueReceivers objectForKey:curLocalID];
+        BOOL validDownloadInProgress = NO;
+        
+        if (downloadRequestsForID != nil)
+        {
+            for (id curRequestID in downloadRequestsForID)
+            {
+                FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+                if (curRequest.imageType == imageType)
+                {
+                    validDownloadInProgress = YES;
+                    break;
+                }
+            }
+        }
+        
+        if (validDownloadInProgress)
+        {
+            [[downloadQueueReceivers objectForKey:curLocalID] addObject:requestID];
+        }
+        else
+        {
+            [downloadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:curLocalID];
+            
+            // Begin download of image
+            FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
+            [networkServices getImageFeaturesForID:curImageObj.imageID andRequestID:requestID];
+        }
+    }
+    
+    if (completedRequest)
+    {
+        [self completeRequestWithDataRequest:dataRequest];
+    }
+    
+    return requestID;
+}
+
+
+
 #pragma mark - Tag Requests
 
 - (FluxRequestID *) requestTagListAtLocation:(CLLocationCoordinate2D)coordinate
@@ -525,7 +581,6 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     {
         // We are currently assuming the size in the request is the size returned. Should check this.
         
-        
         // Add image to Data Store
         [fluxDataStore addImageToStore:image withLocalID:imageObj.localID withSize:request.imageType];
         
@@ -573,6 +628,75 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         }
     }
 }
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
+         didreturnImageFeatures:(NSString *)features
+                     forImageID:(int)imageID
+                   andRequestID:(FluxRequestID *)requestID
+{
+    // This is the request matching the call to download. Note that others may also be waiting.
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    
+    // Make sure that imageID matches requested ID
+    FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
+    
+    if (![request.requestedIDs containsObject:imageObj.localID])
+    {
+        // This ID was not requested
+        NSLog(@"%s: Request ID returned not expecting imageID %d", __func__, imageID);
+    }
+    else
+    {
+        // We are currently assuming the size in the request is the size returned. Should check this.
+        
+        // Add image to Data Store
+        imageObj.features = features;
+        
+        // Notify and clean up.
+        // Note that a single image download may not necessarily complete a request.
+        // Also note that multiple requests may be open for each image received.
+        // Clean up:
+        // - each request in currentRequests dictionary (update received items, check if complete)
+        // - requests are identified by downloadQueueReceivers list for current localID
+        
+        NSMutableArray *completedRequestIDs = [[NSMutableArray alloc] init];
+        
+        for (id curRequestID in [downloadQueueReceivers objectForKey:imageObj.localID])
+        {
+            FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+            if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
+                (![curRequest.completedIDs containsObject:imageObj.localID]) &&
+                (curRequest.imageType == request.imageType))
+            {
+                // Mark as complete prior to callback
+                [curRequest.completedIDs addObject:imageObj.localID];
+                
+                // Notify and execute callback
+                [curRequest whenImageFeaturesReady:imageObj.localID withFeatures:features withDataRequest:request];
+                
+                // Used to clean up in next step
+                if ([curRequest.completedIDs count] == [curRequest.requestedIDs count])
+                {
+                    // Request is complete
+                    [completedRequestIDs addObject:curRequestID];
+                }
+            }
+        }
+        
+        for (id curRequestID in completedRequestIDs)
+        {
+            FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+            [self completeRequestWithDataRequest:curRequest];
+            [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
+        }
+        
+        if ([[downloadQueueReceivers objectForKey:imageObj.localID] count] == 0)
+        {
+            [downloadQueueReceivers removeObjectForKey:imageObj.localID];
+        }
+    }
+}
+
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
                     ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID

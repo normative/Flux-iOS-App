@@ -80,6 +80,8 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 - (FluxRequestID *)deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest;
 
+- (FluxRequestID *) requestImageFeaturesByLocalID:(FluxDataRequest *)dataRequest;
+
 //users
 - (FluxRequestID *) uploadNewUser:(FluxUserObject *)userObject withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest;
