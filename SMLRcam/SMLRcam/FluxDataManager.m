@@ -473,6 +473,47 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     [self completeRequestWithDataRequest:request];
 }
 
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailImageDownloadWithError:(NSError *)e andNaturalString:(NSString *)string andRequestID:(NSUUID *)requestID andImageID:(FluxImageID)imageID
+{
+    // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenErrorOccurred:e withDescription:string withDataRequest:request];
+    
+    // Clean up other requests tied to this request (in the case of image download)
+    FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
+    NSMutableArray *completedRequestIDs = [[NSMutableArray alloc] init];
+    
+    for (id curRequestID in [downloadQueueReceivers objectForKey:imageObj.localID])
+    {
+        FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+        if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
+            (![curRequest.completedIDs containsObject:imageObj.localID]) &&
+            (curRequest.imageType == request.imageType))
+        {
+            // Delete requested ID from both lists
+            [curRequest.requestedIDs removeObject:imageObj.localID];
+            [curRequest.completedIDs removeObject:imageObj.localID];
+            
+            // Used to clean up in next step
+            if ([curRequest.completedIDs count] == [curRequest.requestedIDs count])
+            {
+                // Request is complete
+                [completedRequestIDs addObject:curRequestID];
+            }
+        }
+    }
+    
+    for (id curRequestID in completedRequestIDs)
+    {
+        FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+        [self completeRequestWithDataRequest:curRequest];
+        [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
+    }
+    
+    // In this case, delete no matter what (since we want next request to re-request ID)
+    [downloadQueueReceivers removeObjectForKey:imageObj.localID];
+}
+
 
 #pragma mark Images
 
