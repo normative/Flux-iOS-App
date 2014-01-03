@@ -838,22 +838,11 @@ void init(){
     GLKVector4 vertex4 = GLKVector4Make(vertex.x, vertex.y, vertex.z, 1.0);
     
     GLKVector4 tCoord = GLKMatrix4MultiplyVector4(tMVP, vertex4);
-    GLKVector4 tCoord7= GLKMatrix4MultiplyVector4(_tBiasMVP[7],vertex4);
-    
-    float s7= tCoord7.x / tCoord7.w;
-    float t7 = tCoord7.y / tCoord7.w;
-    
-    if(s7<0.0 ||  s7 >1.0 || t7 <0.0 || t7>1.0)
-    {
-        valid = 0;
-        return valid;
-    }
-    
     
     float s = tCoord.x / tCoord.w;
     float t = tCoord.y / tCoord.w;
 
-    if(s>=0.0 && s<=1.0 && t>=0.25 && t<=75.0 &&tCoord.w >0.0)
+    if(s>0.0 && s<1.0 && t>0.3 && t<0.7 &&tCoord.w >0.0)
         valid = 1;
     else
         valid = 0;
@@ -876,7 +865,7 @@ void init(){
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planeRotationMatrix, planeNormalI);
     //intersection with plane
-    GLKVector3 N = planeNormalRotated;
+    GLKVector3 N = GLKVector3Normalize(planeNormalRotated);
     GLKVector3 P0 = vertex0;
     GLKVector3 V = GLKVector3Normalize(v);
         
@@ -914,13 +903,13 @@ void init(){
     tapPoint.y = _tapPoint.y;
     tapPoint.z =0.0;
     valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
                  withScreenViewport:vp
                       andCalcVertex:&vertex0];
     
     tapPoint.z = 1.0;
     valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrixInOrder
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
                  withScreenViewport:vp
                       andCalcVertex:&vertex1];
     
@@ -928,18 +917,7 @@ void init(){
     valid = [self calcTappedVertexV0:vertex0 V1:vertex1 result:&vertex];
     if(valid ==-1)
         return nil;
-    //test
   
-    tapPoint.z = 15.0/50.0;
-    valid = [self calcVertexAtPoint:tapPoint
-      withModelViewProjectionMatrix:_modelViewProjectionMatrix
-                 withScreenViewport:vp
-                      andCalcVertex:&vertexTest];
-    //test ends
-    NSLog(@"vertex");
-    
-    
-    //int element = 0;
     int i;
     int tapped =0;
     //this is order dependant of course so any time the ordering of items in renderList will change this needs to be updated
