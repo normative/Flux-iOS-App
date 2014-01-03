@@ -994,7 +994,7 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
     double distance;
     p1.position.x = 43.654113;
     p1.position.y = -79.383400;
-    p2.position.x =43.653527;
+    p2.position.x = 43.653527;
     p2.position.y = -79.383189;
     
     
