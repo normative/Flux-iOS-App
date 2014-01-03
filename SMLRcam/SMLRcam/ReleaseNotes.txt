@@ -1,5 +1,9 @@
 Release Notes:
 
+- fixes which may address Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
+
+Release Notes:
+
 - fixes snapshot annotation bug
 - preliminary fix for profile photos crash
 - camera button and feature matching are disabled if location/orientation is not valid at any time, not just at initialization
