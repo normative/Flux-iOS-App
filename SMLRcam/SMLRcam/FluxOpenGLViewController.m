@@ -845,7 +845,7 @@ void init(){
     float s = tCoord.x / tCoord.w;
     float t = tCoord.y / tCoord.w;
 
-    if(s>0.0 && s<1.0 && t>0.3 && t<0.7 &&tCoord.w >0.0)
+    if(s>0.0 && s<1.0 && t>0.25 && t<0.75 &&tCoord.w >0.0)
         valid = 1;
     else
         valid = 0;
@@ -2315,6 +2315,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                             object:self userInfo:userInfoDict];
         _takesnapshot =0;
     }
+    if (_imagetapped == 1) {
+        
+        FluxScanImageObject* fsio = [self imageTappedAtPointFunc];
+        if(fsio != nil)
+        {
+            FluxScanViewController *fsvc;
+            fsvc = (FluxScanViewController*)self.parentViewController;
+            [fsvc didTapImageFunc:fsio];
+            //NSDictionary *userInfoDict = @{@"tappedimage" : fsio};
+            //[[NSNotificationCenter defaultCenter] postNotificationName:@"FluxDidTapImage"
+                //                                                object:self userInfo:nil];
+        }
+       
+    }
+    
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation
