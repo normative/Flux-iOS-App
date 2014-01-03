@@ -1,5 +1,12 @@
 Release Notes:
 
+******************************************
+
+V0.16 B01
+
+Released: 2014-01-02 21:30:00
+
+Release Notes:
 - fixes snapshot annotation bug
 - preliminary fix for profile photos crash
 - camera button and feature matching are disabled if location/orientation is not valid at any time, not just at initialization
