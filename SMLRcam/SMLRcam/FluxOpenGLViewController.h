@@ -28,7 +28,7 @@
 
 @interface FluxOpenGLViewController : GLKViewController <AVCaptureVideoDataOutputSampleBufferDelegate>{
     GLuint _program;
-    
+    GLKMatrix4 _modelViewProjectionMatrixInOrder;
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix4 _tBiasMVP[MAX_TEXTURES];
     float _projectionDistance;
@@ -52,7 +52,7 @@
     demoImage *demoimage;
     
     int _takesnapshot;
-    
+    int  _imagetapped;
     CGFloat _screenWidth;
     CGFloat _screenHeight;
     size_t _videoTextureWidth;
@@ -67,6 +67,7 @@
     FluxCameraFrameElement *frameGrabRequest;
     bool frameGrabRequested;
     int _renderingMatchedImage;
+    CGPoint _tapPoint;
     
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
@@ -139,7 +140,7 @@
 - (void)updateImageMetadataForElementList:(NSMutableArray *)elementList andMaxIncidentThreshold:(double)maxIncidentThreshold;
 
 //image tap
-- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point;
+- (void)imageTappedAtPoint:(CGPoint)point;
 
 - (void) requestCameraFrame:(FluxCameraFrameElement *)frameRequest;
 

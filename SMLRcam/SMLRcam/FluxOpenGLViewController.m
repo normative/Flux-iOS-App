@@ -137,7 +137,7 @@ int iPhone5_bottomcrop;
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
 
-
+GLKMatrix4 planeRotationMatrix;
 GLKMatrix4 tProjectionMatrix;
 GLKMatrix4 tViewMatrix;
 GLKMatrix4 tModelMatrix;
@@ -806,21 +806,151 @@ void init(){
 
 #pragma mark - Image Tapping
 
-- (FluxScanImageObject*)imageTappedAtPoint:(CGPoint)point
+
+- (int) calcVertexAtPoint:(GLKVector3)point withModelViewProjectionMatrix:(GLKMatrix4)mvp withScreenViewport:(GLKVector4)vp andCalcVertex:(GLKVector3 *) vertex
+{
+    bool isinvertible;
+    GLKMatrix4 invMVP = GLKMatrix4Invert(mvp, &isinvertible);
+    if (isinvertible == false)
+        return -1;
+    GLKVector4 in = GLKVector4Make(point.x, point.y, point.z, 1.0);
+    in.x = (in.x - vp.x) /vp.z;
+    in.y = (in.y - vp.y) /vp.w;
+    
+    in.x = in.x *2.0 - 1.0;
+    in.y = in.y *2.0 - 1.0;
+    in.z = in.z *2.0 - 1.0;
+    
+    GLKVector4 out = GLKMatrix4MultiplyVector4(invMVP, in);
+    if(out.w == 0.0) return -1;
+    
+    out.x /= out.w;
+    out.y /= out.w;
+    out.z /= out.w;
+    
+    vertex->x = out.x;
+    vertex->y = out.y;
+    vertex->z = out.z;
+    
+    return 0;
+}
+
+-(int) isImageTappedAtVertex:(GLKVector3)vertex withMVP:(GLKMatrix4)tMVP
+{
+    int valid=0;
+    GLKVector4 vertex4 = GLKVector4Make(vertex.x, vertex.y, vertex.z, 1.0);
+    
+    GLKVector4 tCoord = GLKMatrix4MultiplyVector4(tMVP, vertex4);
+    
+    float s = tCoord.x / tCoord.w;
+    float t = tCoord.y / tCoord.w;
+
+    if(s>0.0 && s<1.0 && t>0.25 && t<0.75 &&tCoord.w >0.0)
+        valid = 1;
+    else
+        valid = 0;
+    
+    return valid;
+}
+
+-(int) calcTappedVertexV0:(GLKVector3)vertex0 V1:(GLKVector3) vertex1 result:(GLKVector3*) vertex
+{
+   
+    GLKVector3 positionTP;
+    positionTP = GLKVector3Make(0.0, 0.0, 0.0);
+    float distance = 15.0;
+    
+    GLKVector3 zRay = GLKVector3Subtract(vertex1, vertex0);
+    
+    GLKVector3 v = GLKVector3Normalize(zRay);
+    
+    //normal plane
+    GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3(planeRotationMatrix, planeNormalI);
+    //intersection with plane
+    GLKVector3 N = GLKVector3Normalize(planeNormalRotated);
+    GLKVector3 P0 = vertex0;
+    GLKVector3 V = GLKVector3Normalize(v);
+        
+    float vd = GLKVector3DotProduct(N,V);
+    float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
+    float t = v0/vd;
+        
+    if(vd==0)
+    {
+        return -1;
+    }
+    if(t < 0)
+    {
+        return -1;
+    }
+    *vertex = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
+    return 0;
+}
+- (FluxScanImageObject*)imageTappedAtPointFunc
 {
     FluxScanImageObject *touchedObject = nil;
     
-    if (self.renderList.count>0) {
-        FluxImageRenderElement *ire = [self.renderList objectAtIndex:0];
-        if (ire != nil)
+    int valid =-1;
+    GLKVector3 tapPoint;
+    GLKVector3 vertex, vertex1, vertex0, vertexTest;
+    GLKVector4 vp;
+    
+    //assuming that this is a retina device
+    vp.x = 0.0;
+    vp.y = 0.0;
+    vp.z = _screenWidth  * 2.0;
+    vp.w = _screenHeight * 2.0;
+    
+    tapPoint.x = _tapPoint.x;
+    tapPoint.y = _tapPoint.y;
+    tapPoint.z =0.0;
+    valid = [self calcVertexAtPoint:tapPoint
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+                 withScreenViewport:vp
+                      andCalcVertex:&vertex0];
+    
+    tapPoint.z = 1.0;
+    valid = [self calcVertexAtPoint:tapPoint
+      withModelViewProjectionMatrix:_modelViewProjectionMatrix
+                 withScreenViewport:vp
+                      andCalcVertex:&vertex1];
+    
+    
+    valid = [self calcTappedVertexV0:vertex0 V1:vertex1 result:&vertex];
+    if(valid ==-1)
+        return nil;
+  
+    int i;
+    int tapped =0;
+    //this is order dependant of course so any time the ordering of items in renderList will change this needs to be updated
+    for(i = 0; i <self.renderList.count;i++)
+    {
+        //element = self.renderList.count - i;
+        FluxImageRenderElement *ire = [self.renderList objectAtIndex:i];
+        int element = ire.textureMapElement.textureIndex;
+        tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
+        if (tapped ==1)
         {
-            //        FluxScanImageObject *touchedObject = [[FluxScanImageObject alloc]initWithUserID:ire.imageMetadata.userID atTimestampString:nil andCameraID:0 andCategoryID:0 withDescriptionString:ire.imageMetadata.descriptionString andlatitude:0 andlongitude:0 andaltitude:0 andHeading:0 andYaw:0 andPitch:0 andRoll:0 andQW:0 andQX:0 andQY:0 andQZ:0 andHorizAccuracy:0 andVertAccuracy:0];
-            touchedObject = ire.imageMetadata;
+            
+            if (ire != nil)
+            {
+                touchedObject = ire.imageMetadata;
+            }
+            break;
         }
     }
-
-
+     _imagetapped =0;
     return touchedObject;
+}
+
+
+- (void)imageTappedAtPoint:(CGPoint)point
+{
+    
+    _tapPoint.x = point.x;
+    _tapPoint.y = point.y;
+    _imagetapped = 1;
 }
 
 #pragma mark - AV Capture
@@ -1567,6 +1697,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glEnable(GL_DEPTH_TEST);
     
     _takesnapshot =0;
+    _imagetapped = 0;
     
     /*
      NSError *error;
@@ -2030,7 +2161,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     viewParameters vpuser;
     
     setupRenderingPlane(planeNormal, _userPose.rotationMatrix, distance);
-   
+    
+    planeRotationMatrix = _userPose.rotationMatrix;
+    
+    
     computeProjectionParametersUser(&_userPose, &planeNormal, distance, &vpuser);
     
     
@@ -2056,11 +2190,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     //    NSLog(@"eye up    :x=%f y=%f z=%f", vpuser.up.x, vpuser.up.y, vpuser.up.z);
     //    GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(eye_origin.x, eye_origin.y, eye_origin.z, eye_at.x, eye_at.y, eye_at.z , eye_up.x, eye_up.y, eye_up.z);
     
-    GLKMatrix4 modelViewMatrix = GLKMatrix4MakeTranslation(0.0f, 0.0f, 0.0f);
+    GLKMatrix4 modelViewMatrix = GLKMatrix4Identity;
     modelViewMatrix = GLKMatrix4Multiply(viewMatrix, modelViewMatrix);
     
     
     _modelViewProjectionMatrix = GLKMatrix4Multiply(camera_perspective, modelViewMatrix);
+     _modelViewProjectionMatrixInOrder = GLKMatrix4Multiply(modelViewMatrix, camera_perspective);
     
     [self updateImageMetaData];
     
@@ -2180,6 +2315,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                             object:self userInfo:userInfoDict];
         _takesnapshot =0;
     }
+    if (_imagetapped == 1) {
+        
+        FluxScanImageObject* fsio = [self imageTappedAtPointFunc];
+        if(fsio != nil)
+        {
+            FluxScanViewController *fsvc;
+            fsvc = (FluxScanViewController*)self.parentViewController;
+            [fsvc didTapImageFunc:fsio];
+            //NSDictionary *userInfoDict = @{@"tappedimage" : fsio};
+            //[[NSNotificationCenter defaultCenter] postNotificationName:@"FluxDidTapImage"
+                //                                                object:self userInfo:nil];
+        }
+       
+    }
+    
 }
 
 #pragma mark -  OpenGL ES 2 shader compilation

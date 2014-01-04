@@ -1,6 +1,7 @@
 Release Notes:
 
-- fixes which may address Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
+- fix for Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
+- fix for Trello issue #266 (Full-resolution images don't always update if device sleeps during load)
 
 ******************************************
 
