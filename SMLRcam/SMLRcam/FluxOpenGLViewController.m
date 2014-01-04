@@ -1146,7 +1146,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         for (FluxImageRenderElement *ire in self.renderList)
         {
             if (ire.imageMetadata.matchFailed &&
-                ([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending)
+                (([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending) &&
+                (ire.imageMetadata.features != nil))
             {
                 // Reset failure state so it doesn't get queued up again until matching is complete or fails again
                 ire.imageMetadata.matchFailed = NO;
@@ -1154,7 +1155,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 // Only add object image + metadata to queue - scene object will be grabbed by matcher
                 [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
             }
-            else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil) && (ire.textureMapElement.imageType >= quarterhd))
+            else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil) && (ire.imageMetadata.features != nil))
             {
                 // Also queue up any items which have not been queueud (not matched, no failure retry time set, valid resolution).
                 // This handles cases due to toggling of Kalman state at various points. Duplicate queued items are ignored.
@@ -1178,7 +1179,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         // Add operation will ignore this request if localID is already queued.
         for (FluxImageRenderElement *ire in self.renderList)
         {
-            if (!ire.imageMetadata.matched && (ire.textureMapElement.imageType >= quarterhd))
+            if (!ire.imageMetadata.matched && (ire.imageMetadata.features != nil))
             {
                 // Only add object image + metadata to queue - scene object will be grabbed by matcher
                 [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
@@ -1903,7 +1904,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
 
                         // Queue up image for feature matching with background camera feed
-                        if (!ire.imageMetadata.matched && [self.fluxLocationManager isKalmanSolutionValid])
+                        if ((!ire.imageMetadata.matched) && [self.fluxLocationManager isKalmanSolutionValid] && (ire.imageMetadata.features != nil))
                         {
                             // Only add object image + metadata to queue - scene object will be grabbed by matcher
                             [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
