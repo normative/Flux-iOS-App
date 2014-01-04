@@ -903,13 +903,13 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:full_res];
 
                     FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
-                    [featuresRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
+                    [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
                     featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
                         // assign features into SIO.features...
                         ire.imageMetadata.features = features;
                         
-                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageFeatures
-                                                                            object:self userInfo:nil];
+//                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageFeatures
+//                                                                            object:self userInfo:nil];
                     };
                     [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
                     
