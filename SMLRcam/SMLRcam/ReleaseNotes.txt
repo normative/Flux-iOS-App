@@ -1,5 +1,12 @@
 Release Notes:
 
+******************************************
+
+V0.16 B02
+
+Released: 2014-01-03 22:00:00
+
+Release Notes:
 - fix for Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
 - fix for Trello issue #266 (Full-resolution images don't always update if device sleeps during load)
 
