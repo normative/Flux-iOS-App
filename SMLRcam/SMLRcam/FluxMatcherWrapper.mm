@@ -76,6 +76,21 @@ const double maxRatioSideLength = 2.0;
     object_img = inputImage;
 }
 
+// Object images are downloaded content to be matched and this routine supplies raw features
+- (void)setObjectFeatures:(NSString *)objectFeatures
+{
+    cv::Mat keypoints;
+    cv::Mat descriptors;
+    
+    cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
+
+//    fs["Keypoints"] >> keypoints;
+    fs["Descriptors"] >> descriptors;
+    
+//    std::cout << keypoints << std::endl;
+    std::cout << descriptors << std::endl;
+}
+
 // Scene images are the background camera feed to match against
 - (void)setSceneImage:(UIImage *)sceneImage
 {

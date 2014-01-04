@@ -18,6 +18,7 @@ enum feature_matching_error_codes {
 
 // Wrapper to set object_image for matching
 -(void)setObjectImage:(UIImage*)objectImage;
+-(void)setObjectFeatures:(NSString*)objectFeatures;
 
 // Wrapper to set scene_image for matching
 -(void)setSceneImage:(UIImage *)sceneImage;

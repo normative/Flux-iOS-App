@@ -46,12 +46,13 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         NSLog(@"Matching localID: %@", self.matchRecord.ire.localID);
         
         // Make sure camera frame (scene) and object are both available
-        if (self.isCancelled || !self.matchRecord.hasCameraScene || !self.matchRecord.hasObjectImage)
+        if (self.isCancelled || !self.matchRecord.hasCameraScene || !self.matchRecord.hasObjectFeatures)
         {
             [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskWasCancelled:) withObject:self waitUntilDone:NO];
             return;
         }
         
+        [self.matcherEngine setObjectFeatures:self.matchRecord.ire.imageMetadata.features];
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
         [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage];
         
