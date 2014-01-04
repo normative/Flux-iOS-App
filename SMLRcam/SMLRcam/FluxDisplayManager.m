@@ -335,8 +335,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     // request it if it isn't there...
                     ire.imageFetchType = thumb;
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                    [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
-                    dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                    [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                    dataRequest.imageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.image = image;
                         ire.imageRenderType = thumb;
@@ -883,14 +883,19 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     [_imageRequestCountLock unlock];
                     
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                    [dataRequest setRequestedIDs:[NSArray arrayWithObject:ire.localID]];
-                    dataRequest.ImageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                    [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                    dataRequest.imageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.imageFetchType = none;
                         ire.imageRenderType = full_res;
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                             object:self userInfo:nil];
+                        [_imageRequestCountLock lock];
+                        _imageRequestCountQuart--;
+                        [_imageRequestCountLock unlock];
+                    };
+                    dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
                         [_imageRequestCountLock lock];
                         _imageRequestCountQuart--;
                         [_imageRequestCountLock unlock];

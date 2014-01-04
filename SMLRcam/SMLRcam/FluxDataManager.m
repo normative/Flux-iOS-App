@@ -173,7 +173,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
     if (imageObj != nil)
     {
-        NSArray *requestArray = [NSArray arrayWithObject:imageObj.localID];
+        NSMutableArray *requestArray = [NSMutableArray arrayWithObject:imageObj.localID];
         [dataRequest setRequestedIDs:requestArray];
         [self requestImagesByLocalID:dataRequest withSize:imageType];
     }
@@ -475,9 +475,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailImageDownloadWithError:(NSError *)e andNaturalString:(NSString *)string andRequestID:(NSUUID *)requestID andImageID:(FluxImageID)imageID
 {
-    // Call callback of requestor
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenErrorOccurred:e withDescription:string withDataRequest:request];
     
     // Clean up other requests tied to this request (in the case of image download)
     FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
@@ -490,6 +488,9 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
             (![curRequest.completedIDs containsObject:imageObj.localID]) &&
             (curRequest.imageType == request.imageType))
         {
+            // Call callback of each requestor
+            [curRequest whenErrorOccurred:e withDescription:string withDataRequest:curRequest];
+
             // Delete requested ID from both lists
             [curRequest.requestedIDs removeObject:imageObj.localID];
             [curRequest.completedIDs removeObject:imageObj.localID];
