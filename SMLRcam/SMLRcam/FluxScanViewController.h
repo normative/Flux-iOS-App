@@ -35,7 +35,7 @@
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
 extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
-
+//extern NSString* const FluxDidTapImage;
 @class FluxRotatingCompassButton;
 
 
@@ -70,7 +70,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
     //time scrolling
     NSDateFormatter *dateFormatter;
-    
+    CGPoint _point;
     //openGL
     FluxOpenGLViewController*openGLController;
     //map
@@ -80,6 +80,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int totalUploads;
     
     FluxDataFilter *currentDataFilter;
+    
+    
 }
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
@@ -107,4 +109,5 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 //timeScrolling
 - (void)setupTimeFilterControl;
+- (void) didTapImageFunc:(FluxScanImageObject*) fsio;
 @end

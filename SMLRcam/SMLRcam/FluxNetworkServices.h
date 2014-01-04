@@ -34,6 +34,8 @@ extern NSString* const FluxTestServerURL;
             ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e andNaturalString:(NSString*)string
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailImageDownloadWithError:(NSError*)e andNaturalString:(NSString*)string
+           andRequestID:(FluxRequestID *)requestID andImageID:(FluxImageID)imageID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSString *)features forImageID:(int)imageID
