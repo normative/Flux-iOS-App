@@ -22,6 +22,8 @@ const double maxRatioSideLength = 2.0;
     cv::Mat scene_img;
     std::vector<cv::KeyPoint> keypoints_object;
     cv::Mat descriptors_object;
+    int object_img_rows;
+    int object_img_cols;
     
     double intrinsicsInverse[9];
     double homography[9];
@@ -81,6 +83,11 @@ const double maxRatioSideLength = 2.0;
 // Object images are downloaded content to be matched and this routine supplies raw features
 - (void)setObjectFeatures:(NSString *)objectFeatures
 {
+    // Hard-code image dimensions to HD resolution right now.
+    // Should probably add these quantities to downloaded feature content in XML
+    object_img_rows = 1920;
+    object_img_cols = 1080;
+    
     cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
 
     cv::FileNode kptFileNode = fs["Keypoints"];
@@ -133,7 +140,7 @@ const double maxRatioSideLength = 2.0;
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
-        double scale_factor = scene_img.rows / object_img.rows;
+        double scale_factor = scene_img.rows / object_img_rows;
         
         [self setCameraIntrinsicsWithRows:scene_img.rows andColums:scene_img.cols];
         
@@ -159,7 +166,7 @@ const double maxRatioSideLength = 2.0;
         bool validHomographyFound = NO;
         
         // Check if homography calculated represents a valid match
-        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
+        if (![self isHomographyValid:H withRows:object_img_rows withCols:object_img_cols])
         {
             result = feature_matching_homography_error;
             
@@ -204,10 +211,10 @@ const double maxRatioSideLength = 2.0;
             //-- Get the corners from the object image ( the object to be "detected" )
             std::vector<cv::Point2f> obj_corners(5);
             obj_corners[0] = cvPoint(0,0);
-            obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
-            obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
-            obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
-            obj_corners[4] = cvPoint( object_img.cols * scale_factor / 2, object_img.rows * scale_factor / 2 );
+            obj_corners[1] = cvPoint( object_img_cols * scale_factor, 0 );
+            obj_corners[2] = cvPoint( object_img_cols * scale_factor, object_img_rows * scale_factor );
+            obj_corners[3] = cvPoint( 0, object_img_rows * scale_factor );
+            obj_corners[4] = cvPoint( object_img_cols * scale_factor / 2, object_img_rows * scale_factor / 2 );
             std::vector<cv::Point2f> scene_corners(5);
             
             cv::perspectiveTransform( obj_corners, scene_corners, H );
@@ -274,7 +281,7 @@ const double maxRatioSideLength = 2.0;
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
-        double scale_factor = scene_img.rows / object_img.rows;
+        double scale_factor = scene_img.rows / object_img_rows;
         
         for( size_t i = 0; i < matches.size(); i++ )
         {
@@ -291,10 +298,10 @@ const double maxRatioSideLength = 2.0;
         //-- Get the corners from the object image ( the object to be "detected" )
         std::vector<cv::Point2f> obj_corners(5);
         obj_corners[0] = cvPoint(0,0);
-        obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
-        obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
-        obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
-        obj_corners[4] = cvPoint( object_img.cols * scale_factor / 2, object_img.rows * scale_factor / 2 );
+        obj_corners[1] = cvPoint( object_img_cols * scale_factor, 0 );
+        obj_corners[2] = cvPoint( object_img_cols * scale_factor, object_img_rows * scale_factor );
+        obj_corners[3] = cvPoint( 0, object_img_rows * scale_factor );
+        obj_corners[4] = cvPoint( object_img_cols * scale_factor / 2, object_img_rows * scale_factor / 2 );
         std::vector<cv::Point2f> scene_corners(5);
         
         cv::perspectiveTransform( obj_corners, scene_corners, H );
