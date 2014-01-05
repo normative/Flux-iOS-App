@@ -179,10 +179,10 @@ public:
     // Match feature points using symmetry test and RANSAC
     // outputs matches and fundemental matrix
     // returns 0 for success, negative if error
-    int match(cv::Mat& image1, cv::Mat& image2, // input images
-                  std::vector<cv::DMatch>& matches, // output matches and keypoints
-                  std::vector<cv::KeyPoint>& keypoints1,
-                  std::vector<cv::KeyPoint>& keypoints2,
+    int match(cv::Mat& image2, // input images
+                  std::vector<cv::DMatch>& matches, // output matches
+                  std::vector<cv::KeyPoint>& keypoints1, // keypoints1/descriptors1 are input for object image (image1)
+                  std::vector<cv::KeyPoint>& keypoints2, // keypoints2/descriptors2 are output/calculated from scene image (image2)
                   cv::Mat& descriptors1, cv::Mat& descriptors2,
                   cv::Mat& fundamental);
 };

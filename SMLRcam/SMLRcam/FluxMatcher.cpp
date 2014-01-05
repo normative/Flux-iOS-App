@@ -172,35 +172,18 @@ int FluxMatcher::ransacTest(const std::vector<cv::DMatch>& matches,
     
     return 0;
 }
-
-int FluxMatcher::match(cv::Mat& image1, cv::Mat& image2, // input images
-                             std::vector<cv::DMatch>& matches, // output matches and keypoints
-                             std::vector<cv::KeyPoint>& keypoints1,
-                             std::vector<cv::KeyPoint>& keypoints2,
-                             cv::Mat& descriptors1, cv::Mat& descriptors2,
-                             cv::Mat& fundamental)
+int FluxMatcher::match(cv::Mat& image2, // input images
+                      std::vector<cv::DMatch>& matches, // output matches
+                      std::vector<cv::KeyPoint>& keypoints1, // keypoints1/descriptors1 are input for object image (image1)
+                      std::vector<cv::KeyPoint>& keypoints2, // keypoints2/descriptors2 are output/calculated from scene image (image2)
+                      cv::Mat& descriptors1, cv::Mat& descriptors2,
+                      cv::Mat& fundamental)
 {
-    double t_begin = (double)cv::getTickCount();
-    double t_start = t_begin;
-    
     // 1a. Detection of the features
-    detector->detect(image1,keypoints1);
-    double t_detect1 = (double)cv::getTickCount();
     detector->detect(image2,keypoints2);
-    double t_detect2 = (double)cv::getTickCount();
-    
-    t_detect2 = (t_detect2 - t_detect1)/cv::getTickFrequency();
-    t_detect1 = (t_detect1 - t_start)/cv::getTickFrequency();
     
     // 1b. Extraction of descriptors
-    t_start = (double)cv::getTickCount();
-    extractor->compute(image1,keypoints1,descriptors1);
-    double t_extract1 = (double)cv::getTickCount();
     extractor->compute(image2,keypoints2,descriptors2);
-    double t_extract2 = (double)cv::getTickCount();
-    
-    t_extract2 = (t_extract2 - t_extract1)/cv::getTickFrequency();
-    t_extract1 = (t_extract1 - t_start)/cv::getTickFrequency();
     
     if (descriptors1.rows == 0 || descriptors2.rows == 0)
     {
@@ -208,8 +191,6 @@ int FluxMatcher::match(cv::Mat& image1, cv::Mat& image2, // input images
     }
     
     // 2. Match the two image descriptors
-    
-    t_start = (double)cv::getTickCount();
     
     // Construction of the matcher
     cv::BFMatcher matcher;
@@ -280,21 +261,11 @@ int FluxMatcher::match(cv::Mat& image1, cv::Mat& image2, // input images
             return -1;
         }
         
-        double t_match = (double)cv::getTickCount();
-        double t_end = t_match;
-        t_match = (t_match - t_start)/cv::getTickFrequency();
-        t_end = (t_end - t_begin)/cv::getTickFrequency();
-        
         return 0;
     }
     else
     {
         // No match found
-        double t_match = (double)cv::getTickCount();
-        double t_end = t_match;
-        t_match = (t_match - t_start)/cv::getTickFrequency();
-        t_end = (t_end - t_begin)/cv::getTickFrequency();
-
         return -1;
     }
 }

@@ -20,6 +20,8 @@ const double maxRatioSideLength = 2.0;
     // Convert to grayscale before populating for performance improvement
     cv::Mat object_img;
     cv::Mat scene_img;
+    std::vector<cv::KeyPoint> keypoints_object;
+    cv::Mat descriptors_object;
     
     double intrinsicsInverse[9];
     double homography[9];
@@ -57,12 +59,12 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
-    cv::Mat descriptors_object, descriptors_scene;
+    std::vector<cv::KeyPoint> keypoints_scene;
+    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     
     int result = 0;
-    result = self.wrappedMatcher->match(object_img, scene_img, matches,
+    result = self.wrappedMatcher->match(scene_img, matches,
                                keypoints_object, keypoints_scene,
                                descriptors_object, descriptors_scene,
                                fundamental);
@@ -79,17 +81,14 @@ const double maxRatioSideLength = 2.0;
 // Object images are downloaded content to be matched and this routine supplies raw features
 - (void)setObjectFeatures:(NSString *)objectFeatures
 {
-    std::vector<cv::KeyPoint> keypoints;
-    cv::Mat descriptors;
-    
     cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
 
     cv::FileNode kptFileNode = fs["Keypoints"];
-    cv::read(kptFileNode, keypoints);
+    cv::read(kptFileNode, keypoints_object);
     
-    fs["Descriptors"] >> descriptors;
+    fs["Descriptors"] >> descriptors_object;
     
-    std::cout << keypoints.size() << " keypoints and " << descriptors.rows << " descriptors read from file." << std::endl;
+    std::cout << keypoints_object.size() << " keypoints and " << descriptors_object.rows << " descriptors read from file." << std::endl;
 }
 
 // Scene images are the background camera feed to match against
@@ -116,14 +115,14 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
-    cv::Mat descriptors_object, descriptors_scene;
+    std::vector<cv::KeyPoint> keypoints_scene;
+    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
     
-    result = self.wrappedMatcher->match(object_img, scene_img, matches,
+    result = self.wrappedMatcher->match(scene_img, matches,
                                         keypoints_object, keypoints_scene,
                                         descriptors_object, descriptors_scene,
                                         fundamental);
@@ -258,13 +257,13 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
-    cv::Mat descriptors_object, descriptors_scene;
+    std::vector<cv::KeyPoint> keypoints_scene;
+    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
-    result = self.wrappedMatcher->match(object_img, scene_img, matches,
+    result = self.wrappedMatcher->match(scene_img, matches,
                                keypoints_object, keypoints_scene,
                                descriptors_object, descriptors_scene,
                                fundamental);
