@@ -329,21 +329,21 @@ const double maxRatioSideLength = 2.0;
 -(int) invertCameraIntrinsics
 {
     int dim = 3;
-    long lWork = dim * dim;
-    long info = -1;
-    long n = dim;
+    long int lWork = dim * dim;
+    long int info = -1;
+    long int n = dim;
+    long int ipiv_local[3];
     
-    //long * ipiv = (long *)malloc((5 +1) *sizeof (long));
-    //double *work = (double*) malloc(3 * 3 *sizeof(double));
-    int i;
-    for(i=0;i <9;i++)
-        ciinverse[i] = ci[i];
+    double ci_inv[9];
     
-    dgetrf_(&n, &n,ciinverse, &n, &ipiv[0], &info);
-    dgetri_(&n, ciinverse, &n, &ipiv[0], &work[0], &lWork,&info );
+    for(int i=0; i<9;i++)
+        ci_inv[i] = ci[i];
     
-    //free(ipiv);
-    //free(work);
+    dgetrf_(&n, &n, ci_inv, &n, ipiv_local, &info);
+    dgetri_(&n, ci_inv, &n, ipiv_local, work, &lWork,&info );
+    
+    for(int i=0; i<9;i++)
+        ciinverse[i] = ci_inv[i];
     
     return info;
 }
