@@ -236,7 +236,6 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 {
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = image_request;
-    dataRequest.imageType = imageType;
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
@@ -245,22 +244,25 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
         case lowest_res:
             imageType = thumb;
         case thumb:
-            sizeString = @"thumb";
+//            sizeString = @"thumb";
             break;
         case quarterhd:
-            sizeString = @"quarterhd";
+//            sizeString = @"quarterhd";
             break;
         case screen_res:
         case highest_res:
             imageType = full_res;
         case full_res:
-            sizeString = @"oriented";
+//            sizeString = @"oriented";
             break;
         default:
             imageType = thumb;
-            sizeString = @"thumb";
+//            sizeString = @"thumb";
             break;
     }
+
+    sizeString = fluxImageTypeStrings[imageType];
+    dataRequest.imageType = imageType;
 
     BOOL completedRequest = NO;
 
@@ -300,16 +302,17 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                         break;
                     }
                 }
-            }
-
-            if (validDownloadInProgress)
-            {
+                // simply add the request to the existing record
                 [[downloadQueueReceivers objectForKey:curLocalID] addObject:requestID];
             }
             else
             {
+                // create a new record
                 [downloadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:curLocalID];
-                
+            }
+            
+            if (!validDownloadInProgress)
+            {
                 // Begin download of image
                 FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
                 [networkServices getImageForID:curImageObj.imageID withStringSize:sizeString andRequestID:requestID];
@@ -355,16 +358,17 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                     break;
                 }
             }
-        }
-        
-        if (validDownloadInProgress)
-        {
+            // simply add the request to the existing record
             [[downloadQueueReceivers objectForKey:curLocalID] addObject:requestID];
         }
         else
         {
+            // create a new record
             [downloadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:curLocalID];
-            
+        }
+        
+        if (!validDownloadInProgress)
+        {
             // Begin download of image
             FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
             [networkServices getImageFeaturesForID:curImageObj.imageID andRequestID:requestID];

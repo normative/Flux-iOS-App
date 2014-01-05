@@ -10,6 +10,15 @@
 
 @implementation FluxScanImageObject
 
+const NSString *fluxImageTypeStrings[] = {  @"none",
+    @"thumb",
+    @"quarterhd",
+    @"screen",
+    @"oriented",
+    @"highest",
+    @"features"
+};
+
 #pragma mark - getter methods
 
 

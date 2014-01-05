@@ -25,6 +25,8 @@ typedef enum FluxImageType : NSUInteger {
     features = 6
 } FluxImageType;
 
+extern const NSString *fluxImageTypeStrings[];
+
 typedef enum LocationDataType : NSUInteger {
     location_data_default = 0,
     location_data_valid_ecef = 1,
