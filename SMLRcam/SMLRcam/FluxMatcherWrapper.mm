@@ -79,16 +79,17 @@ const double maxRatioSideLength = 2.0;
 // Object images are downloaded content to be matched and this routine supplies raw features
 - (void)setObjectFeatures:(NSString *)objectFeatures
 {
-    cv::Mat keypoints;
+    std::vector<cv::KeyPoint> keypoints;
     cv::Mat descriptors;
     
     cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
 
-//    fs["Keypoints"] >> keypoints;
+    cv::FileNode kptFileNode = fs["Keypoints"];
+    cv::read(kptFileNode, keypoints);
+    
     fs["Descriptors"] >> descriptors;
     
-//    std::cout << keypoints << std::endl;
-    std::cout << descriptors << std::endl;
+    std::cout << keypoints.size() << " keypoints and " << descriptors.rows << " descriptors read from file." << std::endl;
 }
 
 // Scene images are the background camera feed to match against
