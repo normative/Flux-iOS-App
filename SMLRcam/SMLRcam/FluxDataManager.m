@@ -236,6 +236,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 {
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = image_request;
+    dataRequest.imageType = imageType;
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
@@ -261,16 +262,15 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
             break;
     }
 
-    sizeString = fluxImageTypeStrings[imageType];
-    dataRequest.imageType = imageType;
 
     BOOL completedRequest = NO;
 
     for (id curLocalID in dataRequest.requestedIDs)
     {
         // First check if image is already in cache
+        // use dataRequest.imageType for this check because it may be "lowest" or "highest"
         NSArray *imageExist = [fluxDataStore doesImageExistForLocalID:curLocalID];
-        if (imageExist[imageType] != [NSNull null])
+        if (imageExist[dataRequest.imageType] != [NSNull null])
         {
             // If so, we can take immediate action
             if (![[dataRequest completedIDs] containsObject:curLocalID])
@@ -282,12 +282,15 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                     completedRequest = YES;
                 }
             }
-            UIImage *image = imageExist[imageType];
+            UIImage *image = imageExist[dataRequest.imageType];
             [dataRequest whenImageReady:curLocalID withImage:image withDataRequest:dataRequest];
         }
         // Now check if request has already been made
         else
         {
+            dataRequest.imageType = imageType;      // reset image type to specific rather than relative
+            sizeString = fluxImageTypeStrings[imageType];
+
             NSMutableArray *downloadRequestsForID = [downloadQueueReceivers objectForKey:curLocalID];
             BOOL validDownloadInProgress = NO;
             
