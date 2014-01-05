@@ -2,6 +2,15 @@ Release Notes:
 
 ******************************************
 
+V0.16 B03
+
+Released: 2014-01-05 18:30:00
+
+Release Notes:
+- Release for closed beta.  No code changes from V0.16  B02
+
+******************************************
+
 V0.16 B02
 
 Released: 2014-01-03 22:00:00
