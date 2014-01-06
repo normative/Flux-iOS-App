@@ -332,6 +332,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 }
                 else if (_isScanMode)
                 {
+                    [self.fluxDataManager debugByShowingCachedImageKeys];
+                    
                     // request it if it isn't there...
                     ire.imageFetchType = thumb;
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
@@ -866,6 +868,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     [renderList sortUsingDescriptors:sortDescriptors];
     
+    [self.fluxDataManager debugByShowingCachedImageKeys];
+
     if (!_isScrubAnimating)
     {
         if (_imageRequestCountQuart < maxRequestCountQuart)

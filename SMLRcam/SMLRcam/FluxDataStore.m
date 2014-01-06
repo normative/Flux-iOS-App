@@ -217,4 +217,27 @@
     }
 }
 
+- (void)debugByShowingCachedImageKeys
+{
+    NSMutableDictionary *cachedIDs = [[NSMutableDictionary alloc] init];
+    
+    for (FluxLocalID *localID in [fluxMetadata allKeys])
+    {
+        NSMutableArray *foundImageTypes = [[NSMutableArray alloc] init];
+        FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+        for (NSUInteger imageType = thumb; imageType <= full_res; imageType++)
+        {
+            if ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]])
+            {
+                [foundImageTypes addObject:[NSNumber numberWithUnsignedInteger:imageType]];
+            }
+        }
+
+        if ([foundImageTypes count] > 0)
+        {
+            cachedIDs[localID] = foundImageTypes;
+        }
+    }
+}
+
 @end

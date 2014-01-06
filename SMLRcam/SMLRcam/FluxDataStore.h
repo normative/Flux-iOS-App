@@ -31,4 +31,6 @@
 - (void) setImageIDMapping:(FluxImageID)imageID forLocalID:(FluxLocalID *)localID;
 - (void)resetAllFeatureMatches;
 
+- (void)debugByShowingCachedImageKeys;
+
 @end
