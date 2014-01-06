@@ -12,7 +12,7 @@
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
 
-@interface FluxDataStore : NSObject
+@interface FluxDataStore : NSObject <NSCacheDelegate>
 {
     NSCache *fluxImageCache;
     NSMutableDictionary *fluxMetadata;

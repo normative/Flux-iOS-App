@@ -15,6 +15,9 @@
     if (self = [super init])
     {
         fluxImageCache = [[NSCache alloc] init];
+        [fluxImageCache setDelegate:self];
+        [fluxImageCache setEvictsObjectsWithDiscardedContent:NO];
+        
         fluxMetadata = [[NSMutableDictionary alloc] init];
         imageIDMapping = [[NSMutableDictionary alloc] init];
     }
@@ -215,6 +218,14 @@
         // Just set the location_data_type to default. Other quantities will be ignored if this is not set.
         imageObject.location_data_type = location_data_default;
     }
+}
+
+#pragma mark - NSCache delegate and debugging code
+
+- (void)cache:(NSCache *)cache willEvictObject:(id)obj
+{
+    // Called when an object is about to be evicted or removed from the cache.
+    // It is not possible to modify cache from within the implementation of this delegate method.
 }
 
 - (void)debugByShowingCachedImageKeys
