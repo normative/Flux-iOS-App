@@ -15,6 +15,8 @@
 
 
 
+
+
 #import <FacebookSDK/FacebookSDK.h>
 #import <sys/utsname.h>
 
@@ -46,16 +48,6 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     if (!firstCheck) {
-        //dev alert
-        
-//        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Welcome"
-//                                                          message:@"Login / Signup is now partially implemented, please try it out. To save time in future launches, tap the flux logo to skip."
-//                                                         delegate:nil
-//                                                cancelButtonTitle:@"OK"
-//                                                otherButtonTitles:nil];
-//        [message show];
-        
-        
         [self checkCurrentLoginState];
         firstCheck = YES;
     }
@@ -96,17 +88,25 @@
     self.accountStore = [[ACAccountStore alloc] init];
     self.apiManager = [[TWAPIManager alloc] init];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(twitterChanged) name:ACAccountStoreDidChangeNotification object:nil];
+    
     [twitterButton setEnabled:NO];
     [facebookButton setEnabled:NO];
-    [signInOptionsLabel setAlpha:0.3];    
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(twitterChanged) name:ACAccountStoreDidChangeNotification object:nil];
+    [signInOptionsLabel setAlpha:0.3];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    if ([[segue identifier] isEqualToString:@"pushUsernameSegue"]) {
+        FluxRegisterUsernameViewController*usernameVC = (FluxRegisterUsernameViewController*)segue.destinationViewController;
+        [usernameVC setUserInfo:[thirdPartyUserInfo mutableCopy]];
+        [usernameVC setFluxDataManager:self.fluxDataManager];
+    }
 }
 
 #pragma mark Text Delegate Methods
@@ -385,15 +385,39 @@
 
 - (void)socialPartner:(NSString*)partner didAuthenticateWithToken:(NSString*)token andUserInfo:(NSDictionary*)userInfo{
     
-    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome Friend" message:[NSString stringWithFormat:@"You (%@) successfully logged in with %@.",[userInfo objectForKey:@"username"],partner]  delegate:nil cancelButtonTitle:@"Coool" otherButtonTitles: nil];
-    [alert becomeFirstResponder];
-    [alert show];
+//    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome Friend" message:[NSString stringWithFormat:@"You (%@) successfully logged in with %@.",[userInfo objectForKey:@"username"],partner]  delegate:nil cancelButtonTitle:@"Coool" otherButtonTitles: nil];
+//    [alert becomeFirstResponder];
+//    [alert show];
+
     
-    [UICKeyChainStore setString:token forKey:@"token" service:[NSString stringWithFormat:@"com.%@",partner]];
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setUsernameUniquenessComplete:^(BOOL unique, NSString*suggestion, FluxDataRequest*completedRequest){
+        if (unique) {
+            [UICKeyChainStore setString:token forKey:@"token" service:[NSString stringWithFormat:@"com.%@",partner]];
+            [self RegisterUsernameView:nil didAcceptAddUsernameToUserInfo:[userInfo mutableCopy]];
+        }
+        
+        else{
+            thirdPartyUserInfo = userInfo;
+            [self performSegueWithIdentifier:@"pushUsernameSegue" sender:self];
+        }
+    }];
+    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSLog(@"Unique lookup failed with error %d", (int)[e code]);
+    }];
+    [self.fluxDataManager checkUsernameUniqueness:[userInfo objectForKey:@"username"] withDataRequest:dataRequest];
+}
+
+- (void)RegisterUsernameView:(FluxRegisterUsernameViewController *)usernameView didAcceptAddUsernameToUserInfo:(NSMutableDictionary *)userInfo{
     
-    //perform flux login, then post camera to the db to move forward.
-    //for now just post the cam with default userID
-    [self didLoginSuccessfullyWithUserID:1];
+    FluxUserObject *newThirdPartyUser = [[FluxUserObject alloc]init];
+    
+    [newThirdPartyUser setUsername:[userInfo objectForKey:@"username"]];
+    [newThirdPartyUser setAuth_token:[userInfo objectForKey:@"token"]];
+    //[newThirdPartyUser setPassword:password];
+    [newThirdPartyUser setProfilePic:nil];
+    
+    [self createAccountForUser:newThirdPartyUser];
 }
 
 #pragma mark Twitter
@@ -637,20 +661,7 @@
         [newUser setPassword:password];
         [newUser setEmail:email];
         
-        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
-            [createdUserObject setPassword:password];
-            [self loginWithUserObject:createdUserObject andDidJustRegister:YES];
-
-        }];
-        [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-
-            [self showContainerViewAnimated:YES];
-            NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
-            [ProgressHUD showError:str];
-        }];
-        [self hideKeyboard];
-        [self.fluxDataManager uploadNewUser:newUser withImage:[UIImage imageNamed:@"emptyProfileImage_big"] withDataRequest:dataRequest];
+        [self createAccountForUser:newUser];
     }
     else{
         FluxUserObject *signingInUser = [[FluxUserObject alloc]init];
@@ -665,6 +676,28 @@
         [signingInUser setPassword:password];
         
         [self loginWithUserObject:signingInUser andDidJustRegister:NO];
+    }
+}
+
+- (void)createAccountForUser:(FluxUserObject*)user{
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
+        [createdUserObject setPassword:user.password];
+        [self loginWithUserObject:createdUserObject andDidJustRegister:YES];
+        
+    }];
+    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        [self showContainerViewAnimated:YES];
+        NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    [self hideKeyboard];
+    if (user.profilePic) {
+        [self.fluxDataManager uploadNewUser:user withImage:user.profilePic withDataRequest:dataRequest];
+    }
+    else{
+        [self.fluxDataManager uploadNewUser:user withImage:[UIImage imageNamed:@"emptyProfileImage_big"] withDataRequest:dataRequest];
     }
 }
 

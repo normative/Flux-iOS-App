@@ -11,6 +11,7 @@
 #import "FluxLeftDrawerViewController.h"
 #import "FluxScanViewController.h"
 #import "FluxRegisterEmailViewController.h"
+#import "FluxRegisterUsernameViewController.h"
 
 #import "FluxDataManager.h"
 
@@ -24,11 +25,12 @@
 
 
 
-@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, FluxRegisterEmailViewDelegate>{
+@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, FluxRegisterEmailViewDelegate, FluxRegisterUsernameViewDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     
     NSString*socialOauthPin;
+    NSDictionary*thirdPartyUserInfo;
     
     NSMutableArray*textInputElements;
     NSMutableArray*registrationOKArray;
