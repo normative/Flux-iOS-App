@@ -46,6 +46,9 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     IBOutlet UIView *topContainerView;
     IBOutlet UIView *bottomContainerView;
     
+    IBOutlet UIButton *shareButton;
+    
+    
     //Camera
     AVCaptureVideoPreviewLayer *previewLayer;
     AVCaptureDevice *device;
@@ -73,6 +76,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
 - (IBAction)closeButtonAction:(id)sender;
 - (IBAction)approveImageAction:(id)sender;
 
+- (IBAction)shareButtonAction:(id)sender;
 
 
 - (void)setHidden:(BOOL)hidden;

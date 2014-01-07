@@ -405,7 +405,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      completion:^(BOOL finished){
                          //stops drawing them
                          [ScanUIContainerView setHidden:YES];
-                         [self startDeviceMotion];
                          imageCaptureIsActive = YES;
                      }];
 }
