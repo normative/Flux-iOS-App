@@ -16,13 +16,13 @@
 
 
 NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
+//NSString* const FluxProductionServerURL = @"http://54.221.222.71/";
+//NSString* const FluxProductionServerURL = @"http://192.168.2.18:3101/";
 NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 //serverURL
-#define productionServerURL @"http://54.221.254.230/"
-//#define productionServerURL @"http://54.221.222.71/"
-#define testServerURL @"http://54.221.222.71/"
-//#define productionServerURL @"http://192.168.2.18:3001/"
+#define productionServerURL FluxProductionServerURL
+#define testServerURL   FluxTestServerURL
 
 @implementation FluxNetworkServices
 
@@ -168,9 +168,9 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                                                                                            failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
     {
         NSLog(@"Failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didFailImageDownloadWithError:andNaturalString:andRequestID:andImageID:)])
         {
-            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+            [delegate NetworkServices:self didFailImageDownloadWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID andImageID:imageID];
         }
     }];
     [operation start];

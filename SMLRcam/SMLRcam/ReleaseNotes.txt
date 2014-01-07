@@ -1,9 +1,32 @@
 Release Notes:
+- fix for Trello issue #269 (Thumbnails appear to be re-downloaded when phone goes to sleep or app is put in background)
 
-- fixes which may address Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
+******************************************
+
+V0.16 B03
+
+Released: 2014-01-05 18:30:00
 
 Release Notes:
+- Release for closed beta.  No code changes from V0.16  B02
 
+******************************************
+
+V0.16 B02
+
+Released: 2014-01-03 22:00:00
+
+Release Notes:
+- fix for Trello issue #168 (When the app is used after being left idle for a period of time no images will render in the scan mode)
+- fix for Trello issue #266 (Full-resolution images don't always update if device sleeps during load)
+
+******************************************
+
+V0.16 B01
+
+Released: 2014-01-02 21:30:00
+
+Release Notes:
 - fixes snapshot annotation bug
 - preliminary fix for profile photos crash
 - camera button and feature matching are disabled if location/orientation is not valid at any time, not just at initialization
