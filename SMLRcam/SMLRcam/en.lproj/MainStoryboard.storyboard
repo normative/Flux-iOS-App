@@ -1083,7 +1083,6 @@
         <!--Flux Register Email View Controller - Add Email-->
         <scene sceneID="fZV-R3-iKV">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Wrn-tU-EFT" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="registerEmailView" id="71W-0H-05H" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="vzf-U5-ahO"/>
@@ -1153,6 +1152,7 @@
                         <outlet property="emailTableView" destination="QN7-Gg-5Ou" id="lWd-rS-jJG"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Wrn-tU-EFT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1479" y="-870"/>
         </scene>
@@ -1252,7 +1252,7 @@
                             <size key="itemSize" width="92" height="92"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="10" minY="10" maxX="10" maxY="0.0"/>
+                            <inset key="sectionInset" minX="10" minY="10" maxX="10" maxY="10"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="myCell" id="0ga-wy-Zkw" customClass="FluxPhotoCollectionCell">
@@ -1693,7 +1693,6 @@
         <!--Flux Register Email View Controller - Pick a Name-->
         <scene sceneID="ytO-Jc-A3e">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5qq-rz-Wnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="registerEmailView" id="eN4-z8-AgL" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bka-Lp-Lwk"/>
@@ -1763,6 +1762,7 @@
                         <outlet property="emailTableView" destination="Igi-2y-LHe" id="O4g-jH-fiW"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5qq-rz-Wnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1479" y="158"/>
         </scene>
