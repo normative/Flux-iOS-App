@@ -147,6 +147,7 @@
 		F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162117E206DC0027BD1F /* FluxDataManager.m */; };
 		F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162417E23FAA0027BD1F /* FluxDataFilter.m */; };
 		F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */; };
+		F2A04431187B48A00044DDC4 /* FluxCacheImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F2A04430187B48A00044DDC4 /* FluxCacheImageObject.m */; };
 		F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F26EF31E183D138F00536C54 /* opencv2.framework */; };
 		F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */; };
 		F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1E5183D51C100D32084 /* UIImage+OpenCV.mm */; };
@@ -425,6 +426,8 @@
 		F26EF318183D10EF00536C54 /* FluxFeatureMatchingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingQueue.h; sourceTree = "<group>"; };
 		F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingQueue.m; sourceTree = "<group>"; };
 		F26EF31E183D138F00536C54 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = OpenCV_mod/opencv2.framework; sourceTree = "<group>"; };
+		F2A0442F187B48A00044DDC4 /* FluxCacheImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCacheImageObject.h; sourceTree = "<group>"; };
+		F2A04430187B48A00044DDC4 /* FluxCacheImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCacheImageObject.m; sourceTree = "<group>"; };
 		F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		F2B2C1E4183D51C100D32084 /* UIImage+OpenCV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+OpenCV.h"; sourceTree = "<group>"; };
 		F2B2C1E5183D51C100D32084 /* UIImage+OpenCV.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "UIImage+OpenCV.mm"; sourceTree = "<group>"; };
@@ -791,6 +794,8 @@
 		AA61528918281D4000B8F2C8 /* Data Objects */ = {
 			isa = PBXGroup;
 			children = (
+				F2A0442F187B48A00044DDC4 /* FluxCacheImageObject.h */,
+				F2A04430187B48A00044DDC4 /* FluxCacheImageObject.m */,
 				AA4CE15D17B58433008D04BE /* FluxScanImageObject.h */,
 				AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */,
 				AAA265A517E89EAE003AE787 /* FluxTagObject.h */,
@@ -1396,6 +1401,7 @@
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,
 				AA984F1218088923007F33B1 /* MIMapView.m in Sources */,
 				AA9D0EA2185646DB0004823E /* FluxCameraObject.m in Sources */,
+				F2A04431187B48A00044DDC4 /* FluxCacheImageObject.m in Sources */,
 				AAA265C717EA02F6003AE787 /* TFFeedbackController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
