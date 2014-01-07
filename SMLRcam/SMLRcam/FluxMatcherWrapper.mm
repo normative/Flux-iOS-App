@@ -103,7 +103,7 @@ const double maxRatioSideLength = 2.0;
 
 
 
-- (int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withDebugImage:(bool)outputImage
+- (int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withRotationSoln3:(double[])R3 withTranslationSoln3:(double[])t3 withNormalSoln3:(double[])n3 withDebugImage:(bool)outputImage
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
@@ -186,38 +186,36 @@ const double maxRatioSideLength = 2.0;
                 std::cout << R_matchcam_origin << std::endl;
                 std::cout << t_matchcam_origin << std::endl;
                 
+                // Extract transforms (R and t) using SolvePnP method
                 for (int i=0; i < 3; i++)
                 {
-                    t1[i] = t_matchcam_origin.at<double>(i)/15.0; // self.t_from_H1.translation[i];
-                    t2[i] = t_matchcam_origin.at<double>(i)/15.0; // self.t_from_H2.translation[i];
+                    t3[i] = t_matchcam_origin.at<double>(i)/15.0; // self.t_from_H1.translation[i];
                     
                     // Just set these from other method. Used for check
-                    n1[i] = (i < 2) ? 0.0 : 1.0;
-                    n2[i] = (i < 2) ? 0.0 : 1.0;
+                    n3[i] = (i < 2) ? 0.0 : 1.0;
                     for (int j=0; j < 3; j++)
                     {
-                        R1[i + 3*j] = R_matchcam_origin.at<double>(j,i); // self.t_from_H1.rotation[i + 3*j];
-                        R2[i + 3*j] = R_matchcam_origin.at<double>(j,i); // self.t_from_H2.rotation[i + 3*j];
+                        R3[i + 3*j] = R_matchcam_origin.at<double>(j,i); // self.t_from_H1.rotation[i + 3*j];
                     }
                 }
             }
             
-//            // Extract transforms (R and t)
-//            if (result == 0)
-//            {
-//                for (int i=0; i < 3; i++)
-//                {
-//                    t1[i] = self.t_from_H1.translation[i];
-//                    t2[i] = self.t_from_H2.translation[i];
-//                    n1[i] = self.t_from_H1.normal[i];
-//                    n2[i] = self.t_from_H2.normal[i];
-//                    for (int j=0; j < 3; j++)
-//                    {
-//                        R1[i + 3*j] = self.t_from_H1.rotation[i + 3*j];
-//                        R2[i + 3*j] = self.t_from_H2.rotation[i + 3*j];
-//                    }
-//                }
-//            }
+            // Extract transforms (R and t) using standard method
+            if (result == 0)
+            {
+                for (int i=0; i < 3; i++)
+                {
+                    t1[i] = self.t_from_H1.translation[i];
+                    t2[i] = self.t_from_H2.translation[i];
+                    n1[i] = self.t_from_H1.normal[i];
+                    n2[i] = self.t_from_H2.normal[i];
+                    for (int j=0; j < 3; j++)
+                    {
+                        R1[i + 3*j] = self.t_from_H1.rotation[i + 3*j];
+                        R2[i + 3*j] = self.t_from_H2.rotation[i + 3*j];
+                    }
+                }
+            }
         }
         
         // Debugging code to output image
