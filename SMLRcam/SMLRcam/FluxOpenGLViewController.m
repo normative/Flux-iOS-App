@@ -1181,6 +1181,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     self.fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
     frameGrabRequested = NO;
+    useSolvePnPSolution = YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageTexture:) name:FluxDisplayManagerDidUpdateImageTexture object:nil];
@@ -1322,6 +1323,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
 }
 
+- (void) setHomographyState:(int)mode
+{
+    // Default value is on (1). This is called whenever a user toggles the state.
+    // Can be 0 or 1.
+    
+    if(mode == 1)
+    {
+        useSolvePnPSolution = YES;
+    }
+    else
+    {
+        useSolvePnPSolution = NO;
+    }
+}
+
 #pragma mark - OpenGL Texture & Metadata Manipulation
 
 - (void) deleteImageTextureIdx:(int)i
@@ -1391,9 +1407,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         if (ire.imageMetadata.location_data_type == location_data_from_homography)
         {
-            sensorPose imPose = ire.imageMetadata.imageHomographyPose;
-            cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
-            ire.imageMetadata.imageHomographyPose = imPose;
+            if (useSolvePnPSolution)
+            {
+                sensorPose imPose = ire.imageMetadata.imageHomographyPosePnP;
+                cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+                ire.imageMetadata.imageHomographyPosePnP = imPose;
+            }
+            else
+            {
+                sensorPose imPose = ire.imageMetadata.imageHomographyPose;
+                cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+                ire.imageMetadata.imageHomographyPose = imPose;
+            }
         }
         else
         {
@@ -1622,7 +1647,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (FluxImageRenderElement *ire in self.renderList)
     {
         scanimageobject = ire.imageMetadata;
-        imagehomographyPose = scanimageobject.imageHomographyPose;
+        imagehomographyPose = useSolvePnPSolution ? scanimageobject.imageHomographyPosePnP : scanimageobject.imageHomographyPose;
         if (ire.textureMapElement != nil)
         {
             int idx = ire.textureMapElement.textureIndex;

@@ -802,7 +802,7 @@
                                             <action selector="showLeftDrawer:" destination="2" eventType="touchUpInside" id="IOJ-qU-bqK"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
+                                    <button hidden="YES" opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
                                         <rect key="frame" x="230" y="486" width="70" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
@@ -825,6 +825,13 @@
                                         </constraints>
                                         <color key="progressTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
                                     </progressView>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="un4-1f-5zm" userLabel="Homography Select">
+                                        <rect key="frame" x="246" y="505" width="51" height="31"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="toggleHomographyResult:" destination="2" eventType="valueChanged" id="6dc-Yl-CgA"/>
+                                        </connections>
+                                    </switch>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="Jav-fJ-sQd" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="4oR-Ld-br5"/>
@@ -1070,7 +1077,6 @@
         <!--Flux Register Email View Controller - Add Email-->
         <scene sceneID="fZV-R3-iKV">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Wrn-tU-EFT" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="registerEmailView" id="71W-0H-05H" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="vzf-U5-ahO"/>
@@ -1140,6 +1146,7 @@
                         <outlet property="emailTableView" destination="QN7-Gg-5Ou" id="lWd-rS-jJG"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Wrn-tU-EFT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1479" y="-870"/>
         </scene>
@@ -1680,7 +1687,6 @@
         <!--Flux Register Email View Controller - Pick a Name-->
         <scene sceneID="ytO-Jc-A3e">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="5qq-rz-Wnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="registerEmailView" id="eN4-z8-AgL" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bka-Lp-Lwk"/>
@@ -1750,6 +1756,7 @@
                         <outlet property="emailTableView" destination="Igi-2y-LHe" id="O4g-jH-fiW"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="5qq-rz-Wnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1479" y="158"/>
         </scene>
