@@ -27,6 +27,14 @@ const double maxRatioSideLength = 2.0;
     // Convert to grayscale before populating for performance improvement
     cv::Mat object_img;
     cv::Mat scene_img;
+    std::vector<cv::KeyPoint> keypoints_object;
+    std::vector<cv::KeyPoint> keypoints_scene;
+    cv::Mat descriptors_object;
+    cv::Mat descriptors_scene;
+    int object_img_rows;
+    int object_img_cols;
+    
+    NSDate *cameraFrameFeatureExtractDate;
     
     double intrinsicsInverse[9];
     double homography[9];
@@ -64,15 +72,13 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
-    cv::Mat descriptors_object, descriptors_scene;
     cv::Mat fundamental;
     
     int result = 0;
-    result = self.wrappedMatcher->match(object_img, scene_img, matches,
-                               keypoints_object, keypoints_scene,
-                               descriptors_object, descriptors_scene,
-                               fundamental);
+    result = self.wrappedMatcher->match(matches,
+                                        keypoints_object, keypoints_scene,
+                                        descriptors_object, descriptors_scene,
+                                        fundamental);
 }
 
 // Object images are downloaded content to be matched
@@ -83,15 +89,49 @@ const double maxRatioSideLength = 2.0;
     object_img = inputImage;
 }
 
-// Scene images are the background camera feed to match against
-- (void)setSceneImage:(UIImage *)sceneImage
+// Object images are downloaded content to be matched and this routine supplies raw features
+- (void)setObjectFeatures:(NSString *)objectFeatures
 {
-    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+    // Hard-code image dimensions to HD resolution right now.
+    // Should probably add these quantities to downloaded feature content in XML
+    object_img_rows = 1920;
+    object_img_cols = 1080;
     
-    cv::transpose(inputImage, inputImage);
-    cv::flip(inputImage, inputImage, 1);
+    cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
+
+    cv::FileNode kptFileNode = fs["Keypoints"];
+    cv::read(kptFileNode, keypoints_object);
     
-    scene_img = inputImage;
+    fs["Descriptors"] >> descriptors_object;
+    
+    std::cout << keypoints_object.size() << " keypoints and " << descriptors_object.rows << " descriptors read from file." << std::endl;
+}
+
+// Scene images are the background camera feed to match against
+- (NSDate *)setSceneImage:(UIImage *)sceneImage withPreviousExtractDate:(NSDate *)extractDate
+{
+    if (![extractDate isEqualToDate:cameraFrameFeatureExtractDate])
+    {
+        cameraFrameFeatureExtractDate = [NSDate date];
+
+        // Prepare the image and store it in the engine
+        cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+        
+        cv::transpose(inputImage, inputImage);
+        cv::flip(inputImage, inputImage, 1);
+        
+        scene_img = inputImage;
+        
+        // Now extract and store the keypoints and descriptors
+        int result = self.wrappedMatcher->extractFeatures(scene_img, keypoints_scene, descriptors_scene);
+
+        if (result < 0)
+        {
+            cameraFrameFeatureExtractDate = nil;
+        }
+    }
+    
+    return cameraFrameFeatureExtractDate;
 }
 
 - (void)setSceneImageNoOrientationChange:(UIImage *)sceneImage
@@ -107,14 +147,12 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
-    cv::Mat descriptors_object, descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
     
-    result = self.wrappedMatcher->match(object_img, scene_img, matches,
+    result = self.wrappedMatcher->match(matches,
                                         keypoints_object, keypoints_scene,
                                         descriptors_object, descriptors_scene,
                                         fundamental);
@@ -127,7 +165,7 @@ const double maxRatioSideLength = 2.0;
         
         cv::Mat R_matchcam_origin;
         
-        double scale_factor = scene_img.rows / object_img.rows;
+        double scale_factor = scene_img.rows / object_img_rows;
         
         [self setCameraIntrinsicsWithRows:scene_img.rows andColums:scene_img.cols];
         
@@ -153,7 +191,7 @@ const double maxRatioSideLength = 2.0;
         bool validHomographyFound = NO;
         
         // Check if homography calculated represents a valid match
-        if (![self isHomographyValid:H withRows:object_img.rows withCols:object_img.cols])
+        if (![self isHomographyValid:H withRows:object_img_rows withCols:object_img_cols])
         {
             result = feature_matching_homography_error;
             
@@ -233,10 +271,10 @@ const double maxRatioSideLength = 2.0;
             //-- Get the corners from the object image ( the object to be "detected" )
             std::vector<cv::Point2f> obj_corners(5);
             obj_corners[0] = cvPoint(0,0);
-            obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
-            obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
-            obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
-            obj_corners[4] = cvPoint( object_img.cols * scale_factor / 2, object_img.rows * scale_factor / 2 );
+            obj_corners[1] = cvPoint( object_img_cols * scale_factor, 0 );
+            obj_corners[2] = cvPoint( object_img_cols * scale_factor, object_img_rows * scale_factor );
+            obj_corners[3] = cvPoint( 0, object_img_rows * scale_factor );
+            obj_corners[4] = cvPoint( object_img_cols * scale_factor / 2, object_img_rows * scale_factor / 2 );
             std::vector<cv::Point2f> scene_corners(5);
             
             cv::perspectiveTransform( obj_corners, scene_corners, H );
@@ -516,16 +554,14 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_object, keypoints_scene;
-    cv::Mat descriptors_object, descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
-    result = self.wrappedMatcher->match(object_img, scene_img, matches,
-                               keypoints_object, keypoints_scene,
-                               descriptors_object, descriptors_scene,
-                               fundamental);
+    result = self.wrappedMatcher->match(matches,
+                                        keypoints_object, keypoints_scene,
+                                        descriptors_object, descriptors_scene,
+                                        fundamental);
     
     if (result == 0)
     {
@@ -533,7 +569,7 @@ const double maxRatioSideLength = 2.0;
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
         
-        double scale_factor = scene_img.rows / object_img.rows;
+        double scale_factor = scene_img.rows / object_img_rows;
         
         for( size_t i = 0; i < matches.size(); i++ )
         {
@@ -550,10 +586,10 @@ const double maxRatioSideLength = 2.0;
         //-- Get the corners from the object image ( the object to be "detected" )
         std::vector<cv::Point2f> obj_corners(5);
         obj_corners[0] = cvPoint(0,0);
-        obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
-        obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
-        obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
-        obj_corners[4] = cvPoint( object_img.cols * scale_factor / 2, object_img.rows * scale_factor / 2 );
+        obj_corners[1] = cvPoint( object_img_cols * scale_factor, 0 );
+        obj_corners[2] = cvPoint( object_img_cols * scale_factor, object_img_rows * scale_factor );
+        obj_corners[3] = cvPoint( 0, object_img_rows * scale_factor );
+        obj_corners[4] = cvPoint( object_img_cols * scale_factor / 2, object_img_rows * scale_factor / 2 );
         std::vector<cv::Point2f> scene_corners(5);
         
         cv::perspectiveTransform( obj_corners, scene_corners, H );
@@ -581,21 +617,21 @@ const double maxRatioSideLength = 2.0;
 -(int) invertCameraIntrinsics
 {
     int dim = 3;
-    long lWork = dim * dim;
-    long info = -1;
-    long n = dim;
+    long int lWork = dim * dim;
+    long int info = -1;
+    long int n = dim;
+    long int ipiv_local[3];
     
-    //long * ipiv = (long *)malloc((5 +1) *sizeof (long));
-    //double *work = (double*) malloc(3 * 3 *sizeof(double));
-    int i;
-    for(i=0;i <9;i++)
-        ciinverse[i] = ci[i];
+    double ci_inv[9];
     
-    dgetrf_(&n, &n,ciinverse, &n, &ipiv[0], &info);
-    dgetri_(&n, ciinverse, &n, &ipiv[0], &work[0], &lWork,&info );
+    for(int i=0; i<9;i++)
+        ci_inv[i] = ci[i];
     
-    //free(ipiv);
-    //free(work);
+    dgetrf_(&n, &n, ci_inv, &n, ipiv_local, &info);
+    dgetri_(&n, ci_inv, &n, ipiv_local, work, &lWork,&info );
+    
+    for(int i=0; i<9;i++)
+        ciinverse[i] = ci_inv[i];
     
     return info;
 }

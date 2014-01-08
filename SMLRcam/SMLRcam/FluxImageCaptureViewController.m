@@ -178,6 +178,16 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     }
 }
 
+- (IBAction)shareButtonAction:(id)sender {
+    NSString *textToShare = @"Check out what I found in Flux!\n\n";
+    NSURL *URL = [NSURL URLWithString:@"http://www.smlr.is/"];
+    UIImage *imageToShare = snapshotImage;
+    NSArray *itemsToShare = @[textToShare, URL, imageToShare];
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:itemsToShare applicationActivities:nil];
+    activityVC.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact, UIActivityTypeAddToReadingList];
+    [self presentViewController:activityVC animated:YES completion:nil];
+}
+
 - (void)setViewBG:(NSNotification*)notification{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
     
@@ -342,7 +352,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [topGradientView setHidden:NO];
     [bottomContainerView setHidden:YES];
     [topContainerView setBackgroundColor:[UIColor clearColor]];
-    [approveButton setHidden:NO];
+    [shareButton setHidden:NO];
    
 }
 

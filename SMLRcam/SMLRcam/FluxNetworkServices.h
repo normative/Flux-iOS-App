@@ -38,6 +38,8 @@ extern NSString* const FluxTestServerURL;
            andRequestID:(FluxRequestID *)requestID andImageID:(FluxImageID)imageID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSString *)features forImageID:(int)imageID
+           andRequestID:(FluxRequestID *)requestID;
 
 //maps
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray*)imageList
@@ -133,6 +135,14 @@ extern NSString* const FluxTestServerURL;
  Removes an image from the Flux DB given an imageID.
  **/
 - (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID;
+
+#pragma mark  Features
+
+/**
+ returns NSXMLParser containing image features based on given imageID
+ **/
+
+- (void)getImageFeaturesForID:(int)imageID andRequestID:(FluxRequestID *)requestID;
 
 #pragma mark  - Users
 

@@ -17,6 +17,7 @@
 
 NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 //NSString* const FluxProductionServerURL = @"http://54.221.222.71/";
+//NSString* const FluxProductionServerURL = @"http://54.205.83.75/";
 //NSString* const FluxProductionServerURL = @"http://192.168.2.18:3101/";
 NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
@@ -395,6 +396,38 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
             }
         }
     }];
+    [operation start];
+}
+
+#pragma mark Features
+
+//returns the cloud-extracted features given an image ID
+- (void)getImageFeaturesForID:(int)imageID andRequestID:(FluxRequestID *)requestID
+{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?auth_token=%@&size=features",objectManager.baseURL,imageID,token];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject)
+        {
+            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageFeatures:forImageID:andRequestID:)])
+            {
+                [delegate NetworkServices:self didreturnImageFeatures:operation.responseString forImageID:imageID andRequestID:requestID];
+            }
+        }
+        failure:^(AFHTTPRequestOperation *operation, NSError *error)
+        {
+            NSLog(@"Failed with error: %@", [error localizedDescription]);
+            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+            {
+                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+            }
+        }
+     ];
+
     [operation start];
 }
 

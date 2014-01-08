@@ -267,7 +267,9 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     // Notify observers of updated position
     if (self.location != nil)
     {
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self];
+        NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
+        [userInfo setObject:self.location forKey:@"location"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfo];
         //[self reverseGeocodeLocation:self.location];
     }
 }
@@ -773,7 +775,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     {
         if(!_validCurrentLocationData)
         {
-            NSLog(@"updateKFilter:Invalid location, kf not started");
+            //NSLog(@"updateKFilter:Invalid location, kf not started");
             return;
         }
         _kfInit.position.x = _kfMeasure.position.x;

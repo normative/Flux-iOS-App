@@ -85,6 +85,11 @@
     }
 }
 
+- (void) addImageFeaturesToStore:(NSString *)features withLocalID:localID
+{
+    
+}
+
 - (NSArray *) doesImageExistForImageID:(FluxImageID)imageID
 {
     NSArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null],

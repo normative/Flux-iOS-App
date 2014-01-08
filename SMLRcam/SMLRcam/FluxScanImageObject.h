@@ -21,8 +21,11 @@ typedef enum FluxImageType : NSUInteger {
     quarterhd = 2,
     screen_res = 3,
     full_res = 4,
-    highest_res = 5     // keep this at highest allowable resultion + 1
+    highest_res = 5,     // keep this at highest allowable resultion + 1
+    features = 6
 } FluxImageType;
+
+extern const NSString *fluxImageTypeStrings[];
 
 typedef enum LocationDataType : NSUInteger {
     location_data_default = 0,
@@ -87,6 +90,7 @@ typedef enum LocationDataType : NSUInteger {
 @property (nonatomic) bool matched;
 @property (nonatomic) bool matchFailed;
 @property (nonatomic, strong) NSDate* matchFailureRetryTime;
+@property (nonatomic, strong) NSString *features;
 
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr

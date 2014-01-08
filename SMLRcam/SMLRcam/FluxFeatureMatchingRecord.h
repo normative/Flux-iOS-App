@@ -16,6 +16,7 @@
 @property (nonatomic, strong) FluxImageRenderElement *ire; // Image Render Element to store object image + metadata
 @property (nonatomic, readonly) BOOL hasCameraScene; // Return YES if image is downloaded.
 @property (nonatomic, readonly) BOOL hasObjectImage; // Return YES if image is downloaded.
+@property (nonatomic, readonly) BOOL hasObjectFeatures; // Return YES if object features are downloaded.
 @property (nonatomic, getter = isMatched) BOOL matched; // Return YES if object is matched to scene
 @property (nonatomic, getter = isFailed) BOOL failed; // Return Yes if image matching failed
 

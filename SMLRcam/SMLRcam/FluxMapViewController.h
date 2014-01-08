@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 #import "MapIndex.h"
+#import "FluxUserLocationPin.h"
 
 #import "FluxDataManager.h"
 #import "FluxDisplayManager.h"
@@ -33,6 +34,7 @@
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
+    
     
     IBOutlet UIButton *filterButton;
     FluxDataFilter *currentDataFilter;

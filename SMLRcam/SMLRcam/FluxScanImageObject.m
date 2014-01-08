@@ -10,6 +10,15 @@
 
 @implementation FluxScanImageObject
 
+const NSString *fluxImageTypeStrings[] = {  @"none",
+    @"thumb",
+    @"quarterhd",
+    @"screen",
+    @"oriented",
+    @"highest",
+    @"features"
+};
+
 #pragma mark - getter methods
 
 
@@ -81,6 +90,7 @@ withDescriptionString:(NSString*)description
         self.matched = NO;
         self.matchFailed = NO;
         self.location_data_type = location_data_default;
+        self.features = nil;
     }
     
     return self;

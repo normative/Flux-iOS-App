@@ -14,6 +14,7 @@
 @synthesize ire = _ire;
 @synthesize hasCameraScene = _hasCameraScene;
 @synthesize hasObjectImage = _hasObjectImage;
+@synthesize hasObjectFeatures = _hasObjectFeatures;
 @synthesize matched = _matched;
 @synthesize failed = _failed;
 
@@ -36,6 +37,11 @@
 - (BOOL)hasObjectImage
 {
     return ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.image != nil));
+}
+
+- (BOOL)hasObjectFeatures
+{
+    return ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.imageMetadata.features != nil));
 }
 
 - (BOOL)isFailed
