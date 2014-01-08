@@ -1,4 +1,5 @@
 Release Notes:
+- support for pulling cloud-generate image features for feature matching
 - fix for Trello issue #269 (Thumbnails appear to be re-downloaded when phone goes to sleep or app is put in background)
 
 ******************************************
