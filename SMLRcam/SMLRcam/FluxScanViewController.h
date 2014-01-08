@@ -110,4 +110,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //timeScrolling
 - (void)setupTimeFilterControl;
 - (void) didTapImageFunc:(FluxScanImageObject*) fsio;
+- (IBAction)toggleHomographyResult:(id)sender;
+
 @end

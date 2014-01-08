@@ -23,6 +23,8 @@
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MKMapView.h>
+#import "FluxUserLocationPin.h"
+
 
 @class MITransitionFactory, MITransition, MIMapIndex;
 
@@ -49,6 +51,11 @@
   	MITransition *_transition;
 
 	NSMutableArray *_deferredChanges;
+    
+    
+    FluxUserLocationPin*userLocationPin;
+    MKCircle*circ;
+    MKCircle*myCirc;
 }
 
 - (void)setNeedsUpdateVisibleState;

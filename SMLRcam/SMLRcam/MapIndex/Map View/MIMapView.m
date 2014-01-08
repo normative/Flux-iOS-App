@@ -31,6 +31,7 @@
 #import "MITransition+Subclass.h"
 
 #import <MapKit/MKPinAnnotationView.h>
+#import "FluxLocationServicesSingleton.h"
 
 #import "MIAnnotation+Package.h"
 
@@ -90,6 +91,8 @@ typedef void (^_MIMapViewChange)(void);
 	_clusters = [NSMutableSet new];
 
 	[self setTransitionFactory:[MITransitionFactory new]];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
 
 	[super setDelegate:self];
 }
@@ -116,9 +119,30 @@ typedef void (^_MIMapViewChange)(void);
 	return self;
 }
 
--(void)setTheUserLocation:(CLLocation *)theUserLocation{
-    MKCircle *myCircle = [MKCircle circleWithCenterCoordinate:theUserLocation.coordinate radius:500];
-    [self addOverlay:myCircle];
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
+}
+
+#pragma mark - Location
+- (void)didUpdateLocation:(NSNotification*)notification{
+    CLLocation*location = [[notification userInfo]objectForKey:@"location"];
+    [userLocationPin setLocation:[[notification userInfo]objectForKey:@"location"]];
+    //    [self removeAnnotation:userLocationPin];
+    //    [userLocationPin setCoordinate:userLocationPin.location.coordinate];
+    //    [self addAnnotation:userLocationPin];
+    
+    NSLog(@"Accuracy: %f, %f",location.horizontalAccuracy, location.verticalAccuracy);
+    float radius = (location.horizontalAccuracy > location.verticalAccuracy ? location.horizontalAccuracy : location.verticalAccuracy);
+
+    [self removeOverlay:circ];
+    [self removeOverlay:myCirc];
+    circ = [MKCircle circleWithCenterCoordinate:location.coordinate radius:radius];
+    myCirc = [MKCircle circleWithCenterCoordinate:location.coordinate radius:5.0];
+    [self addOverlay:circ];
+    [self addOverlay:myCirc];
+    
+    //[fluxMapView setTheUserLocation:locationManager.location];
 }
 
 #pragma mark - Message Forwarding
@@ -423,13 +447,18 @@ typedef void (^_MIMapViewChange)(void);
 	return view;
 }
 //blue circle around the user
-//- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay{
-//    MKCircleView *circleView = [[MKCircleView alloc] initWithCircle:(MKCircle *)overlay];
-//    circleView.fillColor = [UIColor colorWithWhite:1.0 alpha:0.45];
-//    circleView.lineWidth = 2.0;
-//    circleView.strokeColor = [UIColor colorWithRed:0.0 green:182.0/255 blue:235.0/255 alpha:1.0];
-//    return circleView;
-//}
+- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay{
+    MKCircleView *circleView = [[MKCircleView alloc] initWithCircle:(MKCircle *)overlay];
+    if (overlay == circ) {
+        circleView.fillColor = [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:0.45];
+    }
+    else{
+        circleView.fillColor = [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0];
+        circleView.lineWidth = 4.0;
+        circleView.strokeColor = [UIColor whiteColor];
+    }
+    return circleView;
+}
 
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
 {

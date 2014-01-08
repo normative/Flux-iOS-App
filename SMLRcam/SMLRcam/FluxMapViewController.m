@@ -109,10 +109,15 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
 }
 
-
 - (void)setupLocationManager
 {
     locationManager = [FluxLocationServicesSingleton sharedManager];
+}
+
+
+- (void)didUpdateLocation:(NSNotification*)notification{
+
+    //[fluxMapView setTheUserLocation:locationManager.location];
 }
 
 #pragma mark - IBActions
@@ -153,11 +158,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 // initialize and allocate memory to the map view object
 - (void) setupMapView
 {
-    [fluxMapView setShowsUserLocation:YES];
+    [fluxMapView setShowsUserLocation:NO];
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
-    [fluxMapView setTheUserLocation:locationManager.location];
+    //[fluxMapView setTheUserLocation:locationManager.location];
     lastSynchedLocation = locationManager.location.coordinate;
     lastRadius = 75.0;
     outstandingRequests = 0;
@@ -176,6 +181,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
+    
+    
 }
 
 #pragma mark Transitions
