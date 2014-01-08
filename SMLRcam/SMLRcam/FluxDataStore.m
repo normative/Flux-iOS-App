@@ -7,6 +7,7 @@
 //
 
 #import "FluxDataStore.h"
+#import "FluxCacheImageObject.h"
 
 @implementation FluxDataStore
 
@@ -15,6 +16,9 @@
     if (self = [super init])
     {
         fluxImageCache = [[NSCache alloc] init];
+        [fluxImageCache setDelegate:self];
+        [fluxImageCache setEvictsObjectsWithDiscardedContent:NO];
+        
         fluxMetadata = [[NSMutableDictionary alloc] init];
         imageIDMapping = [[NSMutableDictionary alloc] init];
     }
@@ -40,7 +44,8 @@
         FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
         if (imageObject != nil)
         {
-            [fluxImageCache setObject:image forKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
+            [fluxImageCache setObject:[FluxCacheImageObject cacheImageObject:image]
+                               forKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
         }
         else
         {
@@ -112,22 +117,16 @@
     if (localID != nil)
     {
         FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
-//        imageFormats[thumb] = [NSNumber numberWithBool:
-//                               ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]] != nil)];
-//        imageFormats[screen_res] = [NSNumber numberWithBool:
-//                                    ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]] != nil)];
-//        imageFormats[full_res] = [NSNumber numberWithBool:
-//                                  ([fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]] != nil)];
         
         // No point searching for them for existence then searching for them again - might as well store the pointers.
-        id img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]];
-        imageFormats[thumb] = (img != nil) ? img : [NSNull null];
+        FluxCacheImageObject *img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]];
+        imageFormats[thumb] = (img.image != nil) ? img.image : [NSNull null];
         img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:quarterhd]];
-        imageFormats[quarterhd] = (img != nil) ? img : [NSNull null];
+        imageFormats[quarterhd] = (img.image != nil) ? img.image : [NSNull null];
         img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]];
-        imageFormats[screen_res] = (img != nil) ? img : [NSNull null];
+        imageFormats[screen_res] = (img.image != nil) ? img.image : [NSNull null];
         img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]];
-        imageFormats[full_res] = (img != nil) ? img : [NSNull null];
+        imageFormats[full_res] = (img.image != nil) ? img.image : [NSNull null];
         imageFormats[screen_res] = imageFormats[full_res];
         
         bool foundLowest = false;
@@ -170,7 +169,8 @@
     // If key doesn't exist, this will return nil.
     // This means it is either no longer in cache, or didn't exist in the first place
     FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
-    return [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
+    FluxCacheImageObject *img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
+    return img.image;
 }
 
 - (FluxScanImageObject *) getMetadataWithImageID:(FluxImageID)imageID
@@ -219,6 +219,38 @@
         
         // Just set the location_data_type to default. Other quantities will be ignored if this is not set.
         imageObject.location_data_type = location_data_default;
+    }
+}
+
+#pragma mark - NSCache delegate and debugging code
+
+- (void)cache:(NSCache *)cache willEvictObject:(id)obj
+{
+    // Called when an object is about to be evicted or removed from the cache.
+    // It is not possible to modify cache from within the implementation of this delegate method.
+}
+
+- (void)debugByShowingCachedImageKeys
+{
+    NSMutableDictionary *cachedIDs = [[NSMutableDictionary alloc] init];
+    
+    for (FluxLocalID *localID in [fluxMetadata allKeys])
+    {
+        NSMutableArray *foundImageTypes = [[NSMutableArray alloc] init];
+        FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+        for (NSUInteger imageType = thumb; imageType <= full_res; imageType++)
+        {
+            FluxCacheImageObject *cacheImageObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
+            if (cacheImageObj && ![cacheImageObj isContentDiscarded])
+            {
+                [foundImageTypes addObject:[NSNumber numberWithUnsignedInteger:imageType]];
+            }
+        }
+
+        if ([foundImageTypes count] > 0)
+        {
+            cachedIDs[localID] = foundImageTypes;
+        }
     }
 }
 

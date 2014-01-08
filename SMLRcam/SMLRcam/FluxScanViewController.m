@@ -336,7 +336,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     if(tappedImageObject == nil)
         return;
     
-    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=thumb",FluxProductionServerURL,tappedImageObject.imageID];
+    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
     IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
     photo.userID = tappedImageObject.userID;
     photo.caption = tappedImageObject.descriptionString;
@@ -405,7 +405,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      completion:^(BOOL finished){
                          //stops drawing them
                          [ScanUIContainerView setHidden:YES];
-                         [self startDeviceMotion];
                          imageCaptureIsActive = YES;
                      }];
 }

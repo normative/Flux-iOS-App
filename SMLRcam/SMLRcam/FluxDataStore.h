@@ -12,7 +12,7 @@
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
 
-@interface FluxDataStore : NSObject
+@interface FluxDataStore : NSObject <NSCacheDelegate>
 {
     NSCache *fluxImageCache;
     NSMutableDictionary *fluxMetadata;
@@ -30,5 +30,7 @@
 - (FluxScanImageObject *) getMetadataWithLocalID:(FluxLocalID *)localID;
 - (void) setImageIDMapping:(FluxImageID)imageID forLocalID:(FluxLocalID *)localID;
 - (void)resetAllFeatureMatches;
+
+- (void)debugByShowingCachedImageKeys;
 
 @end
