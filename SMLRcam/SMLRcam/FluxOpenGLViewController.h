@@ -67,6 +67,9 @@
     FluxCameraFrameElement *frameGrabRequest;
     bool frameGrabRequested;
     int _renderingMatchedImage;
+    
+    bool useSolvePnPSolution;
+    
     CGPoint _tapPoint;
     
 //    NSLock *_nearbyListLock;
@@ -144,6 +147,6 @@
 
 - (void) requestCameraFrame:(FluxCameraFrameElement *)frameRequest;
 
-
+- (void) setHomographyState:(int)mode;
 
 @end

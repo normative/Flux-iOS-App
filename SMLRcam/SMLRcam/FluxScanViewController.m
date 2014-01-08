@@ -365,6 +365,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
    
 }
 
+- (IBAction)toggleHomographyResult:(id)sender
+{
+    UISwitch *theSwitch = (UISwitch *)sender;
+    BOOL homographyMethod = theSwitch.on;
+    [openGLController setHomographyState:(homographyMethod ? 1 : 0)];
+}
+
 #pragma mark Camera View
 
 - (void)setupCameraView{
