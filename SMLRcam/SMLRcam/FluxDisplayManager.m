@@ -903,16 +903,40 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     };
                     [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
 
+                    if ((ire.imageMetadata.features == nil) && (!ire.imageMetadata.featureFetching))
+                    {
+                        FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
+                        [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                        featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
+                            // assign features into SIO.features...
+                            ire.imageMetadata.features = features;
+                            ire.imageMetadata.featureFetching = false;
+                        };
+                        featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                            ire.imageMetadata.featureFetching = false;
+                        };
+
+                        ire.imageMetadata.featureFetching = true;
+                        [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
+                    }
+                    // only request one at a time
+                    break;
+                }
+                else if ((ire.imageMetadata.features == nil) && (!ire.imageMetadata.featureFetching))
+                {
                     FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
                     [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
                     featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
                         // assign features into SIO.features...
                         ire.imageMetadata.features = features;
+                        ire.imageMetadata.featureFetching = false;
                     };
-                    [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
+                    featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                        ire.imageMetadata.featureFetching = false;
+                    };
                     
-                    // only request one at a time
-                    break;
+                    ire.imageMetadata.featureFetching = true;
+                    [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
                 }
             }
         }

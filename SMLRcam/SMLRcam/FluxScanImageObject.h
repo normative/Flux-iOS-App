@@ -90,6 +90,7 @@ typedef enum LocationDataType : NSUInteger {
 @property (nonatomic) bool matchFailed;
 @property (nonatomic, strong) NSDate* matchFailureRetryTime;
 @property (nonatomic, strong) NSString *features;
+@property (nonatomic) bool featureFetching;
 
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr
