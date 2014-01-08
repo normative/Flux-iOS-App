@@ -85,17 +85,14 @@ const double maxRatioSideLength = 2.0;
 // Object images are downloaded content to be matched and this routine supplies raw features
 - (void)setObjectFeatures:(NSString *)objectFeatures
 {
-    // Hard-code image dimensions to HD resolution right now.
-    // Should probably add these quantities to downloaded feature content in XML
-    object_img_rows = 1920;
-    object_img_cols = 1080;
-    
     cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
 
     cv::FileNode kptFileNode = fs["Keypoints"];
     cv::read(kptFileNode, keypoints_object);
     
     fs["Descriptors"] >> descriptors_object;
+    fs["img_cols"] >> object_img_cols;
+    fs["img_rows"] >> object_img_rows;
     
     std::cout << keypoints_object.size() << " keypoints and " << descriptors_object.rows << " descriptors read from file." << std::endl;
 }
