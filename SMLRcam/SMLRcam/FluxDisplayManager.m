@@ -922,7 +922,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     // only request one at a time
                     break;
                 }
-                else if ((ire.imageMetadata.features == nil) && (!ire.imageMetadata.featureFetching))
+                else if (((ire.imageFetchType >= quarterhd) || (ire.imageRenderType >= quarterhd))
+                         && (ire.imageMetadata.features == nil) && (!ire.imageMetadata.featureFetching))
                 {
                     FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
                     [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
