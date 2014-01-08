@@ -1582,7 +1582,7 @@
                                 <color key="separatorColor" red="0.396078431372549" green="0.42352941176470588" blue="0.4392156862745098" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" restorationIdentifier="publicProfileCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileDetailsCell" rowHeight="120" id="ZeG-UB-I8U" customClass="FluxProfileCell">
+                                    <tableViewCell contentMode="scaleToFill" restorationIdentifier="profileDetailsCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileDetailsCell" rowHeight="120" id="ZeG-UB-I8U" customClass="FluxProfileCell">
                                         <rect key="frame" x="0.0" y="22" width="320" height="120"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZeG-UB-I8U" id="pTZ-OZ-zeH">
@@ -1624,7 +1624,7 @@
                                         <connections>
                                             <outlet property="bioLabel" destination="nTv-Fd-tO6" id="THv-ID-tXg"/>
                                             <outlet property="imageCountLabel" destination="BBd-0f-9Pk" id="xsW-y7-y6S"/>
-                                            <outlet property="profileImageView" destination="3G9-QW-Boj" id="4xF-ry-F0k"/>
+                                            <outlet property="profileImageView" destination="3G9-QW-Boj" id="coq-AR-rCI"/>
                                             <outlet property="usernameLabel" destination="6id-UM-p7F" id="rVa-ZI-3Nm"/>
                                         </connections>
                                     </tableViewCell>
