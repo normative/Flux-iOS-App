@@ -21,9 +21,13 @@ const double maxRatioSideLength = 2.0;
     cv::Mat object_img;
     cv::Mat scene_img;
     std::vector<cv::KeyPoint> keypoints_object;
+    std::vector<cv::KeyPoint> keypoints_scene;
     cv::Mat descriptors_object;
+    cv::Mat descriptors_scene;
     int object_img_rows;
     int object_img_cols;
+    
+    NSDate *cameraFrameFeatureExtractDate;
     
     double intrinsicsInverse[9];
     double homography[9];
@@ -61,15 +65,13 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_scene;
-    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     
     int result = 0;
-    result = self.wrappedMatcher->match(scene_img, matches,
-                               keypoints_object, keypoints_scene,
-                               descriptors_object, descriptors_scene,
-                               fundamental);
+    result = self.wrappedMatcher->match(matches,
+                                        keypoints_object, keypoints_scene,
+                                        descriptors_object, descriptors_scene,
+                                        fundamental);
 }
 
 // Object images are downloaded content to be matched
@@ -99,14 +101,30 @@ const double maxRatioSideLength = 2.0;
 }
 
 // Scene images are the background camera feed to match against
-- (void)setSceneImage:(UIImage *)sceneImage
+- (NSDate *)setSceneImage:(UIImage *)sceneImage withPreviousExtractDate:(NSDate *)extractDate
 {
-    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+    if (![extractDate isEqualToDate:cameraFrameFeatureExtractDate])
+    {
+        cameraFrameFeatureExtractDate = [NSDate date];
+
+        // Prepare the image and store it in the engine
+        cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+        
+        cv::transpose(inputImage, inputImage);
+        cv::flip(inputImage, inputImage, 1);
+        
+        scene_img = inputImage;
+        
+        // Now extract and store the keypoints and descriptors
+        int result = self.wrappedMatcher->extractFeatures(scene_img, keypoints_scene, descriptors_scene);
+
+        if (result < 0)
+        {
+            cameraFrameFeatureExtractDate = nil;
+        }
+    }
     
-    cv::transpose(inputImage, inputImage);
-    cv::flip(inputImage, inputImage, 1);
-    
-    scene_img = inputImage;
+    return cameraFrameFeatureExtractDate;
 }
 
 - (void)setSceneImageNoOrientationChange:(UIImage *)sceneImage
@@ -122,14 +140,12 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_scene;
-    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
     
-    result = self.wrappedMatcher->match(scene_img, matches,
+    result = self.wrappedMatcher->match(matches,
                                         keypoints_object, keypoints_scene,
                                         descriptors_object, descriptors_scene,
                                         fundamental);
@@ -264,16 +280,14 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_scene;
-    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
-    result = self.wrappedMatcher->match(scene_img, matches,
-                               keypoints_object, keypoints_scene,
-                               descriptors_object, descriptors_scene,
-                               fundamental);
+    result = self.wrappedMatcher->match(matches,
+                                        keypoints_object, keypoints_scene,
+                                        descriptors_object, descriptors_scene,
+                                        fundamental);
     
     if (result == 0)
     {
