@@ -172,19 +172,14 @@ int FluxMatcher::ransacTest(const std::vector<cv::DMatch>& matches,
     
     return 0;
 }
-int FluxMatcher::match(cv::Mat& image2, // input images
-                      std::vector<cv::DMatch>& matches, // output matches
-                      std::vector<cv::KeyPoint>& keypoints1, // keypoints1/descriptors1 are input for object image (image1)
-                      std::vector<cv::KeyPoint>& keypoints2, // keypoints2/descriptors2 are output/calculated from scene image (image2)
-                      cv::Mat& descriptors1, cv::Mat& descriptors2,
-                      cv::Mat& fundamental)
+
+int FluxMatcher::match(std::vector<cv::DMatch>& matches, // output matches
+                       std::vector<cv::KeyPoint>& keypoints1, // keypoints1/descriptors1 are input for object image (image1)
+                       std::vector<cv::KeyPoint>& keypoints2, // keypoints2/descriptors2 are output/calculated from scene image (image2)
+                       cv::Mat& descriptors1, cv::Mat& descriptors2,
+                       cv::Mat& fundamental)
 {
-    // 1a. Detection of the features
-    detector->detect(image2,keypoints2);
-    
-    // 1b. Extraction of descriptors
-    extractor->compute(image2,keypoints2,descriptors2);
-    
+    // Verify descriptors exist for object and scene
     if (descriptors1.rows == 0 || descriptors2.rows == 0)
     {
         return -1;
@@ -268,4 +263,22 @@ int FluxMatcher::match(cv::Mat& image2, // input images
         // No match found
         return -1;
     }
+}
+
+int FluxMatcher::extractFeatures(cv::Mat &image,                        // input image
+                                 std::vector<cv::KeyPoint> &keypoints,  // output keypoints
+                                 cv::Mat &descriptors)                  // output feature descriptors
+{
+    // 1a. Detection of the features
+    detector->detect(image,keypoints);
+    
+    // 1b. Extraction of descriptors
+    extractor->compute(image,keypoints,descriptors);
+    
+    if (descriptors.rows == 0)
+    {
+        return -1;
+    }
+
+    return 0;
 }

@@ -52,9 +52,13 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
             return;
         }
         
+        // Set object image features/image
         [self.matcherEngine setObjectFeatures:self.matchRecord.ire.imageMetadata.features];
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
-        [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage];
+        
+        // Set scene image features/image (note that if passed-in date matches date stored in matcher engine, features will be re-used
+        self.matchRecord.cfe.cameraFrameExtractDate = [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage
+                                                                withPreviousExtractDate:self.matchRecord.cfe.cameraFrameExtractDate];
         
         double rotation1[9];
         double translation1[3];

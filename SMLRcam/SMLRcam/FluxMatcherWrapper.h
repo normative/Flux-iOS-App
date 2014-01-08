@@ -21,7 +21,9 @@ enum feature_matching_error_codes {
 -(void)setObjectFeatures:(NSString*)objectFeatures;
 
 // Wrapper to set scene_image for matching
--(void)setSceneImage:(UIImage *)sceneImage;
+// Pass in a date if you want to re-use a set of features. If dates match, will re-use.
+// Returns the date if a new set of features are extracted
+-(NSDate *)setSceneImage:(UIImage *)sceneImage withPreviousExtractDate:(NSDate *)extractDate;
 -(void)setSceneImageNoOrientationChange:(UIImage *)sceneImage;
 
 // Wrapper for: FluxMatcher::match()
