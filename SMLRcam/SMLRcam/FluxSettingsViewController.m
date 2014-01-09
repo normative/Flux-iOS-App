@@ -8,6 +8,7 @@
 
 #import "FluxSettingsViewController.h"
 #import "FluxRegisterViewController.h"
+#import "FluxSocialManagementCell.h"
 #import "UICKeyChainStore.h"
 #import <FacebookSDK/FacebookSDK.h>
 
@@ -47,6 +48,8 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     initialMask = [[defaults objectForKey:@"Mask"] integerValue];
     
+    [self.logoutButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.logoutButton.titleLabel.font.pointSize]];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -76,79 +79,132 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 1;
+    return 2;
+}
+
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+    if (section == 0) {
+        return @"General";
+    }
+    else
+        return @"Social Management";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    // Return the number of rows in the section.
-    return 2;
+    if (section == 0) {
+        return 0;
+    }
+    else
+        return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    UITableViewCell *cell = [super tableView:tableView cellForRowAtIndexPath:indexPath];
-    cell.accessoryType = UITableViewCellAccessoryNone;
 
+    
+    if (indexPath.section == 0) {
+        static NSString *cellIdentifier = @"cell";
+        UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        if (!cell) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+        }
+        
+        [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
+    }
+    
+    static NSString *socialCellIdentifier = @"socialManagementCell";
+    FluxSocialManagementCell * socialMgmtcell = [tableView dequeueReusableCellWithIdentifier:socialCellIdentifier];
+    if (!socialMgmtcell) {
+        socialMgmtcell = [[FluxSocialManagementCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:socialCellIdentifier];
+    }
+    [socialMgmtcell.socialPartnerLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialMgmtcell.socialPartnerLabel.font.pointSize]];
+    [socialMgmtcell.socialDescriptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialMgmtcell.socialDescriptionLabel.font.pointSize]];
+    
     switch (indexPath.row)
     {
         case 0:
-            self.saveLocallySwitch.on = [[defaults objectForKey:@"Save Pictures"] boolValue];
+            [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
+            [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"facebookLogo"]];
             break;
         case 1:
-            break;
-        case 2:
-            break;
-        case 3:
-            self.connectServerSegmentedControl.selectedSegmentIndex = [[defaults objectForKey:@"Server Location"] intValue];
+            [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
+            [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"twitterLogo"]]];
             break;
         default:
             break;
             
     }
-    return cell;
+    return socialMgmtcell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    switch (indexPath.row) {
+        case 0:
+            //facebook row tapped
+            break;
+        case 1:
+            //twitter row tapped
+            break;
+            
+        default:
+            break;
+    }
 }
 
 
-- (IBAction)changeSaveLocallySwitch:(id)sender
-{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[NSNumber numberWithBool:self.saveLocallySwitch.on]
-                 forKey:@"Save Pictures"];
-    [defaults synchronize];
+//- (IBAction)changeSaveLocallySwitch:(id)sender
+//{
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    [defaults setObject:[NSNumber numberWithBool:self.saveLocallySwitch.on]
+//                 forKey:@"Save Pictures"];
+//    [defaults synchronize];
+//}
+//
+//- (IBAction)changeConnectServerSegment:(id)sender
+//{
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    [defaults setObject:[NSNumber numberWithInt:self.connectServerSegmentedControl.selectedSegmentIndex] forKey:@"Server Location"];
+//    [defaults synchronize];
+//}
+//
+//- (IBAction)maskSliderChanged:(id)sender {
+//    int discreteValue = roundl([self.maskSlider value]);
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    [defaults setObject:[NSNumber numberWithInt:discreteValue] forKey:@"Mask"];
+//    [defaults synchronize];
+//    [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
+//    [self.maskSlider setValue:(float)discreteValue];
+//}
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 0) {
+        [UICKeyChainStore removeAllItemsForService:FluxService];
+        [UICKeyChainStore removeAllItemsForService:FacebookService];
+        [UICKeyChainStore removeAllItemsForService:TwitterService];
+        
+        if (FBSession.activeSession.isOpen) {
+            [FBSession.activeSession closeAndClearTokenInformation];
+        }
+        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];
+        [self.parentViewController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
+            
+        }];
+    }
 }
 
-- (IBAction)changeConnectServerSegment:(id)sender
-{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[NSNumber numberWithInt:self.connectServerSegmentedControl.selectedSegmentIndex] forKey:@"Server Location"];
-    [defaults synchronize];
-}
-
-- (IBAction)maskSliderChanged:(id)sender {
-    int discreteValue = roundl([self.maskSlider value]);
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[NSNumber numberWithInt:discreteValue] forKey:@"Mask"];
-    [defaults synchronize];
-    [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
-    [self.maskSlider setValue:(float)discreteValue];
-}
+#pragma mark - Logout
 
 - (IBAction)logoutButtonAction:(id)sender {
-    [UICKeyChainStore removeAllItemsForService:FluxService];
-    [UICKeyChainStore removeAllItemsForService:FacebookService];
-    [UICKeyChainStore removeAllItemsForService:TwitterService];
-    
-    if (FBSession.activeSession.isOpen) {
-        [FBSession.activeSession closeAndClearTokenInformation];
-    }
-    UIWindow *window = [UIApplication sharedApplication].keyWindow;
-    [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];
-    [self.parentViewController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
-        
-    }];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]
+                                  initWithTitle:@"Are you sure you'd like to logout?"
+                                  delegate:self
+                                  cancelButtonTitle:@"Cancel"
+                                  destructiveButtonTitle:@"Logout"
+                                  otherButtonTitles:nil];
+    [actionSheet showInView:self.view];
 }
 
 - (IBAction)onAreaResetBtn:(id)sender
@@ -162,6 +218,19 @@
     {
         [self.fluxDataManager deleteLocations];
     }
+}
+
+#pragma mark - Helper Methods
+
+-(UIImage*) imageDesaturated:(UIImage*) image {
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CIImage *ciimage = [CIImage imageWithCGImage:image.CGImage];
+    CIFilter *filter = [CIFilter filterWithName:@"CIColorControls"];
+    [filter setValue:ciimage forKey:@"inputImage"];
+    [filter setValue:[NSNumber numberWithFloat:0.0f] forKey:@"inputSaturation"];
+    CIImage *result = [filter valueForKey:kCIOutputImageKey];
+    CGImageRef cgImage = [context createCGImage:result fromRect:[result extent]];
+    return [UIImage imageWithCGImage:cgImage];
 }
 
 @end

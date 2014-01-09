@@ -27,11 +27,10 @@
                                                   @"time_stamp":    @"timestamp",
                                                   @"description":   @"descriptionString",
                                                   @"user_id":       @"userID",
-                                                  @"camera_id":     @"cameraID",
-                                                  @"user":          @"username"
+                                                  @"camera_id":     @"cameraID"
                                                  }];
     
-    [mapping addAttributeMappingsFromArray:@[@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz"]];
+    [mapping addAttributeMappingsFromArray:@[@"username",@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz"]];
     
     return mapping;
 }
