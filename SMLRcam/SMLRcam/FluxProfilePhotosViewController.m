@@ -166,16 +166,17 @@
         [cell.checkboxButton setHidden:YES];
     }
     if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=quarterhd&auth_token='%@'",FluxProductionServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],[UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=thumb&auth_token='%@'",FluxProductionServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],[UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
         [cell.imageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
         [cell.imageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                 CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*0.68, image.size.width*0.68));
-                 // or use the UIImage wherever you like
-                 UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
-                 CGImageRelease(imageRef);
-
-                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
+//                 CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*0.68, image.size.width*0.68));
+//                 // or use the UIImage wherever you like
+//                 UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+//                 CGImageRelease(imageRef);
+//
+//                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
+                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
                  [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
              }
              failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
