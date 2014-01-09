@@ -1,5 +1,8 @@
 Release Notes:
 - support for pulling cloud-generate image features for feature matching
+- use alternate method for calculating matched camera position from matched features
+- features extracted from live camera frame are re-used if the frame is the same to improve performance
+- use image resolution returned from server for images to be matched, rather than assuming HD
 - fix for Trello issue #269 (Thumbnails appear to be re-downloaded when phone goes to sleep or app is put in background)
 
 ******************************************

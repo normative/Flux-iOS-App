@@ -40,13 +40,14 @@ static const CGFloat labelPadding = 10;
     if (self) {
         _photo = photo;
         self.opaque = NO;
+        self.displaysProfileInfo = YES;
         
         [self setBackground];
         
         [self setupCaption];
-        
-        self.displaysProfileInfo = YES;
     }
+    
+
     
     return self;
 }
@@ -93,7 +94,7 @@ static const CGFloat labelPadding = 10;
     [self addSubview:userameButton];
     
     userProfileImageButton = [[UIButton alloc]initWithFrame:CGRectMake(10, self.bounds.size.height, 20, 20)];
-    [userProfileImageButton setBackgroundImage:[UIImage imageNamed:@"checkbox_checked"]forState:UIControlStateNormal];
+    [userProfileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage_small"]forState:UIControlStateNormal];
     [userProfileImageButton setCenter:CGPointMake(userProfileImageButton.center.x, userameButton.center.y)];
     [userProfileImageButton addTarget:self action:@selector(profileTapped) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:userProfileImageButton];
@@ -131,9 +132,8 @@ static const CGFloat labelPadding = 10;
 
 
 - (void)profileTapped{
-    NSLog(@"Totally tapped it");
-    if ([delegate respondsToSelector:@selector(CaptionView:sidSelectUsername:andProfileImage:)]) {
-        [delegate CaptionView:self sidSelectUsername:[_photo username] ? [_photo username] : @"" andProfileImage:nil];
+    if ([delegate respondsToSelector:@selector(CaptionView:didSelectUsername:andProfileImage:)]) {
+        [delegate CaptionView:self didSelectUsername:[_photo username] ? [_photo username] : @"" andProfileImage:nil];
     }
 }
 @end

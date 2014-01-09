@@ -12,7 +12,7 @@
 @class IDMCaptionView;
 @protocol IDMCaptionViewDelegate <NSObject>
 @optional
-- (void)CaptionView:(IDMCaptionView *)captionView sidSelectUsername:(NSString*)username andProfileImage:(UIImage*)profPic;
+- (void)CaptionView:(IDMCaptionView *)captionView didSelectUsername:(NSString*)username andProfileImage:(UIImage*)profPic;
 @end
 
 @interface IDMCaptionView : UIView{

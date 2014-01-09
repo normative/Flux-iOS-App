@@ -52,9 +52,13 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
             return;
         }
         
+        // Set object image features/image
         [self.matcherEngine setObjectFeatures:self.matchRecord.ire.imageMetadata.features];
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
-        [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage];
+        
+        // Set scene image features/image (note that if passed-in date matches date stored in matcher engine, features will be re-used
+        self.matchRecord.cfe.cameraFrameExtractDate = [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage
+                                                                withPreviousExtractDate:self.matchRecord.cfe.cameraFrameExtractDate];
         
         double rotation1[9];
         double translation1[3];
@@ -62,6 +66,9 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         double rotation2[9];
         double translation2[3];
         double normal2[3];
+        double rotation3[9];
+        double translation3[3];
+        double normal3[3];
         
         int result = [self.matcherEngine matchAndCalculateTransformsWithRotationSoln1:rotation1
                                                                  withTranslationSoln1:translation1
@@ -69,6 +76,9 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
                                                                     withRotationSoln2:rotation2
                                                                  withTranslationSoln2:translation2
                                                                       withNormalSoln2:normal2
+                                                                    withRotationSoln3:rotation3
+                                                                 withTranslationSoln3:translation3
+                                                                      withNormalSoln3:normal3
                                                                        withDebugImage:NO];//Debugging of images
         
         if (feature_matching_success == result)
@@ -87,6 +97,19 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
                                 hNormal2:normal2];
             
             self.matchRecord.ire.imageMetadata.imageHomographyPose = imagePose;
+
+            sensorPose imagePosePnP = self.matchRecord.ire.imageMetadata.imageHomographyPosePnP;
+            
+            [self computeImagePoseInECEF:&imagePosePnP
+                                userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
+                           hTranslation1: translation3
+                              hRotation1: rotation3
+                                hNormal1: normal3
+                           hTranslation2:translation3
+                              hRotation2:rotation3
+                                hNormal2:normal3];
+            
+            self.matchRecord.ire.imageMetadata.imageHomographyPosePnP = imagePosePnP;
         }
         
         // Check again if operation is cancelled after performing feature matching in case location is no longer valid

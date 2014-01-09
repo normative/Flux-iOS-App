@@ -11,6 +11,13 @@
 #import "FluxOpenGLCommon.h"
 #import "UIImage+OpenCV.h"
 #import <Accelerate/Accelerate.h>
+#include <iostream>
+
+typedef struct{
+    double theta1;
+    double theta2;
+    double theta3;
+} euler_angles;
 
 const double minLengthHomographyDiagonal = 50.0;
 const double maxRatioSideLength = 2.0;
@@ -21,9 +28,13 @@ const double maxRatioSideLength = 2.0;
     cv::Mat object_img;
     cv::Mat scene_img;
     std::vector<cv::KeyPoint> keypoints_object;
+    std::vector<cv::KeyPoint> keypoints_scene;
     cv::Mat descriptors_object;
+    cv::Mat descriptors_scene;
     int object_img_rows;
     int object_img_cols;
+    
+    NSDate *cameraFrameFeatureExtractDate;
     
     double intrinsicsInverse[9];
     double homography[9];
@@ -61,15 +72,13 @@ const double maxRatioSideLength = 2.0;
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_scene;
-    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     
     int result = 0;
-    result = self.wrappedMatcher->match(scene_img, matches,
-                               keypoints_object, keypoints_scene,
-                               descriptors_object, descriptors_scene,
-                               fundamental);
+    result = self.wrappedMatcher->match(matches,
+                                        keypoints_object, keypoints_scene,
+                                        descriptors_object, descriptors_scene,
+                                        fundamental);
 }
 
 // Object images are downloaded content to be matched
@@ -83,30 +92,43 @@ const double maxRatioSideLength = 2.0;
 // Object images are downloaded content to be matched and this routine supplies raw features
 - (void)setObjectFeatures:(NSString *)objectFeatures
 {
-    // Hard-code image dimensions to HD resolution right now.
-    // Should probably add these quantities to downloaded feature content in XML
-    object_img_rows = 1920;
-    object_img_cols = 1080;
-    
     cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
 
     cv::FileNode kptFileNode = fs["Keypoints"];
     cv::read(kptFileNode, keypoints_object);
     
     fs["Descriptors"] >> descriptors_object;
+    fs["img_cols"] >> object_img_cols;
+    fs["img_rows"] >> object_img_rows;
     
     std::cout << keypoints_object.size() << " keypoints and " << descriptors_object.rows << " descriptors read from file." << std::endl;
 }
 
 // Scene images are the background camera feed to match against
-- (void)setSceneImage:(UIImage *)sceneImage
+- (NSDate *)setSceneImage:(UIImage *)sceneImage withPreviousExtractDate:(NSDate *)extractDate
 {
-    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+    if (![extractDate isEqualToDate:cameraFrameFeatureExtractDate])
+    {
+        cameraFrameFeatureExtractDate = [NSDate date];
+
+        // Prepare the image and store it in the engine
+        cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+        
+        cv::transpose(inputImage, inputImage);
+        cv::flip(inputImage, inputImage, 1);
+        
+        scene_img = inputImage;
+        
+        // Now extract and store the keypoints and descriptors
+        int result = self.wrappedMatcher->extractFeatures(scene_img, keypoints_scene, descriptors_scene);
+
+        if (result < 0)
+        {
+            cameraFrameFeatureExtractDate = nil;
+        }
+    }
     
-    cv::transpose(inputImage, inputImage);
-    cv::flip(inputImage, inputImage, 1);
-    
-    scene_img = inputImage;
+    return cameraFrameFeatureExtractDate;
 }
 
 - (void)setSceneImageNoOrientationChange:(UIImage *)sceneImage
@@ -118,18 +140,16 @@ const double maxRatioSideLength = 2.0;
 
 
 
-- (int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withDebugImage:(bool)outputImage
+- (int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withRotationSoln3:(double[])R3 withTranslationSoln3:(double[])t3 withNormalSoln3:(double[])n3 withDebugImage:(bool)outputImage
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_scene;
-    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
     
-    result = self.wrappedMatcher->match(scene_img, matches,
+    result = self.wrappedMatcher->match(matches,
                                         keypoints_object, keypoints_scene,
                                         descriptors_object, descriptors_scene,
                                         fundamental);
@@ -139,6 +159,8 @@ const double maxRatioSideLength = 2.0;
         // Calculate homography using matches
         std::vector<cv::Point2f> obj;
         std::vector<cv::Point2f> scene;
+        
+        cv::Mat R_matchcam_origin;
         
         double scale_factor = scene_img.rows / object_img_rows;
         
@@ -178,7 +200,42 @@ const double maxRatioSideLength = 2.0;
              // Calculate transform_from_H
             result = [self computeRTFromHomography:homography];
             
-            // Extract transforms (R and t)
+            // Use SolvePnP method for calculating R and t
+            if (result == 0)
+            {
+                cv::Mat t_matchcam_origin;
+                
+                //-- Get the corners from the object image ( the object to be "detected" )
+                std::vector<cv::Point2f> obj_corners(4);
+                obj_corners[0] = cvPoint(0,0);
+                obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
+                obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
+                obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
+                std::vector<cv::Point2f> scene_corners(4);
+                
+                cv::perspectiveTransform( obj_corners, scene_corners, H );
+                
+                // Call method for calculating R and t
+                [self testPnpWithSceneCorners:scene_corners withObjectCorners:obj_corners withRotation:R_matchcam_origin withTranslation:t_matchcam_origin];
+                
+                std::cout << R_matchcam_origin << std::endl;
+                std::cout << t_matchcam_origin << std::endl;
+                
+                // Extract transforms (R and t) using SolvePnP method
+                for (int i=0; i < 3; i++)
+                {
+                    t3[i] = t_matchcam_origin.at<double>(i)/15.0; // self.t_from_H1.translation[i];
+                    
+                    // Just set these from other method. Used for check
+                    n3[i] = (i < 2) ? 0.0 : 1.0;
+                    for (int j=0; j < 3; j++)
+                    {
+                        R3[i + 3*j] = R_matchcam_origin.at<double>(j,i); // self.t_from_H1.rotation[i + 3*j];
+                    }
+                }
+            }
+            
+            // Extract transforms (R and t) using standard method
             if (result == 0)
             {
                 for (int i=0; i < 3; i++)
@@ -241,12 +298,15 @@ const double maxRatioSideLength = 2.0;
             
             scene_img.copyTo(dst);
             cv::cvtColor(dst, dst, CV_GRAY2RGB);
-            testOutStr = [NSString stringWithFormat:@"(%f, %f, %f)", homography[0], homography[1], homography[2]];
-            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
-            testOutStr = [NSString stringWithFormat:@"(%f, %f, %f)", homography[3], homography[4], homography[5]];
-            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,200), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
-            testOutStr = [NSString stringWithFormat:@"(%f, %f, %f)", homography[6], homography[7], homography[8]];
-            cv::putText(dst, testOutStr.UTF8String, cvPoint(50,275), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+            
+            if (validHomographyFound)
+            {
+                euler_angles test_angles = [self calculateEulerAngles:R_matchcam_origin];
+                testOutStr = [NSString stringWithFormat:@"euler(%f, %f, %f)", test_angles.theta1*180.0/M_PI, test_angles.theta2*180.0/M_PI, test_angles.theta3*180.0/M_PI];
+                cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+                testOutStr = [NSString stringWithFormat:@"t(%f, %f, %f)", t1[0]*15.0, t1[1]*15.0, t1[2]*15.0];
+                cv::putText(dst, testOutStr.UTF8String, cvPoint(50,200), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+            }
             
             outputImg = [UIImage imageWithCVMat:dst];
             UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
@@ -260,20 +320,245 @@ const double maxRatioSideLength = 2.0;
     return result;
 }
 
+- (void)testPnpWithSceneCorners:(std::vector<cv::Point2f>&)scene_corners withObjectCorners:(std::vector<cv::Point2f>&)object_corners
+                   withRotation:(cv::Mat&)R_final withTranslation:(cv::Mat&)t_final
+{
+    double projection_distance = 15.0;
+    
+    // Camera intrinsics
+    cv::Mat K = [self calculateCameraMatrixWithRows:scene_img.rows andColums:scene_img.cols];
+    
+    std::cout << "K:" << std::endl;
+    std::cout << K << std::endl;
+    std::cout << "K_inverse:" << std::endl;
+    std::cout << K.inv() << std::endl;
+    
+    // 2D image location of corners of matched image projected against rendering plane from the homography
+    // projected on the user's camera
+    std::cout << "Scene corners:" << std::endl;
+    for( size_t i = 0; i < scene_corners.size(); i++ )
+    {
+        std::cout << scene_corners[i] << std::endl;
+    }
+    
+    // 2D image location of image to be matched projected on it's own camera (pixel extents)
+    std::cout << "Object corners:" << std::endl;
+    for( size_t i = 0; i < object_corners.size(); i++ )
+    {
+        std::cout << object_corners[i] << std::endl;
+    }
+    
+    // Calculate 3D points of "object" in world coordinates
+    std::cout << "World coordinates:" << std::endl;
+    
+    std::vector<cv::Point3_<double> > planar_3d_points;
+    
+    for( size_t i = 0; i < scene_corners.size(); i++ )
+    {
+        // Corners of projected homography transform on rendering plane treated as a 3D surface
+        // Assume z = 1 here, but zero out coordinate to transpose it in reference frame at center of projection plane
+        cv::Mat pt1 = cv::Mat::zeros(3, 1, CV_64F);
+        pt1.at<double>(0,0) = scene_corners[i].x;
+        pt1.at<double>(1,0) = scene_corners[i].y;
+        pt1.at<double>(2,0) = 1.0;
+        
+        cv::Mat result = projection_distance * K.inv() * pt1;
+        
+        planar_3d_points.push_back(cv::Point3_<double>(result.at<double>(0),result.at<double>(1),0.0));
+        
+        std::cout << i << ": " << planar_3d_points[i] << std::endl;
+    }
+    
+    // Call solvePnP to calculate R and t given the 2D/3D pairing
+    // 3D points are at the projected plane (projection_distance away along z).
+    // Origin of this frame is at the center of the camera with x to the right and y down.
+    // z is away from the camera
+    // 2D points are the object image
+    // We assume that the "box" calculate from the homography resides on the plane perpendicular to the user's camera.
+    // It will have a shape dependent on the warping resulting from matching.
+    // The original image which was matched will have a defined rectangular shape which projects this shape on the plane
+    // because of the R and t transformations.
+    // Therefore the 3D object is this skewed projection on the rendering plane (a planar surface) and the 2D image
+    // points are the raw image to be matched.
+    cv::Mat rvec, tvec;
+    cv::Mat dist;
+    cv::solvePnP(planar_3d_points, object_corners, K, dist, rvec, tvec);
+    
+    // Outputs origin of world reference frame (center of user's camera FOV on projection plane)
+    // in camera frame (camera of matched image)
+    std::cout << "Rvec: " << rvec << std::endl;
+    std::cout << "Tvec: " << tvec << std::endl;
+    
+    // Calculate camera position in world reference frame
+    cv::Mat rotM;
+    cv::Rodrigues(rvec, rotM);
+    cv::Mat camera_pos = -tvec;
+    
+    std::cout << "camera_pos: " << camera_pos << std::endl;
+    std::cout << "camera_mat: " << rotM.t() << std::endl;
+    
+    // Calculate Euler angles for verification
+    euler_angles rot_euler = [self calculateEulerAngles:rotM.t()];
+    std::cout << "theta 1: " << 180.0/M_PI*rot_euler.theta1 << ", theta 2: " << 180.0/M_PI*rot_euler.theta2
+    << ", theta 3: " << 180.0/M_PI*rot_euler.theta3 << std::endl;
+    
+    // Frame transformations
+    
+    // Origin frame of reference
+    // x right, y up, -z is in front
+    
+    // Origin (OpenGL/tangent plane) to user camera position (of background image)
+    cv::Mat R_usercam_origin = [self R_x:M_PI];
+    cv::Mat t_usercam_origin = cv::Mat::zeros(3, 1, CV_64F);
+    
+    cv::Mat rvec_usercam_origin;
+    cv::Rodrigues(R_usercam_origin, rvec_usercam_origin);
+    
+    // User camera position (of background image) to center of image plane (where camera axis intersects rendering plane)
+    cv::Mat R_imageplane_usercam = cv::Mat::eye(3, 3, CV_64F);
+    cv::Mat t_imageplane_usercam = cv::Mat::zeros(3, 1, CV_64F);
+    t_imageplane_usercam.at<double>(2,0) = projection_distance;
+    cv::Mat rvec_imageplane_usercam;
+    cv::Rodrigues(R_imageplane_usercam, rvec_imageplane_usercam);
+    
+    // Center of image plane to camera frame of matched image
+    cv::Mat R_matchcam_imageplane = rotM;
+    cv::Mat t_matchcam_imageplane = camera_pos;
+    cv::Mat rvec_matchcam_imageplane;
+    cv::Rodrigues(R_matchcam_imageplane, rvec_matchcam_imageplane);
+    
+    // User camera position (of background image) to camera frame of matched image
+    cv::Mat rvec_matchcam_usercam;
+    cv::Mat tvec_matchcam_usercam;
+    cv::composeRT(rvec_imageplane_usercam, t_imageplane_usercam, rvec_matchcam_imageplane, t_matchcam_imageplane, rvec_matchcam_usercam, tvec_matchcam_usercam);
+    
+    cv::Mat R_matchcam_usercam;
+    cv::Rodrigues(rvec_matchcam_usercam, R_matchcam_usercam);
+    euler_angles euler_matchcam_usercam = [self calculateEulerAngles:R_matchcam_usercam];
+    
+    std::cout << "tvec_matchcam_usercam: " << tvec_matchcam_usercam << std::endl;
+    std::cout << "R_matchcam_usercam: " << std::endl;
+    std::cout << "theta 1: " << 180.0/M_PI*euler_matchcam_usercam.theta1 << ", theta 2: " << 180.0/M_PI*euler_matchcam_usercam.theta2
+    << ", theta 3: " << 180.0/M_PI*euler_matchcam_usercam.theta3 << std::endl;
+    
+    // User camera position (of background image) to camera frame of matched image
+    // Also include conversion from matched image camera frame (Open CV) to matched image camera frame (Open GL) - transpose of this transform
+    cv::Mat tvec_matchcam_origin;
+    
+    cv::Mat R_matchcam_origin = R_usercam_origin.t() * R_matchcam_usercam * R_usercam_origin;
+    tvec_matchcam_origin = R_usercam_origin.t() * tvec_matchcam_usercam;
+    
+    euler_angles euler_matchcam_origin = [self calculateEulerAngles:R_matchcam_origin];
+    
+    std::cout << "tvec_matchcam_origin: " << tvec_matchcam_origin << std::endl;
+    std::cout << "R_matchcam_origin: " << std::endl;
+    std::cout << "theta 1: " << 180.0/M_PI*euler_matchcam_origin.theta1 << ", theta 2: " << 180.0/M_PI*euler_matchcam_origin.theta2
+    << ", theta 3: " << 180.0/M_PI*euler_matchcam_origin.theta3 << std::endl;
+    
+    R_final = R_matchcam_usercam;
+    t_final = tvec_matchcam_usercam;
+//    R_final = R_matchcam_origin;
+//    t_final = tvec_matchcam_origin;
+}
+
+- (cv::Mat)R_x:(double)theta
+{
+    cv::Mat R_final = cv::Mat::eye(3, 3, CV_64F);
+    
+    R_final.at<double>(0,0) = 1.0;
+    R_final.at<double>(1,0) = 0.0;
+    R_final.at<double>(2,0) = 0.0;
+    R_final.at<double>(0,1) = 0.0;
+    R_final.at<double>(1,1) = cos(theta);
+    R_final.at<double>(2,1) = sin(theta);
+    R_final.at<double>(0,2) = 0.0;
+    R_final.at<double>(1,2) = -sin(theta);
+    R_final.at<double>(2,2) = cos(theta);
+    
+    return R_final;
+}
+
+- (cv::Mat)R_y:(double)theta
+{
+    cv::Mat R_final = cv::Mat::eye(3, 3, CV_64F);
+    
+    R_final.at<double>(0,0) = cos(theta);
+    R_final.at<double>(1,0) = 0.0;
+    R_final.at<double>(2,0) = -sin(theta);
+    R_final.at<double>(0,1) = 0.0;
+    R_final.at<double>(1,1) = 1.0;
+    R_final.at<double>(2,1) = 0.0;
+    R_final.at<double>(0,2) = sin(theta);
+    R_final.at<double>(1,2) = 0.0;
+    R_final.at<double>(2,2) = cos(theta);
+    
+    return R_final;
+}
+
+- (cv::Mat)R_z:(double)theta
+{
+    cv::Mat R_final = cv::Mat::eye(3, 3, CV_64F);
+    
+    R_final.at<double>(0,0) = cos(theta);
+    R_final.at<double>(1,0) = sin(theta);
+    R_final.at<double>(2,0) = 0.0;
+    R_final.at<double>(0,1) = -sin(theta);
+    R_final.at<double>(1,1) = cos(theta);
+    R_final.at<double>(2,1) = 0.0;
+    R_final.at<double>(0,2) = 0.0;
+    R_final.at<double>(1,2) = 0.0;
+    R_final.at<double>(2,2) = 1.0;
+    
+    return R_final;
+}
+
+- (euler_angles)calculateEulerAngles:(cv::Mat)rotM
+{
+    euler_angles angles;
+    
+    // From Computing Euler angles from a rotation matrix
+    // Gregory G. Slabaugh
+    angles.theta2 = -asin(rotM.at<double>(2,0));
+    angles.theta1 = atan2(rotM.at<double>(2,1)/cos(angles.theta1), rotM.at<double>(2,2)/cos(angles.theta1));
+    angles.theta3 = atan2(rotM.at<double>(1,0)/cos(angles.theta1), rotM.at<double>(0,0)/cos(angles.theta1));
+    
+    return angles;
+}
+
+- (cv::Mat)calculateCameraMatrixWithRows:(int)rows andColums:(int)cols
+{
+    double pixel = 0.0000014; //1.4 microns Pixel Size for iPhone5
+    double fx, fy;
+    double ox, oy;
+    
+    float focalL = 0.0041; //4.10 mm iPhone5
+    
+    fx = focalL/pixel;
+    fy = focalL/pixel;
+    ox = ((double)cols)/2.0;
+    oy = ((double)rows)/2.0;
+    
+    cv::Mat K = cv::Mat::eye(3, 3, CV_64F);
+    K.at<double>(0,0) = 1.0*fx;
+    K.at<double>(1,1) = 1.0*fy;
+    K.at<double>(0,2) = ox;
+    K.at<double>(1,2) = oy;
+    
+    return K;
+}
+
 - (UIImage *)matchAndDrawFeatures
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
-    std::vector<cv::KeyPoint> keypoints_scene;
-    cv::Mat descriptors_scene;
     cv::Mat fundamental;
     cv::Mat dst;
 
     int result = 0;
-    result = self.wrappedMatcher->match(scene_img, matches,
-                               keypoints_object, keypoints_scene,
-                               descriptors_object, descriptors_scene,
-                               fundamental);
+    result = self.wrappedMatcher->match(matches,
+                                        keypoints_object, keypoints_scene,
+                                        descriptors_object, descriptors_scene,
+                                        fundamental);
     
     if (result == 0)
     {

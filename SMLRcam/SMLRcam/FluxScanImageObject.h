@@ -48,6 +48,7 @@ typedef enum LocationDataType : NSUInteger {
 
 //
 @property (nonatomic) sensorPose imageHomographyPose;
+@property (nonatomic) sensorPose imageHomographyPosePnP;
 @property (nonatomic) sensorPose userHomographyPose;
 
 //orientation (euler angles)

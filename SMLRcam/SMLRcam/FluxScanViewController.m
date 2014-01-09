@@ -64,7 +64,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)kalmanStateChange
 {
     bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
-    [CameraButton setEnabled:currentKalmanStateValid];
+    if (currentKalmanStateValid) {
+        [CameraButton setAlpha:1.0];
+    }
+    else{
+        [CameraButton setAlpha:0.4];
+    }
     NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
 
@@ -353,11 +358,18 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
     [browser setDelegate:self];
     [browser setDisplayToolbar:NO];
-    [browser setDisplayDoneButtonBackgroundImage:NO];
+    //[browser setDisplayDoneButtonBackgroundImage:NO];
     UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
     [nav setNavigationBarHidden:YES];
     [self presentViewController:nav animated:YES completion:nil];
    
+}
+
+- (IBAction)toggleHomographyResult:(id)sender
+{
+    UISwitch *theSwitch = (UISwitch *)sender;
+    BOOL homographyMethod = theSwitch.on;
+    [openGLController setHomographyState:(homographyMethod ? 1 : 0)];
 }
 
 #pragma mark Camera View
@@ -387,6 +399,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
+    if (CameraButton.alpha < 1.0) {
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh :("
+                                                          message:@"Taking pictures is disabled because the device's location accuracy is poor. Try going outside, or avoid standing next to large metal objects."
+                                                         delegate:nil
+                                                cancelButtonTitle:@"OK"
+                                                otherButtonTitles:nil];
+        [message show];
+        return;
+    }
     if (!imageCaptureIsActive) {
         [openGLController showImageCapture];
         [self activateImageCapture];
@@ -626,7 +647,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-        [CameraButton setEnabled:NO];
+        [CameraButton setAlpha:0.4];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];

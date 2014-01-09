@@ -14,6 +14,7 @@
 @interface FluxProfileCell : UITableViewCell{
     UILabel*editLabel;
 }
+@property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (strong, nonatomic) IBOutlet UIButton *profileImageButton;
 @property (strong, nonatomic) IBOutlet UILabel *usernameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *bioLabel;

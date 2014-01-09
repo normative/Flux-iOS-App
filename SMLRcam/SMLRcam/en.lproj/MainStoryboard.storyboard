@@ -838,6 +838,13 @@
                                         </constraints>
                                         <color key="progressTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
                                     </progressView>
+                                    <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="un4-1f-5zm" userLabel="Homography Select">
+                                        <rect key="frame" x="246" y="505" width="51" height="31"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="toggleHomographyResult:" destination="2" eventType="valueChanged" id="6dc-Yl-CgA"/>
+                                        </connections>
+                                    </switch>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="Jav-fJ-sQd" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="4oR-Ld-br5"/>
@@ -1582,7 +1589,7 @@
                                 <color key="separatorColor" red="0.396078431372549" green="0.42352941176470588" blue="0.4392156862745098" alpha="1" colorSpace="calibratedRGB"/>
                                 <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" restorationIdentifier="publicProfileCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileDetailsCell" rowHeight="120" id="ZeG-UB-I8U" customClass="FluxProfileCell">
+                                    <tableViewCell contentMode="scaleToFill" restorationIdentifier="profileDetailsCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileDetailsCell" rowHeight="120" id="ZeG-UB-I8U" customClass="FluxProfileCell">
                                         <rect key="frame" x="0.0" y="22" width="320" height="120"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZeG-UB-I8U" id="pTZ-OZ-zeH">
@@ -1624,7 +1631,7 @@
                                         <connections>
                                             <outlet property="bioLabel" destination="nTv-Fd-tO6" id="THv-ID-tXg"/>
                                             <outlet property="imageCountLabel" destination="BBd-0f-9Pk" id="xsW-y7-y6S"/>
-                                            <outlet property="profileImageView" destination="3G9-QW-Boj" id="4xF-ry-F0k"/>
+                                            <outlet property="profileImageView" destination="3G9-QW-Boj" id="coq-AR-rCI"/>
                                             <outlet property="usernameLabel" destination="6id-UM-p7F" id="rVa-ZI-3Nm"/>
                                         </connections>
                                     </tableViewCell>
