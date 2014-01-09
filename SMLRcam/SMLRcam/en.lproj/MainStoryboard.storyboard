@@ -1017,7 +1017,7 @@
                         <outlet property="topSeparator" destination="mf9-MM-b8u" id="UUT-Po-sQE"/>
                         <outlet property="twitterButton" destination="Kbc-JC-R0G" id="GxA-lw-7OO"/>
                         <segue destination="2" kind="modal" identifier="pushScanView" modalTransitionStyle="crossDissolve" id="YOZ-ZI-zAe"/>
-                        <segue destination="71W-0H-05H" kind="push" identifier="" id="SrP-Jh-RBO"/>
+                        <segue destination="71W-0H-05H" kind="push" identifier="pushEmailSegue" id="SrP-Jh-RBO"/>
                         <segue destination="eN4-z8-AgL" kind="push" identifier="pushUsernameSegue" id="gce-s1-9QL"/>
                     </connections>
                 </viewController>
@@ -1635,10 +1635,10 @@
             </objects>
             <point key="canvasLocation" x="2918" y="719"/>
         </scene>
-        <!--Flux Register Email View Controller - Pick a Name-->
+        <!--Flux Register Username View Controller - Pick a Name-->
         <scene sceneID="ytO-Jc-A3e">
             <objects>
-                <viewController storyboardIdentifier="registerEmailView" id="eN4-z8-AgL" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="registerUsernameView" id="eN4-z8-AgL" customClass="FluxRegisterUsernameViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bka-Lp-Lwk"/>
                         <viewControllerLayoutGuide type="bottom" id="HPH-lf-QqN"/>
@@ -1647,19 +1647,6 @@
                         <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="fill" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ohg-6x-AEw">
-                                <rect key="frame" x="96" y="300" width="129" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <state key="normal" title="Create Account">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="createAccountButtonAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="7od-Bd-cul"/>
-                                    <action selector="createAccountButtonAction:" destination="eN4-z8-AgL" eventType="touchUpInside" id="sFN-vd-xSz"/>
-                                </connections>
-                            </button>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="Igi-2y-LHe">
                                 <rect key="frame" x="10" y="183" width="300" height="89"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -1691,8 +1678,8 @@
                                     <outlet property="delegate" destination="eN4-z8-AgL" id="wQu-YR-n1V"/>
                                 </connections>
                             </tableView>
-                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-Ya-IaC">
-                                <rect key="frame" x="114" y="78" width="93" height="108"/>
+                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="emptyProfileImage_big" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-Ya-IaC">
+                                <rect key="frame" x="124" y="102" width="73" height="73"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
@@ -1703,8 +1690,8 @@
                     </navigationItem>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
-                        <outlet property="createAccountButton" destination="ohg-6x-AEw" id="tdR-cC-SdD"/>
-                        <outlet property="emailTableView" destination="Igi-2y-LHe" id="O4g-jH-fiW"/>
+                        <outlet property="profileImageView" destination="cj9-Ya-IaC" id="96O-cG-V4z"/>
+                        <outlet property="usernameTableView" destination="Igi-2y-LHe" id="Ee9-pt-yym"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5qq-rz-Wnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1719,6 +1706,7 @@
         <image name="camButton" width="140" height="140"/>
         <image name="closeCamButton" width="100" height="101"/>
         <image name="emptyProfileImage" width="140" height="140"/>
+        <image name="emptyProfileImage_big" width="140" height="140"/>
         <image name="facebook_mini" width="221" height="50"/>
         <image name="filterButton" width="140" height="140"/>
         <image name="fluxlogo" width="186" height="217"/>

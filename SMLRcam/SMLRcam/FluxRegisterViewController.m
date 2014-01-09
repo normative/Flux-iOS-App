@@ -104,8 +104,11 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     if ([[segue identifier] isEqualToString:@"pushUsernameSegue"]) {
         FluxRegisterUsernameViewController*usernameVC = (FluxRegisterUsernameViewController*)segue.destinationViewController;
-        [usernameVC setUserInfo:[thirdPartyUserInfo mutableCopy]];
         [usernameVC setFluxDataManager:self.fluxDataManager];
+        [usernameVC setUserInfo:[thirdPartyUserInfo mutableCopy]];
+        [usernameVC setSuggestedUsername:tempUsername];
+        [usernameVC setDelegate:self];
+
     }
 }
 
@@ -399,6 +402,7 @@
         
         else{
             thirdPartyUserInfo = userInfo;
+            tempUsername = suggestion;
             [self performSegueWithIdentifier:@"pushUsernameSegue" sender:self];
         }
     }];
@@ -409,15 +413,20 @@
 }
 
 - (void)RegisterUsernameView:(FluxRegisterUsernameViewController *)usernameView didAcceptAddUsernameToUserInfo:(NSMutableDictionary *)userInfo{
-    
-    FluxUserObject *newThirdPartyUser = [[FluxUserObject alloc]init];
-    
-    [newThirdPartyUser setUsername:[userInfo objectForKey:@"username"]];
-    [newThirdPartyUser setAuth_token:[userInfo objectForKey:@"token"]];
-    //[newThirdPartyUser setPassword:password];
-    [newThirdPartyUser setProfilePic:nil];
-    
-    [self createAccountForUser:newThirdPartyUser];
+    if (userInfo) {
+        FluxUserObject *newThirdPartyUser = [[FluxUserObject alloc]init];
+        
+        [newThirdPartyUser setUsername:[userInfo objectForKey:@"username"]];
+        [newThirdPartyUser setAuth_token:[userInfo objectForKey:@"token"]];
+        //[newThirdPartyUser setPassword:password];
+        [newThirdPartyUser setProfilePic:nil];
+        
+        [self createAccountForUser:newThirdPartyUser];
+    }
+    else{
+        [self showContainerViewAnimated:YES];
+    }
+
 }
 
 #pragma mark Twitter
@@ -456,7 +465,7 @@
         return;
     }
     [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
             if (granted) {
                 if (_accounts.count > 1) {
                     UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Choose an Account" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
@@ -487,16 +496,23 @@
             NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
             
             NSLog(@"Reverse Auth process returned: %@", responseStr);
+            NSMutableArray *parts = [[responseStr componentsSeparatedByString:@"&"] mutableCopy];
+            for (int i = 0; i<parts.count; i++) {
+                NSString*string = (NSString*)[parts objectAtIndex:i];
+                NSRange range = [string rangeOfString:@"="];
+                [parts replaceObjectAtIndex:i withObject:(NSString*)[string substringFromIndex:range.location+1]];
+            }
             
-            NSArray *parts = [responseStr componentsSeparatedByString:@"&"];
+            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", [NSNumber numberWithInt:index], @"accountIndex", @"Twitter", @"socialPartner",_accounts, @"twitterAccounts", nil];
+            [self socialPartner:@"Twitter" didAuthenticateWithToken:(NSString*)[parts objectAtIndex:0] andUserInfo:userInfo];
             
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle: nil];
-            FluxRegisterEmailViewController*emailVC = [storyboard instantiateViewControllerWithIdentifier:@"registerEmailView"];
-
-            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", nil];
-            emailVC.userInfo = [userInfo mutableCopy];
-            [emailVC setDelegate:self];
-            [self.navigationController pushViewController:emailVC animated:YES];
+//            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle: nil];
+//            FluxRegisterEmailViewController*emailVC = [storyboard instantiateViewControllerWithIdentifier:@"registerEmailView"];
+//
+//            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", nil];
+//            emailVC.userInfo = [userInfo mutableCopy];
+//            [emailVC setDelegate:self];
+//            [self.navigationController pushViewController:emailVC animated:YES];
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
@@ -849,7 +865,10 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex != actionSheet.cancelButtonIndex) {
-        [self loginWithTwitterForAccountIndex:buttonIndex-1];
+        [self loginWithTwitterForAccountIndex:buttonIndex];
+    }
+    else{
+        [self showContainerViewAnimated:YES];
     }
 }
 
