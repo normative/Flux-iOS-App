@@ -180,6 +180,16 @@
 //}
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 0) {
+        [self.logoutButton setEnabled:NO];
+        //delay until the action sheet is removed from the stack
+        [self performSelector:@selector(logout) withObject:Nil afterDelay:0.5];
+    }
+}
+
+- (void)logout{
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    //if the action sheet was delayed, do nothing (**should** never happen)
+    if (window.rootViewController) {
         [UICKeyChainStore removeAllItemsForService:FluxService];
         [UICKeyChainStore removeAllItemsForService:FacebookService];
         [UICKeyChainStore removeAllItemsForService:TwitterService];
@@ -187,8 +197,9 @@
         if (FBSession.activeSession.isOpen) {
             [FBSession.activeSession closeAndClearTokenInformation];
         }
-        UIWindow *window = [UIApplication sharedApplication].keyWindow;
+        
         [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];
+        
         [self.parentViewController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
             
         }];
