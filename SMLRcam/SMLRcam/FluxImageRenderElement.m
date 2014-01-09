@@ -26,6 +26,7 @@
         _imageFetchType = none;
         // TODO: this allocation needs to be de-allocated at object destruction time....
         _imagePose = malloc(sizeof(sensorPose));
+        _featureFetching = false;
     }
     
     return self;

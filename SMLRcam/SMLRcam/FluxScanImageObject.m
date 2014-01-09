@@ -91,6 +91,7 @@ withDescriptionString:(NSString*)description
         self.matchFailed = NO;
         self.location_data_type = location_data_default;
         self.features = nil;
+        self.featureFetching = false;
     }
     
     return self;

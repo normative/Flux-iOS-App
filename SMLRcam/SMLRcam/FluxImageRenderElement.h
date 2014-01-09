@@ -27,6 +27,7 @@
 @property (nonatomic)           FluxImageType imageRenderType;
 @property (nonatomic)           FluxImageType imageFetchType;
 @property (nonatomic)           sensorPose *imagePose;
+@property (nonatomic)           bool featureFetching;
 
 - (id)initWithImageObject:(FluxScanImageObject *)curImgObj;
 
