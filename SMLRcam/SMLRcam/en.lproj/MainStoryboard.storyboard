@@ -1196,7 +1196,7 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ka0-3T-Kej">
-                                <rect key="frame" x="215" y="38" width="70" height="70"/>
+                                <rect key="frame" x="225" y="38" width="70" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="70" id="5sM-0T-opg"/>
@@ -1212,7 +1212,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBs-aE-2LI">
-                                <rect key="frame" x="35" y="38" width="70" height="70"/>
+                                <rect key="frame" x="25" y="38" width="70" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="70" id="6hO-w2-RDP"/>
@@ -1231,8 +1231,8 @@
                             <constraint firstItem="Qs4-tt-toV" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" id="By1-NW-t2M"/>
                             <constraint firstItem="gBs-aE-2LI" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="38" id="IS8-1X-OZk"/>
                             <constraint firstItem="Qs4-tt-toV" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" id="bS9-St-Rm6"/>
-                            <constraint firstItem="gBs-aE-2LI" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" constant="35" id="byb-31-h9b"/>
-                            <constraint firstAttribute="trailing" secondItem="ka0-3T-Kej" secondAttribute="trailing" constant="35" id="isb-lm-PQ1"/>
+                            <constraint firstItem="gBs-aE-2LI" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" constant="25" id="byb-31-h9b"/>
+                            <constraint firstAttribute="trailing" secondItem="ka0-3T-Kej" secondAttribute="trailing" constant="25" id="isb-lm-PQ1"/>
                             <constraint firstItem="ka0-3T-Kej" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="38" id="rh3-Oz-45y"/>
                         </constraints>
                     </view>
@@ -1799,6 +1799,6 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="cDh-QJ-kAL"/>
+        <segue reference="03e-8S-vGN"/>
     </inferredMetricsTieBreakers>
 </document>
