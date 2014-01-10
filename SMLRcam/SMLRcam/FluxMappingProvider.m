@@ -27,7 +27,8 @@
                                                   @"time_stamp":    @"timestamp",
                                                   @"description":   @"descriptionString",
                                                   @"user_id":       @"userID",
-                                                  @"camera_id":     @"cameraID"
+                                                  @"camera_id":     @"cameraID",
+                                                  @"camera_model":  @"cameraModelStr"
                                                  }];
     
     [mapping addAttributeMappingsFromArray:@[@"username",@"heading", @"longitude", @"latitude", @"altitude", @"yaw", @"pitch", @"roll", @"qw", @"qx", @"qy", @"qz"]];

@@ -7,6 +7,7 @@
 //
 
 #import "FluxDataManager.h"
+#import <sys/utsname.h>
 
 NSString* const FluxDataManagerDidAcquireNewImage = @"FluxDataManagerDidAcquireNewImage";
 NSString* const FluxDataManagerDidDownloadImage = @"FluxDataManagerDidDownloadImage";
@@ -17,6 +18,22 @@ NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidComplete
 NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImageLocalID";
 
 @implementation FluxDataManager
+
+#pragma mark - Class methods
+
++ (NSString*)thisDeviceName
+{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    return [NSString stringWithCString:systemInfo.machine
+                              encoding:NSUTF8StringEncoding];
+}
+
++ (FluxCameraModel)thisCameraModel
+{
+    return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager thisDeviceName]];
+}
 
 - (id)init
 {

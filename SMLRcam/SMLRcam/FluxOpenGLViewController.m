@@ -76,7 +76,7 @@ enum
 };
 
 GLint uniforms[NUM_UNIFORMS];
-
+int models[maxCameraModel];
 // Attribute index.
 enum
 {
@@ -122,13 +122,15 @@ GLfloat textureCoord[12] =
 
 
 GLubyte indexdata[6]={0,1,2,3,4,5};
-
+#define SQUAREIMAGES1080P
 //iPhone5 model
 
 float iPhone5_pixelsize = 0.0000014; //1.4 microns
-int   iPhone5_ypixels = 3264;
-int   iPhone5_xpixels = 2448;
+int   iPhone5_ypixels = 1920.0;
+int   iPhone5_xpixels = 1080.0;
 float iPhone5_focalLength = 0.0041; //4.10 mm
+
+
 
 //square images
 int iPhone5_topcrop;
@@ -176,7 +178,7 @@ GLKVector4 result[4];
 #pragma mark - OpenGL Utility Routines
 void init_camera_model()
 {
-	float _fov = 2 * atan2(iPhone5_pixelsize*3264.0/2.0, iPhone5_focalLength); //radians
+	float _fov = 2 * atan2(iPhone5_pixelsize*1920.0/2.0, iPhone5_focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
     camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
@@ -310,7 +312,7 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((usp->rotationMatrix), planeNormalI);
     //intersection with plane
-    GLKVector3 N = planeNormalRotated;
+    GLKVector3 N = GLKVector3Normalize(planeNormalRotated);
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
@@ -459,7 +461,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((userPose.rotationMatrix), planeNormalI);
     
     //intersection with plane
-    GLKVector3 N = planeNormalRotated;
+    GLKVector3 N = GLKVector3Normalize(planeNormalRotated);
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
@@ -1572,11 +1574,20 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 }
 
+-(GLKMatrix4) computeImageCameraPerspectivewithCameraModel:(int) model
+{
+    GLKMatrix4 icameraPerspective;
+    float _fov = 2 * atan2(cameraParameters[model].pixelSize* cameraParameters[model].yPixels/2.0, cameraParameters[model].focalLength   ); //radians
+    float aspect = cameraParameters[model].xPixels / cameraParameters[model].yPixels;
+    icameraPerspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
+    return icameraPerspective;
+}
 -(void)updateImageMetaData
 {
     viewParameters vpimage;
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
+    GLKMatrix4 icameraPerspective;
     float distance = _projectionDistance;
     FluxScanImageObject *scanimageobject;
     sensorPose imagehomographyPose;
@@ -1609,7 +1620,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
                                                vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                                vpimage.up.x, vpimage.up.y, vpimage.up.z);
-            tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
+            
+            icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
+           tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
             
             _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
         }
@@ -1676,7 +1689,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     */
-    
+    [self initCameraModels];
     [self setupBuffers];
     [self loadAlphaTexture];
     //[pedoLabel setText:@"ped"];
@@ -1736,6 +1749,54 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     glEnableVertexAttribArray(ATTRIB_TEXCOORD);
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
+}
+
+-(void) initCameraModels
+{
+    
+    cameraParameters = (fluxCameraParameters*)malloc(maxCameraModel * sizeof(fluxCameraParameters));
+    
+    //unknown treated as iPhone5
+    cameraParameters[0].pixelSize = 0.0000014;
+    cameraParameters[0].focalLength = 0.0041;
+    cameraParameters[0].yPixels = 3264.0;
+    cameraParameters[0].xPixels = 2448.0;
+    //iphone4  = 1,
+    cameraParameters[1].pixelSize = 0.00000175;
+    cameraParameters[1].focalLength = 0.00385;
+    cameraParameters[1].yPixels = 3264.0;
+    cameraParameters[1].xPixels = 2448.0;
+    //iphone4s = 2,
+    cameraParameters[2].pixelSize = 0.0000014;
+    cameraParameters[2].focalLength = 0.00428;
+    cameraParameters[2].yPixels = 3264.0;
+    cameraParameters[2].xPixels = 2448.0;
+    //iphone5  = 3,
+    cameraParameters[3].pixelSize = 0.0000014;
+    cameraParameters[3].focalLength = 0.0041;
+    cameraParameters[3].yPixels = 3264.0;
+    cameraParameters[3].xPixels = 2448.0;
+    //iphone5c = 4,
+    cameraParameters[4].pixelSize = 0.0000014;
+    cameraParameters[4].focalLength = 0.0041;
+    cameraParameters[4].yPixels = 3264.0;
+    cameraParameters[4].xPixels = 2448.0;
+    //iphone5s = 5,
+    cameraParameters[5].pixelSize = 0.0000015;
+    cameraParameters[5].focalLength = 0.00412;
+    cameraParameters[5].yPixels = 3264.0;
+    cameraParameters[5].xPixels = 2448.0;
+
+#ifdef SQUAREIMAGES1080P
+    int i;
+
+    for(i = 0;i <maxCameraModel; i++)
+    {
+        cameraParameters[i].xPixels = 1080.0;
+        cameraParameters[i].yPixels = 1080.0;
+    }
+    
+#endif
 }
 
 // IMPORTANT: Call this method after you draw and before -presentRenderbuffer:.
@@ -2232,7 +2293,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 sepia = (sio.location_data_type ==location_data_from_homography || sio.location_data_type ==location_data_valid_ecef) ? 0.0:1.0;
                 glUniform1f(uniforms[UNIFORM_SET_SEPIA0+c],sepia);
                 glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
-
+             // glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[i].m);
                 glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],1);
                 glActiveTexture(GL_TEXTURE0 + c);
                 glBindTexture(_texture[i].target, _texture[i].name);
