@@ -85,6 +85,12 @@
     CGFloat circleStartAngle;
     CGFloat circleEndAngle;
     
+    if (count > 1)
+    {
+        // add buffer to count
+        count += (CELLS_PER_VIEW - 1);
+    }
+    
     if (count <= CELLS_PER_VIEW) {
         circleStartAngle = 0;
         circleEndAngle = 0;
@@ -142,8 +148,13 @@
     
     //if it's outside the bounds of the scrollView
     if ((scrollView.contentOffset.y < scrollView.contentSize.height - scrollView.frame.size.height) && scrollView.contentOffset.y > 0) {
-        if (self.fluxDisplayManager && self.fluxDisplayManager.nearbyListCount > 5) {
-            [self.fluxDisplayManager timeBracketDidChange:(scrollView.contentOffset.y/scrollView.contentSize.height)];
+        if (self.fluxDisplayManager && self.fluxDisplayManager.nearbyListCount > 1) {
+            // adjust for the buffer to allow scrolling to the last item in the real list.  Make sure it doesn't go beyond that.
+            int nlc = self.fluxDisplayManager.nearbyList.count;
+            int idx = (nlc + (CELLS_PER_VIEW - 1)) * (scrollView.contentOffset.y/scrollView.contentSize.height);
+            if (idx >= nlc)
+                idx = nlc - 1;
+            [self.fluxDisplayManager timeBracketDidChange:idx];
             
         }
     }
