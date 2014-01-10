@@ -90,9 +90,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 
-
-- (void)didUpdatePlacemark:(NSNotification *)notification;
-
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)cameraButtonAction:(id)sender;
 - (IBAction)filterButtonAction:(id)sender;
