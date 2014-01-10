@@ -106,6 +106,8 @@ typedef enum _FluxCameraModel : NSUInteger {
 @property (nonatomic, strong) NSString *features;
 @property (nonatomic) bool featureFetching;
 
++ (FluxCameraModel)cameraModelFromModelStr:(NSString *)cameraModelStr;
+
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr
         andCameraID:(int)camID

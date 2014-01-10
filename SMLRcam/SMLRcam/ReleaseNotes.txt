@@ -1,5 +1,9 @@
 Release Notes:
 
+- add support for downloading and rendering square images
+- add support for proper camera model determination for improved rendering
+- fixes to profile image management grid display
+
 ******************************************
 
 V0.17 B01
