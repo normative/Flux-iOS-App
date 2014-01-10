@@ -144,8 +144,9 @@
                 [socialMgmtcell setIsActivated:NO];
             }
             else{
+                [socialMgmtcell setIsActivated:YES];
                 [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"facebookLogo"]];
-                [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService]];
+                [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]];
             }
             
             break;
