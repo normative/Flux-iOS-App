@@ -145,6 +145,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupLocationManager];
     
+    firstRunDone = NO;
+    
     currentDataFilter = [[FluxDataFilter alloc] init];
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
     [transitionFadeView setBackgroundColor:[UIColor blackColor]];
@@ -156,9 +158,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    if (!firstRunDone) {
+    if (!firstRunDone)
+    {
         [self setupMapView];
         firstRunDone = YES;
+    }
+    else
+    {
+        [self didUpdateLocation:nil];
     }
 }
 
