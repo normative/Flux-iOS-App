@@ -7,17 +7,38 @@
 //
 
 #import "FluxScanImageObject.h"
+#import <sys/utsname.h>
 
 @implementation FluxScanImageObject
 
-const NSString *fluxImageTypeStrings[] = {  @"none",
-    @"thumb",
-    @"quarterhd",
+const NSString *fluxImageTypeStrings[] = {
+    @"none",
+    @"thumbcrop",
+    @"quarterhdcrop",
     @"screen",
     @"oriented",
     @"highest",
     @"features"
 };
+
+const NSString *fluxCameraModelStrings[] = {
+    @"unknown",     // unknown
+    @"iPhone4,1",   // iPhone 4  ??
+    @"iPhone4,2",   // iPhone 4s ??
+    @"iPhone5,1",   // iPhone 5
+    @"iPhone5,2",   // iPhone 5  CDMA+GSM
+    @"iPhone5,3",   // iPhone 5c
+    @"iPhone6,1"    // iPhone 5s
+};
+
+- (NSString*)deviceName
+{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    return [NSString stringWithCString:systemInfo.machine
+                              encoding:NSUTF8StringEncoding];
+}
 
 #pragma mark - getter methods
 
@@ -43,6 +64,95 @@ const NSString *fluxImageTypeStrings[] = {  @"none",
     
     return theCoordinate;
 }
+
+#pragma mark -- utility / class methods
+
++ (FluxCameraModel)cameraModelFromModelStr:(NSString *)cameraModelStr
+{
+    FluxCameraModel cameraModel = unknown_cam;
+    
+    int stridx = 0;
+    
+    // i
+    for (int i = 1; (i < (sizeof(fluxCameraModelStrings) / sizeof(NSString *))); i++)
+    {
+        if ([cameraModelStr compare:fluxCameraModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
+        {
+            stridx = i;
+            break;
+        }
+    }
+    
+    switch (stridx)
+    {
+        case 1:     // iPhone 4     ??
+            cameraModel = iphone4;
+            break;
+        case 2:     // iPhone 4s    ??
+            cameraModel = iphone4s;
+            break;
+        case 3:     // iPhone 5
+        case 4:     // iPhone 5 CDMA+GSM
+            cameraModel = iphone5;
+            break;
+        case 5:     // iPhone 5c
+            cameraModel = iphone5c;
+            break;
+        case 6:     // iPhone 5s
+            cameraModel = iphone5s;
+            break;
+        default:    // unknown - anything else is an iPhone 5 for now...
+            cameraModel = iphone5;
+            break;
+    }
+    
+    return cameraModel;
+}
+
+#pragma mark - setter methods
+
+- (void) setCameraModelStr:(NSString *)cameraModelStr
+{
+    _cameraModelStr = cameraModelStr;
+    
+    _cameraModel = [FluxScanImageObject cameraModelFromModelStr:cameraModelStr];
+    
+    int stridx = 0;
+    
+    // i
+    for (int i = 1; (i < (sizeof(fluxCameraModelStrings) / sizeof(NSString *))); i++)
+    {
+        if ([cameraModelStr compare:fluxCameraModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
+        {
+            stridx = i;
+            break;
+        }
+    }
+    
+    switch (stridx)
+    {
+        case 1:     // iPhone 4     ??
+            _cameraModel = iphone4;
+            break;
+        case 2:     // iPhone 4s    ??
+            _cameraModel = iphone4s;
+            break;
+        case 3:     // iPhone 5
+        case 4:     // iPhone 5 CDMA+GSM
+            _cameraModel = iphone5;
+            break;
+        case 5:     // iPhone 5c
+            _cameraModel = iphone5c;
+            break;
+        case 6:     // iPhone 5s
+            _cameraModel = iphone5s;
+            break;
+        default:    // unknown - anything else is an iPhone 5 for now...
+            _cameraModel = iphone5;
+            break;
+    }
+}
+
 
 #pragma mark - nsobject life cycle
 
@@ -70,6 +180,7 @@ withDescriptionString:(NSString*)description
     {
         self.userID = userID;
         self.cameraID = camID;
+        self.cameraModelStr = [self deviceName];
         self.categoryID = catID;
         self.timestampString = timestampStr;
         self.descriptionString = description;
@@ -95,7 +206,6 @@ withDescriptionString:(NSString*)description
     }
     
     return self;
-    
 }
 
 - (NSString *)generateUniqueStringID

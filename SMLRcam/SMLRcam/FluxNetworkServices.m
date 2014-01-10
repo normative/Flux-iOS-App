@@ -15,7 +15,7 @@
 
 
 
-NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
+//NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 //NSString* const FluxProductionServerURL = @"http://54.221.222.71/";
 //NSString* const FluxProductionServerURL = @"http://54.205.83.75/";
 //NSString* const FluxProductionServerURL = @"http://192.168.2.18:3101/";

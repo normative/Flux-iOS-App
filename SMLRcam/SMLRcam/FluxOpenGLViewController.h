@@ -70,7 +70,7 @@
     bool useSolvePnPSolution;
     
     CGPoint _tapPoint;
-    
+    fluxCameraParameters *cameraParameters;
 //    NSLock *_nearbyListLock;
 //    NSLock *_renderListLock;
     
