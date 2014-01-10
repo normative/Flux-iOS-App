@@ -10,8 +10,9 @@
 #import <GLKit/GLKit.h>
 
 #import "FluxDataManager.h"
-#import "FluxLocationServicesSingleton.h"
+#import "FluxFeatureMatchingQueue.h"
 #import "FluxImageRenderElement.h"
+#import "FluxLocationServicesSingleton.h"
 
 extern NSString* const FluxDisplayManagerDidUpdateDisplayList;
 extern NSString* const FluxDisplayManagerDidUpdateNearbyList;
@@ -64,6 +65,7 @@ extern NSString* const FluxOpenGLShouldRender;
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxLocationServicesSingleton *locationManager;
+@property (nonatomic, strong) FluxFeatureMatchingQueue *fluxFeatureMatchingQueue;
 @property (nonatomic, strong) NSArray *fluxMapContentMetadata;
 @property (nonatomic, strong) GLKViewController *openGLVC;
 

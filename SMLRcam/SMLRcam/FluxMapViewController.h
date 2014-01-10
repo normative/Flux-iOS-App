@@ -34,7 +34,7 @@
     
     //location + motion
     FluxLocationServicesSingleton *locationManager;
-    
+    FluxUserLocationPin *userLocationPin;
     
     IBOutlet UIButton *filterButton;
     FluxDataFilter *currentDataFilter;

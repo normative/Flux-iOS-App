@@ -1,4 +1,7 @@
 Release Notes:
+- indicator in map view for current location updated with visual improvements
+- when zoomed in with map, radius of animated circle on current location indicator shows horizontal accuracy
+- improved logic for selecting candidate feature sets for matching (able to handle large orientation errors)
 
 ******************************************
 

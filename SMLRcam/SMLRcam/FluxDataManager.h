@@ -77,6 +77,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (NSArray *) checkForImagesByLocalID:(FluxLocalID *)localID;
 
 - (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
+- (UIImage *)fetchImageByImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
 
 - (FluxRequestID *)deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest;
 

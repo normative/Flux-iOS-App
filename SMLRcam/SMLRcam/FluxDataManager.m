@@ -195,6 +195,20 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return [fluxDataStore doesImageExistForLocalID:localID];
 }
 
+- (UIImage *)fetchImageByImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType
+{
+    FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
+    if (imageObj != nil)
+    {
+        return [self fetchImagesByLocalID:imageObj.localID withSize:imageType returnSize:returnType];
+    }
+    else
+    {
+        returnType = none;
+        return nil;
+    }
+}
+
 - (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType
 {
     UIImage *ret = nil;
