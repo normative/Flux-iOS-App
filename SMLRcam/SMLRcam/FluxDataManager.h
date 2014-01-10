@@ -39,6 +39,9 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
     NSMutableDictionary *uploadQueueReceivers;
 }
 
++ (NSString*)thisDeviceName;
++ (FluxCameraModel)thisCameraModel;
+
 - (FluxRequestID *) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                 withDataRequest:(FluxDataRequest *)dataRequest;
 
