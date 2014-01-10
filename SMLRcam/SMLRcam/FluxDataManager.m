@@ -32,7 +32,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 + (FluxCameraModel)thisCameraModel
 {
-    //return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager deviceName ]];
+    return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager thisDeviceName]];
 }
 
 - (id)init
