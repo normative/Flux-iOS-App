@@ -82,6 +82,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         
         _openGLVC = nil;
         
+        _fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -95,6 +97,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+
     }
     
     return self;
@@ -113,6 +117,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidUndoCapture object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
 }
 
 //double getAbsAngle(double angle, double heading)
@@ -187,7 +192,49 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 - (void)checkForFeatureMatchingTasks:(NSArray *)nearbyList
 {
-    
+    bool currentKalmanStateValid = [self.locationManager isKalmanSolutionValid];
+
+    if (currentKalmanStateValid)
+    {
+        FluxOpenGLViewController *fluxGLVC = (FluxOpenGLViewController *)self.openGLVC;
+
+        for (FluxImageRenderElement *ire in nearbyList)
+        {
+            if (ire.imageMetadata.features != nil)
+            {
+                if (ire.imageMetadata.matchFailed &&
+                    (([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending))
+                {
+                    // Reset failure state so it doesn't get queued up again until matching is complete or fails again
+                    ire.imageMetadata.matchFailed = NO;
+                    
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC];
+                }
+                else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil))
+                {
+                    // Also queue up any items which have not been queueud (not matched, no failure retry time set).
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC];
+                }
+            }
+            else if (!ire.imageMetadata.featureFetching)
+            {
+                // No features yet. Request them. Retry will be handled once they are available.
+                FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
+                [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
+                    // assign features into SIO.features...
+                    ire.imageMetadata.features = features;
+                    ire.imageMetadata.featureFetching = false;
+                };
+                featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                    ire.imageMetadata.featureFetching = false;
+                };
+                
+                ire.imageMetadata.featureFetching = true;
+                [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
+            }
+        }
+    }
 }
 
 - (void)didMatchImage:(NSNotification *)notification
@@ -199,16 +246,35 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [self calculateTimeAdjustedImageList];
 }
 
+# pragma mark - Kalman State Changes
+
 - (void)didResetKalmanFilter:(NSNotification *)notification
 {
     NSLog(@"Kalman Reset: All cached quantities being reset.");
     
     // Delete all queued matching tasks
-    FluxOpenGLViewController *fluxGLVC = (FluxOpenGLViewController *)self.openGLVC;
-    [fluxGLVC.fluxFeatureMatchingQueue deleteMatchRequests];
+    [self.fluxFeatureMatchingQueue deleteMatchRequests];
 
     // Reset cached quantities
     [self.fluxDataManager resetAllFeatureMatches];
+}
+
+// Adds valid FluxImageRenderElements to the match queue if enabled, or deletes existing tasks if disabled.
+// Triggered by a Kalman state change.
+- (void)featureMatchingKalmanFilterStateChange
+{
+    bool currentKalmanStateValid = [self.locationManager isKalmanSolutionValid];
+    
+    if (currentKalmanStateValid)
+    {
+        // This has the side-effect of queueing up jobs for feature matching, but we probably should be doing it anyways
+        [self calculateTimeAdjustedImageList];
+    }
+    else
+    {
+        // Delete any feature matching jobs in the queue (probably not valid).
+        [self.fluxFeatureMatchingQueue deleteMatchRequests];
+    }
 }
 
 #pragma mark - Filter
@@ -920,41 +986,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     };
                     [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
 
-                    if ((ire.imageMetadata.features == nil) && (!ire.imageMetadata.featureFetching))
-                    {
-                        FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
-                        [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                        featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
-                            // assign features into SIO.features...
-                            ire.imageMetadata.features = features;
-                            ire.imageMetadata.featureFetching = false;
-                        };
-                        featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                            ire.imageMetadata.featureFetching = false;
-                        };
-
-                        ire.imageMetadata.featureFetching = true;
-                        [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
-                    }
                     // only request one at a time
                     break;
-                }
-                else if (((ire.imageFetchType >= quarterhd) || (ire.imageRenderType >= quarterhd))
-                         && (ire.imageMetadata.features == nil) && (!ire.imageMetadata.featureFetching))
-                {
-                    FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
-                    [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
-                        // assign features into SIO.features...
-                        ire.imageMetadata.features = features;
-                        ire.imageMetadata.featureFetching = false;
-                    };
-                    featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                        ire.imageMetadata.featureFetching = false;
-                    };
-                    
-                    ire.imageMetadata.featureFetching = true;
-                    [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
                 }
             }
         }

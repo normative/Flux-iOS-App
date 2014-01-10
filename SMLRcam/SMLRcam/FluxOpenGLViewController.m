@@ -1179,7 +1179,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     delta.hidden = YES;
     pedometerL.hidden = YES;
     
-    self.fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
     frameGrabRequested = NO;
     useSolvePnPSolution = YES;
     
@@ -1188,7 +1187,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidCapture:) name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadAlphaTexture) name:@"maskChange" object:nil];
 }
@@ -1216,7 +1214,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"maskChange" object:nil];
     
     [self tearDownGL];
@@ -1265,64 +1262,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 #pragma mark - Feature Matching Support
-
-- (void)retryFailedMatches
-{
-    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
-
-    // Only attempt retries if Kalman state is valid. Otherwise wait until it is valid (retries will be queued then).
-    if (currentKalmanStateValid)
-    {
-        // Spin through list of elements and see if any are failed matches. Retry.
-        for (FluxImageRenderElement *ire in self.renderList)
-        {
-            if (ire.imageMetadata.matchFailed &&
-                (([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending) &&
-                (ire.imageMetadata.features != nil))
-            {
-                // Reset failure state so it doesn't get queued up again until matching is complete or fails again
-                ire.imageMetadata.matchFailed = NO;
-                
-                // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
-            }
-            else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil) && (ire.imageMetadata.features != nil))
-            {
-                // Also queue up any items which have not been queueud (not matched, no failure retry time set, valid resolution).
-                // This handles cases due to toggling of Kalman state at various points. Duplicate queued items are ignored.
-                
-                // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
-            }
-        }
-    }
-}
-
-// Adds any currently rendered FluxImageRenderElements to the match queue if enabled, or deletes existing tasks if disabled.
-// Triggered by a Kalman state change.
-- (void)featureMatchingKalmanFilterStateChange
-{
-    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
-    
-    if (currentKalmanStateValid)
-    {
-        // Spin through list of elements and queue up unmatched, high-resolution images.
-        // Add operation will ignore this request if localID is already queued.
-        for (FluxImageRenderElement *ire in self.renderList)
-        {
-            if (!ire.imageMetadata.matched && (ire.imageMetadata.features != nil))
-            {
-                // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
-            }
-        }
-    }
-    else
-    {
-        // Delete any feature matching jobs in the queue (probably not valid).
-        [self.fluxFeatureMatchingQueue deleteMatchRequests];
-    }
-}
 
 - (void) setHomographyState:(int)mode
 {
@@ -2058,13 +1997,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //                        int height = CGImageGetWidth(image.CGImage);
 //
 //                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
-
-                        // Queue up image for feature matching with background camera feed
-                        if ((!ire.imageMetadata.matched) && [self.fluxLocationManager isKalmanSolutionValid] && (ire.imageMetadata.features != nil))
-                        {
-                            // Only add object image + metadata to queue - scene object will be grabbed by matcher
-                            [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:self];
-                        }
                     }
                 }
                 else
@@ -2143,9 +2075,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         [self fixRenderList];
     }
-    
-    // Check for matching retries
-    [self retryFailedMatches];
     
     CMAttitude *att = motionManager.attitude;
     
