@@ -185,6 +185,11 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 #pragma mark - Feature Matching
 
+- (void)checkForFeatureMatchingTasks:(NSArray *)nearbyList
+{
+    
+}
+
 - (void)didMatchImage:(NSNotification *)notification
 {
     NSDictionary *userInfoDict = [notification userInfo];
@@ -294,21 +299,34 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     self.earliestDisplayDate = nil;
     self.latestDisplayDate = nil;
+
+    NSMutableArray *nearbyListCopy;
     
     [_displayListLock lock];
-    [_nearbyListLock lock];
     {
+        inCalcTimeAdjImageList = true;
+
+        // Grab a copy of self.nearbyList (keeps the lock hold time to a minimum)
+        [_nearbyListLock lock];
+        {
+            nearbyListCopy = [self.nearbyList mutableCopy];
+        }
+        [_nearbyListLock unlock];
+
+        // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
+        // We are checking "before" we filter the list in any way to maximize chances of finding a match
+        // Since this code is called very frequently, the retry logic will also be handled here for failed matches
+        [self checkForFeatureMatchingTasks:nearbyListCopy];
+    
         // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
         // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
         // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
         // hard pressed to see the issues simply because of motion blur.
         
-        inCalcTimeAdjImageList = true;
-        
         // spin through nearbylist to update metadata and nearbylist...
         if (self.openGLVC != nil)
         {
-            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:self.nearbyList andMaxIncidentThreshold:maxIncidentThreshold];
+            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:nearbyListCopy andMaxIncidentThreshold:maxIncidentThreshold];
         }
         
         // generate the displayList...
@@ -317,9 +335,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         [self.displayList removeAllObjects];
         
         // extract X images from nearbyList where timestamp <= time from slider (timeRangeMaxIndex)
-        for (int idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < self.nearbyList.count)); idx++)
+        for (int idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < nearbyListCopy.count)); idx++)
         {
-            FluxImageRenderElement *ire = [self.nearbyList objectAtIndex:(_timeRangeMinIndex + idx)];
+            FluxImageRenderElement *ire = [nearbyListCopy objectAtIndex:(_timeRangeMinIndex + idx)];
             if (ire.image == nil)
             {
                 // check to see if we have the imagery in the cache..
@@ -394,7 +412,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         
         inCalcTimeAdjImageList = false;
     }
-    [_nearbyListLock unlock];
     [_displayListLock unlock];
     
 //    NSLog(@"Nearby Sort:");
