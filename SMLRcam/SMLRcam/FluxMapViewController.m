@@ -116,12 +116,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 - (void)didUpdateLocation:(NSNotification*)notification
 {
+    CLLocationAccuracy newAccuracy = locationManager.location.horizontalAccuracy;
     [userLocationPin setCoordinate:locationManager.location.coordinate];
-    NSLog(@"Horizontal Accuracy (m): %f", locationManager.location.horizontalAccuracy);
-    if (userLocationPin.horizontalAccuracy != locationManager.location.horizontalAccuracy)
+    if (userLocationPin.horizontalAccuracy != newAccuracy)
     {
+        NSLog(@"Horizontal Accuracy (m): %f", newAccuracy);
         [fluxMapView removeAnnotation:userLocationPin];
-        [userLocationPin setHorizontalAccuracy:locationManager.location.horizontalAccuracy];
+        [userLocationPin setHorizontalAccuracy:newAccuracy];
         [fluxMapView addAnnotation:userLocationPin];
     }
 }
