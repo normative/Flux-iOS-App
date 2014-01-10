@@ -546,7 +546,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
          if ([result count]>0)
          {
              FluxUserObject*userObj = [result firstObject];
-             NSLog(@"Successfuly logged in with userID %i and token %@",userObj.userID,userObj.auth_token);
+             NSLog(@"Successfully logged in with userID %i and token %@",userObj.userID,userObj.auth_token);
              if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUser:andRequestID:)])
              {
                  [delegate NetworkServices:self didLoginUser:userObj andRequestID:requestID];
@@ -923,7 +923,11 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         else if ([localizedRecoverySuggestionDict isKindOfClass:[NSString class]])
         {
             NSString*string = (NSString *)localizedRecoverySuggestionDict;
-            return [string capitalizedString];
+            
+            NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+            id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSString*error = [json objectForKey:@"error"];
+            return [error lowercaseString];
         }
     }
     return @"An unknown error occured";

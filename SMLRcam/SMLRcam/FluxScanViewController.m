@@ -414,7 +414,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (IBAction)cameraButtonAction:(id)sender {
     if (CameraButton.alpha < 1.0) {
-        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh :("
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh..."
                                                           message:@"Taking pictures is disabled because the device's location accuracy is poor. Try going outside, or avoid standing next to large metal objects."
                                                          delegate:nil
                                                 cancelButtonTitle:@"OK"
