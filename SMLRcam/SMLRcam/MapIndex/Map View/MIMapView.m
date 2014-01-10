@@ -31,11 +31,13 @@
 #import "MITransition+Subclass.h"
 
 #import <MapKit/MKPinAnnotationView.h>
-#import "FluxLocationServicesSingleton.h"
 
 #import "MIAnnotation+Package.h"
 
 #import <MapKit/MapKit.h>
+
+#import "FluxUserLocationPin.h"
+#import "SVPulsingAnnotationView.h"
 
 static inline MIChangeType MIChangeTypeFromNSComparisonResult(NSComparisonResult result)
 {
@@ -91,8 +93,6 @@ typedef void (^_MIMapViewChange)(void);
 	_clusters = [NSMutableSet new];
 
 	[self setTransitionFactory:[MITransitionFactory new]];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
 
 	[super setDelegate:self];
 }
@@ -117,32 +117,6 @@ typedef void (^_MIMapViewChange)(void);
 	}
 
 	return self;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
-}
-
-#pragma mark - Location
-- (void)didUpdateLocation:(NSNotification*)notification{
-    CLLocation*location = [[notification userInfo]objectForKey:@"location"];
-    [userLocationPin setLocation:[[notification userInfo]objectForKey:@"location"]];
-    //    [self removeAnnotation:userLocationPin];
-    //    [userLocationPin setCoordinate:userLocationPin.location.coordinate];
-    //    [self addAnnotation:userLocationPin];
-    
-    NSLog(@"Accuracy: %f, %f",location.horizontalAccuracy, location.verticalAccuracy);
-    float radius = (location.horizontalAccuracy > location.verticalAccuracy ? location.horizontalAccuracy : location.verticalAccuracy);
-
-    [self removeOverlay:circ];
-    [self removeOverlay:myCirc];
-    circ = [MKCircle circleWithCenterCoordinate:location.coordinate radius:radius];
-    myCirc = [MKCircle circleWithCenterCoordinate:location.coordinate radius:5.0];
-    [self addOverlay:circ];
-    [self addOverlay:myCirc];
-    
-    //[fluxMapView setTheUserLocation:locationManager.location];
 }
 
 #pragma mark - Message Forwarding
@@ -262,9 +236,21 @@ typedef void (^_MIMapViewChange)(void);
 	}];
 
 	NSMutableSet *source = [[NSMutableSet alloc] initWithArray:[super annotations]];
+    
+    MIAnnotation *userPinAnnotation;
+    
+    for (MIAnnotation *annotation in [source copy])
+    {
+        if([annotation isKindOfClass:[FluxUserLocationPin class]])
+        {
+            userPinAnnotation = annotation;
+        }
+    }
+    
 	if (self.userLocation != nil)
 	{
 		[source removeObject:self.userLocation];
+        [source removeObject:userPinAnnotation];
 	}
 
 	for (MIAnnotation *annotation in [source copy])
@@ -379,10 +365,17 @@ typedef void (^_MIMapViewChange)(void);
 
 - (void)addAnnotation:(id <MKAnnotation>)annotation
 {
-	[self requestChange:^
-	{
-		[_index addAnnotation:annotation];
-	}];
+    if([annotation isKindOfClass:[FluxUserLocationPin class]])
+    {
+        [super addAnnotation:annotation];
+    }
+    else
+    {
+        [self requestChange:^
+        {
+            [_index addAnnotation:annotation];
+        }];
+    }
 }
 
 - (void)removeAnnotations:(NSArray *)annotations
@@ -396,11 +389,18 @@ typedef void (^_MIMapViewChange)(void);
 
 - (void)removeAnnotation:(id <MKAnnotation>)annotation
 {
-	[self requestChange:^
-	{
-		[_index removeAnnotation:annotation];
-		_flags.removalHandlingRequired = YES;
-	}];
+    if([annotation isKindOfClass:[FluxUserLocationPin class]])
+    {
+        [super removeAnnotation:annotation];
+    }
+    else
+    {
+        [self requestChange:^
+        {
+            [_index removeAnnotation:annotation];
+            _flags.removalHandlingRequired = YES;
+        }];
+    }
 }
 
 - (NSSet *)annotationsInMapRect:(MKMapRect)mapRect
@@ -417,6 +417,19 @@ typedef void (^_MIMapViewChange)(void);
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
+    if([annotation isKindOfClass:[FluxUserLocationPin class]]) {
+        static NSString *identifier = @"currentLocation";
+		SVPulsingAnnotationView *pulsingView = (SVPulsingAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:identifier];
+		
+		if(pulsingView == nil) {
+			pulsingView = [[SVPulsingAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
+            pulsingView.annotationColor = [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1];
+            pulsingView.canShowCallout = YES;
+        }
+		
+		return pulsingView;
+    }
+    
 	MKAnnotationView *view = nil;
 	if (_flags.delegateViewForAnnotation)
 	{
@@ -445,19 +458,6 @@ typedef void (^_MIMapViewChange)(void);
 		MKPinAnnotationColorGreen];
 
 	return view;
-}
-//blue circle around the user
-- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay{
-    MKCircleView *circleView = [[MKCircleView alloc] initWithCircle:(MKCircle *)overlay];
-    if (overlay == circ) {
-        circleView.fillColor = [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:0.45];
-    }
-    else{
-        circleView.fillColor = [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0];
-        circleView.lineWidth = 4.0;
-        circleView.strokeColor = [UIColor whiteColor];
-    }
-    return circleView;
 }
 
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated

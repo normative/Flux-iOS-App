@@ -9,11 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 
-@interface FluxUserLocationPin : NSObject <MKOverlay> {
-}
-@property (nonatomic, assign) CLLocation *location;
-@property (nonatomic, assign) MKMapRect boundingMapRect;
-@property (nonatomic, assign) CLLocationCoordinate2D coordinate;
+@interface FluxUserLocationPin : NSObject <MKAnnotation>
 
+- (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate;
+
+@property (nonatomic, readwrite) CLLocationCoordinate2D coordinate;
+@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *subtitle;
 
 @end

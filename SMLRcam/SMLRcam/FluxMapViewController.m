@@ -162,7 +162,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
-    //[fluxMapView setTheUserLocation:locationManager.location];
     lastSynchedLocation = locationManager.location.coordinate;
     lastRadius = 75.0;
     outstandingRequests = 0;
@@ -172,6 +171,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     if (currentDataFilter == nil) {
         currentDataFilter = [[FluxDataFilter alloc] init];
     }
+    
+
+    FluxUserLocationPin *annotation = [[FluxUserLocationPin alloc] initWithCoordinate:locationManager.location.coordinate];
+    annotation.title = @"Current Location";
+    [fluxMapView addAnnotation:annotation];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
