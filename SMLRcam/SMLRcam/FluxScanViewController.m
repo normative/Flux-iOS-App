@@ -341,8 +341,22 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     if(tappedImageObject == nil)
         return;
     
-    NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=quarterhd",FluxProductionServerURL,tappedImageObject.imageID];
-    IDMPhoto *photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
+    FluxImageType actualType = none;
+    
+    IDMPhoto *photo = nil;
+
+    UIImage *img = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType];
+    if (actualType >= quarterhd)
+    {
+        photo = [[IDMPhoto alloc]initWithImage:img];
+    }
+    else
+    {
+        // last resort
+        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=%@",FluxProductionServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];
+        photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
+    }
+    
     photo.userID = tappedImageObject.userID;
     photo.caption = tappedImageObject.descriptionString;
     NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
