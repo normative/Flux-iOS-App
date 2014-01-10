@@ -127,7 +127,7 @@
     {
         case 0:
             [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
-            [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"facebookLogo"]];
+            [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"facebookLogo"]]];
             break;
         case 1:
             [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];

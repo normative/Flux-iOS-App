@@ -114,10 +114,17 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     locationManager = [FluxLocationServicesSingleton sharedManager];
 }
 
-
-- (void)didUpdateLocation:(NSNotification*)notification{
-
-    //[fluxMapView setTheUserLocation:locationManager.location];
+- (void)didUpdateLocation:(NSNotification*)notification
+{
+    CLLocationAccuracy newAccuracy = locationManager.location.horizontalAccuracy;
+    [userLocationPin setCoordinate:locationManager.location.coordinate];
+    if (userLocationPin.horizontalAccuracy != newAccuracy)
+    {
+        NSLog(@"Horizontal Accuracy (m): %f", newAccuracy);
+        [fluxMapView removeAnnotation:userLocationPin];
+        [userLocationPin setHorizontalAccuracy:newAccuracy];
+        [fluxMapView addAnnotation:userLocationPin];
+    }
 }
 
 #pragma mark - IBActions
@@ -138,6 +145,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupLocationManager];
     
+    firstRunDone = NO;
+    
     currentDataFilter = [[FluxDataFilter alloc] init];
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
     [transitionFadeView setBackgroundColor:[UIColor blackColor]];
@@ -149,9 +158,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-    if (!firstRunDone) {
+    if (!firstRunDone)
+    {
         [self setupMapView];
         firstRunDone = YES;
+    }
+    else
+    {
+        [self didUpdateLocation:nil];
     }
 }
 
@@ -162,10 +176,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
-    //[fluxMapView setTheUserLocation:locationManager.location];
     lastSynchedLocation = locationManager.location.coordinate;
     lastRadius = 75.0;
     outstandingRequests = 0;
+    
+    userLocationPin = [[FluxUserLocationPin alloc] initWithCoordinate:locationManager.location.coordinate];
+    userLocationPin.title = @"Current Location";
+    userLocationPin.horizontalAccuracy = locationManager.location.horizontalAccuracy;
+    [fluxMapView addAnnotation:userLocationPin];
     
     filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
     
@@ -173,12 +191,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         currentDataFilter = [[FluxDataFilter alloc] init];
     }
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
 }
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
     

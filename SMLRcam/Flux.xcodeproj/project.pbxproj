@@ -145,6 +145,7 @@
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
 		F240346017E103140088CA2D /* FluxDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345F17E103140088CA2D /* FluxDataRequest.m */; };
+		F2434C21187F42E100D08B6B /* SVPulsingAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2434C20187F42E100D08B6B /* SVPulsingAnnotationView.m */; };
 		F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162117E206DC0027BD1F /* FluxDataManager.m */; };
 		F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162417E23FAA0027BD1F /* FluxDataFilter.m */; };
 		F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */; };
@@ -422,6 +423,8 @@
 		F240345C17E102F50088CA2D /* FluxDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataStore.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F240345E17E103140088CA2D /* FluxDataRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDataRequest.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F240345F17E103140088CA2D /* FluxDataRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataRequest.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		F2434C1F187F42E100D08B6B /* SVPulsingAnnotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVPulsingAnnotationView.h; sourceTree = "<group>"; };
+		F2434C20187F42E100D08B6B /* SVPulsingAnnotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SVPulsingAnnotationView.m; sourceTree = "<group>"; };
 		F245162017E206DC0027BD1F /* FluxDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDataManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F245162117E206DC0027BD1F /* FluxDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F245162317E23FAA0027BD1F /* FluxDataFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDataFilter.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -835,10 +838,11 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
-				AA9F85E61868AFF600AB98A7 /* Image Browser */,
 				AAF1BCF2183A73A900909AFF /* Animated Label */,
-				AAC1BF061811AF67001D3C01 /* ProgressHUD */,
+				AA9F85E61868AFF600AB98A7 /* Image Browser */,
 				AA984EE718088923007F33B1 /* MapIndex */,
+				AAC1BF061811AF67001D3C01 /* ProgressHUD */,
+				F2434C1E187F42E100D08B6B /* SVPulsingAnnotationView */,
 			);
 			name = "3rd Party";
 			sourceTree = "<group>";
@@ -1151,6 +1155,15 @@
 			name = "Data Store";
 			sourceTree = "<group>";
 		};
+		F2434C1E187F42E100D08B6B /* SVPulsingAnnotationView */ = {
+			isa = PBXGroup;
+			children = (
+				F2434C1F187F42E100D08B6B /* SVPulsingAnnotationView.h */,
+				F2434C20187F42E100D08B6B /* SVPulsingAnnotationView.m */,
+			);
+			path = SVPulsingAnnotationView;
+			sourceTree = "<group>";
+		};
 		F26EF317183D109F00536C54 /* Feature Matching */ = {
 			isa = PBXGroup;
 			children = (
@@ -1350,6 +1363,7 @@
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
 				F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */,
+				F2434C21187F42E100D08B6B /* SVPulsingAnnotationView.m in Sources */,
 				AA9D0EA5185664570004823E /* FluxRegisterEmailViewController.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */,

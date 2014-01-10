@@ -19,7 +19,6 @@
 #import "FluxOpenGLCommon.h"
 #import "FluxTextureToImageMapElement.h"
 #import "FluxImageRenderElement.h"
-#import "FluxFeatureMatchingQueue.h"
 #import "FluxCameraFrameElement.h"
 #import "FluxLocationServicesSingleton.h"
 
@@ -95,7 +94,6 @@
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
-@property (nonatomic, strong) FluxFeatureMatchingQueue *fluxFeatureMatchingQueue;
 @property (nonatomic, strong) FluxLocationServicesSingleton *fluxLocationManager;
 
 //	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
