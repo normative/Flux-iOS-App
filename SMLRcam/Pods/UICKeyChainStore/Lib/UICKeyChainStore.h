@@ -11,6 +11,7 @@
 @interface UICKeyChainStore : NSObject
 
 extern NSString* const FluxUsernameKey;
+extern NSString* const FluxNameKey;
 extern NSString* const FluxPasswordKey;
 extern NSString* const FluxUserIDKey;
 extern NSString* const FluxEmailKey;

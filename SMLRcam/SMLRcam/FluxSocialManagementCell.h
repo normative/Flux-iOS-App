@@ -12,6 +12,9 @@
     
 }
 
+
+@property (nonatomic)BOOL isActivated;
+
 @property (nonatomic, assign)IBOutlet UIImageView*socialIconImageView;
 @property (nonatomic, assign)IBOutlet UILabel*socialPartnerLabel;
 @property (nonatomic, assign)IBOutlet UILabel*socialDescriptionLabel;

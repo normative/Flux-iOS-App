@@ -10,6 +10,13 @@
 
 #import "FluxDataManager.h"
 
+#import <Accounts/Accounts.h>
+#import <Twitter/Twitter.h>
+#import "OAuth+Additions.h"
+#import "TWAPIManager.h"
+#import "TWSignedRequest.h"
+
+
 @interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate,UIActionSheetDelegate>{
     int initialMask;
 }
@@ -22,6 +29,10 @@
 @property (strong, nonatomic) IBOutlet UISlider *maskSlider;
 @property (strong, nonatomic) IBOutlet UILabel *maskLabel;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
+
+@property (nonatomic, strong) ACAccountStore *accountStore;
+@property (nonatomic, strong) TWAPIManager *apiManager;
+@property (nonatomic, strong) NSArray *accounts;
 
 //- (IBAction)changeSaveLocallySwitch:(id)sender;
 - (IBAction)onAreaResetBtn:(id)sender;

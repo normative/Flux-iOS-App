@@ -518,13 +518,7 @@
             NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", [NSNumber numberWithInt:index], @"accountIndex", @"Twitter", @"socialPartner",_accounts, @"twitterAccounts",[parts objectAtIndex:0], @"token", nil];
             [self socialPartner:@"Twitter" didAuthenticateWithUserInfo:userInfo];
             
-//            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle: nil];
-//            FluxRegisterEmailViewController*emailVC = [storyboard instantiateViewControllerWithIdentifier:@"registerEmailView"];
-//
-//            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", nil];
-//            emailVC.userInfo = [userInfo mutableCopy];
-//            [emailVC setDelegate:self];
-//            [self.navigationController pushViewController:emailVC animated:YES];
+
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
@@ -728,11 +722,14 @@
 - (void)loginWithUserObject:(FluxUserObject*)user andDidJustRegister:(BOOL)new{
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setLoginUserComplete:^(FluxUserObject*userObject, FluxDataRequest * completedDataRequest){
-        [UICKeyChainStore setString:userObject.username forKey:FluxUsernameKey service:FluxService];
-        [UICKeyChainStore setString:userObject.password forKey:FluxPasswordKey service:FluxService];
-        [UICKeyChainStore setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey service:FluxService];
-        [UICKeyChainStore setString:userObject.auth_token forKey:FluxTokenKey service:FluxService];
-        [UICKeyChainStore setString:userObject.email forKey:FluxEmailKey service:FluxService];
+        UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:FluxService];
+        
+        [store setString:userObject.username forKey:FluxUsernameKey];
+        [store setString:userObject.password forKey:FluxPasswordKey];
+        [store setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey];
+        [store setString:userObject.auth_token forKey:FluxTokenKey];
+        [store setString:userObject.email forKey:FluxEmailKey];
+        [store synchronize];
 
         
         if (new) {
