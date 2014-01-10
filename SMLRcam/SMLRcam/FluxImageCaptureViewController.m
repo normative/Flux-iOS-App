@@ -403,7 +403,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     UIGraphicsBeginImageContext(size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSaveGState(context);
-    
+
     //    CGContextTranslateCTM( context, 0.5f * size.width, 0.5f * size.height ) ;
     //    //CGContextRotateCTM( context, M_PI_2) ;
     //    [capturedImage drawInRect:(CGRect){ { -size.width * 0.5f, -size.height * 0.5f }, size } ] ;
@@ -411,23 +411,33 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [capturedImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
     
     UIImage *spunImage = UIGraphicsGetImageFromCurrentImageContext();
+    
     CGContextRestoreGState(context);
     UIGraphicsEndImageContext();
     
     // END HACK
+
+    // crop it for local display...
+    double width = spunImage.size.width;
+    double height = spunImage.size.height;
+    
+    CGImageRef imageRef = CGImageCreateWithImageInRect([spunImage CGImage], CGRectMake(0, ((height) - (width)) / 2, width, width));
+    UIImage* croppedImg = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
 
     if ([capturedImageObjects count]==0)
     {
         [previewLayer removeFromSuperlayer];
     }
 
-    [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:spunImage];
-
     [capturedImageObjects addObject:newImageObject];
-    [capturedImages addObject:spunImage];
-    
+    [capturedImages addObject:spunImage];   // post the uncropped version
+
+    // add to cache and notify for local rendering using the cropped image
+    [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:croppedImg];
+
     NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:localID, @"localID", spunImage, @"image", newImageObject, @"imageObject", nil];
+                                  initWithObjectsAndKeys:localID, @"localID", croppedImg, @"image", newImageObject, @"imageObject", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidCaptureImage
                                                         object:self userInfo:userInfoDict];
 
