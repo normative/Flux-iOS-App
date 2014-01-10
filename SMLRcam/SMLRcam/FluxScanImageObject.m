@@ -10,9 +10,10 @@
 
 @implementation FluxScanImageObject
 
-const NSString *fluxImageTypeStrings[] = {  @"none",
-    @"thumb",
-    @"quarterhd",
+const NSString *fluxImageTypeStrings[] = {
+    @"none",
+    @"thumbcrop",
+    @"quarterhdcrop",
     @"screen",
     @"oriented",
     @"highest",
