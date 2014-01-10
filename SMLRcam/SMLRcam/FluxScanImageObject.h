@@ -26,12 +26,23 @@ typedef enum FluxImageType : NSUInteger {
 } FluxImageType;
 
 extern const NSString *fluxImageTypeStrings[];
+extern const NSString *fluxCameraModelStrings[];
 
 typedef enum LocationDataType : NSUInteger {
     location_data_default = 0,
     location_data_valid_ecef = 1,
     location_data_from_homography = 2
 } LocationDataType;
+
+typedef enum _FluxCameraModel : NSUInteger {
+    unknown_cam = 0,
+    iphone4  = 1,
+    iphone4s = 2,
+    iphone5  = 3,
+    iphone5c = 4,
+    iphone5s = 5,
+    maxCameraModel = 6
+} FluxCameraModel;
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
@@ -83,6 +94,8 @@ typedef enum LocationDataType : NSUInteger {
 
 @property (nonatomic) int categoryID;
 @property (nonatomic) int cameraID;
+@property (nonatomic, strong) NSString *cameraModelStr;
+@property (nonatomic) FluxCameraModel cameraModel;
 @property (nonatomic) int imageID;
 @property (nonatomic) FluxImageID userID;
 @property (nonatomic) FluxLocalID *localID;
