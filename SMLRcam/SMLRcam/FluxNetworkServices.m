@@ -923,7 +923,11 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         else if ([localizedRecoverySuggestionDict isKindOfClass:[NSString class]])
         {
             NSString*string = (NSString *)localizedRecoverySuggestionDict;
-            return [string capitalizedString];
+            
+            NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+            id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSString*error = [json objectForKey:@"error"];
+            return [error lowercaseString];
         }
     }
     return @"An unknown error occured";

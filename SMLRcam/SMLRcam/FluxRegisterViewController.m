@@ -117,7 +117,7 @@
     
     //only letters and numbers
     NSCharacterSet *blockedCharacters = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
-    if (!([string rangeOfCharacterFromSet:blockedCharacters].location == NSNotFound) && (textField.tag == 10 || textField.tag == 88) ) {
+    if (!([string rangeOfCharacterFromSet:blockedCharacters].location == NSNotFound) && (textField.tag == 10 || textField.tag == 88) && ![string isEqualToString:@"."]) {
         return NO;
     }
     
@@ -130,6 +130,11 @@
     else{
         text = [textField.text stringByAppendingString:string];
     }
+    
+    if (text.length > 16) {
+        return NO;
+    }
+    
     [self checkTextCompletionForTextField:textField andString:text];
     return YES;
 }
@@ -319,7 +324,7 @@
                 break;
             }
     }
-
+    
     [cell.textField setDelegate:self];
     cell.textField.textAlignment = NSTextAlignmentCenter;
     [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
@@ -377,26 +382,31 @@
         [self fadeOutLogin];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        [self showContainerViewAnimated:YES];
         NSString*str = [NSString stringWithFormat:@"Camera registration failed with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+        [self loginRegistrationFailedWithString:str];
     }];
     [self.fluxDataManager postCamera:camObj withDataRequest:dataRequest];
 }
 
+- (void)loginRegistrationFailedWithString:(NSString*)description{
+    [self showContainerViewAnimated:YES];
+    if (FBSession.activeSession.isOpen) {
+        [FBSession.activeSession closeAndClearTokenInformation];
+    }
+    if ([description isKindOfClass:[NSString class]]) {
+        [ProgressHUD showError:description];
+    }
+}
+
 #pragma mark - 3rd Party Social
 
-- (void)socialPartner:(NSString*)partner didAuthenticateWithToken:(NSString*)token andUserInfo:(NSDictionary*)userInfo{
-    
-//    UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome Friend" message:[NSString stringWithFormat:@"You (%@) successfully logged in with %@.",[userInfo objectForKey:@"username"],partner]  delegate:nil cancelButtonTitle:@"Coool" otherButtonTitles: nil];
-//    [alert becomeFirstResponder];
-//    [alert show];
+- (void)socialPartner:(NSString*)partner didAuthenticateWithUserInfo:(NSDictionary*)userInfo{
 
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setUsernameUniquenessComplete:^(BOOL unique, NSString*suggestion, FluxDataRequest*completedRequest){
         if (unique) {
-            [UICKeyChainStore setString:token forKey:@"token" service:[NSString stringWithFormat:@"com.%@",partner]];
+            [UICKeyChainStore setString:[userInfo objectForKey:@"token"] forKey:@"token" service:[NSString stringWithFormat:@"com.%@",partner]];
             [self RegisterUsernameView:nil didAcceptAddUsernameToUserInfo:[userInfo mutableCopy]];
         }
         
@@ -407,7 +417,8 @@
         }
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSLog(@"Unique lookup failed with error %d", (int)[e code]);
+        NSString*str = [NSString stringWithFormat:@"Unique lookup failed with error %d", (int)[e code]];
+        [self loginRegistrationFailedWithString:str];
     }];
     [self.fluxDataManager checkUsernameUniqueness:[userInfo objectForKey:@"username"] withDataRequest:dataRequest];
 }
@@ -418,6 +429,7 @@
         
         [newThirdPartyUser setUsername:[userInfo objectForKey:@"username"]];
         [newThirdPartyUser setAuth_token:[userInfo objectForKey:@"token"]];
+        [newThirdPartyUser setEmail:[userInfo objectForKey:@"email"]];
         //[newThirdPartyUser setPassword:password];
         [newThirdPartyUser setProfilePic:nil];
         
@@ -503,8 +515,8 @@
                 [parts replaceObjectAtIndex:i withObject:(NSString*)[string substringFromIndex:range.location+1]];
             }
             
-            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", [NSNumber numberWithInt:index], @"accountIndex", @"Twitter", @"socialPartner",_accounts, @"twitterAccounts", nil];
-            [self socialPartner:@"Twitter" didAuthenticateWithToken:(NSString*)[parts objectAtIndex:0] andUserInfo:userInfo];
+            NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:3], @"username",[parts objectAtIndex:0], @"token", [NSNumber numberWithInt:index], @"accountIndex", @"Twitter", @"socialPartner",_accounts, @"twitterAccounts",[parts objectAtIndex:0], @"token", nil];
+            [self socialPartner:@"Twitter" didAuthenticateWithUserInfo:userInfo];
             
 //            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle: nil];
 //            FluxRegisterEmailViewController*emailVC = [storyboard instantiateViewControllerWithIdentifier:@"registerEmailView"];
@@ -544,16 +556,15 @@
 - (void)RegisterEmailView:(FluxRegisterEmailViewController *)emailView didAcceptAddEmailToUserInfo:(NSMutableDictionary *)userInfo{
     if (userInfo) {
         if ([userInfo objectForKey:@"token"]) {
-            [self socialPartner:@"Twitter" didAuthenticateWithToken:[userInfo objectForKey:@"token"] andUserInfo:userInfo];
+            [self socialPartner:@"Twitter" didAuthenticateWithUserInfo:userInfo];
         }
         // **should** never occur
         else{
-            [ProgressHUD showError:@"Unknown error occurred"];
+            [self loginRegistrationFailedWithString:@"Unknown error occurred"];
         }
     }
     else{
-        [ProgressHUD showError:@"Email is required for signup"];
-        [self showContainerViewAnimated:YES];
+        [self loginRegistrationFailedWithString:@"Email is required for signup"];
     }
 }
 
@@ -576,14 +587,12 @@
            FBSessionState state, NSError *error) {
              if (!error) {
                  dispatch_async(dispatch_get_main_queue(), ^{
-                     NSLog(@"Token: %@",FBSession.activeSession.accessTokenData.accessToken);
-                     
                      if (FBSession.activeSession.isOpen) {
                          [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
                          if (!error) {
                              
-                             NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:user.username, @"username", nil];
-                             [self socialPartner:@"Facebook" didAuthenticateWithToken:FBSession.activeSession.accessTokenData.accessToken andUserInfo:userInfo];
+                             NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:user.username, @"username",FBSession.activeSession.accessTokenData.accessToken,@"token", nil];
+                             [self socialPartner:@"Facebook" didAuthenticateWithUserInfo:userInfo];
                          }
 
                          else{
@@ -592,6 +601,7 @@
                                  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
                                  [alert show];
                                  [self showContainerViewAnimated:YES];
+                                 
                                  });
                              }
                          }];
@@ -703,10 +713,8 @@
         
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        
-        [self showContainerViewAnimated:YES];
         NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+        [self loginRegistrationFailedWithString:str];
     }];
     [self hideKeyboard];
     if (user.profilePic) {
@@ -736,16 +744,14 @@
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        [self showContainerViewAnimated:YES];
-        
         NSString*str;
         if (new) {
             str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
         }
         else{
-            str = [NSString stringWithFormat:@"Login failed with error %d", (int)[e code]];
+            str = [description stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[description substringToIndex:1] capitalizedString]];
         }
-        [ProgressHUD showError:str];
+        [self loginRegistrationFailedWithString:str];
     }];
     [self hideKeyboard];
     [self.fluxDataManager loginUser:user withDataRequest:dataRequest];

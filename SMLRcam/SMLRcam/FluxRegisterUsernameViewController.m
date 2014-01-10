@@ -125,6 +125,12 @@
 
 #pragma mark Text Delegate Methods
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    //only letters and numbers
+    NSCharacterSet *blockedCharacters = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
+    if (!([string rangeOfCharacterFromSet:blockedCharacters].location == NSNotFound) && (textField.tag == 10 || textField.tag == 88) && ![string isEqualToString:@"."]) {
+        return NO;
+    }
+    
     NSString * text;
     //hit backspace
     if (range.length>0) {
@@ -134,6 +140,11 @@
     else{
         text = [textField.text stringByAppendingString:string];
     }
+    
+    if (text.length > 16) {
+        return NO;
+    }
+    
     username = text;
     return YES;
 }
@@ -183,7 +194,22 @@
 }
 
 - (void)getFacebookProfilePic{
+    NSString*profileImageUrl = [NSString stringWithFormat:@"http://graph.facebook.com/%@/picture?type=large",[self.userInfo objectForKey:@"username"]];
     
+    dispatch_async
+    (dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSData *imageData =
+        [NSData dataWithContentsOfURL:
+         [NSURL URLWithString:profileImageUrl]];
+        
+        UIImage *image = [UIImage imageWithData:imageData];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            profileImageView.layer.cornerRadius = profileImageView.frame.size.width/2;
+            profileImageView.clipsToBounds = YES;
+            profileImageView.image = image;
+        });
+    });
 }
 
 - (void)getTwitterProfilePic{
@@ -213,7 +239,6 @@
              NSString *profileImageUrl = [user objectForKey:@"profile_image_url"];
              profileImageUrl = [profileImageUrl stringByReplacingOccurrencesOfString:@"pic_normal" withString:@"pic_bigger"];
              
-             //  As an example we could set an image's content to the image
              dispatch_async
              (dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                  NSData *imageData =

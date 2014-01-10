@@ -81,6 +81,12 @@
     [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.feedbackButton.titleLabel.font.pointSize]];
     
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+    if (!userID) {
+        NSString *a = [UICKeyChainStore stringForKey:FluxPasswordKey service:FluxService];
+        NSString *s = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+        NSString *d = [UICKeyChainStore stringForKey:FluxEmailKey service:FluxService];
+    }
+
     //**should** always pass
     if (userID) {
         FluxDataRequest*request = [[FluxDataRequest alloc]init];

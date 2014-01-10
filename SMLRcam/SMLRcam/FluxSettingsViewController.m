@@ -141,6 +141,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     switch (indexPath.row) {
         case 0:
             //facebook row tapped
@@ -186,6 +187,8 @@
     }
 }
 
+#pragma mark - Logout
+
 - (void)logout{
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     //if the action sheet was delayed, do nothing (**should** never happen)
@@ -205,8 +208,6 @@
         }];
     }
 }
-
-#pragma mark - Logout
 
 - (IBAction)logoutButtonAction:(id)sender {
     UIActionSheet *actionSheet = [[UIActionSheet alloc]
