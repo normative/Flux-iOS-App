@@ -424,6 +424,7 @@ typedef void (^_MIMapViewChange)(void);
 		if(pulsingView == nil) {
 			pulsingView = [[SVPulsingAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:identifier];
             pulsingView.annotationColor = [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1];
+            pulsingView.pulseScaleFactor = ((FluxUserLocationPin *)annotation).horizontalAccuracy / 5.0;
             pulsingView.canShowCallout = YES;
         }
 		

@@ -15,6 +15,7 @@
     if (self = [super init])
     {
         self.coordinate = coordinate;
+        self.horizontalAccuracy = 10.0;
     }
     
     return self;

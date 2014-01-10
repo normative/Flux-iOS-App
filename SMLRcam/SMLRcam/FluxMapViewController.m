@@ -114,10 +114,16 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     locationManager = [FluxLocationServicesSingleton sharedManager];
 }
 
-
-- (void)didUpdateLocation:(NSNotification*)notification{
-
-    //[fluxMapView setTheUserLocation:locationManager.location];
+- (void)didUpdateLocation:(NSNotification*)notification
+{
+    [userLocationPin setCoordinate:locationManager.location.coordinate];
+    NSLog(@"Horizontal Accuracy (m): %f", locationManager.location.horizontalAccuracy);
+    if (userLocationPin.horizontalAccuracy != locationManager.location.horizontalAccuracy)
+    {
+        [fluxMapView removeAnnotation:userLocationPin];
+        [userLocationPin setHorizontalAccuracy:locationManager.location.horizontalAccuracy];
+        [fluxMapView addAnnotation:userLocationPin];
+    }
 }
 
 #pragma mark - IBActions
@@ -166,23 +172,25 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     lastRadius = 75.0;
     outstandingRequests = 0;
     
+    userLocationPin = [[FluxUserLocationPin alloc] initWithCoordinate:locationManager.location.coordinate];
+    userLocationPin.title = @"Current Location";
+    userLocationPin.horizontalAccuracy = locationManager.location.horizontalAccuracy;
+    [fluxMapView addAnnotation:userLocationPin];
+    
     filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
     
     if (currentDataFilter == nil) {
         currentDataFilter = [[FluxDataFilter alloc] init];
     }
     
-
-    FluxUserLocationPin *annotation = [[FluxUserLocationPin alloc] initWithCoordinate:locationManager.location.coordinate];
-    annotation.title = @"Current Location";
-    [fluxMapView addAnnotation:annotation];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateMapPins:) name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFailToUpdatePins:) name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
 }
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
     
