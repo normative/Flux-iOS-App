@@ -58,5 +58,10 @@ typedef struct {
     GLKVector3 ecef;
 } sensorPose;
 
-
+typedef struct {
+    float pixelSize;
+    float yPixels;
+    float xPixels;
+    float focalLength;
+} fluxCameraParameters;
 #endif
