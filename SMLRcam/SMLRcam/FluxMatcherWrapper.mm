@@ -208,9 +208,9 @@ const double maxRatioSideLength = 2.0;
                 //-- Get the corners from the object image ( the object to be "detected" )
                 std::vector<cv::Point2f> obj_corners(4);
                 obj_corners[0] = cvPoint(0,0);
-                obj_corners[1] = cvPoint( object_img.cols * scale_factor, 0 );
-                obj_corners[2] = cvPoint( object_img.cols * scale_factor, object_img.rows * scale_factor );
-                obj_corners[3] = cvPoint( 0, object_img.rows * scale_factor );
+                obj_corners[1] = cvPoint( object_img_cols * scale_factor, 0 );
+                obj_corners[2] = cvPoint( object_img_cols * scale_factor, object_img_rows * scale_factor );
+                obj_corners[3] = cvPoint( 0, object_img_rows * scale_factor );
                 std::vector<cv::Point2f> scene_corners(4);
                 
                 cv::perspectiveTransform( obj_corners, scene_corners, H );
