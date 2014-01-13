@@ -55,6 +55,7 @@
 {
     [super viewDidLoad];
     firstTime = YES;
+    saveButton = [[UIBarButtonItem alloc]initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(saveButtonAction:)];
     
     editedDictionary = [[NSMutableDictionary alloc]init];
     
@@ -104,6 +105,15 @@
 
 - (void)PlaceholderTextViewDidEdit:(KTPlaceholderTextView *)placeholderTextView{
     [editedDictionary setObject:placeholderTextView.text forKey:@"bio"];
+    
+    if (![placeholderTextView.text isEqualToString:userObject.bio]) {
+        self.navigationItem.rightBarButtonItem = saveButton;
+    }
+    else
+    {
+        self.navigationItem.rightBarButtonItem = nil;
+        [editedDictionary removeObjectForKey:@"bio"];
+    }
 }
 
 
@@ -157,6 +167,8 @@
             [profileImageButton setBackgroundImage:image forState:UIControlStateNormal];
             [editedDictionary setObject:image forKey:@"profilePic"];
             [bioTextField becomeFirstResponder];
+            
+            self.navigationItem.rightBarButtonItem = saveButton;
             
         });
     });

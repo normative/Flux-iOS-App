@@ -68,7 +68,6 @@
     
     self.fluxDataManager = [[FluxDataManager alloc]init];
     registrationOKArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], nil];
-    [createLoginButton setEnabled:NO];
     
     loadingActivityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0, 0, 37, 37)];
     [loadingActivityIndicator setCenter:CGPointMake(self.view.center.x, self.view.center.y+100)];
@@ -730,6 +729,10 @@
         [store setString:userObject.auth_token forKey:FluxTokenKey];
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
+        
+        if (![NSString stringWithFormat:@"%i",userObject.userID]) {
+            NSLog(@"Login didn't return a valid userID");
+        }
 
         
         if (new) {
@@ -760,6 +763,7 @@
     if (isInSignUp) {
         //if they got here by pressing "join" on the keyboard, but didn't get all checkmarks yet.
         if (![self canCreateAccount]) {
+            [ProgressHUD showError:@"Please fill out the fields to create an account"];
             return;
         }
 //        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome!" message:@"Thanks for your interest in Flux. At the moment, Flux is still in beta, and requires a pin to continue. If you're one of the lucky ones, please enter your pin below." delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles:@"Activate Pin", nil];
@@ -811,8 +815,7 @@
         [UIView setAnimationsEnabled:NO];
         [createLoginButton setTitle:@"Sign in" forState:UIControlStateNormal];
         [UIView setAnimationsEnabled:YES];
-        [createLoginButton setEnabled:YES];
-        
+        [createLoginButton setEnabled:NO];
         
         
         [UIView animateWithDuration:0.3 animations:^{
@@ -823,6 +826,7 @@
             [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y-40)];
         } completion:^(BOOL finished){
             [loginToggleButton setEnabled:YES];
+            [createLoginButton setEnabled:YES];
         }];
     }
     else{
@@ -848,6 +852,7 @@
             [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y+40)];
         } completion:^(BOOL finished){
             [loginToggleButton setEnabled:YES];
+            [createLoginButton setEnabled:YES];
         }];
     }
 }
@@ -919,7 +924,7 @@
                 [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
             }
             else{
-                [logoImageView setCenter:CGPointMake(self.view.center.x, 87)];
+                [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
             }
             [loadingActivityIndicator setAlpha:0.0];
         }];
@@ -930,7 +935,7 @@
             [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
         }
         else{
-            [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
+            [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
         }
         [loadingActivityIndicator setAlpha:0.0];
     }

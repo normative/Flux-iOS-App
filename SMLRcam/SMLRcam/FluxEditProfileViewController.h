@@ -18,6 +18,7 @@
     IBOutlet UIButton *profileImageButton;
     IBOutlet UILabel *usernameLabel;
     IBOutlet KTPlaceholderTextView *bioTextField;
+    IBOutlet UIBarButtonItem* saveButton;
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 

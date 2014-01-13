@@ -872,7 +872,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="xZG-ie-JbE">
-                                <rect key="frame" x="114" y="186" width="93" height="108"/>
+                                <rect key="frame" x="114" y="230" width="93" height="108"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RuW-dy-GsI">
@@ -1297,13 +1297,7 @@
                         </subviews>
                         <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Edit Profile" id="yxN-HC-BQy">
-                        <barButtonItem key="rightBarButtonItem" title="Save" id="7oP-FM-AEP">
-                            <connections>
-                                <action selector="saveButtonAction:" destination="Ikh-cP-T3a" id="thv-4M-ttD"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Edit Profile" id="yxN-HC-BQy"/>
                     <connections>
                         <outlet property="bioTextField" destination="ZXg-vF-7Dv" id="3XG-UT-Yw9"/>
                         <outlet property="profileImageButton" destination="70Q-Pt-moQ" id="2xN-bd-N3W"/>
