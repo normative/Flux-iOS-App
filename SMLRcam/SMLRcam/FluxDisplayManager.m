@@ -292,7 +292,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 // determine sub-set of time-sorted image entries to copy into display list
 // value is % of displayListCount and reps the top of the list.  List is fixed size of X
-- (void)timeBracketDidChange:(float)value
+- (void)timeBracketDidChange:(int)value
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
     // TODO: these notifications may come thick and fast (especially when using momentum) so we may want to limit them
@@ -304,7 +304,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     if (!_isScanMode)
         return;
     
-    _timeRangeMinIndex = (self.nearbyList.count * value);
+//    _timeRangeMinIndex = ((self.nearbyList.count + 4) * value);
+    _timeRangeMinIndex = value;
+    
 //    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
     [self calculateTimeAdjustedImageList];
 }

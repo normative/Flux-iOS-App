@@ -2,6 +2,8 @@ Release Notes:
 - auto-calculate threshold parameter for feature extraction of camera frame
 - feature matching will begin once features are downloaded but no longer requires image to be downloaded as well
 
+- fix time scrubbing to allow scrolling through all imagery, down to the last one.
+
 ******************************************
 
 V0.17 B02

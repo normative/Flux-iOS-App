@@ -78,7 +78,7 @@ extern NSString* const FluxOpenGLShouldRender;
 @property (readonly, nonatomic) int nearbyListCount;     // what externals use to get the current count for the nearby list (formerly fluxNearbyMetadata.count)
 @property (readonly, nonatomic) int displayListCount;    // what externals use to get the current count for the display list (formerly fluxNearbyMetadata.count)
 
-- (void)timeBracketDidChange:(float)value;
+- (void)timeBracketDidChange:(int)value;
 
 - (void)mapViewWillDisplay;
 - (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter*)mapDataFilter;
