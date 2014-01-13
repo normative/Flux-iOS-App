@@ -22,6 +22,10 @@ typedef struct{
 const double minLengthHomographyDiagonal = 50.0;
 const double maxRatioSideLength = 2.0;
 
+const long int auto_threshold_min = 100;
+const long int auto_threshold_max = 10000;
+const int auto_threshold_inc = 10;
+
 @interface FluxMatcherWrapper ()
 {
     // Convert to grayscale before populating for performance improvement
@@ -84,9 +88,16 @@ const double maxRatioSideLength = 2.0;
 // Object images are downloaded content to be matched
 - (void)setObjectImage:(UIImage *)objectImage
 {
-    cv::Mat inputImage = [objectImage CVGrayscaleMat];
-    
-    object_img = inputImage;
+    if (!objectImage)
+    {
+        object_img = cv::Mat();
+    }
+    else
+    {
+        cv::Mat inputImage = [objectImage CVGrayscaleMat];
+        
+        object_img = inputImage;
+    }
 }
 
 // Object images are downloaded content to be matched and this routine supplies raw features
@@ -119,11 +130,15 @@ const double maxRatioSideLength = 2.0;
         
         scene_img = inputImage;
         
-        // Now extract and store the keypoints and descriptors
-        int result = self.wrappedMatcher->extractFeatures(scene_img, keypoints_scene, descriptors_scene);
+        // Now extract and store the keypoints and descriptors using auto mode
+        // Intentionally using a wide range to prevent retries with parameter selection
+        int result = self.wrappedMatcher->extractFeaturesWithAutoThreshold(scene_img, keypoints_scene, descriptors_scene,
+                                                                           auto_threshold_min, auto_threshold_max,
+                                                                           auto_threshold_inc);
 
         if (result < 0)
         {
+            NSLog(@"Extracting features from current camera frame failed.");
             cameraFrameFeatureExtractDate = nil;
         }
     }
@@ -254,7 +269,7 @@ const double maxRatioSideLength = 2.0;
         }
         
         // Debugging code to output image
-        if (outputImage)
+        if (outputImage && (object_img.rows > 0) && (object_img.cols > 0))
         {
             // Draw box around video image in destination image
             scene_img.copyTo(dst);
@@ -553,6 +568,11 @@ const double maxRatioSideLength = 2.0;
     std::vector<cv::DMatch> matches;
     cv::Mat fundamental;
     cv::Mat dst;
+    
+    if (object_img.size <= 0)
+    {
+        return nil;
+    }
 
     int result = 0;
     result = self.wrappedMatcher->match(matches,
