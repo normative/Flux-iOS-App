@@ -19,6 +19,8 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 #define a_WGS84 6378137.0
 #define b_WGS84 6356752.3142
 
+const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notification
+
 const double kalmanFilterMinHeadingAccuracy = 20.0;
 const double kalmanFilterMinHorizontalAccuracy = 20.0;
 const double kalmanFilterMinVerticalAccuracy = 20.0;
@@ -80,6 +82,9 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     else {
         NSLog(@"No Heading Information Available");
     }
+    
+    [self startUpdateTimer];
+
 }
 - (void)endLocating{
     [locationManager stopUpdatingLocation];
@@ -88,6 +93,12 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     if ([CLLocationManager headingAvailable]) {
         [locationManager stopUpdatingHeading];
+    }
+    
+    if (updateTimer != nil)
+    {
+        [updateTimer invalidate];
+        updateTimer = nil;
     }
 }
 
@@ -164,6 +175,31 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     newHeading = theta;
     return newHeading;
+}
+
+- (void) startUpdateTimer
+{
+    if (updateTimer != nil)
+        [updateTimer invalidate];
+    
+    updateTimer = [NSTimer scheduledTimerWithTimeInterval:maxUpdateTime
+                                                   target:self
+                                                 selector:@selector(notifyLocationUpdate)
+                                                 userInfo:nil
+                                                  repeats:NO];
+}
+
+- (void)notifyLocationUpdate
+{
+    [self startUpdateTimer];
+
+    // Notify observers of updated position
+    if (self.location != nil)
+    {
+        NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
+        [userInfo setObject:self.location forKey:@"location"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfo];
+    }
 }
 
 
@@ -264,14 +300,16 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     [self updateUserPose];
     
-    // Notify observers of updated position
-    if (self.location != nil)
-    {
-        NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
-        [userInfo setObject:self.location forKey:@"location"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfo];
-        //[self reverseGeocodeLocation:self.location];
-    }
+    [self notifyLocationUpdate];
+    
+//    // Notify observers of updated position
+//    if (self.location != nil)
+//    {
+//        NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
+//        [userInfo setObject:self.location forKey:@"location"];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfo];
+//        //[self reverseGeocodeLocation:self.location];
+//    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
