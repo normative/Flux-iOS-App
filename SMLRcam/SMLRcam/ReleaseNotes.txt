@@ -1,5 +1,7 @@
 Release Notes:
 
+- HACK fix to force reload of Profile picture.
+
 ******************************************
 
 V0.18 B01
