@@ -22,6 +22,10 @@ typedef struct{
 const double minLengthHomographyDiagonal = 50.0;
 const double maxRatioSideLength = 2.0;
 
+const long int auto_threshold_min = 100;
+const long int auto_threshold_max = 10000;
+const int auto_threshold_inc = 10;
+
 @interface FluxMatcherWrapper ()
 {
     // Convert to grayscale before populating for performance improvement
@@ -119,11 +123,15 @@ const double maxRatioSideLength = 2.0;
         
         scene_img = inputImage;
         
-        // Now extract and store the keypoints and descriptors
-        int result = self.wrappedMatcher->extractFeatures(scene_img, keypoints_scene, descriptors_scene);
+        // Now extract and store the keypoints and descriptors using auto mode
+        // Intentionally using a wide range to prevent retries with parameter selection
+        int result = self.wrappedMatcher->extractFeaturesWithAutoThreshold(scene_img, keypoints_scene, descriptors_scene,
+                                                                           auto_threshold_min, auto_threshold_max,
+                                                                           auto_threshold_inc);
 
         if (result < 0)
         {
+            NSLog(@"Extracting features from current camera frame failed.");
             cameraFrameFeatureExtractDate = nil;
         }
     }

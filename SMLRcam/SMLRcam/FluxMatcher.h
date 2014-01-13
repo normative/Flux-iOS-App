@@ -38,6 +38,7 @@ private:
     
     // pointer to the feature point detector object
     cv::Ptr<cv::FeatureDetector> detector;
+    cv::Ptr<cv::FeatureDetector> base_detector;
     // pointer to the feature descriptor extractor object
     cv::Ptr<cv::DescriptorExtractor> extractor;
     double ratio; // max ratio between 1st and 2nd NN
@@ -65,8 +66,12 @@ public:
         
         if (pyramid_levels > 0)
         {
-            cv::Ptr<cv::FeatureDetector> base_detector = detector;
-            detector = new cv::PyramidAdaptedFeatureDetector(detector, pyramid_levels);
+            base_detector = detector;
+            detector = new cv::PyramidAdaptedFeatureDetector(base_detector, pyramid_levels);
+        }
+        else
+        {
+            base_detector = 0;
         }
         
         // Configure the descriptor extractor
@@ -191,6 +196,15 @@ public:
                         std::vector<cv::KeyPoint>& keypoints,   // output keypoints
                         cv::Mat& descriptors);                  // output feature descriptors
 
+    // Detect and extract keypoints and descriptors on input image
+    // uses auto-method for calculating threshold
+    // returns 0 for success, negative if error
+    int extractFeaturesWithAutoThreshold(cv::Mat& image,        // input image
+                        std::vector<cv::KeyPoint>& keypoints,   // output keypoints
+                        cv::Mat& descriptors,                   // output feature descriptors
+                        long int auto_threshold_min,            // minimum number of features accepted
+                        long int auto_threshold_max,            // maximum number of features accepted
+                        int auto_threshold_inc);                // value to change threshold by
 };
 
 #endif

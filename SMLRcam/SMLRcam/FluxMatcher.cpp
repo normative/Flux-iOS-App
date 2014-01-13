@@ -8,6 +8,11 @@
 
 #include "FluxMatcher.h"
 
+typedef enum {
+    AUTO_DIRECTION_DECREASE = -1,
+    AUTO_DIRECTION_NONE = 0,
+    AUTO_DIRECTION_INCREASE = +1
+} auto_direction;
 
 // Clear matches for which NN ratio is > than threshold
 // return the number of removed points
@@ -280,5 +285,112 @@ int FluxMatcher::extractFeatures(cv::Mat &image,                        // input
         return -1;
     }
 
+    return 0;
+}
+
+int FluxMatcher::extractFeaturesWithAutoThreshold(cv::Mat &image,
+                                                  std::vector<cv::KeyPoint> &keypoints,
+                                                  cv::Mat &descriptors,
+                                                  long int auto_threshold_min,
+                                                  long int auto_threshold_max,
+                                                  int auto_threshold_inc)
+{
+    long int num_features = 0;
+    auto_direction param_direction = AUTO_DIRECTION_NONE;
+    int orig_threshold = 40;
+    
+    if (detector == 0)
+    {
+        return -1;
+    }
+    
+    // Handles case if using image pyramid
+    if (base_detector == 0)
+    {
+        orig_threshold = detector->getInt("threshold");
+    }
+    else
+    {
+        orig_threshold = base_detector->getInt("threshold");
+    }
+    
+    int threshold = orig_threshold;
+    bool errorOccurred = false;
+    
+    while (1)
+    {
+        if (base_detector == 0)
+        {
+            detector->set("threshold", threshold);
+        }
+        else
+        {
+            base_detector->set("threshold", threshold);
+        }
+        
+        // 1a. Detection of the features
+        detector->detect(image,keypoints);
+        
+        // 1b. Extraction of descriptors
+        extractor->compute(image,keypoints,descriptors);
+        
+        num_features = descriptors.rows;
+        
+        if (num_features == 0)
+        {
+            errorOccurred = true;
+            break;
+        }
+        
+        if (num_features < auto_threshold_min)
+        {
+            if (param_direction == AUTO_DIRECTION_INCREASE)
+            {
+                // We over-shot the parameter
+                errorOccurred = true;
+                break;
+            }
+            threshold = threshold - auto_threshold_inc;
+            param_direction = AUTO_DIRECTION_DECREASE;
+        }
+        else if (num_features > auto_threshold_max)
+        {
+            if (param_direction == AUTO_DIRECTION_DECREASE)
+            {
+                // We over-shot the parameter
+                errorOccurred = true;
+                break;
+            }
+            threshold = threshold + auto_threshold_inc;
+            param_direction = AUTO_DIRECTION_INCREASE;
+        }
+        else
+        {
+            // Correct number of features
+            break;
+        }
+        
+        if (threshold <= 0)
+        {
+            errorOccurred = true;
+            break;
+        }
+    }
+    
+    // Set the parameters back to the original value
+    if (base_detector == 0)
+    {
+        detector->set("threshold", orig_threshold);
+    }
+    else
+    {
+        base_detector->set("threshold", orig_threshold);
+    }
+    
+    if (errorOccurred)
+    {
+        return -1;
+    }
+    
     return 0;
 }
