@@ -1,5 +1,7 @@
 Release Notes:
 
+- fix time scrubbing to allow scrolling through all imagery, down to the last one.
+
 ******************************************
 
 V0.17 B02
