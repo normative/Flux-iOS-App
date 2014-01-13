@@ -1,4 +1,5 @@
 Release Notes:
+- auto-calculate threshold parameter for feature extraction of camera frame
 
 ******************************************
 
