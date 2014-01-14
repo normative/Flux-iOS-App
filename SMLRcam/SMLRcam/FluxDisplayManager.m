@@ -232,9 +232,27 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 - (void)requestMissingFeatures:(NSArray *)nearbyList
 {
-    // Figure out prioritized list of features to download.
+    // This routine prioritizes features to download.
+    // Note that displayList is a subset of nearbyList
     
-    // First pass through gives priority to feature sets that have not yet failed
+    // First pass through display list (current time, desirable heading)
+    [_displayListLock lock];
+
+    for (FluxImageRenderElement *ire in self.displayList)
+    {
+        if (!ire.imageMetadata.features &&
+            !ire.imageMetadata.featureFetching &&
+            !ire.imageMetadata.featureFetchFailed &&
+            (_featureRequestCount < maxRequestCountFeatures))
+        {
+            [self queueFeatureRequest:ire];
+        }
+    }
+
+    [_displayListLock unlock];
+    
+    // Next check any that were not in displayList but are in nearbyList
+    // Two-pass approach gives priority to feature sets that have not yet failed
     for (FluxImageRenderElement *ire in nearbyList)
     {
         if (!ire.imageMetadata.features &&
