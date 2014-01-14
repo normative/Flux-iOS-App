@@ -1,6 +1,7 @@
 Release Notes:
 - HACK fix to force reload of Profile picture.
 - throttle total number of feature descriptor downloads to reduce startup latency
+- prevent crash in MapView when zooming in/out with lots of content
 
 ******************************************
 
