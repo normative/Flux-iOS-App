@@ -16,6 +16,7 @@ const int maxDisplayListCount   = 10;
 
 const int maxRequestCountQuart = 2;
 const int maxRequestCountThumb = 5;
+const int maxRequestCountFeatures = 2;
 
 const double minMoveDistanceThreshold = 1.0;
 const NSTimeInterval maxMoveTimeThreshold = 5.0;
@@ -77,8 +78,10 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         
         _imageRequestCountThumb = 0;
         _imageRequestCountQuart = 0;
+        _featureRequestCount = 0;
 
         _imageRequestCountLock = [[NSLock alloc]init];
+        _featureRequestCountLock = [[NSLock alloc] init];
         
         _openGLVC = nil;
         
@@ -197,6 +200,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
     if (currentKalmanStateValid)
     {
+        // For all IRE's with features available, queue up feature-matching tasks
         FluxOpenGLViewController *fluxGLVC = (FluxOpenGLViewController *)self.openGLVC;
 
         for (FluxImageRenderElement *ire in nearbyList)
@@ -206,6 +210,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 if (ire.imageMetadata.matchFailed &&
                     (([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending))
                 {
+                    // Case where previous match attempt has failed
                     // Reset failure state so it doesn't get queued up again until matching is complete or fails again
                     ire.imageMetadata.matchFailed = NO;
                     
@@ -217,23 +222,51 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC];
                 }
             }
-            else if (!ire.imageMetadata.featureFetching)
-            {
-                // No features yet. Request them. Retry will be handled once they are available.
-                FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
-                [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
-                    // assign features into SIO.features...
-                    ire.imageMetadata.features = features;
-                    ire.imageMetadata.featureFetching = false;
-                };
-                featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                    ire.imageMetadata.featureFetching = false;
-                };
+        }
+    }
+    
+    // Request features not yet available for matching.
+    // This can happen whether or not the Kalman state is valid for matching.
+    [self requestMissingFeatures:nearbyList];
+}
+
+- (void)requestMissingFeatures:(NSArray *)nearbyList
+{
+    // Figure out prioritized list of features to download.
+    for (FluxImageRenderElement *ire in nearbyList)
+    {
+        if (!ire.imageMetadata.features &&
+            !ire.imageMetadata.featureFetching &&
+            !ire.imageMetadata.featureFetchFailed &&
+            (_featureRequestCount < maxRequestCountFeatures))
+        {
+            // No features yet. Request them. Retry will be handled once they are available.
+            FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
+            [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+            featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
+                // assign features into SIO.features...
+                ire.imageMetadata.features = features;
+                ire.imageMetadata.featureFetching = NO;
+
+                [_featureRequestCountLock lock];
+                _featureRequestCount--;
+                [_featureRequestCountLock unlock];
+            };
+            featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                ire.imageMetadata.featureFetching = NO;
+                ire.imageMetadata.featureFetchFailed = YES;
                 
-                ire.imageMetadata.featureFetching = true;
-                [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
-            }
+                [_featureRequestCountLock lock];
+                _featureRequestCount--;
+                [_featureRequestCountLock unlock];
+            };
+            
+            [_featureRequestCountLock lock];
+            _featureRequestCount++;
+            [_featureRequestCountLock unlock];
+
+            ire.imageMetadata.featureFetching = YES;
+            [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
         }
     }
 }
