@@ -109,6 +109,7 @@
 
 	if ([annotation class] == [MIAnnotation class])
 	{
+        if (!((MIAnnotation *)annotation)->_readAvailable) return NO;
 		return MIQuadTreeIsDescendant(_content, ((MIAnnotation *)annotation)->_content);
 	}
 
