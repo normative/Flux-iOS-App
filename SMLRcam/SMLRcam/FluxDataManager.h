@@ -58,7 +58,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestTimeValuesAtLocation:(CLLocationCoordinate2D)coordinate
                                     withRadius:(float)radius
                                     withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) requestImageListAtLocation:(CLLocationCoordinate2D)coordinate
+- (FluxRequestID *) requestImageListAtLocation:(CLLocation *)location
                                     withRadius:(float)radius
                                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestMetadataByImageID:(FluxDataRequest *)dataRequest;
@@ -68,12 +68,12 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(FluxImageType)imageType;
 - (void) completeRequestWithDataRequest:(FluxDataRequest *)dataRequest;
 
-- (FluxRequestID *) requestTagListAtLocation:(CLLocationCoordinate2D)coordinate
+- (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
                                   withRadius:(float)radius
                                  andMaxCount:(int)maxCount
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
-- (FluxRequestID *) requestMapImageListAtLocation:(CLLocationCoordinate2D)coordinate
+- (FluxRequestID *) requestMapImageListAtLocation:(CLLocationCoordinate2D)location
                                     withRadius:(float)radius
                                withDataRequest:(FluxDataRequest *)dataRequest;
 
