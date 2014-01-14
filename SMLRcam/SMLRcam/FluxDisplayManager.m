@@ -860,7 +860,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         }];
         
        CLLocation *loc = self.locationManager.location;
-       [self.fluxDataManager requestImageListAtLocation:loc.coordinate withRadius:scanImageRequestRadius withDataRequest:dataRequest];
+        [self.fluxDataManager requestImageListAtLocation:loc withRadius:scanImageRequestRadius withDataRequest:dataRequest];
 
     }
     else
