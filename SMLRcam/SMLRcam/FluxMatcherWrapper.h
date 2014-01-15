@@ -27,11 +27,13 @@ const uint16_t minorVersion = 0;
 
 typedef struct {
 	uint32_t magic;
+    char buff[28];
 	uint16_t major;
 	uint16_t minor;
 	uint16_t image_cols;
 	uint16_t image_rows;
 	uint32_t feature_count;
+    uint32_t reserved[4];
 } binHeader;
 
 enum feature_matching_error_codes {
