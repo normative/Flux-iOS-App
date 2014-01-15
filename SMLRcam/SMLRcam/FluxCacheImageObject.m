@@ -15,7 +15,7 @@
     FluxCacheImageObject *discardable = [[FluxCacheImageObject alloc] init];
     
     discardable.image = image;
-    discardable.accessCount = 0u;
+    discardable.accessCount = 1u;
     
     return discardable;
 }
