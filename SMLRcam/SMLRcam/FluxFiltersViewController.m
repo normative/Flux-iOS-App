@@ -146,7 +146,7 @@
     }];
     
     
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location.coordinate withRadius:self.radius
+    [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius
                                        andMaxCount:20 withDataRequest:request];
 }
 

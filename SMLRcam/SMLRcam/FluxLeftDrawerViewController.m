@@ -98,7 +98,8 @@
                 
                 NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 
-                if (![defaults objectForKey:@"profileImage"]) {
+//                if (![defaults objectForKey:@"profileImage"]) {
+                if (true) {
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                         [userObj setProfilePic:img];

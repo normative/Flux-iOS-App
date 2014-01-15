@@ -1,4 +1,17 @@
 Release Notes:
+- HACK fix to force reload of Profile picture.
+- throttle total number of feature descriptor downloads to reduce startup latency
+- prevent crash in MapView when zooming in/out with lots of content
+- set image request altitude to be current altitude +-3m. Mapview still requests all altitudes (+- 100000m)
+
+******************************************
+
+V0.18 B01
+
+Released: 2014-01-13 15:00:00
+
+Release Notes:
+- add location update timer to ensure a location update is sent at least every 5s regardless of Apple and/or Kalman state
 - auto-calculate threshold parameter for feature extraction of camera frame
 - feature matching will begin once features are downloaded but no longer requires image to be downloaded as well
 - fix time scrubbing to allow scrolling through all imagery, down to the last one.
@@ -11,7 +24,6 @@ V0.17 B02
 Released: 2014-01-12 21:15:00
 
 Release Notes:
-
 - indicator in map view for current location updated with visual improvements
 - when zoomed in with map, radius of animated circle on current location indicator shows horizontal accuracy
 - improved logic for selecting candidate feature sets for matching (able to handle large orientation errors)

@@ -17,6 +17,11 @@ NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidComplete
 
 NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImageLocalID";
 
+float const altitudeLowRange = 3.0;
+float const altitudeHighRange = 3.0;
+float const altitudeMin = -100000;
+float const altitudeMax =  100000;
+
 @implementation FluxDataManager
 
 #pragma mark - Class methods
@@ -100,7 +105,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     return nil;
 }
 
-- (FluxRequestID *) requestImageListAtLocation:(CLLocationCoordinate2D)coordinate
+- (FluxRequestID *) requestImageListAtLocation:(CLLocation*)location
                                     withRadius:(float)radius
                                withDataRequest:(FluxDataRequest *)dataRequest
 {
@@ -112,14 +117,16 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     // Simple case with no filtering
     if (dataRequest.searchFilter == nil)
     {
-        [networkServices getImagesForLocation:coordinate andRadius:radius andRequestID:requestID];
+        [networkServices getImagesForLocation:location.coordinate andRadius:radius andRequestID:requestID];
     }
     else
     {
-        [networkServices getImagesForLocationFiltered:coordinate
+        [networkServices getImagesForLocationFiltered:location.coordinate
                                             andRadius:radius
-                                            andMinAlt:dataRequest.searchFilter.altMin
-                                            andMaxAlt:dataRequest.searchFilter.altMax
+//                                            andMinAlt:dataRequest.searchFilter.altMin
+//                                            andMaxAlt:dataRequest.searchFilter.altMax
+                                            andMinAlt:location.altitude - altitudeLowRange
+                                            andMaxAlt:location.altitude + altitudeHighRange
                                       andMinTimestamp:dataRequest.searchFilter.timeMin
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
@@ -421,7 +428,7 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
 
 #pragma mark - Tag Requests
 
-- (FluxRequestID *) requestTagListAtLocation:(CLLocationCoordinate2D)coordinate
+- (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
                                   withRadius:(float)radius
                                  andMaxCount:(int)maxCount
                              withDataRequest:(FluxDataRequest *)dataRequest
@@ -435,14 +442,14 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
     
     if (dataRequest.searchFilter == nil)
     {
-        [networkServices getTagsForLocation:coordinate andRadius:radius andMaxCount:maxCount andRequestID:requestID];
+        [networkServices getTagsForLocation:location.coordinate andRadius:radius andMaxCount:maxCount andRequestID:requestID];
     }
     else
     {
-        [networkServices getTagsForLocationFiltered:coordinate
+        [networkServices getTagsForLocationFiltered:location.coordinate
                                             andRadius:radius
-                                            andMinAlt:dataRequest.searchFilter.altMin
-                                            andMaxAlt:dataRequest.searchFilter.altMax
+                                            andMinAlt:location.altitude - altitudeLowRange
+                                            andMaxAlt:location.altitude + altitudeHighRange
                                       andMinTimestamp:dataRequest.searchFilter.timeMin
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
@@ -451,8 +458,6 @@ NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImage
                                           andMaxCount:maxCount
                                          andRequestID:requestID];
     }
-    
-    
     
     return requestID;
 }

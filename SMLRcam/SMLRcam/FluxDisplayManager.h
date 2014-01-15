@@ -53,7 +53,9 @@ extern NSString* const FluxOpenGLShouldRender;
     
     int _imageRequestCountThumb;
     int _imageRequestCountQuart;
+    int _featureRequestCount;
     NSLock *_imageRequestCountLock;
+    NSLock *_featureRequestCountLock;
     
     sensorPose lastMotionPose;
     NSDate *lastMotionTime;
