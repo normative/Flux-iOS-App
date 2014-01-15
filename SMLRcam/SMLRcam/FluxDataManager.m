@@ -943,4 +943,9 @@ float const altitudeMax =  100000;
     [fluxDataStore debugByShowingCachedImageKeys];
 }
 
+- (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems
+{
+    [fluxDataStore cleanupNonLocalContentWithLocalIDArray:localItems];
+}
+
 @end

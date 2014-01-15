@@ -701,6 +701,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             //  copy local-only objects (imageid < 0) into localList
             NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];
             
+            NSMutableArray *nearbyLocalIDs = [[NSMutableArray alloc] init];
+            
             [_nearbyListLock lock];
             {
 //                for (int oidx = 0; oidx < (imageList.count-1); oidx++)
@@ -795,6 +797,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 //                    if ([self.nearbyList indexOfObject:curImgRenderObj] == NSNotFound)
                     {
                         [self.nearbyList addObject:curImgRenderObj];
+                        [nearbyLocalIDs addObject:curImgRenderObj.localID];
                     }
                 }
                 
@@ -812,6 +815,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     {
                         // copy to nearbyList
                         [self.nearbyList addObject:curImgRenderObj];
+                        [nearbyLocalIDs addObject:curImgRenderObj.localID];
 
                         // update anything else that needs to be here...
                         curImgRenderObj.lastReferenced = [[NSDate alloc]init];
@@ -851,6 +855,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 }
 
                 [self calculateTimeAdjustedImageList];
+                
+                [self.fluxDataManager cleanupNonLocalContentWithLocalIDArray:nearbyLocalIDs];
             }
             [_nearbyListLock unlock];
 

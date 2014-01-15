@@ -32,5 +32,6 @@
 - (void)resetAllFeatureMatches;
 
 - (void)debugByShowingCachedImageKeys;
+- (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems;
 
 @end

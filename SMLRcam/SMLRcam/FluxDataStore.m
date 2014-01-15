@@ -262,4 +262,24 @@
     }
 }
 
+- (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems
+{
+    // Cleans up the image NSCache for now. Could also clean up metadata structure
+    for (FluxLocalID *localID in [fluxMetadata allKeys])
+    {
+        if (![localItems containsObject:localID])
+        {
+            FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+            for (NSUInteger imageType = thumb; imageType <= full_res; imageType++)
+            {
+                FluxCacheImageObject *cacheImageObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
+                if (cacheImageObj && ![cacheImageObj isContentDiscarded])
+                {
+                    [cacheImageObj endContentAccess];
+                }
+            }
+        }
+    }
+}
+
 @end
