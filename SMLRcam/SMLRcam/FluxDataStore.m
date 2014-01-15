@@ -170,7 +170,15 @@
     // This means it is either no longer in cache, or didn't exist in the first place
     FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
     FluxCacheImageObject *img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
-    return img.image;
+    
+    if (img.image && [img beginContentAccess])
+    {
+        return img.image;
+    }
+    else
+    {
+        return nil;
+    }
 }
 
 - (FluxScanImageObject *) getMetadataWithImageID:(FluxImageID)imageID
