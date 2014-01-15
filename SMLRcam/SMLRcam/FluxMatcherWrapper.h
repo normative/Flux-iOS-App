@@ -21,7 +21,7 @@ typedef struct {
     int32_t class_id; //!< object class (if the keypoints need to be clustered by an object they belong to)
 } FluxKeyPoint;
 
-const uint32_t fluxMagic = 0x464C5558;	// "FLUX"
+const uint32_t fluxMagic = 0x58554C46;	// "FLUX" backwards so it reads correct if you cat the file
 const uint16_t majorVersion = 1;
 const uint16_t minorVersion = 0;
 

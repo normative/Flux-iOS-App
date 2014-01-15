@@ -128,8 +128,18 @@ const int auto_threshold_inc = 10;
     if ((header->magic != fluxMagic) || (header->major != 1))
     {
     	// problem
-    	std::cout << "Magic wrong (" << header->magic << ") or major wrong (" << header->major << ")." << std::endl;
+        NSLog(@"Feature header Magic number wrong (%x) or major wrong (%i).", header->magic, header->major);
+        keypoints_object.resize(0);
     	return;
+    }
+    
+    int expectedSize = sizeof(binHeader) + header->feature_count * (sizeof(FluxKeyPoint) + 64);
+    
+    if (objectFeatures.length < expectedSize)
+    {
+        NSLog(@"Invalid feature block size.  Expecting %i, have %i.", expectedSize, objectFeatures.length);
+        keypoints_object.resize(0);
+        return;
     }
     
     keypoints_object.resize(header->feature_count);
@@ -161,9 +171,9 @@ const int auto_threshold_inc = 10;
     	}
     }
     
-//    int descsize = descriptors_object.rows;
+    int descsize = descriptors_object.rows;
     
-//    std::cout << kpsize << " keypoints and " << descsize << " descriptors read from file." << std::endl;
+    NSLog(@"%i keypoints and %i descriptors read from file.", kpsize, descsize);
     
     kpsize = 0;
 }
