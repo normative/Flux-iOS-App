@@ -89,41 +89,58 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 2;
+    return 1;
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        return @"General";
-    }
-    else
-        return @"Social Management";
+//    if (section == 0) {
+//        return @"General";
+//    }
+//    else
+        return @"Linked Accounts";
+}
+
+- (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    return 30.0;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    UIView*view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, 30.0)];
+    [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
+    
+    // Create label with section title
+    UILabel*label = [[UILabel alloc] init];
+    label.frame = CGRectMake(20, 0, 150, 30.0);
+    label.textColor = [UIColor whiteColor];
+    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:15.0]];
+    label.text = [self tableView:tableView titleForHeaderInSection:section];
+    label.backgroundColor = [UIColor clearColor];
+    //[label setCenter:CGPointMake(label.center.x, view.center.y)];
+    [view addSubview:label];
+    return view;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0) {
-        return 0;
-    }
-    else
+//    if (section == 0) {
+//        return 0;
+//    }
+//    else
         return 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-
-    
-    if (indexPath.section == 0) {
-        static NSString *cellIdentifier = @"cell";
-        UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
-        }
-        
-        [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
-    }
+//    if (indexPath.section == 0) {
+//        static NSString *cellIdentifier = @"cell";
+//        UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+//        if (!cell) {
+//            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
+//        }
+//        
+//        [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
+//    }
     
     static NSString *socialCellIdentifier = @"socialManagementCell";
     FluxSocialManagementCell * socialMgmtcell = [tableView dequeueReusableCellWithIdentifier:socialCellIdentifier];
@@ -265,7 +282,7 @@
                 if (FBSession.activeSession.isOpen) {
                     [FBSession.activeSession closeAndClearTokenInformation];
                 }
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
             }
                 
                 break;
@@ -279,7 +296,7 @@
             {
                 //unlick twitter
                 [UICKeyChainStore removeAllItemsForService:TwitterService];
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
             }
                 
                 break;
@@ -352,7 +369,7 @@
             [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
             [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
             
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
             
         }
         else {
@@ -403,7 +420,7 @@
                                  [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
                                  [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
                                  
-                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
                              }
                              
                              else{
