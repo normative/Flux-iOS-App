@@ -15,9 +15,6 @@
 #define ERROR_PERM_ACCESS @"We weren't granted access your twitter accounts"
 #define ERROR_OK @"OK"
 
-NSString* const FacebookPost = @"FacebookPost";
-NSString* const TwitterPost = @"TwitterPost";
-
 typedef enum FluxSocialManagerReturnType : NSUInteger {
     no_request_specified = 0,
     returnTypeBlock = 1,
@@ -39,6 +36,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 	else self.window = [[UIApplication sharedApplication] keyWindow];
     
     self.TWAccountStore = [[ACAccountStore alloc] init];
+    [self.TWAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
     self.TWApiManager = [[TWAPIManager alloc] init];
     
     return self;
@@ -68,6 +66,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 [delegate SocialManager:self didLinkTwitterAccountWithUsername:username];
             }
         }
+        return;
     }
     
     
@@ -312,10 +311,10 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     outstandingPosts = [socialPartners mutableCopy];
     posts = [socialPartners mutableCopy];
     
-    if ([socialPartners containsObject:TwitterPost]) {
+    if ([socialPartners containsObject:TwitterService]) {
         [self postToTwitterWithStatus:status andImage:image];
     }
-    if ([socialPartners containsObject:FacebookPost]) {
+    if ([socialPartners containsObject:FacebookService]) {
         [self postToFacebookWithStatus:status andImage:image];
     }
 }
@@ -335,8 +334,8 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     [posts removeObject:socialType];
     
     if (outstandingPosts == 0) {
-        if ([delegate respondsToSelector:@selector(SocialManager:didMakeSocialPosts:)]) {
-            [delegate SocialManager:self didMakeSocialPosts:posts];
+        if ([delegate respondsToSelector:@selector(SocialManager:didFailToMakeSocialPostWithType:)]) {
+            [delegate SocialManager:self didFailToMakeSocialPostWithType:socialType];
         }
     }
 }
@@ -448,13 +447,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
          {
              if (error)
              {
-                 [weakSelf failedToCompleterequestWithType:FacebookPost];
+                 NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+                 NSLog(@"Facebook Post Error: %@",errorstring);
+                 [weakSelf failedToCompleteRequestWithType:FacebookService];
              }
              else
              {
-                 NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-                 NSLog(@"Facebook Post Error: %@",errorstring);
-                 [weakSelf completedRequestWithType:FacebookPost];
+                 [weakSelf completedRequestWithType:FacebookService];
              }
          }];
     }];

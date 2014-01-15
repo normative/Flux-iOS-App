@@ -16,8 +16,6 @@
 #import "TWSignedRequest.h"
 #import <FacebookSDK/FacebookSDK.h>
 
-extern NSString* const FacebookPost;
-extern NSString* const TwitterPost;
 
 @class FluxSocialManager;
 @protocol FluxSocialManagerDelegate <NSObject>

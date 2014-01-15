@@ -82,6 +82,8 @@
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you capture?"]];
 
+    [facebookButton setHidden:YES];
+    [twitterButton setHidden:YES];
     
     images = capturedObjects;
 }
@@ -94,10 +96,7 @@
     
     isSnapshot = YES;
     
-    [saveButton setTitle:@"Save to Photos"];
-    [facebookButton setUserInteractionEnabled:NO];
-    [twitterButton setUserInteractionEnabled:NO];
-    
+    //[saveButton setTitle:@"Save to Photos"];
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
     
@@ -214,34 +213,30 @@
 
 - (IBAction)saveButtonAction:(id)sender {
     if (ImageAnnotationTextView.text.length < 141) {
+        
+        
         if (isSnapshot) {
-            //if saving allowed
-//            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//            BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
-//            if (savelocally)
-//            {
-//                UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
-//            }
             UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
-            [self cancelButtonAction:nil];
         }
-        else{
-            if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
-                NSMutableArray*socialPostArr = [[NSMutableArray alloc]init];
-                if ([NSNumber numberWithBool:facebookButton.isSelected]) {
-                    [socialPostArr addObject:FacebookService];
-                }
-                if ([NSNumber numberWithBool:twitterButton.isSelected]) {
-                    [socialPostArr addObject:TwitterService];
-                }
-                NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
-                                                                                removedImages, @"removedImages",
-                                                                                [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
-                                                                                socialPostArr, @"social",
-                                                                                nil];
-                [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
+        
+        
+        if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
+            NSMutableArray*socialPostArr = [[NSMutableArray alloc]init];
+            if ([NSNumber numberWithBool:facebookButton.isSelected]) {
+                [socialPostArr addObject:FacebookService];
             }
+            if ([NSNumber numberWithBool:twitterButton.isSelected]) {
+                [socialPostArr addObject:TwitterService];
+            }
+            NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
+                                 removedImages, @"removedImages",
+                                 [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
+                                 socialPostArr, @"social",
+                                 [NSNumber numberWithBool:isSnapshot], @"snapshot",
+                                 nil];
+            [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
         }
+        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -262,7 +257,6 @@
 
 - (IBAction)twitterButtonAction:(id)sender {
     [twitterButton setSelected:!twitterButton.selected];
-    
     
     if (isSnapshot) {
         [self checkPostButton];

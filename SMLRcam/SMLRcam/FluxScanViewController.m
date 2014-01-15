@@ -502,17 +502,17 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     
     
-    if ([notification userInfo]) {
+    if (![(NSNumber*)[[notification userInfo] objectForKey:@"snapshot"]boolValue]) {
         [self uploadImages:notification.userInfo];
+    }
+    
+    if ([(NSArray*)[notification.userInfo objectForKey:@"social"]count] > 0) {
+        FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+        [socialManager setDelegate:self];
         
-        if ([(NSArray*)[notification.userInfo objectForKey:@"social"]count] > 0) {
-            FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
-            [socialManager setDelegate:self];
-            
-            [socialManager socialPostTo:[notification.userInfo objectForKey:@"social"]
-                             withStatus:[notification.userInfo objectForKey:@"annotation"]
-                               andImage:(UIImage*)[(NSArray*)[notification.userInfo objectForKey:@"capturedImages"]firstObject]];
-        }
+        [socialManager socialPostTo:[notification.userInfo objectForKey:@"social"]
+                         withStatus:[notification.userInfo objectForKey:@"annotation"]
+                           andImage:(UIImage*)[(NSArray*)[notification.userInfo objectForKey:@"capturedImages"]firstObject]];
     }
     
     
