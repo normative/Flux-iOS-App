@@ -43,7 +43,7 @@ typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
-typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSString *, FluxDataRequest *);
+typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSData *, FluxDataRequest *);
 
 
 
@@ -159,7 +159,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
-- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSString *)features withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 //users
 - (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;

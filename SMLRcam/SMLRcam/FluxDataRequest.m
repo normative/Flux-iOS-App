@@ -31,7 +31,7 @@
     }
 }
 
-- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSString *)features withDataRequest:(FluxDataRequest *)completeDataRequest
+- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.imageFeaturesReady)
     {

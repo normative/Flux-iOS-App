@@ -715,7 +715,7 @@ float const altitudeMax =  100000;
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
-         didreturnImageFeatures:(NSString *)features
+         didreturnImageFeatures:(NSData *)features
                      forImageID:(int)imageID
                    andRequestID:(FluxRequestID *)requestID
 {
