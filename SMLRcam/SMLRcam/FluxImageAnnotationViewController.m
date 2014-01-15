@@ -227,9 +227,17 @@
         }
         else{
             if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
+                NSMutableArray*socialPostArr = [[NSMutableArray alloc]init];
+                if ([NSNumber numberWithBool:facebookButton.isSelected]) {
+                    [socialPostArr addObject:FacebookService];
+                }
+                if ([NSNumber numberWithBool:twitterButton.isSelected]) {
+                    [socialPostArr addObject:TwitterService];
+                }
                 NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
                                                                                 removedImages, @"removedImages",
                                                                                 [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
+                                                                                socialPostArr, @"social",
                                                                                 nil];
                 [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
             }

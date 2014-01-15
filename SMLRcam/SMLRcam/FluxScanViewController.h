@@ -22,6 +22,7 @@
 #import "IDMPhotoBrowser.h"
 #import "BBCyclingLabel.h"
 
+#import "FluxSocialManager.h"
 #import "FluxDisplayManager.h"
 
 
@@ -39,7 +40,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @class FluxRotatingCompassButton;
 
 
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate>{
     
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;

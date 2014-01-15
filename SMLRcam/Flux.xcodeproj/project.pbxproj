@@ -130,6 +130,7 @@
 		AAAD9A3C187B14CE003BC1FF /* FluxRegisterUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3B187B14CE003BC1FF /* FluxRegisterUsernameViewController.m */; };
 		AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationPin.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationPin.m */; };
 		AAAD9A46187EF89F003BC1FF /* FluxSocialManagementCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A45187EF89F003BC1FF /* FluxSocialManagementCell.m */; };
+		AAB066F01886F6E6002914B2 /* UIActionSheet+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB066EF1886F6E6002914B2 /* UIActionSheet+Blocks.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
 		AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */; };
 		AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */; };
@@ -395,6 +396,8 @@
 		AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxUserLocationPin.m; sourceTree = "<group>"; };
 		AAAD9A44187EF89F003BC1FF /* FluxSocialManagementCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialManagementCell.h; sourceTree = "<group>"; };
 		AAAD9A45187EF89F003BC1FF /* FluxSocialManagementCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialManagementCell.m; sourceTree = "<group>"; };
+		AAB066EE1886F6E6002914B2 /* UIActionSheet+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIActionSheet+Blocks.h"; sourceTree = "<group>"; };
+		AAB066EF1886F6E6002914B2 /* UIActionSheet+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIActionSheet+Blocks.m"; sourceTree = "<group>"; };
 		AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSwitchTableViewCell.h; sourceTree = "<group>"; };
 		AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSwitchTableViewCell.m; sourceTree = "<group>"; };
 		AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapImageObject.h; sourceTree = "<group>"; };
@@ -839,6 +842,7 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
+				AAB066F11886F6EA002914B2 /* UIActionSheet Blocks */,
 				AAF1BCF2183A73A900909AFF /* Animated Label */,
 				AA9F85E61868AFF600AB98A7 /* Image Browser */,
 				AA984EE718088923007F33B1 /* MapIndex */,
@@ -1113,6 +1117,15 @@
 				AA3BAF241846477E009D4FAC /* FluxPublicProfileViewController.m */,
 			);
 			name = "Public Profile";
+			sourceTree = "<group>";
+		};
+		AAB066F11886F6EA002914B2 /* UIActionSheet Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				AAB066EE1886F6E6002914B2 /* UIActionSheet+Blocks.h */,
+				AAB066EF1886F6E6002914B2 /* UIActionSheet+Blocks.m */,
+			);
+			name = "UIActionSheet Blocks";
 			sourceTree = "<group>";
 		};
 		AAC1BF061811AF67001D3C01 /* ProgressHUD */ = {
@@ -1419,6 +1432,7 @@
 				89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */,
 				AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */,
 				F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */,
+				AAB066F01886F6E6002914B2 /* UIActionSheet+Blocks.m in Sources */,
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
 				AA9F85E51863994800AB98A7 /* FluxRoundImagePickerController.m in Sources */,
 				AA984F0E18088923007F33B1 /* MKAnnotationView+MIExtension.m in Sources */,

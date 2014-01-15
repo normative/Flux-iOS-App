@@ -14,6 +14,9 @@
 #import "FluxImageRenderElement.h"
 #import <malloc/malloc.h>
 #import "FluxImageTools.h"
+#import "UICKeyChainStore.h"
+#import "ProgressHUD.h"
+
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -237,29 +240,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     //    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-# pragma mark - View Transitions
+# pragma mark - MapView
 - (void)presentMapView{
     [self performSegueWithIdentifier:@"pushMapModalView" sender:self];
-}
-
-- (void)pushImageAnnotationView{
-    [self performSegueWithIdentifier:@"pushAnnotationModalView" sender:self];
-}
-
-- (IBAction)filterButtonAction:(id)sender {
-    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setFiltersViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
-    [openGLController setBackgroundSnapFlag];
-}
-
-- (void)setFiltersViewBG:(NSNotification*)notification{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
-    
-    snapshotBGImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
-    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
-    snapshotBGImage = [imageTools blurImage:snapshotBGImage withBlurLevel:0.6];
-    
-    [self performSegueWithIdentifier:@"pushFiltersView" sender:self];
-    
 }
 
 #pragma mark - OpenGLView
@@ -267,8 +250,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 -(void)setupOpenGLView{
     UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
                                                            bundle:[NSBundle mainBundle]];
-
-    
     
     // setup the opengl controller
     // first get an instance from storyboard
@@ -317,6 +298,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
 }
 
+- (void)hideDateRangeLabel{
+    [UIView animateWithDuration:1.0 animations:^{
+        [dateRangeLabel setAlpha:0.0];
+    }];
+}
+
 #pragma mark - Tapping images
 
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
@@ -336,6 +323,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [photoViewerPlacementView removeFromSuperview];
 }
+
 -(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject
 {
     if(tappedImageObject == nil)
@@ -511,72 +499,24 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
+
+    
+    
     if ([notification userInfo]) {
-        NSArray*objectsArr = [notification.userInfo objectForKey:@"capturedImageObjects"];
-        NSArray*imagesArr = [notification.userInfo objectForKey:@"capturedImages"];
+        [self uploadImages:notification.userInfo];
         
-        [UIView animateWithDuration:0.1f
-                         animations:^{
-                             [progressView setAlpha:1.0];
-                             [progressView setProgress:0.0];
-                         }
-                         completion:nil];
-        
-        uploadsCompleted = 0;
-        totalUploads = objectsArr.count;
-        NSMutableArray*requestsArray = [[NSMutableArray alloc]init];
-        __block float totalBytes = 0;
-        __block float progress = 0;
-        
-        for (int i = 0; i<objectsArr.count; i++) {
-            // Add the image and metadata to the local cache
+        if ([(NSArray*)[notification.userInfo objectForKey:@"social"]count] > 0) {
+            FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+            [socialManager setDelegate:self];
             
-            FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-            [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
-                FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:updatedImageObject.localID];
-                if (ire != nil)
-                {
-                    // FluxScanImageObject exists in the local cache. Replace it with updated object.
-                    ire.imageMetadata = updatedImageObject;
-                }
-                uploadsCompleted++;
-                float doneTest = uploadsCompleted/totalUploads;
-                
-                if (doneTest == 1) {
-                    [progressView setProgress:1.0 animated:YES];
-                    [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
-                }
-            }];
-            [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
-                if (requestsArray.count < totalUploads) {
-                    if (![requestsArray containsObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]]) {
-                        totalBytes += inProgressDataRequest.totalByteSize;
-                        [requestsArray addObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]];
-                    }
-                }
-                
-                progress+=inProgressDataRequest.bytesUploaded;
-                [progressView setProgress:(float)progress/totalBytes-0.10 animated:YES];
-            }];
-            [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-                UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]]
-                                                                    message:[e localizedDescription]
-                                                                   delegate:nil
-                                                          cancelButtonTitle:@"OK"
-                                                          otherButtonTitles:nil];
-                [alertView show];
-                
-                [UIView animateWithDuration:0.2f
-                                 animations:^{
-                                     [progressView setAlpha:0.0];
-                                 }
-                                 completion:^(BOOL finished){
-                                     progressView.progress = 0;
-                                 }];
-            }];
-            [self.fluxDisplayManager.fluxDataManager addDataToStore:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
+            [socialManager socialPostTo:[notification.userInfo objectForKey:@"social"]
+                             withStatus:[notification.userInfo objectForKey:@"annotation"]
+                               andImage:(UIImage*)[(NSArray*)[notification.userInfo objectForKey:@"capturedImages"]firstObject]];
         }
     }
+    
+    
+    //view cleanup
     if (openGLController.imageCaptureViewController.isSnapshot) {
         [self deactivateSnapshotView];
         openGLController.imageCaptureViewController.isSnapshot = NO;
@@ -585,6 +525,87 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [self deactivateImageCapture];
     }
 }
+
+- (void)uploadImages:(NSDictionary*)imagesDict{
+    NSArray*objectsArr = [imagesDict objectForKey:@"capturedImageObjects"];
+    NSArray*imagesArr = [imagesDict objectForKey:@"capturedImages"];
+    
+    [UIView animateWithDuration:0.1f
+                     animations:^{
+                         [progressView setAlpha:1.0];
+                         [progressView setProgress:0.0];
+                     }
+                     completion:nil];
+    
+    uploadsCompleted = 0;
+    totalUploads = objectsArr.count;
+    NSMutableArray*requestsArray = [[NSMutableArray alloc]init];
+    __block float totalBytes = 0;
+    __block float progress = 0;
+    
+    for (int i = 0; i<objectsArr.count; i++) {
+        // Add the image and metadata to the local cache
+        
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
+            FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:updatedImageObject.localID];
+            if (ire != nil)
+            {
+                // FluxScanImageObject exists in the local cache. Replace it with updated object.
+                ire.imageMetadata = updatedImageObject;
+            }
+            uploadsCompleted++;
+            float doneTest = uploadsCompleted/totalUploads;
+            
+            if (doneTest == 1) {
+                [progressView setProgress:1.0 animated:YES];
+                [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+            }
+        }];
+        [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
+            if (requestsArray.count < totalUploads) {
+                if (![requestsArray containsObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]]) {
+                    totalBytes += inProgressDataRequest.totalByteSize;
+                    [requestsArray addObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]];
+                }
+            }
+            
+            progress+=inProgressDataRequest.bytesUploaded;
+            [progressView setProgress:(float)progress/totalBytes-0.10 animated:YES];
+        }];
+        [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]]
+                                                                message:[e localizedDescription]
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil];
+            [alertView show];
+            
+            [UIView animateWithDuration:0.2f
+                             animations:^{
+                                 [progressView setAlpha:0.0];
+                             }
+                             completion:^(BOOL finished){
+                                 progressView.progress = 0;
+                             }];
+        }];
+        [self.fluxDisplayManager.fluxDataManager addDataToStore:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
+    }
+}
+
+#pragma mark Social Manager Delegate
+
+
+-(void)SocialManager:(FluxSocialManager *)socialManager didMakeSocialPosts:(NSArray *)socialPartners{
+    
+}
+
+- (void)SocialManager:(FluxSocialManager *)socialManager didFailToMakeSocialPostWithType:(NSString *)socialType{
+    [ProgressHUD showError:[NSString stringWithFormat:@"Failed to post to %@",socialType]];
+}
+
+#pragma mark Other Camera view methods
+
 
 -(void)hideProgressView{
     [UIView animateWithDuration:1.2f
@@ -600,12 +621,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (IBAction)snapshotButtonAction:(id)sender {
     [self activateSnapshotView];
     [openGLController setSnapShotFlag];
-}
-
-- (IBAction)stepper:(id)sender {
-    UIStepper* stepper = (UIStepper*)sender;
-    
-    [openGLController stepperChangedWithValue: stepper.value];
 }
 
 
@@ -635,6 +650,42 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     CGImageRelease(cgimg);
     
     return blurredImage;
+}
+
+#pragma mark - FiltersView
+
+- (IBAction)filterButtonAction:(id)sender {
+    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(setFiltersViewBG:) name:@"didCaptureBackgroundSnapshot" object:nil];
+    [openGLController setBackgroundSnapFlag];
+}
+
+- (void)setFiltersViewBG:(NSNotification*)notification{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
+    
+    snapshotBGImage = (UIImage*)[[notification userInfo] objectForKey:@"snapshot"];
+    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+    snapshotBGImage = [imageTools blurImage:snapshotBGImage withBlurLevel:0.6];
+    
+    [self performSegueWithIdentifier:@"pushFiltersView" sender:self];
+    
+}
+
+#pragma mark Filters Delegate
+
+- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+    //[self animationPopFrontScaleUp];
+    
+    if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
+        NSDictionary *userInfoDict = @{@"filter" : dataFilter};
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
+        currentDataFilter = [dataFilter copy];
+    }
+    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
+    }
+    else{
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
+    }
 }
 
 #pragma mark - view lifecycle
@@ -685,24 +736,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidAppear:(BOOL)animated{
     [CameraButton setFrame:CGRectMake(0, 0, CameraButton.frame.size.width, CameraButton.frame.size.height)];
     [CameraButton setCenter:CGPointMake(self.view.center.x, self.leftDrawerButton.center.y)];
-}
-
-
-- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
-    //[self animationPopFrontScaleUp];
-    
-    if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
-        NSDictionary *userInfoDict = @{@"filter" : dataFilter};
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
-        currentDataFilter = [dataFilter copy];
-    }
-    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
-        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
-    }
-    else{
-        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
-    }
-    
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -807,10 +840,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	[view.layer addAnimation:group forKey:nil];
 }
 
-- (void)hideDateRangeLabel{
-    [UIView animateWithDuration:1.0 animations:^{
-        [dateRangeLabel setAlpha:0.0];
-    }];
+
+
+- (IBAction)stepper:(id)sender {
+    UIStepper* stepper = (UIStepper*)sender;
+    
+    [openGLController stepperChangedWithValue: stepper.value];
 }
 
 

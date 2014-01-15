@@ -12,6 +12,7 @@
 #import "UICKeyChainStore.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "ProgressHUD.h"
+#import "UIActionSheet+Blocks.h"
 
 #define ERROR_TITLE_MSG @"Uh oh..."
 #define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the Settings app to sign in with Twitter"
@@ -178,46 +179,69 @@
     switch (indexPath.row) {
         case 0:
             if ([(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath] isActivated]) {
-                UIActionSheet *actionSheet = [[UIActionSheet alloc]
-                                              initWithTitle:@"Facebook"
-                                              delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                              destructiveButtonTitle:@"Unlink"
-                                              otherButtonTitles:nil];
-                [actionSheet setTag:3];
-                [actionSheet showInView:self.view];
+                
+                [UIActionSheet showInView:self.view
+                                withTitle:@"Facebook"
+                        cancelButtonTitle:@"Cancel"
+                   destructiveButtonTitle:@"Unlink"
+                        otherButtonTitles:nil
+                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                         //unlink facebook
+                                         [UICKeyChainStore removeAllItemsForService:FacebookService];
+                                         //close facebook session
+                                         if (FBSession.activeSession.isOpen) {
+                                             [FBSession.activeSession closeAndClearTokenInformation];
+                                         }
+                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+                                     }
+                                 }];
+                
+                
             }
             else{
-                UIActionSheet *actionSheet = [[UIActionSheet alloc]
-                                              initWithTitle:@"Facebook"
-                                              delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                              destructiveButtonTitle:nil
-                                              otherButtonTitles:@"Link", nil];
-                [actionSheet setTag:33];
-                [actionSheet showInView:self.view];
+                [UIActionSheet showInView:self.view
+                                withTitle:@"Facebook"
+                        cancelButtonTitle:@"Cancel"
+                   destructiveButtonTitle:nil
+                        otherButtonTitles:@[@"Link"]
+                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                         //link facebook
+                                         [self linkFacebook];
+                                     }
+                                 }];
             }
             break;
         case 1:
             if ([(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath] isActivated]) {
-                UIActionSheet *actionSheet = [[UIActionSheet alloc]
-                                              initWithTitle:@"Twitter"
-                                              delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                              destructiveButtonTitle:@"Unlink"
-                                              otherButtonTitles:nil];
-                [actionSheet setTag:8];
-                [actionSheet showInView:self.view];
+                
+                [UIActionSheet showInView:self.view
+                                withTitle:@"Twitter"
+                        cancelButtonTitle:@"Cancel"
+                   destructiveButtonTitle:@"Unlink"
+                        otherButtonTitles:nil
+                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                         //unlick twitter
+                                         [UICKeyChainStore removeAllItemsForService:TwitterService];
+                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+                                     }
+                                 }];
+                
             }
             else{
-                UIActionSheet *actionSheet = [[UIActionSheet alloc]
-                                              initWithTitle:@"Twitter"
-                                              delegate:self
-                                              cancelButtonTitle:@"Cancel"
-                                              destructiveButtonTitle:nil
-                                              otherButtonTitles:@"Link", nil];
-                [actionSheet setTag:88];
-                [actionSheet showInView:self.view];
+                [UIActionSheet showInView:self.view
+                                withTitle:@"Twitter"
+                        cancelButtonTitle:@"Cancel"
+                   destructiveButtonTitle:nil
+                        otherButtonTitles:@[@"Link"]
+                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                         //link twitter
+                                         [self linkTwitterAccount];
+                                     }
+                                 }];
             }
             break;
             
@@ -250,185 +274,39 @@
 //    [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
 //    [self.maskSlider setValue:(float)discreteValue];
 //}
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex != actionSheet.cancelButtonIndex) {
-        switch (actionSheet.tag) {
-            case 5:
-                [self.logoutButton setEnabled:NO];
-                //delay until the action sheet is removed from the stack
-                [self performSelector:@selector(logout) withObject:Nil afterDelay:0.5];
-                break;
-            case 3:
-            {
-                //unlink facebook
-                [UICKeyChainStore removeAllItemsForService:FacebookService];
-                //close facebook session
-                if (FBSession.activeSession.isOpen) {
-                    [FBSession.activeSession closeAndClearTokenInformation];
-                }
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
-            }
-                
-                break;
-            case 33:
-            {
-                //link facebook
-                [self linkFacebook];
-            }
-                break;
-            case 8:
-            {
-                //unlick twitter
-                [UICKeyChainStore removeAllItemsForService:TwitterService];
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
-            }
-                
-                break;
-            case 88:
-            {
-                //link twitter
-                [self linkTwitterAccount];
-            }
-                
-                break;
-            case 100:
-            {
-                [self loginWithTwitterForAccountIndex:buttonIndex];
-            }
-                break;
-            default:
-                break;
-        }
-    }
-}
 
-#pragma mark - Social
 
 #pragma mark Twitter
 - (void)linkTwitterAccount{
-    if (![TWAPIManager isLocalTwitterAccountAvailable]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_NO_ACCOUNTS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
-        [alert show];
-        return;
-    }
-    
-    [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if (granted) {
-                if (_accounts.count > 1) {
-                    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Choose an Account" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
-                    for (ACAccount *acct in _accounts) {
-                        [sheet addButtonWithTitle:acct.username];
-                    }
-                    sheet.cancelButtonIndex = [sheet addButtonWithTitle:@"Cancel"];
-                    [sheet setTag:100];
-                    [sheet showInView:self.view];
-                }
-                else{
-                    [self loginWithTwitterForAccountIndex:0];
-                }
-            }
-            else {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:ERROR_TITLE_MSG message:ERROR_PERM_ACCESS delegate:nil cancelButtonTitle:ERROR_OK otherButtonTitles:nil];
-                [alert show];
-                NSLog(@"You were not granted access to the user's Twitter accounts.");
-            }
-        });
-    }];
-}
-
-- (void)loginWithTwitterForAccountIndex:(int)index{
-    [_apiManager performReverseAuthForAccount:_accounts[index] withHandler:^(NSData *responseData, NSError *error) {
-        if (responseData) {
-            NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            
-            NSLog(@"Reverse Auth process returned: %@", responseStr);
-            NSMutableArray *parts = [[responseStr componentsSeparatedByString:@"&"] mutableCopy];
-            for (int i = 0; i<parts.count; i++) {
-                NSString*string = (NSString*)[parts objectAtIndex:i];
-                NSRange range = [string rangeOfString:@"="];
-                [parts replaceObjectAtIndex:i withObject:(NSString*)[string substringFromIndex:range.location+1]];
-            }
-            
-            [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
-            [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
-            
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
-            
-        }
-        else {
-            NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
-            [ProgressHUD showError:@"Twitter link failed"];
-        }
-    }];
-}
-
-- (void)obtainAccessToAccountsWithBlock:(void (^)(BOOL))block
-{
-    ACAccountType *twitterType = [_accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-    
-    ACAccountStoreRequestAccessCompletionHandler handler = ^(BOOL granted, NSError *error) {
-        if (granted) {
-            self.accounts = [_accountStore accountsWithAccountType:twitterType];
-        }
-        
-        block(granted);
-    };
-    
-    //  This method changed in iOS6. If the new version isn't available, fall back to the original (which means that we're running on iOS5+).
-    [_accountStore requestAccessToAccountsWithType:twitterType options:nil completion:handler];
+    FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+    [socialManager setDelegate:self];
+    [socialManager linkTwitter];
 }
 
 
 #pragma mark Facebook
 
 - (void)linkFacebook{
-    if (!FBSession.activeSession.isOpen) {
-        if (FBSession.activeSession.state != FBSessionStateCreated) {
-            // Create a new, logged out session.
-            FBSession.activeSession = [[FBSession alloc] init];
-        }
-        
-        // if the session isn't open, let's open it now and present the login UX to the user
-        NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
-        [FBSession openActiveSessionWithReadPermissions:permissions
-                                           allowLoginUI:YES
-                                      completionHandler:
-         ^(FBSession *session,
-           FBSessionState state, NSError *error) {
-             if (!error) {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     if (FBSession.activeSession.isOpen) {
-                         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
-                             if (!error) {
-                                 [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
-                                 [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
-                                 [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
-                                 
-                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
-                             }
-                             
-                             else{
-                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                     NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-                                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                                     [alert show];
-                                 });
-                             }
-                         }];
-                     }
-                 });
-             }
-             else{
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                     [alert show];
-                 });
-             }
-         }];
-    }
+    FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+    [socialManager setDelegate:self];
+    [socialManager linkFacebook];
 }
+
+#pragma mark - Social Manager Delegate
+
+
+-(void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{
+    [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@ account",accountType]];
+}
+
 
 #pragma mark - Logout
 
@@ -470,14 +348,18 @@
 }
 
 - (IBAction)logoutButtonAction:(id)sender {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]
-                                  initWithTitle:@"Are you sure you'd like to logout?"
-                                  delegate:self
-                                  cancelButtonTitle:@"Cancel"
-                                  destructiveButtonTitle:@"Logout"
-                                  otherButtonTitles:nil];
-    [actionSheet setTag:5];
-    [actionSheet showInView:self.view];
+    [UIActionSheet showInView:self.view
+                    withTitle:@"Are you sure you'd like to logout?"
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:@"Logout"
+            otherButtonTitles:nil
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             [self.logoutButton setEnabled:NO];
+                             //delay until the action sheet is removed from the stack
+                             [self performSelector:@selector(logout) withObject:Nil afterDelay:0.5];
+                         }
+                     }];
 }
 
 - (IBAction)onAreaResetBtn:(id)sender

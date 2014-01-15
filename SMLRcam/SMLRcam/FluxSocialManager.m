@@ -8,7 +8,7 @@
 
 #import "FluxSocialManager.h"
 #import "UICKeyChainStore.h"
-#import "ProgressHUD.h"
+#import "UIActionSheet+Blocks.h"
 
 #define ERROR_TITLE_MSG @"Uh oh..."
 #define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the Settings app to sign in with Twitter"
@@ -38,8 +38,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 		self.window = [appDelegate performSelector:@selector(window)];
 	else self.window = [[UIApplication sharedApplication] keyWindow];
     
+    self.TWAccountStore = [[ACAccountStore alloc] init];
+    self.TWApiManager = [[TWAPIManager alloc] init];
+    
     return self;
 }
+
+#pragma mark - Linking Social Accounts
 
 #pragma mark Twitter
 
@@ -66,9 +71,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     }
     
     
-    if (![TWAPIManager isLocalTwitterAccountAvailable]) {        
-        [ProgressHUD showError:@"You must add a Twitter account in the Settings app to link with Twitter"];
-        
+    if (![TWAPIManager isLocalTwitterAccountAvailable]) {
         if (returnType == returnTypeBlock) {
             if (self.socialLoginDidFail)
             {
@@ -76,6 +79,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
         }
         else{
+            NSLog(@"You were not granted access to the Twitter accounts.");
             if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
                 [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
             }
@@ -85,17 +89,47 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         return;
     }
     
+    
     [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (granted) {
                 if (self.TWAccounts.count > 1) {
-                    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Choose an Account" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+                    
+                    NSMutableArray*accountNames = [[NSMutableArray alloc]init];
                     for (ACAccount *acct in self.TWAccounts) {
-                        [sheet addButtonWithTitle:acct.username];
+                        [accountNames addObject:acct.username];
                     }
-                    sheet.cancelButtonIndex = [sheet addButtonWithTitle:@"Cancel"];
-                    [sheet setTag:returnType];
-                    [sheet showInView:self.window];
+                    
+//                    UIActionSheet *sheet = [[UIActionSheet alloc] initWithTitle:@"Choose an Account:" delegate:self cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:nil];
+//                    
+//                    sheet.cancelButtonIndex = [sheet addButtonWithTitle:@"Cancel"];
+//                    [sheet setTag:returnType];
+//                    [sheet showInView:self.window];
+                    
+                    [UIActionSheet showInView:self.window
+                                    withTitle:@"Choose an Account:"
+                            cancelButtonTitle:@"Cancel"
+                       destructiveButtonTitle:nil
+                            otherButtonTitles:accountNames
+                                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                         
+                                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                             [self loginWithTwitterForAccountIndex:buttonIndex andReturnType:returnType];
+                                         }
+                                         else{
+                                             if (returnType == returnTypeBlock) {
+                                                 if (self.socialLoginDidFail)
+                                                 {
+                                                     self.socialLoginDidFail(nil, TwitterService);
+                                                 }
+                                             }
+                                             else{
+                                                 if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                                                     [delegate SocialManager:self didFailToLinkSocialAccount:TwitterService];
+                                                 }
+                                             }
+                                         }
+                                     }];
                 }
                 else{
                     [self loginWithTwitterForAccountIndex:0 andReturnType:returnType];
@@ -109,8 +143,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                     }
                 }
                 else{
-                    [ProgressHUD showError:@"We weren't granted access your twitter accounts"];
-                    
                     if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
                         [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
                     }
@@ -163,7 +195,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
             else{
                 NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
-                [ProgressHUD showError:@"Twitter link failed"];
                 
                 if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
                     [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
@@ -177,7 +208,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 - (void)obtainAccessToAccountsWithBlock:(void (^)(BOOL))block
 {
     ACAccountType *twitterType = [self.TWAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-    
+
     ACAccountStoreRequestAccessCompletionHandler handler = ^(BOOL granted, NSError *error) {
         if (granted) {
             self.TWAccounts = [self.TWAccountStore accountsWithAccountType:twitterType];
@@ -194,7 +225,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 #pragma mark Facebook
 
 - (void)linkFacebook{
-    [self linkTwitterWithReturnType:returnTypeDelegate];
+    [self linkFacebookWithReturnType:returnTypeDelegate];
 }
 
 - (void)linkFacebookWithReturnType:(FluxSocialManagerReturnType)returnType{
@@ -243,7 +274,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                          }
                                      }
                                      else{
-                                         [ProgressHUD showError:@"Facebook link failed"];
                                          NSLog(@"Facebook Link Error: %@",error.localizedDescription);
                                          if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
                                              [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
@@ -265,7 +295,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                          }
                      }
                      else{
-                         [ProgressHUD showError:@"Facebook link failed"];
                          NSLog(@"Facebook Link Error: %@",error.localizedDescription);
                          if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
                              [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
@@ -301,7 +330,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     }
 }
 
-- (void)failedToCompleterequestWithType:(NSString*)socialType{
+- (void)failedToCompleteRequestWithType:(NSString*)socialType{
     [outstandingPosts removeObject:socialType];
     [posts removeObject:socialType];
     
@@ -309,15 +338,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         if ([delegate respondsToSelector:@selector(SocialManager:didMakeSocialPosts:)]) {
             [delegate SocialManager:self didMakeSocialPosts:posts];
         }
-    }
-}
-
-
-- (void) whenSocialLoginReady:(NSString *)username
-{
-    if (self.socialLoginDidComplete)
-    {
-        self.socialLoginDidComplete(username);
     }
 }
 
@@ -342,16 +362,19 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                                     options:NSJSONReadingMutableContainers
                                                       error:NULL];
                     NSLog(@"[SUCCESS!] Created Tweet with ID: %@", postResponseData[@"id_str"]);
+                    [weakSelf completedRequestWithType:TwitterService];
 
                     
                 }
                 else {
                     NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
                           [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
+                    [weakSelf failedToCompleteRequestWithType:TwitterService];
                 }
             }
             else {
                 NSLog(@"[ERROR] An error occurred while posting: %@", [error localizedDescription]);
+                [weakSelf failedToCompleteRequestWithType:TwitterService];
             }
         };
         
@@ -389,6 +412,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 
                 NSLog(@"[ERROR] An error occurred while asking for user authorization: %@",
                       [error localizedDescription]);
+                [weakSelf failedToCompleteRequestWithType:TwitterService];
             }
         };
         
@@ -398,9 +422,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     }];
     
     [self setSocialLoginDidFail:^(NSError*e,NSString*service){
-        if ([weakSelf.delegate respondsToSelector:@selector(SocialManager:didFailToMakeSocialPostWithType:)]) {
-            [weakSelf.delegate SocialManager:weakSelf didFailToMakeSocialPostWithType:TwitterService];
-        }
+        [weakSelf failedToCompleteRequestWithType:service];
     }];
     
     [self linkTwitterWithReturnType:returnTypeBlock];

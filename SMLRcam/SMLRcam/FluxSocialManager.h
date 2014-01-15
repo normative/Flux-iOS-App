@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+
 #import <Accounts/Accounts.h>
 #import <Twitter/Twitter.h>
 #import "OAuth+Additions.h"
@@ -34,7 +35,7 @@ typedef void (^socialLoginBlock)(NSString *);
 typedef void (^socialLoginErrorBlock)(NSError *,NSString*);
 
 
-@interface FluxSocialManager : NSObject <UIAlertViewDelegate,UIActionSheetDelegate>{
+@interface FluxSocialManager : NSObject <UIAlertViewDelegate>{
     NSMutableArray* outstandingPosts;
     NSMutableArray*posts;
     id __unsafe_unretained delegate;
