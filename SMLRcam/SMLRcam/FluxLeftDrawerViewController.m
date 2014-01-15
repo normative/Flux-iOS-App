@@ -94,9 +94,13 @@
             userObj = userObject;
             tableViewArray = [self tableViewArrayForUser:userObject];
             [self.tableView reloadData];
+            
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:userObject.bio forKey:@"bio"];
+            
             if (userObject.hasProfilePic) {
                 
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                
                 
                 if (![defaults objectForKey:@"profileImage"]) {
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
@@ -215,6 +219,9 @@
         [profileCell initCellisEditing:isEditing];
         
         NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSString*bio = (NSString*)[defaults objectForKey:@"bio"];
         if (username) {
             [profileCell setUsernameText:username];
         }
@@ -222,8 +229,11 @@
         if (userObj.bio) {
             [profileCell setBioText:userObj.bio];
         }
+        else{
+            [profileCell setBioText:bio];
+        }
         
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
         if ([defaults objectForKey:@"profileImage"]) {
             
             NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];

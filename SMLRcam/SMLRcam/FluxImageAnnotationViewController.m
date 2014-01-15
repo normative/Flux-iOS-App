@@ -10,6 +10,8 @@
 #import "FluxScanImageObject.h"
 #import "FluxImageTools.h"
 
+#import "UICKeyChainStore.h"
+
 @interface FluxImageAnnotationViewController ()
 
 @end
@@ -32,9 +34,26 @@
     [super viewDidLoad];
     [ImageAnnotationTextView setTheDelegate:self];
     [ImageAnnotationTextView becomeFirstResponder];
+    
+    NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
+    NSString*twitter = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
+    
+    if (twitter) {
+        [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
+    }
+    else{
+        [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_off"] forState:UIControlStateSelected];
+    }
+    
+    if (facebook) {
+        [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
+    }
+    else{
+        [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_off"] forState:UIControlStateSelected];
+    }
 
-    [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
-    [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
+    
+    
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
     removedImages = [[NSMutableIndexSet alloc]init];
@@ -48,8 +67,8 @@
     [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
     
     [privacyButton setHidden:YES];
-    [facebookButton setHidden:YES];
-    [twitterButton setHidden:YES];
+//    [facebookButton setHidden:YES];
+//    [twitterButton setHidden:YES];
     
     
 	// Do any additional setup after loading the view.
@@ -226,6 +245,8 @@
 
 - (IBAction)facebookButtonAction:(id)sender {
     [facebookButton setSelected:!facebookButton.selected];
+    
+    
     if (isSnapshot) {
         [self checkPostButton];
     }
@@ -233,6 +254,8 @@
 
 - (IBAction)twitterButtonAction:(id)sender {
     [twitterButton setSelected:!twitterButton.selected];
+    
+    
     if (isSnapshot) {
         [self checkPostButton];
     }

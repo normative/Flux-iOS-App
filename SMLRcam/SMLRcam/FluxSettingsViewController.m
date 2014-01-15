@@ -11,6 +11,7 @@
 #import "FluxSocialManagementCell.h"
 #import "UICKeyChainStore.h"
 #import <FacebookSDK/FacebookSDK.h>
+#import "ProgressHUD.h"
 
 #define ERROR_TITLE_MSG @"Uh oh..."
 #define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the Settings app to sign in with Twitter"
@@ -357,6 +358,7 @@
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
+            [ProgressHUD showError:@"Twitter link failed"];
         }
     }];
 }
