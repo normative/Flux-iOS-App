@@ -171,7 +171,7 @@
     FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
     FluxCacheImageObject *img = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
     
-    if (img.image && [img beginContentAccess])
+    if ([img beginContentAccess])
     {
         return img.image;
     }
