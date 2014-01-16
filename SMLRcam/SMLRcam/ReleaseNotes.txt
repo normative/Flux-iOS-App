@@ -3,6 +3,7 @@ Release Notes:
 - throttle total number of feature descriptor downloads to reduce startup latency
 - prevent crash in MapView when zooming in/out with lots of content
 - set image request altitude to be current altitude +-3m. Mapview still requests all altitudes (+- 100000m)
+- change feature download to request and process binary feature file
 
 ******************************************
 

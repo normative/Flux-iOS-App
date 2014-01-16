@@ -18,7 +18,7 @@ const NSString *fluxImageTypeStrings[] = {
     @"screen",
     @"oriented",
     @"highest",
-    @"features"
+    @"binfeatures"
 };
 
 const NSString *fluxCameraModelStrings[] = {

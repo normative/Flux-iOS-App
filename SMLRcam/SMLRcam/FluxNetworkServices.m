@@ -46,16 +46,16 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 {
     if (self = [super init])
     {
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
-        if (isremote)
-        {
+//        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
+//        if (isremote)
+//        {
             objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:productionServerURL]];
-        }
-        else
-        {
-            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:testServerURL]];
-        }
+//        }
+//        else
+//        {
+//            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:testServerURL]];
+//        }
         
         NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful);
         
@@ -405,7 +405,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 - (void)getImageFeaturesForID:(int)imageID andRequestID:(FluxRequestID *)requestID
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?auth_token=%@&size=features",objectManager.baseURL,imageID,token];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?auth_token=%@&size=%@",objectManager.baseURL,imageID,token, fluxImageTypeStrings[features]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     
@@ -415,7 +415,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         {
             if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageFeatures:forImageID:andRequestID:)])
             {
-                [delegate NetworkServices:self didreturnImageFeatures:operation.responseString forImageID:imageID andRequestID:requestID];
+                [delegate NetworkServices:self didreturnImageFeatures:operation.responseData forImageID:imageID andRequestID:requestID];
             }
         }
         failure:^(AFHTTPRequestOperation *operation, NSError *error)
