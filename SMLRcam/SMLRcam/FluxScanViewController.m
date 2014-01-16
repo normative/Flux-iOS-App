@@ -322,14 +322,14 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     
     
-//    if (IS_RETINA) {
-//        [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
-//        _point = CGPointMake(point.x*2, point.y*2);
-//    }
-//    else{
-//        [openGLController imageTappedAtPoint:point];
-//        _point = point;
-//    }
+    if (IS_RETINA) {
+        [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
+        _point = CGPointMake(point.x*2, point.y*2);
+    }
+    else{
+        [openGLController imageTappedAtPoint:point];
+        _point = point;
+    }
     
 }
 

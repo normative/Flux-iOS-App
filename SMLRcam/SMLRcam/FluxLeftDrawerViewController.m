@@ -251,6 +251,10 @@
     else if (indexPath.row == tableViewArray.count){
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
+        [cell.titleLabel setEnabled:YES];
+        
+        //hack for hiding other cells. should be removed once they're active
+        return cell;
     }
     //disable social
     else if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4){
@@ -282,7 +286,8 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            
             break;
         case 3:
                 [tableView deselectRowAtIndexPath:indexPath animated:NO];
@@ -291,7 +296,7 @@
                 [tableView deselectRowAtIndexPath:indexPath animated:NO];
             break;
         case 5:
-            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
             break;
             
         default:
