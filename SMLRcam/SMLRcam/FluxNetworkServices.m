@@ -15,10 +15,10 @@
 
 
 
-NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
+//NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
 //NSString* const FluxProductionServerURL = @"http://54.221.222.71/";
 //NSString* const FluxProductionServerURL = @"http://54.205.83.75/";
-//NSString* const FluxProductionServerURL = @"http://192.168.2.18:3101/";
+NSString* const FluxProductionServerURL = @"http://192.168.2.18:3101/";
 NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 //serverURL
@@ -569,7 +569,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
-                                                            path:[NSString stringWithFormat:@"%@/users/sign_in?auth_token=%@",objectManager.baseURL, token]
+                                                            path:[NSString stringWithFormat:@"%@/users/sign_out?auth_token=%@",objectManager.baseURL, token]
                                                       parameters:nil];
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
