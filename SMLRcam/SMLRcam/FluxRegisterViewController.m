@@ -130,7 +130,7 @@
         text = [textField.text stringByAppendingString:string];
     }
     
-    if (text.length > 16) {
+    if ((textField.tag == 10 || textField.tag == 88) &&  text.length > 16) {
         return NO;
     }
     
