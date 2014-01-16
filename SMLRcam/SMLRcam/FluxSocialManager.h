@@ -29,10 +29,6 @@
 @end
 
 
-typedef void (^socialLoginBlock)(NSString *);
-typedef void (^socialLoginErrorBlock)(NSError *,NSString*);
-
-
 @interface FluxSocialManager : NSObject <UIAlertViewDelegate>{
     NSMutableArray* outstandingPosts;
     NSMutableArray*posts;
@@ -48,9 +44,7 @@ typedef void (^socialLoginErrorBlock)(NSError *,NSString*);
 @property (nonatomic, strong) NSArray *TWAccounts;
 
 // Callback for single image retrieved (either from cache or download)
-@property (strong) socialLoginBlock socialLoginDidComplete;
-@property (strong) socialLoginErrorBlock socialLoginDidFail;
-- (void) whenSocialLoginReady:(NSString *)username;
+
 
 - (void)linkFacebook;
 - (void)linkTwitter;

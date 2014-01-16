@@ -10,7 +10,9 @@
 #import "FluxScanImageObject.h"
 #import "FluxImageTools.h"
 
+
 #import "UICKeyChainStore.h"
+#import "UIActionSheet+Blocks.h"
 
 @interface FluxImageAnnotationViewController ()
 
@@ -35,21 +37,19 @@
     [ImageAnnotationTextView setTheDelegate:self];
     [ImageAnnotationTextView becomeFirstResponder];
     
+    [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
+    [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
+    
     NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
     NSString*twitter = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
     
     if (twitter) {
-        [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
+        [self toggleSwitchSocialButton:twitterButton state:YES];
     }
-    else{
-        [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_off"] forState:UIControlStateSelected];
-    }
+
     
     if (facebook) {
-        [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
-    }
-    else{
-        [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_off"] forState:UIControlStateSelected];
+        [self toggleSwitchSocialButton:facebookButton state:YES];
     }
 
     
@@ -222,10 +222,10 @@
         
         if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
             NSMutableArray*socialPostArr = [[NSMutableArray alloc]init];
-            if ([NSNumber numberWithBool:facebookButton.isSelected]) {
+            if (facebookButton.isSelected) {
                 [socialPostArr addObject:FacebookService];
             }
-            if ([NSNumber numberWithBool:twitterButton.isSelected]) {
+            if (twitterButton.isSelected) {
                 [socialPostArr addObject:TwitterService];
             }
             NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
@@ -233,6 +233,7 @@
                                  [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
                                  socialPostArr, @"social",
                                  [NSNumber numberWithBool:isSnapshot], @"snapshot",
+                                 [images firstObject] , @"snapshotImage",
                                  nil];
             [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
         }
@@ -247,20 +248,67 @@
 }
 
 - (IBAction)facebookButtonAction:(id)sender {
-    [facebookButton setSelected:!facebookButton.selected];
+    NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
     
+    if (facebook) {
+        [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
+    }
+    else{
+        [UIActionSheet showInView:self.view
+                        withTitle:@"Facebook"
+                cancelButtonTitle:@"Cancel"
+           destructiveButtonTitle:nil
+                otherButtonTitles:@[@"Link"]
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                 //link facebook
+                                 FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+                                 [socialManager setDelegate:self];
+                                 [socialManager linkFacebook];
+                             }
+                         }];
+    }
+}
+
+- (IBAction)twitterButtonAction:(id)sender {
+    NSString*twitter = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
+    
+    if (twitter) {
+        [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
+    }
+    else{
+        [UIActionSheet showInView:self.view
+                        withTitle:@"Twitter"
+                cancelButtonTitle:@"Cancel"
+           destructiveButtonTitle:nil
+                otherButtonTitles:@[@"Link"]
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                 //link twitter
+                                 FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+                                 [socialManager setDelegate:self];
+                                 [socialManager linkTwitter];
+                             }
+                         }];
+    }
+
+}
+
+- (void)toggleSwitchSocialButton:(UIButton*)button state:(BOOL)state{
+    [button setSelected:state];
     
     if (isSnapshot) {
         [self checkPostButton];
     }
 }
 
-- (IBAction)twitterButtonAction:(id)sender {
-    [twitterButton setSelected:!twitterButton.selected];
-    
-    if (isSnapshot) {
-        [self checkPostButton];
-    }
+- (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
+    [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
+
+}
+
+- (void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
+    [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
 }
 
 - (void)checkPostButton{

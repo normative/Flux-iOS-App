@@ -157,6 +157,11 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     NSNumber*snapshot = (NSNumber*)[changes objectForKey:@"snapshot"];
     NSString*annotation = (NSString*)[changes objectForKey:@"annotation"];
     
+    if ([snapshot boolValue]) {
+        UIImage*theSnapshotImage = (UIImage*)[changes objectForKey:@"snapshotImage"];
+        [capturedImages addObject:theSnapshotImage];
+    }
+    
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects",
                                   capturedImages, @"capturedImages",

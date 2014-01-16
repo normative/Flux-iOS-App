@@ -12,6 +12,7 @@
 #import "FluxCheckboxCell.h"
 
 #import "FluxLocationServicesSingleton.h"
+#import "FluxSocialManager.h"
 
 @class FluxImageAnnotationViewController;
 @protocol ImageAnnotationDelegate <NSObject>
@@ -21,7 +22,7 @@
 @end
 
 
-@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, UICollectionViewDataSource, UICollectionViewDelegate>{
+@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, UICollectionViewDataSource, UICollectionViewDelegate, FluxSocialManagerDelegate>{
     __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
     __weak IBOutlet UIView *photoAnnotationContainerView;
     
