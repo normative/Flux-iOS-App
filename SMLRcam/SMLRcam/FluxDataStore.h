@@ -17,6 +17,7 @@
     NSCache *fluxImageCache;
     NSMutableDictionary *fluxMetadata;
     NSMutableDictionary *imageIDMapping;
+    NSMutableDictionary *cachedImageLocalIDList;
 }
 
 - (void) addImageToStore:(UIImage *)image withImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType;

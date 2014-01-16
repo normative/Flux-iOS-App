@@ -21,6 +21,8 @@
         
         fluxMetadata = [[NSMutableDictionary alloc] init];
         imageIDMapping = [[NSMutableDictionary alloc] init];
+        
+        cachedImageLocalIDList = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -44,8 +46,11 @@
         FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
         if (imageObject != nil)
         {
-            [fluxImageCache setObject:[FluxCacheImageObject cacheImageObject:image]
-                               forKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
+            NSString *imageCacheKey =[imageObject generateImageCacheKeyWithImageType:imageType];
+            FluxCacheImageObject *imageCacheObject = [FluxCacheImageObject cacheImageObject:image withID:localID withType:imageType];
+            [fluxImageCache setObject:imageCacheObject
+                               forKey:imageCacheKey];
+            [cachedImageLocalIDList setObject:imageCacheObject forKey:imageCacheKey];
         }
         else
         {
@@ -236,6 +241,13 @@
 {
     // Called when an object is about to be evicted or removed from the cache.
     // It is not possible to modify cache from within the implementation of this delegate method.
+    
+    FluxLocalID *localID = ((FluxCacheImageObject *)obj).localID;
+    FluxImageType imageType = ((FluxCacheImageObject *)obj).imageType;
+    FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+
+    NSString *imageCacheKey = [imageObject generateImageCacheKeyWithImageType:imageType];
+    [cachedImageLocalIDList removeObjectForKey:imageCacheKey];
 }
 
 - (void)debugByShowingCachedImageKeys
@@ -272,9 +284,10 @@
             FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
             for (NSUInteger imageType = thumb; imageType <= full_res; imageType++)
             {
-                FluxCacheImageObject *cacheImageObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:imageType]];
-                if (cacheImageObj && ![cacheImageObj isContentDiscarded])
+                NSString *imageCacheKey = [imageObject generateImageCacheKeyWithImageType:imageType];
+                if (cachedImageLocalIDList[imageCacheKey])
                 {
+                    FluxCacheImageObject *cacheImageObj = cachedImageLocalIDList[imageCacheKey];
                     [cacheImageObj endContentAccess];
                 }
             }
