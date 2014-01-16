@@ -39,22 +39,12 @@
     
     [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
     [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
-    
-    NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
-    NSString*twitter = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
-    
-    if (twitter) {
-        [self toggleSwitchSocialButton:twitterButton state:YES];
-    }
-
-    
-    if (facebook) {
-        [self toggleSwitchSocialButton:facebookButton state:YES];
-    }
 
     
     
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
+    
+    [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
     
     removedImages = [[NSMutableIndexSet alloc]init];
     
@@ -312,14 +302,23 @@
 }
 
 - (void)checkPostButton{
-//    if (facebookButton.isSelected || twitterButton.isSelected) {
-//        self.navigationItem.rightBarButtonItem.enabled = YES;
-//        [saveButton setTintColor:[UIColor whiteColor]];
-//    }
-//    else{
-//        self.navigationItem.rightBarButtonItem.enabled = NO;
-//        [saveButton setTintColor:[UIColor lightGrayColor]];
-//    }
+    if (facebookButton.isSelected || twitterButton.isSelected) {
+        self.navigationItem.rightBarButtonItem.enabled = YES;
+        [saveButton setTintColor:[UIColor whiteColor]];
+        [self.navigationItem.rightBarButtonItem setTitle:@"Post"];
+    }
+    else{
+        [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
+        
+//        if (!localSaveButton.isSelected) {
+//            self.navigationItem.rightBarButtonItem.enabled = NO;
+//            [saveButton setTintColor:[UIColor lightGrayColor]];
+//        }
+//        else{
+            self.navigationItem.rightBarButtonItem.enabled = YES;
+            [saveButton setTintColor:[UIColor whiteColor]];
+//        }
+    }
 }
 
 @end

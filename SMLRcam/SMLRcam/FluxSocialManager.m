@@ -166,7 +166,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         }
         
         // if the session isn't open, let's open it now and present the login UX to the user
-        NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
+        NSArray *permissions = [NSArray arrayWithObjects:@"email",@"publish_actions", nil];
         [FBSession openActiveSessionWithReadPermissions:permissions
                                            allowLoginUI:YES
                                       completionHandler:
@@ -324,42 +324,96 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 }
 
 #pragma mark Facebook
+
+- (IBAction)ShareLinkWithAPICalls:(id)sender {
+    // We will post on behalf of the user, these are the permissions we need:
+    
+}
+
+
+
+//this won't work until we have an app backend from the looks of it
 - (void)postToFacebookWithStatus:(NSString*)status andImage:(UIImage*)image{
     
-//    [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-//        if (!error){
-//            NSString *uri = [result valueForKey:@"uri"];
+////    [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+////        if (!error){
+////            NSString *uri = [result valueForKey:@"uri"];
+//    
+//            NSMutableDictionary<FBOpenGraphObject> *object = [FBGraphObject openGraphObjectForPost];
+//            object.provisionedForPost = YES;
+//            object[@"type"] = @":<OBJECT_NAME>";
+//            object[@"url"] = @"http://www.smlr.is/";
+//            object[@"title"] = @"My Title";
+//            
+//            object[@"description"] = status;
+//            object[@"user_generated"] = @"true";
+//            
+////            object[@"image"] = @[@{@"url": uri, @"user_generated":@"true"}];
+//    
+//            // for og:image we assign the image that we just staged, using the uri we got as a response
+//            // the image has to be packed in a dictionary like this:
+//            object[@"image"] = image;
+//            
+//            [FBRequestConnection startForPostOpenGraphObject:object
+//                                           completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+//                                               if (error)
+//                                               {
+//                                                   NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+//                                                   NSLog(@"Facebook Post Error: %@",errorstring);
+//                                                   [self failedToCompleteRequestWithType:FacebookService];
+//                                               }
+//                                               else
+//                                               {
+//                                                   [self completedRequestWithType:FacebookService];
+//                                               }
+//                                           }];
+////        }
+////    }];
     
-            NSMutableDictionary<FBOpenGraphObject> *object = [FBGraphObject openGraphObjectForPost];
-            object.provisionedForPost = YES;
-            object[@"type"] = @":<OBJECT_NAME>";
-            object[@"url"] = @"http://www.smlr.is/";
-            object[@"title"] = @"My Title";
-            
-            object[@"description"] = status;
-            object[@"user_generated"] = @"true";
-            
-//            object[@"image"] = @[@{@"url": uri, @"user_generated":@"true"}];
     
-            // for og:image we assign the image that we just staged, using the uri we got as a response
-            // the image has to be packed in a dictionary like this:
-            object[@"image"] = image;
-            
-            [FBRequestConnection startForPostOpenGraphObject:object
-                                           completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-                                               if (error)
-                                               {
-                                                   NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-                                                   NSLog(@"Facebook Post Error: %@",errorstring);
-                                                   [self failedToCompleteRequestWithType:FacebookService];
-                                               }
-                                               else
-                                               {
-                                                   [self completedRequestWithType:FacebookService];
-                                               }
-                                           }];
-//        }
-//    }];
+    
+    NSArray *permissionsNeeded = @[@"publish_actions"];
+    
+    // Request the permissions the user currently has
+    [FBRequestConnection startWithGraphPath:@"/me/permissions" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if (!error){
+          NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
+          NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
+          
+          // Check if all the permissions we need are present in the user's current permissions
+          // If they are not present add them to the permissions to be requested
+          for (NSString *permission in permissionsNeeded){
+              if (![currentPermissions objectForKey:permission]){
+                  [requestPermissions addObject:permission];
+              }
+          }
+          
+          // If we have permissions to request
+          if ([requestPermissions count] > 0){
+              // Ask for the missing permissions
+              [FBSession.activeSession requestNewPublishPermissions:requestPermissions
+                                                    defaultAudience:FBSessionDefaultAudienceFriends
+                                                  completionHandler:^(FBSession *session, NSError *error) {
+                                                      if (!error) {
+                                                          // Permission granted, we can request the user information
+                                                          [self postToFacebookWithPermissionsWithStatus:status andImage:image];
+                                                      } else {
+                                                          // An error occurred, handle the error
+                                                          // See our Handling Errors guide: https://developers.facebook.com/docs/ios/errors/
+                                                          NSLog(@"%@", error.description);
+                                                      }
+                                                  }];
+          } else {
+              [self postToFacebookWithPermissionsWithStatus:status andImage:image];
+          }
+          
+        } else {
+          // There was an error requesting the permission information
+          // See our Handling Errors guide: https://developers.facebook.com/docs/ios/errors/
+          NSLog(@"%@", error.description);
+        }
+        }];
+    
     
     
     
@@ -386,6 +440,33 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 //             [self completedRequestWithType:FacebookService];
 //         }
 //     }];
+}
+
+- (void)postToFacebookWithPermissionsWithStatus:(NSString*)status andImage:(UIImage*)image{
+    // Permissions are present, we can request the user information
+    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                   @"Flux", @"name",
+                                   @"See a place like you’ve never seen it before.", @"caption",
+                                   @"Flux gives you and your friends the ability to automatically place photos in the real world, the rest is up to you.",@"description",
+                                   @"http://www.smlr.is/", @"link",
+                                   @"http://imgur.com/ADMTzLB", @"picture",
+                                   nil];
+    
+    // Make the request
+    [FBRequestConnection startWithGraphPath:@"/me/feed"
+                                 parameters:params
+                                 HTTPMethod:@"POST"
+                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if (!error) {
+            // Link posted successfully to Facebook
+            [self completedRequestWithType:FacebookService];
+        } else {
+            // An error occurred, we need to handle the error
+            NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+            NSLog(@"Facebook Post Error: %@",errorstring);
+            [self failedToCompleteRequestWithType:FacebookService];
+        }
+    }];
 }
 
 @end

@@ -36,6 +36,7 @@
     IBOutlet UIBarButtonItem *saveButton;
     IBOutlet UIButton *facebookButton;
     IBOutlet UIButton *twitterButton;
+    IBOutlet UIButton *localSaveButton;
     NSArray*images;
     NSMutableIndexSet*removedImages;
 }
