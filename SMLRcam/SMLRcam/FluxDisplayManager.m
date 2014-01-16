@@ -282,7 +282,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 {
     FluxDataRequest *featuresRequest = [[FluxDataRequest alloc] init];
     [featuresRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-    featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSString *features, FluxDataRequest *completedDataRequest){
+    featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSData *features, FluxDataRequest *completedDataRequest){
         // assign features into SIO.features...
         ire.imageMetadata.features = features;
         ire.imageMetadata.featureFetching = NO;
@@ -310,9 +310,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 - (void)didMatchImage:(NSNotification *)notification
 {
-    NSDictionary *userInfoDict = [notification userInfo];
-    FluxLocalID *localID = userInfoDict[@"matchedLocalID"];
-    FluxScanImageObject *imageObject = userInfoDict[@"matchedImageObject"];
+//    NSDictionary *userInfoDict = [notification userInfo];
+//    FluxLocalID *localID = userInfoDict[@"matchedLocalID"];
+//    FluxScanImageObject *imageObject = userInfoDict[@"matchedImageObject"];
 
     [self calculateTimeAdjustedImageList];
 }

@@ -89,8 +89,8 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(twitterChanged) name:ACAccountStoreDidChangeNotification object:nil];
     
-//    [twitterButton setEnabled:NO];
-//    [facebookButton setEnabled:NO];
+    [twitterButton setEnabled:NO];
+    [facebookButton setEnabled:NO];
 //    [signInOptionsLabel setAlpha:0.3];
 }
 

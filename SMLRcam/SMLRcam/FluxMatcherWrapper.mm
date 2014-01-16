@@ -101,7 +101,7 @@ const int auto_threshold_inc = 10;
 }
 
 // Object images are downloaded content to be matched and this routine supplies raw features
-- (void)setObjectFeatures:(NSString *)objectFeatures
+- (void)setObjectFeaturesFromString:(NSString *)objectFeatures
 {
     cv::FileStorage fs([objectFeatures UTF8String], cv::FileStorage::READ + cv::FileStorage::MEMORY);
 
@@ -113,6 +113,69 @@ const int auto_threshold_inc = 10;
     fs["img_rows"] >> object_img_rows;
     
     std::cout << keypoints_object.size() << " keypoints and " << descriptors_object.rows << " descriptors read from file." << std::endl;
+}
+
+// Object images are downloaded content to be matched and this routine supplies raw features
+- (void)setObjectFeatures:(NSData *)objectFeatures
+{
+	// open file and pull out header...
+    Byte *fp = (Byte *)[objectFeatures bytes];
+
+    binHeader *header = (binHeader *)fp;
+    fp += sizeof(binHeader);
+    
+    // parse out and validate the header
+    if ((header->magic != fluxMagic) || (header->major != 1))
+    {
+    	// problem
+        NSLog(@"Feature header Magic number wrong (%x) or major wrong (%i).", header->magic, header->major);
+        keypoints_object.resize(0);
+    	return;
+    }
+    
+    int expectedSize = sizeof(binHeader) + header->feature_count * (sizeof(FluxKeyPoint) + 64);
+    
+    if (objectFeatures.length < expectedSize)
+    {
+        NSLog(@"Invalid feature block size.  Expecting %i, have %i.", expectedSize, objectFeatures.length);
+        keypoints_object.resize(0);
+        return;
+    }
+    
+    keypoints_object.resize(header->feature_count);
+    
+    int kpsize = keypoints_object.size();
+    
+    // read the keypoints...
+    FluxKeyPoint *fkp;
+    for (int i = 0; i < header->feature_count; i++)
+    {
+        fkp = (FluxKeyPoint *)fp;
+        fp += sizeof(FluxKeyPoint);
+        
+        keypoints_object[i] = cv::KeyPoint(fkp->ptx, fkp->pty, fkp->size, fkp->angle, fkp->response, fkp->octave, fkp->class_id);
+    }
+    
+    descriptors_object = cv::Mat(header->feature_count, 64, CV_8U);
+
+    for (int r = 0; r < header->feature_count; r++)
+    {
+        Byte *buff = fp;
+        fp += 64;
+        
+       	char *dc = descriptors_object.ptr<char>(r);
+        
+    	for (int c = 0; c < 64; c++)
+    	{
+    		dc[c] = buff[c];
+    	}
+    }
+    
+    int descsize = descriptors_object.rows;
+    
+    NSLog(@"%i keypoints and %i descriptors read from file.", kpsize, descsize);
+    
+    kpsize = 0;
 }
 
 // Scene images are the background camera feed to match against

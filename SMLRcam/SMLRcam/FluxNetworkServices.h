@@ -38,7 +38,7 @@ extern NSString* const FluxTestServerURL;
            andRequestID:(FluxRequestID *)requestID andImageID:(FluxImageID)imageID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSString *)features forImageID:(int)imageID
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSData *)features forImageID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 
 //maps
