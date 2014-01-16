@@ -61,6 +61,7 @@ extern NSString* const FluxTestServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray*)images
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogout:(FluxRequestID *)requestID;
 
 //tags
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
@@ -155,6 +156,11 @@ returns a complete userObject for a given userID
 Logs in a given userObject and returns an access token
  **/
 - (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
+
+/**
+ Log out the current user
+ **/
+- (void)logoutWithRequestID:(FluxRequestID *)requestID;
 
 /**
 checks the 'uniqueness' of a given username and returns a BOOL along with a suggested alternate
