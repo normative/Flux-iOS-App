@@ -1,4 +1,12 @@
 Release Notes:
+
+******************************************
+
+V0.18 B02
+
+Released: 2014-01-15 22:00:00
+
+Release Notes:
 - HACK fix to force reload of Profile picture.
 - throttle total number of feature descriptor downloads to reduce startup latency
 - prevent crash in MapView when zooming in/out with lots of content
