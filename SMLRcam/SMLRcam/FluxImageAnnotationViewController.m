@@ -222,10 +222,10 @@
         
         if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
             NSMutableArray*socialPostArr = [[NSMutableArray alloc]init];
-            if (facebookButton.isSelected) {
+            if (facebookButton.isSelected && !facebookButton.isHidden) {
                 [socialPostArr addObject:FacebookService];
             }
-            if (twitterButton.isSelected) {
+            if (twitterButton.isSelected && !twitterButton.isHidden) {
                 [socialPostArr addObject:TwitterService];
             }
             NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",

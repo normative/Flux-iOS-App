@@ -252,8 +252,10 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 
     NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
     
+    
     ACAccountType *twitterType =
     [self.TWAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    self.TWAccounts = [self.TWAccountStore accountsWithAccountType:twitterType];
     
     SLRequestHandler requestHandler =
     ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
@@ -302,13 +304,10 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             for (ACAccount *acct in self.TWAccounts) {
                 if ([username isEqualToString:acct.username]) {
                     account = acct;
+                    break;
                 }
             }
             [request setAccount:account];
-            
-            
-            
-            [request setAccount:[accounts lastObject]];
             [request performRequestWithHandler:requestHandler];
         }
         else {
@@ -327,28 +326,66 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 #pragma mark Facebook
 - (void)postToFacebookWithStatus:(NSString*)status andImage:(UIImage*)image{
     
-    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
-    [params setObject:status forKey:@"message"];
-    [params setObject:UIImagePNGRepresentation(image) forKey:@"picture"];
+//    [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+//        if (!error){
+//            NSString *uri = [result valueForKey:@"uri"];
     
-    [FBRequestConnection startWithGraphPath:@"me/photos"
-                                 parameters:params
-                                 HTTPMethod:@"POST"
-                          completionHandler:^(FBRequestConnection *connection,
-                                              id result,
-                                              NSError *error)
-     {
-         if (error)
-         {
-             NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-             NSLog(@"Facebook Post Error: %@",errorstring);
-             [self failedToCompleteRequestWithType:FacebookService];
-         }
-         else
-         {
-             [self completedRequestWithType:FacebookService];
-         }
-     }];
+            NSMutableDictionary<FBOpenGraphObject> *object = [FBGraphObject openGraphObjectForPost];
+            object.provisionedForPost = YES;
+            object[@"type"] = @":<OBJECT_NAME>";
+            object[@"url"] = @"http://www.smlr.is/";
+            object[@"title"] = @"My Title";
+            
+            object[@"description"] = status;
+            object[@"user_generated"] = @"true";
+            
+//            object[@"image"] = @[@{@"url": uri, @"user_generated":@"true"}];
+    
+            // for og:image we assign the image that we just staged, using the uri we got as a response
+            // the image has to be packed in a dictionary like this:
+            object[@"image"] = image;
+            
+            [FBRequestConnection startForPostOpenGraphObject:object
+                                           completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                               if (error)
+                                               {
+                                                   NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+                                                   NSLog(@"Facebook Post Error: %@",errorstring);
+                                                   [self failedToCompleteRequestWithType:FacebookService];
+                                               }
+                                               else
+                                               {
+                                                   [self completedRequestWithType:FacebookService];
+                                               }
+                                           }];
+//        }
+//    }];
+    
+    
+    
+    
+//    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
+//    [params setObject:status forKey:@"message"];
+//    [params setObject:UIImagePNGRepresentation(image) forKey:@"picture"];
+//    
+//    [FBRequestConnection startWithGraphPath:@"me/photos"
+//                                 parameters:params
+//                                 HTTPMethod:@"POST"
+//                          completionHandler:^(FBRequestConnection *connection,
+//                                              id result,
+//                                              NSError *error)
+//     {
+//         if (error)
+//         {
+//             NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
+//             NSLog(@"Facebook Post Error: %@",errorstring);
+//             [self failedToCompleteRequestWithType:FacebookService];
+//         }
+//         else
+//         {
+//             [self completedRequestWithType:FacebookService];
+//         }
+//     }];
 }
 
 @end
