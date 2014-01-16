@@ -480,14 +480,14 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         for (int idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < nearbyListCopy.count)); idx++)
         {
             FluxImageRenderElement *ire = [nearbyListCopy objectAtIndex:(_timeRangeMinIndex + idx)];
-            if (ire.image == nil)
+            if (ire.imageCacheObject.image == nil)
             {
                 // check to see if we have the imagery in the cache..
                 FluxImageType rtype = none;
-                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
-                if (image != nil)
+                FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
+                if (imageCacheObj != nil)
                 {
-                    ire.image = image;
+                    ire.imageCacheObject = imageCacheObj;
                     ire.imageRenderType = rtype;
                 }
                 else if (_isScanMode)
@@ -496,9 +496,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     ire.imageFetchType = thumb;
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
                     [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    dataRequest.imageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                    dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
-                        ire.image = image;
+                        ire.imageCacheObject = imageCacheObj;
                         ire.imageRenderType = thumb;
                         ire.imageFetchType = none;
                         [self updateImageMetadataForElement:ire];
@@ -510,7 +510,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 }
             }
             
-            if (ire.image != nil)
+            if (ire.imageCacheObject.image != nil)
             {
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
@@ -653,7 +653,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     FluxScanImageObject *newImageObject = [[notification userInfo] objectForKey:@"imageObject"];
     UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
     FluxImageRenderElement *ire = [[FluxImageRenderElement alloc]initWithImageObject:newImageObject];
-    ire.image = newImage;
+    NSString *imageCacheKey =[newImageObject generateImageCacheKeyWithImageType:full_res];
+    FluxCacheImageObject *imageCacheObject = [FluxCacheImageObject cacheImageObject:newImage withID:imageCacheKey withType:full_res];
+    ire.imageCacheObject = imageCacheObject;
     ire.imageRenderType = full_res;
     ire.localCaptureTime = ire.timestamp;
     [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
@@ -759,7 +761,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                             // in both lists - make sure things are transferred properly
                             curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
                             curImgRenderObj.textureMapElement = localImgRenderObj.textureMapElement;
-                            curImgRenderObj.image = localImgRenderObj.image;
+                            curImgRenderObj.imageCacheObject = localImgRenderObj.imageCacheObject;
                             curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
 
                         }
@@ -1049,7 +1051,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
                     [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    dataRequest.imageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                    dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.imageRenderType = ire.imageFetchType;
                         ire.imageFetchType = none;

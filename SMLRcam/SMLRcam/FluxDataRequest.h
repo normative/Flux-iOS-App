@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FluxCacheImageObject.h"
 #import "FluxDataFilter.h"
 #import "FluxDataStore.h"
 #import "FluxNetworkServices.h"
@@ -35,7 +36,7 @@ typedef enum FluxDataRequestType : NSUInteger {
 @class FluxDataRequest;
 
 //images
-typedef void (^ImageReadyBlock)(FluxLocalID *, UIImage *, FluxDataRequest *);
+typedef void (^ImageReadyBlock)(FluxLocalID *, FluxCacheImageObject *, FluxDataRequest *);
 typedef void (^MetadataReadyBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^NearbyListReadyBlock)(NSArray *);
 typedef void (^WideAreaListReadyBlock)(NSArray *);
@@ -151,7 +152,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 
 //images
-- (void) whenImageReady:(FluxLocalID *)localID withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenImageReady:(FluxLocalID *)localID withImage:(FluxCacheImageObject *)image withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenNearbyListReady:(NSArray *)nearbyList;
 - (void) whenWideAreaListReady:(NSArray *)wideList;

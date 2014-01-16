@@ -20,7 +20,7 @@
         _lastReferenced = nil;
         _localCaptureTime = nil;
         _textureMapElement = nil;
-        _image = nil;
+        _imageCacheObject = nil;
         _dirty = true;
         _imageRenderType = none;
         _imageFetchType = none;
@@ -45,7 +45,7 @@
             _lastReferenced = [[NSDate alloc]init];
             _localCaptureTime = [[NSDate alloc]initWithTimeIntervalSince1970:0];
             _textureMapElement = nil;
-            _image = nil;
+            _imageCacheObject = nil;
             _dirty = true;
             _imageRenderType = none;
             _imagePose = malloc(sizeof(sensorPose));

@@ -1977,9 +1977,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
                 // not found so always load lowest resolution (thumb typically)
                 FluxImageType rtype = none;
-                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
+                FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
                 
-                if (image != nil)
+                if (imageCacheObj.image != nil)
                 {
                     textureIndex = newTel.textureIndex;
                     if (newTel.localID != nil)
@@ -1992,7 +1992,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         }
                     }
 
-                    NSError *error = [self loadTexture:textureIndex withImage:image];
+                    NSError *error = [self loadTexture:textureIndex withImage:imageCacheObj.image];
                     
                     if (error)
                     {
@@ -2003,7 +2003,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         // found one - set it up...
                         ire.textureMapElement = newTel;
                         ire.imageRenderType = rtype;
-                        ire.image = image;
+                        ire.imageCacheObject = imageCacheObj;
                         newTel.imageType = rtype;
                         newTel.used = true;
                         newTel.localID = ire.localID;
@@ -2033,11 +2033,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             {
                 // new one is bigger - load it up... if need to load up...
                 FluxImageType rtype = none;
-                UIImage *image = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageRenderType returnSize:&rtype];
+                FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageRenderType returnSize:&rtype];
 
-                if (image != nil)
+                if (imageCacheObj.image != nil)
                 {
-                    NSError *error = [self loadTexture:textureIndex withImage:image];
+                    NSError *error = [self loadTexture:textureIndex withImage:imageCacheObj.image];
                     
                     if (error)
                     {
@@ -2049,7 +2049,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                         FluxTextureToImageMapElement *tel = ire.textureMapElement;
                         tel.imageType = rtype;
                         ire.imageRenderType = rtype;
-                        ire.image = image;
+                        ire.imageCacheObject = imageCacheObj;
                         loadedOneHiRes = true;
                         tel.used = true;
                         justLoaded = true;

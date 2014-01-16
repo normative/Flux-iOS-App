@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxCacheImageObject.h"
 #import "FluxScanImageObject.h"
 #import "FluxOpenGLCommon.h"
 #import "FluxTextureToImageMapElement.h"
@@ -23,7 +24,7 @@
 @property (nonatomic, strong)   NSDate *localCaptureTime;
 @property (nonatomic, strong)   FluxTextureToImageMapElement *textureMapElement;
 @property (nonatomic)           bool dirty;
-@property (nonatomic, weak)     UIImage *image;
+@property (nonatomic, weak)     FluxCacheImageObject *imageCacheObject;
 @property (nonatomic)           FluxImageType imageRenderType;
 @property (nonatomic)           FluxImageType imageFetchType;
 @property (nonatomic)           sensorPose *imagePose;

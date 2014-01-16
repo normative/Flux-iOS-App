@@ -219,7 +219,7 @@ float const altitudeMax =  100000;
     return [fluxDataStore doesImageExistForLocalID:localID];
 }
 
-- (UIImage *)fetchImageByImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType
+- (FluxCacheImageObject *)fetchImageByImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType
 {
     FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
     if (imageObj != nil)
@@ -233,9 +233,9 @@ float const altitudeMax =  100000;
     }
 }
 
-- (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType
+- (FluxCacheImageObject *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType
 {
-    UIImage *ret = nil;
+    FluxCacheImageObject *cacheImageObj = nil;
     FluxImageType itype;
 
     *returnType = none;
@@ -244,29 +244,29 @@ float const altitudeMax =  100000;
         case lowest_res:
             //  find lowest image res...
             itype = lowest_res + 1;
-            while ((ret == nil) && (itype < highest_res))
+            while ((cacheImageObj.image == nil) && (itype < highest_res))
             {
-                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype];
+                cacheImageObj = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype];
                 *returnType = itype++;
             }
             break;
         case highest_res:
             //  find lowest highest res...
             itype = highest_res - 1;
-            while ((ret == nil) && (itype > lowest_res))
+            while ((cacheImageObj.image == nil) && (itype > lowest_res))
             {
-                ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype];
+                cacheImageObj = [fluxDataStore getImageWithLocalID:curLocalID withSize:itype];
                 *returnType = itype--;
             }
             break;
         default:
             // everything else - just return what is asked...
-            ret = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
+            cacheImageObj = [fluxDataStore getImageWithLocalID:curLocalID withSize:imageType];
             *returnType = imageType;
             break;
     }
 
-    return ret;
+    return cacheImageObj;
 }
 
 
@@ -320,8 +320,8 @@ float const altitudeMax =  100000;
                     completedRequest = YES;
                 }
             }
-            UIImage *image = imageExist[dataRequest.imageType];
-            [dataRequest whenImageReady:curLocalID withImage:image withDataRequest:dataRequest];
+            FluxCacheImageObject *cacheImageObj = imageExist[dataRequest.imageType];
+            [dataRequest whenImageReady:curLocalID withImage:cacheImageObj withDataRequest:dataRequest];
         }
         // Now check if request has already been made
         else
@@ -667,7 +667,7 @@ float const altitudeMax =  100000;
         // We are currently assuming the size in the request is the size returned. Should check this.
         
         // Add image to Data Store
-        [fluxDataStore addImageToStore:image withLocalID:imageObj.localID withSize:request.imageType];
+        FluxCacheImageObject *imageCacheObj = [fluxDataStore addImageToStore:image withLocalID:imageObj.localID withSize:request.imageType];
         
         // Notify and clean up.
         // Note that a single image download may not necessarily complete a request.
@@ -689,7 +689,7 @@ float const altitudeMax =  100000;
                 [curRequest.completedIDs addObject:imageObj.localID];
 
                 // Notify and execute callback
-                [curRequest whenImageReady:imageObj.localID withImage:image withDataRequest:request];
+                [curRequest whenImageReady:imageObj.localID withImage:imageCacheObj withDataRequest:request];
                 
                 // Used to clean up in next step
                 if ([curRequest.completedIDs count] == [curRequest.requestedIDs count])

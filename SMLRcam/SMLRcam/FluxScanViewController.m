@@ -211,8 +211,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 # warning Currently extra overhead. Should fix this to get it locally first before requesting.
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:rowObject.localID]];
-    [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-        [cell.contentImageView setImage:image];
+    [dataRequest setImageReady:^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+        [cell.contentImageView setImage:imageCacheObj.image];
     }];
     [self.fluxDisplayManager.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
 
@@ -345,7 +345,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     IDMPhoto *photo = nil;
 
-    UIImage *img = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType];
+    UIImage *img = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType].image;
     if (actualType >= quarterhd)
     {
         photo = [[IDMPhoto alloc]initWithImage:img];
