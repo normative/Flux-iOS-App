@@ -10,14 +10,14 @@
 
 @implementation FluxTextureToImageMapElement
 
-- (id)init
+- (id)initWithSlotIndex:(int)index
 {
     self = [super init];
     if (self)
     {
         _localID = @"";
         _imageType = none;
-        _textureIndex = -1;
+        _textureIndex = index;
         _used = false;
     }
     
