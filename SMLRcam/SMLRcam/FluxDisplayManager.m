@@ -493,20 +493,26 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 else if (_isScanMode)
                 {
                     // request it if it isn't there...
-                    ire.imageFetchType = thumb;
-                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                    [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
-                        // assign image into ire.image...
-                        ire.imageCacheObject = imageCacheObj;
-                        ire.imageRenderType = thumb;
-                        ire.imageFetchType = none;
-                        [self updateImageMetadataForElement:ire];
-                        
-                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                            object:self userInfo:nil];
-                    };
-                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+                    if (ire.imageFetchType < thumb)
+                    {
+                        ire.imageFetchType = thumb;
+                        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                        [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                        dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+                            // assign image into ire.image...
+                            ire.imageCacheObject = imageCacheObj;
+                            ire.imageRenderType = thumb;
+                            [self updateImageMetadataForElement:ire];
+                            
+                            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                                object:self userInfo:nil];
+                        };
+                        dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                            ire.imageFetchType = none;
+                        };
+
+                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+                    }
                 }
             }
             
@@ -515,7 +521,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
                 [self.displayList addObject:ire];
-                
                 
                 //to get display date range
                 NSDate *date = [ire timestamp]; 
@@ -1035,12 +1040,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     if (!_isScrubAnimating)
     {
-        if (_imageRequestCountQuart < maxRequestCountQuart)
+        if (_isScanMode && (_imageRequestCountQuart < maxRequestCountQuart))
         {
             // look to see if can trigger load of higher resolution
             for (FluxImageRenderElement *ire in renderList)
             {
-                if ((ire.imageFetchType == none) && (ire.textureMapElement != nil) && (ire.textureMapElement.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
+                if (ire.imageFetchType < quarterhd)
                 {
                     // fetch the quart for this element
                     ire.imageFetchType = quarterhd;
@@ -1054,7 +1059,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.imageRenderType = ire.imageFetchType;
-                        ire.imageFetchType = none;
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                             object:self userInfo:nil];
