@@ -923,26 +923,19 @@ void init(){
     if(valid ==-1)
         return nil;
   
-    int i;
-    int tapped =0;
+    int tapped = 0;
     //this is order dependant of course so any time the ordering of items in renderList will change this needs to be updated
-    for(i = 0; i <self.renderList.count;i++)
+    for (FluxTextureToImageMapElement *tel in [self.textureMap subarrayWithRange:NSMakeRange(0, [self.renderList count])])
     {
-        //element = self.renderList.count - i;
-        FluxImageRenderElement *ire = [self.renderList objectAtIndex:i];
-        int element = ire.textureMapElement.textureIndex;
+        int element = tel.textureIndex;
         tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
-        if (tapped ==1)
+        if (tapped == 1)
         {
-            
-            if (ire != nil)
-            {
-                touchedObject = ire.imageMetadata;
-            }
+            touchedObject = [self.fluxDisplayManager getRenderElementForKey:tel.localID].imageMetadata;
             break;
         }
     }
-     _imagetapped =0;
+     _imagetapped = 0;
     return touchedObject;
 }
 
@@ -1595,41 +1588,39 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     for (int i = 0; i < MAX_TEXTURES; i++)
         _validMetaData[i] = 0;
     
-    for (FluxImageRenderElement *ire in self.renderList)
+    for (FluxTextureToImageMapElement *tel in [self.textureMap subarrayWithRange:NSMakeRange(0, [self.renderList count])])
     {
+        FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
         scanimageobject = ire.imageMetadata;
         imagehomographyPose = useSolvePnPSolution ? scanimageobject.imageHomographyPosePnP : scanimageobject.imageHomographyPose;
-        if (ire.textureMapElement != nil)
+        
+        int idx = tel.textureIndex;
+        
+        if(scanimageobject.location_data_type == location_data_from_homography)
         {
-            int idx = ire.textureMapElement.textureIndex;
-            
-//
-            ;
-            if(scanimageobject.location_data_type == location_data_from_homography)
-            {
-                _validMetaData[idx] = [self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose userHomographyPose:scanimageobject.userHomographyPose planeNormal:&planeNormal Distance:distance currentUserPose:_userPose viewParamters:&vpimage]*
-                                 self.fluxDisplayManager.locationManager.notMoving ;
-                _renderingMatchedImage =1;
-            }
-            else
-            {
-                _validMetaData[idx] = (computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage) *
-                                       self.fluxDisplayManager.locationManager.notMoving);
-            }
-            
-            tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
-                                               vpimage.at.x, vpimage.at.y, vpimage.at.z,
-                                               vpimage.up.x, vpimage.up.y, vpimage.up.z);
-            
-            icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
-           tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
-            
-            _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
+            _validMetaData[idx] = ([self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose
+                                                                          userHomographyPose:scanimageobject.userHomographyPose
+                                                                                 planeNormal:&planeNormal
+                                                                                    Distance:distance
+                                                                             currentUserPose:_userPose
+                                                                               viewParamters:&vpimage]) *
+                                    (self.fluxDisplayManager.locationManager.notMoving);
+            _renderingMatchedImage = 1;
         }
         else
         {
-            // TS: should generate an error here - should never get here...
+            _validMetaData[idx] = (computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage)) *
+                                   (self.fluxDisplayManager.locationManager.notMoving);
         }
+        
+        tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
+                                           vpimage.at.x, vpimage.at.y, vpimage.at.z,
+                                           vpimage.up.x, vpimage.up.y, vpimage.up.z);
+        
+        icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
+        tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
+        
+        _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
     }
 }
 
@@ -2237,34 +2228,25 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
     
     // then spin through the images...
-    NSEnumerator *revEnumerator = [self.renderList reverseObjectEnumerator];
+    NSEnumerator *revEnumerator = [[self.textureMap subarrayWithRange:NSMakeRange(0, [self.renderList count])] reverseObjectEnumerator];
     int c = 0;
-    for (FluxImageRenderElement *ire in revEnumerator)
+    for (FluxTextureToImageMapElement *tel in revEnumerator)
     {
-        if (ire.textureMapElement)
-        {
-            int i = ire.textureMapElement.textureIndex;
+        int i = tel.textureIndex;
 
-            if ((ire.textureMapElement.used) && (_texture[i] != nil) && (_validMetaData[i]==1))
-            {
-//                NSLog(@"    binding texture from slot %d, id %@, to gltexture %d", i, ire.localID, c);
-                sio = ire.imageMetadata;
-                sepia = (sio.location_data_type ==location_data_from_homography || sio.location_data_type ==location_data_valid_ecef) ? 0.0:1.0;
-                glUniform1f(uniforms[UNIFORM_SET_SEPIA0+c],sepia);
-                glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
-             // glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[i].m);
-                glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],1);
-                glActiveTexture(GL_TEXTURE0 + c);
-                glBindTexture(_texture[i].target, _texture[i].name);
-                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-                glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + c], c);
-                c++;
-            }
-//            else
-//            {
-//                NSLog(@"Not binding texture from slot %d, id %@, used: %@, texture!=nil: %@, valid meta=(1): %d", i, ire.localID, ire.textureMapElement.used?@"Yes":@"No",(_texture[i]!=nil)?@"Yes":@"No", _validMetaData[i] );
-//            }
+        if ((tel.used) && (_texture[i] != nil) && (_validMetaData[i]==1))
+        {
+            sio = ((FluxImageRenderElement *)[self.fluxDisplayManager getRenderElementForKey:tel.localID]).imageMetadata;
+            sepia = (sio.location_data_type == location_data_from_homography || sio.location_data_type == location_data_valid_ecef) ? 0.0 : 1.0;
+            glUniform1f(uniforms[UNIFORM_SET_SEPIA0+c],sepia);
+            glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0 + c], 1, 0, _tBiasMVP[i].m);
+            glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],1);
+            glActiveTexture(GL_TEXTURE0 + c);
+            glBindTexture(_texture[i].target, _texture[i].name);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + c], c);
+            c++;
         }
     }
     
