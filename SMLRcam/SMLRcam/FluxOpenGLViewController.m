@@ -1139,14 +1139,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _displayListHasChanged = 0;
 
     self.renderList = [[NSMutableArray alloc] initWithCapacity:number_textures];
-    self.textureMap = [[NSMutableArray alloc] initWithCapacity:number_textures];
     
+    NSMutableArray *tempTextureList = [[NSMutableArray alloc] initWithCapacity:number_textures];
     for (int i = 0; i < number_textures; i++)
     {
-        FluxTextureToImageMapElement *ime = [[FluxTextureToImageMapElement alloc] init];
-        ime.textureIndex = i;
-        [self.textureMap addObject:ime];
+        FluxTextureToImageMapElement *ime = [[FluxTextureToImageMapElement alloc] initWithSlotIndex:i];
+        [tempTextureList addObject:ime];
     }
+    self.textureMap = [NSArray arrayWithArray:tempTextureList];
 
     self.fluxLocationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMotionManager];
