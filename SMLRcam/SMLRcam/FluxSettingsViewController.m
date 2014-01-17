@@ -210,7 +210,7 @@
                                          if (FBSession.activeSession.isOpen) {
                                              [FBSession.activeSession closeAndClearTokenInformation];
                                          }
-                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
                                      }
                                  }];
                 
@@ -242,7 +242,7 @@
                                      if (buttonIndex != actionSheet.cancelButtonIndex) {
                                          //unlick twitter
                                          [UICKeyChainStore removeAllItemsForService:TwitterService];
-                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
                                      }
                                  }];
                 
@@ -291,89 +291,12 @@
 //    [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
 //    [self.maskSlider setValue:(float)discreteValue];
 //}
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex != actionSheet.cancelButtonIndex) {
-        switch (actionSheet.tag) {
-            case 5:
-                [self.logoutButton setEnabled:NO];
-                //delay until the action sheet is removed from the stack
-                [self performSelector:@selector(logout) withObject:Nil afterDelay:0.5];
-                break;
-            case 3:
-            {
-                //unlink facebook
-                [UICKeyChainStore removeAllItemsForService:FacebookService];
-                //close facebook session
-                if (FBSession.activeSession.isOpen) {
-                    [FBSession.activeSession closeAndClearTokenInformation];
-                }
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-            }
-                
-                break;
-            case 33:
-            {
-                //link facebook
-                [self linkFacebook];
-            }
-                break;
-            case 8:
-            {
-                //unlick twitter
-                [UICKeyChainStore removeAllItemsForService:TwitterService];
-                [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-            }
-                
-                break;
-            case 88:
-            {
-                //link twitter
-                [self linkTwitterAccount];
-            }
-                
-                break;
-            case 100:
-            {
-                [self loginWithTwitterForAccountIndex:buttonIndex];
-            }
-                break;
-            default:
-                break;
-        }
-    }
-}
-
 
 #pragma mark Twitter
 - (void)linkTwitterAccount{
     FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
     [socialManager setDelegate:self];
     [socialManager linkTwitter];
-}
-
-- (void)loginWithTwitterForAccountIndex:(int)index{
-    [_apiManager performReverseAuthForAccount:_accounts[index] withHandler:^(NSData *responseData, NSError *error) {
-        if (responseData) {
-            NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            
-            NSLog(@"Reverse Auth process returned: %@", responseStr);
-            NSMutableArray *parts = [[responseStr componentsSeparatedByString:@"&"] mutableCopy];
-            for (int i = 0; i<parts.count; i++) {
-                NSString*string = (NSString*)[parts objectAtIndex:i];
-                NSRange range = [string rangeOfString:@"="];
-                [parts replaceObjectAtIndex:i withObject:(NSString*)[string substringFromIndex:range.location+1]];
-            }
-            
-            [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
-            [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
-            
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-            
-        }
-        else {
-            NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
-        }
-    }];
 }
 
 #pragma mark Facebook
@@ -387,56 +310,12 @@
 #pragma mark - Social Manager Delegate
 
 
-- (void)linkFacebook{
-    if (!FBSession.activeSession.isOpen) {
-        if (FBSession.activeSession.state != FBSessionStateCreated) {
-            // Create a new, logged out session.
-            FBSession.activeSession = [[FBSession alloc] init];
-        }
-        
-        // if the session isn't open, let's open it now and present the login UX to the user
-        NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
-        [FBSession openActiveSessionWithReadPermissions:permissions
-                                           allowLoginUI:YES
-                                      completionHandler:
-         ^(FBSession *session,
-           FBSessionState state, NSError *error) {
-             if (!error) {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     if (FBSession.activeSession.isOpen) {
-                         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
-                             if (!error) {
-                                 [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
-                                 [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
-                                 [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
-                                 
-                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-                             }
-                             
-                             else{
-                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                     NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-                                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                                     [alert show];
-                                 });
-                             }
-                         }];
-                     }
-                 });
-             }
-             else{
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:errorstring delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-                     [alert show];
-                 });
-             }
-         }];
-    }
+-(void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 - (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
-    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 - (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{

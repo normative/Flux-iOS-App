@@ -167,9 +167,10 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         
         // if the session isn't open, let's open it now and present the login UX to the user
         NSArray *permissions = [NSArray arrayWithObjects:@"email",@"publish_actions", nil];
-        [FBSession openActiveSessionWithReadPermissions:permissions
-                                           allowLoginUI:YES
-                                      completionHandler:
+        [FBSession openActiveSessionWithPublishPermissions:permissions
+                                           defaultAudience:FBSessionDefaultAudienceEveryone
+                                              allowLoginUI:YES
+                                          completionHandler:
          ^(FBSession *session,
            FBSessionState state, NSError *error) {
              if (!error) {
@@ -286,7 +287,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     ACAccountStoreRequestAccessCompletionHandler accountStoreHandler =
     ^(BOOL granted, NSError *error) {
         if (granted) {
-            NSArray *accounts = [self.TWAccountStore accountsWithAccountType:twitterType];
             NSURL *url = [NSURL URLWithString:@"https://api.twitter.com"
                           @"/1.1/statuses/update_with_media.json"];
             NSDictionary *params = @{@"status" : status};
@@ -302,7 +302,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             
             ACAccount* account;
             for (ACAccount *acct in self.TWAccounts) {
-                if ([username isEqualToString:acct.username]) {
+                if ([[username lowercaseString] isEqualToString:[acct.username lowercaseString]]) {
                     account = acct;
                     break;
                 }

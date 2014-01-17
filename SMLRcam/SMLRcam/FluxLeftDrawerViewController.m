@@ -45,12 +45,12 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
     [UIView animateWithDuration:0.25 animations:^{
         [self.tableView setAlpha:1.0];
     }];
 }
+
+
 
 - (void)viewDidLoad
 {
@@ -99,7 +99,6 @@
             [defaults setObject:userObject.bio forKey:@"bio"];
             
             if (userObject.hasProfilePic) {
-                
                 
                 
 //                if (![defaults objectForKey:@"profileImage"]) {
@@ -164,7 +163,7 @@
         NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
         NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, /*tmp2, tmp3, tmp4,*/ tmp5, nil];
     }
     return newTableArray;
 }
@@ -203,7 +202,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+{    
     static NSString *cellIdentifier = @"standardLeftCell";
     FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
