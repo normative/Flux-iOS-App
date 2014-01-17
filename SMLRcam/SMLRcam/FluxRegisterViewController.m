@@ -630,7 +630,7 @@
              ^(FBSession *session,
                FBSessionState state, NSError *error) {
                  if (!error) {
-                     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+//                     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
                      [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:@"token" service:[NSString stringWithFormat:@"com.%@",@"Facebook"]];
                      [self didLoginSuccessfullyWithUserID:1];
                  }

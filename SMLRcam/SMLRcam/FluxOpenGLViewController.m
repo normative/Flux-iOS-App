@@ -665,9 +665,11 @@ void init(){
     
 }
 
-
-
-
+#warning this is referenced in FluxScanVC:- (IBAction)stepper:(id)sender. If the associated control and IBAction is no longer required, this code can go away
+- (void)stepperChangedWithValue:(double)v
+{
+    
+}
 
 
 #pragma mark - Display Manager Notifications
@@ -895,7 +897,7 @@ void init(){
     
     int valid =-1;
     GLKVector3 tapPoint;
-    GLKVector3 vertex, vertex1, vertex0, vertexTest;
+    GLKVector3 vertex, vertex1, vertex0;
     GLKVector4 vp;
     
     //assuming that this is a retina device

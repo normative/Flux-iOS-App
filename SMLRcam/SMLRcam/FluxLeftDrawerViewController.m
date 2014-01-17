@@ -81,11 +81,6 @@
     [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.feedbackButton.titleLabel.font.pointSize]];
     
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
-    if (!userID) {
-        NSString *a = [UICKeyChainStore stringForKey:FluxPasswordKey service:FluxService];
-        NSString *s = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-        NSString *d = [UICKeyChainStore stringForKey:FluxEmailKey service:FluxService];
-    }
 
     //**should** always pass
     if (userID) {
@@ -158,9 +153,9 @@
     }
     else{
         NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Photos" , nil];
-        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Following" , nil];
-        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
-        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
+//        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Following" , nil];
+//        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
+//        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
         newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, /*tmp2, tmp3, tmp4,*/ tmp5, nil];
     }
