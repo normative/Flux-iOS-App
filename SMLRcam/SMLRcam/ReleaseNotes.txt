@@ -1,6 +1,7 @@
 Release Notes:
 
 - fix startup count=3 issue (remove extraneous / too early call to requestNearbyItems)
+- fix logout issue
 
 ******************************************
 
