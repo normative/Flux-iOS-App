@@ -502,6 +502,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     if ([notification userInfo]) {
         if (![(NSNumber*)[[notification userInfo] objectForKey:@"snapshot"]boolValue]) {
+            id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+            [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"event"     // Event category (required)
+                                                                  action:@"action"  // Event action (required)
+                                                                   label:@"uploaded image to flux"          // Event label
+                                                                   value:nil] build]];    // Event value
+            
             [self uploadImages:notification.userInfo];
         }
         
@@ -512,6 +518,21 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             [socialManager socialPostTo:[notification.userInfo objectForKey:@"social"]
                              withStatus:[notification.userInfo objectForKey:@"annotation"]
                                andImage:(UIImage*)[(NSArray*)[notification.userInfo objectForKey:@"capturedImages"]firstObject]];
+            
+            if ([(NSArray*)[notification.userInfo objectForKey:@"social"]containsObject:TwitterService]) {
+                id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+                [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"event"     // Event category (required)
+                                                                      action:@"action"  // Event action (required)
+                                                                       label:@"shared image to twitter"          // Event label
+                                                                       value:nil] build]];    // Event value
+            }
+            if ([(NSArray*)[notification.userInfo objectForKey:@"social"]containsObject:FacebookService]) {
+                id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+                [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"event"     // Event category (required)
+                                                                      action:@"action"  // Event action (required)
+                                                                       label:@"shared image to facebook"          // Event label
+                                                                       value:nil] build]];    // Event value
+            }
         }
     }    
     
@@ -620,6 +641,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (IBAction)snapshotButtonAction:(id)sender {
     [self activateSnapshotView];
     [openGLController setSnapShotFlag];
+    
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                          action:@"action"  // Event action (required)
+                                                           label:@"take snapshot"          // Event label
+                                                           value:nil] build]];    // Event value
 }
 
 

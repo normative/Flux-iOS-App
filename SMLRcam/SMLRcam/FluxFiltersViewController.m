@@ -54,14 +54,7 @@
 
 
 
-- (void)viewWillAppear:(BOOL)animated{
-    //google analytics
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker set:kGAIScreenName
-           value:@"Filters View"];
-    // manual screen tracking
-    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
-    
+- (void)viewWillAppear:(BOOL)animated{    
     [self sendTagRequest];
 }
 

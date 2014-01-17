@@ -449,7 +449,7 @@
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kU6-wo-9ey" userLabel="fake line">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="0.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
                                 </view>
@@ -587,7 +587,7 @@
                                     </connections>
                                 </button>
                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mLL-Vu-a9b" userLabel="fake line">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="0.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
                                 </view>

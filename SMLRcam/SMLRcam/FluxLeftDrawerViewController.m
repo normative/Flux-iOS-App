@@ -78,7 +78,7 @@
     
     [self.versionLbl setText:[NSString stringWithFormat:@"Flux v.%@ (%@)",version,build]];
     [self.versionLbl setFont:[UIFont fontWithName:@"Akkurat" size:self.versionLbl.font.pointSize]];
-    [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.feedbackButton.titleLabel.font.pointSize]];
+    [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.feedbackButton.titleLabel.font.pointSize]];
     
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
     if (!userID) {
@@ -202,7 +202,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{    
+{
     static NSString *cellIdentifier = @"standardLeftCell";
     FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
