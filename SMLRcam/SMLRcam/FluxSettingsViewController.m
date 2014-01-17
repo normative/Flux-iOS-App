@@ -54,8 +54,8 @@
     
     [self setTitle:@"Settings"];
     
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    initialMask = [[defaults objectForKey:@"Mask"] integerValue];
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    initialMask = [[defaults objectForKey:@"Mask"] integerValue];
     
     [self.logoutButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.logoutButton.titleLabel.font.pointSize]];
     
@@ -70,13 +70,13 @@
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    int tmp = [[defaults objectForKey:@"Mask"] integerValue];
-
-    if (tmp!= initialMask) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"maskChange"
-                                                            object:self userInfo:nil];
-    }
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    int tmp = [[defaults objectForKey:@"Mask"] integerValue];
+//
+//    if (tmp!= initialMask) {
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"maskChange"
+//                                                            object:self userInfo:nil];
+//    }
 
 }
 
@@ -330,11 +330,6 @@
     //if the action sheet was delayed, do nothing (**should** never happen)
     if (window.rootViewController) {
         
-        //clear keychain
-        [UICKeyChainStore removeAllItemsForService:FluxService];
-        [UICKeyChainStore removeAllItemsForService:FacebookService];
-        [UICKeyChainStore removeAllItemsForService:TwitterService];
-        
         //close facebook session
         if (FBSession.activeSession.isOpen) {
             [FBSession.activeSession closeAndClearTokenInformation];
@@ -352,10 +347,16 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults removeObjectForKey:@"profileImage"];
         [defaults removeObjectForKey:@"cameraID"];
+        [defaults removeObjectForKey:@"bio"];
         [defaults synchronize];
         
         [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];
         
+        //clear keychain _after_ other elements have had a chance to close down
+        [UICKeyChainStore removeAllItemsForService:FluxService];
+        [UICKeyChainStore removeAllItemsForService:FacebookService];
+        [UICKeyChainStore removeAllItemsForService:TwitterService];
+
         [self.parentViewController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
             
         }];

@@ -148,10 +148,8 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
         [imgObject setCategoryID:0];
         [imgObject setDescriptionString:[changes objectForKey:@"annotation"]];
         imgObject.privacy = [changes objectForKey:@"privacy"];
-        
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        
     }
+    
     NSArray*socialSelections = (NSArray*)[changes objectForKey:@"social"];
     NSNumber*privacy = (NSNumber*)[changes objectForKey:@"privacy"];
     NSNumber*snapshot = (NSNumber*)[changes objectForKey:@"snapshot"];

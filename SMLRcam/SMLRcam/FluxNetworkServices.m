@@ -569,13 +569,17 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
-                                                            path:[NSString stringWithFormat:@"%@/users/sign_out?auth_token=%@",objectManager.baseURL, token]
+                                                            path:[NSString stringWithFormat:@"%@users/sign_out?auth_token=%@",objectManager.baseURL, token]
                                                       parameters:nil];
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        // No success for DELETE
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didDeleteImageWithID:andRequestID:)])
+        {
+            [delegate NetworkServices:self didLogout:requestID];
+        }
+    }
+    failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         if ([operation.response statusCode] == 404) {
             if ([delegate respondsToSelector:@selector(NetworkServices:didDeleteImageWithID:andRequestID:)])
             {

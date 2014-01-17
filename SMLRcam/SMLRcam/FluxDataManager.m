@@ -489,10 +489,10 @@ float const altitudeMax =  100000;
 
 - (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
-//    dataRequest.requestType = data_upload_request;
-//    [currentRequests setObject:dataRequest forKey:requestID];
-//    // Begin logout from server
-//    [networkServices logoutWithRequestID:requestID];
+    dataRequest.requestType = data_upload_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin logout from server
+    [networkServices logoutWithRequestID:requestID];
     return requestID;
 }
 
