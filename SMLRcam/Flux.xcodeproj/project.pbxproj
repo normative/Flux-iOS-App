@@ -804,18 +804,20 @@
 			children = (
 				F2A0442F187B48A00044DDC4 /* FluxCacheImageObject.h */,
 				F2A04430187B48A00044DDC4 /* FluxCacheImageObject.m */,
+				AA9D0EA0185646DB0004823E /* FluxCameraObject.h */,
+				AA9D0EA1185646DB0004823E /* FluxCameraObject.m */,
+				17891FC1181D6C840064B2F9 /* FluxImageRenderElement.h */,
+				17891FC2181D6C840064B2F9 /* FluxImageRenderElement.m */,
+				AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */,
+				AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */,
+				AA9D0E9D1851318C0004823E /* FluxProfileImageObject.h */,
+				AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */,
 				AA4CE15D17B58433008D04BE /* FluxScanImageObject.h */,
 				AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */,
 				AAA265A517E89EAE003AE787 /* FluxTagObject.h */,
 				AAA265A617E89EAE003AE787 /* FluxTagObject.m */,
 				AAD2DFF317BBFC8200D572A4 /* FluxUserObject.h */,
 				AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */,
-				AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */,
-				AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */,
-				AA9D0E9D1851318C0004823E /* FluxProfileImageObject.h */,
-				AA9D0E9E1851318C0004823E /* FluxProfileImageObject.m */,
-				AA9D0EA0185646DB0004823E /* FluxCameraObject.h */,
-				AA9D0EA1185646DB0004823E /* FluxCameraObject.m */,
 			);
 			name = "Data Objects";
 			sourceTree = "<group>";
@@ -1149,8 +1151,6 @@
 				F240345C17E102F50088CA2D /* FluxDataStore.m */,
 				AA55534017F0C0EA0098C45C /* FluxDisplayManager.h */,
 				AA55534117F0C0EA0098C45C /* FluxDisplayManager.m */,
-				17891FC1181D6C840064B2F9 /* FluxImageRenderElement.h */,
-				17891FC2181D6C840064B2F9 /* FluxImageRenderElement.m */,
 			);
 			name = "Data Store";
 			sourceTree = "<group>";
