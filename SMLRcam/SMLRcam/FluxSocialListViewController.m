@@ -26,12 +26,30 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self.view setAlpha:0.0];
+    if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [UIView animateWithDuration:0.2 animations:^{
+        [self.tableView setAlpha:0.0];
+    }];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.tableView setAlpha:1.0];
+    }];
 }
 
 - (void)didReceiveMemoryWarning
@@ -44,26 +62,36 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return friendFollowerArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    static NSString *cellIdentifier = @"standardLeftCell";
+    FluxFriendFollowerCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell) {
+        cell = [[FluxFriendFollowerCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+    }
+    [cell initCell];
     
-    // Configure the cell...
+    [cell setDelegate:self];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    NSLog(@"tapped cell with userID %@",(NSString*)[friendFollowerArray objectAtIndex:indexPath.row]);
+}
+
+- (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell{
+    NSLog(@"tapped button on cell with userID %i",friendFollowerCell.userObject.userID);
 }
 
 /*
@@ -116,5 +144,26 @@
 }
 
  */
+
+-(void)prepareViewforMode:(SocialListMode)mode andIDList:(NSArray *)idList{
+    listMode = mode;
+    friendFollowerArray = [[NSMutableArray alloc]init];
+    
+    for (NSString* userID in idList){
+        FluxUserObject*person = [[FluxUserObject alloc]init];
+        [person setUserID:[userID intValue]];
+        [friendFollowerArray addObject:person];
+    }
+    
+    if (listMode == followerMode) {
+        self.title = @"Followers";
+    }
+    else if (listMode == followingMode){
+        self.title = @"Following";
+    }
+    else{
+        self.title = @"Friends";
+    }
+}
 
 @end

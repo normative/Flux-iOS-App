@@ -18,6 +18,7 @@
 #import "FluxSettingsViewController.h"
 #import "FluxProfilePhotosViewController.h"
 #import "FluxEditProfileViewController.h"
+#import "FluxSocialListViewController.h"
 
 @interface FluxLeftDrawerViewController ()
 
@@ -56,6 +57,14 @@
 {
     [self.view setAlpha:0.0];
     [super viewDidLoad];
+    
+
+    UIView*view = fakeSeparator.superview;
+    [fakeSeparator removeFromSuperview];
+    [fakeSeparator setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [view addSubview:fakeSeparator];
+    //fixes what looks to be an Xcode bug where if you put a frame height as less than 1 it makes it 1 (2 pixels)
+    [fakeSeparator setFrame:CGRectMake(fakeSeparator.frame.origin.x, fakeSeparator.frame.origin.y, fakeSeparator.frame.size.width, 1/[[UIScreen mainScreen] scale])];
     
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
@@ -145,19 +154,19 @@
     NSMutableArray*newTableArray;
     if (user) {
         NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.imageCount], @"Photos" , nil];
-//        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followingCount], @"Following" , nil];
-//        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followerCount], @"Followers" , nil];
-//        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.friendCount], @"Friends" , nil];
+        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followingCount], @"Following" , nil];
+        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followerCount], @"Followers" , nil];
+        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.friendCount], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, /*tmp2, tmp3, tmp4,*/ tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
     }
     else{
         NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Photos" , nil];
-//        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Following" , nil];
-//        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
-//        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
+        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Following" , nil];
+        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
+        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, /*tmp2, tmp3, tmp4,*/ tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
     }
     return newTableArray;
 }
@@ -255,9 +264,6 @@
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
         [cell.titleLabel setEnabled:YES];
-        
-        //hack for hiding other cells. should be removed once they're active
-        return cell;
     }
     //disable social
     else if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4){
@@ -289,17 +295,19 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
-            
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followingMode]];
             break;
         case 3:
-                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followerMode]];
             break;
         case 4:
-                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:friendMode]];
             break;
         case 5:
-            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
             break;
             
         default:
@@ -458,6 +466,21 @@
     if ([[segue identifier] isEqualToString:@"pushPhotosSegue"]){
         [(FluxProfilePhotosViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
         [(FluxProfilePhotosViewController*)segue.destinationViewController prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService].integerValue];
+    }
+    if ([[segue identifier]isEqualToString:@"pushSocialList"]) {
+        [(FluxSocialListViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
+        if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followingMode]]) {
+            //following
+            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followingMode andIDList:nil];
+        }
+        else if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followerMode]]){
+            //follower
+            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followerMode andIDList:nil];
+        }
+        else{
+            //friend
+            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:friendMode andIDList:nil];
+        }
     }
 }
 

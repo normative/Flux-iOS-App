@@ -67,6 +67,13 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    UIView*view = fakeSeparator.superview;
+    [fakeSeparator removeFromSuperview];
+    [fakeSeparator setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [view addSubview:fakeSeparator];
+    //fixes what looks to be an Xcode bug where if you put a frame height as less than 1 it makes it 1 (2 pixels)
+    [fakeSeparator setFrame:CGRectMake(fakeSeparator.frame.origin.x, fakeSeparator.frame.origin.y, fakeSeparator.frame.size.width, 1/[[UIScreen mainScreen] scale])];
 }
 
 -(void)viewDidDisappear:(BOOL)animated{

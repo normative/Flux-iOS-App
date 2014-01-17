@@ -132,6 +132,7 @@
 		AAAD9A46187EF89F003BC1FF /* FluxSocialManagementCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A45187EF89F003BC1FF /* FluxSocialManagementCell.m */; };
 		AAB066F01886F6E6002914B2 /* UIActionSheet+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB066EF1886F6E6002914B2 /* UIActionSheet+Blocks.m */; };
 		AAB066F5188994BC002914B2 /* FluxSocialListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB066F4188994BC002914B2 /* FluxSocialListViewController.m */; };
+		AAB066F81889978B002914B2 /* FluxFriendFollowerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB066F71889978B002914B2 /* FluxFriendFollowerCell.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
 		AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */; };
 		AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */; };
@@ -401,6 +402,8 @@
 		AAB066EF1886F6E6002914B2 /* UIActionSheet+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIActionSheet+Blocks.m"; sourceTree = "<group>"; };
 		AAB066F3188994BC002914B2 /* FluxSocialListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialListViewController.h; sourceTree = "<group>"; };
 		AAB066F4188994BC002914B2 /* FluxSocialListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialListViewController.m; sourceTree = "<group>"; };
+		AAB066F61889978B002914B2 /* FluxFriendFollowerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFriendFollowerCell.h; sourceTree = "<group>"; };
+		AAB066F71889978B002914B2 /* FluxFriendFollowerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFriendFollowerCell.m; sourceTree = "<group>"; };
 		AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSwitchTableViewCell.h; sourceTree = "<group>"; };
 		AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSwitchTableViewCell.m; sourceTree = "<group>"; };
 		AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapImageObject.h; sourceTree = "<group>"; };
@@ -1137,6 +1140,8 @@
 				AAAD9A43187EF86C003BC1FF /* Public Profile */,
 				AAB066F3188994BC002914B2 /* FluxSocialListViewController.h */,
 				AAB066F4188994BC002914B2 /* FluxSocialListViewController.m */,
+				AAB066F61889978B002914B2 /* FluxFriendFollowerCell.h */,
+				AAB066F71889978B002914B2 /* FluxFriendFollowerCell.m */,
 			);
 			name = "Social Lists";
 			sourceTree = "<group>";
@@ -1468,6 +1473,7 @@
 				AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */,
 				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
 				F2ED424D183F8A19007A825A /* FluxCameraFrameElement.m in Sources */,
+				AAB066F81889978B002914B2 /* FluxFriendFollowerCell.m in Sources */,
 				AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */,
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
 				AA9D0E95184D39510004823E /* NSData+Base64.m in Sources */,

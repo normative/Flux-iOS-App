@@ -20,6 +20,7 @@
 
 @interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate, FluxSocialManagerDelegate>{
     int initialMask;
+    IBOutlet UIView *fakeSeparator;
 }
 @property (strong, nonatomic) IBOutlet UIButton *logoutButton;
 

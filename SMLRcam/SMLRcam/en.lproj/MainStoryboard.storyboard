@@ -75,7 +75,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="p12-6b-dHX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1914" y="51"/>
+            <point key="canvasLocation" x="2273" y="-993"/>
         </scene>
         <!--Flux Image Capture View Controller-->
         <scene sceneID="FvW-Vk-fmx">
@@ -242,7 +242,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bsn-pr-Bkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2287" y="-1735"/>
+            <point key="canvasLocation" x="2267" y="-1891"/>
         </scene>
         <!--Flux Image Annotation View Controller-->
         <scene sceneID="ius-dq-IxH">
@@ -404,7 +404,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h4u-kD-UF5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3324" y="-1735"/>
+            <point key="canvasLocation" x="3304" y="-1891"/>
         </scene>
         <!--Flux Left Drawer View Controller - Profile-->
         <scene sceneID="tKx-Sl-qpc">
@@ -418,11 +418,11 @@
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="pCz-38-tt7">
-                            <rect key="frame" x="0.0" y="250" width="320" height="293"/>
+                            <rect key="frame" x="0.0" y="250" width="320" height="165"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oYY-Vs-Dgh">
-                                    <rect key="frame" x="106" y="242" width="108" height="30"/>
+                                    <rect key="frame" x="106" y="114" width="108" height="30"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="30" id="0ln-rs-FgD"/>
@@ -438,7 +438,7 @@
                                     </connections>
                                 </button>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eTl-Gu-teW">
-                                    <rect key="frame" x="77" y="266" width="166" height="21"/>
+                                    <rect key="frame" x="77" y="138" width="166" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="21" id="bCe-8p-TqD"/>
@@ -548,11 +548,13 @@
                     <navigationItem key="navigationItem" title="Profile" id="3Mq-rN-QnL"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <connections>
+                        <outlet property="fakeSeparator" destination="kU6-wo-9ey" id="yDr-5w-D6h"/>
                         <outlet property="feedbackButton" destination="oYY-Vs-Dgh" id="anK-9d-wk1"/>
                         <outlet property="versionLbl" destination="eTl-Gu-teW" id="Q0O-vq-FZx"/>
                         <segue destination="0Hb-dd-ez9" kind="push" identifier="pushSettingsSegue" id="bTt-Mn-4jt"/>
                         <segue destination="Hk4-y1-dJH" kind="push" identifier="pushPhotosSegue" id="5Gp-6F-wwh"/>
                         <segue destination="Ikh-cP-T3a" kind="push" identifier="pushEditProfileSegue" id="gvj-oK-KBl"/>
+                        <segue destination="F48-rn-xd1" kind="push" identifier="pushSocialList" id="TCt-Vc-QJ3"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E2w-Yv-OWW" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -667,10 +669,13 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="EJU-PO-Xig"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <connections>
+                        <outlet property="fakeSeparator" destination="mLL-Vu-a9b" id="uRf-DV-inu"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="S7W-FE-kCN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3940" y="333"/>
+            <point key="canvasLocation" x="4440" y="719"/>
         </scene>
         <!--Scan View Controller-->
         <scene sceneID="5">
@@ -1199,6 +1204,65 @@
             </objects>
             <point key="canvasLocation" x="2918" y="-321"/>
         </scene>
+        <!--Flux Social List View Controller-->
+        <scene sceneID="hIu-9h-JH3">
+            <objects>
+                <tableViewController id="F48-rn-xd1" customClass="FluxSocialListViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="kH6-UT-xId">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                        <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="60" id="pgh-Lw-Zs7" customClass="FluxFriendFollowerCell">
+                                <rect key="frame" x="0.0" y="86" width="320" height="60"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="pgh-Lw-Zs7" id="bL1-68-CJN">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="59"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zaa-u9-VuA">
+                                            <rect key="frame" x="20" y="10" width="40" height="40"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="iDj-cF-KSB">
+                                            <rect key="frame" x="68" y="15" width="194" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mRt-ta-erG">
+                                            <rect key="frame" x="270" y="15" width="30" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <state key="normal" image="emptyProfileImage_small">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="friendFollowButtonAction:" destination="pgh-Lw-Zs7" eventType="touchUpInside" id="H0z-tn-O4B"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="friendFollowButton" destination="mRt-ta-erG" id="qym-p9-k6J"/>
+                                    <outlet property="profileImageView" destination="zaa-u9-VuA" id="JJ9-2P-CB8"/>
+                                    <outlet property="titleLabel" destination="iDj-cF-KSB" id="VPa-jV-pvJ"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="F48-rn-xd1" id="htm-ky-meC"/>
+                            <outlet property="delegate" destination="F48-rn-xd1" id="Udb-cj-MWG"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="fXu-su-vGY"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Apu-MR-YiX" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4230" y="1384"/>
+        </scene>
         <!--Flux Profile Photos View Controller - Your Photos-->
         <scene sceneID="PoS-IU-SUS">
             <objects>
@@ -1269,7 +1333,7 @@
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ijg-Ri-Urg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3940" y="1066"/>
+            <point key="canvasLocation" x="4230" y="40"/>
         </scene>
         <!--Flux Edit Profile View Controller - Edit Profile-->
         <scene sceneID="wsh-xG-gjZ">
@@ -1320,7 +1384,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HaT-6D-Y1w" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4341" y="719"/>
+            <point key="canvasLocation" x="3724" y="-123"/>
         </scene>
         <!--Flux Filters View Controller - Filters-->
         <scene sceneID="98b-gV-sNd">
@@ -1495,7 +1559,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dnU-h1-HjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2798" y="-1735"/>
+            <point key="canvasLocation" x="2778" y="-1891"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Npa-d2-5dG">
@@ -1715,6 +1779,7 @@
         <image name="closeCamButton" width="100" height="101"/>
         <image name="emptyProfileImage" width="140" height="140"/>
         <image name="emptyProfileImage_big" width="140" height="140"/>
+        <image name="emptyProfileImage_small" width="40" height="40"/>
         <image name="facebook_mini" width="221" height="50"/>
         <image name="filterButton" width="140" height="140"/>
         <image name="fluxlogo" width="186" height="217"/>
