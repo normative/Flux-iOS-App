@@ -737,7 +737,7 @@
             [ProgressHUD showSuccess:@"Welcome To Flux!"];
         }
         else{
-            [ProgressHUD showSuccess:@"Login Successful"];
+            [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
         }
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
