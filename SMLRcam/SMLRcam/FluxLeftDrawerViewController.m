@@ -45,12 +45,12 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
     [UIView animateWithDuration:0.25 animations:^{
         [self.tableView setAlpha:1.0];
     }];
 }
+
+
 
 - (void)viewDidLoad
 {
@@ -94,9 +94,12 @@
             userObj = userObject;
             tableViewArray = [self tableViewArrayForUser:userObject];
             [self.tableView reloadData];
+            
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:userObject.bio forKey:@"bio"];
+            
             if (userObject.hasProfilePic) {
                 
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 
 //                if (![defaults objectForKey:@"profileImage"]) {
                 if (true) {
@@ -160,7 +163,7 @@
         NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
         NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, /*tmp2, tmp3, tmp4,*/ tmp5, nil];
     }
     return newTableArray;
 }
@@ -199,7 +202,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+{    
     static NSString *cellIdentifier = @"standardLeftCell";
     FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
@@ -216,6 +219,9 @@
         [profileCell initCellisEditing:isEditing];
         
         NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSString*bio = (NSString*)[defaults objectForKey:@"bio"];
         if (username) {
             [profileCell setUsernameText:username];
         }
@@ -223,8 +229,11 @@
         if (userObj.bio) {
             [profileCell setBioText:userObj.bio];
         }
+        else{
+            [profileCell setBioText:bio];
+        }
         
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
         if ([defaults objectForKey:@"profileImage"]) {
             
             NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
@@ -251,6 +260,10 @@
     else if (indexPath.row == tableViewArray.count){
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
+        [cell.titleLabel setEnabled:YES];
+        
+        //hack for hiding other cells. should be removed once they're active
+        return cell;
     }
     //disable social
     else if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4){
@@ -282,7 +295,8 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            
             break;
         case 3:
                 [tableView deselectRowAtIndexPath:indexPath animated:NO];
@@ -291,7 +305,7 @@
                 [tableView deselectRowAtIndexPath:indexPath animated:NO];
             break;
         case 5:
-            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
             break;
             
         default:

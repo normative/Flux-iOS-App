@@ -112,7 +112,7 @@ const int auto_threshold_inc = 10;
     fs["img_cols"] >> object_img_cols;
     fs["img_rows"] >> object_img_rows;
     
-    std::cout << keypoints_object.size() << " keypoints and " << descriptors_object.rows << " descriptors read from file." << std::endl;
+//    std::cout << keypoints_object.size() << " keypoints and " << descriptors_object.rows << " descriptors read from file." << std::endl;
 }
 
 // Object images are downloaded content to be matched and this routine supplies raw features
@@ -171,9 +171,9 @@ const int auto_threshold_inc = 10;
     	}
     }
     
-    int descsize = descriptors_object.rows;
+//    int descsize = descriptors_object.rows;
     
-    NSLog(@"%i keypoints and %i descriptors read from file.", kpsize, descsize);
+//    NSLog(@"%i keypoints and %i descriptors read from file.", kpsize, descsize);
     
     kpsize = 0;
 }
