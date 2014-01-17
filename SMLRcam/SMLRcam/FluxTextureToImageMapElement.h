@@ -16,6 +16,7 @@
 
 @property (nonatomic, strong)   FluxLocalID *localID;
 @property (nonatomic)           FluxImageType imageType;
+@property (nonatomic)           NSUInteger renderOrder;
 @property (nonatomic, readonly) int textureIndex;
 @property (nonatomic)           bool used;
 

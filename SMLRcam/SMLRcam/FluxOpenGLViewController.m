@@ -1897,136 +1897,145 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     return error;
 }
 
-- (void)updateTextures
+- (int)pickSlotToReplace:(NSMutableArray *)unusedSlots withRemaining:(NSMutableArray *)remainingLocalIDs
 {
-    // textureList is array of textureToImageMapElement
-    // using the mapping, find if the image is already loaded into a texture
-    // spin through texture mapping and mark each as "unused",
-    for (FluxTextureToImageMapElement *tel in self.textureMap)
-    {
-        tel.used = false;
-    }
+    int slotToUse = 0;
     
-    // spin through renderlist, find associated texture mapping (by LocalID) and mark mapping as "used"
-    for (FluxImageRenderElement *ire in self.renderList)
+    if ([unusedSlots count] == 0)
     {
-        if (ire.textureMapElement != nil)
-        {
-            if ([ire.textureMapElement.localID isEqualToString:ire.localID])
-            {
-                ire.textureMapElement.used = true;
-            }
-            else
-            {
-                // not a match - clear it out
-                ire.textureMapElement = nil;
-            }
-        }
+        slotToUse = -1;
     }
-    
-    bool loadedOneHiRes = false;
-    // spin through renderlist, find associated texture mapping
-    //      if not found, find "unused"
-    for (FluxImageRenderElement *ire in self.renderList)
+    else
     {
-        int textureIndex = -1;
-        bool justLoaded = false;
-        if (ire.textureMapElement == nil)
+        if ([unusedSlots count] == [remainingLocalIDs count])
         {
-            // find a new texture and load it up...
-            FluxTextureToImageMapElement *newTel = nil;
-            double rhead = -1.0;
-            for (FluxTextureToImageMapElement *tel in self.textureMap)
-            {
-                if (tel.used == false)
-                {
-                    // find a match...
-                    if ((tel.localID != nil) && ([tel.localID isEqual:ire.localID]))
-                    {
-                        // have a match - can just link it up and continue on...
-                        tel.used = true;
-                        textureIndex = tel.textureIndex;
-                        ire.textureMapElement = tel;
-                        newTel = nil;
-                        break;
-                    }
-                    
-                    // ... or the farthest away to use for the new image
-                    FluxImageRenderElement *lire = nil;
-                    if (tel.localID != nil)
-                        lire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-                    
-                    if (lire == nil)
-                    {
-                        newTel = tel;
-                        break;
-                    }
-                    else if (fabs(lire.imageMetadata.relHeading) > rhead)
-                    {
-                        newTel = tel;
-                        rhead = fabs(lire.imageMetadata.relHeading);
-                    }
-                    else if (newTel == nil)
-                    {
-                        newTel = tel;
-                    }
-                }
-            }
-            
-            if (newTel != nil)
-            {
-                // not found so always load lowest resolution (thumb typically)
-                FluxImageType rtype = none;
-                FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
-                
-                if (imageCacheObj.image != nil)
-                {
-                    textureIndex = newTel.textureIndex;
-                    if (newTel.localID != nil)
-                    {
-                        // break link from old ire to tel - need to search and update it.
-                        FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:newTel.localID];
-                        if (tire != nil)
-                        {
-                            tire.textureMapElement = nil;
-                        }
-                    }
-
-                    NSError *error = [self loadTexture:textureIndex withImage:imageCacheObj.image];
-                    
-                    if (error)
-                    {
-                        textureIndex = -1;
-                    }
-                    else
-                    {
-                        // found one - set it up...
-                        ire.textureMapElement = newTel;
-                        ire.imageRenderType = rtype;
-                        ire.imageCacheObject = imageCacheObj;
-                        newTel.imageType = rtype;
-                        newTel.used = true;
-                        newTel.localID = ire.localID;
-                        justLoaded = true;
-//                        int width = CGImageGetWidth(image.CGImage);
-//                        int height = CGImageGetWidth(image.CGImage);
-//
-//                        NSLog(@"Loaded Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, newTel.imageType, width, height);
-                    }
-                    break;
-                }
-                else
-                {
-                    NSLog(@"GLVC:UpdateTextures: lowest_res texture not found in cache");
-                }
-            }
+            // We will use all of the slots anyways, so just pick one (last is optimal)
+            slotToUse = [[unusedSlots lastObject] integerValue];
+            [unusedSlots removeLastObject];
         }
         else
         {
-            textureIndex = ire.textureMapElement.textureIndex;
-//            NSLog(@"Recycling texture in slot %d for key %@, size: %d", textureIndex, ire.localID, ire.imageType);
+            // Find the slot furthest away in terms of heading (most likely to disappear)
+            double maxRelativeHeadingFound = -1.0;
+            int indexToRemove = 0;
+            
+            for (int i=0; i<[unusedSlots count]; i++)
+            {
+                FluxLocalID *localID = ((FluxTextureToImageMapElement *)self.textureMap[[unusedSlots[i] integerValue]]).localID;
+                FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
+                if (fabs(ire.imageMetadata.relHeading) > maxRelativeHeadingFound)
+                {
+                    slotToUse = [unusedSlots[i] integerValue];
+                    indexToRemove = i;
+                }
+            }
+            
+            // Remove from unusedSlots list
+            [unusedSlots removeObjectAtIndex:indexToRemove];
         }
+        
+    }
+    
+    return slotToUse;
+}
 
+- (bool)replaceDataInTexture:(FluxTextureToImageMapElement *)tel forLocalID:(FluxLocalID *)localID withImageType:(FluxImageType)imageType
+{
+    bool success = YES;
+    
+    FluxImageRenderElement *oldIre = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+    FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
+    
+    // End access for existing texture element/image cache object
+    [oldIre.imageCacheObject endContentAccess];
+    
+    // Populate with new image data
+    FluxImageType rtype = none;
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
+    
+    if (imageCacheObj.image != nil)
+    {
+        ire.imageRenderType = rtype;
+        ire.imageCacheObject = imageCacheObj;
+        
+        // Load texture into slot
+        NSError *error = [self loadTexture:tel.textureIndex withImage:imageCacheObj.image];
+        
+        if (error)
+        {
+            [imageCacheObj endContentAccess];
+            success = NO;
+        }
+        else
+        {
+            tel.imageType = rtype;
+            tel.used = true;
+            tel.localID = ire.localID;
+        }
+    }
+    else
+    {
+        success = NO;
+    }
+    
+    return success;
+}
+
+- (void)updateTextures
+{
+    NSMutableArray *unusedTextureMapSlots = [[NSMutableArray alloc] init];
+    NSMutableArray *renderedLocalIDs = [[NSMutableArray alloc] init];
+    
+    // List of localIDs in renderList to render
+    for (FluxImageRenderElement *ire in self.renderList)
+    {
+        [renderedLocalIDs addObject:ire.localID];
+    }
+
+    // List of localIDs still looking for a slot
+    NSMutableArray *remainingLocalIDs = [renderedLocalIDs mutableCopy];
+
+    // Check which textureElements are already populated correctly
+    for (int i=0; i<[self.textureMap count]; i++)
+    {
+        FluxTextureToImageMapElement *tel = self.textureMap[i];
+        if ([renderedLocalIDs containsObject:tel.localID])
+        {
+            if (!tel.used)
+            {
+                // Element has been re-added to rendering. Do we need to check anything?
+            }
+            tel.used = YES;
+            [remainingLocalIDs removeObject:tel.localID];
+        }
+        else
+        {
+            tel.used = NO;
+            [unusedTextureMapSlots addObject:@(i)];
+        }
+    }
+    
+    // Find slots for remaining elements to be rendered
+    for (FluxLocalID *localID in remainingLocalIDs)
+    {
+        int slotToUse = [self pickSlotToReplace:unusedTextureMapSlots withRemaining:remainingLocalIDs];
+        if (slotToUse >= 0)
+        {
+            FluxTextureToImageMapElement *tel = self.textureMap[slotToUse];
+            
+            // Load information into the new texture
+            if ([self replaceDataInTexture:tel forLocalID:localID withImageType:lowest_res])
+            {
+                tel.used = YES;
+            }
+        }
+    }
+    
+    // Sort textureMap based on desired render order
+    
+    // Pick a higher resolution texture to load
+    
+    
         if ((textureIndex >= 0) && (!justLoaded) && (!loadedOneHiRes))
         {
             if (ire.textureMapElement.imageType < ire.imageRenderType)
@@ -2042,16 +2051,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                     if (error)
                     {
                         textureIndex = -1;
+                        [imageCacheObj endContentAccess];
                         NSLog(@"Failed to load texture %d for ID %@", rtype, ire.localID);
                     }
                     else
                     {
                         FluxTextureToImageMapElement *tel = ire.textureMapElement;
                         tel.imageType = rtype;
-                        ire.imageRenderType = rtype;
-                        ire.imageCacheObject = imageCacheObj;
-                        loadedOneHiRes = true;
                         tel.used = true;
+
+                        ire.imageRenderType = rtype;
+                        
+                        // Decrement reference count on old FluxCacheImageObject before assigning new one
+                        [ire.imageCacheObject endContentAccess];
+                        ire.imageCacheObject = imageCacheObj;
+                        
+                        loadedOneHiRes = true;
                         justLoaded = true;
                         
 //                        int width = CGImageGetWidth(image.CGImage);
@@ -2060,33 +2075,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
                     }
                 }
-                else
-                {
-                    NSLog(@"GLVC:UpdateTextures: upgrade_res texture not found in cache - not updating");
-                }
             }
         }
     }
     
-    for (FluxTextureToImageMapElement *tel in self.textureMap)
-    {
-        if ((!tel.used) && (tel.localID != nil))
-        {
-            // break link from old ire to tel - need to search and update it.
-            FluxImageRenderElement *tire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-            if (tire != nil)
-            {
-                tire.textureMapElement = nil;
-            }
-//            tel.localID = nil;
-//            tel.imageType = none;
-//
-//            [self deleteImageTextureIdx:tel.textureIndex];
-        }
-    }
-    
-
-//    NSLog(@"Done texture loading");
 }
 
 - (void)fixRenderList
