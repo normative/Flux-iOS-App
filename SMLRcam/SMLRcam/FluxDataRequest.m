@@ -116,6 +116,13 @@
     }
 }
 
+-(void)whenLogoutComplete:(FluxDataRequest *)completeDataRequest{
+    if (self.logoutComplete)
+    {
+        self.logoutComplete(completeDataRequest);
+    }
+}
+
 -(void)whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString *)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.usernameUniquenessComplete)
     {

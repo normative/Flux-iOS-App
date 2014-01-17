@@ -15,8 +15,6 @@
 
 
 
-
-
 #import <FacebookSDK/FacebookSDK.h>
 #import <sys/utsname.h>
 
@@ -89,9 +87,9 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(twitterChanged) name:ACAccountStoreDidChangeNotification object:nil];
     
-    [twitterButton setEnabled:NO];
-    [facebookButton setEnabled:NO];
-//    [signInOptionsLabel setAlpha:0.3];
+//    [twitterButton setEnabled:NO];
+//    [facebookButton setEnabled:NO];
+//    [signInOptionsLabel setAlpha:0.3];    
 }
 
 - (void)didReceiveMemoryWarning
@@ -323,7 +321,7 @@
                 break;
             }
     }
-    
+
     [cell.textField setDelegate:self];
     cell.textField.textAlignment = NSTextAlignmentCenter;
     [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
@@ -632,7 +630,7 @@
              ^(FBSession *session,
                FBSessionState state, NSError *error) {
                  if (!error) {
-                     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+//                     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
                      [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:@"token" service:[NSString stringWithFormat:@"com.%@",@"Facebook"]];
                      [self didLoginSuccessfullyWithUserID:1];
                  }
@@ -699,17 +697,17 @@
 }
 
 - (void)createAccountForUser:(FluxUserObject*)user{
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
         [createdUserObject setPassword:user.password];
-        [self loginWithUserObject:createdUserObject andDidJustRegister:YES];
-        
-    }];
-    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
+            [self loginWithUserObject:createdUserObject andDidJustRegister:YES];
+
+        }];
+        [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
         [self loginRegistrationFailedWithString:str];
-    }];
-    [self hideKeyboard];
+        }];
+        [self hideKeyboard];
     if (user.profilePic) {
         [self.fluxDataManager uploadNewUser:user withImage:user.profilePic withDataRequest:dataRequest];
     }
@@ -729,17 +727,17 @@
         [store setString:userObject.auth_token forKey:FluxTokenKey];
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
-        
+
         if (![NSString stringWithFormat:@"%i",userObject.userID]) {
             NSLog(@"Login didn't return a valid userID");
         }
-
+        
         
         if (new) {
             [ProgressHUD showSuccess:@"Welcome To Flux!"];
         }
         else{
-            [ProgressHUD showSuccess:@"Login Successful"];
+            [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
         }
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
@@ -1056,6 +1054,15 @@
         [self loginSignupToggleAction:nil];
     }
     
+    // log out of the server...
+    // ZZZ
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSString* str = [NSString stringWithFormat:@"Logout failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    [self.fluxDataManager logoutWithDataRequest:dataRequest];
+
     for (int i = 0; i<[self.tableView numberOfRowsInSection:0]; i++) {
         FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         cell.textField.text = @"";
