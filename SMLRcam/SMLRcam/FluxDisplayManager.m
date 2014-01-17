@@ -102,7 +102,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
         
-        [self requestNearbyItems];
     }
     
     return self;
