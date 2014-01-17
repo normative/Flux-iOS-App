@@ -1994,6 +1994,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
     // List of localIDs still looking for a slot
     NSMutableArray *remainingLocalIDs = [renderedLocalIDs mutableCopy];
+    
+    // Flag to ensure only one high-res image is loaded per cycle
+    bool highResAddedThisCycle = NO;
 
     // Check which textureElements are already populated correctly
     for (int i=0; i<[self.textureMap count]; i++)
@@ -2001,16 +2004,24 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         FluxTextureToImageMapElement *tel = self.textureMap[i];
         if ([renderedLocalIDs containsObject:tel.localID])
         {
-            if (!tel.used)
-            {
-                // Element has been re-added to rendering. Do we need to check anything?
-            }
             tel.used = YES;
+            tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
             [remainingLocalIDs removeObject:tel.localID];
+            
+            // Pick a higher resolution texture to load (only select from textures already in the correct slot)
+            FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+            if (!highResAddedThisCycle && (tel.imageType < ire.imageRenderType))
+            {
+                if ([self replaceDataInTexture:tel forLocalID:ire.localID withImageType:ire.imageRenderType])
+                {
+                    highResAddedThisCycle = YES;
+                }
+            }
         }
         else
         {
             tel.used = NO;
+            tel.renderOrder = NSUIntegerMax;
             [unusedTextureMapSlots addObject:@(i)];
         }
     }
@@ -2027,58 +2038,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             if ([self replaceDataInTexture:tel forLocalID:localID withImageType:lowest_res])
             {
                 tel.used = YES;
+                tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
             }
         }
     }
     
-    // Sort textureMap based on desired render order
-    
-    // Pick a higher resolution texture to load
-    
-    
-        if ((textureIndex >= 0) && (!justLoaded) && (!loadedOneHiRes))
-        {
-            if (ire.textureMapElement.imageType < ire.imageRenderType)
-            {
-                // new one is bigger - load it up... if need to load up...
-                FluxImageType rtype = none;
-                FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:ire.imageRenderType returnSize:&rtype];
-
-                if (imageCacheObj.image != nil)
-                {
-                    NSError *error = [self loadTexture:textureIndex withImage:imageCacheObj.image];
-                    
-                    if (error)
-                    {
-                        textureIndex = -1;
-                        [imageCacheObj endContentAccess];
-                        NSLog(@"Failed to load texture %d for ID %@", rtype, ire.localID);
-                    }
-                    else
-                    {
-                        FluxTextureToImageMapElement *tel = ire.textureMapElement;
-                        tel.imageType = rtype;
-                        tel.used = true;
-
-                        ire.imageRenderType = rtype;
-                        
-                        // Decrement reference count on old FluxCacheImageObject before assigning new one
-                        [ire.imageCacheObject endContentAccess];
-                        ire.imageCacheObject = imageCacheObj;
-                        
-                        loadedOneHiRes = true;
-                        justLoaded = true;
-                        
-//                        int width = CGImageGetWidth(image.CGImage);
-//                        int height = CGImageGetWidth(image.CGImage);
-//
-//                        NSLog(@"Updated Image texture in slot %d for key %@, %d, (%d,%d)", (textureIndex),ire.localID, ire.imageRenderType, width, height);
-                    }
-                }
-            }
-        }
-    }
-    
+    // Sort textureMap based on desired render order (reverse the order here)
+    NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"renderOrder" ascending:YES]];
+    self.textureMap = [self.textureMap sortedArrayUsingDescriptors:sortDescriptors];
 }
 
 - (void)fixRenderList

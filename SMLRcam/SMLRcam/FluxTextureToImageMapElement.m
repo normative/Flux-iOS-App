@@ -17,7 +17,7 @@
     {
         _localID = @"";
         _imageType = none;
-        _renderOrder = 0;
+        _renderOrder = NSUIntegerMax;
         _textureIndex = index;
         _used = false;
     }
