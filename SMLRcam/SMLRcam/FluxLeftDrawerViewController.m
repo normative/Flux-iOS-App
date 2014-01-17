@@ -101,8 +101,7 @@
             if (userObject.hasProfilePic) {
                 
                 
-//                if (![defaults objectForKey:@"profileImage"]) {
-                if (true) {
+                if (![defaults objectForKey:@"profileImage"]) {
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                         [userObj setProfilePic:img];
