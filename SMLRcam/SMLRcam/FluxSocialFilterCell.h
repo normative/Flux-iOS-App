@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "KTCheckboxButton.h"
+#import "FluxDataFilter.h"
+
+
 
 @class FluxSocialFilterCell;
 @protocol SocialFilterTableViewCellDelegate <NSObject>
@@ -20,8 +23,8 @@
     id __unsafe_unretained delegate;
 }
 @property (weak, nonatomic) IBOutlet UILabel *descriptorLabel;
-@property (weak, nonatomic) NSString*dbTitle;
 @property (weak, nonatomic) IBOutlet KTCheckboxButton *checkbox;
+@property (nonatomic)FluxFilterType filterType;
 
 
 @property (unsafe_unretained) id <SocialFilterTableViewCellDelegate> delegate;

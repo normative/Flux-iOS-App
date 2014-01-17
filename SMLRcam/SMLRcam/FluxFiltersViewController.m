@@ -11,6 +11,7 @@
 
 #import "FluxImageTools.h"
 #import "ProgressHUD.h"
+#import "UICKeyChainStore.h"
 
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -60,9 +61,12 @@
 
 //must be called from presenting VC
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
-    FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andDBTitle:@"myPhotos" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"myPhotos"]];
-//    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
-//    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
+
+    FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:theDataFilter.isActiveUserFiltered];
+    
+//    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andFilterType:followers_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter isFollowingActive]];
+//    
+//    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter isFriendActive]];
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
@@ -313,7 +317,8 @@
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             
             //set the cell properties to the array elements declared above
-            [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
+            [cell setFilterType:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]filterType]];
+
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             
@@ -367,7 +372,32 @@
 
 //if the checkbox is selected, the callback comes here. In the method below we check which cell it is and mark the corresponding object as active.
 - (void)SocialCell:(FluxSocialFilterCell *)checkCell boxWasChecked:(BOOL)checked{
-    [self modifyDataFilter:dataFilter filterSting:checkCell.dbTitle forType:social_filterType andAdd:checked];
+    switch (checkCell.filterType) {
+        case myPhotos_filterType:
+        {
+            NSString*userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+            if (checked) {
+                [dataFilter addActiveUserToFilter:userID];
+            }
+            else{
+                [dataFilter removeActiveUserFromFilter:userID];
+            }
+        }
+            break;
+        case followers_filterType:
+        {
+            
+        }
+            break;
+        case friends_filterType:
+        {
+            
+        }
+            break;
+        default:
+            break;
+    }
+    
     //update the cell
     for (FluxSocialFilterCell* cell in [self.filterTableView visibleCells]) {
         if (cell == checkCell) {
@@ -405,20 +435,12 @@
 }
 
 -(void)modifyDataFilter:(FluxDataFilter*)filter filterSting:(NSString*)string forType:(FluxFilterType)type andAdd:(BOOL)add{
-    if (type == social_filterType) {
-        if (add) {
-            [dataFilter addCategoryToFilter:string];
-        }
-        else{
-            [dataFilter removeCategoryFromFilter:string];
-        }
-    }
     if (type == tags_filterType) {
         if (add) {
-            [dataFilter addHashTagToFilter:string];
+            [filter addHashTagToFilter:string];
         }
         else{
-            [dataFilter removeHashTagFromFilter:string];
+            [filter removeHashTagFromFilter:string];
         }
     }
 }

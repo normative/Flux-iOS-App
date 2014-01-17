@@ -131,7 +131,7 @@ float const altitudeMax =  100000;
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
-                                        andCategories:dataRequest.searchFilter.categories
+                                        andCategories:@""
                                           andMaxCount:dataRequest.maxReturnItems
                                          andRequestID:requestID];
     }
@@ -158,7 +158,7 @@ float const altitudeMax =  100000;
                                   andMaxTimestamp:dataRequest.searchFilter.timeMax
                                       andHashTags:dataRequest.searchFilter.hashTags
                                          andUsers:dataRequest.searchFilter.users
-                                    andCategories:dataRequest.searchFilter.categories
+                                    andCategories:@""
                                       andMaxCount:dataRequest.maxReturnItems
                                      andRequestID:requestID];
     
@@ -451,7 +451,7 @@ float const altitudeMax =  100000;
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
-                                        andCategories:dataRequest.searchFilter.categories
+                                        andCategories:@""
                                           andMaxCount:maxCount
                                          andRequestID:requestID];
     }

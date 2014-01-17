@@ -12,17 +12,16 @@
 
 @synthesize title, titleImage, isChecked;
 
-- (id)initWithTitle:(NSString *)atitle andDBTitle:(NSString *)dbtitle andtitleImage:(UIImage *)atitleImage andActive:(BOOL)bActive{
+- (id)initWithTitle:(NSString *)atitle andFilterType:(FluxFilterType)type andtitleImage:(UIImage *)atitleImage andActive:(BOOL)bActive{
     self = [super init];
     if (self) {
         self.title = atitle;
         self.titleImage = atitleImage;
         self.isChecked = bActive;
-        self.dbTitle = dbtitle;
+        self.filterType = type;
     }
     
     return self;
-
 }
 
 - (void)setIsActive:(BOOL)active{
