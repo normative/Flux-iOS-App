@@ -765,7 +765,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                         {
                             // in both lists - make sure things are transferred properly
                             curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
-                            curImgRenderObj.textureMapElement = localImgRenderObj.textureMapElement;
                             curImgRenderObj.imageCacheObject = localImgRenderObj.imageCacheObject;
                             curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
 
@@ -1088,14 +1087,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             ire.imageRenderType = thumb;
         }
     }
-
-//    NSLog(@"Render Sort:");
-//    int i = 0;
-//    for (FluxImageRenderElement *ire in renderList)
-//    {
-////        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
-//        NSLog(@"render: i: %d, key: %@, abs head: %f, rel head: %f", i++, ire.localID, ire.imageMetadata.absHeading, ire.imageMetadata.relHeading);
-//    }
 }
 
 #pragma mark - Logging

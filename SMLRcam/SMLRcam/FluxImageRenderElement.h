@@ -22,7 +22,6 @@
 @property (nonatomic, strong)   NSDate *timestamp;
 @property (nonatomic, strong)   NSDate *lastReferenced;
 @property (nonatomic, strong)   NSDate *localCaptureTime;
-@property (nonatomic, strong)   FluxTextureToImageMapElement *textureMapElement;
 @property (nonatomic)           bool dirty;
 @property (nonatomic, weak)     FluxCacheImageObject *imageCacheObject;
 @property (nonatomic)           FluxImageType imageRenderType;
