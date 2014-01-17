@@ -61,8 +61,8 @@
 //must be called from presenting VC
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andDBTitle:@"myPhotos" andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:[theDataFilter containsCategory:@"myPhotos"]];
-    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
-    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
+//    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andDBTitle:@"following" andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter containsCategory:@"following"]];
+//    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andDBTitle:@"favorites" andtitleImage:[UIImage imageNamed:@"filter_Places.png"] andActive:[theDataFilter containsCategory:@"favorites"]];
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
@@ -70,7 +70,7 @@
     imageCount = [NSNumber numberWithInt:count];
     self.radius = 15;
     
-    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, favouritesFilterObject, nil];
+    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, /*followingFilterObject, favouritesFilterObject, */nil];
     topTagsArray = [[NSMutableArray alloc]init];
     if ([theDataFilter.hashTags isEqualToString:@""]) {
         selectedTags = [[NSMutableArray alloc]init];
@@ -245,21 +245,21 @@
             [label setCenter:CGPointMake(label.center.x, view.center.y)];
             [view addSubview:label];
             
-            //searchbar
-            self.tagsSearchBar = [[UISearchBar alloc]initWithFrame:CGRectMake(view.frame.size.width-218, 5, 218, 40)];
-            [self.tagsSearchBar setBarTintColor:[UIColor clearColor]];
-            [self.tagsSearchBar setSearchBarStyle:UISearchBarStyleMinimal];
-            [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor whiteColor]];
-            [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setFont:[UIFont fontWithName:@"Akkurat" size:17]];
-            [self.tagsSearchBar setTintColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
-            [self.tagsSearchBar setPlaceholder:@"Search"];
-            [self.tagsSearchBar setDelegate:self];
-            
-            //disable for now
-            [self.tagsSearchBar setUserInteractionEnabled:NO];
-            [self.tagsSearchBar setAlpha:0.8];
-            
-            [view addSubview:self.tagsSearchBar];
+//            //searchbar
+//            self.tagsSearchBar = [[UISearchBar alloc]initWithFrame:CGRectMake(view.frame.size.width-218, 5, 218, 40)];
+//            [self.tagsSearchBar setBarTintColor:[UIColor clearColor]];
+//            [self.tagsSearchBar setSearchBarStyle:UISearchBarStyleMinimal];
+//            [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor whiteColor]];
+//            [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setFont:[UIFont fontWithName:@"Akkurat" size:17]];
+//            [self.tagsSearchBar setTintColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
+//            [self.tagsSearchBar setPlaceholder:@"Search"];
+//            [self.tagsSearchBar setDelegate:self];
+//            
+////            //disable for now
+////            [self.tagsSearchBar setUserInteractionEnabled:NO];
+////            [self.tagsSearchBar setAlpha:0.8];
+//            
+//            [view addSubview:self.tagsSearchBar];
         }
         
 
@@ -305,8 +305,9 @@
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
             
-            //disable the cell for now
-            [cell setUserInteractionEnabled:NO];
+//            //disable the cell for now
+//            [cell setUserInteractionEnabled:NO];
+//            [cell.descriptorLabel setEnabled:NO];
             
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -315,7 +316,7 @@
             [cell setDbTitle:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]dbTitle]];
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
-            [cell.descriptorLabel setEnabled:NO];
+            
             return cell;
         }
         //it's a tag
