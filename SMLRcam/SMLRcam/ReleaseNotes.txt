@@ -2,6 +2,10 @@ Release Notes:
 
 - fix startup count=3 issue (remove extraneous / too early call to requestNearbyItems)
 - fix logout issue
+- filtering for "My Photos"
+- third party share options for snapshot
+- profile UI bug fixes
+- assorted settings view bug fixes
 
 ******************************************
 
