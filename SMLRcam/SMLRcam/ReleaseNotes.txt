@@ -1,5 +1,13 @@
 Release Notes:
 
+******************************************
+
+V0.18 B03
+
+Released: 2014-01-17 22:30:00
+
+Release Notes:
+
 - fix startup count=3 issue (remove extraneous / too early call to requestNearbyItems)
 - fix logout issue
 - filtering for "My Photos"
