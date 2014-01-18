@@ -7,21 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxDataFilter.h"
 
 @interface FluxFilterDrawerObject : NSObject{
    
 }
 
 @property (nonatomic, weak) NSString *title;
-@property (nonatomic, weak) NSString *dbTitle;
 @property (nonatomic, weak) UIImage *titleImage;
 @property (nonatomic)BOOL isChecked;
+@property (nonatomic)FluxFilterType filterType;
 
 
 
 
-- (id)initWithTitle:(NSString*)atitle andDBTitle:(NSString*)dbtitle andtitleImage:(UIImage*)atitleImage andActive:(BOOL)bActive;
-
+- (id)initWithTitle:(NSString*)atitle andFilterType:(FluxFilterType)type andtitleImage:(UIImage*)atitleImage andActive:(BOOL)bActive;
 - (void)setIsActive:(BOOL)active;
 
 @end

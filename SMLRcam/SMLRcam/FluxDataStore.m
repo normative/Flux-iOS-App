@@ -215,10 +215,10 @@
     FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
     if (imageObject != nil)
     {
-        if (imageObject.imageID >= 0)
-        {
-            NSLog(@"%s: imageID for localID %@ has previously been set (cid:%d, nid:%d).", __func__, localID, imageObject.imageID, imageID);
-        }
+//        if (imageObject.imageID >= 0)
+//        {
+//            NSLog(@"%s: imageID for localID %@ has previously been set (cid:%d, nid:%d).", __func__, localID, imageObject.imageID, imageID);
+//        }
         [imageIDMapping setValue:localID forKey:[NSString stringWithFormat:@"%d",imageID]];
     }
 }

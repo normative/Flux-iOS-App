@@ -15,8 +15,6 @@
 
 
 
-
-
 #import <FacebookSDK/FacebookSDK.h>
 #import <sys/utsname.h>
 
@@ -68,7 +66,6 @@
     
     self.fluxDataManager = [[FluxDataManager alloc]init];
     registrationOKArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], nil];
-    [createLoginButton setEnabled:NO];
     
     loadingActivityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0, 0, 37, 37)];
     [loadingActivityIndicator setCenter:CGPointMake(self.view.center.x, self.view.center.y+100)];
@@ -92,7 +89,7 @@
     
 //    [twitterButton setEnabled:NO];
 //    [facebookButton setEnabled:NO];
-//    [signInOptionsLabel setAlpha:0.3];
+//    [signInOptionsLabel setAlpha:0.3];    
 }
 
 - (void)didReceiveMemoryWarning
@@ -131,7 +128,7 @@
         text = [textField.text stringByAppendingString:string];
     }
     
-    if (text.length > 16) {
+    if ((textField.tag == 10 || textField.tag == 88) &&  text.length > 16) {
         return NO;
     }
     
@@ -324,7 +321,7 @@
                 break;
             }
     }
-    
+
     [cell.textField setDelegate:self];
     cell.textField.textAlignment = NSTextAlignmentCenter;
     [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
@@ -633,7 +630,7 @@
              ^(FBSession *session,
                FBSessionState state, NSError *error) {
                  if (!error) {
-                     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+//                     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
                      [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:@"token" service:[NSString stringWithFormat:@"com.%@",@"Facebook"]];
                      [self didLoginSuccessfullyWithUserID:1];
                  }
@@ -700,17 +697,17 @@
 }
 
 - (void)createAccountForUser:(FluxUserObject*)user{
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
         [createdUserObject setPassword:user.password];
-        [self loginWithUserObject:createdUserObject andDidJustRegister:YES];
-        
-    }];
-    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
+            [self loginWithUserObject:createdUserObject andDidJustRegister:YES];
+
+        }];
+        [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
         [self loginRegistrationFailedWithString:str];
-    }];
-    [self hideKeyboard];
+        }];
+        [self hideKeyboard];
     if (user.profilePic) {
         [self.fluxDataManager uploadNewUser:user withImage:user.profilePic withDataRequest:dataRequest];
     }
@@ -731,12 +728,16 @@
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
 
+        if (![NSString stringWithFormat:@"%i",userObject.userID]) {
+            NSLog(@"Login didn't return a valid userID");
+        }
+        
         
         if (new) {
             [ProgressHUD showSuccess:@"Welcome To Flux!"];
         }
         else{
-            [ProgressHUD showSuccess:@"Login Successful"];
+            [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
         }
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
@@ -760,6 +761,7 @@
     if (isInSignUp) {
         //if they got here by pressing "join" on the keyboard, but didn't get all checkmarks yet.
         if (![self canCreateAccount]) {
+            [ProgressHUD showError:@"Please fill out the fields to create an account"];
             return;
         }
 //        UIAlertView * alert = [[UIAlertView alloc] initWithTitle:@"Welcome!" message:@"Thanks for your interest in Flux. At the moment, Flux is still in beta, and requires a pin to continue. If you're one of the lucky ones, please enter your pin below." delegate:self cancelButtonTitle:@"Nevermind" otherButtonTitles:@"Activate Pin", nil];
@@ -811,8 +813,7 @@
         [UIView setAnimationsEnabled:NO];
         [createLoginButton setTitle:@"Sign in" forState:UIControlStateNormal];
         [UIView setAnimationsEnabled:YES];
-        [createLoginButton setEnabled:YES];
-        
+        [createLoginButton setEnabled:NO];
         
         
         [UIView animateWithDuration:0.3 animations:^{
@@ -823,6 +824,7 @@
             [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y-40)];
         } completion:^(BOOL finished){
             [loginToggleButton setEnabled:YES];
+            [createLoginButton setEnabled:YES];
         }];
     }
     else{
@@ -848,6 +850,7 @@
             [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y+40)];
         } completion:^(BOOL finished){
             [loginToggleButton setEnabled:YES];
+            [createLoginButton setEnabled:YES];
         }];
     }
 }
@@ -919,7 +922,7 @@
                 [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
             }
             else{
-                [logoImageView setCenter:CGPointMake(self.view.center.x, 87)];
+                [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
             }
             [loadingActivityIndicator setAlpha:0.0];
         }];
@@ -930,7 +933,7 @@
             [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
         }
         else{
-            [logoImageView setCenter:CGPointMake(self.view.center.x, 94)];
+            [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
         }
         [loadingActivityIndicator setAlpha:0.0];
     }
@@ -1051,6 +1054,15 @@
         [self loginSignupToggleAction:nil];
     }
     
+    // log out of the server...
+    // ZZZ
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSString* str = [NSString stringWithFormat:@"Logout failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    [self.fluxDataManager logoutWithDataRequest:dataRequest];
+
     for (int i = 0; i<[self.tableView numberOfRowsInSection:0]; i++) {
         FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         cell.textField.text = @"";

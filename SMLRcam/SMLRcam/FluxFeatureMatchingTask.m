@@ -41,9 +41,9 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 {
     @autoreleasepool
     {
-        NSDate *startTime = [NSDate date];
+//        NSDate *startTime = [NSDate date];
         
-        NSLog(@"Matching localID: %@", self.matchRecord.ire.localID);
+//        NSLog(@"Matching localID: %@", self.matchRecord.ire.localID);
         
         // Make sure camera frame (scene) and object are both available
         if (self.isCancelled || !self.matchRecord.hasCameraScene || !self.matchRecord.hasObjectFeatures)
@@ -142,7 +142,7 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
                     ((feature_matching_homography_error == result) ? retryTimeIfInvalidHomography : retryTimeIfInvalidMatch)];
         }
         
-        NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
+//        NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
 
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskDidFinish:) withObject:self waitUntilDone:NO];
     }

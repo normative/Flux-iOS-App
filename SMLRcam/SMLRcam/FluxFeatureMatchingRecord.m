@@ -7,6 +7,7 @@
 //
 
 #import "FluxFeatureMatchingRecord.h"
+#import "FluxMatcherWrapper.h"
 
 @implementation FluxFeatureMatchingRecord
 
@@ -41,7 +42,19 @@
 
 - (BOOL)hasObjectFeatures
 {
-    return ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.imageMetadata.features != nil));
+    BOOL retval = false;
+    retval = ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.imageMetadata.features != nil));
+    if (retval)
+    {
+        // secondary tests...
+        // header validation
+        binHeader *header = (binHeader *)[_ire.imageMetadata.features bytes];
+        
+        // parse out and validate the header
+        retval = ((header->magic == fluxMagic) && (header->major == 1));
+    }
+    
+    return  retval;
 }
 
 - (BOOL)isFailed

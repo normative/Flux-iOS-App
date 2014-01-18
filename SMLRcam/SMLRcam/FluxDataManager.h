@@ -103,6 +103,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestImageListForUserWithID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest;
 
 - (void)deleteLocations;
 - (void)debugByShowingCachedImageKeys;

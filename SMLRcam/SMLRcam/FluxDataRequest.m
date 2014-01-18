@@ -31,7 +31,7 @@
     }
 }
 
-- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSString *)features withDataRequest:(FluxDataRequest *)completeDataRequest
+- (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.imageFeaturesReady)
     {
@@ -113,6 +113,13 @@
     if (self.loginUserComplete)
     {
         self.loginUserComplete(userObject,completeDataRequest);
+    }
+}
+
+-(void)whenLogoutComplete:(FluxDataRequest *)completeDataRequest{
+    if (self.logoutComplete)
+    {
+        self.logoutComplete(completeDataRequest);
     }
 }
 

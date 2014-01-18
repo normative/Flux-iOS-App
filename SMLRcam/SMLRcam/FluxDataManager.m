@@ -131,7 +131,7 @@ float const altitudeMax =  100000;
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
-                                        andCategories:dataRequest.searchFilter.categories
+                                        andCategories:@""
                                           andMaxCount:dataRequest.maxReturnItems
                                          andRequestID:requestID];
     }
@@ -158,7 +158,7 @@ float const altitudeMax =  100000;
                                   andMaxTimestamp:dataRequest.searchFilter.timeMax
                                       andHashTags:dataRequest.searchFilter.hashTags
                                          andUsers:dataRequest.searchFilter.users
-                                    andCategories:dataRequest.searchFilter.categories
+                                    andCategories:@""
                                       andMaxCount:dataRequest.maxReturnItems
                                      andRequestID:requestID];
     
@@ -300,7 +300,6 @@ float const altitudeMax =  100000;
             break;
     }
 
-
     BOOL completedRequest = NO;
 
     for (id curLocalID in dataRequest.requestedIDs)
@@ -351,7 +350,7 @@ float const altitudeMax =  100000;
                 // create a new record
                 [downloadQueueReceivers setObject:[[NSMutableArray alloc] initWithObjects:requestID, nil] forKey:curLocalID];
             }
-            
+                
             if (!validDownloadInProgress)
             {
                 // Begin download of image
@@ -424,8 +423,6 @@ float const altitudeMax =  100000;
     return requestID;
 }
 
-
-
 #pragma mark - Tag Requests
 
 - (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
@@ -454,7 +451,7 @@ float const altitudeMax =  100000;
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
-                                        andCategories:dataRequest.searchFilter.categories
+                                        andCategories:@""
                                           andMaxCount:maxCount
                                          andRequestID:requestID];
     }
@@ -487,6 +484,15 @@ float const altitudeMax =  100000;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
     [networkServices loginUser:userObject withRequestID:requestID];
+    return requestID;
+}
+
+- (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = data_upload_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin logout from server
+    [networkServices logoutWithRequestID:requestID];
     return requestID;
 }
 
@@ -715,7 +721,7 @@ float const altitudeMax =  100000;
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
-         didreturnImageFeatures:(NSString *)features
+         didreturnImageFeatures:(NSData *)features
                      forImageID:(int)imageID
                    andRequestID:(FluxRequestID *)requestID
 {
@@ -781,7 +787,6 @@ float const altitudeMax =  100000;
         }
     }
 }
-
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
                     ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID
@@ -890,6 +895,16 @@ float const altitudeMax =  100000;
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
+
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenLogoutComplete:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+
 
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString *)suggestion andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];

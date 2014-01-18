@@ -11,13 +11,15 @@
 
 typedef enum
 FluxFilterType: NSUInteger {
-    social_filterType = 0,
-    tags_filterType = 0,
+    myPhotos_filterType = 0,
+    followers_filterType = 1,
+    friends_filterType = 2,
+    tags_filterType = 3,
 } FluxFilterType;
 
 @interface FluxDataFilter : NSObject
 {
-    
+
 }
 
 // Since every request has a location and radius associated with it,
@@ -29,17 +31,23 @@ FluxFilterType: NSUInteger {
 @property (nonatomic) float altMax;
 @property (nonatomic, strong) NSString *hashTags;
 @property (nonatomic, strong) NSString *users;
-@property (nonatomic, strong) NSString *categories;
+@property (nonatomic)BOOL isFriendsFiltered;
+@property (nonatomic)BOOL isFollowingFiltered;
+@property (nonatomic)BOOL isActiveUserFiltered;
 
 - (void)addHashTagToFilter:(NSString*)tag;
-- (void)addCategoryToFilter:(NSString*)category;
-
 - (void)removeHashTagFromFilter:(NSString*)tag;
-- (void)removeCategoryFromFilter:(NSString*)category;
+
+-(void)addActiveUserToFilter:(NSString*)userID;
+-(void)removeActiveUserFromFilter:(NSString*)userID;
+
+- (void)addUsersToFilter:(NSArray*)filteredUsers andType:(FluxFilterType)type;
+- (void)removeUsersFromFilter:(NSArray*)filteredUsers andType:(FluxFilterType)type;
 
 - (BOOL)isEqualToFilter:(FluxDataFilter*)filter;
 - (id)initWithFilter:(FluxDataFilter*)filter;
 
-- (BOOL)containsCategory:(NSString*)category;
+
+
 
 @end

@@ -17,6 +17,7 @@
     NSMutableArray*tableViewArray;
     FluxUserObject*userObj;
     
+    IBOutlet UIView *fakeSeparator;
     BOOL isEditing;
 }
 

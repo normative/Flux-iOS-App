@@ -117,6 +117,6 @@ typedef enum _fftwalkstate {
 //- (void)pauseButtonTaped;
 - (void) processMotion:(CMDeviceMotion *)devMotion;
 - (void) resetCount;
-- (void) setViewController:(UIViewController *)vc;
+//- (void) setViewController:(UIViewController *)vc;
 
 @end

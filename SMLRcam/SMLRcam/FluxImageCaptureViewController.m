@@ -145,21 +145,29 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     for (int i = 0; i < [capturedImageObjects count]; i++)
     {
         FluxScanImageObject *imgObject = [capturedImageObjects objectAtIndex:i];
-        UIImage *img = [capturedImages objectAtIndex:i];
-        
         [imgObject setCategoryID:0];
         [imgObject setDescriptionString:[changes objectForKey:@"annotation"]];
         imgObject.privacy = [changes objectForKey:@"privacy"];
-        
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
-        if (savelocally)
-        {
-            UIImageWriteToSavedPhotosAlbum(img, nil, nil, nil);
-        }
     }
+    
+    NSArray*socialSelections = (NSArray*)[changes objectForKey:@"social"];
+    NSNumber*privacy = (NSNumber*)[changes objectForKey:@"privacy"];
+    NSNumber*snapshot = (NSNumber*)[changes objectForKey:@"snapshot"];
+    NSString*annotation = (NSString*)[changes objectForKey:@"annotation"];
+    
+    if ([snapshot boolValue]) {
+        UIImage*theSnapshotImage = (UIImage*)[changes objectForKey:@"snapshotImage"];
+        [capturedImages addObject:theSnapshotImage];
+    }
+    
     NSDictionary *userInfoDict = [[NSDictionary alloc]
-                                  initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects", capturedImages, @"capturedImages", nil];
+                                  initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects",
+                                  capturedImages, @"capturedImages",
+                                  socialSelections, @"social",
+                                  privacy, @"privacy",
+                                  snapshot, @"snapshot",
+                                  annotation, @"annotation",
+                                  nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
                                                         object:self userInfo:userInfoDict];
     [self setHidden:YES];
@@ -353,7 +361,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [topGradientView setHidden:NO];
     [bottomContainerView setHidden:YES];
     [topContainerView setBackgroundColor:[UIColor clearColor]];
-    [shareButton setHidden:NO];
+    [approveButton setHidden:NO];
 }
 
 - (void)showFlash:(UIColor*)color andFull:(BOOL)full{

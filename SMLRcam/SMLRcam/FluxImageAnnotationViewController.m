@@ -10,6 +10,10 @@
 #import "FluxScanImageObject.h"
 #import "FluxImageTools.h"
 
+
+#import "UICKeyChainStore.h"
+#import "UIActionSheet+Blocks.h"
+
 @interface FluxImageAnnotationViewController ()
 
 @end
@@ -32,10 +36,15 @@
     [super viewDidLoad];
     [ImageAnnotationTextView setTheDelegate:self];
     [ImageAnnotationTextView becomeFirstResponder];
-
+    
     [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
     [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
+
+    
+    
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
+    
+    [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
     
     removedImages = [[NSMutableIndexSet alloc]init];
     
@@ -48,8 +57,8 @@
     [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
     
     [privacyButton setHidden:YES];
-    [facebookButton setHidden:YES];
-    [twitterButton setHidden:YES];
+//    [facebookButton setHidden:YES];
+//    [twitterButton setHidden:YES];
     
     
 	// Do any additional setup after loading the view.
@@ -63,6 +72,8 @@
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you capture?"]];
 
+    [facebookButton setHidden:YES];
+    [twitterButton setHidden:YES];
     
     images = capturedObjects;
 }
@@ -75,10 +86,7 @@
     
     isSnapshot = YES;
     
-    [saveButton setTitle:@"Save to Photos"];
-    [facebookButton setUserInteractionEnabled:NO];
-    [twitterButton setUserInteractionEnabled:NO];
-    
+    //[saveButton setTitle:@"Save to Photos"];
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
     
@@ -195,26 +203,31 @@
 
 - (IBAction)saveButtonAction:(id)sender {
     if (ImageAnnotationTextView.text.length < 141) {
+        
+        
         if (isSnapshot) {
-            //if saving allowed
-//            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//            BOOL savelocally = [[defaults objectForKey:@"Save Pictures"]boolValue];
-//            if (savelocally)
-//            {
-//                UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
-//            }
             UIImageWriteToSavedPhotosAlbum([images objectAtIndex:0], nil, nil, nil);
-            [self cancelButtonAction:nil];
         }
-        else{
-            if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
-                NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
-                                                                                removedImages, @"removedImages",
-                                                                                [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
-                                                                                nil];
-                [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
+        
+        
+        if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
+            NSMutableArray*socialPostArr = [[NSMutableArray alloc]init];
+            if (facebookButton.isSelected && !facebookButton.isHidden) {
+                [socialPostArr addObject:FacebookService];
             }
+            if (twitterButton.isSelected && !twitterButton.isHidden) {
+                [socialPostArr addObject:TwitterService];
+            }
+            NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
+                                 removedImages, @"removedImages",
+                                 [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
+                                 socialPostArr, @"social",
+                                 [NSNumber numberWithBool:isSnapshot], @"snapshot",
+                                 [images firstObject] , @"snapshotImage",
+                                 nil];
+            [delegate ImageAnnotationViewDidPop:self andApproveWithChanges:dict];
         }
+        
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
@@ -225,28 +238,87 @@
 }
 
 - (IBAction)facebookButtonAction:(id)sender {
-    [facebookButton setSelected:!facebookButton.selected];
-    if (isSnapshot) {
-        [self checkPostButton];
+    NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
+    
+    if (facebook) {
+        [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
+    }
+    else{
+        [UIActionSheet showInView:self.view
+                        withTitle:@"Facebook"
+                cancelButtonTitle:@"Cancel"
+           destructiveButtonTitle:nil
+                otherButtonTitles:@[@"Link"]
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                 //link facebook
+                                 FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+                                 [socialManager setDelegate:self];
+                                 [socialManager linkFacebook];
+                             }
+                         }];
     }
 }
 
 - (IBAction)twitterButtonAction:(id)sender {
-    [twitterButton setSelected:!twitterButton.selected];
+    NSString*twitter = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
+    
+    if (twitter) {
+        [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
+    }
+    else{
+        [UIActionSheet showInView:self.view
+                        withTitle:@"Twitter"
+                cancelButtonTitle:@"Cancel"
+           destructiveButtonTitle:nil
+                otherButtonTitles:@[@"Link"]
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                 //link twitter
+                                 FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+                                 [socialManager setDelegate:self];
+                                 [socialManager linkTwitter];
+                             }
+                         }];
+    }
+
+}
+
+- (void)toggleSwitchSocialButton:(UIButton*)button state:(BOOL)state{
+    [button setSelected:state];
+    
     if (isSnapshot) {
         [self checkPostButton];
     }
 }
 
+- (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
+    [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
+
+}
+
+- (void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
+    [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
+}
+
 - (void)checkPostButton{
-//    if (facebookButton.isSelected || twitterButton.isSelected) {
-//        self.navigationItem.rightBarButtonItem.enabled = YES;
-//        [saveButton setTintColor:[UIColor whiteColor]];
-//    }
-//    else{
-//        self.navigationItem.rightBarButtonItem.enabled = NO;
-//        [saveButton setTintColor:[UIColor lightGrayColor]];
-//    }
+    if (facebookButton.isSelected || twitterButton.isSelected) {
+        self.navigationItem.rightBarButtonItem.enabled = YES;
+        [saveButton setTintColor:[UIColor whiteColor]];
+        [self.navigationItem.rightBarButtonItem setTitle:@"Post"];
+    }
+    else{
+        [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
+        
+//        if (!localSaveButton.isSelected) {
+//            self.navigationItem.rightBarButtonItem.enabled = NO;
+//            [saveButton setTintColor:[UIColor lightGrayColor]];
+//        }
+//        else{
+            self.navigationItem.rightBarButtonItem.enabled = YES;
+            [saveButton setTintColor:[UIColor whiteColor]];
+//        }
+    }
 }
 
 @end

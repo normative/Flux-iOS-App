@@ -18,6 +18,7 @@
 #import "FluxSettingsViewController.h"
 #import "FluxProfilePhotosViewController.h"
 #import "FluxEditProfileViewController.h"
+#import "FluxSocialListViewController.h"
 
 @interface FluxLeftDrawerViewController ()
 
@@ -45,17 +46,25 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
-    
     [UIView animateWithDuration:0.25 animations:^{
         [self.tableView setAlpha:1.0];
     }];
 }
 
+
+
 - (void)viewDidLoad
 {
     [self.view setAlpha:0.0];
     [super viewDidLoad];
+    
+
+    UIView*view = fakeSeparator.superview;
+    [fakeSeparator removeFromSuperview];
+    [fakeSeparator setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [view addSubview:fakeSeparator];
+    //fixes what looks to be an Xcode bug where if you put a frame height as less than 1 it makes it 1 (2 pixels)
+    [fakeSeparator setFrame:CGRectMake(fakeSeparator.frame.origin.x, fakeSeparator.frame.origin.y, fakeSeparator.frame.size.width, 1/[[UIScreen mainScreen] scale])];
     
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
@@ -78,14 +87,9 @@
     
     [self.versionLbl setText:[NSString stringWithFormat:@"Flux v.%@ (%@)",version,build]];
     [self.versionLbl setFont:[UIFont fontWithName:@"Akkurat" size:self.versionLbl.font.pointSize]];
-    [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.feedbackButton.titleLabel.font.pointSize]];
+    [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.feedbackButton.titleLabel.font.pointSize]];
     
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
-    if (!userID) {
-        NSString *a = [UICKeyChainStore stringForKey:FluxPasswordKey service:FluxService];
-        NSString *s = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-        NSString *d = [UICKeyChainStore stringForKey:FluxEmailKey service:FluxService];
-    }
 
     //**should** always pass
     if (userID) {
@@ -94,12 +98,14 @@
             userObj = userObject;
             tableViewArray = [self tableViewArrayForUser:userObject];
             [self.tableView reloadData];
+            
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults setObject:userObject.bio forKey:@"bio"];
+            
             if (userObject.hasProfilePic) {
                 
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
                 
-//                if (![defaults objectForKey:@"profileImage"]) {
-                if (true) {
+                if (![defaults objectForKey:@"profileImage"]) {
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                         [userObj setProfilePic:img];
@@ -216,6 +222,9 @@
         [profileCell initCellisEditing:isEditing];
         
         NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSString*bio = (NSString*)[defaults objectForKey:@"bio"];
         if (username) {
             [profileCell setUsernameText:username];
         }
@@ -223,8 +232,11 @@
         if (userObj.bio) {
             [profileCell setBioText:userObj.bio];
         }
+        else{
+            [profileCell setBioText:bio];
+        }
         
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
         if ([defaults objectForKey:@"profileImage"]) {
             
             NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
@@ -251,6 +263,7 @@
     else if (indexPath.row == tableViewArray.count){
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
+        [cell.titleLabel setEnabled:YES];
     }
     //disable social
     else if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4){
@@ -282,13 +295,16 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followingMode]];
             break;
         case 3:
-                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followerMode]];
             break;
         case 4:
-                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:friendMode]];
             break;
         case 5:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
@@ -450,6 +466,21 @@
     if ([[segue identifier] isEqualToString:@"pushPhotosSegue"]){
         [(FluxProfilePhotosViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
         [(FluxProfilePhotosViewController*)segue.destinationViewController prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService].integerValue];
+    }
+    if ([[segue identifier]isEqualToString:@"pushSocialList"]) {
+        [(FluxSocialListViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
+        if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followingMode]]) {
+            //following
+            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followingMode andIDList:nil];
+        }
+        else if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followerMode]]){
+            //follower
+            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followerMode andIDList:nil];
+        }
+        else{
+            //friend
+            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:friendMode andIDList:nil];
+        }
     }
 }
 

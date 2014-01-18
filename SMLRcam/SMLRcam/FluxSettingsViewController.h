@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "FluxDataManager.h"
+#import "FluxSocialManager.h"
 
 #import <Accounts/Accounts.h>
 #import <Twitter/Twitter.h>
@@ -17,8 +18,9 @@
 #import "TWSignedRequest.h"
 
 
-@interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate,UIActionSheetDelegate>{
+@interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate, FluxSocialManagerDelegate>{
     int initialMask;
+    IBOutlet UIView *fakeSeparator;
 }
 @property (strong, nonatomic) IBOutlet UIButton *logoutButton;
 
