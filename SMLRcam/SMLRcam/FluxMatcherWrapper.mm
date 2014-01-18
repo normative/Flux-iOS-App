@@ -132,7 +132,10 @@ const int auto_threshold_inc = 10;
         keypoints_object.resize(0);
     	return;
     }
-    
+ 
+    object_img_cols = header->image_cols;
+    object_img_rows = header->image_rows;
+
     int expectedSize = sizeof(binHeader) + header->feature_count * (sizeof(FluxKeyPoint) + 64);
     
     if (objectFeatures.length < expectedSize)
