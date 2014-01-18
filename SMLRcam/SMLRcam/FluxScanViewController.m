@@ -333,10 +333,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     IDMPhoto *photo = nil;
 
-    UIImage *img = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType].image;
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType];
     if (actualType >= quarterhd)
     {
-        photo = [[IDMPhoto alloc]initWithImage:img];
+        photo = [[IDMPhoto alloc]initWithImage:imageCacheObj.image];
+        [imageCacheObj endContentAccess];
     }
     else
     {
