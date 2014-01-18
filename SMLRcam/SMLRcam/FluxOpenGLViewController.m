@@ -1944,7 +1944,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // Populate with new image data
     FluxImageType rtype = none;
-    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
+    FluxCacheImageObject *imageCacheObj;
+    
+    if ((ire.imageCacheObject.image != nil) && (ire.imageCacheObject.imageType == (imageType == 0 ? thumb : imageType)))
+    {
+        // It has been fetched from the cache elsewhere. Don't re-fetch it.
+        imageCacheObj = ire.imageCacheObject;
+    }
+    else
+    {
+        imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
+    }
     
     if (imageCacheObj.image != nil)
     {
