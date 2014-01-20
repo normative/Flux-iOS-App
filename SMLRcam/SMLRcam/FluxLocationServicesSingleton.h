@@ -79,7 +79,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 @property (nonatomic) NSString* sublocality;
 @property (nonatomic) NSString* subadministativearea;
 
-@property (nonatomic) int notMoving;
 @property (nonatomic) kfECEF kflocation;
 @property (nonatomic) kfDEBUG kfdebug;
 

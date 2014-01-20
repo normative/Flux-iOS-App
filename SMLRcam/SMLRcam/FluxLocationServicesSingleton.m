@@ -66,7 +66,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
             locationManager.headingFilter = 1.0;
         }
     }
-    self.notMoving = 1;
     [self initKFilter];
     [self startKFilter];
     return self;
@@ -285,9 +284,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     self.location = newLocation;
     self.rawlocation = newLocation;
-    
-    self.notMoving = 1;
-   
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);
