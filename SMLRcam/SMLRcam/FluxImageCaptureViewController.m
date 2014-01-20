@@ -365,6 +365,12 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [bottomContainerView setHidden:YES];
     [topContainerView setBackgroundColor:[UIColor clearColor]];
     [approveButton setHidden:NO];
+    
+    [approveButton setTitle:@"" forState:UIControlStateNormal];
+    CGPoint point = approveButton.center;
+    [approveButton setFrame:CGRectMake(0, 0, 19, 27)];
+    [approveButton setCenter:point];
+    [approveButton setImage:[UIImage imageNamed:@"actionButtonItem"] forState:UIControlStateNormal];
 }
 
 - (void)showFlash:(UIColor*)color andFull:(BOOL)full{

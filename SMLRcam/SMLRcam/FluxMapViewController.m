@@ -111,6 +111,15 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
 }
 
+- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay {
+    
+    userLocationPin.pulsingCircleOverlay = [[FluxUserLocationOverlay alloc]init];
+    userLocationPin.pulsingCircleOverlay.coordinate = overlay.coordinate;
+    userLocationPin.pulsingCircleOverlay.boundingMapRect = overlay.boundingMapRect;
+    
+    return userLocationPin.pulsingCircleOverlay;
+}
+
 - (MKMapRect)shrunkenMapRect:(MKMapRect)mapRect{
     MKOverlayRenderer*tmpRenderer = [[MKOverlayRenderer alloc]init];
     CGRect narowedRect = [tmpRenderer rectForMapRect:mapRect];
@@ -129,13 +138,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)didUpdateLocation:(NSNotification*)notification
 {
     CLLocationAccuracy newAccuracy = locationManager.location.horizontalAccuracy;
-    [userLocationPin setCoordinate:locationManager.location.coordinate];
-    if (userLocationPin.horizontalAccuracy != newAccuracy)
+    [userLocationPin.pinAnnotation setCoordinate:locationManager.location.coordinate];
+    if (userLocationPin.pinAnnotation.horizontalAccuracy != newAccuracy)
     {
-        NSLog(@"Horizontal Accuracy (m): %f", newAccuracy);
-        [fluxMapView removeAnnotation:userLocationPin];
-        [userLocationPin setHorizontalAccuracy:newAccuracy];
-        [fluxMapView addAnnotation:userLocationPin];
+        NSLog(@"Accuracy: %f",newAccuracy);
+        [fluxMapView removeOverlay:tempCircle];
+        tempCircle = [MKCircle circleWithCenterCoordinate:locationManager.location.coordinate radius:locationManager.location.horizontalAccuracy];
+        [fluxMapView addOverlay:tempCircle];
     }
 }
 
@@ -197,10 +206,16 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     lastRadius = 75.0;
     outstandingRequests = 0;
     
-    userLocationPin = [[FluxUserLocationPin alloc] initWithCoordinate:locationManager.location.coordinate];
-    userLocationPin.title = @"Current Location";
-    userLocationPin.horizontalAccuracy = locationManager.location.horizontalAccuracy;
-    [fluxMapView addAnnotation:userLocationPin];
+    userLocationPin = [[FluxUserLocationMapPin alloc]init];
+    userLocationPin.pinAnnotation = [[FluxUserLocationAnnotation alloc] initWithCoordinate:locationManager.location.coordinate];
+    userLocationPin.pinAnnotation.title = @"Current Location";
+    userLocationPin.pinAnnotation.horizontalAccuracy = locationManager.location.horizontalAccuracy;
+    [fluxMapView addAnnotation:userLocationPin.pinAnnotation];
+    
+    userLocationPin.pulsingCircleOverlay = [[FluxUserLocationOverlay alloc]init];
+    tempCircle = [MKCircle circleWithCenterCoordinate:locationManager.location.coordinate radius:locationManager.location.horizontalAccuracy];
+    [fluxMapView addOverlay:tempCircle];
+
     
     filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
     

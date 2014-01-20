@@ -36,7 +36,7 @@
 
 #import <MapKit/MapKit.h>
 
-#import "FluxUserLocationPin.h"
+#import "FluxUserLocationAnnotation.h"
 #import "SVPulsingAnnotationView.h"
 
 static inline MIChangeType MIChangeTypeFromNSComparisonResult(NSComparisonResult result)
@@ -241,7 +241,7 @@ typedef void (^_MIMapViewChange)(void);
     
     for (MIAnnotation *annotation in [source copy])
     {
-        if([annotation isKindOfClass:[FluxUserLocationPin class]])
+        if([annotation isKindOfClass:[FluxUserLocationAnnotation class]])
         {
             userPinAnnotation = annotation;
         }
@@ -365,7 +365,7 @@ typedef void (^_MIMapViewChange)(void);
 
 - (void)addAnnotation:(id <MKAnnotation>)annotation
 {
-    if([annotation isKindOfClass:[FluxUserLocationPin class]])
+    if([annotation isKindOfClass:[FluxUserLocationAnnotation class]])
     {
         [super addAnnotation:annotation];
     }
@@ -389,7 +389,7 @@ typedef void (^_MIMapViewChange)(void);
 
 - (void)removeAnnotation:(id <MKAnnotation>)annotation
 {
-    if([annotation isKindOfClass:[FluxUserLocationPin class]])
+    if([annotation isKindOfClass:[FluxUserLocationAnnotation class]])
     {
         [super removeAnnotation:annotation];
     }
@@ -417,7 +417,7 @@ typedef void (^_MIMapViewChange)(void);
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation
 {
-    if([annotation isKindOfClass:[FluxUserLocationPin class]]) {
+    if([annotation isKindOfClass:[FluxUserLocationAnnotation class]]) {
         static NSString *identifier = @"currentLocation";
 		SVPulsingAnnotationView *pulsingView = (SVPulsingAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:identifier];
 		
@@ -427,7 +427,7 @@ typedef void (^_MIMapViewChange)(void);
             pulsingView.canShowCallout = YES;
         }
 
-        pulsingView.pulseScaleFactor = ((FluxUserLocationPin *)annotation).horizontalAccuracy / 5.0;
+        pulsingView.pulseScaleFactor = ((FluxUserLocationAnnotation *)annotation).horizontalAccuracy / 5.0;
 		
 		return pulsingView;
     }

@@ -128,11 +128,13 @@
 		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A381871F0EA003BC1FF /* FluxPhotoCollectionCell.m */; };
 		AAAD9A3C187B14CE003BC1FF /* FluxRegisterUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3B187B14CE003BC1FF /* FluxRegisterUsernameViewController.m */; };
-		AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationPin.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationPin.m */; };
+		AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationAnnotation.m */; };
 		AAAD9A46187EF89F003BC1FF /* FluxSocialManagementCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A45187EF89F003BC1FF /* FluxSocialManagementCell.m */; };
 		AAB066F01886F6E6002914B2 /* UIActionSheet+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB066EF1886F6E6002914B2 /* UIActionSheet+Blocks.m */; };
 		AAB066F5188994BC002914B2 /* FluxSocialListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB066F4188994BC002914B2 /* FluxSocialListViewController.m */; };
 		AAB066F81889978B002914B2 /* FluxFriendFollowerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB066F71889978B002914B2 /* FluxFriendFollowerCell.m */; };
+		AAB2138C188DD36600173B35 /* FluxUserLocationOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB2138B188DD36600173B35 /* FluxUserLocationOverlay.m */; };
+		AAB2138F188DD3C900173B35 /* FluxUserLocationMapPin.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB2138E188DD3C900173B35 /* FluxUserLocationMapPin.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
 		AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */; };
 		AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */; };
@@ -394,8 +396,8 @@
 		AAAD9A381871F0EA003BC1FF /* FluxPhotoCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPhotoCollectionCell.m; sourceTree = "<group>"; };
 		AAAD9A3A187B14CE003BC1FF /* FluxRegisterUsernameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRegisterUsernameViewController.h; sourceTree = "<group>"; };
 		AAAD9A3B187B14CE003BC1FF /* FluxRegisterUsernameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegisterUsernameViewController.m; sourceTree = "<group>"; };
-		AAAD9A3D187DAE6B003BC1FF /* FluxUserLocationPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxUserLocationPin.h; sourceTree = "<group>"; };
-		AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxUserLocationPin.m; sourceTree = "<group>"; };
+		AAAD9A3D187DAE6B003BC1FF /* FluxUserLocationAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxUserLocationAnnotation.h; sourceTree = "<group>"; };
+		AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxUserLocationAnnotation.m; sourceTree = "<group>"; };
 		AAAD9A44187EF89F003BC1FF /* FluxSocialManagementCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialManagementCell.h; sourceTree = "<group>"; };
 		AAAD9A45187EF89F003BC1FF /* FluxSocialManagementCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialManagementCell.m; sourceTree = "<group>"; };
 		AAB066EE1886F6E6002914B2 /* UIActionSheet+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIActionSheet+Blocks.h"; sourceTree = "<group>"; };
@@ -404,6 +406,10 @@
 		AAB066F4188994BC002914B2 /* FluxSocialListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialListViewController.m; sourceTree = "<group>"; };
 		AAB066F61889978B002914B2 /* FluxFriendFollowerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFriendFollowerCell.h; sourceTree = "<group>"; };
 		AAB066F71889978B002914B2 /* FluxFriendFollowerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFriendFollowerCell.m; sourceTree = "<group>"; };
+		AAB2138A188DD36600173B35 /* FluxUserLocationOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxUserLocationOverlay.h; sourceTree = "<group>"; };
+		AAB2138B188DD36600173B35 /* FluxUserLocationOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxUserLocationOverlay.m; sourceTree = "<group>"; };
+		AAB2138D188DD3C900173B35 /* FluxUserLocationMapPin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxUserLocationMapPin.h; sourceTree = "<group>"; };
+		AAB2138E188DD3C900173B35 /* FluxUserLocationMapPin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxUserLocationMapPin.m; sourceTree = "<group>"; };
 		AAB24E4B17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDrawerSwitchTableViewCell.h; sourceTree = "<group>"; };
 		AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSwitchTableViewCell.m; sourceTree = "<group>"; };
 		AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapImageObject.h; sourceTree = "<group>"; };
@@ -613,8 +619,7 @@
 			children = (
 				2204371817B925870017EA93 /* FluxMapViewController.h */,
 				2204371917B925870017EA93 /* FluxMapViewController.m */,
-				AAAD9A3D187DAE6B003BC1FF /* FluxUserLocationPin.h */,
-				AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationPin.m */,
+				AAB21390188DD43600173B35 /* User Location Pin */,
 			);
 			name = "Map Views";
 			sourceTree = "<group>";
@@ -1146,6 +1151,19 @@
 			name = "Social Lists";
 			sourceTree = "<group>";
 		};
+		AAB21390188DD43600173B35 /* User Location Pin */ = {
+			isa = PBXGroup;
+			children = (
+				AAB2138D188DD3C900173B35 /* FluxUserLocationMapPin.h */,
+				AAB2138E188DD3C900173B35 /* FluxUserLocationMapPin.m */,
+				AAAD9A3D187DAE6B003BC1FF /* FluxUserLocationAnnotation.h */,
+				AAAD9A3E187DAE6B003BC1FF /* FluxUserLocationAnnotation.m */,
+				AAB2138A188DD36600173B35 /* FluxUserLocationOverlay.h */,
+				AAB2138B188DD36600173B35 /* FluxUserLocationOverlay.m */,
+			);
+			name = "User Location Pin";
+			sourceTree = "<group>";
+		};
 		AAC1BF061811AF67001D3C01 /* ProgressHUD */ = {
 			isa = PBXGroup;
 			children = (
@@ -1396,6 +1414,7 @@
 				F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */,
 				F2434C21187F42E100D08B6B /* SVPulsingAnnotationView.m in Sources */,
 				AA9D0EA5185664570004823E /* FluxRegisterEmailViewController.m in Sources */,
+				AAB2138F188DD3C900173B35 /* FluxUserLocationMapPin.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
 				AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */,
 				AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */,
@@ -1428,7 +1447,7 @@
 				AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */,
 				AA55534217F0C0EA0098C45C /* FluxDisplayManager.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
-				AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationPin.m in Sources */,
+				AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationAnnotation.m in Sources */,
 				F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */,
 				AA9F86131868AFF600AB98A7 /* IDMTapDetectingImageView.m in Sources */,
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
@@ -1454,6 +1473,7 @@
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
 				AA9F85E51863994800AB98A7 /* FluxRoundImagePickerController.m in Sources */,
 				AA984F0E18088923007F33B1 /* MKAnnotationView+MIExtension.m in Sources */,
+				AAB2138C188DD36600173B35 /* FluxUserLocationOverlay.m in Sources */,
 				AA9F86141868AFF600AB98A7 /* IDMTapDetectingView.m in Sources */,
 				22335E42181ACC610098F205 /* FluxLeftDrawerViewController.m in Sources */,
 				AAC1BF0B1811AF67001D3C01 /* ProgressHUD.m in Sources */,
