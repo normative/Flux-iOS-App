@@ -12,6 +12,7 @@
 #import "FluxImageTools.h"
 #import "ProgressHUD.h"
 #import "UICKeyChainStore.h"
+#import "FluxMapViewController.h"
 
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -142,9 +143,13 @@
         [ProgressHUD showError:str];
     }];
     
-    
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius
-                                       andMaxCount:20 withDataRequest:request];
+    if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
+        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:NO withDataRequest:request];
+    }
+    else{
+        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:YES withDataRequest:request];
+    }
+
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{

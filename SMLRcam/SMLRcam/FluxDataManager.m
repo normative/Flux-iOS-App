@@ -23,7 +23,6 @@ float const altitudeMin = -100000;
 float const altitudeMax =  100000;
 
 @implementation FluxDataManager
-
 #pragma mark - Class methods
 
 + (NSString*)thisDeviceName
@@ -131,7 +130,6 @@ float const altitudeMax =  100000;
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
-                                        andCategories:@""
                                           andMaxCount:dataRequest.maxReturnItems
                                          andRequestID:requestID];
     }
@@ -158,7 +156,6 @@ float const altitudeMax =  100000;
                                   andMaxTimestamp:dataRequest.searchFilter.timeMax
                                       andHashTags:dataRequest.searchFilter.hashTags
                                          andUsers:dataRequest.searchFilter.users
-                                    andCategories:@""
                                       andMaxCount:dataRequest.maxReturnItems
                                      andRequestID:requestID];
     
@@ -428,12 +425,12 @@ float const altitudeMax =  100000;
 - (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
                                   withRadius:(float)radius
                                  andMaxCount:(int)maxCount
+                        andAltitudeSensitive:(BOOL)altitudeSensitive
                              withDataRequest:(FluxDataRequest *)dataRequest
 {
     
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = tag_request;
-    
     
     [currentRequests setObject:dataRequest forKey:requestID];
     
@@ -445,13 +442,12 @@ float const altitudeMax =  100000;
     {
         [networkServices getTagsForLocationFiltered:location.coordinate
                                             andRadius:radius
-                                            andMinAlt:location.altitude - altitudeLowRange
-                                            andMaxAlt:location.altitude + altitudeHighRange
+                                          andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
+                                            andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
                                       andMinTimestamp:dataRequest.searchFilter.timeMin
                                       andMaxTimestamp:dataRequest.searchFilter.timeMax
                                           andHashTags:dataRequest.searchFilter.hashTags
                                              andUsers:dataRequest.searchFilter.users
-                                        andCategories:@""
                                           andMaxCount:maxCount
                                          andRequestID:requestID];
     }

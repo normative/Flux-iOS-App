@@ -242,7 +242,6 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                      andMaxTimestamp:(NSDate *)timeMax
                          andHashTags:(NSString *)hashTags
                             andUsers:(NSString *)users
-                       andCategories:(NSString *)cats
                          andMaxCount:(int)maxCount
                         andRequestID:(FluxRequestID *)requestID;
 
@@ -270,12 +269,12 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@';&userlist='%@'&catlist='%@';&maxcount=%d&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@';&userlist='%@'&maxcount=%d&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, cats, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               hashTags, users, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
 
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
     
@@ -793,7 +792,6 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                    andMaxTimestamp:(NSDate *)timeMax
                        andHashTags:(NSString *)hashTags
                           andUsers:(NSString *)users
-                     andCategories:(NSString *)cats
                        andMaxCount:(int)maxCount
                       andRequestID:(FluxRequestID *)requestID;
 {
@@ -814,12 +812,12 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, cats, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               hashTags, users, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -857,7 +855,6 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                         andMaxTimestamp:(NSDate *)timeMax
                             andHashTags:(NSString *)hashTags
                                andUsers:(NSString *)users
-                          andCategories:(NSString *)cats
                             andMaxCount:(int)maxCount
                            andRequestID:(FluxRequestID *)requestID{
     
@@ -875,12 +872,12 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&catlist='%@'&maxcount=%d&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, cats, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               hashTags, users, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];

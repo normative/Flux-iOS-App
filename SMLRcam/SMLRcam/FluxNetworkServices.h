@@ -105,7 +105,6 @@ extern NSString* const FluxTestServerURL;
                      andMaxTimestamp:(NSDate *)timeMax
                          andHashTags:(NSString *)hashTags
                             andUsers:(NSString *)users
-                       andCategories:(NSString *)cats
                          andMaxCount:(int)maxCount
                         andRequestID:(FluxRequestID *)requestID;
 
@@ -120,7 +119,6 @@ extern NSString* const FluxTestServerURL;
                      andMaxTimestamp:(NSDate *)timeMax
                          andHashTags:(NSString *)hashTags
                             andUsers:(NSString *)users
-                       andCategories:(NSString *)cats
                          andMaxCount:(int)maxCount
                         andRequestID:(FluxRequestID *)requestID;
 
@@ -205,7 +203,6 @@ return's a profile image for a given userID and size
                    andMaxTimestamp:(NSDate *)timeMax
                        andHashTags:(NSString *)hashTags
                           andUsers:(NSString *)users
-                     andCategories:(NSString *)cats
                        andMaxCount:(int)maxCount
                       andRequestID:(FluxRequestID *)requestID;
 
