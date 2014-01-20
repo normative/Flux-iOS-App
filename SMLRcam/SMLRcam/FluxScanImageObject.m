@@ -200,6 +200,9 @@ withDescriptionString:(NSString*)description
         self.localID = [self generateUniqueStringID];
         self.matched = NO;
         self.matchFailed = NO;
+        self.numFeatureMatchAttempts = 0;
+        self.numFeatureMatchCancels = 0;
+        self.cumulativeFeatureMatchTime = 0.0;
         self.location_data_type = location_data_default;
         self.features = nil;
         self.featureFetching = NO;

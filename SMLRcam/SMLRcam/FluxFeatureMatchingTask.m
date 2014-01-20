@@ -41,7 +41,7 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 {
     @autoreleasepool
     {
-//        NSDate *startTime = [NSDate date];
+        NSDate *startTime = [NSDate date];
         
 //        NSLog(@"Matching localID: %@", self.matchRecord.ire.localID);
         
@@ -141,6 +141,9 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
             self.matchRecord.ire.imageMetadata.matchFailureRetryTime = [NSDate dateWithTimeIntervalSinceNow:
                     ((feature_matching_homography_error == result) ? retryTimeIfInvalidHomography : retryTimeIfInvalidMatch)];
         }
+        
+        NSTimeInterval timeElapsedForCurrentMatch = [[NSDate date] timeIntervalSinceDate:startTime];
+        self.matchRecord.ire.imageMetadata.cumulativeFeatureMatchTime = self.matchRecord.ire.imageMetadata.cumulativeFeatureMatchTime + timeElapsedForCurrentMatch;
         
 //        NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
 

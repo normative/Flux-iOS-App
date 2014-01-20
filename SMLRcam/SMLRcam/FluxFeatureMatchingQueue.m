@@ -116,6 +116,8 @@ const double reuseCameraFrameTimeInterval = 1.0;
 {
     FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
 
+    record.ire.imageMetadata.numFeatureMatchAttempts++;
+
     if (record.matched)
     {
         // Send notification to trigger new data to trickle into OpenGL View Controller
@@ -137,7 +139,8 @@ const double reuseCameraFrameTimeInterval = 1.0;
     record.ire.imageMetadata.matched = NO;
     record.ire.imageMetadata.matchFailed = NO;
     record.ire.imageMetadata.matchFailureRetryTime = nil;
-
+    record.ire.imageMetadata.numFeatureMatchCancels++;
+    
     [self.pendingOperations.featureMatchingInProgress removeObjectForKey:record.ire.localID];
 }
 
