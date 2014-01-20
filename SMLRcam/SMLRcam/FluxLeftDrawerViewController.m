@@ -39,6 +39,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
     [UIView animateWithDuration:0.2 animations:^{
         [self.tableView setAlpha:0.0];
     }];
@@ -46,6 +47,8 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    
     [UIView animateWithDuration:0.25 animations:^{
         [self.tableView setAlpha:1.0];
     }];

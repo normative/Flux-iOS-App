@@ -737,8 +737,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupAnnotationsTableView];
 
     currentDataFilter = [[FluxDataFilter alloc] init];
-
-    self.screenName = @"Scan View";
     
     [CameraButton removeFromSuperview];
     [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
@@ -755,21 +753,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
 }
 
--(void)viewWillLayoutSubviews{
-    
-}
-
-- (void)viewDidLayoutSubviews{
-
-}
-
--(void)viewWillAppear:(BOOL)animated{
-
-}
-
 - (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
     [CameraButton setFrame:CGRectMake(0, 0, CameraButton.frame.size.width, CameraButton.frame.size.height)];
     [CameraButton setCenter:CGPointMake(self.view.center.x, self.leftDrawerButton.center.y)];
+    
+    self.screenName = @"Scan View";
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -804,7 +793,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    
+    [super viewWillDisappear:animated];
+
 }
 
 - (void)didReceiveMemoryWarning

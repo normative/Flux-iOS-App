@@ -64,6 +64,11 @@
 	// Do any additional setup after loading the view.
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Image Capture Annotation View";
+}
+
 - (void)prepareViewWithBGImage:(UIImage *)image andCapturedImages:(NSMutableArray *)capturedObjects withLocation:(NSString*)location andDate:(NSDate *)capturedDate{
     FluxImageTools*tools = [[FluxImageTools alloc]init];
     UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.bounds];

@@ -15,13 +15,15 @@
 #import "TWAPIManager.h"
 #import "TWSignedRequest.h"
 
+#import "GAITrackedViewController.h"
+
 @class FluxRegisterUsernameViewController;
 @protocol FluxRegisterUsernameViewDelegate <NSObject>
 @optional
 - (void)RegisterUsernameView:(FluxRegisterUsernameViewController*)usernameView didAcceptAddUsernameToUserInfo:(NSMutableDictionary *)userInfo;
 @end
 
-@interface FluxRegisterUsernameViewController : UIViewController<
+@interface FluxRegisterUsernameViewController : GAITrackedViewController<
     UITableViewDelegate, UITextFieldDelegate>{
     IBOutlet UITableView* usernameTableView;
     id __unsafe_unretained delegate;

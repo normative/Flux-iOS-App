@@ -51,13 +51,19 @@
     tapGesture.cancelsTouchesInView = NO;
     
     //[self.filterTableView addGestureRecognizer:tapGesture];
-    self.screenName = @"Filters View";
+    
 }
 
 
 
-- (void)viewWillAppear:(BOOL)animated{    
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     [self sendTagRequest];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Filters View";
 }
 
 //must be called from presenting VC

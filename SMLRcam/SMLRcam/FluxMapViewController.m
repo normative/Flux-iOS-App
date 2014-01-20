@@ -165,11 +165,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [transitionFadeView setAlpha:0.0];
     [transitionFadeView setHidden:YES];
     [self.view addSubview:transitionFadeView];
-    
-    self.screenName = @"Map View";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
     if (!firstRunDone)
     {
         [self setupMapView];
@@ -179,6 +179,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         [self didUpdateLocation:nil];
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Map View";
 }
 
 // initialize and allocate memory to the map view object

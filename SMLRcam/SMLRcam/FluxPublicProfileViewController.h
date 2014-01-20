@@ -10,7 +10,9 @@
 #import "FluxUserObject.h"
 #import "FluxDataManager.h"
 
-@interface FluxPublicProfileViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>{
+#import "GAITrackedViewController.h"
+
+@interface FluxPublicProfileViewController : GAITrackedViewController<UITableViewDelegate, UITableViewDataSource>{
     
     IBOutlet UITableView *profileTableView;
     FluxUserObject*theUser;

@@ -55,8 +55,6 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     
     [self setupAVCapture];
     
-    self.screenName = @"Image Capture View";
-    
     [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
     [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosLabel.font.pointSize]];
     [undoButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:undoButton.titleLabel.font.pointSize]];
@@ -65,6 +63,11 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     motionManager = [FluxMotionManagerSingleton sharedManager];
     locationManager = [FluxLocationServicesSingleton sharedManager];
 	// Do any additional setup after loading the view.
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Image Capture View";
 }
 
 - (void)didReceiveMemoryWarning
