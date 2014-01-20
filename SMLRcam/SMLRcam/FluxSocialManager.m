@@ -120,13 +120,25 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 [parts replaceObjectAtIndex:i withObject:(NSString*)[string substringFromIndex:range.location+1]];
             }
             
-            [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
-            [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
-            
-            //call delegate
-            if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
-                [delegate SocialManager:self didLinkTwitterAccountWithUsername:(NSString*)[parts objectAtIndex:3]];
+            if (parts.count > 1) {
+                [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
+                [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
+                
+                //call delegate
+                if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
+                    [delegate SocialManager:self didLinkTwitterAccountWithUsername:(NSString*)[parts objectAtIndex:3]];
+                }
             }
+            else{
+                if (parts.count) {
+                    NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [parts objectAtIndex:0]);
+                }
+                if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                    [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                }
+            }
+            
+
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
@@ -166,11 +178,8 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         }
         
         // if the session isn't open, let's open it now and present the login UX to the user
-        NSArray *permissions = [NSArray arrayWithObjects:@"email",@"publish_actions", nil];
-        [FBSession openActiveSessionWithPublishPermissions:permissions
-                                           defaultAudience:FBSessionDefaultAudienceEveryone
-                                              allowLoginUI:YES
-                                          completionHandler:
+        NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
+        [FBSession openActiveSessionWithReadPermissions:permissions allowLoginUI:YES completionHandler:
          ^(FBSession *session,
            FBSessionState state, NSError *error) {
              if (!error) {

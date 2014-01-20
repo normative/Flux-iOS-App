@@ -35,6 +35,9 @@
 
 - (void)drawInContext:(CGContextRef)context
 {
+    if (!context) {
+        return;
+    }
     CGRect rect = self.bounds;
     CGPoint centerPoint = CGPointMake(rect.size.height / 2, rect.size.width / 2);
     CGFloat radius = MIN(rect.size.height, rect.size.width) / 2;
