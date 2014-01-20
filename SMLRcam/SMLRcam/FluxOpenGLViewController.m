@@ -1609,14 +1609,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             ;
             if(scanimageobject.location_data_type == location_data_from_homography)
             {
-                _validMetaData[idx] = [self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose userHomographyPose:scanimageobject.userHomographyPose planeNormal:&planeNormal Distance:distance currentUserPose:_userPose viewParamters:&vpimage]*
-                                 self.fluxDisplayManager.locationManager.notMoving ;
-                _renderingMatchedImage =1;
+                _validMetaData[idx] = [self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose userHomographyPose:scanimageobject.userHomographyPose planeNormal:&planeNormal Distance:distance currentUserPose:_userPose viewParamters:&vpimage];
+                _renderingMatchedImage = 1;
             }
             else
             {
-                _validMetaData[idx] = (computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage) *
-                                       self.fluxDisplayManager.locationManager.notMoving);
+                _validMetaData[idx] = computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage);
             }
             
             tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
