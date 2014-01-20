@@ -60,6 +60,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         
         locationMeasurements = [[NSMutableArray alloc] init];
         
+        useFakeLocationCoordinate = NO;
+        
         if ([CLLocationManager headingAvailable]) {
             locationManager.headingFilter = 1.0;
         }
@@ -272,6 +274,14 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 //                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
 //                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
 //    }
+    
+    if (useFakeLocationCoordinate)
+    {
+        CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(43.65337, -79.40658);     // Normative office
+        newLocation = [[CLLocation alloc] initWithCoordinate:fakecoord altitude:newLocation.altitude
+                                          horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+                                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    }
     
     self.location = newLocation;
     self.rawlocation = newLocation;
@@ -957,6 +967,12 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
 }
 */
+
+- (void)toggleLocationCoordinate:(bool)useFakeCoordinate
+{
+    useFakeLocationCoordinate = useFakeCoordinate;
+}
+
 @end
 
 

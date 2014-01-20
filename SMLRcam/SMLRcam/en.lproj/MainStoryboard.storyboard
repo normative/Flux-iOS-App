@@ -772,7 +772,7 @@
                                             <action selector="showLeftDrawer:" destination="2" eventType="touchUpInside" id="IOJ-qU-bqK"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
+                                    <button hidden="YES" opaque="NO" contentMode="scaleAspectFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
                                         <rect key="frame" x="230" y="486" width="70" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
@@ -800,6 +800,13 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <connections>
                                             <action selector="toggleHomographyResult:" destination="2" eventType="valueChanged" id="6dc-Yl-CgA"/>
+                                        </connections>
+                                    </switch>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="B0g-NL-YnT" userLabel="Location Select">
+                                        <rect key="frame" x="246" y="517" width="51" height="31"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="toggleLocationCoordinate:" destination="2" eventType="valueChanged" id="xC6-pj-e6v"/>
                                         </connections>
                                     </switch>
                                 </subviews>
