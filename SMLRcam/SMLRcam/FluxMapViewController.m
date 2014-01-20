@@ -36,6 +36,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:lastRadius andFilter:currentDataFilter];
         outstandingRequests++;
     }
+    
+    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
+    }
+    else{
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
+    }
 }
 
 - (void)didUpdateMapPins:(NSNotification*)notification{
@@ -99,14 +106,19 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     lastSynchedLocation = fluxMapView.centerCoordinate;
     lastRadius = screenDistance/2;
     
-    MKMapRect narrowedScreenRect = fluxMapView.visibleMapRect;
+    
+    MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
+}
+
+- (MKMapRect)shrunkenMapRect:(MKMapRect)mapRect{
     MKOverlayRenderer*tmpRenderer = [[MKOverlayRenderer alloc]init];
-    CGRect narowedRect = [tmpRenderer rectForMapRect:narrowedScreenRect];
+    CGRect narowedRect = [tmpRenderer rectForMapRect:mapRect];
     NSLog(@"Norm: %@",NSStringFromCGRect(narowedRect));
     narowedRect = CGRectInset(narowedRect, narowedRect.size.width*.15, narowedRect.size.width*.15);
-    narrowedScreenRect = [tmpRenderer mapRectForRect:narowedRect];
+    mapRect = [tmpRenderer mapRectForRect:narowedRect];
     NSLog(@"Small: %@",NSStringFromCGRect(narowedRect));
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
+    return mapRect;
 }
 
 - (void)setupLocationManager
@@ -213,7 +225,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-    [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.fluxMapContentMetadata.count];
+    [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
     [self animationPushBackScaleDown];
     [filtersVC setRadius:lastRadius];
 }
