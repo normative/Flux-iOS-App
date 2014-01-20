@@ -41,7 +41,6 @@ const int auto_threshold_inc = 10;
     NSDate *cameraFrameFeatureExtractDate;
     
     double intrinsicsInverse[9];
-    double homography[9];
     transformRtn result1;
     transformRtn result2;
     
@@ -221,7 +220,7 @@ const int auto_threshold_inc = 10;
 
 
 
-- (int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withRotationSoln3:(double[])R3 withTranslationSoln3:(double[])t3 withNormalSoln3:(double[])n3 withDebugImage:(bool)outputImage
+- (int)matchAndCalculateTransformsWithRotation:(double[])R1 withTranslation:(double[])t1 withNormal:(double[])n1 withDebugImage:(bool)outputImage
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
@@ -245,8 +244,6 @@ const int auto_threshold_inc = 10;
         
         double scale_factor = scene_img.rows / object_img_rows;
         
-        [self setCameraIntrinsicsWithRows:scene_img.rows andColums:scene_img.cols];
-        
         for( size_t i = 0; i < matches.size(); i++ )
         {
             //-- Get the keypoints from the good matches
@@ -255,16 +252,6 @@ const int auto_threshold_inc = 10;
         }
         
         cv::Mat H = cv::findHomography( obj, scene, CV_LMEDS );
-        
-        homography[0] = H.at<double>(0,0);
-        homography[1] = H.at<double>(1,0);
-        homography[2] = H.at<double>(2,0);
-        homography[3] = H.at<double>(0,1);
-        homography[4] = H.at<double>(1,1);
-        homography[5] = H.at<double>(2,1);
-        homography[6] = H.at<double>(0,2);
-        homography[7] = H.at<double>(1,2);
-        homography[8] = H.at<double>(2,2);
         
         bool validHomographyFound = NO;
         
@@ -278,58 +265,34 @@ const int auto_threshold_inc = 10;
         {
             validHomographyFound = YES;
 
-             // Calculate transform_from_H
-            result = [self computeRTFromHomography:homography];
-            
             // Use SolvePnP method for calculating R and t
-            if (result == 0)
-            {
-                cv::Mat t_matchcam_origin;
-                
-                //-- Get the corners from the object image ( the object to be "detected" )
-                std::vector<cv::Point2f> obj_corners(4);
-                obj_corners[0] = cvPoint(0,0);
-                obj_corners[1] = cvPoint( object_img_cols * scale_factor, 0 );
-                obj_corners[2] = cvPoint( object_img_cols * scale_factor, object_img_rows * scale_factor );
-                obj_corners[3] = cvPoint( 0, object_img_rows * scale_factor );
-                std::vector<cv::Point2f> scene_corners(4);
-                
-                cv::perspectiveTransform( obj_corners, scene_corners, H );
-                
-                // Call method for calculating R and t
-                [self testPnpWithSceneCorners:scene_corners withObjectCorners:obj_corners withRotation:R_matchcam_origin withTranslation:t_matchcam_origin];
-                
-                std::cout << R_matchcam_origin << std::endl;
-                std::cout << t_matchcam_origin << std::endl;
-                
-                // Extract transforms (R and t) using SolvePnP method
-                for (int i=0; i < 3; i++)
-                {
-                    t3[i] = t_matchcam_origin.at<double>(i)/15.0; // self.t_from_H1.translation[i];
-                    
-                    // Just set these from other method. Used for check
-                    n3[i] = (i < 2) ? 0.0 : 1.0;
-                    for (int j=0; j < 3; j++)
-                    {
-                        R3[i + 3*j] = R_matchcam_origin.at<double>(j,i); // self.t_from_H1.rotation[i + 3*j];
-                    }
-                }
-            }
+            cv::Mat t_matchcam_origin;
             
-            // Extract transforms (R and t) using standard method
-            if (result == 0)
+            //-- Get the corners from the object image ( the object to be "detected" )
+            std::vector<cv::Point2f> obj_corners(4);
+            obj_corners[0] = cvPoint(0,0);
+            obj_corners[1] = cvPoint( object_img_cols * scale_factor, 0 );
+            obj_corners[2] = cvPoint( object_img_cols * scale_factor, object_img_rows * scale_factor );
+            obj_corners[3] = cvPoint( 0, object_img_rows * scale_factor );
+            std::vector<cv::Point2f> scene_corners(4);
+            
+            cv::perspectiveTransform( obj_corners, scene_corners, H );
+            
+            // Call method for calculating R and t
+            [self calcPnPWithSceneCorners:scene_corners withObjectCorners:obj_corners withRotation:R_matchcam_origin withTranslation:t_matchcam_origin];
+            
+            std::cout << R_matchcam_origin << std::endl;
+            std::cout << t_matchcam_origin << std::endl;
+            
+            // Extract transforms (R and t) using SolvePnP method
+            for (int i=0; i < 3; i++)
             {
-                for (int i=0; i < 3; i++)
+                t1[i] = t_matchcam_origin.at<double>(i)/15.0;
+                
+                n1[i] = (i < 2) ? 0.0 : 1.0;
+                for (int j=0; j < 3; j++)
                 {
-                    t1[i] = self.t_from_H1.translation[i];
-                    t2[i] = self.t_from_H2.translation[i];
-                    n1[i] = self.t_from_H1.normal[i];
-                    n2[i] = self.t_from_H2.normal[i];
-                    for (int j=0; j < 3; j++)
-                    {
-                        R1[i + 3*j] = self.t_from_H1.rotation[i + 3*j];
-                        R2[i + 3*j] = self.t_from_H2.rotation[i + 3*j];
-                    }
+                    R1[i + 3*j] = R_matchcam_origin.at<double>(j,i);
                 }
             }
         }
@@ -401,7 +364,7 @@ const int auto_threshold_inc = 10;
     return result;
 }
 
-- (void)testPnpWithSceneCorners:(std::vector<cv::Point2f>&)scene_corners withObjectCorners:(std::vector<cv::Point2f>&)object_corners
+- (void)calcPnPWithSceneCorners:(std::vector<cv::Point2f>&)scene_corners withObjectCorners:(std::vector<cv::Point2f>&)object_corners
                    withRotation:(cv::Mat&)R_final withTranslation:(cv::Mat&)t_final
 {
     double projection_distance = 15.0;
@@ -1098,21 +1061,21 @@ const int auto_threshold_inc = 10;
     return (B.y - A.y) / (B.x - A.x);
 }
 
-- (void)testTransformsFromHomography
-{
-    //assuming row major
-    homography[0] = 5.404;
-    homography[1] = 0.0;
-    homography[2] = 4.436;
-    homography[3] = 0.0;
-    homography[4] = 4.0;
-    homography[5] = 0.0;
-    homography[6] = -1.236;
-    homography[7] = 0.0;
-    homography[8] = 3.804;
-    
-    //singular values {7.197, 4.000, 3.619} Pg 138
-}
+//- (void)testTransformsFromHomography
+//{
+//    //assuming row major
+//    homography[0] = 5.404;
+//    homography[1] = 0.0;
+//    homography[2] = 4.436;
+//    homography[3] = 0.0;
+//    homography[4] = 4.0;
+//    homography[5] = 0.0;
+//    homography[6] = -1.236;
+//    homography[7] = 0.0;
+//    homography[8] = 3.804;
+//    
+//    //singular values {7.197, 4.000, 3.619} Pg 138
+//}
 
 
 - (void)dealloc

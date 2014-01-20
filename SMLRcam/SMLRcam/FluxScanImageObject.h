@@ -58,7 +58,6 @@ typedef enum _FluxCameraModel : NSUInteger {
 @property (nonatomic) double ecefZ;
 
 //
-@property (nonatomic) sensorPose imageHomographyPose;
 @property (nonatomic) sensorPose imageHomographyPosePnP;
 @property (nonatomic) sensorPose userHomographyPose;
 

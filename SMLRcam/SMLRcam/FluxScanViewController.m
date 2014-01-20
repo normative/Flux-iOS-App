@@ -76,14 +76,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
 
-
-- (IBAction)toggleHomographyResult:(id)sender
-{
-    UISwitch *theSwitch = (UISwitch *)sender;
-    BOOL homographyMethod = theSwitch.on;
-    [openGLController setHomographyState:(homographyMethod ? 1 : 0)];
-}
-
 - (IBAction)toggleLocationCoordinate:(id)sender
 {
     UISwitch *theSwitch = (UISwitch *)sender;

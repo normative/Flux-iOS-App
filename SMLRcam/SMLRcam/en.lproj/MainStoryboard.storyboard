@@ -795,13 +795,6 @@
                                         </constraints>
                                         <color key="progressTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
                                     </progressView>
-                                    <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="un4-1f-5zm" userLabel="Homography Select">
-                                        <rect key="frame" x="246" y="505" width="51" height="31"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <connections>
-                                            <action selector="toggleHomographyResult:" destination="2" eventType="valueChanged" id="6dc-Yl-CgA"/>
-                                        </connections>
-                                    </switch>
                                     <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="B0g-NL-YnT" userLabel="Location Select">
                                         <rect key="frame" x="246" y="517" width="51" height="31"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>

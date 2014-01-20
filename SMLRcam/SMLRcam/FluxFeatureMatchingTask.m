@@ -63,51 +63,26 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         double rotation1[9];
         double translation1[3];
         double normal1[3];
-        double rotation2[9];
-        double translation2[3];
-        double normal2[3];
-        double rotation3[9];
-        double translation3[3];
-        double normal3[3];
         
-        int result = [self.matcherEngine matchAndCalculateTransformsWithRotationSoln1:rotation1
-                                                                 withTranslationSoln1:translation1
-                                                                      withNormalSoln1:normal1
-                                                                    withRotationSoln2:rotation2
-                                                                 withTranslationSoln2:translation2
-                                                                      withNormalSoln2:normal2
-                                                                    withRotationSoln3:rotation3
-                                                                 withTranslationSoln3:translation3
-                                                                      withNormalSoln3:normal3
+        int result = [self.matcherEngine matchAndCalculateTransformsWithRotation:rotation1
+                                                                 withTranslation:translation1
+                                                                      withNormal:normal1
                                                                        withDebugImage:NO];//Debugging of images
         
         if (feature_matching_success == result)
         {
             self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
-            
-            sensorPose imagePose = self.matchRecord.ire.imageMetadata.imageHomographyPose;
-            
-            [self computeImagePoseInECEF:&imagePose
-                                userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
-                            hTranslation1: translation1
-                              hRotation1: rotation1
-                                hNormal1: normal1
-                           hTranslation2:translation2
-                              hRotation2:rotation2
-                                hNormal2:normal2];
-            
-            self.matchRecord.ire.imageMetadata.imageHomographyPose = imagePose;
 
             sensorPose imagePosePnP = self.matchRecord.ire.imageMetadata.imageHomographyPosePnP;
             
             [self computeImagePoseInECEF:&imagePosePnP
                                 userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
-                           hTranslation1: translation3
-                              hRotation1: rotation3
-                                hNormal1: normal3
-                           hTranslation2:translation3
-                              hRotation2:rotation3
-                                hNormal2:normal3];
+                           hTranslation1: translation1
+                              hRotation1: rotation1
+                                hNormal1: normal1
+                           hTranslation2:translation1
+                              hRotation2:rotation1
+                                hNormal2:normal1];
             
             self.matchRecord.ire.imageMetadata.imageHomographyPosePnP = imagePosePnP;
         }
