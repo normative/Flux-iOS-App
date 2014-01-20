@@ -97,6 +97,6 @@ extern NSString* const FluxOpenGLShouldRender;
 - (void)timeBracketDidEndScrolling;
 
 - (void) writeLog:(NSString *)logmsg;
-
+- (void)toggleLocationCoordinate:(bool)useFakeCoordinate;
 
 @end

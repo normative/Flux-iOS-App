@@ -191,6 +191,11 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     }
 }
 
+- (void)toggleLocationCoordinate:(bool)useFakeCoordinate
+{
+    [self.locationManager toggleLocationCoordinate:useFakeCoordinate];
+}
+
 #pragma mark - Feature Matching
 
 - (void)checkForFeatureMatchingTasks:(NSArray *)nearbyList
@@ -858,7 +863,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
         }];
         
-       CLLocation *loc = self.locationManager.location;
+        CLLocation *loc = self.locationManager.location;
         [self.fluxDataManager requestImageListAtLocation:loc withRadius:scanImageRequestRadius withDataRequest:dataRequest];
 
     }

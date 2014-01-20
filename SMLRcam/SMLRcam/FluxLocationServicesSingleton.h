@@ -66,6 +66,8 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     sensorPose _userPose;
     
     NSTimer*updateTimer;
+    
+    bool useFakeLocationCoordinate;
 }
 
 @property (nonatomic) CLLocation* location;
@@ -90,5 +92,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 - (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 - (bool)isKalmanSolutionValid;
+- (void)toggleLocationCoordinate:(bool)useFakeCoordinate;
 
 @end

@@ -291,18 +291,15 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     {
         NSLog(@"%s: Found %i Standard Images",__func__,[result count]);
         
-        if ([result count] > 0)
+        NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
+        for (FluxScanImageObject*obj in result.array)
         {
-            NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
-            for (FluxScanImageObject*obj in result.array)
-            {
-                [obj setLocalID:[obj generateUniqueStringID]];
-                [mutableArray addObject:obj];
-            }
-            if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:andRequestID:)])
-            {
-                [delegate NetworkServices:self didreturnImageList:[NSArray arrayWithArray:mutableArray] andRequestID:requestID];
-            }
+            [obj setLocalID:[obj generateUniqueStringID]];
+            [mutableArray addObject:obj];
+        }
+        if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageList:andRequestID:)])
+        {
+            [delegate NetworkServices:self didreturnImageList:[NSArray arrayWithArray:mutableArray] andRequestID:requestID];
         }
     }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)

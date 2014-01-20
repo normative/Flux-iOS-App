@@ -802,6 +802,13 @@
                                             <action selector="toggleHomographyResult:" destination="2" eventType="valueChanged" id="6dc-Yl-CgA"/>
                                         </connections>
                                     </switch>
+                                    <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="B0g-NL-YnT" userLabel="Location Select">
+                                        <rect key="frame" x="246" y="517" width="51" height="31"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="toggleLocationCoordinate:" destination="2" eventType="valueChanged" id="xC6-pj-e6v"/>
+                                        </connections>
+                                    </switch>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="Jav-fJ-sQd" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="4oR-Ld-br5"/>

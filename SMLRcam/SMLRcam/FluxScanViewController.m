@@ -76,6 +76,21 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
 
+
+- (IBAction)toggleHomographyResult:(id)sender
+{
+    UISwitch *theSwitch = (UISwitch *)sender;
+    BOOL homographyMethod = theSwitch.on;
+    [openGLController setHomographyState:(homographyMethod ? 1 : 0)];
+}
+
+- (IBAction)toggleLocationCoordinate:(id)sender
+{
+    UISwitch *theSwitch = (UISwitch *)sender;
+    bool useFakeCoordinate = theSwitch.on;
+    [self.fluxDisplayManager toggleLocationCoordinate:useFakeCoordinate];
+}
+
 #pragma mark - Drawer Methods
 
 // Left Drawer
@@ -365,13 +380,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [nav setNavigationBarHidden:YES];
     [self presentViewController:nav animated:YES completion:nil];
    
-}
-
-- (IBAction)toggleHomographyResult:(id)sender
-{
-    UISwitch *theSwitch = (UISwitch *)sender;
-    BOOL homographyMethod = theSwitch.on;
-    [openGLController setHomographyState:(homographyMethod ? 1 : 0)];
 }
 
 #pragma mark Camera View
