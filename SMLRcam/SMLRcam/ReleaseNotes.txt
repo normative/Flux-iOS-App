@@ -1,4 +1,5 @@
 Release Notes:
+- update count and list of nearby items in locations with no content (Trello issue #334)
 
 ******************************************
 
