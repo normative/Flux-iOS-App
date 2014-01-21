@@ -113,6 +113,7 @@
                                 </state>
                                 <connections>
                                     <action selector="snapshotRollButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="jsc-7j-q3Z"/>
+                                    <segue destination="vvc-He-IAt" kind="push" id="gTR-yF-0e1"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -131,37 +132,53 @@
             </objects>
             <point key="canvasLocation" x="2273" y="-2525"/>
         </scene>
-        <!--Collection View Controller-->
+        <!--Flux Snapshot Collection View Controller - My Snapshots-->
         <scene sceneID="qHk-I8-ZKB">
             <objects>
-                <collectionViewController autoresizesArchivedViewToFullSize="NO" id="vvc-He-IAt" sceneMemberID="viewController">
-                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="HEZ-xj-mI8">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                <collectionViewController autoresizesArchivedViewToFullSize="NO" id="vvc-He-IAt" customClass="FluxSnapshotCollectionViewController" sceneMemberID="viewController">
+                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="9N1-sd-6zF">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
-                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="AKu-EY-Pje">
-                            <size key="itemSize" width="50" height="50"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="iQX-c0-B0P">
+                            <size key="itemSize" width="92" height="92"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                            <inset key="sectionInset" minX="10" minY="10" maxX="10" maxY="10"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="faA-7d-geR">
-                                <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="myCell" id="hyd-06-Oyx" customClass="FluxPhotoCollectionCell">
+                                <rect key="frame" x="10" y="54" width="92" height="92"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="92" height="92"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t8a-Vl-j19">
+                                            <rect key="frame" x="0.0" y="0.0" width="92" height="92"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <view tag="200" contentMode="scaleAspectFit" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jcE-Pv-qIq" customClass="KTCheckboxButton">
+                                            <rect key="frame" x="65" y="10" width="25" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
+                                <connections>
+                                    <outlet property="checkboxButton" destination="jcE-Pv-qIq" id="w6e-Wr-okb"/>
+                                    <outlet property="imageView" destination="t8a-Vl-j19" id="R7g-Sz-vA6"/>
+                                </connections>
                             </collectionViewCell>
                         </cells>
                         <connections>
-                            <outlet property="dataSource" destination="vvc-He-IAt" id="9Ui-WC-rRM"/>
-                            <outlet property="delegate" destination="vvc-He-IAt" id="3LN-mS-AA2"/>
+                            <outlet property="dataSource" destination="vvc-He-IAt" id="OW7-WM-1cc"/>
+                            <outlet property="delegate" destination="vvc-He-IAt" id="N8h-US-BD3"/>
                         </connections>
                     </collectionView>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <navigationItem key="navigationItem" title="My Snapshots" id="uWj-M4-W9C"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2pD-b6-oTR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

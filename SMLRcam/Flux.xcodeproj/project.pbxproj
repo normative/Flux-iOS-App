@@ -59,6 +59,8 @@
 		AA255166183577D900DCA62F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA255165183577D900DCA62F /* Social.framework */; };
 		AA2CBAB8188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBAB7188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m */; };
 		AA2CBABB188F029C001ECF86 /* FluxCameraRollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBABA188F029C001ECF86 /* FluxCameraRollButton.m */; };
+		AA2CBAC2188F2810001ECF86 /* FluxSnapshotCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBAC1188F2810001ECF86 /* FluxSnapshotCollectionViewController.m */; };
+		AA2CBAC6188F31C2001ECF86 /* UIAlertView+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBAC5188F31C2001ECF86 /* UIAlertView+Blocks.m */; };
 		AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */; };
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
@@ -260,6 +262,10 @@
 		AA2CBAB7188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSnapshotCaptureViewController.m; sourceTree = "<group>"; };
 		AA2CBAB9188F029C001ECF86 /* FluxCameraRollButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraRollButton.h; sourceTree = "<group>"; };
 		AA2CBABA188F029C001ECF86 /* FluxCameraRollButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraRollButton.m; sourceTree = "<group>"; };
+		AA2CBAC0188F2810001ECF86 /* FluxSnapshotCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSnapshotCollectionViewController.h; sourceTree = "<group>"; };
+		AA2CBAC1188F2810001ECF86 /* FluxSnapshotCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSnapshotCollectionViewController.m; sourceTree = "<group>"; };
+		AA2CBAC4188F31C2001ECF86 /* UIAlertView+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+Blocks.h"; sourceTree = "<group>"; };
+		AA2CBAC5188F31C2001ECF86 /* UIAlertView+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+Blocks.m"; sourceTree = "<group>"; };
 		AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewerImageUtil.h; sourceTree = "<group>"; };
@@ -479,6 +485,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */,
 				F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */,
 				F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */,
 				AA9D0E9C184D3AC30004823E /* Accounts.framework in Frameworks */,
@@ -500,7 +507,6 @@
 				17604B9E1785F522005CF054 /* CoreMedia.framework in Frameworks */,
 				17604B6B1785CA59005CF054 /* CoreGraphics.framework in Frameworks */,
 				AAA265BD17EA00E4003AE787 /* libTestFlight.a in Frameworks */,
-				17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */,
 				17604B921785CB27005CF054 /* CoreImage.framework in Frameworks */,
 				17604B941785CB35005CF054 /* AVFoundation.framework in Frameworks */,
 				17604B991785F4CA005CF054 /* CoreVideo.framework in Frameworks */,
@@ -748,8 +754,19 @@
 				AA2CBAB7188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m */,
 				AA2CBAB9188F029C001ECF86 /* FluxCameraRollButton.h */,
 				AA2CBABA188F029C001ECF86 /* FluxCameraRollButton.m */,
+				AA2CBAC0188F2810001ECF86 /* FluxSnapshotCollectionViewController.h */,
+				AA2CBAC1188F2810001ECF86 /* FluxSnapshotCollectionViewController.m */,
 			);
 			name = Snapshot;
+			sourceTree = "<group>";
+		};
+		AA2CBAC3188F31B8001ECF86 /* UIAlert Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				AA2CBAC4188F31C2001ECF86 /* UIAlertView+Blocks.h */,
+				AA2CBAC5188F31C2001ECF86 /* UIAlertView+Blocks.m */,
+			);
+			name = "UIAlert Blocks";
 			sourceTree = "<group>";
 		};
 		AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */ = {
@@ -879,6 +896,7 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
+				AA2CBAC3188F31B8001ECF86 /* UIAlert Blocks */,
 				AAB066F11886F6EA002914B2 /* UIActionSheet Blocks */,
 				AAF1BCF2183A73A900909AFF /* Animated Label */,
 				AA9F85E61868AFF600AB98A7 /* Image Browser */,
@@ -1459,6 +1477,7 @@
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
+				AA2CBAC2188F2810001ECF86 /* FluxSnapshotCollectionViewController.m in Sources */,
 				F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
 				AA9D0E8E184D392E0004823E /* TWSignedRequest.m in Sources */,
@@ -1477,6 +1496,7 @@
 				AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationAnnotation.m in Sources */,
 				F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */,
 				AA9F86131868AFF600AB98A7 /* IDMTapDetectingImageView.m in Sources */,
+				AA2CBAC6188F31C2001ECF86 /* UIAlertView+Blocks.m in Sources */,
 				AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */,
 				22335E45181B07380098F205 /* FluxSettingsViewController.m in Sources */,
 				AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */,
