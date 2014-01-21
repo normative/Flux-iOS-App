@@ -60,13 +60,13 @@
     
 
     [self.layer addSublayer:self.colorStaticLayer];
-    [self.layer addSublayer:self.colorHaloLayer];
+    //[self.layer addSublayer:self.colorHaloLayer];
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     if(newSuperview) {
         [self rebuildLayers];
-        [self popIn];
+        //[self popIn];
     }
 }
 
@@ -141,9 +141,9 @@
         _colorStaticLayer.bounds = CGRectMake(0, 0, width, width);
         _colorStaticLayer.position = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
         _colorStaticLayer.contentsScale = [UIScreen mainScreen].scale;
-        _colorStaticLayer.backgroundColor =  [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0].CGColor;
+        _colorStaticLayer.backgroundColor =  [UIColor colorWithRed:0.000 green:0.478 blue:1.000 alpha:1].CGColor;
         _colorStaticLayer.cornerRadius = width/2;
-        _colorStaticLayer.opacity = 0.2;
+        _colorStaticLayer.opacity = 0.1;
     }
     return _colorStaticLayer;
 }
@@ -155,7 +155,7 @@
         _colorHaloLayer.bounds = CGRectMake(0, 0, width, width);
         _colorHaloLayer.position = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
         _colorHaloLayer.contentsScale = [UIScreen mainScreen].scale;
-        _colorHaloLayer.backgroundColor =  [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0].CGColor;
+        _colorHaloLayer.backgroundColor =  [UIColor colorWithRed:0.000 green:0.478 blue:1.000 alpha:1].CGColor;
         _colorHaloLayer.cornerRadius = width/2;
         _colorHaloLayer.opacity = 0;
         

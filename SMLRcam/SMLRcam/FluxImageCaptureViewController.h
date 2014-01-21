@@ -46,7 +46,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     IBOutlet UIView *topContainerView;
     IBOutlet UIView *bottomContainerView;
     
-    IBOutlet UIButton *shareButton;
+    IBOutlet UIButton *snapshotShareButton;
     
     
     //Camera

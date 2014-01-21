@@ -212,7 +212,7 @@
         CGFloat width = self.bounds.size.width-6;
         _colorDotLayer.bounds = CGRectMake(0, 0, width, width);
         _colorDotLayer.allowsGroupOpacity = YES;
-        _colorDotLayer.backgroundColor = self.annotationColor.CGColor;
+        _colorDotLayer.backgroundColor = [UIColor colorWithRed:0.000 green:0.478 blue:1.000 alpha:1].CGColor;
         _colorDotLayer.cornerRadius = width/2;
         _colorDotLayer.position = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
         

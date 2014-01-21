@@ -81,7 +81,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
         [self.view setHidden:NO];
         [approveButton setHidden:YES];
         [undoButton setHidden:YES];
-        [shareButton setHidden:YES];
+        [snapshotShareButton setHidden:YES];
         [UIView animateWithDuration:0.3f
                          animations:^{
                              [self.view setAlpha:1.0];
@@ -364,13 +364,11 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [topGradientView setHidden:NO];
     [bottomContainerView setHidden:YES];
     [topContainerView setBackgroundColor:[UIColor clearColor]];
-    [approveButton setHidden:NO];
+    [approveButton setHidden:YES];
     
-    [approveButton setTitle:@"" forState:UIControlStateNormal];
-    CGPoint point = approveButton.center;
-    [approveButton setFrame:CGRectMake(0, 0, 19, 27)];
-    [approveButton setCenter:point];
-    [approveButton setImage:[UIImage imageNamed:@"actionButtonItem"] forState:UIControlStateNormal];
+    [snapshotShareButton setHidden:NO];
+    
+    
 }
 
 - (void)showFlash:(UIColor*)color andFull:(BOOL)full{
