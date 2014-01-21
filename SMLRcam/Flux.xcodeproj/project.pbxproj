@@ -57,6 +57,8 @@
 		AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */; };
 		AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA25515E18355A6400DCA62F /* FluxSocialManager.m */; };
 		AA255166183577D900DCA62F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA255165183577D900DCA62F /* Social.framework */; };
+		AA2CBAB8188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBAB7188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m */; };
+		AA2CBABB188F029C001ECF86 /* FluxCameraRollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBABA188F029C001ECF86 /* FluxCameraRollButton.m */; };
 		AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */; };
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
@@ -254,6 +256,10 @@
 		AA25515D18355A6400DCA62F /* FluxSocialManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialManager.h; sourceTree = "<group>"; };
 		AA25515E18355A6400DCA62F /* FluxSocialManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialManager.m; sourceTree = "<group>"; };
 		AA255165183577D900DCA62F /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		AA2CBAB6188F00D4001ECF86 /* FluxSnapshotCaptureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSnapshotCaptureViewController.h; sourceTree = "<group>"; };
+		AA2CBAB7188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSnapshotCaptureViewController.m; sourceTree = "<group>"; };
+		AA2CBAB9188F029C001ECF86 /* FluxCameraRollButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraRollButton.h; sourceTree = "<group>"; };
+		AA2CBABA188F029C001ECF86 /* FluxCameraRollButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraRollButton.m; sourceTree = "<group>"; };
 		AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewerImageUtil.h; sourceTree = "<group>"; };
@@ -682,10 +688,8 @@
 		AA1183FE17FDB9430078FCCF /* Image Capture */ = {
 			isa = PBXGroup;
 			children = (
-				AA650F0117FDBFD000424223 /* FluxImageAnnotationViewController.h */,
-				AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */,
-				AA650F0C1802EE1900424223 /* FluxImageCaptureViewController.h */,
-				AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */,
+				AA2CBAB5188F00B7001ECF86 /* Snapshot */,
+				AA2CBAB4188F00A0001ECF86 /* New Image Capture */,
 			);
 			name = "Image Capture";
 			sourceTree = "<group>";
@@ -724,6 +728,28 @@
 				AA9D0E98184D395C0004823E /* ABOAuthCore */,
 			);
 			name = TwitterOauth;
+			sourceTree = "<group>";
+		};
+		AA2CBAB4188F00A0001ECF86 /* New Image Capture */ = {
+			isa = PBXGroup;
+			children = (
+				AA650F0117FDBFD000424223 /* FluxImageAnnotationViewController.h */,
+				AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */,
+				AA650F0C1802EE1900424223 /* FluxImageCaptureViewController.h */,
+				AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */,
+			);
+			name = "New Image Capture";
+			sourceTree = "<group>";
+		};
+		AA2CBAB5188F00B7001ECF86 /* Snapshot */ = {
+			isa = PBXGroup;
+			children = (
+				AA2CBAB6188F00D4001ECF86 /* FluxSnapshotCaptureViewController.h */,
+				AA2CBAB7188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m */,
+				AA2CBAB9188F029C001ECF86 /* FluxCameraRollButton.h */,
+				AA2CBABA188F029C001ECF86 /* FluxCameraRollButton.m */,
+			);
+			name = Snapshot;
 			sourceTree = "<group>";
 		};
 		AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */ = {
@@ -1425,6 +1451,7 @@
 				F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */,
 				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
 				17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */,
+				AA2CBABB188F029C001ECF86 /* FluxCameraRollButton.m in Sources */,
 				AA9D0E8D184D392E0004823E /* TWAPIManager.m in Sources */,
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
 				AA9F86081868AFF600AB98A7 /* DACircularProgressView.m in Sources */,
@@ -1493,6 +1520,7 @@
 				AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */,
 				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
 				F2ED424D183F8A19007A825A /* FluxCameraFrameElement.m in Sources */,
+				AA2CBAB8188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m in Sources */,
 				AAB066F81889978B002914B2 /* FluxFriendFollowerCell.m in Sources */,
 				AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */,
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
