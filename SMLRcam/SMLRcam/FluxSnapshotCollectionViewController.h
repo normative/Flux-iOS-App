@@ -11,7 +11,8 @@
 #import "IDMPhotoBrowser.h"
 
 @interface FluxSnapshotCollectionViewController : UICollectionViewController <IDMPhotoBrowserDelegate>{
-    NSArray*picturesArray;
+    NSArray*imageURLArray;
+    NSMutableArray*imagesArray;
 }
 
 @property (nonatomic, retain) UIImage * BGImage;

@@ -40,6 +40,17 @@
     [blackView setAlpha:0.0];
     [blackView setHidden:YES];
     [self.view addSubview:blackView];
+    
+    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+        NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
+        NSArray*picsArr = [NSArray arrayWithArray:[defaults objectForKey:@"snapshotImages"]];
+        if (picsArr.count) {
+            [self setSnapshotButtonImage:[picsArr lastObject]];
+        }
+    }
+    else{
+        [self.snapshotRollButton setHidden:YES];
+    }
 
 	// Do any additional setup after loading the view.
 }
@@ -52,6 +63,32 @@
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     
+}
+
+
+- (void)setSnapshotButtonImage:(NSString*)localURL{
+    //
+    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+    {
+        ALAssetRepresentation *rep = [myasset defaultRepresentation];
+        CGImageRef iref = [rep fullResolutionImage];
+        if (iref) {
+            UIImage *image = [UIImage imageWithCGImage:iref];
+            [self.snapshotRollButton addImage:image];
+        }
+    };
+    
+    //
+    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+    {
+        NSLog(@"oops, cant get image - %@",[myerror localizedDescription]);
+    };
+    
+    NSURL *asseturl = [NSURL URLWithString:localURL];
+    ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
+    [assetslibrary assetForURL:asseturl
+                   resultBlock:resultblock
+                  failureBlock:failureblock];
 }
 
 #pragma mark - Other
@@ -84,6 +121,7 @@
 }
 
 - (void)saveImageLocally: (UIImage*)image{
+    [self.snapshotRollButton setHidden:NO];
     [self.snapshotRollButton addImage:image];
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     // Request to save the image to camera roll
