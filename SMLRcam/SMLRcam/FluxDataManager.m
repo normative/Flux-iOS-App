@@ -408,7 +408,10 @@ float const altitudeMax =  100000;
         {
             // Begin download of image
             FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
-            [networkServices getImageFeaturesForID:curImageObj.imageID andRequestID:requestID];
+            if (curImageObj.imageID > 0)
+            {
+                [networkServices getImageFeaturesForID:curImageObj.imageID andRequestID:requestID];
+            }
         }
     }
     
