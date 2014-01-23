@@ -93,7 +93,17 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                      }];
                 }
                 else{
-                    [self loginWithTwitterForAccountIndex:0];
+                    if (self.TWAccounts.count > 0) {
+                        [self loginWithTwitterForAccountIndex:0];
+                    }
+                    else{
+                        if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                            [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                        }
+                        
+                        NSLog(@"The user has no accounts");
+                    }
+                    
                 }
             }
             else {

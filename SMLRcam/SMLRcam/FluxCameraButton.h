@@ -8,9 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum
+FluxImageCaptureMode: NSUInteger {
+    snapshot_mode = 0,
+    camera_mode = 1,
+} FluxImageCaptureMode;
+
 @interface FluxCameraButton : UIButton{
     UIImageView *circleView;
 }
+
+@property (nonatomic) FluxImageCaptureMode captureMode;
+
 - (UIImageView*)getThumbView;
 
 @end

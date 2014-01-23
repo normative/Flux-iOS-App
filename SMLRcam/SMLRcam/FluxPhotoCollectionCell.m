@@ -19,6 +19,11 @@
     return self;
 }
 
+- (void)setTheImage:(UIImage *)theImage{
+    self->_theImage = theImage;
+    [self.imageView setImage:theImage];
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

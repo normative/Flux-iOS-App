@@ -665,12 +665,6 @@ void init(){
     
 }
 
-#warning this is referenced in FluxScanVC:- (IBAction)stepper:(id)sender. If the associated control and IBAction is no longer required, this code can go away
-- (void)stepperChangedWithValue:(double)v
-{
-    
-}
-
 
 #pragma mark - Display Manager Notifications
 
@@ -764,12 +758,23 @@ void init(){
     [self addChildViewController:self.imageCaptureViewController];
     [self.imageCaptureViewController didMoveToParentViewController:self];
     self.imageCaptureViewController.view.frame = self.view.bounds;
+    
+    
+    self.snapshotViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"snapshotViewController"];
+    // then add the imageCaptureView as the subview of the parent view
+    [self.view addSubview:self.snapshotViewController.view];
+    // add the glkViewController as the child of self
+    [self addChildViewController:self.snapshotViewController];
+    [self.snapshotViewController didMoveToParentViewController:self];
+    self.snapshotViewController.view.frame = self.view.bounds;
+    [self.snapshotViewController.view setHidden:YES];
+    
     camIsOn = NO;
     imageCaptured = NO;
     _displayListHasChanged = 0;
 }
 
-- (void)showImageCapture{
+- (void)activateNewImageCapture{
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self.imageCaptureViewController setHidden:NO];
     camIsOn = YES;
@@ -778,6 +783,11 @@ void init(){
     // really should be called from ImageCaptureViewController but no really obvious place to put it.
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
                                                         object:self userInfo:nil];
+}
+
+- (void)activateSnapshotCapture{
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    [self.snapshotViewController.view setHidden:NO];
 }
 
 
