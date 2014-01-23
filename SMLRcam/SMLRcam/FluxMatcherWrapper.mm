@@ -224,6 +224,13 @@ const int auto_threshold_inc = 10;
         cfe.cameraFeatureDescriptorsRows = descriptors.rows;
         cfe.cameraFeatureDescriptorsCols = descriptors.cols;
         cfe.cameraFeatureDescriptorsSteps = descriptors.step;
+        
+        // Store extracted image (from UIImage to cv::Mat) in NSMutableData buffer
+        cfe.cameraFrameMatchImage = [[NSMutableData alloc] initWithBytes:scene_extract_img.data length:scene_extract_img.rows * scene_extract_img.step];
+        
+        cfe.cameraFrameMatchImageRows = scene_extract_img.rows;
+        cfe.cameraFrameMatchImageCols = scene_extract_img.cols;
+        cfe.cameraFrameMatchImageSteps = scene_extract_img.step;
     }
     
     return success;
@@ -231,32 +238,33 @@ const int auto_threshold_inc = 10;
 
 // Scene images are the background camera feed to match against
 // Uses previously calculated buffers and sets them to data structures used by feature matching
-- (bool)setSceneImage:(UIImage *)sceneImage
+- (bool)setSceneImage:(NSMutableData *)image_buffer
+        withImageRows:(int)image_rows withImageCols:(int)image_cols withImageSteps:(int)image_steps
         withKeypoints:(NSData *)keypoints_buffer
       withDescriptors:(NSMutableData *)descriptors_buffer
-  withDescriptorsRows:(int)rows
-  withDescriptorsCols:(int)cols
- withDescriptorsSteps:(int)steps
+  withDescriptorsRows:(int)descriptors_rows withDescriptorsCols:(int)descriptors_cols withDescriptorsSteps:(int)descriptors_steps
 {
     bool success = YES;
-    
-    // Prepare the image and store it in the engine
-    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
-    
-    cv::transpose(inputImage, inputImage);
-    cv::flip(inputImage, inputImage, 1);
-    
-    scene_img = inputImage;
-    
+
+    // Read image into cv::Mat from NSMutableData buffer
+    scene_img = cv::Mat(image_rows, image_cols, CV_8U, [image_buffer mutableBytes], image_steps);
+
+    if ((scene_img.rows != image_rows) || (scene_img.cols != image_cols))
+    {
+        NSLog(@"Array dimensions do not match in image for extracted camera frame when re-reading buffer.");
+        success = NO;
+        return success;
+    }
+
     // Read keypoints into std::vector<cv::KeyPoint> from NSData buffer
     keypoints_scene =  std::vector<cv::KeyPoint>((cv::KeyPoint*)[keypoints_buffer bytes], (cv::KeyPoint*)((cv::KeyPoint*)[keypoints_buffer bytes]+([keypoints_buffer length]/sizeof(cv::KeyPoint))));
 
     // Read descriptors into cv::Mat from NSMutableData buffer
-    descriptors_scene = cv::Mat(rows, cols, CV_8U, [descriptors_buffer mutableBytes], steps);
+    descriptors_scene = cv::Mat(descriptors_rows, descriptors_cols, CV_8U, [descriptors_buffer mutableBytes], descriptors_steps);
     
-    if ((descriptors_scene.rows != rows) || (descriptors_scene.cols != cols))
+    if ((descriptors_scene.rows != descriptors_rows) || (descriptors_scene.cols != descriptors_cols))
     {
-        NSLog(@"Array dimensions do not match in extracted camera frame when re-reading buffer.");
+        NSLog(@"Array dimensions do not match in descriptors for extracted camera frame when re-reading buffer.");
         success = NO;
         return success;
     }

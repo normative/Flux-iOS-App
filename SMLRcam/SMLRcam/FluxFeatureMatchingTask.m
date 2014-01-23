@@ -57,7 +57,10 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
         
         // Set scene image features/image using previously computed values
-        if (![self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage
+        if (![self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameMatchImage
+                                 withImageRows:self.matchRecord.cfe.cameraFrameMatchImageRows
+                                 withImageCols:self.matchRecord.cfe.cameraFrameMatchImageCols
+                                withImageSteps:self.matchRecord.cfe.cameraFrameMatchImageSteps
                                  withKeypoints:self.matchRecord.cfe.cameraFeatureKeypoints
                                withDescriptors:self.matchRecord.cfe.cameraFeatureDescriptors
                            withDescriptorsRows:self.matchRecord.cfe.cameraFeatureDescriptorsRows

@@ -57,8 +57,11 @@ enum feature_matching_error_codes {
 // Wrapper to set scene_image for matching
 // Uses keypoint and descriptor buffers calculated by extractFeaturesForSceneImage
 // Returns YES For success
--(bool)setSceneImage:(UIImage *)sceneImage withKeypoints:(NSData *)keypoints_buffer withDescriptors:(NSMutableData *)descriptors_buffer
-                 withDescriptorsRows:(int)rows withDescriptorsCols:(int)cols withDescriptorsSteps:(int)steps;
+-(bool)setSceneImage:(NSMutableData *)image_buffer
+       withImageRows:(int)image_rows withImageCols:(int)image_cols withImageSteps:(int)image_steps
+       withKeypoints:(NSData *)keypoints_buffer
+     withDescriptors:(NSMutableData *)descriptors_buffer
+ withDescriptorsRows:(int)descriptors_rows withDescriptorsCols:(int)descriptors_cols withDescriptorsSteps:(int)descriptors_steps;
 
 -(void)setSceneImageNoOrientationChange:(UIImage *)sceneImage;
 
