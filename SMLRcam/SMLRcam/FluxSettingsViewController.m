@@ -355,6 +355,7 @@
         [defaults removeObjectForKey:@"profileImage"];
         [defaults removeObjectForKey:@"cameraID"];
         [defaults removeObjectForKey:@"bio"];
+        [defaults removeObjectForKey:@"snapshotImages"];
         [defaults synchronize];
         
         [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];
