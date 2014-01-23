@@ -92,7 +92,7 @@
     [self.versionLbl setFont:[UIFont fontWithName:@"Akkurat" size:self.versionLbl.font.pointSize]];
     [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.feedbackButton.titleLabel.font.pointSize]];
     
-    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+	    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
 
     //**should** always pass
     if (userID) {
@@ -105,10 +105,18 @@
             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
             [defaults setObject:userObject.bio forKey:@"bio"];
             
-            if (userObject.hasProfilePic) {
-                
-                
-                if (![defaults objectForKey:@"profileImage"]) {
+            if (userObject.hasProfilePic)
+            {
+                NSString *picPath = [defaults objectForKey:@"profileImage"];
+                if (picPath && ([[NSFileManager defaultManager] fileExistsAtPath:[defaults objectForKey:@"profileImage"]]))
+                {
+                    NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
+                    UIImage *image = [UIImage imageWithData:pngData];
+                    [userObj setProfilePic:image];
+                }
+                else
+                {
+                    // request the image
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
                         [userObj setProfilePic:img];
@@ -128,11 +136,6 @@
                         [ProgressHUD showError:str];
                     }];
                     [self.fluxDataManager requestUserProfilePicForID:userID.integerValue andSize:@"thumb" withDataRequest:picRequest];
-                }
-                else{
-                    NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
-                    UIImage *image = [UIImage imageWithData:pngData];
-                    [userObj setProfilePic:image];
                 }
             }
         }];
