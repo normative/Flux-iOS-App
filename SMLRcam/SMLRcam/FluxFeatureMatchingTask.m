@@ -58,11 +58,11 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         
         // Set scene image features/image using previously computed values
         if (![self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage
-                            withKeypoints:self.matchRecord.cfe.cameraFeatureKeypoints
-                          withDescriptors:self.matchRecord.cfe.cameraFeatureDescriptors
-                      withDescriptorsRows:self.matchRecord.cfe.cameraFeatureDescriptorsRows
-                      withDescriptorsCols:self.matchRecord.cfe.cameraFeatureDescriptorsCols
-                     withDescriptorsSteps:self.matchRecord.cfe.cameraFeatureDescriptorsSteps])
+                                 withKeypoints:self.matchRecord.cfe.cameraFeatureKeypoints
+                               withDescriptors:self.matchRecord.cfe.cameraFeatureDescriptors
+                           withDescriptorsRows:self.matchRecord.cfe.cameraFeatureDescriptorsRows
+                           withDescriptorsCols:self.matchRecord.cfe.cameraFeatureDescriptorsCols
+                          withDescriptorsSteps:self.matchRecord.cfe.cameraFeatureDescriptorsSteps])
         {
             NSLog(@"Error reading pre-extracted feature buffer for camera frame. Aborting match.");
             result = feature_matching_extract_camera_features_error;
