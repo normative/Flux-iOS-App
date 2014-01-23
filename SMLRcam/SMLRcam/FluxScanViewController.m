@@ -427,6 +427,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                                value:nil] build]];    // Event value
         
         [openGLController setBackgroundSnapFlag];
+        [imageCaptureButton setHidden:YES];
     }
     else{
         [openGLController.imageCaptureViewController takePicture];
@@ -765,6 +766,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [imageCaptureButton setTranslatesAutoresizingMaskIntoConstraints:YES];
     [self.view addSubview:imageCaptureButton];
     [imageCaptureButton setHidden:YES];
+    
+    [self.bottomToolbarView removeFromSuperview];
+    [self.bottomToolbarView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [ScanUIContainerView addSubview:self.bottomToolbarView];
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {

@@ -12,6 +12,7 @@
 @interface FluxPhotoCollectionCell : UICollectionViewCell
 
 @property (nonatomic, strong) IBOutlet UIImageView *imageView;
+@property (nonatomic, strong) UIImage *theImage;
 @property (nonatomic, strong) IBOutlet KTCheckboxButton *checkboxButton;
 
 

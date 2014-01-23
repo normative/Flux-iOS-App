@@ -41,16 +41,19 @@
 }
 
 - (void)addImage:(UIImage*)image{
-    //[imageView setImage:image];
     imageView.transform = CGAffineTransformMakeScale(0.2, 0.2);
     [imageView setImage:image];
+    [self performSelector:@selector(animateAddingImage) withObject:nil afterDelay:0.25];
+}
+
+
+- (void)animateAddingImage{
     [UIView animateWithDuration:0.3 animations:^{
-       imageView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        imageView.transform = CGAffineTransformMakeScale(1.0, 1.0);
     }completion:^(BOOL finished){
         
     }];
 }
-
 
 
 -(void)touchedDown{

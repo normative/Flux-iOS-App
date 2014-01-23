@@ -12,9 +12,15 @@
 
 @interface FluxSnapshotCollectionViewController : UICollectionViewController <IDMPhotoBrowserDelegate>{
     NSArray*imageURLArray;
-    NSMutableArray*imagesArray;
+    NSMutableArray*imagesIndexArray;
+    
+    BOOL isSelecting;
+    IBOutlet UIBarButtonItem *shareButton;
 }
 
 @property (nonatomic, retain) UIImage * BGImage;
+- (IBAction)cancelButtonAction:(id)sender;
+- (IBAction)selectButtonAction:(id)sender;
+- (IBAction)shareButtonAction:(id)sender;
 
 @end

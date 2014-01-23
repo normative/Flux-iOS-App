@@ -10,6 +10,8 @@
 #import "UIAlertView+Blocks.h"
 #import "AssetsLibrary/AssetsLibrary.h"
 
+
+
 @interface FluxSnapshotCaptureViewController ()
 
 @end
@@ -35,17 +37,28 @@
     self.snapshotRollButton.layer.cornerRadius = 1.5;
     self.snapshotRollButton.layer.masksToBounds = YES;
     
+    
     blackView = [[UIView alloc]initWithFrame:self.view.bounds];
     [blackView setBackgroundColor:[UIColor blackColor]];
     [blackView setAlpha:0.0];
     [blackView setHidden:YES];
     [self.view addSubview:blackView];
     
+    newSnapshotView = [[UIImageView alloc]initWithFrame:self.view.bounds];
+    [newSnapshotView setBackgroundColor:[UIColor blackColor]];
+    [newSnapshotView setAlpha:0.0];
+    [newSnapshotView setHidden:YES];
+    [self.view insertSubview:newSnapshotView atIndex:0];
+    
     if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
         NSArray*picsArr = [NSArray arrayWithArray:[defaults objectForKey:@"snapshotImages"]];
         if (picsArr.count) {
             [self setSnapshotButtonImage:[picsArr lastObject]];
+        }
+        else
+        {
+            [self.snapshotRollButton setHidden:YES];
         }
     }
     else{
@@ -55,6 +68,14 @@
 	// Do any additional setup after loading the view.
 }
 
+- (void)viewDidExit{
+    [newSnapshotView setHidden:YES];
+    [newSnapshotView setAlpha:0.0];
+    
+    [shareButton setHidden:YES];
+    [self.snapshotRollButton setHidden:NO];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -62,7 +83,14 @@
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    
+    if ([[segue identifier] isEqualToString:@"annotationSegue"]) {
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+        UINavigationController*tmp = segue.destinationViewController;
+        FluxImageAnnotationViewController* annotationsVC = (FluxImageAnnotationViewController*)tmp.topViewController;
+        [annotationsVC prepareSnapShotViewWithImage:newSnapshot withLocation:nil andDate:[NSDate date]];
+        [annotationsVC setDelegate:self];
+    }
+
 }
 
 
@@ -95,10 +123,22 @@
 - (void)addsnapshot:(NSNotification*)notification{
     [self showFlash:[UIColor blackColor]];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"didCaptureBackgroundSnapshot" object:nil];
-    [self addImageToSnapshotRoll:(UIImage*)[[notification userInfo]objectForKey:@"snapshot"]];
+    newSnapshot = (UIImage*)[[notification userInfo]objectForKey:@"snapshot"];
+    [self addImageToSnapshotRoll:newSnapshot];
 }
 
-- (void)addImageToSnapshotRoll:(UIImage*)image{    
+
+- (void)showNewSnapshot:(UIImage*)image{
+    [newSnapshotView setImage:image];
+    [newSnapshotView setHidden:NO];
+    [UIView animateWithDuration:0.1 animations:^{
+        [newSnapshotView setAlpha:1.0];
+    } completion:^(BOOL finished) {
+    }];
+}
+
+
+- (void)addImageToSnapshotRoll:(UIImage*)image{
     if (![ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
         
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"May We?"
@@ -116,8 +156,6 @@
     else{
         [self saveImageLocally:image];
     }
-    
-    
 }
 
 - (void)saveImageLocally: (UIImage*)image{
@@ -151,15 +189,23 @@
 - (void)showFlash:(UIColor*)color {
     [blackView setHidden:NO];
     [blackView setBackgroundColor:color];
-    [UIView animateWithDuration:0.09 animations:^{
+    [shareButton setHidden:NO];
+    [UIView animateWithDuration:0.15 animations:^{
         [blackView setAlpha:0.9];
     } completion:^(BOOL finished) {
-        [UIView animateWithDuration:0.09 animations:^{
-                [blackView setAlpha:0.0];
+        [UIView animateWithDuration:0.15 animations:^{
+            [blackView setAlpha:0.0];
+            [shareButton setAlpha:1.0];
+            [self.snapshotRollButton setHidden:YES];
             } completion:^(BOOL finished) {
                 [blackView setHidden:YES];
+                [self showNewSnapshot:newSnapshot];
             }];
     }];
+}
+
+- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController{
+    [self closeButtonAction:nil];
 }
 
 
@@ -168,8 +214,14 @@
     [self.view setHidden:YES];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxImageCaptureDidPop"
                                                         object:self userInfo:nil];
+    [self viewDidExit];
 }
 
 - (IBAction)snapshotRollButtonAction:(id)sender {
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+}
+
+- (IBAction)shareButtonAction:(id)sender {
+    
 }
 @end

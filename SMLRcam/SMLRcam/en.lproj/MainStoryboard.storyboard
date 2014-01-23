@@ -113,18 +113,38 @@
                                 </state>
                                 <connections>
                                     <action selector="snapshotRollButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="jsc-7j-q3Z"/>
-                                    <segue destination="vvc-He-IAt" kind="modal" modalTransitionStyle="coverVertical" id="gTR-yF-0e1"/>
+                                    <segue destination="ArK-zK-ko3" kind="modal" modalTransitionStyle="coverVertical" id="gTR-yF-0e1"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tG4-RH-Imp">
+                                <rect key="frame" x="247" y="47" width="53" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="53" id="NRx-AD-oBD"/>
+                                    <constraint firstAttribute="height" constant="30" id="hdM-OK-f3w"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <state key="normal" title="Share">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="shareButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="zgg-tx-U0J"/>
+                                    <segue destination="7MI-iQ-4jy" kind="modal" identifier="annotationSegue" id="XI0-aT-E1x"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="1GL-Ra-meM" firstAttribute="top" secondItem="4MK-7P-Yjj" secondAttribute="top" constant="42" id="BgU-ni-LwE"/>
+                            <constraint firstAttribute="trailing" secondItem="tG4-RH-Imp" secondAttribute="trailing" constant="20" id="KMP-2l-wvu"/>
+                            <constraint firstItem="tG4-RH-Imp" firstAttribute="top" secondItem="4MK-7P-Yjj" secondAttribute="top" constant="47" id="fuy-59-nJv"/>
                             <constraint firstItem="1GL-Ra-meM" firstAttribute="leading" secondItem="4MK-7P-Yjj" secondAttribute="leading" constant="20" id="yih-WS-WQj"/>
                         </constraints>
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
+                        <outlet property="shareButton" destination="tG4-RH-Imp" id="wZJ-6m-xRR"/>
                         <outlet property="snapshotRollButton" destination="e21-oY-W5S" id="PO8-DD-eHz"/>
                     </connections>
                 </viewController>
@@ -137,29 +157,29 @@
             <objects>
                 <collectionViewController autoresizesArchivedViewToFullSize="NO" id="vvc-He-IAt" customClass="FluxSnapshotCollectionViewController" sceneMemberID="viewController">
                     <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="9N1-sd-6zF">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="iQX-c0-B0P">
-                            <size key="itemSize" width="92" height="92"/>
+                            <size key="itemSize" width="93" height="165"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>
                             <size key="footerReferenceSize" width="0.0" height="0.0"/>
                             <inset key="sectionInset" minX="10" minY="10" maxX="10" maxY="10"/>
                         </collectionViewFlowLayout>
                         <cells>
                             <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="myCell" id="hyd-06-Oyx" customClass="FluxPhotoCollectionCell">
-                                <rect key="frame" x="10" y="74" width="92" height="92"/>
+                                <rect key="frame" x="10" y="10" width="93" height="165"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                    <rect key="frame" x="0.0" y="0.0" width="92" height="92"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="93" height="165"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t8a-Vl-j19">
-                                            <rect key="frame" x="0.0" y="0.0" width="92" height="92"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="93" height="165"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
                                         <view tag="200" contentMode="scaleAspectFit" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jcE-Pv-qIq" customClass="KTCheckboxButton">
-                                            <rect key="frame" x="65" y="10" width="25" height="25"/>
+                                            <rect key="frame" x="58" y="10" width="25" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -177,15 +197,34 @@
                             <outlet property="delegate" destination="vvc-He-IAt" id="N8h-US-BD3"/>
                         </connections>
                     </collectionView>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="WYl-51-3OY"/>
+                        <barButtonItem style="plain" systemItem="action" id="zQo-u6-qzN">
+                            <connections>
+                                <action selector="shareButtonAction:" destination="vvc-He-IAt" id="kDm-1s-A5S"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
                     <navigationItem key="navigationItem" title="My Snapshots" id="uWj-M4-W9C">
-                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="GB6-d2-7Pb"/>
+                        <barButtonItem key="leftBarButtonItem" title="Back" id="GB6-d2-7Pb">
+                            <connections>
+                                <action selector="cancelButtonAction:" destination="vvc-He-IAt" id="UNk-nl-pHJ"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Select" id="xhY-ZN-Ea0">
+                            <connections>
+                                <action selector="selectButtonAction:" destination="vvc-He-IAt" id="4cg-yu-mWB"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
-                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="shareButton" destination="zQo-u6-qzN" id="RHz-oI-PEK"/>
+                    </connections>
                 </collectionViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2pD-b6-oTR" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2784" y="-2525"/>
+            <point key="canvasLocation" x="3310" y="-2525"/>
         </scene>
         <!--Flux Image Capture View Controller-->
         <scene sceneID="FvW-Vk-fmx">
@@ -1902,6 +1941,26 @@
             </objects>
             <point key="canvasLocation" x="1479" y="158"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="xjA-qz-FLS">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ArK-zK-ko3" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="mgB-56-SBX">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="vvc-He-IAt" kind="relationship" relationship="rootViewController" id="E44-7o-x88"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xFf-lu-boO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2784" y="-2525"/>
+        </scene>
     </scenes>
     <resources>
         <image name="MapBackToggle" width="140" height="140"/>
@@ -1932,5 +1991,6 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="cDh-QJ-kAL"/>
+        <segue reference="XI0-aT-E1x"/>
     </inferredMetricsTieBreakers>
 </document>

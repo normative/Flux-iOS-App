@@ -9,12 +9,18 @@
 #import <UIKit/UIKit.h>
 #import "FluxCameraRollButton.h"
 
-@interface FluxSnapshotCaptureViewController : UIViewController{
+#import "FluxImageAnnotationViewController.h"
+
+@interface FluxSnapshotCaptureViewController : UIViewController<ImageAnnotationDelegate>{
     UIView *blackView;
+    UIImageView*newSnapshotView;
+    UIImage*newSnapshot;
+    IBOutlet UIButton *shareButton;
 }
 @property (strong, nonatomic) IBOutlet FluxCameraRollButton *snapshotRollButton;
 - (IBAction)closeButtonAction:(id)sender;
 - (IBAction)snapshotRollButtonAction:(id)sender;
 - (void)addsnapshot:(NSNotification*)notification;
+- (IBAction)shareButtonAction:(id)sender;
 
 @end
