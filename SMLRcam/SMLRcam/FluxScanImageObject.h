@@ -104,6 +104,8 @@ typedef enum _FluxCameraModel : NSUInteger {
 @property (nonatomic, strong) NSDate* matchFailureRetryTime;
 @property (nonatomic) NSUInteger numFeatureMatchAttempts;
 @property (nonatomic) NSUInteger numFeatureMatchCancels;
+@property (nonatomic) NSUInteger numFeatureMatchFailMatchErrors;
+@property (nonatomic) NSUInteger numFeatureMatchFailHomographyErrors;
 @property (nonatomic) NSTimeInterval cumulativeFeatureMatchTime;
 @property (nonatomic, strong) NSData *features;
 @property (nonatomic) bool featureFetching;

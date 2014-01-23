@@ -218,6 +218,8 @@
         imageObject.matchFailureRetryTime = nil;
         imageObject.numFeatureMatchAttempts = 0;
         imageObject.numFeatureMatchCancels = 0;
+        imageObject.numFeatureMatchFailHomographyErrors = 0;
+        imageObject.numFeatureMatchFailMatchErrors = 0;
         imageObject.cumulativeFeatureMatchTime = 0.0;
         
         // Just set the location_data_type to default. Other quantities will be ignored if this is not set.

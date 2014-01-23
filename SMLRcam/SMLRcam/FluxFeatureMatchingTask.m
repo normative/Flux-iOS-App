@@ -127,10 +127,12 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
             if (feature_matching_homography_error == result)
             {
                 timeBeforeRetry = retryTimeIfInvalidHomography;
+                self.matchRecord.ire.imageMetadata.numFeatureMatchFailHomographyErrors++;
             }
             else if (feature_matching_match_error == result)
             {
                 timeBeforeRetry = retryTimeIfInvalidMatch;
+                self.matchRecord.ire.imageMetadata.numFeatureMatchFailMatchErrors++;
             }
             else if (feature_matching_extract_camera_features_error == result)
             {
