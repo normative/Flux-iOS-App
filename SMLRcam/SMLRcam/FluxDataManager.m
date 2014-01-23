@@ -53,16 +53,12 @@ float const altitudeMax =  100000;
     return self;
 }
 
-- (FluxRequestID *) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image
+- (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = data_upload_request;
-    
-    // Add a new image with metadata to both cache objects
-    [fluxDataStore addMetadataObject:metadata];
-    [fluxDataStore addImageToStore:image withLocalID:metadata.localID withSize:full_res];
-    
+
     [dataRequest setUploadLocalID:metadata.localID];
 
     [currentRequests setObject:dataRequest forKey:requestID];

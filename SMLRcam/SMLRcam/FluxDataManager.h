@@ -42,7 +42,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 + (NSString*)thisDeviceName;
 + (FluxCameraModel)thisCameraModel;
 
-- (FluxRequestID *) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image
+- (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                 withDataRequest:(FluxDataRequest *)dataRequest;
 
 //used for image capture
