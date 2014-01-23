@@ -203,9 +203,6 @@ const int auto_threshold_inc = 10;
                                                                        auto_threshold_min, auto_threshold_max,
                                                                        auto_threshold_inc);
 
-//    // Delete this after!!!! Just used for debugging!!!!
-//    descriptors_scene = descriptors;
-
     if (result < 0)
     {
         NSLog(@"Extracting features from current camera frame failed.");
@@ -251,9 +248,6 @@ const int auto_threshold_inc = 10;
     
     scene_img = inputImage;
     
-//    // Delete this after!!!! Just used for debugging!!!!
-//    cv::Mat old_descriptors_scene = descriptors_scene;
-    
     // Read keypoints into std::vector<cv::KeyPoint> from NSData buffer
     keypoints_scene =  std::vector<cv::KeyPoint>((cv::KeyPoint*)[keypoints_buffer bytes], (cv::KeyPoint*)((cv::KeyPoint*)[keypoints_buffer bytes]+([keypoints_buffer length]/sizeof(cv::KeyPoint))));
 
@@ -266,14 +260,6 @@ const int auto_threshold_inc = 10;
         success = NO;
         return success;
     }
-    
-//    // Delete this after!!!! Just used for debugging!!!!
-//    if (cv::countNonZero(descriptors_scene != old_descriptors_scene) > 0)
-//    {
-//        NSLog(@"Arrays do not match!");
-////        success = NO;
-////        return success;
-//    }
     
     return success;
 }
