@@ -69,6 +69,7 @@
 }
 
 - (void)viewDidExit{
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     [newSnapshotView setHidden:YES];
     [newSnapshotView setAlpha:0.0];
     
