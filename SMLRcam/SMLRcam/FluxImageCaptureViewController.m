@@ -18,6 +18,8 @@ NSString* const FluxImageCaptureDidPush = @"FluxImageCaptureDidPush";
 NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureImage";
 NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCapture";
 
+static int captureImageID = -1;
+
 @interface FluxImageCaptureViewController ()
 
 @end
@@ -409,7 +411,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [newImageObject setLocalID:localID];
     
     // Set the server-side image id to a negative value until server returns actual
-    [newImageObject setImageID:-1];
+    [newImageObject setImageID:captureImageID--];
     
     // HACK
     

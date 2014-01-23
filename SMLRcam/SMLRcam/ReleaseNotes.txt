@@ -2,6 +2,7 @@ Release Notes:
 
 - update count and list of nearby items in locations with no content (Trello issue #334)
 - fix profile pictures so they don't "go away" when the app is re-downloaded (Trello issue #261)
+- fix server request for imageID=-1 (Trello issue #307)
 
 ******************************************
 
