@@ -43,7 +43,7 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     {
         NSDate *startTime = [NSDate date];
         
-//        NSLog(@"Matching localID: %@", self.matchRecord.ire.localID);
+        int result = feature_matching_success;
         
         // Make sure camera frame (scene) and object are both available
         if (self.isCancelled || !self.matchRecord.hasCameraScene || !self.matchRecord.hasObjectFeatures)
@@ -56,35 +56,45 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         [self.matcherEngine setObjectFeatures:self.matchRecord.ire.imageMetadata.features];
         [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
         
-        // Set scene image features/image (note that if passed-in date matches date stored in matcher engine, features will be re-used
-        self.matchRecord.cfe.cameraFrameExtractDate = [self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage
-                                                                withPreviousExtractDate:self.matchRecord.cfe.cameraFrameExtractDate];
-        
-        double rotation1[9];
-        double translation1[3];
-        double normal1[3];
-        
-        int result = [self.matcherEngine matchAndCalculateTransformsWithRotation:rotation1
-                                                                 withTranslation:translation1
-                                                                      withNormal:normal1
-                                                                       withDebugImage:NO];//Debugging of images
-        
-        if (feature_matching_success == result)
+        // Set scene image features/image using previously computed values
+        if (![self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameImage
+                            withKeypoints:self.matchRecord.cfe.cameraFeatureKeypoints
+                          withDescriptors:self.matchRecord.cfe.cameraFeatureDescriptors
+                      withDescriptorsRows:self.matchRecord.cfe.cameraFeatureDescriptorsRows
+                      withDescriptorsCols:self.matchRecord.cfe.cameraFeatureDescriptorsCols
+                     withDescriptorsSteps:self.matchRecord.cfe.cameraFeatureDescriptorsSteps])
         {
-            self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
-
-            sensorPose imagePosePnP = self.matchRecord.ire.imageMetadata.imageHomographyPosePnP;
+            NSLog(@"Error reading pre-extracted feature buffer for camera frame. Aborting match.");
+            result = feature_matching_extract_camera_features_error;
+        }
+        else
+        {
+            double rotation1[9];
+            double translation1[3];
+            double normal1[3];
             
-            [self computeImagePoseInECEF:&imagePosePnP
-                                userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
-                           hTranslation1: translation1
-                              hRotation1: rotation1
-                                hNormal1: normal1
-                           hTranslation2:translation1
-                              hRotation2:rotation1
-                                hNormal2:normal1];
+            result = [self.matcherEngine matchAndCalculateTransformsWithRotation:rotation1
+                                                                     withTranslation:translation1
+                                                                          withNormal:normal1
+                                                                      withDebugImage:NO];//Debugging of images
             
-            self.matchRecord.ire.imageMetadata.imageHomographyPosePnP = imagePosePnP;
+            if (feature_matching_success == result)
+            {
+                self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
+                
+                sensorPose imagePosePnP = self.matchRecord.ire.imageMetadata.imageHomographyPosePnP;
+                
+                [self computeImagePoseInECEF:&imagePosePnP
+                                    userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
+                               hTranslation1: translation1
+                                  hRotation1: rotation1
+                                    hNormal1: normal1
+                               hTranslation2:translation1
+                                  hRotation2:rotation1
+                                    hNormal2:normal1];
+                
+                self.matchRecord.ire.imageMetadata.imageHomographyPosePnP = imagePosePnP;
+            }
         }
         
         // Check again if operation is cancelled after performing feature matching in case location is no longer valid
@@ -112,15 +122,28 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
             self.matchRecord.failed = YES;
             self.matchRecord.ire.imageMetadata.matchFailed = YES;
             
-            // Set the next retry time (depends if homography or match failure)
-            self.matchRecord.ire.imageMetadata.matchFailureRetryTime = [NSDate dateWithTimeIntervalSinceNow:
-                    ((feature_matching_homography_error == result) ? retryTimeIfInvalidHomography : retryTimeIfInvalidMatch)];
+            // Set the next retry time (depends if homography, matching, or camera extract failure)
+            NSTimeInterval timeBeforeRetry = 0.0;
+            if (feature_matching_homography_error == result)
+            {
+                timeBeforeRetry = retryTimeIfInvalidHomography;
+            }
+            else if (feature_matching_match_error == result)
+            {
+                timeBeforeRetry = retryTimeIfInvalidMatch;
+            }
+            else if (feature_matching_extract_camera_features_error == result)
+            {
+                timeBeforeRetry = 0.0;
+            }
+            
+            self.matchRecord.ire.imageMetadata.matchFailureRetryTime = [NSDate dateWithTimeIntervalSinceNow:timeBeforeRetry];
         }
         
         NSTimeInterval timeElapsedForCurrentMatch = [[NSDate date] timeIntervalSinceDate:startTime];
         self.matchRecord.ire.imageMetadata.cumulativeFeatureMatchTime = self.matchRecord.ire.imageMetadata.cumulativeFeatureMatchTime + timeElapsedForCurrentMatch;
         
-//        NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, [[NSDate date] timeIntervalSinceDate:startTime]);
+        NSLog(@"Matching of localID %@ completed in %f seconds", self.matchRecord.ire.localID, timeElapsedForCurrentMatch);
 
         [(NSObject *)self.delegate performSelectorOnMainThread:@selector(featureMatchingTaskDidFinish:) withObject:self waitUntilDone:NO];
     }

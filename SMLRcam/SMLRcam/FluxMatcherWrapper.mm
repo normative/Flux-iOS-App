@@ -181,74 +181,101 @@ const int auto_threshold_inc = 10;
 }
 
 // Scene images are the background camera feed to match against
-- (NSDate *)setSceneImage:(UIImage *)sceneImage withPreviousExtractDate:(NSDate *)extractDate
+// Extracts features from scene image into buffers for later use
+- (bool)extractFeaturesForSceneImage:(UIImage *)sceneImage withCameraFrameElement:(FluxCameraFrameElement *)cfe
 {
-    if (![extractDate isEqualToDate:cameraFrameFeatureExtractDate])
-    {
-        cameraFrameFeatureExtractDate = [NSDate date];
+    bool success = YES;
+    
+    // Prepare the image and store it in the engine
+    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+    
+    cv::transpose(inputImage, inputImage);
+    cv::flip(inputImage, inputImage, 1);
+    
+    cv::Mat scene_extract_img = inputImage;
+    
+    std::vector<cv::KeyPoint> keypoints;
+    cv::Mat descriptors;
 
-        // Prepare the image and store it in the engine
-        cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+    // Now extract and store the keypoints and descriptors using auto mode
+    // Intentionally using a wide range to prevent retries with parameter selection
+    int result = self.wrappedMatcher->extractFeaturesWithAutoThreshold(scene_extract_img, keypoints, descriptors,
+                                                                       auto_threshold_min, auto_threshold_max,
+                                                                       auto_threshold_inc);
+
+//    // Delete this after!!!! Just used for debugging!!!!
+//    descriptors_scene = descriptors;
+
+    if (result < 0)
+    {
+        NSLog(@"Extracting features from current camera frame failed.");
+        success = NO;
+    }
+    else
+    {
+        // Convert keypoints (std::vector<cv::KeyPoint>) to NSData buffer
+        cfe.cameraFeatureKeypoints = [[NSData alloc] initWithBytes:&keypoints[0] length:keypoints.size()*sizeof(cv::KeyPoint)];
         
-        cv::transpose(inputImage, inputImage);
-        cv::flip(inputImage, inputImage, 1);
-        
-        scene_img = inputImage;
-        
-        // Now extract and store the keypoints and descriptors using auto mode
-        // Intentionally using a wide range to prevent retries with parameter selection
-        int result = self.wrappedMatcher->extractFeaturesWithAutoThreshold(scene_img, keypoints_scene, descriptors_scene,
-                                                                           auto_threshold_min, auto_threshold_max,
-                                                                           auto_threshold_inc);
-        
-        // Test code for converting descriptors_scene (cv::Mat) to NSData
-        if (!descriptors_scene.isContinuous())
+        // Convert descriptors (cv::Mat) to NSMutableData buffer
+        if (!descriptors.isContinuous())
         {
             NSLog(@"Camera matrix not continuous!");
         }
         
-        NSMutableData *descriptors_buffer = [[NSMutableData alloc] initWithBytes:descriptors_scene.data length:descriptors_scene.rows * descriptors_scene.step];
-        cv::Mat newdescriptors = cv::Mat(descriptors_scene.rows, descriptors_scene.cols, CV_8U, [descriptors_buffer mutableBytes], descriptors_scene.step);
+        cfe.cameraFeatureDescriptors = [[NSMutableData alloc] initWithBytes:descriptors.data length:descriptors.rows * descriptors.step];
         
-        int newdesc_rows = newdescriptors.rows;
-        int newdesc_cols = newdescriptors.cols;
-        
-        cv::Mat dst;
-        int outres = 0;
-        cv::compare(descriptors_scene, newdescriptors, dst, outres);
-        
-//        if (outres == cv::CMP_EQ)
-//        {
-//            NSLog(@"Arrays match!");
-//        }
-//        
-//        std::cout << descriptors_scene.at<uchar>(31,44) << std::endl;
-//        std::cout << newdescriptors.at<uchar>(31,44) << std::endl;
-//        std::cout << descriptors_scene.at<uchar>(10,8) << std::endl;
-//        std::cout << newdescriptors.at<uchar>(10,8) << std::endl;
-//        std::cout << descriptors_scene.at<uchar>(newdesc_cols-1,newdesc_rows-1) << std::endl;
-//        std::cout << newdescriptors.at<uchar>(newdesc_cols-1,newdesc_rows-1) << std::endl;
-
-        // Test code for converting keypoints_scene (std::vector) to NSData
-        int origsize = keypoints_scene.size();
-
-        NSData *keypoint_buffer = [[NSData alloc] initWithBytes:&keypoints_scene[0] length:keypoints_scene.size()*sizeof(cv::KeyPoint)];
-        
-        std::vector<cv::KeyPoint> newkeypoints2 =  std::vector<cv::KeyPoint>((cv::KeyPoint*)[keypoint_buffer bytes], (cv::KeyPoint*)((cv::KeyPoint*)[keypoint_buffer bytes]+([keypoint_buffer length]/sizeof(cv::KeyPoint))));
-        
-        std::auto_ptr<std::vector<cv::KeyPoint> > newkeypoints(new std::vector<cv::KeyPoint>((cv::KeyPoint*)[keypoint_buffer bytes], (cv::KeyPoint*)((cv::KeyPoint*)[keypoint_buffer bytes]+([keypoint_buffer length]/sizeof(cv::KeyPoint)))));
-        
-        int newsize2 = newkeypoints2.size();
-        int newsize = newkeypoints->size();
-        
-        if (result < 0)
-        {
-            NSLog(@"Extracting features from current camera frame failed.");
-            cameraFrameFeatureExtractDate = nil;
-        }
+        cfe.cameraFeatureDescriptorsRows = descriptors.rows;
+        cfe.cameraFeatureDescriptorsCols = descriptors.cols;
+        cfe.cameraFeatureDescriptorsSteps = descriptors.step;
     }
     
-    return cameraFrameFeatureExtractDate;
+    return success;
+}
+
+// Scene images are the background camera feed to match against
+// Uses previously calculated buffers and sets them to data structures used by feature matching
+- (bool)setSceneImage:(UIImage *)sceneImage
+        withKeypoints:(NSData *)keypoints_buffer
+      withDescriptors:(NSMutableData *)descriptors_buffer
+  withDescriptorsRows:(int)rows
+  withDescriptorsCols:(int)cols
+ withDescriptorsSteps:(int)steps
+{
+    bool success = YES;
+    
+    // Prepare the image and store it in the engine
+    cv::Mat inputImage = [sceneImage CVGrayscaleMat];
+    
+    cv::transpose(inputImage, inputImage);
+    cv::flip(inputImage, inputImage, 1);
+    
+    scene_img = inputImage;
+    
+//    // Delete this after!!!! Just used for debugging!!!!
+//    cv::Mat old_descriptors_scene = descriptors_scene;
+    
+    // Read keypoints into std::vector<cv::KeyPoint> from NSData buffer
+    keypoints_scene =  std::vector<cv::KeyPoint>((cv::KeyPoint*)[keypoints_buffer bytes], (cv::KeyPoint*)((cv::KeyPoint*)[keypoints_buffer bytes]+([keypoints_buffer length]/sizeof(cv::KeyPoint))));
+
+    // Read descriptors into cv::Mat from NSMutableData buffer
+    descriptors_scene = cv::Mat(rows, cols, CV_8U, [descriptors_buffer mutableBytes], steps);
+    
+    if ((descriptors_scene.rows != rows) || (descriptors_scene.cols != cols))
+    {
+        NSLog(@"Array dimensions do not match in extracted camera frame when re-reading buffer.");
+        success = NO;
+        return success;
+    }
+    
+//    // Delete this after!!!! Just used for debugging!!!!
+//    if (cv::countNonZero(descriptors_scene != old_descriptors_scene) > 0)
+//    {
+//        NSLog(@"Arrays do not match!");
+////        success = NO;
+////        return success;
+//    }
+    
+    return success;
 }
 
 - (void)setSceneImageNoOrientationChange:(UIImage *)sceneImage

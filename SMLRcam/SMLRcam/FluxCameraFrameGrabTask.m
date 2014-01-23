@@ -9,7 +9,6 @@
 #import "FluxCameraFrameGrabTask.h"
 #import "FluxOpenGLViewController.h"
 
-
 @implementation FluxCameraFrameGrabTask
 
 @synthesize delegate = _delegate;
@@ -44,19 +43,33 @@
         
         if (self.openGLVC)
         {
-            // Lock before call to make sure that signal is not missed
-            // But make sure we unlock quickly to prevent locking up camera preview!
-            [self.cameraRecord.frameReadyCondition lock];
+            bool successfulFramGrab = NO;
 
-            // Make call to grab next camera frame
-            [self.openGLVC requestCameraFrame:self.cameraRecord];
-
-            // Wait for signal
-            while (!self.cameraRecord.frameReady)
+            while (!successfulFramGrab)
             {
-                [self.cameraRecord.frameReadyCondition wait];
+                if (self.isCancelled)
+                {
+                    [(NSObject *)self.delegate performSelectorOnMainThread:@selector(cameraFrameGrabTaskWasCancelled:) withObject:self waitUntilDone:NO];
+                    return;
+                }
+                
+                // Lock before call to make sure that signal is not missed
+                // But make sure we unlock quickly to prevent locking up camera preview!
+                [self.cameraRecord.frameReadyCondition lock];
+
+                // Make call to grab next camera frame
+                [self.openGLVC requestCameraFrame:self.cameraRecord];
+
+                // Wait for signal
+                while (!self.cameraRecord.frameReady)
+                {
+                    [self.cameraRecord.frameReadyCondition wait];
+                }
+                [self.cameraRecord.frameReadyCondition unlock];
+                
+                successfulFramGrab = [self.matcherEngine extractFeaturesForSceneImage:self.cameraRecord.cameraFrameImage
+                                                               withCameraFrameElement:self.cameraRecord];
             }
-            [self.cameraRecord.frameReadyCondition unlock];
 
             [(NSObject *)self.delegate performSelectorOnMainThread:@selector(cameraFrameGrabTaskDidFinish:) withObject:self waitUntilDone:NO];
         }

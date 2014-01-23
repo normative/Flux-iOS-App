@@ -6,8 +6,9 @@
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "FluxCameraFrameElement.h"
 
+#import <Foundation/Foundation.h>
 
 typedef struct {
     float ptx; //!< coordinates of the keypoints
@@ -39,7 +40,8 @@ typedef struct {
 enum feature_matching_error_codes {
   feature_matching_success = 0,
   feature_matching_match_error = -1,
-  feature_matching_homography_error = -2
+  feature_matching_homography_error = -2,
+  feature_matching_extract_camera_features_error = -3
 };
     
 @interface FluxMatcherWrapper : NSObject
@@ -48,10 +50,16 @@ enum feature_matching_error_codes {
 -(void)setObjectImage:(UIImage*)objectImage;
 -(void)setObjectFeatures:(NSData*)objectFeatures;
 
+// Wrapper to extract keypoints and descriptors into buffers for later use during extraction from the input sceneImage
+// Returns YES for success
+-(bool)extractFeaturesForSceneImage:(UIImage *)sceneImage withCameraFrameElement:(FluxCameraFrameElement *)cfe;
+
 // Wrapper to set scene_image for matching
-// Pass in a date if you want to re-use a set of features. If dates match, will re-use.
-// Returns the date if a new set of features are extracted
--(NSDate *)setSceneImage:(UIImage *)sceneImage withPreviousExtractDate:(NSDate *)extractDate;
+// Uses keypoint and descriptor buffers calculated by extractFeaturesForSceneImage
+// Returns YES For success
+-(bool)setSceneImage:(UIImage *)sceneImage withKeypoints:(NSData *)keypoints_buffer withDescriptors:(NSMutableData *)descriptors_buffer
+                 withDescriptorsRows:(int)rows withDescriptorsCols:(int)cols withDescriptorsSteps:(int)steps;
+
 -(void)setSceneImageNoOrientationChange:(UIImage *)sceneImage;
 
 // Wrapper for: FluxMatcher::match()
