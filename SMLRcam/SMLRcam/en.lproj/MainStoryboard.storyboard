@@ -944,6 +944,13 @@
                                                     <action selector="snapshotButtonAction:" destination="2" eventType="touchUpInside" id="s0g-Vr-Rqh"/>
                                                 </connections>
                                             </button>
+                                            <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="B0g-NL-YnT" userLabel="Location Select">
+                                                <rect key="frame" x="192" y="20" width="51" height="31"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <connections>
+                                                    <action selector="toggleLocationCoordinate:" destination="2" eventType="valueChanged" id="xC6-pj-e6v"/>
+                                                </connections>
+                                            </switch>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
@@ -965,13 +972,6 @@
                                         </constraints>
                                         <color key="progressTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
                                     </progressView>
-                                    <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="B0g-NL-YnT" userLabel="Location Select">
-                                        <rect key="frame" x="246" y="517" width="51" height="31"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <connections>
-                                            <action selector="toggleLocationCoordinate:" destination="2" eventType="valueChanged" id="xC6-pj-e6v"/>
-                                        </connections>
-                                    </switch>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="VeE-ti-EHD" secondAttribute="trailing" id="1QI-9m-4Vr"/>
