@@ -15,7 +15,7 @@ const double retryTimeIfInvalidHomographyIfDisplayed = 1.5;
 const double retryTimeIfInvalidHomographyIfNotDisplayed = 6.0;
 // If feature matching fails, it means we likely don't have the same features in the current FOV
 const double retryTimeIfInvalidMatchIfDisplayed = 3.0;
-const double retryTimeIfInvalidMatchIfNotDisplayed = 6.0;
+const double retryTimeIfInvalidMatchIfNotDisplayed = 12.0;
 
 enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 
