@@ -208,7 +208,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         FluxOpenGLViewController *fluxGLVC = (FluxOpenGLViewController *)self.openGLVC;
         
         // Grab a copy of all localID's in displayItems
-        NSMutableArray *displayIDs;
+        NSMutableArray *displayIDs = [[NSMutableArray alloc] init];
         for (FluxImageRenderElement *ire in displayItems)
         {
             [displayIDs addObject:ire.localID];
