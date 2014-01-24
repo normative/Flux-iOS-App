@@ -11,11 +11,13 @@
 // Time interval after which to retry feature matching
 
 // If homography fails, it means we had good correspondence with features, but no valid matched box
-const double retryTimeIfInvalidHomography = 1.5;
+const double retryTimeIfInvalidHomographyIfDisplayed = 1.5;
+const double retryTimeIfInvalidHomographyIfNotDisplayed = 6.0;
 // If feature matching fails, it means we likely don't have the same features in the current FOV
-const double retryTimeIfInvalidMatch = 3.0;
+const double retryTimeIfInvalidMatchIfDisplayed = 3.0;
+const double retryTimeIfInvalidMatchIfNotDisplayed = 6.0;
 
-enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
+enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 
 
 @implementation FluxFeatureMatchingTask
@@ -129,12 +131,12 @@ enum {SOLUTION1 =0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
             NSTimeInterval timeBeforeRetry = 0.0;
             if (feature_matching_homography_error == result)
             {
-                timeBeforeRetry = retryTimeIfInvalidHomography;
+                timeBeforeRetry = self.matchRecord.isImageDisplayed ? retryTimeIfInvalidHomographyIfDisplayed : retryTimeIfInvalidHomographyIfNotDisplayed;
                 self.matchRecord.ire.imageMetadata.numFeatureMatchFailHomographyErrors++;
             }
             else if (feature_matching_match_error == result)
             {
-                timeBeforeRetry = retryTimeIfInvalidMatch;
+                timeBeforeRetry = self.matchRecord.isImageDisplayed ? retryTimeIfInvalidMatchIfDisplayed : retryTimeIfInvalidMatchIfNotDisplayed;
                 self.matchRecord.ire.imageMetadata.numFeatureMatchFailMatchErrors++;
             }
             else if (feature_matching_extract_camera_features_error == result)

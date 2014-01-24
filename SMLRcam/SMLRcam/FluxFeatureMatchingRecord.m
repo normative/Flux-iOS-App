@@ -25,6 +25,7 @@
     {
         self.failed = NO;
         self.matched = NO;
+        self.isImageDisplayed = NO;
     }
     return self;
 }

@@ -47,6 +47,7 @@ const double reuseCameraFrameTimeInterval = 1.0;
         
         FluxFeatureMatchingRecord *matchRecord = [[FluxFeatureMatchingRecord alloc] init];
         matchRecord.ire = ireToMatch;
+        matchRecord.isImageDisplayed = isDisplayed;
         
         // Check to see if there is a current frame that is recent enough
         // Note we use request date rather than frame date, since pending requests don't have a frame date yet.
