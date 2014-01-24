@@ -255,6 +255,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
     [_displayListLock unlock];
     
+    if (_featureRequestCount >= maxRequestCountFeatures)
+    {
+        // Reached maximum download count. No sense continuing.
+        return;
+    }
+    
     // Next check any that were not in displayList but are in nearbyList
     // Two-pass approach gives priority to feature sets that have not yet failed
     for (FluxImageRenderElement *ire in nearbyList)
@@ -267,7 +273,13 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             [self queueFeatureRequest:ire];
         }
     }
-    
+
+    if (_featureRequestCount >= maxRequestCountFeatures)
+    {
+        // Reached maximum download count. No sense continuing.
+        return;
+    }
+
     // Second pass through gives failed requests another chance (if download slots still exist)
     for (FluxImageRenderElement *ire in nearbyList)
     {
