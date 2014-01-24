@@ -9,6 +9,7 @@ Release Notes:
 - Google Analytics Updates
 - MapView tags now work
 - fix newly captured images project worse after upload completes (Trello issue #349)
+- refactor image cache handling to set up for proper reference counting and cache cleanup
 
 ******************************************
 
