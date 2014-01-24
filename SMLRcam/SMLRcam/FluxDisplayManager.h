@@ -34,6 +34,7 @@ extern NSString* const FluxOpenGLShouldRender;
 //    NSMutableArray *renderedTextures;
     
     NSMutableDictionary *_fluxNearbyMetadata;
+    NSMutableArray *_nearbyPrunedList;
     NSMutableArray *_nearbyScanList;
     NSMutableArray *_nearbyCamList;
     NSMutableArray *_displayScanList;
@@ -72,6 +73,7 @@ extern NSString* const FluxOpenGLShouldRender;
 @property (nonatomic, strong) GLKViewController *openGLVC;
 
 @property (readonly, nonatomic, strong) NSMutableArray *nearbyList;
+@property (readonly, nonatomic, strong) NSMutableArray *nearbyUnPrunedList;
 @property (readonly, nonatomic, strong) NSMutableArray *displayList;
 
 @property(nonatomic, strong)NSDate* earliestDisplayDate;

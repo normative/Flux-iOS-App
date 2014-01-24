@@ -446,8 +446,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     self.earliestDisplayDate = nil;
     self.latestDisplayDate = nil;
 
-    NSMutableArray *nearbyListCopy;
-    
     [_displayListLock lock];
     {
         inCalcTimeAdjImageList = true;
@@ -455,14 +453,14 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         // Grab a copy of self.nearbyList (keeps the lock hold time to a minimum)
         [_nearbyListLock lock];
         {
-            nearbyListCopy = [self.nearbyList mutableCopy];
+            _nearbyPrunedList = [self.nearbyUnPrunedList mutableCopy];
         }
         [_nearbyListLock unlock];
 
         // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
         // We are checking "before" we filter the list in any way to maximize chances of finding a match
         // Since this code is called very frequently, the retry logic will also be handled here for failed matches
-        [self checkForFeatureMatchingTasks:nearbyListCopy];
+        [self checkForFeatureMatchingTasks:_nearbyPrunedList];
     
         // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
         // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
@@ -472,7 +470,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         // spin through nearbylist to update metadata and nearbylist...
         if (self.openGLVC != nil)
         {
-            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:nearbyListCopy andMaxIncidentThreshold:maxIncidentThreshold];
+            [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:_nearbyPrunedList andMaxIncidentThreshold:maxIncidentThreshold];
         }
         
         // generate the displayList...
@@ -481,9 +479,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         [self.displayList removeAllObjects];
         
         // extract X images from nearbyList where timestamp <= time from slider (timeRangeMaxIndex)
-        for (int idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < nearbyListCopy.count)); idx++)
+        for (int idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count)); idx++)
         {
-            FluxImageRenderElement *ire = [nearbyListCopy objectAtIndex:(_timeRangeMinIndex + idx)];
+            FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
             if (ire.imageCacheObject.image == nil)
             {
                 // check to see if we have the imagery in the cache..
@@ -734,7 +732,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 //                }
 
                 // Iterate over the current nearbylist and clear out anything that is not local-only
-                for (FluxImageRenderElement *ire in self.nearbyList)
+                for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
                 {
                     if (ire.imageMetadata.imageID < 0)
                     {
@@ -743,7 +741,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 }
                 
                 //  clean nearbyList (empty)
-                [self.nearbyList removeAllObjects];
+                [self.nearbyUnPrunedList removeAllObjects];
                 
                 //  for each item in response
                 for (FluxScanImageObject *curImgObj in imageList)
@@ -806,7 +804,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 //                    if (!found)
 //                    if ([self.nearbyList indexOfObject:curImgRenderObj] == NSNotFound)
                     {
-                        [self.nearbyList addObject:curImgRenderObj];
+                        [self.nearbyUnPrunedList addObject:curImgRenderObj];
                         [nearbyLocalIDs addObject:curImgRenderObj.localID];
                     }
                 }
@@ -824,7 +822,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     else
                     {
                         // copy to nearbyList
-                        [self.nearbyList addObject:curImgRenderObj];
+                        [self.nearbyUnPrunedList addObject:curImgRenderObj];
                         [nearbyLocalIDs addObject:curImgRenderObj.localID];
 
                         // update anything else that needs to be here...
@@ -837,14 +835,14 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                                                                             [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
                                                                             nil];
                 
-                [self.nearbyList sortUsingDescriptors:sortDescriptors];
+                [self.nearbyUnPrunedList sortUsingDescriptors:sortDescriptors];
                 
                 // spin through list and remove duplicates - shouldn't be any but given the fits the GL rendering sub-system throws if they are present, better safe than sorry...
                 // NOTE: elements should be right next to each other (same timestamp) - this allows us to do neighbour comparisons rather than full-list checks.
                 NSMutableArray *duplist = [[NSMutableArray alloc]init];
                 FluxImageRenderElement *prevIre = nil;
                 int c = 0;
-                for (FluxImageRenderElement *ire in self.nearbyList)
+                for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
                 {
                     if (prevIre != nil)
                     {
@@ -861,7 +859,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 // remove in reverse order (bottom up) so indexes aren't messed up
                 for (NSNumber *idx in [duplist reverseObjectEnumerator])
                 {
-                    [self.nearbyList removeObjectAtIndex:[idx intValue]];
+                    [self.nearbyUnPrunedList removeObjectAtIndex:[idx intValue]];
                 }
 
                 [self calculateTimeAdjustedImageList];
@@ -889,7 +887,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                                         [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
                                         nil];
             
-            [self.nearbyList sortUsingDescriptors:sortDescriptors];
+            [self.nearbyUnPrunedList sortUsingDescriptors:sortDescriptors];
             
             [self calculateTimeAdjustedImageList];
         }
@@ -959,6 +957,11 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 }
 
 - (NSMutableArray *)nearbyList
+{
+    return _nearbyPrunedList;
+}
+
+- (NSMutableArray *)nearbyUnPrunedList
 {
     if (_isScanMode)
         return _nearbyScanList;
