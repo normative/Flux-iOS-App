@@ -1099,8 +1099,11 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     };
                     [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
 
-                    // only request one at a time
-                    break;
+                    if (_imageRequestCountQuart >= maxRequestCountQuart)
+                    {
+                        // only request a few at a time
+                        break;
+                    }
                 }
             }
         }
