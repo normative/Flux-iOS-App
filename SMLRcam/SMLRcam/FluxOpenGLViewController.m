@@ -1917,11 +1917,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     bool success = YES;
     
-    FluxImageRenderElement *oldIre = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
     FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
     
-    // End access for existing texture element/image cache object
-    [oldIre.imageCacheObject endContentAccess];
+    // If we are replacing with a different localID, then clean up references for the old localID's IRE
+    if (![localID isEqualToString:tel.localID])
+    {
+        FluxImageRenderElement *oldIre = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+        
+        // End access for existing texture element/image cache object
+        [oldIre.imageCacheObject endContentAccess];
+        oldIre.imageCacheObject = nil;
+    }
     
     // Populate with new image data
     FluxImageType rtype = none;
@@ -1934,6 +1940,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     else
     {
+        // If we have to replace the image object, then clean up references for the image cache
+        if ([localID isEqualToString:tel.localID])
+        {
+            // End access for existing texture element/image cache object (since this case wasn't caught above)
+            [ire.imageCacheObject endContentAccess];
+            ire.imageCacheObject = nil;
+        }
+
+        // Fetch new image cache object to replace the old one
         imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
     }
     
