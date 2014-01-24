@@ -707,36 +707,23 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 return;
             
             // process request using nearbyList:
-            //  copy local-only objects (imageid < 0) into localList
+            //  copy local-only objects (justCaptured > 0) into localList
             NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];
             
             NSMutableArray *nearbyLocalIDs = [[NSMutableArray alloc] init];
             
             [_nearbyListLock lock];
             {
-//                for (int oidx = 0; oidx < (imageList.count-1); oidx++)
-//                {
-//                    FluxScanImageObject *oObj = [imageList objectAtIndex:oidx];
-//                    for (int iidx = oidx + 1; iidx < imageList.count; iidx++)
-//                    {
-//                        FluxScanImageObject *iObj = [imageList objectAtIndex:iidx];
-//                        if ((iObj != nil) && (oObj != nil))
-//                        {
-//                            if ([iObj.localID isEqualToString:oObj.localID])
-//                            {
-//                                NSLog(@"Duplicated image IDs in received image list: %@, %@, %d, %d", oObj.localID, iObj.localID, oObj.imageID, iObj.imageID);
-//                            }
-//                        }
-//                    }
-//                    
-//                }
-
-                // Iterate over the current nearbylist and clear out anything that is not local-only
+                // Iterate over the current nearbylist and clear out anything that is not local-only, or that has been local too long
                 for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
                 {
-                    if (ire.imageMetadata.imageID < 0)
+//                    if (ire.imageMetadata.imageID < 0)
+                    if (ire.imageMetadata.justCaptured > 0)
                     {
-                        [localOnlyObjects setObject:ire forKey:ire.localID];
+                        if (ire.imageMetadata.justCaptured++ < 3)
+                        {
+                            [localOnlyObjects setObject:ire forKey:ire.localID];
+                        }
                     }
                 }
                 
@@ -790,23 +777,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     }
                     
                     // copy to nearbyList
-// list dup elimination
-//                    bool found = false;
-//                    for (FluxImageRenderElement *ire in self.nearbyList)
-//                    {
-//                        if (ire.imageMetadata.imageID == curImgRenderObj.imageMetadata.imageID)
-//                        {
-//                            found = true;
-//                            NSLog(@"Found ID %d in nearby list already!!", ire.imageMetadata.imageID);
-//                        }
-//                    }
-//                    
-//                    if (!found)
-//                    if ([self.nearbyList indexOfObject:curImgRenderObj] == NSNotFound)
-                    {
-                        [self.nearbyUnPrunedList addObject:curImgRenderObj];
-                        [nearbyLocalIDs addObject:curImgRenderObj.localID];
-                    }
+                    [self.nearbyUnPrunedList addObject:curImgRenderObj];
+                    [nearbyLocalIDs addObject:curImgRenderObj.localID];
                 }
                 
                 //  for each remaining item in localOnlyObjects list
@@ -1046,12 +1018,14 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     if (!_isScrubAnimating)
     {
-        if (_isScanMode && (_imageRequestCountQuart < maxRequestCountQuart))
+        if (_imageRequestCountQuart < maxRequestCountQuart)
         {
             // look to see if can trigger load of higher resolution
             for (FluxImageRenderElement *ire in renderList)
             {
-                if (ire.imageFetchType < quarterhd)
+//                if (ire.imageFetchType < quarterhd)
+                // only fetch if we aren't fetching and aren't already showing...
+                if ((ire.imageFetchType == none) && (!ire.imageMetadata.justCaptured) && (ire.imageRenderType < quarterhd))
                 {
                     // fetch the quart for this element
                     ire.imageFetchType = quarterhd;

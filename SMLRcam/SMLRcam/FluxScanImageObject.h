@@ -99,6 +99,7 @@ typedef enum _FluxCameraModel : NSUInteger {
 @property (nonatomic) int imageID;
 @property (nonatomic) FluxImageID userID;
 @property (nonatomic) FluxLocalID *localID;
+@property (nonatomic) int justCaptured;
 
 @property (nonatomic) bool matched;
 @property (nonatomic) bool matchFailed;

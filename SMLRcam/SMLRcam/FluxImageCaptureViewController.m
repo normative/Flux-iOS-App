@@ -412,6 +412,7 @@ static int captureImageID = -1;
     
     // Set the server-side image id to a negative value until server returns actual
     [newImageObject setImageID:captureImageID--];
+    [newImageObject setJustCaptured:1];
     
     // HACK
     
