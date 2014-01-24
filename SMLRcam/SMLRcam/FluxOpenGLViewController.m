@@ -1937,6 +1937,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         // It has been fetched from the cache elsewhere. Don't re-fetch it.
         imageCacheObj = ire.imageCacheObject;
+        rtype = imageCacheObj.imageType;
     }
     else
     {
