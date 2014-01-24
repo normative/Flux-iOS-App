@@ -17,6 +17,7 @@
 @property (nonatomic, strong) CALayer *whiteDotLayer;
 @property (nonatomic, strong) CALayer *colorDotLayer;
 @property (nonatomic, strong) CALayer *colorHaloLayer;
+@property (nonatomic, strong) CALayer *colorStaticLayer;
 
 @property (nonatomic, strong) CAAnimationGroup *pulseAnimationGroup;
 
@@ -55,8 +56,11 @@
     [_colorDotLayer removeFromSuperlayer];
     _colorDotLayer = nil;
     
-    [_colorHaloLayer removeFromSuperlayer];
-    _colorHaloLayer = nil;
+//    [_colorHaloLayer removeFromSuperlayer];
+//    _colorHaloLayer = nil;
+//    
+//    [_colorStaticLayer removeFromSuperlayer];
+//    _colorStaticLayer = nil;
     
     _pulseAnimationGroup = nil;
     
@@ -64,20 +68,23 @@
         [_imageView removeFromSuperview];
         _imageView = nil;
     }
-    
-    [self.layer addSublayer:self.colorHaloLayer];
+        //[self.layer addSublayer:self.colorStaticLayer];
+    //[self.layer addSublayer:self.colorHaloLayer];
     [self.layer addSublayer:self.whiteDotLayer];
+
     
     if(self.image)
         [self addSubview:self.imageView];
-    else
+    else{
         [self.layer addSublayer:self.colorDotLayer];
+    }
+    
 }
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     if(newSuperview) {
         [self rebuildLayers];
-        [self popIn];
+        //[self popIn];
     }
 }
 
@@ -205,7 +212,7 @@
         CGFloat width = self.bounds.size.width-6;
         _colorDotLayer.bounds = CGRectMake(0, 0, width, width);
         _colorDotLayer.allowsGroupOpacity = YES;
-        _colorDotLayer.backgroundColor = self.annotationColor.CGColor;
+        _colorDotLayer.backgroundColor = [UIColor colorWithRed:0.000 green:0.478 blue:1.000 alpha:1].CGColor;
         _colorDotLayer.cornerRadius = width/2;
         _colorDotLayer.position = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
         
@@ -245,29 +252,44 @@
     return _colorDotLayer;
 }
 
-- (CALayer *)colorHaloLayer {
-    if(!_colorHaloLayer) {
-        _colorHaloLayer = [CALayer layer];
-        CGFloat width = self.bounds.size.width*self.pulseScaleFactor;
-        _colorHaloLayer.bounds = CGRectMake(0, 0, width, width);
-        _colorHaloLayer.position = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-        _colorHaloLayer.contentsScale = [UIScreen mainScreen].scale;
-        _colorHaloLayer.backgroundColor = self.pulseColor.CGColor;
-        _colorHaloLayer.cornerRadius = width/2;
-        _colorHaloLayer.opacity = 0;
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-            if(self.delayBetweenPulseCycles != INFINITY) {
-                CAAnimationGroup *animationGroup = self.pulseAnimationGroup;
-                
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    [_colorHaloLayer addAnimation:animationGroup forKey:@"pulse"];
-                });
-            }
-        });
-    }
-    return _colorHaloLayer;
-}
+//- (CALayer*)colorStaticLayer {
+//    if(!_colorStaticLayer) {
+//        _colorStaticLayer = [CALayer layer];
+//        CGFloat width = self.bounds.size.width*self.pulseScaleFactor;
+//        _colorStaticLayer.bounds = CGRectMake(0, 0, width, width);
+//        _colorStaticLayer.position = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+//        _colorStaticLayer.contentsScale = [UIScreen mainScreen].scale;
+//        _colorStaticLayer.backgroundColor = self.pulseColor.CGColor;
+//        _colorStaticLayer.cornerRadius = width/2;
+//        _colorStaticLayer.opacity = 0.2;
+//    }
+//    return _colorStaticLayer;
+//}
+//
+//- (CALayer *)colorHaloLayer {
+//    if(!_colorHaloLayer) {
+//        _colorHaloLayer = [CALayer layer];
+//        CGFloat width = self.bounds.size.width*self.pulseScaleFactor;
+//        _colorHaloLayer.bounds = CGRectMake(0, 0, width, width);
+//        _colorHaloLayer.position = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+//        _colorHaloLayer.contentsScale = [UIScreen mainScreen].scale;
+//        _colorHaloLayer.backgroundColor = self.pulseColor.CGColor;
+//        _colorHaloLayer.cornerRadius = width/2;
+//        _colorHaloLayer.opacity = 0;
+//        
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+//            if(self.delayBetweenPulseCycles != INFINITY) {
+//                CAAnimationGroup *animationGroup = self.pulseAnimationGroup;
+//                
+//                dispatch_async(dispatch_get_main_queue(), ^(void) {
+//                    [_colorHaloLayer addAnimation:animationGroup forKey:@"pulse"];
+//                });
+//            }
+//        });
+//    }
+//    return _colorHaloLayer;
+//}
+
 
 - (UIImage*)circleImageWithColor:(UIColor*)color height:(float)height {
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(height, height), NO, 0);

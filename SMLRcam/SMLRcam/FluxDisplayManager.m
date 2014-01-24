@@ -500,42 +500,47 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         for (int idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < nearbyListCopy.count)); idx++)
         {
             FluxImageRenderElement *ire = [nearbyListCopy objectAtIndex:(_timeRangeMinIndex + idx)];
-            if (ire.image == nil)
+            if (ire.imageCacheObject.image == nil)
             {
                 // check to see if we have the imagery in the cache..
                 FluxImageType rtype = none;
-                UIImage *image = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
-                if (image != nil)
+                FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
+                if (imageCacheObj != nil)
                 {
-                    ire.image = image;
+                    ire.imageCacheObject = imageCacheObj;
                     ire.imageRenderType = rtype;
                 }
                 else if (_isScanMode)
                 {
                     // request it if it isn't there...
-                    ire.imageFetchType = thumb;
-                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                    [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    dataRequest.imageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-                        // assign image into ire.image...
-                        ire.image = image;
-                        ire.imageRenderType = thumb;
-                        ire.imageFetchType = none;
-                        [self updateImageMetadataForElement:ire];
-                        
-                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                            object:self userInfo:nil];
-                    };
-                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+                    if (ire.imageFetchType < thumb)
+                    {
+                        ire.imageFetchType = thumb;
+                        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                        [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                        dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+                            // assign image into ire.image...
+                            ire.imageCacheObject = imageCacheObj;
+                            ire.imageRenderType = thumb;
+                            [self updateImageMetadataForElement:ire];
+                            
+                            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                                object:self userInfo:nil];
+                        };
+                        dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                            ire.imageFetchType = none;
+                        };
+
+                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
+                    }
                 }
             }
             
-            if (ire.image != nil)
+            if (ire.imageCacheObject.image != nil)
             {
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
                 [self.displayList addObject:ire];
-                
                 
                 //to get display date range
                 NSDate *date = [ire timestamp]; 
@@ -679,7 +684,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     FluxScanImageObject *newImageObject = [[notification userInfo] objectForKey:@"imageObject"];
     UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
     FluxImageRenderElement *ire = [[FluxImageRenderElement alloc]initWithImageObject:newImageObject];
-    ire.image = newImage;
+    NSString *imageCacheKey =[newImageObject generateImageCacheKeyWithImageType:full_res];
+    FluxCacheImageObject *imageCacheObject = [FluxCacheImageObject cacheImageObject:newImage withID:imageCacheKey withType:full_res];
+    ire.imageCacheObject = imageCacheObject;
     ire.imageRenderType = full_res;
     ire.localCaptureTime = ire.timestamp;
     [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
@@ -726,6 +733,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             // process request using nearbyList:
             //  copy local-only objects (imageid < 0) into localList
             NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];
+            
+            NSMutableArray *nearbyLocalIDs = [[NSMutableArray alloc] init];
             
             [_nearbyListLock lock];
             {
@@ -782,8 +791,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                         {
                             // in both lists - make sure things are transferred properly
                             curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
-                            curImgRenderObj.textureMapElement = localImgRenderObj.textureMapElement;
-                            curImgRenderObj.image = localImgRenderObj.image;
+                            curImgRenderObj.imageCacheObject = localImgRenderObj.imageCacheObject;
                             curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
 
                         }
@@ -821,6 +829,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 //                    if ([self.nearbyList indexOfObject:curImgRenderObj] == NSNotFound)
                     {
                         [self.nearbyList addObject:curImgRenderObj];
+                        [nearbyLocalIDs addObject:curImgRenderObj.localID];
                     }
                 }
                 
@@ -838,6 +847,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     {
                         // copy to nearbyList
                         [self.nearbyList addObject:curImgRenderObj];
+                        [nearbyLocalIDs addObject:curImgRenderObj.localID];
 
                         // update anything else that needs to be here...
                         curImgRenderObj.lastReferenced = [[NSDate alloc]init];
@@ -877,6 +887,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 }
 
                 [self calculateTimeAdjustedImageList];
+                
+                [self.fluxDataManager cleanupNonLocalContentWithLocalIDArray:nearbyLocalIDs];
             }
             [_nearbyListLock unlock];
 
@@ -1053,12 +1065,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     if (!_isScrubAnimating)
     {
-        if (_imageRequestCountQuart < maxRequestCountQuart)
+        if (_isScanMode && (_imageRequestCountQuart < maxRequestCountQuart))
         {
             // look to see if can trigger load of higher resolution
             for (FluxImageRenderElement *ire in renderList)
             {
-                if ((ire.imageFetchType == none) && (ire.textureMapElement != nil) && (ire.textureMapElement.imageType < quarterhd))        // only fetch if we aren't fetching and aren't already showing...
+                if (ire.imageFetchType < quarterhd)
                 {
                     // fetch the quart for this element
                     ire.imageFetchType = quarterhd;
@@ -1069,10 +1081,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     
                     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
                     [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    dataRequest.imageReady=^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
+                    dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
                         // assign image into ire.image...
                         ire.imageRenderType = ire.imageFetchType;
-                        ire.imageFetchType = none;
                         
                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                             object:self userInfo:nil];
@@ -1102,14 +1113,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             ire.imageRenderType = thumb;
         }
     }
-
-//    NSLog(@"Render Sort:");
-//    int i = 0;
-//    for (FluxImageRenderElement *ire in renderList)
-//    {
-////        FluxImageType lt = (ire.textureMapElement != nil) ? ((ire.textureMapElement.localID == ire.localID) ? ire.textureMapElement.imageType : -1) : -2;
-//        NSLog(@"render: i: %d, key: %@, abs head: %f, rel head: %f", i++, ire.localID, ire.imageMetadata.absHeading, ire.imageMetadata.relHeading);
-//    }
 }
 
 #pragma mark - Logging

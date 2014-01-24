@@ -12,6 +12,7 @@
 #import "FluxImageTools.h"
 #import "ProgressHUD.h"
 #import "UICKeyChainStore.h"
+#import "FluxMapViewController.h"
 
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -50,13 +51,19 @@
     tapGesture.cancelsTouchesInView = NO;
     
     //[self.filterTableView addGestureRecognizer:tapGesture];
-    self.screenName = @"Filters View";
+    
 }
 
 
 
-- (void)viewWillAppear:(BOOL)animated{    
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     [self sendTagRequest];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Filters View";
 }
 
 //must be called from presenting VC
@@ -142,9 +149,13 @@
         [ProgressHUD showError:str];
     }];
     
-    
-    [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius
-                                       andMaxCount:20 withDataRequest:request];
+    if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
+        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:NO withDataRequest:request];
+    }
+    else{
+        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:YES withDataRequest:request];
+    }
+
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{

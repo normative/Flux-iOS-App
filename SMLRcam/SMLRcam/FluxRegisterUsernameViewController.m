@@ -38,6 +38,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     
     if ([[self.userInfo objectForKey:@"socialPartner"] isEqualToString:@"Twitter"]) {
@@ -46,6 +47,11 @@
     else{
         [self getFacebookProfilePic];
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Register Unique Username View";
 }
 
 -(void) viewWillDisappear:(BOOL)animated {

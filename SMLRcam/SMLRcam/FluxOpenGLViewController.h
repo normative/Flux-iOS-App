@@ -9,6 +9,7 @@
 #import <GLKit/GLKit.h>
 #import "ImageViewerImageUtil.h"
 #import "FluxImageCaptureViewController.h"
+#import "FluxSnapshotCaptureViewController.h"
 #import "FluxDataManager.h"
 #import "FluxDisplayManager.h"
 #import "FluxMotionManagerSingleton.h"
@@ -97,10 +98,12 @@
 //	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 //@property (nonatomic, strong)NSMutableArray *nearbyList;
 //@property (nonatomic, strong)NSMutableArray *renderedTextures;
-@property (nonatomic, strong)FluxImageCaptureViewController*imageCaptureViewController;
 
-@property (nonatomic, strong)NSMutableArray *renderList;
-@property (nonatomic, strong)NSMutableArray *textureMap;
+@property (nonatomic, strong) FluxImageCaptureViewController*imageCaptureViewController;
+@property (nonatomic, strong) FluxSnapshotCaptureViewController*snapshotViewController;
+
+@property (nonatomic, strong) NSMutableArray *renderList;
+@property (nonatomic, strong) NSArray *textureMap;
 
 
 //- (IBAction)stepperChanged:(id)sender;
@@ -123,7 +126,8 @@
 //AVCam Methods
 - (void)setupAVCapture;
 //image capture methods
-- (void)showImageCapture;
+- (void)activateNewImageCapture;
+- (void)activateSnapshotCapture;
 - (void)setSnapShotFlag;
 - (void)setBackgroundSnapFlag;
 
@@ -135,7 +139,6 @@
 
 - (void)render;
 //- (void)updateImageMetadataForElement:(FluxImageRenderElement*)element;
-- (void)stepperChangedWithValue:(double)v;
 - (void)updateImageMetadataForElementList:(NSMutableArray *)elementList andMaxIncidentThreshold:(double)maxIncidentThreshold;
 
 //image tap

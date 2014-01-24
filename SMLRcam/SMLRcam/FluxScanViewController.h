@@ -59,7 +59,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     UIImage *capturedImage;
     UIImageView*blurView;
-    __strong IBOutlet FluxCameraButton *CameraButton;
+    __strong IBOutlet FluxCameraButton *imageCaptureButton;
     IBOutlet UIButton *filterButton;
     IBOutlet BBCyclingLabel *dateRangeLabel;
     NSTimer *dateRangeLabelHideTimer;
@@ -81,10 +81,10 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int totalUploads;
     
     FluxDataFilter *currentDataFilter;
-    
-    
 }
+@property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
+@property (strong, nonatomic) IBOutlet UIButton *cameraButton;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) IBOutlet FluxTimeFilterControl*timeFilterControl;
@@ -96,8 +96,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (IBAction)filterButtonAction:(id)sender;
 - (void)setCameraButtonEnabled:(BOOL)enabled;
 - (IBAction)snapshotButtonAction:(id)sender;
-
-- (IBAction)stepper:(id)sender;
+- (IBAction)imageCaptureButtonAction:(id)sender;
 
 //imageCapture
 - (void)setupOpenGLView;

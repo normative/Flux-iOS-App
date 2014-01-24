@@ -42,7 +42,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 + (NSString*)thisDeviceName;
 + (FluxCameraModel)thisCameraModel;
 
-- (FluxRequestID *) addDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image
+- (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                 withDataRequest:(FluxDataRequest *)dataRequest;
 
 //used for image capture
@@ -68,19 +68,22 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(FluxImageType)imageType;
 - (void) completeRequestWithDataRequest:(FluxDataRequest *)dataRequest;
 
+//Tags
 - (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
                                   withRadius:(float)radius
                                  andMaxCount:(int)maxCount
+                        andAltitudeSensitive:(BOOL)altitudeSensitive
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
+//Map images
 - (FluxRequestID *) requestMapImageListAtLocation:(CLLocationCoordinate2D)location
                                     withRadius:(float)radius
                                withDataRequest:(FluxDataRequest *)dataRequest;
 
 - (NSArray *) checkForImagesByLocalID:(FluxLocalID *)localID;
 
-- (UIImage *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
-- (UIImage *)fetchImageByImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
+- (FluxCacheImageObject *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
+- (FluxCacheImageObject *)fetchImageByImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
 
 - (FluxRequestID *)deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest;
 
@@ -107,5 +110,6 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 - (void)deleteLocations;
 - (void)debugByShowingCachedImageKeys;
+- (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems;
 
 @end

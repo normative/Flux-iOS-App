@@ -36,6 +36,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:lastRadius andFilter:currentDataFilter];
         outstandingRequests++;
     }
+    
+    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
+    }
+    else{
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
+    }
 }
 
 - (void)didUpdateMapPins:(NSNotification*)notification{
@@ -99,14 +106,28 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     lastSynchedLocation = fluxMapView.centerCoordinate;
     lastRadius = screenDistance/2;
     
-    MKMapRect narrowedScreenRect = fluxMapView.visibleMapRect;
+    
+    MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
+}
+
+- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay {
+    
+    userLocationPin.pulsingCircleOverlay = [[FluxUserLocationOverlay alloc]init];
+    userLocationPin.pulsingCircleOverlay.coordinate = overlay.coordinate;
+    userLocationPin.pulsingCircleOverlay.boundingMapRect = overlay.boundingMapRect;
+    
+    return userLocationPin.pulsingCircleOverlay;
+}
+
+- (MKMapRect)shrunkenMapRect:(MKMapRect)mapRect{
     MKOverlayRenderer*tmpRenderer = [[MKOverlayRenderer alloc]init];
-    CGRect narowedRect = [tmpRenderer rectForMapRect:narrowedScreenRect];
+    CGRect narowedRect = [tmpRenderer rectForMapRect:mapRect];
     NSLog(@"Norm: %@",NSStringFromCGRect(narowedRect));
     narowedRect = CGRectInset(narowedRect, narowedRect.size.width*.15, narowedRect.size.width*.15);
-    narrowedScreenRect = [tmpRenderer mapRectForRect:narowedRect];
+    mapRect = [tmpRenderer mapRectForRect:narowedRect];
     NSLog(@"Small: %@",NSStringFromCGRect(narowedRect));
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
+    return mapRect;
 }
 
 - (void)setupLocationManager
@@ -117,13 +138,13 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)didUpdateLocation:(NSNotification*)notification
 {
     CLLocationAccuracy newAccuracy = locationManager.location.horizontalAccuracy;
-    [userLocationPin setCoordinate:locationManager.location.coordinate];
-    if (userLocationPin.horizontalAccuracy != newAccuracy)
+    [userLocationPin.pinAnnotation setCoordinate:locationManager.location.coordinate];
+    if (userLocationPin.pinAnnotation.horizontalAccuracy != newAccuracy)
     {
-        NSLog(@"Horizontal Accuracy (m): %f", newAccuracy);
-        [fluxMapView removeAnnotation:userLocationPin];
-        [userLocationPin setHorizontalAccuracy:newAccuracy];
-        [fluxMapView addAnnotation:userLocationPin];
+        NSLog(@"Accuracy: %f",newAccuracy);
+        [fluxMapView removeOverlay:tempCircle];
+        tempCircle = [MKCircle circleWithCenterCoordinate:locationManager.location.coordinate radius:locationManager.location.horizontalAccuracy];
+        [fluxMapView addOverlay:tempCircle];
     }
 }
 
@@ -153,11 +174,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [transitionFadeView setAlpha:0.0];
     [transitionFadeView setHidden:YES];
     [self.view addSubview:transitionFadeView];
-    
-    self.screenName = @"Map View";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    
     if (!firstRunDone)
     {
         [self setupMapView];
@@ -167,6 +188,11 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     {
         [self didUpdateLocation:nil];
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Map View";
 }
 
 // initialize and allocate memory to the map view object
@@ -180,10 +206,16 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     lastRadius = 75.0;
     outstandingRequests = 0;
     
-    userLocationPin = [[FluxUserLocationPin alloc] initWithCoordinate:locationManager.location.coordinate];
-    userLocationPin.title = @"Current Location";
-    userLocationPin.horizontalAccuracy = locationManager.location.horizontalAccuracy;
-    [fluxMapView addAnnotation:userLocationPin];
+    userLocationPin = [[FluxUserLocationMapPin alloc]init];
+    userLocationPin.pinAnnotation = [[FluxUserLocationAnnotation alloc] initWithCoordinate:locationManager.location.coordinate];
+    userLocationPin.pinAnnotation.title = @"Current Location";
+    userLocationPin.pinAnnotation.horizontalAccuracy = locationManager.location.horizontalAccuracy;
+    [fluxMapView addAnnotation:userLocationPin.pinAnnotation];
+    
+    userLocationPin.pulsingCircleOverlay = [[FluxUserLocationOverlay alloc]init];
+    tempCircle = [MKCircle circleWithCenterCoordinate:locationManager.location.coordinate radius:locationManager.location.horizontalAccuracy];
+    [fluxMapView addOverlay:tempCircle];
+
     
     filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
     
@@ -213,7 +245,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-    [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.fluxMapContentMetadata.count];
+    [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
     [self animationPushBackScaleDown];
     [filtersVC setRadius:lastRadius];
 }

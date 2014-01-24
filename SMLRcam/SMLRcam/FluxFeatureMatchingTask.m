@@ -56,7 +56,7 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
         
         // Set object image features/image
         [self.matcherEngine setObjectFeatures:self.matchRecord.ire.imageMetadata.features];
-        [self.matcherEngine setObjectImage:self.matchRecord.ire.image];
+        [self.matcherEngine setObjectImage:self.matchRecord.ire.imageCacheObject.image];
         
         // Set scene image features/image using previously computed values
         if (![self.matcherEngine setSceneImage:self.matchRecord.cfe.cameraFrameMatchImage

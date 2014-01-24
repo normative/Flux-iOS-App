@@ -32,6 +32,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     if (firstTime) {
         firstTime = NO;
         if (userObject.profilePic) {
@@ -48,6 +49,11 @@
     }
 
     [bioTextField becomeFirstResponder];
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Edit Profile View";
 }
 
 

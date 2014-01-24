@@ -18,6 +18,8 @@ NSString* const FluxImageCaptureDidPush = @"FluxImageCaptureDidPush";
 NSString* const FluxImageCaptureDidCaptureImage = @"FluxImageCaptureDidCaptureImage";
 NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCapture";
 
+static int captureImageID = -1;
+
 @interface FluxImageCaptureViewController ()
 
 @end
@@ -55,8 +57,6 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     
     [self setupAVCapture];
     
-    self.screenName = @"Image Capture View";
-    
     [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
     [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosLabel.font.pointSize]];
     [undoButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:undoButton.titleLabel.font.pointSize]];
@@ -65,6 +65,11 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     motionManager = [FluxMotionManagerSingleton sharedManager];
     locationManager = [FluxLocationServicesSingleton sharedManager];
 	// Do any additional setup after loading the view.
+}
+
+- (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    self.screenName = @"Image Capture View";
 }
 
 - (void)didReceiveMemoryWarning
@@ -78,7 +83,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
         [self.view setHidden:NO];
         [approveButton setHidden:YES];
         [undoButton setHidden:YES];
-        [shareButton setHidden:YES];
+        [snapshotShareButton setHidden:YES];
         [UIView animateWithDuration:0.3f
                          animations:^{
                              [self.view setAlpha:1.0];
@@ -361,7 +366,11 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [topGradientView setHidden:NO];
     [bottomContainerView setHidden:YES];
     [topContainerView setBackgroundColor:[UIColor clearColor]];
-    [approveButton setHidden:NO];
+    [approveButton setHidden:YES];
+    
+    [snapshotShareButton setHidden:NO];
+    
+    
 }
 
 - (void)showFlash:(UIColor*)color andFull:(BOOL)full{
@@ -402,7 +411,7 @@ NSString* const FluxImageCaptureDidUndoCapture = @"FluxImageCaptureDidUndoCaptur
     [newImageObject setLocalID:localID];
     
     // Set the server-side image id to a negative value until server returns actual
-    [newImageObject setImageID:-1];
+    [newImageObject setImageID:captureImageID--];
     
     // HACK
     

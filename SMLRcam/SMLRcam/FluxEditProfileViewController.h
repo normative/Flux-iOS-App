@@ -11,7 +11,9 @@
 #import "FluxDataManager.h"
 #import "FluxProfileCell.h"
 
-@interface FluxEditProfileViewController : UIViewController<UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, KTPlaceholderTextViewDelegate, UITextFieldDelegate>{
+#import "GAITrackedViewController.h"
+
+@interface FluxEditProfileViewController : GAITrackedViewController<UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, KTPlaceholderTextViewDelegate, UITextFieldDelegate>{
     BOOL firstTime;
     FluxUserObject*userObject;
     NSMutableDictionary*editedDictionary;

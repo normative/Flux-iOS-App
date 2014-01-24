@@ -77,6 +77,155 @@
             </objects>
             <point key="canvasLocation" x="2273" y="-993"/>
         </scene>
+        <!--Flux Snapshot Capture View Controller-->
+        <scene sceneID="UJw-hK-n3F">
+            <objects>
+                <viewController storyboardIdentifier="snapshotViewController" id="pna-MN-DvY" customClass="FluxSnapshotCaptureViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="fQR-24-Ob8"/>
+                        <viewControllerLayoutGuide type="bottom" id="slt-8P-fMz"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="4MK-7P-Yjj">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1GL-Ra-meM">
+                                <rect key="frame" x="20" y="42" width="40" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="ALG-FT-xao"/>
+                                    <constraint firstAttribute="width" constant="40" id="rtg-xd-xyO"/>
+                                </constraints>
+                                <state key="normal" image="closeCamButton">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="closeButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="DON-8W-vN1"/>
+                                    <action selector="closeButtonAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="ZeY-gl-EPo"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e21-oY-W5S" customClass="FluxCameraRollButton">
+                                <rect key="frame" x="25" y="473" width="30" height="53"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="snapshotRollButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="jsc-7j-q3Z"/>
+                                    <segue destination="ArK-zK-ko3" kind="modal" modalTransitionStyle="coverVertical" id="gTR-yF-0e1"/>
+                                </connections>
+                            </button>
+                            <button hidden="YES" opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tG4-RH-Imp">
+                                <rect key="frame" x="247" y="47" width="53" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="53" id="NRx-AD-oBD"/>
+                                    <constraint firstAttribute="height" constant="30" id="hdM-OK-f3w"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <state key="normal" title="Share">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="shareButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="zgg-tx-U0J"/>
+                                    <segue destination="7MI-iQ-4jy" kind="modal" identifier="annotationSegue" id="XI0-aT-E1x"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="1GL-Ra-meM" firstAttribute="top" secondItem="4MK-7P-Yjj" secondAttribute="top" constant="42" id="BgU-ni-LwE"/>
+                            <constraint firstAttribute="trailing" secondItem="tG4-RH-Imp" secondAttribute="trailing" constant="20" id="KMP-2l-wvu"/>
+                            <constraint firstItem="tG4-RH-Imp" firstAttribute="top" secondItem="4MK-7P-Yjj" secondAttribute="top" constant="47" id="fuy-59-nJv"/>
+                            <constraint firstItem="1GL-Ra-meM" firstAttribute="leading" secondItem="4MK-7P-Yjj" secondAttribute="leading" constant="20" id="yih-WS-WQj"/>
+                        </constraints>
+                    </view>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <connections>
+                        <outlet property="shareButton" destination="tG4-RH-Imp" id="wZJ-6m-xRR"/>
+                        <outlet property="snapshotRollButton" destination="e21-oY-W5S" id="PO8-DD-eHz"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="H59-Ts-FUU" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2273" y="-2525"/>
+        </scene>
+        <!--Flux Snapshot Collection View Controller - My Snapshots-->
+        <scene sceneID="qHk-I8-ZKB">
+            <objects>
+                <collectionViewController autoresizesArchivedViewToFullSize="NO" id="vvc-He-IAt" customClass="FluxSnapshotCollectionViewController" sceneMemberID="viewController">
+                    <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="9N1-sd-6zF">
+                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="iQX-c0-B0P">
+                            <size key="itemSize" width="93" height="165"/>
+                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                            <inset key="sectionInset" minX="10" minY="10" maxX="10" maxY="10"/>
+                        </collectionViewFlowLayout>
+                        <cells>
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="myCell" id="hyd-06-Oyx" customClass="FluxPhotoCollectionCell">
+                                <rect key="frame" x="10" y="10" width="93" height="165"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                    <rect key="frame" x="0.0" y="0.0" width="93" height="165"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t8a-Vl-j19">
+                                            <rect key="frame" x="0.0" y="0.0" width="93" height="165"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <view tag="200" contentMode="scaleAspectFit" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jcE-Pv-qIq" customClass="KTCheckboxButton">
+                                            <rect key="frame" x="58" y="10" width="25" height="25"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                </view>
+                                <connections>
+                                    <outlet property="checkboxButton" destination="jcE-Pv-qIq" id="w6e-Wr-okb"/>
+                                    <outlet property="imageView" destination="t8a-Vl-j19" id="R7g-Sz-vA6"/>
+                                </connections>
+                            </collectionViewCell>
+                        </cells>
+                        <connections>
+                            <outlet property="dataSource" destination="vvc-He-IAt" id="OW7-WM-1cc"/>
+                            <outlet property="delegate" destination="vvc-He-IAt" id="N8h-US-BD3"/>
+                        </connections>
+                    </collectionView>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="WYl-51-3OY"/>
+                        <barButtonItem style="plain" systemItem="action" id="zQo-u6-qzN">
+                            <connections>
+                                <action selector="shareButtonAction:" destination="vvc-He-IAt" id="kDm-1s-A5S"/>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
+                    <navigationItem key="navigationItem" title="My Snapshots" id="uWj-M4-W9C">
+                        <barButtonItem key="leftBarButtonItem" title="Back" id="GB6-d2-7Pb">
+                            <connections>
+                                <action selector="cancelButtonAction:" destination="vvc-He-IAt" id="UNk-nl-pHJ"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Select" id="xhY-ZN-Ea0">
+                            <connections>
+                                <action selector="selectButtonAction:" destination="vvc-He-IAt" id="4cg-yu-mWB"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
+                    <connections>
+                        <outlet property="shareButton" destination="zQo-u6-qzN" id="RHz-oI-PEK"/>
+                    </connections>
+                </collectionViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2pD-b6-oTR" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3310" y="-2525"/>
+        </scene>
         <!--Flux Image Capture View Controller-->
         <scene sceneID="FvW-Vk-fmx">
             <objects>
@@ -126,16 +275,14 @@
                                             <action selector="approveImageAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="ZJm-XU-V9E"/>
                                         </connections>
                                     </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="axs-sP-3hm">
-                                        <rect key="frame" x="250" y="47" width="46" height="30"/>
+                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="10L-e5-Tmx" userLabel="Snapshot share button">
+                                        <rect key="frame" x="262" y="46" width="23" height="32"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <state key="normal" title="Share">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <state key="normal" image="actionButtonItem">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <action selector="shareButtonAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="SOP-FV-HIo"/>
+                                            <action selector="approveImageAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="mmD-e0-pdV"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -233,7 +380,7 @@
                         <outlet property="closeButton" destination="Mt2-5Z-isg" id="cpk-p9-jCi"/>
                         <outlet property="imageCaptureSquareView" destination="UPP-yk-7fe" id="KNp-oS-9oV"/>
                         <outlet property="imageCountLabel" destination="Zi1-Yb-u00" id="8ro-SH-FxI"/>
-                        <outlet property="shareButton" destination="axs-sP-3hm" id="ZOm-jJ-7VQ"/>
+                        <outlet property="snapshotShareButton" destination="10L-e5-Tmx" id="ir4-wV-lgf"/>
                         <outlet property="topContainerView" destination="3hP-Qn-vbY" id="dBJ-m8-LOg"/>
                         <outlet property="topGradientView" destination="bYe-XU-Qb3" id="cdR-pC-1Io"/>
                         <outlet property="undoButton" destination="rsU-2Y-4PW" id="Poq-AA-9Kw"/>
@@ -242,7 +389,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Bsn-pr-Bkb" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2267" y="-1891"/>
+            <point key="canvasLocation" x="2273" y="-1779"/>
         </scene>
         <!--Flux Image Annotation View Controller-->
         <scene sceneID="ius-dq-IxH">
@@ -404,7 +551,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="h4u-kD-UF5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3304" y="-1891"/>
+            <point key="canvasLocation" x="3310" y="-1779"/>
         </scene>
         <!--Flux Left Drawer View Controller - Profile-->
         <scene sceneID="tKx-Sl-qpc">
@@ -722,13 +869,6 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="tintColor" red="0.0" green="0.71372549019999998" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
                                     </view>
-                                    <stepper hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" minimumValue="-100" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="4Pb-n8-FGB">
-                                        <rect key="frame" x="113" y="322" width="94" height="29"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                        <connections>
-                                            <action selector="stepper:" destination="2" eventType="valueChanged" id="V9U-s6-QSF"/>
-                                        </connections>
-                                    </stepper>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTA-2K-tgO" customClass="FluxCompassButton">
                                         <rect key="frame" x="25" y="38" width="70" height="70"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -753,39 +893,76 @@
                                             <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="maH-yF-aX4"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WoV-XC-xK1" userLabel="Profile Button">
-                                        <rect key="frame" x="20" y="485" width="70" height="70"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VeE-ti-EHD" userLabel="Bottom Toolbar View">
+                                        <rect key="frame" x="0.0" y="485" width="320" height="87"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WoV-XC-xK1" userLabel="Profile Button">
+                                                <rect key="frame" x="20" y="1" width="70" height="70"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="70" id="E0J-Uu-ljY"/>
+                                                    <constraint firstAttribute="width" constant="70" id="p2d-QO-u3T"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                                <state key="normal" image="profileMenuButton">
+                                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                </state>
+                                                <state key="highlighted">
+                                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="showLeftDrawer:" destination="2" eventType="touchUpInside" id="IOJ-qU-bqK"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="29b-VL-Tq7" userLabel="Camera Button">
+                                                <rect key="frame" x="125" y="1" width="70" height="70"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="70" id="5Sg-8t-j9Y"/>
+                                                    <constraint firstAttribute="width" constant="70" id="qpN-Jg-kVk"/>
+                                                </constraints>
+                                                <state key="normal" image="camButton">
+                                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="cameraButtonAction:" destination="2" eventType="touchUpInside" id="Xgk-6m-t5Z"/>
+                                                </connections>
+                                            </button>
+                                            <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Snapshot Button">
+                                                <rect key="frame" x="230" y="1" width="70" height="70"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="70" id="BWO-Y3-kqO"/>
+                                                    <constraint firstAttribute="width" constant="70" id="VrW-bN-XFr"/>
+                                                </constraints>
+                                                <state key="normal" image="snapshotButton">
+                                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="snapshotButtonAction:" destination="2" eventType="touchUpInside" id="s0g-Vr-Rqh"/>
+                                                </connections>
+                                            </button>
+                                            <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="B0g-NL-YnT" userLabel="Location Select">
+                                                <rect key="frame" x="192" y="20" width="51" height="31"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <connections>
+                                                    <action selector="toggleLocationCoordinate:" destination="2" eventType="valueChanged" id="xC6-pj-e6v"/>
+                                                </connections>
+                                            </switch>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="70" id="E0J-Uu-ljY"/>
-                                            <constraint firstAttribute="width" constant="70" id="p2d-QO-u3T"/>
+                                            <constraint firstAttribute="bottom" secondItem="29b-VL-Tq7" secondAttribute="bottom" constant="16" id="0x5-qy-TLC"/>
+                                            <constraint firstAttribute="centerX" secondItem="29b-VL-Tq7" secondAttribute="centerX" id="4Sa-Wn-TCR"/>
+                                            <constraint firstAttribute="trailing" secondItem="h79-G8-U1l" secondAttribute="trailing" constant="20" id="BUp-tE-std"/>
+                                            <constraint firstAttribute="bottom" secondItem="h79-G8-U1l" secondAttribute="bottom" constant="16" id="CX0-P3-ueA"/>
+                                            <constraint firstItem="WoV-XC-xK1" firstAttribute="leading" secondItem="VeE-ti-EHD" secondAttribute="leading" constant="20" id="P1R-TE-6Qg"/>
+                                            <constraint firstAttribute="bottom" secondItem="WoV-XC-xK1" secondAttribute="bottom" constant="16" id="TDa-mI-xOL"/>
+                                            <constraint firstAttribute="height" constant="87" id="yrA-Y4-WK4"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                        <state key="normal" image="profileMenuButton">
-                                            <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <state key="highlighted">
-                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="showLeftDrawer:" destination="2" eventType="touchUpInside" id="IOJ-qU-bqK"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleAspectFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h79-G8-U1l" userLabel="Share Button">
-                                        <rect key="frame" x="230" y="486" width="70" height="70"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="70" id="BWO-Y3-kqO"/>
-                                            <constraint firstAttribute="width" constant="70" id="VrW-bN-XFr"/>
-                                        </constraints>
-                                        <state key="normal" image="shareButton">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="snapshotButtonAction:" destination="2" eventType="touchUpInside" id="s0g-Vr-Rqh"/>
-                                        </connections>
-                                    </button>
+                                    </view>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="RP7-i5-SqD">
                                         <rect key="frame" x="0.0" y="566" width="320" height="2"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -795,37 +972,29 @@
                                         </constraints>
                                         <color key="progressTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="0.65000000000000002" colorSpace="calibratedRGB"/>
                                     </progressView>
-                                    <switch hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="B0g-NL-YnT" userLabel="Location Select">
-                                        <rect key="frame" x="246" y="517" width="51" height="31"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <connections>
-                                            <action selector="toggleLocationCoordinate:" destination="2" eventType="valueChanged" id="xC6-pj-e6v"/>
-                                        </connections>
-                                    </switch>
                                 </subviews>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="VeE-ti-EHD" secondAttribute="trailing" id="1QI-9m-4Vr"/>
                                     <constraint firstItem="Jav-fJ-sQd" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="4oR-Ld-br5"/>
                                     <constraint firstItem="UQ2-gX-PYO" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="6Aw-m5-sfw"/>
+                                    <constraint firstItem="VeE-ti-EHD" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="7AQ-yI-2pD"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="25" id="9bm-pI-i65"/>
                                     <constraint firstAttribute="trailing" secondItem="sxZ-KT-aF5" secondAttribute="trailing" id="BWH-59-UAz"/>
                                     <constraint firstAttribute="bottom" secondItem="RP7-i5-SqD" secondAttribute="bottom" id="Dek-4Y-rPh"/>
-                                    <constraint firstAttribute="trailing" secondItem="h79-G8-U1l" secondAttribute="trailing" constant="20" id="LuB-B7-Ffw"/>
+                                    <constraint firstAttribute="bottom" secondItem="VeE-ti-EHD" secondAttribute="bottom" constant="-4" id="PLj-fF-Kay"/>
                                     <constraint firstAttribute="bottom" secondItem="Jav-fJ-sQd" secondAttribute="bottom" id="UD8-Mf-NuE"/>
                                     <constraint firstItem="bo9-BI-7cK" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="38" id="Ulv-Ea-TiL"/>
-                                    <constraint firstAttribute="bottom" secondItem="h79-G8-U1l" secondAttribute="bottom" constant="12" id="bdq-Q2-9eq"/>
                                     <constraint firstItem="sxZ-KT-aF5" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="cF1-bA-VzH"/>
-                                    <constraint firstAttribute="bottom" secondItem="WoV-XC-xK1" secondAttribute="bottom" constant="13" id="dWh-hz-Nfh"/>
                                     <constraint firstAttribute="width" constant="320" id="fhw-AM-un3"/>
                                     <constraint firstAttribute="trailing" secondItem="bo9-BI-7cK" secondAttribute="trailing" constant="25" id="gsC-4Y-XOv"/>
                                     <constraint firstAttribute="bottom" secondItem="sxZ-KT-aF5" secondAttribute="bottom" id="mDS-Cv-WkW"/>
                                     <constraint firstItem="UQ2-gX-PYO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="svp-0t-M9t"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="38" id="tQm-EJ-5kf"/>
-                                    <constraint firstItem="WoV-XC-xK1" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="20" id="uBr-ww-aL1"/>
                                     <constraint firstItem="RP7-i5-SqD" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="uP2-MJ-Xxw"/>
                                     <constraint firstItem="sxZ-KT-aF5" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="wys-fz-KvJ"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c58-0p-wGY" userLabel="Camera Button" customClass="FluxCameraButton">
+                            <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c58-0p-wGY" userLabel="Image Capture Button" customClass="FluxCameraButton">
                                 <rect key="frame" x="125" y="486" width="70" height="70"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
@@ -841,7 +1010,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <action selector="cameraButtonAction:" destination="2" eventType="touchUpInside" id="F3K-UJ-Cbf"/>
+                                    <action selector="imageCaptureButtonAction:" destination="2" eventType="touchUpInside" id="WD2-Kb-5g2"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -856,10 +1025,12 @@
                     </view>
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
-                        <outlet property="CameraButton" destination="c58-0p-wGY" id="lft-Eq-AQi"/>
                         <outlet property="ScanUIContainerView" destination="jDD-EI-IPQ" id="dde-LI-oeI"/>
+                        <outlet property="bottomToolbarView" destination="VeE-ti-EHD" id="yuE-fJ-Icw"/>
+                        <outlet property="cameraButton" destination="29b-VL-Tq7" id="uAm-Rx-M48"/>
                         <outlet property="dateRangeLabel" destination="M3r-QE-4sQ" id="Y73-S8-pip"/>
                         <outlet property="filterButton" destination="bo9-BI-7cK" id="0DJ-MQ-P3B"/>
+                        <outlet property="imageCaptureButton" destination="c58-0p-wGY" id="usz-3O-Mvg"/>
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
                         <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
                         <outlet property="radarButton" destination="QTA-2K-tgO" id="fZZ-Fu-W7o"/>
@@ -1559,7 +1730,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dnU-h1-HjP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2778" y="-1891"/>
+            <point key="canvasLocation" x="2784" y="-1779"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="Npa-d2-5dG">
@@ -1770,9 +1941,30 @@
             </objects>
             <point key="canvasLocation" x="1479" y="158"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="xjA-qz-FLS">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ArK-zK-ko3" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="mgB-56-SBX">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="vvc-He-IAt" kind="relationship" relationship="rootViewController" id="E44-7o-x88"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xFf-lu-boO" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2784" y="-2525"/>
+        </scene>
     </scenes>
     <resources>
         <image name="MapBackToggle" width="140" height="140"/>
+        <image name="actionButtonItem" width="38" height="53"/>
         <image name="backgroundGradient_bottom" width="640" height="276"/>
         <image name="backgroundGradient_top" width="640" height="276"/>
         <image name="camButton" width="140" height="140"/>
@@ -1786,10 +1978,10 @@
         <image name="inactiveTimeSlider" width="140" height="140"/>
         <image name="photosTakenBG" width="72" height="72"/>
         <image name="profileMenuButton" width="140" height="140"/>
-        <image name="shareButton" width="140" height="140"/>
         <image name="shareEveryone_on" width="340" height="80"/>
         <image name="shareFacebook_off" width="80" height="80"/>
         <image name="shareTwitter_off" width="80" height="80"/>
+        <image name="snapshotButton" width="140" height="140"/>
         <image name="twitter_mini" width="220" height="50"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
@@ -1799,5 +1991,6 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="cDh-QJ-kAL"/>
+        <segue reference="XI0-aT-E1x"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -34,6 +34,16 @@
     return circleView;
 }
 
+- (void)setCaptureMode:(FluxImageCaptureMode)captureMode{
+    _captureMode = captureMode;
+    if (captureMode == camera_mode) {
+        [self setImage:[UIImage imageNamed:@"camButton"] forState:UIControlStateNormal];
+    }
+    else{
+        [self setImage:[UIImage imageNamed:@"snapshotButton"] forState:UIControlStateNormal];
+    }
+}
+
 /*
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.

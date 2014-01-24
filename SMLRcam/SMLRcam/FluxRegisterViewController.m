@@ -40,15 +40,20 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
     [self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
+    [super viewDidAppear:animated];
+    
     if (!firstCheck) {
         [self checkCurrentLoginState];
         firstCheck = YES;
     }
+    self.screenName = @"Registation View";
+    
     //coming back from a logout
 }
 
@@ -79,8 +84,6 @@
     
     //[logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y+60, logoImageView.frame.size.width, logoImageView.frame.size.height)];
     [logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
-
-    self.screenName = @"Registation View";
     
     self.accountStore = [[ACAccountStore alloc] init];
     self.apiManager = [[TWAPIManager alloc] init];

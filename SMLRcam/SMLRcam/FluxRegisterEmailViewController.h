@@ -8,13 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "GAITrackedViewController.h"
+
 @class FluxRegisterEmailViewController;
 @protocol FluxRegisterEmailViewDelegate <NSObject>
 @optional
 - (void)RegisterEmailView:(FluxRegisterEmailViewController*)emailView didAcceptAddEmailToUserInfo:(NSMutableDictionary *)userInfo;
 @end
 
-@interface FluxRegisterEmailViewController : UIViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>{
+@interface FluxRegisterEmailViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>{
     IBOutlet UITableView* emailTableView;
     IBOutlet UIButton *createAccountButton;
     id __unsafe_unretained delegate;

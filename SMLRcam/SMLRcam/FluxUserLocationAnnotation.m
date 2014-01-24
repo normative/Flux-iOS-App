@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Normative. All rights reserved.
 //
 
-#import "FluxUserLocationPin.h"
+#import "FluxUserLocationAnnotation.h"
 
-@implementation FluxUserLocationPin
+@implementation FluxUserLocationAnnotation
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate
 {

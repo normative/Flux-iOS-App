@@ -68,10 +68,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
     if (currentKalmanStateValid) {
-        [CameraButton setAlpha:1.0];
+        [self.cameraButton setAlpha:1.0];
     }
     else{
-        [CameraButton setAlpha:0.4];
+        [self.cameraButton setAlpha:0.4];
     }
     NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
@@ -139,7 +139,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                  [annotationsTableView setAlpha:1.0];
                              }
                              completion:nil];
-        [CameraButton setUserInteractionEnabled:NO];
+        [imageCaptureButton setUserInteractionEnabled:NO];
     }
     else{
         [UIView animateWithDuration:0.3f
@@ -148,7 +148,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          }
                          completion:^(BOOL finished){
                              [annotationsTableView setHidden:YES];
-                             [CameraButton setUserInteractionEnabled:YES];
+                             [imageCaptureButton setUserInteractionEnabled:YES];
                          }];
     }
 }
@@ -221,8 +221,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 # warning Currently extra overhead. Should fix this to get it locally first before requesting.
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:rowObject.localID]];
-    [dataRequest setImageReady:^(FluxLocalID *localID, UIImage *image, FluxDataRequest *completedDataRequest){
-        [cell.contentImageView setImage:image];
+    [dataRequest setImageReady:^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+        [cell.contentImageView setImage:imageCacheObj.image];
     }];
     [self.fluxDisplayManager.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
 
@@ -340,10 +340,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     IDMPhoto *photo = nil;
 
-    UIImage *img = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType];
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType];
     if (actualType >= quarterhd)
     {
-        photo = [[IDMPhoto alloc]initWithImage:img];
+        photo = [[IDMPhoto alloc]initWithImage:imageCacheObj.image];
+        [imageCacheObj endContentAccess];
     }
     else
     {
@@ -401,32 +402,52 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (IBAction)cameraButtonAction:(id)sender {
-    if (CameraButton.alpha < 1.0) {
+    
+    if (self.cameraButton.alpha < 1.0) {
         UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh..."
                                                           message:@"Taking pictures is disabled because the device's location accuracy is poor. Try going outside, or avoid standing next to large metal objects."
                                                          delegate:nil
                                                 cancelButtonTitle:@"OK"
                                                 otherButtonTitles:nil];
         [message show];
-        return;
     }
-    if (!imageCaptureIsActive) {
-        [openGLController showImageCapture];
-        [self activateImageCapture];
+    else{
+        [openGLController activateNewImageCapture];
+        [self activateImageCaptureForMode:camera_mode];
+    }
+}
+
+- (IBAction)imageCaptureButtonAction:(id)sender {
+    if (imageCaptureButton.captureMode == snapshot_mode) {
+        [[NSNotificationCenter defaultCenter]addObserver:openGLController.snapshotViewController selector:@selector(addsnapshot:) name:@"didCaptureBackgroundSnapshot" object:nil];
+    
+        id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+        [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                              action:@"action"  // Event action (required)
+                                                               label:@"take snapshot"          // Event label
+                                                               value:nil] build]];    // Event value
+        
+        [openGLController setBackgroundSnapFlag];
+        [imageCaptureButton setHidden:YES];
     }
     else{
         [openGLController.imageCaptureViewController takePicture];
     }
+    
 }
 
 - (void)activateSnapshotView{
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [ScanUIContainerView setAlpha:0.0];
-                         [CameraButton setAlpha:0.0];
+                         [imageCaptureButton setAlpha:0.0];
+                         
+                         
+                         
                      }
                      completion:^(BOOL finished){
                          //stops drawing them
+                         [self.bottomToolbarView setHidden:YES];
                          [ScanUIContainerView setHidden:YES];
                          imageCaptureIsActive = YES;
                      }];
@@ -434,28 +455,39 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)deactivateSnapshotView{
     [ScanUIContainerView setHidden:NO];
+    [self.bottomToolbarView setHidden:NO];
     
     [UIView animateWithDuration:0.3f
                      animations:^{
+                         
+                         [self.bottomToolbarView setAlpha:1.0];
                          [ScanUIContainerView setAlpha:1.0];
-                         [CameraButton setAlpha:1.0];
+                         [imageCaptureButton setAlpha:1.0];
                      }
                      completion:^(BOOL finished){
                      }];
     imageCaptureIsActive = NO;
 }
 
-- (void)activateImageCapture{
-    [[CameraButton getThumbView] setHidden:NO];
+- (void)activateImageCaptureForMode:(FluxImageCaptureMode)captureMode{
+    [imageCaptureButton setHidden:NO];
+    [imageCaptureButton setCaptureMode:captureMode];
+    [[imageCaptureButton getThumbView] setHidden:NO];
     [UIView animateWithDuration:0.3f
                      animations:^{
+                         [imageCaptureButton setAlpha:1.0];
                          [ScanUIContainerView setAlpha:0.0];
-                         [[CameraButton getThumbView] setAlpha:1.0];
-                         [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y-21)];
+                         [[imageCaptureButton getThumbView] setAlpha:1.0];
+                         [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y-21)];
+                         
+                         [self.bottomToolbarView setAlpha:0.0];
+                         //self.bottomToolbarView.transform = CGAffineTransformMakeScale(0.5, 0.5);
+                         self.bottomToolbarView.center = CGPointMake(self.bottomToolbarView.center.x, self.bottomToolbarView.center.y+30);
                      }
                      completion:^(BOOL finished){
                          //stops drawing them
                          [ScanUIContainerView setHidden:YES];
+                         [self.bottomToolbarView setHidden:YES];
                          [self startDeviceMotion];
                          imageCaptureIsActive = YES;
                      }];
@@ -468,22 +500,29 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                               [NSNumber numberWithFloat:1.0], nil];
     bounceAnimation.duration = 0.3;
     
-    [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
+    [imageCaptureButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
 }
 
 - (void)deactivateImageCapture{
     [self stopDeviceMotion];
     [ScanUIContainerView setHidden:NO];
+    [self.bottomToolbarView setHidden:NO];
     
     [UIView animateWithDuration:0.3f
                      animations:^{
+                         [imageCaptureButton setAlpha:0.0];
                          [ScanUIContainerView setAlpha:1.0];
-                         [CameraButton setCenter:CGPointMake(CameraButton.center.x, CameraButton.center.y+21)];
-                         [[CameraButton getThumbView] setAlpha:0.0];
+                         [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y+21)];
+                         [[imageCaptureButton getThumbView] setAlpha:0.0];
+                         
+                         [self.bottomToolbarView setAlpha:1];
+                         //self.bottomToolbarView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+                         self.bottomToolbarView.center = CGPointMake(self.bottomToolbarView.center.x, self.bottomToolbarView.center.y-30);
                      }
                      completion:^(BOOL finished){
                          //stops drawing them
-                         [[CameraButton getThumbView] setHidden:NO];
+                         [[imageCaptureButton getThumbView] setHidden:NO];
+                         [imageCaptureButton setHidden:YES];
                      }];
     
     CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
@@ -493,7 +532,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                               [NSNumber numberWithFloat:0.9],
                               [NSNumber numberWithFloat:1.0], nil];
     bounceAnimation.duration = 0.3;
-    [CameraButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
+    [imageCaptureButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
     
     imageCaptureIsActive = NO;
 }
@@ -538,7 +577,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     //view cleanup
     if (openGLController.imageCaptureViewController.isSnapshot) {
-        [self deactivateSnapshotView];
+        [self deactivateImageCapture];
         openGLController.imageCaptureViewController.isSnapshot = NO;
     }
     else{
@@ -609,7 +648,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                  progressView.progress = 0;
                              }];
         }];
-        [self.fluxDisplayManager.fluxDataManager addDataToStore:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
+        [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
     }
 }
 
@@ -635,18 +674,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)setCameraButtonEnabled:(BOOL)enabled{
-    CameraButton.enabled = enabled;
+    imageCaptureButton.enabled = enabled;
 }
 
 - (IBAction)snapshotButtonAction:(id)sender {
-    [self activateSnapshotView];
-    [openGLController setSnapShotFlag];
-    
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
-                                                          action:@"action"  // Event action (required)
-                                                           label:@"take snapshot"          // Event label
-                                                           value:nil] build]];    // Event value
+    [openGLController activateSnapshotCapture];
+    [self activateImageCaptureForMode:snapshot_mode];
 }
 
 
@@ -729,16 +762,19 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupAnnotationsTableView];
 
     currentDataFilter = [[FluxDataFilter alloc] init];
-
-    self.screenName = @"Scan View";
     
-    [CameraButton removeFromSuperview];
-    [CameraButton setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.view addSubview:CameraButton];
+    [imageCaptureButton removeFromSuperview];
+    [imageCaptureButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view addSubview:imageCaptureButton];
+    [imageCaptureButton setHidden:YES];
+    
+    [self.bottomToolbarView removeFromSuperview];
+    [self.bottomToolbarView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [ScanUIContainerView addSubview:self.bottomToolbarView];
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-        [CameraButton setAlpha:0.4];
+        //[self.cameraButton setAlpha:0.4];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
@@ -747,21 +783,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
 }
 
--(void)viewWillLayoutSubviews{
-    
-}
-
-- (void)viewDidLayoutSubviews{
-
-}
-
--(void)viewWillAppear:(BOOL)animated{
-
-}
-
 - (void)viewDidAppear:(BOOL)animated{
-    [CameraButton setFrame:CGRectMake(0, 0, CameraButton.frame.size.width, CameraButton.frame.size.height)];
-    [CameraButton setCenter:CGPointMake(self.view.center.x, self.leftDrawerButton.center.y)];
+    [super viewDidAppear:animated];
+//    [imageCaptureButton setFrame:CGRectMake(0, 0, imageCaptureButton.frame.size.width, imageCaptureButton.frame.size.height)];
+//    [imageCaptureButton setCenter:CGPointMake(self.view.center.x, self.leftDrawerButton.center.y)];
+    
+    self.screenName = @"Scan View";
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -796,7 +823,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
-    
+    [super viewWillDisappear:animated];
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -864,14 +892,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	
 	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
 	[view.layer addAnimation:group forKey:nil];
-}
-
-
-
-- (IBAction)stepper:(id)sender {
-    UIStepper* stepper = (UIStepper*)sender;
-    
-    [openGLController stepperChangedWithValue: stepper.value];
 }
 
 

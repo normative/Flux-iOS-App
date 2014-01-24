@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <MapKit/MapKit.h>
 
-@interface FluxUserLocationPin : NSObject <MKAnnotation>
+@interface FluxUserLocationAnnotation : NSObject <MKAnnotation>
 
 - (id)initWithCoordinate:(CLLocationCoordinate2D)coordinate;
 

@@ -37,7 +37,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-//    [super viewWillAppear:animated];
+    [super viewWillAppear:animated];
 //    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 400, 44)];
 //    label.backgroundColor = [UIColor clearColor];
 //    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:17.0]];
@@ -355,6 +355,7 @@
         [defaults removeObjectForKey:@"profileImage"];
         [defaults removeObjectForKey:@"cameraID"];
         [defaults removeObjectForKey:@"bio"];
+        [defaults removeObjectForKey:@"snapshotImages"];
         [defaults synchronize];
         
         [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];

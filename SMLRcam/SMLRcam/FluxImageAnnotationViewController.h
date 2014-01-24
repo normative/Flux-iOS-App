@@ -14,6 +14,8 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxSocialManager.h"
 
+#import "GAITrackedViewController.h"
+
 @class FluxImageAnnotationViewController;
 @protocol ImageAnnotationDelegate <NSObject>
 @optional
@@ -22,7 +24,7 @@
 @end
 
 
-@interface FluxImageAnnotationViewController : UIViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, UICollectionViewDataSource, UICollectionViewDelegate, FluxSocialManagerDelegate>{
+@interface FluxImageAnnotationViewController : GAITrackedViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, UICollectionViewDataSource, UICollectionViewDelegate, FluxSocialManagerDelegate>{
     __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
     __weak IBOutlet UIView *photoAnnotationContainerView;
     

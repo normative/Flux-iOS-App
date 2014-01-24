@@ -44,10 +44,12 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated{
-
+    [super viewWillAppear:animated];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+
     [self.navigationController setToolbarHidden:YES animated:NO];
 }
 
@@ -218,12 +220,13 @@
         [browser setDisplayDoneButtonBackgroundImage:NO];
         [browser setInitialPageIndex:indexPath.row];
         [browser setDelegate:self];
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
         [self presentViewController:browser animated:YES completion:nil];
     }
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
-    
+    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
 }
 
 #pragma mark - IB Actions
