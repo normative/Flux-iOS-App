@@ -7,12 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxScanImageObject.h"
 
 @interface FluxCacheImageObject : NSObject <NSDiscardableContent>
 
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic) NSUInteger accessCount;
+@property (nonatomic, strong) FluxLocalID *localID;
+@property (nonatomic) FluxImageType imageType;
 
-+ (FluxCacheImageObject *)cacheImageObject:(UIImage *)image;
++ (FluxCacheImageObject *)cacheImageObject:(UIImage *)image withID:(FluxLocalID *)localID withType:(FluxImageType)type;
 
 @end

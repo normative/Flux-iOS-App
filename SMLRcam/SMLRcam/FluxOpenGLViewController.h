@@ -100,11 +100,12 @@
 //	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
 //@property (nonatomic, strong)NSMutableArray *nearbyList;
 //@property (nonatomic, strong)NSMutableArray *renderedTextures;
-@property (nonatomic, strong)FluxImageCaptureViewController*imageCaptureViewController;
-@property (nonatomic, strong)FluxSnapshotCaptureViewController*snapshotViewController;
 
-@property (nonatomic, strong)NSMutableArray *renderList;
-@property (nonatomic, strong)NSMutableArray *textureMap;
+@property (nonatomic, strong) FluxImageCaptureViewController*imageCaptureViewController;
+@property (nonatomic, strong) FluxSnapshotCaptureViewController*snapshotViewController;
+
+@property (nonatomic, strong) NSMutableArray *renderList;
+@property (nonatomic, strong) NSArray *textureMap;
 
 
 //- (IBAction)stepperChanged:(id)sender;

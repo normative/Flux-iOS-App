@@ -10,12 +10,15 @@
 
 @implementation FluxCacheImageObject
 
-+ (FluxCacheImageObject *)cacheImageObject:(UIImage *)image
++ (FluxCacheImageObject *)cacheImageObject:(UIImage *)image withID:(NSString *)localID withType:(FluxImageType)type
 {
     FluxCacheImageObject *discardable = [[FluxCacheImageObject alloc] init];
     
     discardable.image = image;
-    discardable.accessCount = 0u;
+    discardable.accessCount = 1u;
+    
+    discardable.localID = localID;
+    discardable.imageType = type;
     
     return discardable;
 }
