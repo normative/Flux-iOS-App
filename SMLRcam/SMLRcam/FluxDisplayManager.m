@@ -198,7 +198,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 #pragma mark - Feature Matching
 
-- (void)checkForFeatureMatchingTasks:(NSArray *)nearbyList
+- (void)checkForFeatureMatchingTasksWithNearbyItems:(NSArray *)nearbyItems withDisplayItems:(NSArray *)displayItems
 {
     bool currentKalmanStateValid = [self.locationManager isKalmanSolutionValid];
 
@@ -206,11 +206,20 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     {
         // For all IRE's with features available, queue up feature-matching tasks
         FluxOpenGLViewController *fluxGLVC = (FluxOpenGLViewController *)self.openGLVC;
+        
+        // Grab a copy of all localID's in displayItems
+        NSMutableArray *displayIDs;
+        for (FluxImageRenderElement *ire in displayItems)
+        {
+            [displayIDs addObject:ire.localID];
+        }
 
-        for (FluxImageRenderElement *ire in nearbyList)
+        for (FluxImageRenderElement *ire in nearbyItems)
         {
             if (ire.imageMetadata.features != nil)
             {
+                bool isDisplayed = [displayIDs containsObject:ire.localID];
+                
                 if (ire.imageMetadata.matchFailed &&
                     (([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending))
                 {
@@ -218,12 +227,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     // Reset failure state so it doesn't get queued up again until matching is complete or fails again
                     ire.imageMetadata.matchFailed = NO;
                     
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC];
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
                 }
                 else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil))
                 {
                     // Also queue up any items which have not been queueud (not matched, no failure retry time set).
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC];
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
                 }
             }
         }
@@ -231,18 +240,16 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     // Request features not yet available for matching.
     // This can happen whether or not the Kalman state is valid for matching.
-    [self requestMissingFeatures:nearbyList];
+    [self requestMissingFeaturesWithNearbyItems:nearbyItems withDisplayItems:displayItems];
 }
 
-- (void)requestMissingFeatures:(NSArray *)nearbyList
+- (void)requestMissingFeaturesWithNearbyItems:(NSArray *)nearbyItems withDisplayItems:(NSArray *)displayItems
 {
     // This routine prioritizes features to download.
     // Note that displayList is a subset of nearbyList
     
     // First pass through display list (current time, desirable heading)
-    [_displayListLock lock];
-
-    for (FluxImageRenderElement *ire in self.displayList)
+    for (FluxImageRenderElement *ire in displayItems)
     {
         if (!ire.imageMetadata.features &&
             !ire.imageMetadata.featureFetching &&
@@ -252,8 +259,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             [self queueFeatureRequest:ire];
         }
     }
-
-    [_displayListLock unlock];
     
     if (_featureRequestCount >= maxRequestCountFeatures)
     {
@@ -263,7 +268,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     // Next check any that were not in displayList but are in nearbyList
     // Two-pass approach gives priority to feature sets that have not yet failed
-    for (FluxImageRenderElement *ire in nearbyList)
+    for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
             !ire.imageMetadata.featureFetching &&
@@ -281,7 +286,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     }
 
     // Second pass through gives failed requests another chance (if download slots still exist)
-    for (FluxImageRenderElement *ire in nearbyList)
+    for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
             !ire.imageMetadata.featureFetching &&
@@ -459,6 +464,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     self.latestDisplayDate = nil;
 
     NSMutableArray *nearbyListCopy;
+    NSMutableArray *nearbyListUnfilteredCopy;
     
     [_displayListLock lock];
     {
@@ -471,10 +477,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         }
         [_nearbyListLock unlock];
 
-        // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
-        // We are checking "before" we filter the list in any way to maximize chances of finding a match
-        // Since this code is called very frequently, the retry logic will also be handled here for failed matches
-        [self checkForFeatureMatchingTasks:nearbyListCopy];
+        // Grab a copy which will remain unfiltered for use by feature matching selection later
+        nearbyListUnfilteredCopy = [nearbyListCopy copy];
     
         // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
         // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
@@ -568,6 +572,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             }
         }];
         
+        // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
+        // We are checking the un-filtered list to maximize chances of finding a match
+        // Also pass in display list so that priority can be given to images currently viewed
+        // Since this code is called very frequently, the retry logic will also be handled here for failed matches
+        [self checkForFeatureMatchingTasksWithNearbyItems:nearbyListUnfilteredCopy withDisplayItems:self.displayList];
+
         inCalcTimeAdjImageList = false;
     }
     [_displayListLock unlock];

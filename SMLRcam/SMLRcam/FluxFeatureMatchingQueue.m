@@ -38,7 +38,7 @@ const double reuseCameraFrameTimeInterval = 1.0;
     return self;
 }
 
-- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview
+- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview isCurrentlyDisplayed:(bool)isDisplayed
 {
     // Check to see if already feature match in progress. If so, ignore it.
     if (![self.pendingOperations.featureMatchingInProgress.allKeys containsObject:ireToMatch.localID])
