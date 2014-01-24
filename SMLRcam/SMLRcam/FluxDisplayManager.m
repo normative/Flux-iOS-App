@@ -1065,44 +1065,60 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     if (!_isScrubAnimating)
     {
-        if (_isScanMode && (_imageRequestCountQuart < maxRequestCountQuart))
+        if (_isScanMode)
         {
-            // look to see if can trigger load of higher resolution
+            // reset to higher-res (quarterhd) textures if already in the cache
             for (FluxImageRenderElement *ire in renderList)
             {
-                if (ire.imageFetchType < quarterhd)
+                if (ire.imageRenderType < quarterhd)
                 {
-                    // fetch the quart for this element
-                    ire.imageFetchType = quarterhd;
-
-                    [_imageRequestCountLock lock];
-                    _imageRequestCountQuart++;
-                    [_imageRequestCountLock unlock];
-                    
-                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                    [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
-                        // assign image into ire.image...
-                        ire.imageRenderType = ire.imageFetchType;
-                        
-                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                            object:self userInfo:nil];
-                        [_imageRequestCountLock lock];
-                        _imageRequestCountQuart--;
-                        [_imageRequestCountLock unlock];
-                    };
-                    dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                        [_imageRequestCountLock lock];
-                        _imageRequestCountQuart--;
-                        [_imageRequestCountLock unlock];
-                        ire.imageFetchType = none;
-                    };
-                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
-
-                    if (_imageRequestCountQuart >= maxRequestCountQuart)
+                    FluxImageType rtype = none;
+                    [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:quarterhd returnSize:&rtype];
+                    if (rtype == quarterhd)
                     {
-                        // only request a few at a time
-                        break;
+                        ire.imageRenderType = quarterhd;
+                    }
+                }
+            }
+            if (_imageRequestCountQuart < maxRequestCountQuart)
+            {
+                // look to see if can trigger load of higher resolution
+                for (FluxImageRenderElement *ire in renderList)
+                {
+                    if (ire.imageFetchType < quarterhd)
+                    {
+                        // fetch the quart for this element
+                        ire.imageFetchType = quarterhd;
+
+                        [_imageRequestCountLock lock];
+                        _imageRequestCountQuart++;
+                        [_imageRequestCountLock unlock];
+                        
+                        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                        [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                        dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+                            // assign image into ire.image...
+                            ire.imageRenderType = ire.imageFetchType;
+                            
+                            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                                object:self userInfo:nil];
+                            [_imageRequestCountLock lock];
+                            _imageRequestCountQuart--;
+                            [_imageRequestCountLock unlock];
+                        };
+                        dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                            [_imageRequestCountLock lock];
+                            _imageRequestCountQuart--;
+                            [_imageRequestCountLock unlock];
+                            ire.imageFetchType = none;
+                        };
+                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
+
+                        if (_imageRequestCountQuart >= maxRequestCountQuart)
+                        {
+                            // only request a few at a time
+                            break;
+                        }
                     }
                 }
             }
