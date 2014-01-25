@@ -6,8 +6,9 @@
 //  Copyright (c) 2013 Normative. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "FluxCameraFrameElement.h"
 
+#import <Foundation/Foundation.h>
 
 typedef struct {
     float ptx; //!< coordinates of the keypoints
@@ -39,7 +40,8 @@ typedef struct {
 enum feature_matching_error_codes {
   feature_matching_success = 0,
   feature_matching_match_error = -1,
-  feature_matching_homography_error = -2
+  feature_matching_homography_error = -2,
+  feature_matching_extract_camera_features_error = -3
 };
     
 @interface FluxMatcherWrapper : NSObject
@@ -48,10 +50,19 @@ enum feature_matching_error_codes {
 -(void)setObjectImage:(UIImage*)objectImage;
 -(void)setObjectFeatures:(NSData*)objectFeatures;
 
+// Wrapper to extract keypoints and descriptors into buffers for later use during extraction from the input sceneImage
+// Returns YES for success
+-(bool)extractFeaturesForSceneImage:(UIImage *)sceneImage withCameraFrameElement:(FluxCameraFrameElement *)cfe;
+
 // Wrapper to set scene_image for matching
-// Pass in a date if you want to re-use a set of features. If dates match, will re-use.
-// Returns the date if a new set of features are extracted
--(NSDate *)setSceneImage:(UIImage *)sceneImage withPreviousExtractDate:(NSDate *)extractDate;
+// Uses keypoint and descriptor buffers calculated by extractFeaturesForSceneImage
+// Returns YES For success
+-(bool)setSceneImage:(NSMutableData *)image_buffer
+       withImageRows:(int)image_rows withImageCols:(int)image_cols withImageSteps:(int)image_steps
+       withKeypoints:(NSData *)keypoints_buffer
+     withDescriptors:(NSMutableData *)descriptors_buffer
+ withDescriptorsRows:(int)descriptors_rows withDescriptorsCols:(int)descriptors_cols withDescriptorsSteps:(int)descriptors_steps;
+
 -(void)setSceneImageNoOrientationChange:(UIImage *)sceneImage;
 
 // Wrapper for: FluxMatcher::match()
@@ -59,8 +70,8 @@ enum feature_matching_error_codes {
 
 // Wrapper for: FluxMatcher::match() with transforms computed from H
 // Returns 0 for success
+-(int)matchAndCalculateTransformsWithRotation:(double[])R1 withTranslation:(double[])t1 withNormal:(double[])n1 withDebugImage:(bool)outputImage;
 
--(int)matchAndCalculateTransformsWithRotationSoln1:(double[])R1 withTranslationSoln1:(double[])t1 withNormalSoln1:(double[])n1 withRotationSoln2:(double[])R2 withTranslationSoln2:(double[])t2 withNormalSoln2:(double[])n2 withRotationSoln3:(double[])R3 withTranslationSoln3:(double[])t3 withNormalSoln3:(double[])n3 withDebugImage:(bool)outputImage;
 // Wrapper for: FluxMatcher::match() with matched box drawn
 -(UIImage *)matchAndDrawFeatures;
 

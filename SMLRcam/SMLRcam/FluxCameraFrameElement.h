@@ -17,8 +17,16 @@
 @property (nonatomic, strong) UIImage *cameraFrameImage; // To store the scene image from the camera
 @property (nonatomic, strong) NSDate *cameraRequestDate; // Date request was made
 @property (nonatomic, strong) NSDate *cameraFrameDate; // Date of actual camera frame
-@property (nonatomic, strong) NSDate *cameraFrameExtractDate; // Date when camera features were extracted
 @property (nonatomic) sensorPose cameraPose;
 @property (nonatomic) float cameraProjectionDistance;
+@property (nonatomic, strong) NSMutableData *cameraFrameMatchImage; // Image converted to grayscale, proper orientation, and cv::Mat format
+@property (nonatomic) int cameraFrameMatchImageRows;
+@property (nonatomic) int cameraFrameMatchImageCols;
+@property (nonatomic) int cameraFrameMatchImageSteps;
+@property (nonatomic, strong) NSData *cameraFeatureKeypoints;
+@property (nonatomic, strong) NSMutableData *cameraFeatureDescriptors;
+@property (nonatomic) int cameraFeatureDescriptorsRows;
+@property (nonatomic) int cameraFeatureDescriptorsCols;
+@property (nonatomic) int cameraFeatureDescriptorsSteps;
 
 @end

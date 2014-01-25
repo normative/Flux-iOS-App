@@ -198,7 +198,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 #pragma mark - Feature Matching
 
-- (void)checkForFeatureMatchingTasks:(NSArray *)nearbyList
+- (void)checkForFeatureMatchingTasksWithNearbyItems:(NSArray *)nearbyItems withDisplayItems:(NSArray *)displayItems
 {
     bool currentKalmanStateValid = [self.locationManager isKalmanSolutionValid];
 
@@ -206,11 +206,20 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     {
         // For all IRE's with features available, queue up feature-matching tasks
         FluxOpenGLViewController *fluxGLVC = (FluxOpenGLViewController *)self.openGLVC;
+        
+        // Grab a copy of all localID's in displayItems
+        NSMutableArray *displayIDs = [[NSMutableArray alloc] init];
+        for (FluxImageRenderElement *ire in displayItems)
+        {
+            [displayIDs addObject:ire.localID];
+        }
 
-        for (FluxImageRenderElement *ire in nearbyList)
+        for (FluxImageRenderElement *ire in nearbyItems)
         {
             if (ire.imageMetadata.features != nil)
             {
+                bool isDisplayed = [displayIDs containsObject:ire.localID];
+                
                 if (ire.imageMetadata.matchFailed &&
                     (([[NSDate date] compare:ire.imageMetadata.matchFailureRetryTime]) == NSOrderedDescending))
                 {
@@ -218,12 +227,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     // Reset failure state so it doesn't get queued up again until matching is complete or fails again
                     ire.imageMetadata.matchFailed = NO;
                     
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC];
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
                 }
                 else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil))
                 {
                     // Also queue up any items which have not been queueud (not matched, no failure retry time set).
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC];
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
                 }
             }
         }
@@ -231,18 +240,16 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     // Request features not yet available for matching.
     // This can happen whether or not the Kalman state is valid for matching.
-    [self requestMissingFeatures:nearbyList];
+    [self requestMissingFeaturesWithNearbyItems:nearbyItems withDisplayItems:displayItems];
 }
 
-- (void)requestMissingFeatures:(NSArray *)nearbyList
+- (void)requestMissingFeaturesWithNearbyItems:(NSArray *)nearbyItems withDisplayItems:(NSArray *)displayItems
 {
     // This routine prioritizes features to download.
     // Note that displayList is a subset of nearbyList
     
     // First pass through display list (current time, desirable heading)
-    [_displayListLock lock];
-
-    for (FluxImageRenderElement *ire in self.displayList)
+    for (FluxImageRenderElement *ire in displayItems)
     {
         if (!ire.imageMetadata.features &&
             !ire.imageMetadata.featureFetching &&
@@ -252,12 +259,16 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             [self queueFeatureRequest:ire];
         }
     }
-
-    [_displayListLock unlock];
+    
+    if (_featureRequestCount >= maxRequestCountFeatures)
+    {
+        // Reached maximum download count. No sense continuing.
+        return;
+    }
     
     // Next check any that were not in displayList but are in nearbyList
     // Two-pass approach gives priority to feature sets that have not yet failed
-    for (FluxImageRenderElement *ire in nearbyList)
+    for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
             !ire.imageMetadata.featureFetching &&
@@ -267,9 +278,15 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             [self queueFeatureRequest:ire];
         }
     }
-    
+
+    if (_featureRequestCount >= maxRequestCountFeatures)
+    {
+        // Reached maximum download count. No sense continuing.
+        return;
+    }
+
     // Second pass through gives failed requests another chance (if download slots still exist)
-    for (FluxImageRenderElement *ire in nearbyList)
+    for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
             !ire.imageMetadata.featureFetching &&
@@ -457,11 +474,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         }
         [_nearbyListLock unlock];
 
-        // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
-        // We are checking "before" we filter the list in any way to maximize chances of finding a match
-        // Since this code is called very frequently, the retry logic will also be handled here for failed matches
-        [self checkForFeatureMatchingTasks:_nearbyPrunedList];
-    
         // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
         // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
         // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
@@ -559,6 +571,12 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             }
         }];
         
+        // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
+        // We are checking the un-filtered list to maximize chances of finding a match
+        // Also pass in display list so that priority can be given to images currently viewed
+        // Since this code is called very frequently, the retry logic will also be handled here for failed matches
+        [self checkForFeatureMatchingTasksWithNearbyItems:self.nearbyUnPrunedList withDisplayItems:self.displayList];
+
         inCalcTimeAdjImageList = false;
     }
     [_displayListLock unlock];
@@ -1018,44 +1036,61 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
     if (!_isScrubAnimating)
     {
-        if (_imageRequestCountQuart < maxRequestCountQuart)
+        if (_isScanMode)
         {
-            // look to see if can trigger load of higher resolution
+            // reset to higher-res (quarterhd) textures if already in the cache
             for (FluxImageRenderElement *ire in renderList)
             {
-//                if (ire.imageFetchType < quarterhd)
-                // only fetch if we aren't fetching and aren't already showing...
-                if ((ire.imageFetchType == none) && (!ire.imageMetadata.justCaptured) && (ire.imageRenderType < quarterhd))
+                if (ire.imageRenderType < quarterhd)
                 {
-                    // fetch the quart for this element
-                    ire.imageFetchType = quarterhd;
+                    FluxImageType rtype = none;
+                    [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:quarterhd returnSize:&rtype];
+                    if (rtype == quarterhd)
+                    {
+                        ire.imageRenderType = quarterhd;
+                    }
+                }
+            }
+            if (_imageRequestCountQuart < maxRequestCountQuart)
+            {
+                // look to see if can trigger load of higher resolution
+                for (FluxImageRenderElement *ire in renderList)
+                {
+                    if (ire.imageFetchType < quarterhd)
+                    {
+                        // fetch the quart for this element
+                        ire.imageFetchType = quarterhd;
 
-                    [_imageRequestCountLock lock];
-                    _imageRequestCountQuart++;
-                    [_imageRequestCountLock unlock];
-                    
-                    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                    [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                    dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
-                        // assign image into ire.image...
-                        ire.imageRenderType = ire.imageFetchType;
+                        [_imageRequestCountLock lock];
+                        _imageRequestCountQuart++;
+                        [_imageRequestCountLock unlock];
                         
-                        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                            object:self userInfo:nil];
-                        [_imageRequestCountLock lock];
-                        _imageRequestCountQuart--;
-                        [_imageRequestCountLock unlock];
-                    };
-                    dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                        [_imageRequestCountLock lock];
-                        _imageRequestCountQuart--;
-                        [_imageRequestCountLock unlock];
-                        ire.imageFetchType = none;
-                    };
-                    [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
+                        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                        [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                        dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+                            // assign image into ire.image...
+                            ire.imageRenderType = ire.imageFetchType;
+                            
+                            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                                object:self userInfo:nil];
+                            [_imageRequestCountLock lock];
+                            _imageRequestCountQuart--;
+                            [_imageRequestCountLock unlock];
+                        };
+                        dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                            [_imageRequestCountLock lock];
+                            _imageRequestCountQuart--;
+                            [_imageRequestCountLock unlock];
+                            ire.imageFetchType = none;
+                        };
+                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
 
-                    // only request one at a time
-                    break;
+                        if (_imageRequestCountQuart >= maxRequestCountQuart)
+                        {
+                            // only request a few at a time
+                            break;
+                        }
+                    }
                 }
             }
         }

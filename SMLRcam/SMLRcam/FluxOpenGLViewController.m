@@ -1187,7 +1187,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     pedometerL.hidden = YES;
     
     frameGrabRequested = NO;
-    useSolvePnPSolution = YES;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageList:) name:FluxDisplayManagerDidUpdateDisplayList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateImageTexture:) name:FluxDisplayManagerDidUpdateImageTexture object:nil];
@@ -1268,23 +1267,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     self.imageCaptureViewController.fluxDisplayManager = fluxDisplayManager;
 }
 
-#pragma mark - Feature Matching Support
-
-- (void) setHomographyState:(int)mode
-{
-    // Default value is on (1). This is called whenever a user toggles the state.
-    // Can be 0 or 1.
-    
-    if(mode == 1)
-    {
-        useSolvePnPSolution = YES;
-    }
-    else
-    {
-        useSolvePnPSolution = NO;
-    }
-}
-
 #pragma mark - OpenGL Texture & Metadata Manipulation
 
 - (void) deleteImageTextureIdx:(int)i
@@ -1354,18 +1336,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         
         if (ire.imageMetadata.location_data_type == location_data_from_homography)
         {
-            if (useSolvePnPSolution)
-            {
-                sensorPose imPose = ire.imageMetadata.imageHomographyPosePnP;
-                cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
-                ire.imageMetadata.imageHomographyPosePnP = imPose;
-            }
-            else
-            {
-                sensorPose imPose = ire.imageMetadata.imageHomographyPose;
-                cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
-                ire.imageMetadata.imageHomographyPose = imPose;
-            }
+            sensorPose imPose = ire.imageMetadata.imageHomographyPosePnP;
+            cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+            ire.imageMetadata.imageHomographyPosePnP = imPose;
         }
         else
         {
@@ -1604,7 +1577,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
         scanimageobject = ire.imageMetadata;
-        imagehomographyPose = useSolvePnPSolution ? scanimageobject.imageHomographyPosePnP : scanimageobject.imageHomographyPose;
+        imagehomographyPose = scanimageobject.imageHomographyPosePnP;
         
         int idx = tel.textureIndex;
         
@@ -1944,11 +1917,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     bool success = YES;
     
-    FluxImageRenderElement *oldIre = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
     FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
     
-    // End access for existing texture element/image cache object
-    [oldIre.imageCacheObject endContentAccess];
+    // If we are replacing with a different localID, then clean up references for the old localID's IRE
+    if (![localID isEqualToString:tel.localID])
+    {
+        FluxImageRenderElement *oldIre = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+        
+        // End access for existing texture element/image cache object
+        [oldIre.imageCacheObject endContentAccess];
+        oldIre.imageCacheObject = nil;
+    }
     
     // Populate with new image data
     FluxImageType rtype = none;
@@ -1958,9 +1937,19 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         // It has been fetched from the cache elsewhere. Don't re-fetch it.
         imageCacheObj = ire.imageCacheObject;
+        rtype = imageCacheObj.imageType;
     }
     else
     {
+        // If we have to replace the image object, then clean up references for the image cache
+        if ([localID isEqualToString:tel.localID])
+        {
+            // End access for existing texture element/image cache object (since this case wasn't caught above)
+            [ire.imageCacheObject endContentAccess];
+            ire.imageCacheObject = nil;
+        }
+
+        // Fetch new image cache object to replace the old one
         imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
     }
     
