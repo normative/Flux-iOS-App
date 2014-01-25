@@ -31,6 +31,17 @@ const NSString *fluxCameraModelStrings[] = {
     @"iPhone6,1"    // iPhone 5s
 };
 
+
+- (id)init{
+    self = [super init];
+    if (self)
+    {
+        _justCaptured = 0;      // default to pull from cloud (typical case)
+    }
+    
+    return self;
+}
+
 - (NSString*)deviceName
 {
     struct utsname systemInfo;
@@ -209,6 +220,7 @@ withDescriptionString:(NSString*)description
         self.features = nil;
         self.featureFetching = NO;
         self.featureFetchFailed = NO;
+        self.justCaptured = 1;      // assume this method is called only when newly captured image record needs to be created
     }
     
     return self;

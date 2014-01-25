@@ -346,7 +346,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         photo = [[IDMPhoto alloc]initWithImage:imageCacheObj.image];
         [imageCacheObj endContentAccess];
     }
-    else
+    else if (tappedImageObject.imageID > 0)
     {
         // last resort
         NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=%@",FluxProductionServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];

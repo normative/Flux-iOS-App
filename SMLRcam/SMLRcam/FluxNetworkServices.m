@@ -765,12 +765,9 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
      {
          NSLog(@"Found %i Tags",[result count]);
          
-         if ([result count] > 0)
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
          {
-             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
-             {
-                 [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
-             }
+             [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
          }
      }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
@@ -825,12 +822,9 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
      {
          NSLog(@"Found %i Tags",[result count]);
          
-         if ([result count] > 0)
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
          {
-             if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
-             {
-                 [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
-             }
+             [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
          }
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)

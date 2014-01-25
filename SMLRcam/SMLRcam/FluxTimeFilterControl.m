@@ -150,7 +150,7 @@
     if ((scrollView.contentOffset.y < scrollView.contentSize.height - scrollView.frame.size.height) && scrollView.contentOffset.y > 0) {
         if (self.fluxDisplayManager && self.fluxDisplayManager.nearbyListCount > 1) {
             // adjust for the buffer to allow scrolling to the last item in the real list.  Make sure it doesn't go beyond that.
-            int nlc = self.fluxDisplayManager.nearbyList.count;
+            int nlc = self.fluxDisplayManager.nearbyListCount;
             int idx = (nlc + (CELLS_PER_VIEW - 1)) * (scrollView.contentOffset.y/scrollView.contentSize.height);
             if (idx >= nlc)
                 idx = nlc - 1;
