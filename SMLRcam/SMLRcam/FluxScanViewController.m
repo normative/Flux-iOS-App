@@ -607,12 +607,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
         [dataRequest setUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
-            FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:updatedImageObject.localID];
-            if (ire != nil)
-            {
-                // FluxScanImageObject exists in the local cache. Replace it with updated object.
-                ire.imageMetadata = updatedImageObject;
-            }
+            // FluxScanImageObject exists in the local cache. Replace it with updated object.
+            // actually, no.  The current ire.imageMetadata is more up-to-date than the "updated" one as it has rendering and homography data, etc.
+            // The imageID has already been updated
+            // FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:updatedImageObject.localID];
+            // if (ire != nil)
+            // {
+            //     ire.imageMetadata = updatedImageObject;
+            // }
+            
             uploadsCompleted++;
             float doneTest = uploadsCompleted/totalUploads;
             
