@@ -10,6 +10,9 @@ Release Notes:
 - MapView tags now work
 - fix newly captured images project worse after upload completes (Trello issue #349)
 - refactor image cache handling to set up for proper reference counting and cache cleanup
+- add metrics for analysis of feature matching performance
+- improved performance when acquiring a camera frame for feature matching
+- prioritization of retries for feature matching failures based on mode of failure and if currently visible or not visible
 
 ******************************************
 
