@@ -456,7 +456,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 - (void)calculateTimeAdjustedImageList
 {
     static bool inCalcTimeAdjImageList = false;
-    NSLog(@"calculateTimeAdjustedImageList, _timeRangeMinIndex: %d", _timeRangeMinIndex);
+//    NSLog(@"calculateTimeAdjustedImageList, _timeRangeMinIndex: %d", _timeRangeMinIndex);
     
     if (inCalcTimeAdjImageList)
         return;
@@ -475,13 +475,13 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         }
 //        [_nearbyListLock unlock];
 
-        for (FluxImageRenderElement *ire in self.nearbyList)
-        {
-            if (ire.imageMetadata.justCaptured > 0)
-            {
-                NSLog(@"Unpruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-            }
-        }
+//        for (FluxImageRenderElement *ire in self.nearbyList)
+//        {
+//            if (ire.imageMetadata.justCaptured > 0)
+//            {
+//                NSLog(@"Unpruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
+//            }
+//        }
 
         // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
         // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
@@ -496,13 +496,13 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:_nearbyPrunedList andMaxIncidentThreshold:maxIncidentThreshold];
         }
         
-        for (FluxImageRenderElement *ire in self.nearbyList)
-        {
-            if (ire.imageMetadata.justCaptured > 0)
-            {
-                NSLog(@"Pruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-            }
-        }
+//        for (FluxImageRenderElement *ire in self.nearbyList)
+//        {
+//            if (ire.imageMetadata.justCaptured > 0)
+//            {
+//                NSLog(@"Pruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
+//            }
+//        }
 
         // generate the displayList...
         
@@ -555,10 +555,10 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
                 [self.displayList addObject:ire];
-                if (ire.imageMetadata.justCaptured > 0)
-                {
-                    NSLog(@"Displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-                }
+//                if (ire.imageMetadata.justCaptured > 0)
+//                {
+//                    NSLog(@"Displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
+//                }
                 
                 //to get display date range
                 NSDate *date = [ire timestamp]; 
@@ -576,20 +576,20 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     self.latestDisplayDate = date;
                 }
             }
-            else if (ire.imageMetadata.justCaptured > 0)
-            {
-                NSLog(@"Not displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-            }
+//            else if (ire.imageMetadata.justCaptured > 0)
+//            {
+//                NSLog(@"Not displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
+//            }
         }
         [_nearbyListLock unlock];
 
         for (; ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count); idx++)
         {
             FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
-            if (ire.imageMetadata.justCaptured > 0)
-            {
-                NSLog(@"Not considering displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-            }
+//            if (ire.imageMetadata.justCaptured > 0)
+//            {
+//                NSLog(@"Not considering displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
+//            }
             
         }
         
@@ -1028,7 +1028,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 - (NSMutableArray *)selectRenderElementsInto:(NSMutableArray *)renderList ToMaxCount:(integer_t)maxCount
 {
     [renderList removeAllObjects];
-    NSLog(@"selectRenderElements");
+//    NSLog(@"selectRenderElements");
     
     int maxDisplayCount = self.displayListCount;
     maxDisplayCount = MIN(maxDisplayCount, maxCount);
@@ -1055,18 +1055,18 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 //                    NSLog(@"id: %@ added, idx: %d, relHeading: %f", ire.localID, count, ire.imageMetadata.relHeading);
                     count++;
                 }
-                else
-                {
-                    count++;
-                    if (ire.imageMetadata.justCaptured > 0)
-                        NSLog(@"id: %@ not included, relHeading: %f, displaycount: %d", ire.localID, ire.imageMetadata.relHeading, count);
-                }
+//                else
+//                {
+//                    count++;
+//                    if (ire.imageMetadata.justCaptured > 0)
+//                        NSLog(@"id: %@ not included, relHeading: %f, displaycount: %d", ire.localID, ire.imageMetadata.relHeading, count);
+//                }
             }
-            else
-            {
-                if (ire.imageMetadata.justCaptured > 0)
-                    NSLog(@"id: %@ not included, relHeading: %f", ire.localID, ire.imageMetadata.relHeading);
-            }
+//            else
+//            {
+//                if (ire.imageMetadata.justCaptured > 0)
+//                    NSLog(@"id: %@ not included, relHeading: %f", ire.localID, ire.imageMetadata.relHeading);
+//            }
         }
     }
     [self unlockDisplayList];
@@ -1076,7 +1076,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
-    NSLog(@"Renderlist Count: %d", renderList.count);
+//    NSLog(@"Renderlist Count: %d", renderList.count);
 
     NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: /*[NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],*/
                                 [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
@@ -1090,7 +1090,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             // reset to higher-res (quarterhd) textures if already in the cache
             for (FluxImageRenderElement *ire in renderList)
             {
-                NSLog(@"Rendering localid: %@, imageid: %d, just captured: %d", ire.imageMetadata.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured);
+//                NSLog(@"Rendering localid: %@, imageid: %d, just captured: %d", ire.imageMetadata.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured);
                 if (ire.imageRenderType < quarterhd)
                 {
                     FluxImageType rtype = none;
