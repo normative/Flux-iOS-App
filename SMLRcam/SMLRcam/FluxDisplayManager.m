@@ -583,15 +583,14 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         }
         [_nearbyListLock unlock];
 
-        for (; ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count); idx++)
-        {
-            FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
+//        for (; ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count); idx++)
+//        {
+//            FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
 //            if (ire.imageMetadata.justCaptured > 0)
 //            {
 //                NSLog(@"Not considering displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
 //            }
-            
-        }
+//        }
         
         // sort by abs(heading delta with current) asc
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
@@ -750,9 +749,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 - (void)requestNearbyItems
 {
     // make request
-    
     if (_isScanMode)
     {
+//        NSLog(@"requestNearbyItems");
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
         
         dataRequest.maxReturnItems = 100;

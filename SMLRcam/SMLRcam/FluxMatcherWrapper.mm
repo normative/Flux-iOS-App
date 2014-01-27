@@ -281,7 +281,9 @@ const int auto_threshold_inc = 10;
 
 
 
-- (int)matchAndCalculateTransformsWithRotation:(double[])R1 withTranslation:(double[])t1 withNormal:(double[])n1 withDebugImage:(bool)outputImage
+- (int)matchAndCalculateTransformsWithRotation:(double[])R1 withTranslation:(double[])t1 withNormal:(double[])n1
+                        withProjectionDistance:(float)projectionDistance
+                                withDebugImage:(bool)outputImage withImageID:(FluxImageID)imageID
 {
     // Check if object_img and scene_img are valid/set was performed higher up the stack
     std::vector<cv::DMatch> matches;
@@ -340,7 +342,9 @@ const int auto_threshold_inc = 10;
             cv::perspectiveTransform( obj_corners, scene_corners, H );
             
             // Call method for calculating R and t
-            [self calcPnPWithSceneCorners:scene_corners withObjectCorners:obj_corners withRotation:R_matchcam_origin withTranslation:t_matchcam_origin];
+            [self calcPnPWithSceneCorners:scene_corners withObjectCorners:obj_corners
+                             withRotation:R_matchcam_origin withTranslation:t_matchcam_origin
+                   withProjectionDistance:projectionDistance];
             
             std::cout << R_matchcam_origin << std::endl;
             std::cout << t_matchcam_origin << std::endl;
@@ -348,7 +352,7 @@ const int auto_threshold_inc = 10;
             // Extract transforms (R and t) using SolvePnP method
             for (int i=0; i < 3; i++)
             {
-                t1[i] = t_matchcam_origin.at<double>(i)/15.0;
+                t1[i] = t_matchcam_origin.at<double>(i)/projectionDistance;
                 
                 n1[i] = (i < 2) ? 0.0 : 1.0;
                 for (int j=0; j < 3; j++)
@@ -361,10 +365,13 @@ const int auto_threshold_inc = 10;
         // Debugging code to output image
         if (outputImage && (object_img.rows > 0) && (object_img.cols > 0))
         {
+            UIImage *outputImg = [UIImage imageWithCVMat:object_img];
+            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
+            
             // Draw box around video image in destination image
             scene_img.copyTo(dst);
             
-            // Will be a green box if homography is deemed valid, black otherwise
+            // Will be green box/text if homography is deemed valid, black otherwise
             if (validHomographyFound)
             {
                 cv::cvtColor(dst, dst, CV_GRAY2RGB);
@@ -389,30 +396,20 @@ const int auto_threshold_inc = 10;
             line( dst, scene_corners[0], scene_corners[2], cv::Scalar( 0, 255, 0), 4 );
             line( dst, scene_corners[1], scene_corners[3], cv::Scalar( 0, 255, 0), 4 );
             
-            NSString *testOutStr = [NSString stringWithFormat:@"(%f, %f)", scene_corners[4].x, scene_corners[4].y];
+            NSString *testOutStr = [NSString stringWithFormat:@"ID: %d Center: (%.2f, %.2f)",
+                                    imageID, scene_corners[4].x, scene_corners[4].y];
             cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
 
-            UIImage *outputImg = [UIImage imageWithCVMat:dst];
-            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
-            
-            outputImg = [UIImage imageWithCVMat:object_img];
-            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
-
-            outputImg = [UIImage imageWithCVMat:scene_img];
-            UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
-            
-            scene_img.copyTo(dst);
-            cv::cvtColor(dst, dst, CV_GRAY2RGB);
-            
             if (validHomographyFound)
             {
                 euler_angles test_angles = [self calculateEulerAngles:R_matchcam_origin];
-                testOutStr = [NSString stringWithFormat:@"euler(%f, %f, %f)", test_angles.theta1*180.0/M_PI, test_angles.theta2*180.0/M_PI, test_angles.theta3*180.0/M_PI];
-                cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
-                testOutStr = [NSString stringWithFormat:@"t(%f, %f, %f)", t1[0]*15.0, t1[1]*15.0, t1[2]*15.0];
+                testOutStr = [NSString stringWithFormat:@"euler(%.5f, %.5f, %.5f)", test_angles.theta1*180.0/M_PI, test_angles.theta2*180.0/M_PI, test_angles.theta3*180.0/M_PI];
                 cv::putText(dst, testOutStr.UTF8String, cvPoint(50,200), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
+                testOutStr = [NSString stringWithFormat:@"t(%.5f, %.5f, %.5f)",
+                              t1[0]*projectionDistance, t1[1]*projectionDistance, t1[2]*projectionDistance];
+                cv::putText(dst, testOutStr.UTF8String, cvPoint(50,275), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
             }
-            
+
             outputImg = [UIImage imageWithCVMat:dst];
             UIImageWriteToSavedPhotosAlbum(outputImg, nil, nil, nil);
         }
@@ -427,9 +424,8 @@ const int auto_threshold_inc = 10;
 
 - (void)calcPnPWithSceneCorners:(std::vector<cv::Point2f>&)scene_corners withObjectCorners:(std::vector<cv::Point2f>&)object_corners
                    withRotation:(cv::Mat&)R_final withTranslation:(cv::Mat&)t_final
+         withProjectionDistance:(float)projection_distance
 {
-    double projection_distance = 15.0;
-    
     // Camera intrinsics
     cv::Mat K = [self calculateCameraMatrixWithRows:scene_img.rows andColums:scene_img.cols];
     

@@ -7,6 +7,7 @@
 //
 
 #import "FluxCameraFrameElement.h"
+#import "FluxScanImageObject.h"
 
 #import <Foundation/Foundation.h>
 
@@ -70,7 +71,9 @@ enum feature_matching_error_codes {
 
 // Wrapper for: FluxMatcher::match() with transforms computed from H
 // Returns 0 for success
--(int)matchAndCalculateTransformsWithRotation:(double[])R1 withTranslation:(double[])t1 withNormal:(double[])n1 withDebugImage:(bool)outputImage;
+-(int)matchAndCalculateTransformsWithRotation:(double[])R1 withTranslation:(double[])t1 withNormal:(double[])n1
+                       withProjectionDistance:(float)projectionDistance
+                               withDebugImage:(bool)outputImage withImageID:(FluxImageID)imageID;
 
 // Wrapper for: FluxMatcher::match() with matched box drawn
 -(UIImage *)matchAndDrawFeatures;
