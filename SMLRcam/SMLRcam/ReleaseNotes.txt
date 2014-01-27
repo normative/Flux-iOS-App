@@ -1,6 +1,7 @@
 Release Notes:
 
 - fix issue with newly captured image disappearing briefly after upload (Trello issue #264)
+- display proper profile image on image detail view (Trello issue #316)
 
 ******************************************
 
