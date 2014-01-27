@@ -79,9 +79,11 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
             double normal1[3];
             
             result = [self.matcherEngine matchAndCalculateTransformsWithRotation:rotation1
-                                                                     withTranslation:translation1
-                                                                          withNormal:normal1
-                                                                      withDebugImage:NO];//Debugging of images
+                                                                 withTranslation:translation1
+                                                                      withNormal:normal1
+                                                          withProjectionDistance:self.matchRecord.cfe.cameraProjectionDistance
+                                                                  withDebugImage:NO //Debugging of images
+                                                                     withImageID:self.matchRecord.ire.imageMetadata.imageID];
             
             if (feature_matching_success == result)
             {
