@@ -396,16 +396,16 @@ const int auto_threshold_inc = 10;
             line( dst, scene_corners[0], scene_corners[2], cv::Scalar( 0, 255, 0), 4 );
             line( dst, scene_corners[1], scene_corners[3], cv::Scalar( 0, 255, 0), 4 );
             
-            NSString *testOutStr = [NSString stringWithFormat:@"ImageID: %d Center: (%f, %f)",
+            NSString *testOutStr = [NSString stringWithFormat:@"ID: %d Center: (%.2f, %.2f)",
                                     imageID, scene_corners[4].x, scene_corners[4].y];
             cv::putText(dst, testOutStr.UTF8String, cvPoint(50,125), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
 
             if (validHomographyFound)
             {
                 euler_angles test_angles = [self calculateEulerAngles:R_matchcam_origin];
-                testOutStr = [NSString stringWithFormat:@"euler(%f, %f, %f)", test_angles.theta1*180.0/M_PI, test_angles.theta2*180.0/M_PI, test_angles.theta3*180.0/M_PI];
+                testOutStr = [NSString stringWithFormat:@"euler(%.5f, %.5f, %.5f)", test_angles.theta1*180.0/M_PI, test_angles.theta2*180.0/M_PI, test_angles.theta3*180.0/M_PI];
                 cv::putText(dst, testOutStr.UTF8String, cvPoint(50,200), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
-                testOutStr = [NSString stringWithFormat:@"t(%f, %f, %f)",
+                testOutStr = [NSString stringWithFormat:@"t(%.5f, %.5f, %.5f)",
                               t1[0]*projectionDistance, t1[1]*projectionDistance, t1[2]*projectionDistance];
                 cv::putText(dst, testOutStr.UTF8String, cvPoint(50,275), cv::FONT_HERSHEY_SIMPLEX, 1.5f, cv::Scalar( 0, 255, 0),2);
             }
