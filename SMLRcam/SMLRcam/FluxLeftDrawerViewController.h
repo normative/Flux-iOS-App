@@ -10,12 +10,14 @@
 
 #import <MessageUI/MessageUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
+#import "FluxProfilePhotosViewController.h"
 
 #import "FluxDataManager.h"
 
-@interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate,UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
+@interface FluxLeftDrawerViewController : UITableViewController<MFMailComposeViewControllerDelegate,UIActionSheetDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, PhotosViewDelegate>{
     NSMutableArray*tableViewArray;
     FluxUserObject*userObj;
+    int newImageCount;
     
     IBOutlet UIView *fakeSeparator;
     BOOL isEditing;

@@ -20,6 +20,8 @@
 
 @implementation FluxProfilePhotosViewController
 
+@synthesize delegate;
+
 #pragma mark - View Init
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -117,6 +119,9 @@
         [ProgressHUD showSuccess:@"Deleted"];
         [self unfreezeUI];
         
+        if ([delegate respondsToSelector:@selector(FluxProfilePhotosViewController:didPopAndDeleteImages:)]) {
+            [delegate FluxProfilePhotosViewController:self didPopAndDeleteImages:deletedImages];
+        }
         
         NSMutableArray *indexPaths = [[NSMutableArray alloc]initWithCapacity:removedImages.count];
         NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc]init];

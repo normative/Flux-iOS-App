@@ -10,6 +10,12 @@
 #import "IDMPhotoBrowser.h"
 #import "FluxDataManager.h"
 
+@class FluxProfilePhotosViewController;
+@protocol PhotosViewDelegate <NSObject>
+@optional
+- (void)FluxProfilePhotosViewController:(FluxProfilePhotosViewController *)photosViewController didPopAndDeleteImages:(int)count;
+@end
+
 @interface FluxProfilePhotosViewController : UICollectionViewController<IDMPhotoBrowserDelegate, UIActionSheetDelegate>{
     NSMutableArray*picturesArray;
     NSMutableArray*idmPhotos;
@@ -23,7 +29,9 @@
     IBOutlet UICollectionView*theCollectionView;
     IBOutlet UIBarButtonItem *editBarButton;
     BOOL isEditing;
+    __weak id <PhotosViewDelegate> delegate;
 }
+    @property (nonatomic, weak) id <PhotosViewDelegate> delegate;
 @property (nonatomic, strong)FluxDataManager *fluxDataManager;
 - (void)prepareViewWithImagesUserID:(int)userID;
 - (IBAction)garbageButtonAction:(id)sender;
