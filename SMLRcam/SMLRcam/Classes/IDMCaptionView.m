@@ -10,6 +10,10 @@
 #import "IDMPhoto.h"
 #import <QuartzCore/QuartzCore.h>
 
+#import "FluxDataManager.h"
+#import "ProgressHUD.h"
+
+
 static const CGFloat labelPadding = 10;
 
 // Private
@@ -95,6 +99,19 @@ static const CGFloat labelPadding = 10;
     
     userProfileImageButton = [[UIButton alloc]initWithFrame:CGRectMake(10, self.bounds.size.height, 20, 20)];
     [userProfileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage_small"]forState:UIControlStateNormal];
+    
+    // request the image
+    FluxDataRequest *picRequest = [[FluxDataRequest alloc]init];
+    [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest *completedRequest){
+        [userProfileImageButton setBackgroundImage:img forState:UIControlStateNormal];
+
+    }];
+    [picRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    [[FluxDataManager theFluxDataManager] requestUserProfilePicForID:[_photo userID] andSize:@"smallthumb" withDataRequest:picRequest];
+
     [userProfileImageButton setCenter:CGPointMake(userProfileImageButton.center.x, userameButton.center.y)];
     [userProfileImageButton addTarget:self action:@selector(profileTapped) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:userProfileImageButton];

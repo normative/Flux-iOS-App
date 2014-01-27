@@ -25,6 +25,8 @@ float const altitudeMax =  100000;
 @implementation FluxDataManager
 #pragma mark - Class methods
 
+static FluxDataManager *_theFluxDataManager = nil;
+
 + (NSString*)thisDeviceName
 {
     struct utsname systemInfo;
@@ -39,6 +41,11 @@ float const altitudeMax =  100000;
     return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager thisDeviceName]];
 }
 
++ (FluxDataManager *)theFluxDataManager
+{
+    return _theFluxDataManager;
+}
+
 - (id)init
 {
     if (self = [super init])
@@ -50,6 +57,7 @@ float const altitudeMax =  100000;
         
         [self setupNetworkServices];
     }
+    _theFluxDataManager = self;
     return self;
 }
 

@@ -78,11 +78,13 @@
     FluxScanImageObject *imageObject = [fluxMetadata objectForKey:metadata.localID];
     if (!imageObject)
     {
+//        NSLog(@"Metadata for localID %@, imageID %d not found in cache - adding, justCaptured: %d", metadata.localID, metadata.imageID, metadata.justCaptured);
         [fluxMetadata setObject:metadata forKey:metadata.localID];
     }
     else if (imageObject.imageID < 0 && metadata.imageID >= 0)
     {
         // Server has returned a previously local-only metadata object (assigning an imageID). Update.
+//        NSLog(@"Changing imageID for localID %@ from %d to %d, justCaptured: %d", metadata.localID, imageObject.imageID, metadata.imageID, imageObject.justCaptured);
         imageObject.imageID = metadata.imageID;
     }
     
