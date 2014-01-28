@@ -1226,6 +1226,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
     }
+    
+    [self.cameraManager stopAVCapture];
 }
 
 - (void)didReceiveMemoryWarning
