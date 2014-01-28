@@ -149,8 +149,8 @@ static const CGFloat labelPadding = 10;
 
 
 - (void)profileTapped{
-    if ([delegate respondsToSelector:@selector(CaptionView:didSelectUsername:andProfileImage:)]) {
-        [delegate CaptionView:self didSelectUsername:[_photo username] ? [_photo username] : @"" andProfileImage:nil];
-    }
+//    if ([delegate respondsToSelector:@selector(CaptionView:didSelectUsername:andProfileImage:)]) {
+//        [delegate CaptionView:self didSelectUsername:[_photo username] ? [_photo username] : @"" andProfileImage:nil];
+//    }
 }
 @end
