@@ -1,5 +1,24 @@
 Release Notes:
+******************************************
 
+V0.19 B02
+
+Released: 2014-01-27 20:00:00
+
+Release Notes:
+- disable output of feature matching debug images to photo reel
+- disable tap on profile image in image detail view to show user profile
+- open altitude range for query to +- 6m
+
+******************************************
+
+V0.19 B01
+
+Released: 2014-01-27 13:45:00
+
+Release Notes:
+- update count and list of nearby items in locations with no content (Trello issue #334)
+- fix profile pictures so they don't "go away" when the app is re-downloaded (Trello issue #261)
 - fix issue with newly captured image disappearing briefly after upload (Trello issue #264)
 - display proper profile image on image detail view (Trello issue #316)
 - improvements to images output to photo roll
@@ -11,6 +30,7 @@ V0.18 B04
 
 Released: 2014-01-25 00:00:00
 
+Release Notes:
 - update count and list of nearby items in locations with no content (Trello issue #334)
 - fix profile pictures so they don't "go away" when the app is re-downloaded (Trello issue #261)
 - fix server request for imageID=-1 (Trello issue #307)
@@ -32,7 +52,6 @@ V0.18 B03
 Released: 2014-01-17 22:30:00
 
 Release Notes:
-
 - fix startup count=3 issue (remove extraneous / too early call to requestNearbyItems)
 - fix logout issue
 - filtering for "My Photos"
