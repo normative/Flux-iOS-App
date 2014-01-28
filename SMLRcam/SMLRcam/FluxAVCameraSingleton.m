@@ -15,7 +15,7 @@
     static FluxAVCameraSingleton *sharedFluxAVCameraSingleton = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedFluxAVCameraSingleton = [[self alloc] init];
+        sharedFluxAVCameraSingleton = [[FluxAVCameraSingleton alloc] init];
     });
     return sharedFluxAVCameraSingleton;
 }
@@ -61,7 +61,6 @@
             [self.videoDataOutput setVideoSettings:rgbOutputSettings];
             [self.videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; // discard if the data output queue is blocked (as we process the still image)
             
-            
             // create a serial dispatch queue used for the sample buffer delegate as well as when a still image is captured
             // a serial dispatch queue must be used to guarantee that video frames will be delivered in order
             // see the header doc for setSampleBufferDelegate:queue: for more information
@@ -95,6 +94,10 @@
     
 }
 
+- (void)dealloc
+{
+    [self stopAVCapture];
+}
 
 -(void)pauseAVCapture
 {
@@ -104,13 +107,33 @@
     }
 }
 
-- (void)restartAVCapture{
+- (void)restartAVCapture
+{
     if (self.session !=nil  && ![self.session isRunning])
     {
         [self.session startRunning];
     }
 }
 
+-(void)stopAVCapture
+{
+    for(AVCaptureInput *input in self.session.inputs)
+    {
+        [self.session removeInput:input];
+    }
+    
+    for(AVCaptureOutput *output in self.session.outputs)
+    {
+        [self.session removeOutput:output];
+    }
+    
+    if (self.session !=nil && [self.session isRunning])
+    {
+        [self.session stopRunning];
+    }
+    
+    self.session = nil;
+}
 
 #pragma mark Capture
 
