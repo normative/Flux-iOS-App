@@ -1,5 +1,6 @@
 Release Notes:
 ******************************************
+- actually disable output of feature matching debug images to photo reel
 
 V0.19 B02
 
