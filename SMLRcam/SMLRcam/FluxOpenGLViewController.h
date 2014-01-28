@@ -62,7 +62,6 @@
     CVOpenGLESTextureCacheRef _videoTextureCache;
     
     FluxMotionManagerSingleton *motionManager;
-    FluxAVCameraSingleton *cameraManager;
     
     FluxCameraFrameElement *frameGrabRequest;
     bool frameGrabRequested;
@@ -70,8 +69,6 @@
     
     CGPoint _tapPoint;
     fluxCameraParameters *cameraParameters;
-//    NSLock *_nearbyListLock;
-//    NSLock *_renderListLock;
     
     BOOL camIsOn;
     BOOL imageCaptured;
@@ -93,18 +90,13 @@
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
-@property (nonatomic, strong) FluxLocationServicesSingleton *fluxLocationManager;
 
-//	@property (nonatomic, strong) NSMutableDictionary *fluxNearbyMetadata;
-//@property (nonatomic, strong)NSMutableArray *nearbyList;
-//@property (nonatomic, strong)NSMutableArray *renderedTextures;
-
-@property (nonatomic, strong) FluxImageCaptureViewController*imageCaptureViewController;
-@property (nonatomic, strong) FluxSnapshotCaptureViewController*snapshotViewController;
+@property (nonatomic, strong) FluxAVCameraSingleton *cameraManager;
+@property (nonatomic, strong) FluxImageCaptureViewController *imageCaptureViewController;
+@property (nonatomic, strong) FluxSnapshotCaptureViewController *snapshotViewController;
 
 @property (nonatomic, strong) NSMutableArray *renderList;
 @property (nonatomic, strong) NSArray *textureMap;
-
 
 //- (IBAction)stepperChanged:(id)sender;
 

@@ -33,7 +33,6 @@
     __weak IBOutlet MIMapView *fluxMapView;
     
     //location + motion
-    FluxLocationServicesSingleton *locationManager;
     FluxUserLocationMapPin *userLocationPin;
     MKCircle*tempCircle;
     
@@ -46,7 +45,8 @@
 }
 
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
-@property (nonatomic, weak) FluxDisplayManager * fluxDisplayManager;
+@property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
+@property (nonatomic, weak) FluxLocationServicesSingleton *locationManager;
 
 - (IBAction)closeButtonAction:(id)sender;
 

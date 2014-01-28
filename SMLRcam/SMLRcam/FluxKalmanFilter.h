@@ -38,8 +38,6 @@
 // matrix inversion variables, allocating them once to save malloc/free calls
     long *ipiv;
     double *work;
-    
-    
 }
 
 @property (readonly) double positionX;

@@ -1067,8 +1067,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
     UITouch *touch = [touches anyObject];
     NSError*error;
-    [cameraManager.device lockForConfiguration:&error];
-    [cameraManager.device setFocusPointOfInterest:[touch locationInView:self.view]];
+    [self.cameraManager.device lockForConfiguration:&error];
+    [self.cameraManager.device setFocusPointOfInterest:[touch locationInView:self.view]];
 }
 
 - (void)setupAVCapture
@@ -1081,8 +1081,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         NSLog(@"Error at CVOpenGLESTextureCacheCreate %d", err);
         return;
     }
-    cameraManager = [FluxAVCameraSingleton sharedCamera];
-    [cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    self.cameraManager = [FluxAVCameraSingleton sharedCamera];
+    [self.cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 }
 
 - (void)requestCameraFrame:(FluxCameraFrameElement *)frameRequest
@@ -1153,7 +1153,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     self.textureMap = [NSArray arrayWithArray:tempTextureList];
 
-    self.fluxLocationManager = [FluxLocationServicesSingleton sharedManager];
     [self setupMotionManager];
     
     self.context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];

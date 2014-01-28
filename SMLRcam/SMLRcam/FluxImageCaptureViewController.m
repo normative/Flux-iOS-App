@@ -62,8 +62,8 @@ static int captureImageID = -1;
     [undoButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:undoButton.titleLabel.font.pointSize]];
     [approveButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:approveButton.titleLabel.font.pointSize]];
     
-    motionManager = [FluxMotionManagerSingleton sharedManager];
-    locationManager = [FluxLocationServicesSingleton sharedManager];
+    self.motionManager = [FluxMotionManagerSingleton sharedManager];
+    self.locationManager = [FluxLocationServicesSingleton sharedManager];
 	// Do any additional setup after loading the view.
 }
 
@@ -216,12 +216,13 @@ static int captureImageID = -1;
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     UINavigationController*tmp = segue.destinationViewController;
     FluxImageAnnotationViewController* annotationsVC = (FluxImageAnnotationViewController*)tmp.topViewController;
-    if (self.isSnapshot) {
-        [annotationsVC prepareSnapShotViewWithImage:snapshotImage withLocation:locationManager.subadministativearea andDate:[NSDate date]];
+    if (self.isSnapshot)
+    {
+        [annotationsVC prepareSnapShotViewWithImage:snapshotImage withLocation:self.locationManager.subadministativearea andDate:[NSDate date]];
     }
-    else{
-        
-        [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
+    else
+    {
+        [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:self.locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
     }
     [annotationsVC setDelegate:self];
 }
@@ -233,8 +234,8 @@ static int captureImageID = -1;
 - (void)setupAVCapture
 {
     AVCaptureBackgroundQueue = dispatch_queue_create("is.smlr.flux.bgqueue", NULL);
-    cameraManager = [FluxAVCameraSingleton sharedCamera];
-    previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:cameraManager.session];
+    self.cameraManager = [FluxAVCameraSingleton sharedCamera];
+    previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.cameraManager.session];
     [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
     [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
     [previewLayer setFrame:self.view.bounds];
@@ -257,22 +258,22 @@ static int captureImageID = -1;
     [self showFlash:[UIColor blackColor]andFull:NO];
     
     // Collect position and orientation information prior to copying image
-    CLLocation *location = locationManager.rawlocation;
+    CLLocation *location = self.locationManager.rawlocation;
     //CLLocation *bestlocation = locationManager.location;
-    CMAttitude *att = motionManager.attitude;
-    CLLocationDirection heading = locationManager.heading;
+    CMAttitude *att = self.motionManager.attitude;
+    CLLocationDirection heading = self.locationManager.heading;
     
     __block NSDate *endTime = [NSDate date];
     __block NSTimeInterval executionTime = [endTime timeIntervalSinceDate:startTime];
     NSLog(@"Execution Time (1): %f", executionTime);
     
     // Find out the current orientation and tell the still image output.
-	AVCaptureConnection *stillImageConnection = [cameraManager.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
+	AVCaptureConnection *stillImageConnection = [self.cameraManager.stillImageOutput connectionWithMediaType:AVMediaTypeVideo];
 	UIDeviceOrientation curDeviceOrientation = [[UIDevice currentDevice] orientation];
 	AVCaptureVideoOrientation avcaptureOrientation = [self avOrientationForDeviceOrientation:curDeviceOrientation];
 	[stillImageConnection setVideoOrientation:avcaptureOrientation];
 	[stillImageConnection setVideoScaleAndCropFactor:1.0];
-	[cameraManager.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
+	[self.cameraManager.stillImageOutput captureStillImageAsynchronouslyFromConnection:stillImageConnection
                                                                 completionHandler:^(CMSampleBufferRef imageDataSampleBuffer, NSError *error)
      {
          if (error)
@@ -334,12 +335,12 @@ static int captureImageID = -1;
              [capturedImageObject setTimestamp:startTime];
              
              //set estimated location
-             if(locationManager.kflocation.valid ==1)
+             if(self.locationManager.kflocation.valid ==1)
              {
                  capturedImageObject.location_data_type = location_data_valid_ecef;
-                 capturedImageObject.ecefX = locationManager.kflocation.x;
-                 capturedImageObject.ecefY = locationManager.kflocation.y;
-                 capturedImageObject.ecefZ = locationManager.kflocation.z;
+                 capturedImageObject.ecefX = self.locationManager.kflocation.x;
+                 capturedImageObject.ecefY = self.locationManager.kflocation.y;
+                 capturedImageObject.ecefZ = self.locationManager.kflocation.z;
                             
              }
              else

@@ -8,7 +8,6 @@
 
 #import "FluxDisplayManager.h"
 #import "FluxScanImageObject.h"
-#import "FluxImageCaptureViewController.h"
 #import "FluxOpenGLViewController.h"
 
 const int number_OpenGL_Textures = 5;
