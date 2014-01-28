@@ -137,15 +137,19 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 - (void)didUpdateLocation:(NSNotification*)notification
 {
-    CLLocationAccuracy newAccuracy = locationManager.location.horizontalAccuracy;
+    // NSLog(@"Old Accuracy: %f, New Accuract: %f",tempCircle.radius, locationManager.location.horizontalAccuracy);
+//    [UIView animateWithDuration:0.5f
+//                     animations:^(void){
+//                         
+//                     }
+//                     completion:^(BOOL finished){
+//                         
+//                     }];
     [userLocationPin.pinAnnotation setCoordinate:locationManager.location.coordinate];
-    if (userLocationPin.pinAnnotation.horizontalAccuracy != newAccuracy)
-    {
-        NSLog(@"Accuracy: %f",newAccuracy);
-        [fluxMapView removeOverlay:tempCircle];
-        tempCircle = [MKCircle circleWithCenterCoordinate:locationManager.location.coordinate radius:locationManager.location.horizontalAccuracy];
-        [fluxMapView addOverlay:tempCircle];
-    }
+    
+    [fluxMapView removeOverlay:tempCircle];
+    tempCircle = [MKCircle circleWithCenterCoordinate:locationManager.location.coordinate radius:locationManager.location.horizontalAccuracy];
+    [fluxMapView addOverlay:tempCircle];
 }
 
 #pragma mark - IBActions
@@ -199,6 +203,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void) setupMapView
 {
     [fluxMapView setShowsUserLocation:NO];
+    [fluxMapView setPitchEnabled:NO];
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
@@ -212,7 +217,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     userLocationPin.pinAnnotation.horizontalAccuracy = locationManager.location.horizontalAccuracy;
     [fluxMapView addAnnotation:userLocationPin.pinAnnotation];
     
-    userLocationPin.pulsingCircleOverlay = [[FluxUserLocationOverlay alloc]init];
+    //userLocationPin.pulsingCircleOverlay = [[FluxUserLocationOverlay alloc]init];
     tempCircle = [MKCircle circleWithCenterCoordinate:locationManager.location.coordinate radius:locationManager.location.horizontalAccuracy];
     [fluxMapView addOverlay:tempCircle];
 
