@@ -48,11 +48,6 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     
     IBOutlet UIButton *snapshotShareButton;
     
-    //Camera
-    AVCaptureVideoPreviewLayer *previewLayer;
-    AVCaptureDevice *device;
-    dispatch_queue_t AVCaptureBackgroundQueue;
-    
     NSMutableArray *capturedImageObjects;
     NSMutableArray *capturedImages;
     

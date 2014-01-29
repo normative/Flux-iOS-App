@@ -89,7 +89,6 @@ static int captureImageID = -1;
                              [self.view setAlpha:1.0];
                          }
                          completion:nil];
-        [[self.view layer] insertSublayer:previewLayer atIndex:0];
     }
     else{
         [UIView animateWithDuration:0.3f
@@ -233,12 +232,7 @@ static int captureImageID = -1;
 
 - (void)setupAVCapture
 {
-    AVCaptureBackgroundQueue = dispatch_queue_create("is.smlr.flux.bgqueue", NULL);
     self.cameraManager = [FluxAVCameraSingleton sharedCamera];
-    previewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.cameraManager.session];
-    [previewLayer setBackgroundColor:[[UIColor blackColor] CGColor]];
-    [previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-    [previewLayer setFrame:self.view.bounds];
 }
 
 - (void)takePicture{
@@ -443,11 +437,6 @@ static int captureImageID = -1;
     CGImageRef imageRef = CGImageCreateWithImageInRect([spunImage CGImage], CGRectMake(0, ((height) - (width)) / 2, width, width));
     UIImage* croppedImg = [UIImage imageWithCGImage:imageRef];
     CGImageRelease(imageRef);
-
-    if ([capturedImageObjects count]==0)
-    {
-        [previewLayer removeFromSuperlayer];
-    }
 
     [capturedImageObjects addObject:newImageObject];
     [capturedImages addObject:spunImage];   // post the uncropped version
