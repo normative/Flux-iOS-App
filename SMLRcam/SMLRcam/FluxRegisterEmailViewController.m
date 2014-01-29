@@ -128,7 +128,7 @@
     [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
     [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [cell.textField setKeyboardType:UIKeyboardTypeEmailAddress];
-    [cell.textField setReturnKeyType:UIReturnKeyNext];
+    [cell.textField setReturnKeyType:UIReturnKeyDefault];
 
     
     [cell.textField setDelegate:self];

@@ -436,9 +436,11 @@
     
     NSString*username = (NSString*)[userInfo objectForKey:@"username"];
     NSString*email = (NSString*)[userInfo objectForKey:@"email"];
+    NSString*socialName = (NSString*)[userInfo objectForKey:@"socialName"];
     
     [newUser setUsername:username];
     [newUser setEmail:email];
+    [newUser setSocialName:socialName];
     
     if ([(NSString*)[userInfo objectForKey:@"partner"] isEqualToString:TwitterService]) {
         NSDictionary*twitter = [NSDictionary dictionaryWithObjectsAndKeys:(NSString*)[userInfo objectForKey:@"token"],@"access_token",(NSString*)[userInfo objectForKey:@"secret"],@"access_token_secret",  nil];
@@ -690,6 +692,18 @@
         if (![NSString stringWithFormat:@"%i",userObject.userID]) {
             NSLog(@"Login didn't return a valid userID");
         }
+        
+        //I have a socialName, just not which social service it is yet. maybe check for @?
+        if (userObject.socialName) {
+            if (userObject.twitter) {
+                [UICKeyChainStore setString:userObject.socialName forKey:FluxUsernameKey service:TwitterService];
+            }
+            else{
+                [UICKeyChainStore setString:userObject.socialName forKey:FluxNameKey service:FacebookService];
+            }
+        }
+
+        
         
         
         if (new) {

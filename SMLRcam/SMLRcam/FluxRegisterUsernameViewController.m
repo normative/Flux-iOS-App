@@ -33,10 +33,6 @@
 {
     [super viewDidLoad];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(backAction)];
-    
-    
-    [createAccountButton setEnabled:NO];
-    [createAccountButton setAlpha:0.6];
     [createAccountButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:createAccountButton.titleLabel.font.pointSize]];
     
     
@@ -102,7 +98,7 @@
     [theTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [theTextField setKeyboardType:UIKeyboardTypeDefault];
     [theTextField setSecureTextEntry:NO];
-    [theTextField setReturnKeyType:UIReturnKeyDone];
+    [theTextField setReturnKeyType:UIReturnKeyDefault];
     
     
     [theTextField setDelegate:self];
@@ -139,21 +135,21 @@
     }
     
     username = text;
-    [createAccountButton setEnabled:NO];
-    [createAccountButton setAlpha:0.6];
     [checkMarkImageView setHidden:YES];
+    
     return YES;
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField{
-    if ([textField returnKeyType] == UIReturnKeyJoin) {
-        [self createAccountButtonAction:nil];
-    }else{
-        [self checkUsernameUniqueness];
-    }
-
-    return YES;
-}
+//- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+//    if ([createAccountButton isEnabled]) {
+//        [self createAccountButtonAction:nil];
+//    }
+//    else{
+//        [self checkUsernameUniqueness];
+//    }
+//
+//    return YES;
+//}
 
 - (void)checkUsernameUniqueness{
 //    FluxTextFieldCell*cell = (FluxTextFieldCell*)[usernameTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
@@ -173,18 +169,13 @@
                 usernameBorderLayer.frame = usernameContainerView.bounds;
                 [CATransaction commit];
             }
-            [createAccountButton setAlpha:1.0];
-            [createAccountButton setEnabled:YES];
             [checkMarkImageView setHidden:NO];
-            [theTextField setReturnKeyType:UIReturnKeyJoin];
-            [theTextField reloadInputViews];
+            [self performSelector:@selector(proceed) withObject:nil afterDelay:0.2];
         }
         
         else{
             showUernamePrompt = YES;
             [checkMarkImageView setHidden:YES];
-            [theTextField setReturnKeyType:UIReturnKeyDone];
-            [theTextField reloadInputViews];
 
             if (!warningLabel) {
                 warningLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, usernameContainerView.frame.size.width, 25)];
@@ -205,9 +196,6 @@
                 usernameBorderLayer.frame = usernameContainerView.bounds;
                 [CATransaction commit];
             }
-            
-            [createAccountButton setEnabled:NO];
-            [createAccountButton setAlpha:0.6];
         }
         [activityView setHidden:YES];
     }];
@@ -282,13 +270,17 @@
      }];
 }
 
-- (IBAction)createAccountButtonAction:(id)sender {
+- (void)proceed{
     [self.userInfo setObject:username forKey:@"username"];
     if ([delegate respondsToSelector:@selector(RegisterUsernameView:didAcceptAddUsernameToUserInfo:)]) {
         [delegate RegisterUsernameView:self didAcceptAddUsernameToUserInfo:self.userInfo];
     }
     sent = YES;
     [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+- (IBAction)createAccountButtonAction:(id)sender {
+    [self checkUsernameUniqueness];
 }
 
 @end

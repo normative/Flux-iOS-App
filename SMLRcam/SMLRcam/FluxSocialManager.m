@@ -176,7 +176,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 //call delegate
                 if (isRegister) {
                     if ([delegate respondsToSelector:@selector(SocialManager:didRegisterTwitterAccountWithUserInfo:)]) {
-                        NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:0], @"token", [parts objectAtIndex:3], @"username",[parts objectAtIndex:1], @"secret", [self.TWAccounts objectAtIndex:index] , @"account", nil];
+                        NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:0], @"token", [parts objectAtIndex:3], @"username",[parts objectAtIndex:1], @"secret", [self.TWAccounts objectAtIndex:index] , @"account",[NSString stringWithFormat:@"@%@",[parts objectAtIndex:3]], @"socialName", nil];
                         [delegate SocialManager:self didRegisterTwitterAccountWithUserInfo:userInfo];
                     }
                 }
@@ -273,6 +273,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                  if (isRegister) {
                                      NSMutableDictionary*dict = [NSMutableDictionary dictionaryWithDictionary:user];
                                      [dict setObject:FBSession.activeSession.accessTokenData.accessToken forKey:@"token"];
+                                     [dict setObject:user.name forKey:@"socialName"];
                                      if ([delegate respondsToSelector:@selector(SocialManager:didRegisterFacebookAccountWithUserInfo:)]) {
                                          [delegate SocialManager:self didRegisterFacebookAccountWithUserInfo:dict];
                                      }

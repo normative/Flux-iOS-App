@@ -13,7 +13,7 @@
 @property (nonatomic, strong) NSString*auth_token;
 @property (nonatomic, strong) NSString*facebook;
 @property (nonatomic, strong) NSDictionary*twitter;
-
+@property (nonatomic, strong) NSString*socialName;
 
 @property (nonatomic) int userID;
 @property (nonatomic, strong) NSString*name;
