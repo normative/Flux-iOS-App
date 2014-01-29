@@ -41,6 +41,22 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     return self;
 }
 
+#pragma mark Registering with Social Accounts
+
+#pragma mark Twitter
+- (void)registerWithTwitter{
+    isRegister = YES;
+    [self linkTwitter];
+}
+
+#pragma mark Facebook
+- (void)registerWithFacebook{
+    isRegister = YES;
+    [self linkFacebook];
+}
+
+
+
 #pragma mark - Linking Social Accounts
 
 #pragma mark Twitter
@@ -49,10 +65,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     
     NSString*username = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
     if (username) {
-        if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
-            [delegate SocialManager:self didLinkTwitterAccountWithUsername:username];
-        }
-        return;
+        [UICKeyChainStore removeAllItemsForService:TwitterService];
     }
     
     
@@ -72,7 +85,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                     
                     NSMutableArray*accountNames = [[NSMutableArray alloc]init];
                     for (ACAccount *acct in self.TWAccounts) {
-                        [accountNames addObject:acct.username];
+                        [accountNames addObject:acct.accountDescription];
                     }
                     
                     [UIActionSheet showInView:self.window
@@ -86,9 +99,17 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                              [self loginWithTwitterForAccountIndex:buttonIndex];
                                          }
                                          else{
-                                             if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                                                 [delegate SocialManager:self didFailToLinkSocialAccount:TwitterService];
+                                             if (isRegister) {
+                                                 if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                                                     [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                                                 }
                                              }
+                                             else{
+                                                 if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                                                     [delegate SocialManager:self didFailToLinkSocialAccount:TwitterService];
+                                                 }
+                                             }
+                                             
                                          }
                                      }];
                 }
@@ -97,9 +118,17 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                         [self loginWithTwitterForAccountIndex:0];
                     }
                     else{
-                        if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                            [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                        if (isRegister) {
+                            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                            }
                         }
+                        else{
+                            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                            }
+                        }
+                        
                         
                         NSLog(@"The user has no accounts");
                     }
@@ -107,9 +136,17 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 }
             }
             else {
-                if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                    [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                if (isRegister) {
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                        [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                    }
                 }
+                else{
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                        [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                    }
+                }
+                
                 
                 NSLog(@"You were not granted access to the user's Twitter accounts.");
             }
@@ -131,30 +168,56 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
             
             if (parts.count > 1) {
-                [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
-                [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
+                if (!isRegister) {
+                    [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
+                    [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
+                }
                 
                 //call delegate
-                if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
-                    [delegate SocialManager:self didLinkTwitterAccountWithUsername:(NSString*)[parts objectAtIndex:3]];
+                if (isRegister) {
+                    if ([delegate respondsToSelector:@selector(SocialManager:didRegisterTwitterAccountWithUserInfo:)]) {
+                        NSDictionary*userInfo = [[NSDictionary alloc]initWithObjectsAndKeys:[parts objectAtIndex:0], @"token", [parts objectAtIndex:3], @"username",[parts objectAtIndex:1], @"secret", [self.TWAccounts objectAtIndex:index] , @"account", nil];
+                        [delegate SocialManager:self didRegisterTwitterAccountWithUserInfo:userInfo];
+                    }
+                }
+                else{
+                    if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
+                        [delegate SocialManager:self didLinkTwitterAccountWithUsername:(NSString*)[parts objectAtIndex:3]];
+                    }
                 }
             }
             else{
                 if (parts.count) {
                     NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [parts objectAtIndex:0]);
                 }
-                if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                    [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                //call delegate
+                if (isRegister) {
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                        [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                    }
                 }
+                else{
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                        [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                    }
+                }
+                
             }
             
 
         }
         else {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
-            
-            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+            //call delegate
+            if (isRegister) {
+                if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                    [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                }
+            }
+            else{
+                if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                    [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                }
             }
         }
     }];
@@ -197,22 +260,45 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                      if (FBSession.activeSession.isOpen) {
                          [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
                              if (!error) {
-                                 [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
-                                 [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
-                                 [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
+                                 if (!isRegister) {
+                                     [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
+                                     [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
+                                     [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
+                                 }
+                                 
+                                 
+
                                  
                                  //call delegate
-                                 if ([delegate respondsToSelector:@selector(SocialManager:didLinkFacebookAccountWithName:)]) {
-                                     [delegate SocialManager:self didLinkFacebookAccountWithName:user.name];
+                                 if (isRegister) {
+                                     NSMutableDictionary*dict = [NSMutableDictionary dictionaryWithDictionary:user];
+                                     [dict setObject:FBSession.activeSession.accessTokenData.accessToken forKey:@"token"];
+                                     if ([delegate respondsToSelector:@selector(SocialManager:didRegisterFacebookAccountWithUserInfo:)]) {
+                                         [delegate SocialManager:self didRegisterFacebookAccountWithUserInfo:dict];
+                                     }
                                  }
+                                 else{
+                                     if ([delegate respondsToSelector:@selector(SocialManager:didLinkFacebookAccountWithName:)]) {
+                                         [delegate SocialManager:self didLinkFacebookAccountWithName:user.name];
+                                     }
+                                 }
+                                 
                              }
                              
                              else{
                                  dispatch_async(dispatch_get_main_queue(), ^{
                                      NSLog(@"Facebook Link Error: %@",error.localizedDescription);
-                                     if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                                         [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                                     if (isRegister) {
+                                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                                             [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
+                                         }
                                      }
+                                     else{
+                                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                                             [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                                         }
+                                     }
+                                     
                                  });
                                  
                              }
@@ -223,9 +309,17 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
              else{
                  dispatch_async(dispatch_get_main_queue(), ^{
                      NSLog(@"Facebook Link Error: %@",error.localizedDescription);
-                     if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                         [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                     if (isRegister) {
+                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                             [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
+                         }
                      }
+                     else{
+                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                             [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                         }
+                     }
+                     
                  });
                  
              }

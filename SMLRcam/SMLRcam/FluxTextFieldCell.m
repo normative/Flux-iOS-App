@@ -136,7 +136,7 @@
     }
     //[self insertSubview:imgView belowSubview:self.checkImageView];
     if (!self.textField) {
-        self.textField = [[FluxTextField alloc]initWithFrame:self.bounds andPlaceholderText:placeholder];
+        self.textField = [[FluxTextField alloc]initWithFrame:CGRectMake(35, 0, self.frame.size.width-35-35, self.frame.size.height) andPlaceholderText:placeholder];
         [self addSubview:self.textField];
     }
     else{

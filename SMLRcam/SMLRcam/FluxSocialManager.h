@@ -24,6 +24,10 @@
 - (void)SocialManager:(FluxSocialManager*)socialManager didLinkTwitterAccountWithUsername: (NSString*)username;
 - (void)SocialManager:(FluxSocialManager*)socialManager didFailToLinkSocialAccount:(NSString*)accountType;
 
+- (void)SocialManager:(FluxSocialManager*)socialManager didRegisterFacebookAccountWithUserInfo: (NSDictionary*)userInfo;
+- (void)SocialManager:(FluxSocialManager*)socialManager didRegisterTwitterAccountWithUserInfo: (NSDictionary*)userInfo;
+- (void)SocialManager:(FluxSocialManager*)socialManager didFailToRegisterSocialAccount:(NSString*)accountType;
+
 - (void)SocialManager:(FluxSocialManager*)socialManager didMakeSocialPosts:(NSArray*)socialPartners;
 - (void)SocialManager:(FluxSocialManager*)socialManager didFailToMakeSocialPostWithType:(NSString*)socialType;
 @end
@@ -33,6 +37,8 @@
     NSMutableArray* outstandingPosts;
     NSMutableArray*posts;
     id __unsafe_unretained delegate;
+    
+    BOOL isRegister;
 }
 
 @property (unsafe_unretained) id <FluxSocialManagerDelegate> delegate;
@@ -48,6 +54,9 @@
 
 - (void)linkFacebook;
 - (void)linkTwitter;
+
+- (void)registerWithFacebook;
+- (void)registerWithTwitter;
 
 - (void)socialPostTo:(NSArray*)socialPartners withStatus:(NSString*)status andImage:(UIImage*)image;
 
