@@ -8,7 +8,6 @@
 
 #import "FluxDisplayManager.h"
 #import "FluxScanImageObject.h"
-#import "FluxImageCaptureViewController.h"
 #import "FluxOpenGLViewController.h"
 
 const int number_OpenGL_Textures = 5;
@@ -121,6 +120,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    
+    [self.fluxFeatureMatchingQueue shutdownMatchQueue];
 }
 
 //double getAbsAngle(double angle, double heading)

@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 
 #import "FluxCacheImageObject.h"
-#import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
 

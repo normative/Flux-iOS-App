@@ -70,7 +70,7 @@ extern NSString* const FluxOpenGLShouldRender;
 @property (nonatomic, strong) FluxLocationServicesSingleton *locationManager;
 @property (nonatomic, strong) FluxFeatureMatchingQueue *fluxFeatureMatchingQueue;
 @property (nonatomic, strong) NSArray *fluxMapContentMetadata;
-@property (nonatomic, strong) GLKViewController *openGLVC;
+@property (nonatomic, weak) GLKViewController *openGLVC;
 
 @property (readonly, nonatomic, strong) NSMutableArray *nearbyList;
 @property (readonly, nonatomic, strong) NSMutableArray *nearbyUnPrunedList;

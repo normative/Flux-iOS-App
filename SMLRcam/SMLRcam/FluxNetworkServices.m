@@ -570,16 +570,16 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        if ([delegate respondsToSelector:@selector(NetworkServices:didLogout:)])
+        if ([delegate respondsToSelector:@selector(NetworkServices:didLogoutWithRequestID:)])
         {
-            [delegate NetworkServices:self didLogout:requestID];
+            [delegate NetworkServices:self didLogoutWithRequestID:requestID];
         }
     }
     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         if ([operation.response statusCode] == 404) {
-            if ([delegate respondsToSelector:@selector(NetworkServices:didLogout:)])
+            if ([delegate respondsToSelector:@selector(NetworkServices:didLogoutWithRequestID:)])
             {
-                [delegate NetworkServices:self didLogout:requestID];
+                [delegate NetworkServices:self didLogoutWithRequestID:requestID];
             }
         }
         else{

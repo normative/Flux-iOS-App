@@ -48,16 +48,6 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     
     IBOutlet UIButton *snapshotShareButton;
     
-    
-    //Camera
-    AVCaptureVideoPreviewLayer *previewLayer;
-    AVCaptureDevice *device;
-    dispatch_queue_t AVCaptureBackgroundQueue;
-    
-    
-    FluxLocationServicesSingleton *locationManager;
-    FluxMotionManagerSingleton *motionManager;
-    FluxAVCameraSingleton *cameraManager;
     NSMutableArray *capturedImageObjects;
     NSMutableArray *capturedImages;
     
@@ -69,7 +59,11 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
 //@property (nonatomic, weak) NSMutableDictionary *fluxNearbyMetadata;
 //@property (nonatomic, weak) NSMutableArray *nearbyList;
 
-@property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
+@property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
+@property (nonatomic, weak) FluxAVCameraSingleton *cameraManager;
+
+@property (nonatomic, weak) FluxLocationServicesSingleton *locationManager;
+@property (nonatomic, weak) FluxMotionManagerSingleton *motionManager;
 
 - (IBAction)undoButtonAction:(id)sender;
 

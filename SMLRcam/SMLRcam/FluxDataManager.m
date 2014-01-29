@@ -17,8 +17,8 @@ NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidComplete
 
 NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImageLocalID";
 
-float const altitudeLowRange = 3.0;
-float const altitudeHighRange = 3.0;
+float const altitudeLowRange = 6.0;
+float const altitudeHighRange = 6.0;
 float const altitudeMin = -100000;
 float const altitudeMax =  100000;
 

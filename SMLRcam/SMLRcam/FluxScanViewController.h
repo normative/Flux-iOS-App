@@ -11,25 +11,19 @@
 #import "FluxTimeFilterControl.h"
 #import "FluxCameraButton.h"
 #import "FluxCompassButton.h"
-#import "FluxDataManager.h"
-#import "FluxDataRequest.h"
 #import "FluxMapViewController.h"
-#include "FluxOpenGLViewController.h"
+#import "FluxOpenGLViewController.h"
 #import "FluxImageAnnotationViewController.h"
-#import "FluxImageCaptureViewController.h"
 #import "FluxFiltersViewController.h"
-#import "FluxLocationServicesSingleton.h"
 #import "IDMPhotoBrowser.h"
 #import "BBCyclingLabel.h"
 
 #import "FluxSocialManager.h"
 #import "FluxDisplayManager.h"
 
-
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMotion/CoreMotion.h>
-#import <dispatch/dispatch.h>
 
 #import "GAITrackedViewController.h"
 
@@ -39,7 +33,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //extern NSString* const FluxDidTapImage;
 @class FluxRotatingCompassButton;
 
-
 @interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate>{
     
     //headerView
@@ -48,11 +41,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     UIImage *snapshotBGImage;
     
     UITableView*annotationsTableView;
-    
-    
     UIView *photoViewerPlacementView;
-
-
     
     BOOL imageCaptureIsActive;
     FluxScanImageObject *capturedImageObject;

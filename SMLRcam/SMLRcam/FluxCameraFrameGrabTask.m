@@ -63,11 +63,17 @@
                     [self.openGLVC requestCameraFrame:self.cameraRecord];
 
                     // Wait for signal
-                    while (!self.cameraRecord.frameReady)
+                    while (!self.cameraRecord.frameReady && !self.isCancelled)
                     {
                         [self.cameraRecord.frameReadyCondition wait];
                     }
                     [self.cameraRecord.frameReadyCondition unlock];
+                    
+                    if (self.isCancelled)
+                    {
+                        [(NSObject *)self.delegate performSelectorOnMainThread:@selector(cameraFrameGrabTaskWasCancelled:) withObject:self waitUntilDone:NO];
+                        return;
+                    }
                     
                     successfulFramGrab = [self.matcherEngine extractFeaturesForSceneImage:self.cameraRecord.cameraFrameImage
                                                                    withCameraFrameElement:self.cameraRecord];

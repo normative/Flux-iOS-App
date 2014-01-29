@@ -111,6 +111,20 @@ const double reuseCameraFrameTimeInterval = 1.0;
     [self.pendingOperations.cameraFrameGrabInProgress removeAllObjects];
 }
 
+- (void)shutdownMatchQueue
+{
+    // Cancel camera frame tasks and signal any that might hang and wait for a camera frame that will never arrive
+    [self.pendingOperations.cameraFrameGrabQueue cancelAllOperations];
+    [self.pendingOperations signalWaitingCameraTasks];
+    
+    // Cancel/delete the rest
+    [self deleteMatchRequests];
+    
+    // Wait for them all to complete
+    [self.pendingOperations.cameraFrameGrabQueue waitUntilAllOperationsAreFinished];
+    [self.pendingOperations.featureMatchingQueue waitUntilAllOperationsAreFinished];
+}
+
 #pragma mark - FluxFeatureMatching Delegate
 
 - (void)featureMatchingTaskDidFinish:(FluxFeatureMatchingTask *)featureMatcher

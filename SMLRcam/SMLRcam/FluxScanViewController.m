@@ -12,11 +12,9 @@
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxTimeFilterControl.h"
 #import "FluxImageRenderElement.h"
-#import <malloc/malloc.h>
 #import "FluxImageTools.h"
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
-
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -777,7 +775,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-        //[self.cameraButton setAlpha:0.4];
+        [self.cameraButton setAlpha:0.4];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];

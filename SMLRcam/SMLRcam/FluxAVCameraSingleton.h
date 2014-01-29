@@ -11,28 +11,27 @@
 #import <CoreMedia/CMBufferQueue.h>
 @protocol FluxCameraDelegate;
 
-@interface FluxAVCameraSingleton : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>{
-    id <FluxCameraDelegate> delegate;
+@interface FluxAVCameraSingleton : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
+{
     int _dataPreview;
     CMBufferQueueRef previewBufferQueue;
-    
-    
 }
+
 @property (nonatomic, strong)AVCaptureVideoDataOutput *videoDataOutput;
 @property (nonatomic, strong)AVCaptureSession *session;
 @property (nonatomic, strong)dispatch_queue_t videoDataOutputQueue;
 @property (nonatomic, strong)AVCaptureStillImageOutput *stillImageOutput;
 @property (nonatomic, strong)AVCaptureDevice *device;
-@property (readwrite, assign) id <FluxCameraDelegate> delegate;
--(void)pauseAVCapture;
-- (void)restartAVCapture;
+@property (nonatomic, assign) id <FluxCameraDelegate> delegate;
 
+- (void)pauseAVCapture;
+- (void)startAVCapture;
+- (void)stopAVCapture;
 + (id)sharedCamera;
 
-
 @end
+
 @protocol FluxCameraDelegate <NSObject>
 @required
 - (void)pixelBufferReadyForDisplay:(CVPixelBufferRef)pixelBuffer;	// This method is always called on the main thread.
-
 @end
