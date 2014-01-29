@@ -1,4 +1,7 @@
 Release Notes:
+- reduce memory leak during logout
+
+Release Notes:
 ******************************************
 
 V0.19 B03
