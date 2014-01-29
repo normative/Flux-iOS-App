@@ -336,6 +336,9 @@
                 }
                 break;
             }
+        if ([cell.warningLabel superview]) {
+            [cell.warningLabel removeFromSuperview];
+        }
     }
 
     [cell.textField setDelegate:self];
