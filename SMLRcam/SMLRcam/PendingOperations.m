@@ -89,4 +89,19 @@
     [_cameraFrameGrabInProgress removeObjectsForKeys:toDeleteList];
 }
 
+- (void)signalWaitingCameraTasks
+{
+    for (id key in _cameraFrameGrabInProgress)
+    {
+        FluxCameraFrameGrabTask *curTask = _cameraFrameGrabInProgress[key];
+        if (!curTask.isFinished)
+        {
+            // Signal in case it is waiting for a new frame that won't come
+            [curTask.cameraRecord.frameReadyCondition lock];
+            [curTask.cameraRecord.frameReadyCondition signal];
+            [curTask.cameraRecord.frameReadyCondition unlock];
+        }
+    }
+}
+
 @end

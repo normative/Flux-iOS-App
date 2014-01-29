@@ -17,5 +17,6 @@
 @property (nonatomic, strong) NSOperationQueue *cameraFrameGrabQueue;
 
 - (void) cleanUpUnusedCameraFrames;
+- (void) signalWaitingCameraTasks;
 
 @end
