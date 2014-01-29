@@ -14,6 +14,7 @@
 #import "OAuth+Additions.h"
 #import "TWAPIManager.h"
 #import "TWSignedRequest.h"
+#import "FluxTextField.h"
 
 #import "GAITrackedViewController.h"
 
@@ -25,7 +26,17 @@
 
 @interface FluxRegisterUsernameViewController : GAITrackedViewController<
     UITableViewDelegate, UITextFieldDelegate>{
-    IBOutlet UITableView* usernameTableView;
+
+        
+        IBOutlet UIView *usernameContainerView;
+        CALayer*usernameBorderLayer;
+        FluxTextField*theTextField;
+        UILabel *warningLabel;
+        IBOutlet UIImageView *checkMarkImageView;
+        IBOutlet UIActivityIndicatorView *activityView;
+        
+        
+                IBOutlet UIButton *createAccountButton;
     id __unsafe_unretained delegate;
     NSString*username;
     BOOL showUernamePrompt;

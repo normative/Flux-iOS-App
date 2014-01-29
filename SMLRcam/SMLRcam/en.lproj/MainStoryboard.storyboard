@@ -1208,46 +1208,36 @@
                         <outlet property="twitterButton" destination="Kbc-JC-R0G" id="GxA-lw-7OO"/>
                         <segue destination="2" kind="modal" identifier="pushScanView" modalTransitionStyle="crossDissolve" id="YOZ-ZI-zAe"/>
                         <segue destination="71W-0H-05H" kind="push" identifier="pushEmailSegue" id="SrP-Jh-RBO"/>
-                        <segue destination="eN4-z8-AgL" kind="push" identifier="pushUsernameSegue" id="gce-s1-9QL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eG1-Af-oLG" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1049" y="-321"/>
+            <point key="canvasLocation" x="689" y="-315"/>
         </scene>
         <!--Flux Register Email View Controller - Add Email-->
         <scene sceneID="fZV-R3-iKV">
             <objects>
-                <viewController storyboardIdentifier="registerEmailView" id="71W-0H-05H" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="registerEmailView" extendedLayoutIncludesOpaqueBars="YES" id="71W-0H-05H" customClass="FluxRegisterEmailViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="vzf-U5-ahO"/>
                         <viewControllerLayoutGuide type="bottom" id="tzI-hz-6dx"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="2Ie-6x-Cvg">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="fill" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AoE-H3-qLA">
-                                <rect key="frame" x="96" y="300" width="129" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                <state key="normal" title="Create Account">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="createAccountButtonAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="ZJH-FL-c0J"/>
-                                    <action selector="createAccountButtonAction:" destination="71W-0H-05H" eventType="touchUpInside" id="iOr-m1-JCH"/>
-                                </connections>
-                            </button>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="QN7-Gg-5Ou">
-                                <rect key="frame" x="10" y="183" width="300" height="89"/>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="QN7-Gg-5Ou">
+                                <rect key="frame" x="10" y="221" width="300" height="112"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="0n5-po-vWN"/>
+                                    <constraint firstAttribute="height" constant="112" id="r5e-hw-aMj"/>
+                                </constraints>
                                 <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="textFieldCell" rowHeight="50" id="4d3-9g-0aC" customClass="FluxTextFieldCell">
-                                        <rect key="frame" x="0.0" y="55" width="300" height="50"/>
+                                        <rect key="frame" x="0.0" y="86" width="300" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4d3-9g-0aC" id="KQ0-2p-HBx">
                                             <rect key="frame" x="0.0" y="0.0" width="300" height="49"/>
@@ -1267,29 +1257,46 @@
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
-                                    <outlet property="dataSource" destination="71W-0H-05H" id="pxf-qQ-upp"/>
-                                    <outlet property="delegate" destination="71W-0H-05H" id="f2w-q7-3XS"/>
+                                    <outlet property="dataSource" destination="71W-0H-05H" id="SD6-ry-gRM"/>
+                                    <outlet property="delegate" destination="71W-0H-05H" id="ItQ-MK-UX7"/>
                                 </connections>
                             </tableView>
-                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="1zQ-mf-Xwj">
-                                <rect key="frame" x="114" y="78" width="93" height="108"/>
+                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="1zQ-mf-Xwj">
+                                <rect key="frame" x="114" y="133" width="93" height="108"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" priority="903" constant="108" id="ROB-P9-JaD"/>
+                                    <constraint firstAttribute="width" priority="903" constant="93" id="g8e-8B-9PW"/>
+                                </constraints>
                             </imageView>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QyH-Jv-6TQ">
+                                <rect key="frame" x="0.0" y="352" width="320" height="216"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="1zQ-mf-Xwj" firstAttribute="top" secondItem="2Ie-6x-Cvg" secondAttribute="top" constant="133" id="FdN-Gu-BY0"/>
+                            <constraint firstItem="QN7-Gg-5Ou" firstAttribute="top" secondItem="1zQ-mf-Xwj" secondAttribute="bottom" constant="-20" id="Krf-Zi-7fP"/>
+                            <constraint firstAttribute="centerX" secondItem="QN7-Gg-5Ou" secondAttribute="centerX" id="PYl-bq-v4D"/>
+                            <constraint firstAttribute="centerX" secondItem="1zQ-mf-Xwj" secondAttribute="centerX" id="dzf-R5-C7r"/>
+                            <constraint firstAttribute="bottom" secondItem="QN7-Gg-5Ou" secondAttribute="bottom" constant="235" id="qrQ-ze-PFa"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Add Email" id="XCB-G7-a94">
                         <barButtonItem key="backBarButtonItem" title="Cancel" id="bHT-wI-9U7"/>
                     </navigationItem>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
-                        <outlet property="createAccountButton" destination="AoE-H3-qLA" id="G56-g8-kS6"/>
                         <outlet property="emailTableView" destination="QN7-Gg-5Ou" id="lWd-rS-jJG"/>
+                        <segue destination="eN4-z8-AgL" kind="push" identifier="pushUsernameSegue" id="YqQ-RE-Cmg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Wrn-tU-EFT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1479" y="-870"/>
+            <point key="canvasLocation" x="1217" y="-872"/>
         </scene>
         <!--Flux Map View Controller-->
         <scene sceneID="JdW-hK-6ai">
@@ -1749,7 +1756,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CYM-86-Fic" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="523" y="-321"/>
+            <point key="canvasLocation" x="163" y="-315"/>
         </scene>
         <!--Flux Public Profile View Controller-->
         <scene sceneID="iyM-zj-paR">
@@ -1881,65 +1888,76 @@
         <!--Flux Register Username View Controller - Pick a Name-->
         <scene sceneID="ytO-Jc-A3e">
             <objects>
-                <viewController storyboardIdentifier="registerUsernameView" id="eN4-z8-AgL" customClass="FluxRegisterUsernameViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="registerUsernameView" title="Pick a Name" extendedLayoutIncludesOpaqueBars="YES" id="eN4-z8-AgL" customClass="FluxRegisterUsernameViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="bka-Lp-Lwk"/>
                         <viewControllerLayoutGuide type="bottom" id="HPH-lf-QqN"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="c4n-Pg-q0D">
-                        <rect key="frame" x="0.0" y="64" width="320" height="504"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" style="grouped" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" translatesAutoresizingMaskIntoConstraints="NO" id="Igi-2y-LHe">
-                                <rect key="frame" x="10" y="183" width="300" height="89"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="textFieldCell" rowHeight="50" id="dQG-4f-MFb" customClass="FluxTextFieldCell">
-                                        <rect key="frame" x="0.0" y="55" width="300" height="50"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="dQG-4f-MFb" id="VnI-YH-z50">
-                                            <rect key="frame" x="0.0" y="0.0" width="300" height="49"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3NV-yQ-yIM">
-                                                    <rect key="frame" x="265" y="17" width="15" height="15"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                </imageView>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <connections>
-                                            <outlet property="checkImageView" destination="3NV-yQ-yIM" id="mff-xL-qsY"/>
-                                        </connections>
-                                    </tableViewCell>
-                                </prototypes>
-                                <connections>
-                                    <outlet property="dataSource" destination="eN4-z8-AgL" id="0va-bL-PQu"/>
-                                    <outlet property="delegate" destination="eN4-z8-AgL" id="wQu-YR-n1V"/>
-                                </connections>
-                            </tableView>
                             <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="emptyProfileImage_big" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-Ya-IaC">
-                                <rect key="frame" x="124" y="102" width="73" height="73"/>
+                                <rect key="frame" x="120" y="101" width="80" height="80"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="fill" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zi3-ho-Y1t">
+                                <rect key="frame" x="96" y="314" width="129" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="NJ7-KZ-ut7"/>
+                                    <constraint firstAttribute="width" constant="129" id="cl2-tT-4n5"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <state key="normal" title="Create Account">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="createAccountButtonAction:" destination="eN4-z8-AgL" eventType="touchUpInside" id="oGw-7A-WM1"/>
+                                </connections>
+                            </button>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bxf-cu-29e">
+                                <rect key="frame" x="10" y="246" width="300" height="50"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="TCq-Oc-UGi">
+                                        <rect key="frame" x="275" y="15" width="20" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </activityIndicatorView>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="check" translatesAutoresizingMaskIntoConstraints="NO" id="DgO-aH-yCN">
+                                        <rect key="frame" x="278" y="17" width="15" height="15"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C1W-7L-yrd">
+                                <rect key="frame" x="0.0" y="352" width="320" height="216"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="centerX" secondItem="zi3-ho-Y1t" secondAttribute="centerX" id="6aH-yK-XYm"/>
+                            <constraint firstAttribute="bottom" secondItem="zi3-ho-Y1t" secondAttribute="bottom" constant="224" id="kjk-2H-mZN"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Pick a Name" id="7Ze-F9-0m1">
                         <barButtonItem key="backBarButtonItem" title="Cancel" id="Ywp-aG-Wni"/>
                     </navigationItem>
-                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
+                        <outlet property="activityView" destination="TCq-Oc-UGi" id="DE2-YQ-rO2"/>
+                        <outlet property="checkMarkImageView" destination="DgO-aH-yCN" id="p7Y-KB-vEl"/>
+                        <outlet property="createAccountButton" destination="zi3-ho-Y1t" id="GVm-QF-dXP"/>
                         <outlet property="profileImageView" destination="cj9-Ya-IaC" id="96O-cG-V4z"/>
-                        <outlet property="usernameTableView" destination="Igi-2y-LHe" id="Ee9-pt-yym"/>
+                        <outlet property="usernameContainerView" destination="Bxf-cu-29e" id="rpY-g5-ZwO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5qq-rz-Wnc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1479" y="158"/>
+            <point key="canvasLocation" x="1659" y="-872"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="xjA-qz-FLS">
@@ -1968,6 +1986,7 @@
         <image name="backgroundGradient_bottom" width="640" height="276"/>
         <image name="backgroundGradient_top" width="640" height="276"/>
         <image name="camButton" width="140" height="140"/>
+        <image name="check" width="31" height="31"/>
         <image name="closeCamButton" width="100" height="101"/>
         <image name="emptyProfileImage" width="140" height="140"/>
         <image name="emptyProfileImage_big" width="140" height="140"/>

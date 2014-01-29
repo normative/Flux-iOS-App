@@ -30,16 +30,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [createAccountButton setEnabled:NO];
-    [createAccountButton setAlpha:0.6];
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:nil action:nil];
-    [createAccountButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:createAccountButton.titleLabel.font.pointSize]];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(backAction)];
+
 	// Do any additional setup after loading the view.
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];    
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -54,6 +54,36 @@
         }
     }
     [super viewWillDisappear:animated];
+}
+
+- (void)nextAction{
+    [self performSegueWithIdentifier:@"pushUsernameSegue" sender:self];
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    if ([[segue identifier] isEqualToString:@"pushUsernameSegue"]) {
+        FluxRegisterUsernameViewController*usernameVC = (FluxRegisterUsernameViewController*)segue.destinationViewController;
+        [usernameVC setUserInfo:self.userInfo];
+        [usernameVC setDelegate:self];
+        [usernameVC setFluxDataManager:self.fluxDataManager];
+    }
+}
+
+- (void)RegisterUsernameView:(FluxRegisterUsernameViewController *)usernameView didAcceptAddUsernameToUserInfo:(NSMutableDictionary *)userInfo{
+    if (!userInfo) {
+        if ([delegate respondsToSelector:@selector(RegisterEmailView:didAcceptAddEmailToUserInfo:)]) {
+            [delegate RegisterEmailView:self didAcceptAddEmailToUserInfo:nil];
+        }
+        [self backAction];
+        
+    }
+    else{
+        
+    }
+}
+
+- (void)backAction{
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 
@@ -89,7 +119,7 @@
     [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
     [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [cell.textField setKeyboardType:UIKeyboardTypeEmailAddress];
-    [cell.textField setReturnKeyType:UIReturnKeyJoin];
+    [cell.textField setReturnKeyType:UIReturnKeyNext];
 
     
     [cell.textField setDelegate:self];
@@ -100,6 +130,12 @@
     if (![cell.textField isFirstResponder]) {
         [cell.textField becomeFirstResponder];
         
+    }
+    
+    if ([self.userInfo objectForKey:@"email"]) {
+        [cell.textField setText:[self.userInfo objectForKey:@"email"]];
+        [cell setChecked:YES];
+        [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc]initWithTitle:@"Next" style:UIBarButtonItemStylePlain target:self action:@selector(nextAction)]];
     }
     
     return cell;
@@ -121,12 +157,10 @@
     
     if ([self NSStringIsValidEmail:email]) {
         [cell setChecked:YES];
-        [createAccountButton setAlpha:1.0];
-        [createAccountButton setEnabled:YES];
+        [self.navigationItem setRightBarButtonItem:[[UIBarButtonItem alloc]initWithTitle:@"Next" style:UIBarButtonItemStyleBordered target:self action:@selector(nextAction)]];
     }
     else{
-        [createAccountButton setEnabled:NO];
-        [createAccountButton setAlpha:0.6];
+        [self.navigationItem setRightBarButtonItem:nil];
         [cell setChecked:NO];
     }
     return YES;
@@ -156,6 +190,8 @@
     }
     sent = YES;
     [self.navigationController popToRootViewControllerAnimated:YES];
-    
 }
+
+
+
 @end

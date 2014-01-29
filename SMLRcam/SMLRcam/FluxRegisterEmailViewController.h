@@ -7,8 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-
 #import "GAITrackedViewController.h"
+#import "FluxDataManager.h"
+#import "FluxRegisterUsernameViewController.h"
+
 
 @class FluxRegisterEmailViewController;
 @protocol FluxRegisterEmailViewDelegate <NSObject>
@@ -16,15 +18,16 @@
 - (void)RegisterEmailView:(FluxRegisterEmailViewController*)emailView didAcceptAddEmailToUserInfo:(NSMutableDictionary *)userInfo;
 @end
 
-@interface FluxRegisterEmailViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>{
+@interface FluxRegisterEmailViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, FluxRegisterUsernameViewDelegate>{
     IBOutlet UITableView* emailTableView;
-    IBOutlet UIButton *createAccountButton;
     id __unsafe_unretained delegate;
     NSString*email;
     
     BOOL sent;
 }
 @property (unsafe_unretained) id <FluxRegisterEmailViewDelegate> delegate;
+
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong)    NSMutableDictionary*userInfo;
 - (IBAction)createAccountButtonAction:(id)sender;
 
