@@ -775,7 +775,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-        //[self.cameraButton setAlpha:0.4];
+        [self.cameraButton setAlpha:0.4];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
