@@ -265,12 +265,16 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                      [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
                                      [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
                                  }
+                                 
+                                 
 
                                  
                                  //call delegate
                                  if (isRegister) {
+                                     NSMutableDictionary*dict = [NSMutableDictionary dictionaryWithDictionary:user];
+                                     [dict setObject:FBSession.activeSession.accessTokenData.accessToken forKey:@"token"];
                                      if ([delegate respondsToSelector:@selector(SocialManager:didRegisterFacebookAccountWithUserInfo:)]) {
-                                         [delegate SocialManager:self didRegisterFacebookAccountWithUserInfo:user];
+                                         [delegate SocialManager:self didRegisterFacebookAccountWithUserInfo:dict];
                                      }
                                  }
                                  else{

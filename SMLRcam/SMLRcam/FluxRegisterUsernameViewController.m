@@ -95,12 +95,14 @@
     usernameBorderLayer.frame = CGRectMake(0, 0, usernameContainerView.frame.size.width, usernameContainerView.frame.size.height);
     [usernameContainerView.layer addSublayer:usernameBorderLayer];
     
+    
     theTextField = [[FluxTextField alloc]initWithFrame:usernameContainerView.bounds andPlaceholderText:@"username"];
+    
     [theTextField setAutocorrectionType:UITextAutocorrectionTypeNo];
     [theTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [theTextField setKeyboardType:UIKeyboardTypeDefault];
     [theTextField setSecureTextEntry:NO];
-    [theTextField setReturnKeyType:UIReturnKeyJoin];
+    [theTextField setReturnKeyType:UIReturnKeyDone];
     
     
     [theTextField setDelegate:self];
@@ -113,67 +115,6 @@
     [activityView setHidden:YES];
 }
 
-
-
-//#pragma mark - TableView Methods
-//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-//{
-//    return 1;
-//}
-//
-//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-//{
-//    return 1;
-//}
-//
-//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-//    if (showUernamePrompt) {
-//        return 70.0;
-//    }
-//    return 50.0;
-//}
-//
-//- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-//{
-//    static NSString *cellIdentifier = @"textFieldCell";
-//    FluxTextFieldCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-//    if (!cell) {
-//        cell = [[FluxTextFieldCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-//    }
-//    NSLog(@"%@",NSStringFromCGRect(cell.frame));
-//    [cell setupForPosition:FluxTextFieldPositionTopBottom andPlaceholder:@"username"];
-//    [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
-//    [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
-//    [cell.textField setKeyboardType:UIKeyboardTypeDefault];
-//    [cell.textField setSecureTextEntry:NO];
-//    [cell.textField setReturnKeyType:UIReturnKeyJoin];
-//    
-//    
-//    [cell.textField setDelegate:self];
-//    cell.textField.textAlignment = NSTextAlignmentCenter;
-//    [cell.textField becomeFirstResponder];
-//    [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
-//    [cell.textLabel setTextColor:[UIColor whiteColor]];
-//    
-//    if (self.suggestedUsername) {
-//        [cell.textField setText:self.suggestedUsername];
-//        self.suggestedUsername = nil;
-//    }
-//    
-//    if (showUernamePrompt) {
-//        if (!cell.warningLabel) {
-//            cell.warningLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, cell.frame.size.width, 25)];
-//            [cell.warningLabel setFont:[UIFont fontWithName:@"Akkurat" size:14.0]];
-//            [cell.warningLabel setTextColor:[UIColor colorWithRed:107/255.0 green:29/255.0 blue:29/255.0 alpha:1.0]];
-//            [cell.warningLabel setTextAlignment:NSTextAlignmentCenter];
-//            [cell.warningLabel setText:@"this username has already been taken"];
-//        }
-//        
-//        [cell addSubview:cell.warningLabel];
-//    }
-//    
-//    return cell;
-//}
 
 #pragma mark Text Delegate Methods
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
@@ -205,7 +146,12 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
-    [self checkUsernameUniqueness];
+    if ([textField returnKeyType] == UIReturnKeyJoin) {
+        [self createAccountButtonAction:nil];
+    }else{
+        [self checkUsernameUniqueness];
+    }
+
     return YES;
 }
 
@@ -230,11 +176,15 @@
             [createAccountButton setAlpha:1.0];
             [createAccountButton setEnabled:YES];
             [checkMarkImageView setHidden:NO];
+            [theTextField setReturnKeyType:UIReturnKeyJoin];
+            [theTextField reloadInputViews];
         }
         
         else{
             showUernamePrompt = YES;
             [checkMarkImageView setHidden:YES];
+            [theTextField setReturnKeyType:UIReturnKeyDone];
+            [theTextField reloadInputViews];
 
             if (!warningLabel) {
                 warningLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, usernameContainerView.frame.size.width, 25)];
@@ -330,101 +280,6 @@
              });
          }
      }];
-
-    
-//    - (void)setTwitterProfilePicture{
-//        username = [self.userInfo objectForKey:@"username"];
-//        ACAccount*acct = (ACAccount*)[self.userInfo objectForKey:@"account"];
-//        NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1.1/users/show.json"];
-//        
-//        NSDictionary *params = [NSDictionary dictionaryWithObject:username
-//                                                           forKey:@"screen_name"];
-//        
-//        TWRequest *request = [[TWRequest alloc] initWithURL:url
-//                                                 parameters:params
-//                                              requestMethod:TWRequestMethodGET];
-//        [request setAccount:acct];
-//    
-//    SLRequest *aRequest  = [SLRequest requestForServiceType:SLServiceTypeTwitter
-//                                              requestMethod:SLRequestMethodGET
-//                                                        URL:url
-//                                                 parameters:params];
-//    [aRequest setAccount:acct];
-//    
-//        [aRequest performRequestWithHandler:
-//         ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-//             if (responseData) {
-//                 NSDictionary *user =
-//                 [NSJSONSerialization JSONObjectWithData:responseData
-//                                                 options:NSJSONReadingAllowFragments
-//                                                   error:NULL];
-//                 
-//                 NSString *profileImageUrl = [user objectForKey:@"profile_image_url"];
-//                 
-//                 //  As an example we could set an image's content to the image
-//                 dispatch_async
-//                 (dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//                     NSData *imageData =
-//                     [NSData dataWithContentsOfURL:
-//                      [NSURL URLWithString:profileImageUrl]];
-//                     
-//                     UIImage *image = [UIImage imageWithData:imageData];
-//                     
-//                     dispatch_async(dispatch_get_main_queue(), ^{
-//                         profileImageView.layer.cornerRadius = profileImageView.frame.size.width/2;
-//                         profileImageView.clipsToBounds = YES;
-//                         profileImageView.image = image;
-//                     });
-//                 });
-//             }
-//         }];
-//    }
-
-    
-//    username = [self.userInfo objectForKey:@"username"];
-//    
-//    NSURL *url = [NSURL URLWithString:@"http://api.twitter.com/1.1/users/show.json"];
-//    NSDictionary *params = @{@"screen_name" : username,
-//                             @"include_rts" : @"0",
-//                             @"trim_user" : @"1",
-//                             @"count" : @"1"};
-//    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter requestMethod:SLRequestMethodGET URL:url parameters:params];
-//    
-//    //  Attach an account to the request
-//    [request setAccount:[(NSArray*)[self.userInfo objectForKey:@"twitterAccounts"] objectAtIndex:[(NSNumber*)[self.userInfo objectForKey:@"accountIndex"]intValue]]];
-//    
-//    //  Step 3:  Execute the request
-//    [request performRequestWithHandler:
-//     ^(NSData *responseData,
-//       NSHTTPURLResponse *urlResponse,
-//       NSError *error) {
-//         if (responseData) {
-//             
-//             
-//             NSDictionary *user =
-//             [NSJSONSerialization JSONObjectWithData:responseData
-//                                             options:NSJSONReadingAllowFragments
-//                                               error:NULL];
-//             
-//             NSString *profileImageUrl = [user objectForKey:@"profile_image_url"];
-//             profileImageUrl = [profileImageUrl stringByReplacingOccurrencesOfString:@"pic_normal" withString:@"pic_bigger"];
-//             
-//             dispatch_async
-//             (dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//                 NSData *imageData =
-//                 [NSData dataWithContentsOfURL:
-//                  [NSURL URLWithString:profileImageUrl]];
-//                 
-//                 UIImage *image = [UIImage imageWithData:imageData];
-//                 
-//                 dispatch_async(dispatch_get_main_queue(), ^{
-//                     profileImageView.layer.cornerRadius = profileImageView.frame.size.width/2;
-//                     profileImageView.clipsToBounds = YES;
-//                     profileImageView.image = image;
-//                 });
-//             });
-//         }
-//     }];
 }
 
 - (IBAction)createAccountButtonAction:(id)sender {

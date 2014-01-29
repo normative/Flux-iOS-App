@@ -15,7 +15,7 @@
 @class FluxRegisterEmailViewController;
 @protocol FluxRegisterEmailViewDelegate <NSObject>
 @optional
-- (void)RegisterEmailView:(FluxRegisterEmailViewController*)emailView didAcceptAddEmailToUserInfo:(NSMutableDictionary *)userInfo;
+- (void)RegisterEmailView:(FluxRegisterEmailViewController*)emailView didAddToUserInfo:(NSMutableDictionary *)userInfo;
 @end
 
 @interface FluxRegisterEmailViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, FluxRegisterUsernameViewDelegate>{

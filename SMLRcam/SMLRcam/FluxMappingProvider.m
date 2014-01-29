@@ -76,7 +76,7 @@
 + (RKObjectMapping *)userPOSTMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
-    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token"]];
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"facebook", @"twitter"]];
     
     return mapping;
 }

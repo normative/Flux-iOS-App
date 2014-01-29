@@ -49,8 +49,8 @@
 
 -(void) viewWillDisappear:(BOOL)animated {
     if ([self.navigationController.viewControllers indexOfObject:self]==NSNotFound && !sent) {
-        if ([delegate respondsToSelector:@selector(RegisterEmailView:didAcceptAddEmailToUserInfo:)]) {
-            [delegate RegisterEmailView:self didAcceptAddEmailToUserInfo:nil];
+        if ([delegate respondsToSelector:@selector(RegisterEmailView:didAddToUserInfo:)]) {
+            [delegate RegisterEmailView:self didAddToUserInfo:nil];
         }
     }
     [super viewWillDisappear:animated];
@@ -62,6 +62,11 @@
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     if ([[segue identifier] isEqualToString:@"pushUsernameSegue"]) {
+        
+        //if we changed the email, update it
+        if (email) {
+            [self.userInfo setObject:email forKey:@"email"];
+        }
         FluxRegisterUsernameViewController*usernameVC = (FluxRegisterUsernameViewController*)segue.destinationViewController;
         [usernameVC setUserInfo:self.userInfo];
         [usernameVC setDelegate:self];
@@ -71,14 +76,18 @@
 
 - (void)RegisterUsernameView:(FluxRegisterUsernameViewController *)usernameView didAcceptAddUsernameToUserInfo:(NSMutableDictionary *)userInfo{
     if (!userInfo) {
-        if ([delegate respondsToSelector:@selector(RegisterEmailView:didAcceptAddEmailToUserInfo:)]) {
-            [delegate RegisterEmailView:self didAcceptAddEmailToUserInfo:nil];
+        if ([delegate respondsToSelector:@selector(RegisterEmailView:didAddToUserInfo:)]) {
+            [delegate RegisterEmailView:self didAddToUserInfo:nil];
         }
         [self backAction];
         
     }
     else{
-        
+        if ([delegate respondsToSelector:@selector(RegisterEmailView:didAddToUserInfo:)]) {
+            [delegate RegisterEmailView:self didAddToUserInfo:self.userInfo];
+        }
+        sent = YES;
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
 }
 
@@ -185,8 +194,8 @@
 
 - (IBAction)createAccountButtonAction:(id)sender {
     [self.userInfo setObject:email forKey:@"email"];
-    if ([delegate respondsToSelector:@selector(RegisterEmailView:didAcceptAddEmailToUserInfo:)]) {
-        [delegate RegisterEmailView:self didAcceptAddEmailToUserInfo:self.userInfo];
+    if ([delegate respondsToSelector:@selector(RegisterEmailView:didAddToUserInfo:)]) {
+        [delegate RegisterEmailView:self didAddToUserInfo:self.userInfo];
     }
     sent = YES;
     [self.navigationController popToRootViewControllerAnimated:YES];

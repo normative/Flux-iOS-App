@@ -26,7 +26,7 @@
 
 
 
-@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, FluxRegisterEmailViewDelegate, FluxRegisterUsernameViewDelegate, FluxSocialManagerDelegate>{
+@interface FluxRegisterViewController : GAITrackedViewController <UITextFieldDelegate ,UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, UIActionSheetDelegate, FluxRegisterEmailViewDelegate, FluxSocialManagerDelegate>{
     __strong FluxLeftDrawerViewController * leftSideDrawerViewController;
     __strong FluxScanViewController * scanViewController;
     

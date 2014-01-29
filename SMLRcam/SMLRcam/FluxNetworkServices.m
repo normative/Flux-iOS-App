@@ -50,7 +50,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 //        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
 //        if (isremote)
 //        {
-            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:productionServerURL]];
+            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxTestServerURL]];
 //        }
 //        else
 //        {
@@ -431,12 +431,11 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID
 {
-    NSString* token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:userObject
                                                                                             method:RKRequestMethodPOST
-                                                                                              path:[NSString stringWithFormat:@"/users?auth_token=%@", token]
+                                                                                              path:[NSString stringWithFormat:@"/users"]
                                                                                         parameters:nil
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
                                     {
