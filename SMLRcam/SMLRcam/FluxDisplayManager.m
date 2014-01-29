@@ -1094,10 +1094,13 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 if (ire.imageRenderType < quarterhd)
                 {
                     FluxImageType rtype = none;
-                    [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:quarterhd returnSize:&rtype];
+                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:quarterhd returnSize:&rtype];
                     if (rtype == quarterhd)
                     {
                         ire.imageRenderType = quarterhd;
+                        
+                        // Only care about existence of an image here. Decrement reference count as we are not using the object.
+                        [imageCacheObj endContentAccess];
                     }
                 }
             }
@@ -1121,6 +1124,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                         dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
                             // assign image into ire.image...
                             ire.imageRenderType = ire.imageFetchType;
+                            
+                            // Only care about existence of an image here. Decrement reference count as we are not using the object.
+                            [imageCacheObj endContentAccess];
                             
                             [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                                 object:self userInfo:nil];

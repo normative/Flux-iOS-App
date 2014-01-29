@@ -101,9 +101,7 @@
 
 - (NSArray *) doesImageExistForImageID:(FluxImageID)imageID
 {
-    NSArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null],
-                                                             [NSNull null], [NSNull null], [NSNull null],
-                                                             nil];
+    NSArray *imageFormats = @[@(NO), @(NO), @(NO), @(NO), @(NO), @(NO)];
     
     if (imageID >= 0)
     {
@@ -119,9 +117,7 @@
 
 - (NSArray *) doesImageExistForLocalID:(FluxLocalID *)localID
 {
-    NSMutableArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null],
-                                                                    [NSNull null], [NSNull null], [NSNull null],
-                                                                    nil];
+    NSMutableArray *imageFormats = [NSMutableArray arrayWithObjects:@(NO), @(NO), @(NO), @(NO), @(NO), @(NO), nil];
     
     if (localID != nil)
     {
@@ -129,19 +125,19 @@
         
         // No point searching for them for existence then searching for them again - might as well store the pointers.
         FluxCacheImageObject *imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]];
-        imageFormats[thumb] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[thumb] = @(imageCacheObj.image != nil);
         imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:quarterhd]];
-        imageFormats[quarterhd] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[quarterhd] = @(imageCacheObj.image != nil);
         imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]];
-        imageFormats[screen_res] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[screen_res] = @(imageCacheObj.image != nil);
         imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]];
-        imageFormats[full_res] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[full_res] = @(imageCacheObj.image != nil);
         imageFormats[screen_res] = imageFormats[full_res];
         
         bool foundLowest = false;
         for (int i = (lowest_res + 1); (i < highest_res); i++)
         {
-            if (imageFormats[i] != [NSNull null])
+            if ([imageFormats[i] boolValue])
             {
                 if (!foundLowest)
                 {
