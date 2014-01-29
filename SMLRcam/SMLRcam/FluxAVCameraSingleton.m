@@ -11,10 +11,11 @@
 
 @implementation FluxAVCameraSingleton
 
+static FluxAVCameraSingleton *sharedFluxAVCameraSingleton = nil;
+static dispatch_once_t sharedFluxAVCameraSingleton_onceToken = 0;
+
 + (id)sharedCamera {
-    static FluxAVCameraSingleton *sharedFluxAVCameraSingleton = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    dispatch_once(&sharedFluxAVCameraSingleton_onceToken, ^{
         sharedFluxAVCameraSingleton = [[FluxAVCameraSingleton alloc] init];
     });
     return sharedFluxAVCameraSingleton;
@@ -133,6 +134,9 @@
     }
     
     self.session = nil;
+    
+    sharedFluxAVCameraSingleton = nil;
+    sharedFluxAVCameraSingleton_onceToken = 0;
 }
 
 #pragma mark Capture
