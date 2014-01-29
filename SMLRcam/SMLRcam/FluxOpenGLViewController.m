@@ -1212,6 +1212,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)dealloc
 {
+    [self.cameraManager.videoDataOutput setSampleBufferDelegate:nil queue:NULL];
+
     motionManager = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateDisplayList object:nil];
