@@ -72,7 +72,7 @@
             }
             [[self.videoDataOutput connectionWithMediaType:AVMediaTypeVideo] setEnabled:YES];
             
-            [self restartAVCapture];
+            [self startAVCapture];
         }
         
         //[session release];
@@ -107,7 +107,7 @@
     }
 }
 
-- (void)restartAVCapture
+- (void)startAVCapture
 {
     if (self.session !=nil  && ![self.session isRunning])
     {

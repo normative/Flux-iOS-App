@@ -25,7 +25,7 @@
 @property (nonatomic, assign) id <FluxCameraDelegate> delegate;
 
 - (void)pauseAVCapture;
-- (void)restartAVCapture;
+- (void)startAVCapture;
 - (void)stopAVCapture;
 + (id)sharedCamera;
 

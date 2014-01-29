@@ -1083,6 +1083,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     self.cameraManager = [FluxAVCameraSingleton sharedCamera];
     [self.cameraManager.videoDataOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    [self.cameraManager startAVCapture];
 }
 
 - (void)requestCameraFrame:(FluxCameraFrameElement *)frameRequest
