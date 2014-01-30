@@ -25,10 +25,8 @@
 @property (nonatomic)           bool dirty;
 @property (nonatomic, weak)     FluxCacheImageObject *imageCacheObject;
 @property (nonatomic)           FluxImageType imageRenderType;
-@property (nonatomic)           FluxImageType imageFetchType;
 @property (nonatomic)           FluxImageTypeMask imageTypesFetched;
 @property (nonatomic)           sensorPose *imagePose;
-@property (nonatomic)           bool featureFetching;
 
 - (id)initWithImageObject:(FluxScanImageObject *)curImgObj;
 

@@ -241,7 +241,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     for (FluxImageRenderElement *ire in displayItems)
     {
         if (!ire.imageMetadata.features &&
-            !ire.imageMetadata.featureFetching &&
+            !(ire.imageTypesFetched & FluxImageTypeMask_features) &&
             !ire.imageMetadata.featureFetchFailed &&
             (_featureRequestCount < maxRequestCountFeatures))
         {
@@ -260,7 +260,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
-            !ire.imageMetadata.featureFetching &&
+            !(ire.imageTypesFetched & FluxImageTypeMask_features) &&
             !ire.imageMetadata.featureFetchFailed &&
             (_featureRequestCount < maxRequestCountFeatures))
         {
@@ -278,7 +278,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
-            !ire.imageMetadata.featureFetching &&
+            !(ire.imageTypesFetched & FluxImageTypeMask_features) &&
             (_featureRequestCount < maxRequestCountFeatures))
         {
             // Reset failure status and retry
@@ -295,14 +295,13 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSData *features, FluxDataRequest *completedDataRequest){
         // assign features into SIO.features...
         ire.imageMetadata.features = features;
-        ire.imageMetadata.featureFetching = NO;
         
         [_featureRequestCountLock lock];
         _featureRequestCount--;
         [_featureRequestCountLock unlock];
     };
     featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-        ire.imageMetadata.featureFetching = NO;
+        ire.imageTypesFetched = ire.imageTypesFetched & ~(FluxImageTypeMask_features);
         ire.imageMetadata.featureFetchFailed = YES;
         
         [_featureRequestCountLock lock];
@@ -314,7 +313,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     _featureRequestCount++;
     [_featureRequestCountLock unlock];
     
-    ire.imageMetadata.featureFetching = YES;
+    ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_features;
     [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
 }
 
@@ -482,7 +481,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
             // Ensure we have requested/already have a thumb image
             if (_isScanMode && !(ire.imageTypesFetched & FluxImageTypeMask_thumb))
             {
-                ire.imageFetchType = thumb;
                 ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_thumb;
                 
                 FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
@@ -500,7 +498,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                                                                         object:self userInfo:nil];
                 };
                 dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                    ire.imageFetchType = none;
                     ire.imageTypesFetched = ire.imageTypesFetched & ~(FluxImageTypeMask_thumb);
                 };
                 
@@ -996,17 +993,20 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     {
         if (_isScanMode)
         {
+            FluxImageType higherImageResolution = quarterhd;
+            FluxImageTypeMask higherImageResolutionBitMask = FluxImageTypeMask_quarterhd;
+            
             // reset to higher-res (quarterhd) textures if already in the cache
             for (FluxImageRenderElement *ire in renderList)
             {
-                if (ire.imageRenderType < quarterhd)
+                if (ire.imageRenderType < higherImageResolution)
                 {
                     FluxImageType rtype = none;
-                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:quarterhd returnSize:&rtype];
-                    if (rtype == quarterhd)
+                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:higherImageResolution returnSize:&rtype];
+                    if (imageCacheObj.image && (rtype == higherImageResolution))
                     {
-                        ire.imageRenderType = quarterhd;
-                        ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_quarterhd;
+                        ire.imageRenderType = higherImageResolution;
+                        ire.imageTypesFetched = ire.imageTypesFetched | higherImageResolutionBitMask;
                         
                         // Only care about existence of an image here. Decrement reference count as we are not using the object.
                         [imageCacheObj endContentAccess];
@@ -1019,11 +1019,10 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                 // look to see if can trigger load of higher resolution
                 for (FluxImageRenderElement *ire in renderList)
                 {
-                    if (!(ire.imageTypesFetched & FluxImageTypeMask_quarterhd) && (!ire.imageMetadata.justCaptured))
+                    if (!(ire.imageTypesFetched & higherImageResolutionBitMask) && (!ire.imageMetadata.justCaptured))
                     {
                         // fetch the quart for this element
-                        ire.imageFetchType = quarterhd;
-                        ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_quarterhd;
+                        ire.imageTypesFetched = ire.imageTypesFetched | higherImageResolutionBitMask;
 
                         [_imageRequestCountLock lock];
                         _imageRequestCountQuart++;
@@ -1033,7 +1032,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                         [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
                         dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
                             // assign image into ire.image...
-                            ire.imageRenderType = ire.imageFetchType;
+                            ire.imageRenderType = higherImageResolution;
                             
                             // Only care about existence of an image here. Decrement reference count as we are not using the object.
                             [imageCacheObj endContentAccess];
@@ -1048,10 +1047,10 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                             [_imageRequestCountLock lock];
                             _imageRequestCountQuart--;
                             [_imageRequestCountLock unlock];
-                            ire.imageFetchType = none;
-                            ire.imageTypesFetched = ire.imageTypesFetched & ~(FluxImageTypeMask_quarterhd);
+
+                            ire.imageTypesFetched = ire.imageTypesFetched & ~(higherImageResolutionBitMask);
                         };
-                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
+                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:higherImageResolution];
 
                         if (_imageRequestCountQuart >= maxRequestCountQuart)
                         {

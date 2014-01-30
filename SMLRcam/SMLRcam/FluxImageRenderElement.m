@@ -22,11 +22,9 @@
         _imageCacheObject = nil;
         _dirty = true;
         _imageRenderType = none;
-        _imageFetchType = none;
         _imageTypesFetched = FluxImageTypeMaskNone;
         // TODO: this allocation needs to be de-allocated at object destruction time....
         _imagePose = malloc(sizeof(sensorPose));
-        _featureFetching = NO;
     }
     
     return self;
@@ -47,10 +45,8 @@
             _imageCacheObject = nil;
             _dirty = true;
             _imageRenderType = none;
-            _imageFetchType = none;
             _imageTypesFetched = FluxImageTypeMaskNone;
             _imagePose = malloc(sizeof(sensorPose));
-            _featureFetching = NO;
         }
     }
     

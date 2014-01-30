@@ -218,7 +218,6 @@ withDescriptionString:(NSString*)description
         self.cumulativeFeatureMatchTime = 0.0;
         self.location_data_type = location_data_default;
         self.features = nil;
-        self.featureFetching = NO;
         self.featureFetchFailed = NO;
         self.justCaptured = 1;      // assume this method is called only when newly captured image record needs to be created
     }
