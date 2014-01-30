@@ -478,43 +478,39 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         for (idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count)); idx++)
         {
             FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
-            if (ire.imageCacheObject.image == nil)
+            
+            // Ensure we have requested/already have a thumb image
+            if (_isScanMode && !(ire.imageTypesFetched & FluxImageTypeMask_thumb))
             {
-                // check to see if we have the imagery in the cache..
-                FluxImageType rtype = none;
-                FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
-                if (imageCacheObj != nil)
-                {
-                    ire.imageCacheObject = imageCacheObj;
-                    ire.imageRenderType = rtype;
-                }
-                else if (_isScanMode)
-                {
-                    // request it if it isn't there...
-                    if (ire.imageFetchType < thumb)
-                    {
-                        ire.imageFetchType = thumb;
-                        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                        [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                        dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
-                            // assign image into ire.image...
-                            ire.imageCacheObject = imageCacheObj;
-                            ire.imageRenderType = thumb;
-                            [self updateImageMetadataForElement:ire];
-                            
-                            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                                object:self userInfo:nil];
-                        };
-                        dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                            ire.imageFetchType = none;
-                        };
-
-                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
-                    }
-                }
+                ire.imageFetchType = thumb;
+                ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_thumb;
+                
+                FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+                    // Once we have the image, set the imageRenderType so it can be displayed
+                    // Also, hang on to the reference count for the cached thumbnail. We want to keep it into the cache until
+                    // we move away from here and the image is no longer nearby (or some other condition).
+                    // The render code will also grab a reference count, but it will release it when it isn't being rendered.
+                    // Because of the above logic, we don't need to set the imageCacheObject here...
+                    ire.imageRenderType = thumb;
+                    [self updateImageMetadataForElement:ire];
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                        object:self userInfo:nil];
+                };
+                dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                    ire.imageFetchType = none;
+                    ire.imageTypesFetched = ire.imageTypesFetched & ~(FluxImageTypeMask_thumb);
+                };
+                
+                [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
             }
             
-            if (ire.imageCacheObject.image != nil)
+            // As long as we have an image to render, we can add it to the displayList
+            // imageRenderType is popualted once we have an image, and is only ever dropped down to thumb (during time-scrubbing)
+            // If we ever set it back to none, this will break, and will never again be increased!!!!
+            if (ire.imageRenderType > 0)
             {
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
@@ -654,6 +650,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     FluxCacheImageObject *imageCacheObject = [FluxCacheImageObject cacheImageObject:newImage withID:imageCacheKey withType:full_res];
     ire.imageCacheObject = imageCacheObject;
     ire.imageRenderType = full_res;
+    ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_full_res;
     ire.localCaptureTime = ire.timestamp;
     [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
     [_nearbyCamList addObject:ire];
@@ -1009,6 +1006,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                     if (rtype == quarterhd)
                     {
                         ire.imageRenderType = quarterhd;
+                        ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_quarterhd;
                         
                         // Only care about existence of an image here. Decrement reference count as we are not using the object.
                         [imageCacheObj endContentAccess];
@@ -1021,10 +1019,11 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                 // look to see if can trigger load of higher resolution
                 for (FluxImageRenderElement *ire in renderList)
                 {
-                    if ((ire.imageFetchType < quarterhd) && (!ire.imageMetadata.justCaptured))
+                    if (!(ire.imageTypesFetched & FluxImageTypeMask_quarterhd) && (!ire.imageMetadata.justCaptured))
                     {
                         // fetch the quart for this element
                         ire.imageFetchType = quarterhd;
+                        ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_quarterhd;
 
                         [_imageRequestCountLock lock];
                         _imageRequestCountQuart++;
@@ -1050,6 +1049,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                             _imageRequestCountQuart--;
                             [_imageRequestCountLock unlock];
                             ire.imageFetchType = none;
+                            ire.imageTypesFetched = ire.imageTypesFetched & ~(FluxImageTypeMask_quarterhd);
                         };
                         [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
 

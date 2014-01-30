@@ -1962,6 +1962,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     if ((ire.imageCacheObject.image != nil) && (ire.imageCacheObject.imageType == (imageType == 0 ? thumb : imageType)))
     {
         // It has been fetched from the cache elsewhere. Don't re-fetch it.
+        // Currently, you can't ever get here because we set the imageCacheObject to nil once we swap it out of the texture map
         imageCacheObj = ire.imageCacheObject;
         rtype = imageCacheObj.imageType;
     }

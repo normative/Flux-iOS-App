@@ -25,6 +25,18 @@ typedef enum FluxImageType : NSUInteger {
     features = 6
 } FluxImageType;
 
+// Used as a bit mask of FluxImageType's for packing
+typedef enum {
+  FluxImageTypeMaskNone         = 0,
+  FluxImageTypeMask_lowest_res  = 1 << lowest_res,
+  FluxImageTypeMask_thumb       = 1 << thumb,
+  FluxImageTypeMask_quarterhd   = 1 << quarterhd,
+  FluxImageTypeMask_screen_res  = 1 << screen_res,
+  FluxImageTypeMask_full_res    = 1 << full_res,
+  FluxImageTypeMask_highest     = 1 << highest_res,
+  FluxImageTypeMask_features    = 1 << features
+} FluxImageTypeMask;
+
 extern const NSString *fluxImageTypeStrings[];
 extern const NSString *fluxCameraModelStrings[];
 
