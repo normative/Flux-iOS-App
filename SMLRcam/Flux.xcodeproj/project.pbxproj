@@ -44,6 +44,7 @@
 		22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB643817DA2FF3000F4AA7 /* FluxCompassButton.m */; };
 		89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */; };
 		89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A513631829AED800E25AA1 /* Accelerate.framework */; };
+		89F1DF4B1899E004001EE750 /* mask.png in Resources */ = {isa = PBXBuildFile; fileRef = 89F1DF4A1899E004001EE750 /* mask.png */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
@@ -236,6 +237,7 @@
 		89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxKalmanFilter.h; sourceTree = "<group>"; };
 		89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxKalmanFilter.m; sourceTree = "<group>"; };
 		89A513631829AED800E25AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		89F1DF4A1899E004001EE750 /* mask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mask.png; sourceTree = "<group>"; };
 		AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfilePhotosViewController.h; sourceTree = "<group>"; };
 		AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfilePhotosViewController.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -772,6 +774,7 @@
 		AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */ = {
 			isa = PBXGroup;
 			children = (
+				89F1DF4A1899E004001EE750 /* mask.png */,
 				AAF1BCFA183C173900909AFF /* 2.png */,
 				AA349A2217C3BF4000C72E24 /* FluxOpenGLViewController.h */,
 				AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */,
@@ -1390,6 +1393,7 @@
 				AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */,
 				AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
+				89F1DF4B1899E004001EE750 /* mask.png in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
 				F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */,
