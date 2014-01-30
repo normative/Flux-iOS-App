@@ -1718,9 +1718,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderGrayscaleAsAlpha];
     
-    //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    //    int maskType = [[defaults objectForKey:@"Mask"] integerValue];
-    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"mask"] ofType:@"png"] options:options error:&error];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    int borderType = [[defaults objectForKey:@"Border"] integerValue];
+    
+    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"border%i",borderType] ofType:@"png"] options:options error:&error];
     if (error) NSLog(@"Image texture error %@", error);
     
     //    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"1" ofType:@"png"] options:options error:&error];

@@ -27,6 +27,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [segmentedControl1 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:@"border"]intValue]+1];
 	// Do any additional setup after loading the view.
 }
 
@@ -45,6 +48,9 @@
 - (IBAction)slider3DidSlide:(id)sender {
 }
 - (IBAction)segmentedControl1DidChange:(id)sender {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:[NSString stringWithFormat:@"%i",[(UISegmentedControl*)sender selectedSegmentIndex]+1] forKey:@"Border"];
 }
 
 
