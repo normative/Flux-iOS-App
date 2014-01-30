@@ -6,6 +6,7 @@ Release Notes:
 - profileView bug fixes
 - debug view added
 - image selection and cache improvements to prepare for clearing out old image content
+- feature matching debug image enable option added to debug view
 
 Release Notes:
 ******************************************
