@@ -32,12 +32,13 @@ NSString* const FluxDisplayManagerDidUpdateImageFeatures = @"FluxDisplayManagerD
 
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
-const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image requesting
+const double scanImageRequestRadius = 15.0;     // radius for scan image requesting
 
 
 @implementation FluxDisplayManager
 
-- (id)init{
+- (id)init
+{
     self = [super init];
     if (self)
     {
@@ -70,8 +71,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
         dataFilter = [[FluxDataFilter alloc]init];
         
-//        currHeading = 0.0;  // due North until told otherwise...
-        
         _isScrubAnimating = false;
         _isScanMode = true;
         
@@ -100,13 +99,13 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
-        
     }
     
     return self;
 }
 
-- (void)dealloc{
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -124,19 +123,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [self.fluxFeatureMatchingQueue shutdownMatchQueue];
 }
 
-//double getAbsAngle(double angle, double heading)
-//{
-//    double h1 = fmod((angle + 360.0), 360.0);
-//    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
-//    if (h1 > 180.0)
-//    {
-//        h1 = 360.0 - h1;
-//    }
-//    
-//    return h1;
-//}
-
-
 #pragma mark - Notifications
 
 #pragma mark Location
@@ -146,7 +132,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     
 }
 
-- (void)didUpdateHeading:(NSNotification *)notification{
+- (void)didUpdateHeading:(NSNotification *)notification
+{
     // first normalize to (0 <= heading < 360.0)
 //    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
 
@@ -156,7 +143,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [self calculateTimeAdjustedImageList];
 }
 
-- (void)didUpdateLocation:(NSNotification *)notification{
+- (void)didUpdateLocation:(NSNotification *)notification
+{
     // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
     
     // setup local sensorPose object with new lat/long
@@ -332,10 +320,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 - (void)didMatchImage:(NSNotification *)notification
 {
-//    NSDictionary *userInfoDict = [notification userInfo];
-//    FluxLocalID *localID = userInfoDict[@"matchedLocalID"];
-//    FluxScanImageObject *imageObject = userInfoDict[@"matchedImageObject"];
-
     [self calculateTimeAdjustedImageList];
 }
 
@@ -375,7 +359,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 #pragma mark - Filter
 
-- (void)didChangeFilter:(NSNotification*)notification{
+- (void)didChangeFilter:(NSNotification*)notification
+{
     dataFilter = [notification.userInfo objectForKey:@"filter"];
     [self requestNearbyItems];
 }
@@ -418,7 +403,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
 {
-    //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
     GLKQuaternion quaternion;
     
     FluxScanImageObject *locationObject = element.imageMetadata;
@@ -451,13 +435,11 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
     element.imagePose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
-    //    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
 - (void)calculateTimeAdjustedImageList
 {
     static bool inCalcTimeAdjImageList = false;
-//    NSLog(@"calculateTimeAdjustedImageList, _timeRangeMinIndex: %d", _timeRangeMinIndex);
     
     if (inCalcTimeAdjImageList)
         return;
@@ -474,36 +456,17 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         {
             _nearbyPrunedList = [self.nearbyUnPrunedList mutableCopy];
         }
-//        [_nearbyListLock unlock];
-
-//        for (FluxImageRenderElement *ire in self.nearbyList)
-//        {
-//            if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Unpruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
-//        }
 
         // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
         // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
         // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
         // hard pressed to see the issues simply because of motion blur.
         
-        
-        
         // spin through nearbylist to update metadata and nearbylist...
         if (self.openGLVC != nil)
         {
             [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:_nearbyPrunedList andMaxIncidentThreshold:maxIncidentThreshold];
         }
-        
-//        for (FluxImageRenderElement *ire in self.nearbyList)
-//        {
-//            if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Pruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
-//        }
 
         // generate the displayList...
         
@@ -556,10 +519,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
                 [self.displayList addObject:ire];
-//                if (ire.imageMetadata.justCaptured > 0)
-//                {
-//                    NSLog(@"Displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//                }
                 
                 //to get display date range
                 NSDate *date = [ire timestamp]; 
@@ -577,22 +536,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     self.latestDisplayDate = date;
                 }
             }
-//            else if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Not displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
         }
         [_nearbyListLock unlock];
 
-//        for (; ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count); idx++)
-//        {
-//            FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
-//            if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Not considering displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
-//        }
-        
         // sort by abs(heading delta with current) asc
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
             // get heading deltas relative to current...
@@ -619,20 +565,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         inCalcTimeAdjImageList = false;
     }
     [_displayListLock unlock];
-    
-//    NSLog(@"Nearby Sort:");
-//    int i = 0;
-//    for (FluxImageRenderElement *ire in self.nearbyList)
-//    {
-//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
-//    }
-//    
-//    NSLog(@"Display Sort: localCurrHeading: %f", localCurrHeading);
-//    i = 0;
-//    for (FluxImageRenderElement *ire in self.displayList)
-//    {
-//        NSLog(@"dl: i=%d, key=%@, headDelta=%f, timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
-//    }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
                                                         object:self userInfo:nil];
@@ -684,7 +616,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     if (ire)
                     {
                         [_nearbyScanList insertObject:ire atIndex:0];
-//                        [_nearbyPrunedList insertObject:ire atIndex:0];
                     }
                 }
                 [_nearbyListLock unlock];
@@ -752,7 +683,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     // make request
     if (_isScanMode)
     {
-//        NSLog(@"requestNearbyItems");
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
         
         dataRequest.maxReturnItems = 100;
@@ -776,7 +706,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 // Iterate over the current nearbylist and clear out anything that is not local-only, or that has been local too long
                 for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
                 {
-//                    if (ire.imageMetadata.imageID < 0)
                     if (ire.imageMetadata.justCaptured > 0)
                     {
                         if (ire.imageMetadata.justCaptured++ < 10)
@@ -901,9 +830,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             }
             [_nearbyListLock unlock];
 
-//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
-//                                                                object:self userInfo:nil];
-
         }];
         
         CLLocation *loc = self.locationManager.location;
@@ -925,42 +851,43 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             [self calculateTimeAdjustedImageList];
         }
         [_nearbyListLock unlock];
-        
-//        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
-//                                                            object:self userInfo:nil];
-
     }
 }
 
 #pragma mark MapView Image Request
 
-- (void)mapViewWillDisplay{
+- (void)mapViewWillDisplay
+{
     //if we have items already, check if it's worth pulling again
-    if (self.fluxMapContentMetadata && previousMapViewLocation) {
-        if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50) {
+    if (self.fluxMapContentMetadata && previousMapViewLocation)
+    {
+        if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50)
+        {
             [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
         }
     }
-    else{
+    else
+    {
         [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
     }
 }
 
-- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter *)mapDataFilter{
+- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter *)mapDataFilter
+{
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     
     dataRequest.maxReturnItems = 30000;
-    if (mapDataFilter) {
+    if (mapDataFilter)
+    {
         dataRequest.searchFilter = mapDataFilter;
     }
-    else{
+    else
+    {
         dataRequest.searchFilter = dataFilter;        
     }
 
-    
     dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-    
     
     [dataRequest setWideAreaListReady:^(NSArray *imageList){
         self.fluxMapContentMetadata = imageList;
@@ -1028,7 +955,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 - (NSMutableArray *)selectRenderElementsInto:(NSMutableArray *)renderList ToMaxCount:(integer_t)maxCount
 {
     [renderList removeAllObjects];
-//    NSLog(@"selectRenderElements");
     
     int maxDisplayCount = self.displayListCount;
     maxDisplayCount = MIN(maxDisplayCount, maxCount);
@@ -1052,21 +978,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 if ((!dupFound) && (count < maxDisplayCount))
                 {
                     [renderList addObject:ire];
-//                    NSLog(@"id: %@ added, idx: %d, relHeading: %f", ire.localID, count, ire.imageMetadata.relHeading);
                     count++;
                 }
-//                else
-//                {
-//                    count++;
-//                    if (ire.imageMetadata.justCaptured > 0)
-//                        NSLog(@"id: %@ not included, relHeading: %f, displaycount: %d", ire.localID, ire.imageMetadata.relHeading, count);
-//                }
             }
-//            else
-//            {
-//                if (ire.imageMetadata.justCaptured > 0)
-//                    NSLog(@"id: %@ not included, relHeading: %f", ire.localID, ire.imageMetadata.relHeading);
-//            }
         }
     }
     [self unlockDisplayList];
@@ -1076,8 +990,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
-//    NSLog(@"Renderlist Count: %d", renderList.count);
-
     NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: /*[NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],*/
                                 [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
                                 nil];
@@ -1090,7 +1002,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             // reset to higher-res (quarterhd) textures if already in the cache
             for (FluxImageRenderElement *ire in renderList)
             {
-//                NSLog(@"Rendering localid: %@, imageid: %d, just captured: %d", ire.imageMetadata.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured);
                 if (ire.imageRenderType < quarterhd)
                 {
                     FluxImageType rtype = none;
@@ -1224,8 +1135,8 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
     lontitudeH *= lontitudeH;
     double tmp = cos(p1.position.x*DEG_TO_RAD) * cos(p2.position.y*DEG_TO_RAD);
     arcInRadians = 2.0 * asin(sqrt(latitudeH + tmp*lontitudeH));
+    
     return EARTH_RADIUS_IN_METERS * arcInRadians;
-
 }
 
 -  (void)testHaversine
@@ -1238,10 +1149,8 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
     p2.position.x = 43.653527;
     p2.position.y = -79.383189;
     
-    
     distance = [self haversineBetweenPosition1:p1 andPosition2:p2];
     NSLog(@"distance = %f", distance);
-
 }
 
 @end
