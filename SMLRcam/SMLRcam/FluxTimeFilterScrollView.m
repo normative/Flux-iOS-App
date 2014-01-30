@@ -42,7 +42,7 @@
 
 - (void)handleSingleTap:(UITapGestureRecognizer *)recognizer
 {
-    CGPoint location = [recognizer locationInView:[recognizer.view self]];
+    CGPoint location = [recognizer locationInView:nil];
     if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:didTapAtPoint:)]) {
         [tapDelegate timeFilterScrollView:self didTapAtPoint:location];
     }

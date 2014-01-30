@@ -7,6 +7,7 @@ Release Notes:
 - debug view added
 - image selection and cache improvements to prepare for clearing out old image content
 - feature matching debug image enable option added to debug view
+- fix for Trello Issue #306 (Tapping does not work if the time slider is not at the latest image)
 
 Release Notes:
 ******************************************
