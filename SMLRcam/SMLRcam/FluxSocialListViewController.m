@@ -14,15 +14,6 @@
 
 @implementation FluxSocialListViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -30,6 +21,14 @@
     [self.view setAlpha:0.0];
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
+    }
+    
+    listMode = friendMode;
+    
+    socialListArray = [[NSMutableArray alloc]init];
+    for (int i = 0; i<3; i++) {
+        NSMutableArray*mutArr = [[NSMutableArray alloc]init];
+        [socialListArray addObject:mutArr];
     }
 
     // Uncomment the following line to preserve selection between presentations.
@@ -43,7 +42,7 @@
     [super viewWillDisappear:animated];
 
     [UIView animateWithDuration:0.2 animations:^{
-        [self.tableView setAlpha:0.0];
+        [self.view setAlpha:0.0];
     }];
 }
 
@@ -51,7 +50,7 @@
 {
     [super viewWillAppear:animated];
     [UIView animateWithDuration:0.25 animations:^{
-        [self.tableView setAlpha:1.0];
+        [self.view setAlpha:1.0];
     }];
 }
 
@@ -70,7 +69,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return friendFollowerArray.count;
+    return [(NSMutableArray*)[socialListArray objectAtIndex:listMode] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -90,7 +89,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSLog(@"tapped cell with userID %@",(NSString*)[friendFollowerArray objectAtIndex:indexPath.row]);
+    NSLog(@"tapped cell with userID %@",(NSString*)[(NSArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row]);
 }
 
 - (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell{
@@ -148,25 +147,29 @@
 
  */
 
--(void)prepareViewforMode:(SocialListMode)mode andIDList:(NSArray *)idList{
-    listMode = mode;
-    friendFollowerArray = [[NSMutableArray alloc]init];
-    
-    for (NSString* userID in idList){
-        FluxUserObject*person = [[FluxUserObject alloc]init];
-        [person setUserID:[userID intValue]];
-        [friendFollowerArray addObject:person];
-    }
-    
-    if (listMode == followerMode) {
-        self.title = @"Followers";
-    }
-    else if (listMode == followingMode){
-        self.title = @"Following";
-    }
-    else{
-        self.title = @"Friends";
-    }
-}
+//-(void)prepareViewforMode:(SocialListMode)mode andIDList:(NSArray *)idList{
+//    listMode = mode;
+//    friendFollowerArray = [[NSMutableArray alloc]init];
+//    
+//    for (NSString* userID in idList){
+//        FluxUserObject*person = [[FluxUserObject alloc]init];
+//        [person setUserID:[userID intValue]];
+//        [friendFollowerArray addObject:person];
+//    }
+//    
+//    if (listMode == followerMode) {
+//        self.title = @"Followers";
+//    }
+//    else if (listMode == followingMode){
+//        self.title = @"Following";
+//    }
+//    else{
+//        self.title = @"Friends";
+//    }
+//}
 
+- (IBAction)segmentedControllerDidChange:(id)sender {
+    listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
+    [socialTableView reloadData];
+}
 @end

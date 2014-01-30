@@ -12,18 +12,21 @@
 #import "FluxFriendFollowerCell.h"
 
 typedef enum SocialListMode : NSUInteger {
-    followerMode = 0,
+    friendMode = 0,
     followingMode = 1,
-    friendMode = 2
+    followerMode = 2
 } SocialListMode;
 
-@interface FluxSocialListViewController : UITableViewController <FluxFriendFollowerCellDelegate>{
-    NSMutableArray*friendFollowerArray;
+@interface FluxSocialListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate>{
     SocialListMode listMode;
+    IBOutlet UISegmentedControl *segmentedControl;
+    IBOutlet UITableView *socialTableView;
+    NSMutableArray*socialListArray;
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
+- (IBAction)segmentedControllerDidChange:(id)sender;
 
--(void)prepareViewforMode:(SocialListMode)mode andIDList:(NSArray*)idList;
+//-(void)prepareViewforMode:(SocialListMode)mode andIDList:(NSArray*)idList;
 
 
 @end

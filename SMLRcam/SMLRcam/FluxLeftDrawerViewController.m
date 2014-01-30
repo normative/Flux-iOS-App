@@ -159,20 +159,20 @@
 - (NSMutableArray*)tableViewArrayForUser:(FluxUserObject*)user{
     NSMutableArray*newTableArray;
     if (user) {
-        NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.imageCount], @"Photos" , nil];
-        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followingCount], @"Following" , nil];
-        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followerCount], @"Followers" , nil];
-        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.friendCount], @"Friends" , nil];
+        NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.imageCount], @"My Photos" , nil];
+        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Network" , nil];
+//        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followerCount], @"Followers" , nil];
+//        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.friendCount], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, /*tmp3, tmp4,*/ tmp5, nil];
     }
     else{
-        NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Photos" , nil];
-        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Following" , nil];
-        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
-        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
+        NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Photos" , nil];
+        NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Network" , nil];
+//        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
+//        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp3, tmp4, tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, /*tmp3, tmp4,*/ tmp5, nil];
     }
     return newTableArray;
 }
@@ -271,16 +271,8 @@
         cell.countLabel.text = @"";
         [cell.titleLabel setEnabled:YES];
     }
-    //disable social
-    else if(indexPath.row == 2 || indexPath.row == 3 || indexPath.row == 4){
-        cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
-        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
-        [cell.titleLabel setEnabled:NO];
-        [cell.countLabel setEnabled:NO];
-        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-    }
     
-    else{
+    else if (indexPath.row == 1){
         if (newImageCount >=0) {
             
             cell.countLabel.text = [NSString stringWithFormat:@"%i",newImageCount];
@@ -291,6 +283,15 @@
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         [cell.titleLabel setEnabled:YES];
         [cell.countLabel setEnabled:YES];
+    }
+    //disable social
+    else{
+        cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
+        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
+        [cell.titleLabel setEnabled:NO];
+        [cell.countLabel setEnabled:NO];
+        [cell.countLabel setHidden:YES];
+        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
     //[cell.imageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
     return cell;
@@ -311,16 +312,16 @@
 //            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followingMode]];
             break;
         case 3:
-            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
 //            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followerMode]];
             break;
-        case 4:
-            [tableView deselectRowAtIndexPath:indexPath animated:NO];
-//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:friendMode]];
-            break;
-        case 5:
-            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
-            break;
+//        case 4:
+//            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+////            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:friendMode]];
+//            break;
+//        case 5:
+//            
+//            break;
             
         default:
             break;
@@ -483,18 +484,18 @@
     }
     if ([[segue identifier]isEqualToString:@"pushSocialList"]) {
         [(FluxSocialListViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
-        if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followingMode]]) {
-            //following
-            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followingMode andIDList:nil];
-        }
-        else if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followerMode]]){
-            //follower
-            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followerMode andIDList:nil];
-        }
-        else{
-            //friend
-            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:friendMode andIDList:nil];
-        }
+//        if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followingMode]]) {
+//            //following
+//            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followingMode andIDList:nil];
+//        }
+//        else if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followerMode]]){
+//            //follower
+//            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followerMode andIDList:nil];
+//        }
+//        else{
+//            //friend
+//            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:friendMode andIDList:nil];
+//        }
     }
 }
 
