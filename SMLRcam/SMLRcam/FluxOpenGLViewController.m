@@ -774,6 +774,8 @@ void init(){
     _displayListHasChanged = 0;
 }
 
+
+
 - (void)activateNewImageCapture{
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self.imageCaptureViewController setHidden:NO];

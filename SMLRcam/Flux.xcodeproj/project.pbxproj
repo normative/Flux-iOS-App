@@ -61,6 +61,7 @@
 		AA2CBABB188F029C001ECF86 /* FluxCameraRollButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBABA188F029C001ECF86 /* FluxCameraRollButton.m */; };
 		AA2CBAC2188F2810001ECF86 /* FluxSnapshotCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBAC1188F2810001ECF86 /* FluxSnapshotCollectionViewController.m */; };
 		AA2CBAC6188F31C2001ECF86 /* UIAlertView+Blocks.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2CBAC5188F31C2001ECF86 /* UIAlertView+Blocks.m */; };
+		AA2F9DBE189AAD450030F749 /* FluxDebugViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA2F9DBD189AAD450030F749 /* FluxDebugViewController.m */; };
 		AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */; };
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
@@ -266,6 +267,8 @@
 		AA2CBAC1188F2810001ECF86 /* FluxSnapshotCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSnapshotCollectionViewController.m; sourceTree = "<group>"; };
 		AA2CBAC4188F31C2001ECF86 /* UIAlertView+Blocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+Blocks.h"; sourceTree = "<group>"; };
 		AA2CBAC5188F31C2001ECF86 /* UIAlertView+Blocks.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+Blocks.m"; sourceTree = "<group>"; };
+		AA2F9DBC189AAD450030F749 /* FluxDebugViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDebugViewController.h; sourceTree = "<group>"; };
+		AA2F9DBD189AAD450030F749 /* FluxDebugViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDebugViewController.m; sourceTree = "<group>"; };
 		AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewerImageUtil.h; sourceTree = "<group>"; };
@@ -769,9 +772,19 @@
 			name = "UIAlert Blocks";
 			sourceTree = "<group>";
 		};
+		AA2F9DBB189AAD300030F749 /* Debug VC */ = {
+			isa = PBXGroup;
+			children = (
+				AA2F9DBC189AAD450030F749 /* FluxDebugViewController.h */,
+				AA2F9DBD189AAD450030F749 /* FluxDebugViewController.m */,
+			);
+			name = "Debug VC";
+			sourceTree = "<group>";
+		};
 		AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */ = {
 			isa = PBXGroup;
 			children = (
+				AA2F9DBB189AAD300030F749 /* Debug VC */,
 				AAF1BCFA183C173900909AFF /* 2.png */,
 				AA349A2217C3BF4000C72E24 /* FluxOpenGLViewController.h */,
 				AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */,
@@ -1464,6 +1477,7 @@
 				AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */,
 				AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */,
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
+				AA2F9DBE189AAD450030F749 /* FluxDebugViewController.m in Sources */,
 				F2B2C1F7183E41CE00D32084 /* FluxMatcherWrapper.mm in Sources */,
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
 				F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */,
