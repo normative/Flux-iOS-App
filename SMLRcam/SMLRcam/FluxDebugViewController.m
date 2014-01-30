@@ -8,6 +8,7 @@
 
 #import "FluxDebugViewController.h"
 #import "FluxScanViewController.h"
+#import "FluxDisplayManager.h"
 
 @interface FluxDebugViewController ()
 
@@ -31,6 +32,9 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
      int borderType = [[defaults objectForKey:@"Border"] integerValue];
     [segmentedControl1 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:@"Border"]intValue]-1];
+    
+    [switch1 setOn:[[defaults objectForKey:FluxDisplayManagerMatchDebugImageOutputKey] boolValue]];
+    
 	// Do any additional setup after loading the view.
 }
 
@@ -59,7 +63,14 @@
 
 
 
-- (IBAction)switch1DidChange:(id)sender {
+- (IBAction)switch1DidChange:(id)sender
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:@([(UISwitch*)sender isOn]) forKey:FluxDisplayManagerMatchDebugImageOutputKey];
+    [defaults synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidChangeMatchDebugImageOutput
+                                                        object:self userInfo:nil];
 }
 
 - (IBAction)switch2DidChange:(id)sender {

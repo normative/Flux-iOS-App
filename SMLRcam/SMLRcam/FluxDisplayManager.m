@@ -29,6 +29,8 @@ NSString* const FluxDisplayManagerDidUpdateMapPinList = @"FluxDisplayManagerDidU
 NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManagerDidFailToUpdateMapPinList";
 NSString* const FluxDisplayManagerDidMatchImage = @"FluxDisplayManagerDidMatchImage";
 NSString* const FluxDisplayManagerDidUpdateImageFeatures = @"FluxDisplayManagerDidUpdateImageFeatures";
+NSString* const FluxDisplayManagerDidChangeMatchDebugImageOutput = @"FluxDisplayManagerDidChangeMatchDebugImageOutput";
+NSString* const FluxDisplayManagerMatchDebugImageOutputKey = @"FluxDisplayManagerMatchDebugImageOutputKey";
 
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
@@ -85,6 +87,8 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         
         _fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
         
+        [self setupFeatureMatching];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -96,6 +100,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupFeatureMatching) name:FluxDisplayManagerDidChangeMatchDebugImageOutput object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDataStoreRemoveImageObjectFromCache:) name:FluxDataStoreDidEvictImageObjectFromCache object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
@@ -117,6 +122,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidUndoCapture object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidChangeMatchDebugImageOutput object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDataStoreDidEvictImageObjectFromCache object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
@@ -228,12 +234,14 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                     // Reset failure state so it doesn't get queued up again until matching is complete or fails again
                     ire.imageMetadata.matchFailed = NO;
                     
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC
+                                              isCurrentlyDisplayed:isDisplayed withDebugImageOutput:featureMatchingDebugImageOutput];
                 }
                 else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil))
                 {
                     // Also queue up any items which have not been queueud (not matched, no failure retry time set).
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC
+                                              isCurrentlyDisplayed:isDisplayed withDebugImageOutput:featureMatchingDebugImageOutput];
                 }
             }
         }
@@ -332,6 +340,12 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 - (void)didMatchImage:(NSNotification *)notification
 {
     [self calculateTimeAdjustedImageList];
+}
+
+- (void)setupFeatureMatching
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    featureMatchingDebugImageOutput = [[defaults objectForKey:FluxDisplayManagerMatchDebugImageOutputKey] boolValue];
 }
 
 # pragma mark - Kalman State Changes

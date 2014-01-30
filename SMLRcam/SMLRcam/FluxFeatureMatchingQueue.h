@@ -22,7 +22,8 @@
 
 @property (nonatomic, strong) PendingOperations *pendingOperations;
 
--(void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview isCurrentlyDisplayed:(bool)isDisplayed;
+-(void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview
+              isCurrentlyDisplayed:(bool)isDisplayed withDebugImageOutput:(bool)outputDebugImages;
 -(void)deleteMatchRequests;
 -(void)shutdownMatchQueue;
 

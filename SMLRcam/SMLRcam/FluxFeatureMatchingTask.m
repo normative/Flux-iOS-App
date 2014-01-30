@@ -82,7 +82,7 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
                                                                  withTranslation:translation1
                                                                       withNormal:normal1
                                                           withProjectionDistance:self.matchRecord.cfe.cameraProjectionDistance
-                                                                  withDebugImage:NO //Debugging of images
+                                                                  withDebugImage:self.matchRecord.outputDebugImages //Debugging of images
                                                                      withImageID:self.matchRecord.ire.imageMetadata.imageID];
             
             if (feature_matching_success == result)

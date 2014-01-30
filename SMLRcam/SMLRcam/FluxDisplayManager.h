@@ -20,6 +20,8 @@ extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
 extern NSString* const FluxDisplayManagerDidUpdateMapPinList;
 extern NSString* const FluxDisplayManagerDidFailToUpdateMapPinList;
 extern NSString* const FluxDisplayManagerDidMatchImage;
+extern NSString* const FluxDisplayManagerDidChangeMatchDebugImageOutput;
+extern NSString* const FluxDisplayManagerMatchDebugImageOutputKey;
 
 extern NSString* const FluxOpenGLShouldRender;
 
@@ -57,6 +59,7 @@ extern NSString* const FluxOpenGLShouldRender;
     int _featureRequestCount;
     NSLock *_imageRequestCountLock;
     NSLock *_featureRequestCountLock;
+    bool featureMatchingDebugImageOutput;
     
     sensorPose lastMotionPose;
     NSDate *lastMotionTime;

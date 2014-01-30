@@ -26,6 +26,7 @@
         self.failed = NO;
         self.matched = NO;
         self.isImageDisplayed = NO;
+        self.outputDebugImages = NO;
     }
     return self;
 }

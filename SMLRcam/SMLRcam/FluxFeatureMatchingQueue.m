@@ -38,7 +38,8 @@ const double reuseCameraFrameTimeInterval = 1.0;
     return self;
 }
 
-- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview isCurrentlyDisplayed:(bool)isDisplayed
+- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview
+               isCurrentlyDisplayed:(bool)isDisplayed withDebugImageOutput:(bool)outputDebugImages
 {
     // Check to see if already feature match in progress. If so, ignore it.
     if (![self.pendingOperations.featureMatchingInProgress.allKeys containsObject:ireToMatch.localID])
@@ -48,6 +49,7 @@ const double reuseCameraFrameTimeInterval = 1.0;
         FluxFeatureMatchingRecord *matchRecord = [[FluxFeatureMatchingRecord alloc] init];
         matchRecord.ire = ireToMatch;
         matchRecord.isImageDisplayed = isDisplayed;
+        matchRecord.outputDebugImages = outputDebugImages;
         
         // Check to see if there is a current frame that is recent enough
         // Note we use request date rather than frame date, since pending requests don't have a frame date yet.

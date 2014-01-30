@@ -20,5 +20,6 @@
 @property (nonatomic, getter = isMatched) BOOL matched; // Return YES if object is matched to scene
 @property (nonatomic, getter = isFailed) BOOL failed; // Return Yes if image matching failed
 @property (nonatomic) BOOL isImageDisplayed; // Property to store if image is currently in displayList (i.e. visible or possibly visible)
+@property (nonatomic) BOOL outputDebugImages; // Property to store whether or not to output feature matching debug imagery to camera roll
 
 @end
