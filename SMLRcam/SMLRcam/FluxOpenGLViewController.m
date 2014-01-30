@@ -1674,6 +1674,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [self initCameraModels];
     [self setupBuffers];
     [self loadAlphaTexture];
+    [self loadBorderTexture];
     //[pedoLabel setText:@"ped"];
 }
 
@@ -1699,11 +1700,31 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 //    int maskType = [[defaults objectForKey:@"Mask"] integerValue];
     int maskType = 2;
-    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"%i",maskType] ofType:@"png"] options:options error:&error];
+    _texture[6] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"%i",maskType] ofType:@"png"] options:options error:&error];
     if (error) NSLog(@"Image texture error %@", error);
     
 //    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"1" ofType:@"png"] options:options error:&error];
 //    if (error) NSLog(@"Image texture error %@", error);
+    
+    glActiveTexture(GL_TEXTURE6);
+    glBindTexture(_texture[6].target, _texture[6].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+}
+- (void) loadBorderTexture
+{
+    NSError *error;
+    NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
+    options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderGrayscaleAsAlpha];
+    
+    //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    //    int maskType = [[defaults objectForKey:@"Mask"] integerValue];
+    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:[NSString stringWithFormat:@"mask"] ofType:@"png"] options:options error:&error];
+    if (error) NSLog(@"Image texture error %@", error);
+    
+    //    _texture[5] = [GLKTextureLoader textureWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"1" ofType:@"png"] options:options error:&error];
+    //    if (error) NSLog(@"Image texture error %@", error);
     
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(_texture[5].target, _texture[5].name);
@@ -1711,7 +1732,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     
 }
-
 - (void)setupBuffers
 {
     glGenBuffers(1, &_indexVBO);
@@ -2243,6 +2263,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER5], 5);
 
+    glActiveTexture(GL_TEXTURE6);
+    glBindTexture(_texture[6].target, _texture[6].name);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER6], 6);
     
     // then spin through the images...
     NSEnumerator *revEnumerator = [[self.textureMap subarrayWithRange:NSMakeRange(0, [self.renderList count])] reverseObjectEnumerator];
@@ -2391,6 +2416,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     uniforms[UNIFORM_MYTEXTURE_SAMPLER3] = glGetUniformLocation(_program, "textureSampler[3]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER4] = glGetUniformLocation(_program, "textureSampler[4]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER5] = glGetUniformLocation(_program, "textureSampler[5]");
+    uniforms[UNIFORM_MYTEXTURE_SAMPLER6] = glGetUniformLocation(_program, "textureSampler[6]");
     uniforms[UNIFORM_MYTEXTURE_SAMPLER7] = glGetUniformLocation(_program, "textureSampler[7]");
     
     uniforms[UNIFORM_RENDER_ENABLE0] = glGetUniformLocation(_program, "renderEnable[0]");
