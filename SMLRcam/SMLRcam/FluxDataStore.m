@@ -8,6 +8,10 @@
 
 #import "FluxDataStore.h"
 
+NSString* const FluxDataStoreDidEvictImageObjectFromCache = @"FluxDataStoreDidEvictImageObjectFromCache";
+NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyImageType = @"FluxDataStoreDidEvictImageObjectFromCacheKeyImageType";
+NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID = @"FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID";
+
 @implementation FluxDataStore
 
 - (id)init
@@ -253,6 +257,11 @@
 
     NSString *imageCacheKey = [imageObject generateImageCacheKeyWithImageType:imageType];
     [cachedImageLocalIDList removeObjectForKey:imageCacheKey];
+    
+    NSDictionary *userInfoDict = @{FluxDataStoreDidEvictImageObjectFromCacheKeyImageType : @(imageType),
+                                   FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID : localID};
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataStoreDidEvictImageObjectFromCache
+                                                        object:self userInfo:userInfoDict];
 }
 
 - (void)debugByShowingCachedImageKeys

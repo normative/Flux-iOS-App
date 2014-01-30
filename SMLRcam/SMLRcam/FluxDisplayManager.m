@@ -96,6 +96,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDataStoreRemoveImageObjectFromCache:) name:FluxDataStoreDidEvictImageObjectFromCache object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
@@ -116,6 +117,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidUndoCapture object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDataStoreDidEvictImageObjectFromCache object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
@@ -125,9 +127,19 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 
 #pragma mark - Notifications
 
+- (void)didDataStoreRemoveImageObjectFromCache:(NSNotification *)notification
+{
+    NSNumber *imageTypeNSNumber = [notification.userInfo objectForKey:FluxDataStoreDidEvictImageObjectFromCacheKeyImageType];
+    FluxImageType imageType = [imageTypeNSNumber unsignedIntegerValue];
+    FluxLocalID *localID = [notification.userInfo objectForKey:FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID];
+    
+    FluxImageRenderElement *ire = [self getRenderElementForKey:localID];
+    ire.imageTypesFetched = ire.imageTypesFetched & ~(1 << imageType);
+}
+
 #pragma mark Location
 
--(void)didUpdatePlacemark:(NSNotification *)notification
+- (void)didUpdatePlacemark:(NSNotification *)notification
 {
     
 }
