@@ -28,6 +28,7 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
+    NSString * borderType = [defaults objectForKey:@"Border"];
     
     // do not save locally by default
     if (savePic == nil) {
@@ -37,6 +38,11 @@
     //set local by default
     if (isLocalURL == nil) {
         [defaults setObject:[NSNumber numberWithInt:1] forKey:@"Server Location"];
+        [defaults synchronize];
+    }
+    
+    if (borderType == nil) {
+        [defaults setObject:@"1" forKey:@"Border"];
         [defaults synchronize];
     }
     
@@ -78,8 +84,8 @@
     //testFlight analytics
     [TestFlight takeOff:TestFlightAppToken];
     
-    //RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
-    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
+    //RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     //RKLogConfigureByName("*", RKLogLevelOff);
     
     return YES;

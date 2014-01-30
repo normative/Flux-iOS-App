@@ -77,6 +77,164 @@
             </objects>
             <point key="canvasLocation" x="2273" y="-993"/>
         </scene>
+        <!--Flux Debug View Controller-->
+        <scene sceneID="dtQ-rK-kdc">
+            <objects>
+                <viewController storyboardIdentifier="debugViewController" id="V4e-hA-nqo" customClass="FluxDebugViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="XvU-jN-dgf"/>
+                        <viewControllerLayoutGuide type="bottom" id="5Lf-DQ-jH7"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="tmc-bf-Rg8">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="V8q-tt-89J">
+                                <rect key="frame" x="18" y="140" width="156" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="slider1DidSlide:" destination="V4e-hA-nqo" eventType="valueChanged" id="7cP-ft-pwh"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Opt-qW-r7G">
+                                <rect key="frame" x="75" y="111" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wj3-0u-Sbw">
+                                <rect key="frame" x="234" y="112" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="chN-Ew-RNh">
+                                <rect key="frame" x="18" y="220" width="156" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="slider2DidSlide:" destination="V4e-hA-nqo" eventType="valueChanged" id="XO1-bu-Y0A"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yAH-dK-88h">
+                                <rect key="frame" x="75" y="190" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="vyg-2g-yl1">
+                                <rect key="frame" x="18" y="299" width="156" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="slider3DidSlide:" destination="V4e-hA-nqo" eventType="valueChanged" id="oy0-g8-bR9"/>
+                                </connections>
+                            </slider>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gMa-co-6JK">
+                                <rect key="frame" x="75" y="270" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Border Style" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZNF-JL-1uU">
+                                <rect key="frame" x="49" y="346" width="95" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pCA-VX-yox">
+                                <rect key="frame" x="234" y="346" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Sdd-Mx-Y9G">
+                                <rect key="frame" x="231" y="141" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="switch1DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="WGJ-cn-Tcu"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6oT-J6-QoB">
+                                <rect key="frame" x="234" y="190" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hPh-ep-mX4">
+                                <rect key="frame" x="231" y="219" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="switch2DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="sPs-fv-md6"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K16-JH-xA3">
+                                <rect key="frame" x="234" y="270" width="42" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HLL-0P-ix6">
+                                <rect key="frame" x="231" y="299" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="switch3DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="muZ-dH-xzD"/>
+                                </connections>
+                            </switch>
+                            <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Y6f-M0-Qsf">
+                                <rect key="frame" x="208" y="374" width="94" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <connections>
+                                    <action selector="stepper1DidStep:" destination="V4e-hA-nqo" eventType="valueChanged" id="zKA-tB-SVK"/>
+                                </connections>
+                            </stepper>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="G41-CX-NvM">
+                                <rect key="frame" x="20" y="375" width="152" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title="1"/>
+                                    <segment title="2"/>
+                                    <segment title="3"/>
+                                    <segment title="4"/>
+                                </segments>
+                                <connections>
+                                    <action selector="segmentedControl1DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="FUt-r0-TDf"/>
+                                </connections>
+                            </segmentedControl>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P7N-x3-Awn">
+                                <rect key="frame" x="102" y="440" width="117" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Hide This Menu">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="hideMenuAction:" destination="V4e-hA-nqo" eventType="touchUpInside" id="XO4-1a-a9C"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="segmentedControl1" destination="G41-CX-NvM" id="FAv-w4-D8E"/>
+                        <outlet property="slider1" destination="V8q-tt-89J" id="J8u-bG-PIA"/>
+                        <outlet property="slider2" destination="chN-Ew-RNh" id="JdO-4G-EXR"/>
+                        <outlet property="slider3" destination="vyg-2g-yl1" id="ADP-Lt-VGT"/>
+                        <outlet property="stepper1" destination="Y6f-M0-Qsf" id="dj3-a4-XwA"/>
+                        <outlet property="switch1" destination="Sdd-Mx-Y9G" id="eTa-ld-MWu"/>
+                        <outlet property="switch2" destination="hPh-ep-mX4" id="rgF-TV-WaS"/>
+                        <outlet property="switch3" destination="HLL-0P-ix6" id="MWr-py-5DJ"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yX8-jP-Y2K" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2638" y="-993"/>
+        </scene>
         <!--Flux Snapshot Capture View Controller-->
         <scene sceneID="UJw-hK-n3F">
             <objects>
@@ -895,6 +1053,54 @@
                                             <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="maH-yF-aX4"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Qy-BY-UGL">
+                                        <rect key="frame" x="0.0" y="110" width="50" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="debugButton1Cancelled:" destination="2" eventType="touchUpOutside" id="eJc-ap-SXj"/>
+                                            <action selector="debugButton1Cancelled:" destination="2" eventType="touchUpInside" id="sYq-XI-91p"/>
+                                            <action selector="debugButton1Pressed:" destination="2" eventType="touchDown" id="j2K-Ku-CPW"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CqY-hu-eLa">
+                                        <rect key="frame" x="90" y="110" width="50" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="debugButton2Cancelled:" destination="2" eventType="touchUpOutside" id="2Hm-k4-0GF"/>
+                                            <action selector="debugButton2Cancelled:" destination="2" eventType="touchUpInside" id="9e5-kM-gCx"/>
+                                            <action selector="debugButton2Pressed:" destination="2" eventType="touchDown" id="DSY-gj-sDI"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U50-Bo-x59">
+                                        <rect key="frame" x="185" y="110" width="50" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="debugButton3Cancelled:" destination="2" eventType="touchUpInside" id="OSJ-jA-1P3"/>
+                                            <action selector="debugButton3Cancelled:" destination="2" eventType="touchUpOutside" id="aN1-ht-KHe"/>
+                                            <action selector="debugButton3Pressed:" destination="2" eventType="touchDown" id="Kqd-xV-Qf3"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eey-VP-W7S">
+                                        <rect key="frame" x="270" y="110" width="50" height="40"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <state key="normal" title="Button">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="debugButton4Cancelled:" destination="2" eventType="touchUpInside" id="DX4-Ws-SJC"/>
+                                            <action selector="debugButton4Cancelled:" destination="2" eventType="touchUpOutside" id="oHy-27-6Zu"/>
+                                            <action selector="debugButton4Pressed:" destination="2" eventType="touchDown" id="IdU-Rw-0mH"/>
+                                        </connections>
+                                    </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VeE-ti-EHD" userLabel="Bottom Toolbar View">
                                         <rect key="frame" x="0.0" y="485" width="320" height="87"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1031,6 +1237,10 @@
                         <outlet property="bottomToolbarView" destination="VeE-ti-EHD" id="yuE-fJ-Icw"/>
                         <outlet property="cameraButton" destination="29b-VL-Tq7" id="uAm-Rx-M48"/>
                         <outlet property="dateRangeLabel" destination="M3r-QE-4sQ" id="Y73-S8-pip"/>
+                        <outlet property="debugButton1" destination="6Qy-BY-UGL" id="sC6-pe-L5n"/>
+                        <outlet property="debugButton2" destination="CqY-hu-eLa" id="lZj-OR-kqC"/>
+                        <outlet property="debugButton3" destination="U50-Bo-x59" id="gLJ-ti-AlT"/>
+                        <outlet property="debugButton4" destination="eey-VP-W7S" id="gB1-zR-fns"/>
                         <outlet property="filterButton" destination="bo9-BI-7cK" id="0DJ-MQ-P3B"/>
                         <outlet property="imageCaptureButton" destination="c58-0p-wGY" id="usz-3O-Mvg"/>
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
@@ -2012,6 +2222,6 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="cDh-QJ-kAL"/>
-        <segue reference="XI0-aT-E1x"/>
+        <segue reference="TKb-mp-b48"/>
     </inferredMetricsTieBreakers>
 </document>

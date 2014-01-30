@@ -16,6 +16,8 @@
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
 
+
+
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -761,6 +763,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupOpenGLView];
     [self setupTimeFilterControl];
     [self setupAnnotationsTableView];
+    [self setupDebugView];
 
     currentDataFilter = [[FluxDataFilter alloc] init];
     
@@ -777,6 +780,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     {
         [self.cameraButton setAlpha:0.4];
     }
+    
+    debugPressCount = 0;
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNearbyImageList:) name:FluxDisplayManagerDidUpdateNearbyList object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
@@ -895,7 +900,85 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	[view.layer addAnimation:group forKey:nil];
 }
 
+#pragma mark - Debug Menu
 
+- (void)setupDebugView{
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+    // setup the opengl controller
+    // first get an instance from storyboard
+    self.debugViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"debugViewController"];
+    
+    // then add the imageCaptureView as the subview of the parent view
+    [self.view addSubview:self.debugViewController.view];
+    // add the glkViewController as the child of self
+    [self addChildViewController:self.debugViewController];
+    [self.debugViewController didMoveToParentViewController:self];
+    self.debugViewController.view.frame = self.view.bounds;
+    [self.debugViewController.view setHidden:YES];
+    
+    [debugButton1 setTitle:@"" forState:UIControlStateNormal];
+    [debugButton2 setTitle:@"" forState:UIControlStateNormal];
+    [debugButton3 setTitle:@"" forState:UIControlStateNormal];
+    [debugButton4 setTitle:@"" forState:UIControlStateNormal];
+}
+
+- (void)showDebugMenu{
+    [self.debugViewController.view setHidden:NO];
+}
+- (void)hideDebugMenu{
+    [self.debugViewController.view setHidden:YES];
+}
+
+- (IBAction)debugButton1Pressed:(id)sender {
+    NSLog(@"Button1 Pressed");
+    debugPressCount++;
+    [self checkToDisplayDebugMenu];
+}
+
+- (IBAction)debugButton1Cancelled:(id)sender {
+    NSLog(@"Button1 cancelled");
+    debugPressCount--;
+}
+
+- (IBAction)debugButton2Pressed:(id)sender {
+    NSLog(@"Button2 Pressed");
+    debugPressCount++;
+    [self checkToDisplayDebugMenu];
+}
+
+- (IBAction)debugButton2Cancelled:(id)sender {
+    NSLog(@"Button2 cancelled");
+    debugPressCount--;
+}
+
+- (IBAction)debugButton3Pressed:(id)sender {
+    NSLog(@"Button3 Pressed");
+    debugPressCount++;
+    [self checkToDisplayDebugMenu];
+}
+
+- (IBAction)debugButton3Cancelled:(id)sender {
+    NSLog(@"Button4 cancelled");
+    debugPressCount--;
+}
+
+- (IBAction)debugButton4Pressed:(id)sender {
+    NSLog(@"Button4 Pressed");
+    debugPressCount++;
+    [self checkToDisplayDebugMenu];
+}
+
+- (IBAction)debugButton4Cancelled:(id)sender {
+    NSLog(@"Button3 cancelled");
+    debugPressCount--;
+}
+
+- (void)checkToDisplayDebugMenu{
+    if (debugPressCount == 4) {
+        [self showDebugMenu];
+    }
+}
 
 @end
 

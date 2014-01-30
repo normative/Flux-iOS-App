@@ -27,6 +27,8 @@
 
 #import "GAITrackedViewController.h"
 
+#import "FluxDebugViewController.h"
+
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
 extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
@@ -70,6 +72,14 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int totalUploads;
     
     FluxDataFilter *currentDataFilter;
+    
+    //debugMenu
+    int debugPressCount;
+    IBOutlet UIButton *debugButton1;
+    IBOutlet UIButton *debugButton2;
+    IBOutlet UIButton *debugButton3;
+    IBOutlet UIButton *debugButton4;
+    
 }
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
@@ -77,8 +87,10 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) IBOutlet FluxTimeFilterControl*timeFilterControl;
-
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
+
+@property (nonatomic, strong) FluxDebugViewController *debugViewController;
+- (void)hideDebugMenu;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)cameraButtonAction:(id)sender;
@@ -97,5 +109,16 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 - (void)setupTimeFilterControl;
 - (void) didTapImageFunc:(FluxScanImageObject*) fsio;
 - (IBAction)toggleLocationCoordinate:(id)sender;
+
+//debugMenu
+- (IBAction)debugButton1Pressed:(id)sender;
+- (IBAction)debugButton1Cancelled:(id)sender;
+- (IBAction)debugButton2Pressed:(id)sender;
+- (IBAction)debugButton2Cancelled:(id)sender;
+- (IBAction)debugButton3Pressed:(id)sender;
+- (IBAction)debugButton3Cancelled:(id)sender;
+- (IBAction)debugButton4Pressed:(id)sender;
+- (IBAction)debugButton4Cancelled:(id)sender;
+
 
 @end
