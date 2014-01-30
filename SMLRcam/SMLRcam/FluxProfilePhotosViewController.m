@@ -20,6 +20,8 @@
 
 @implementation FluxProfilePhotosViewController
 
+@synthesize delegate;
+
 #pragma mark - View Init
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -117,6 +119,9 @@
         [ProgressHUD showSuccess:@"Deleted"];
         [self unfreezeUI];
         
+        if ([delegate respondsToSelector:@selector(FluxProfilePhotosViewController:didPopAndDeleteImages:)]) {
+            [delegate FluxProfilePhotosViewController:self didPopAndDeleteImages:deletedImages];
+        }
         
         NSMutableArray *indexPaths = [[NSMutableArray alloc]initWithCapacity:removedImages.count];
         NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc]init];
@@ -220,13 +225,13 @@
         [browser setDisplayDoneButtonBackgroundImage:NO];
         [browser setInitialPageIndex:indexPath.row];
         [browser setDelegate:self];
-        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
         [self presentViewController:browser animated:YES completion:nil];
     }
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 #pragma mark - IB Actions

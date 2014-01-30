@@ -164,7 +164,7 @@
         case 0:
             [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
             
-            if (![UICKeyChainStore stringForKey:FluxTokenKey service:FacebookService]) {
+            if (![UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]) {
                 [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"facebookLogo"]]];
                 [socialMgmtcell.socialDescriptionLabel setText:@""];
                 [socialMgmtcell setIsActivated:NO];
@@ -179,7 +179,7 @@
         case 1:
             [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
             
-            if (![UICKeyChainStore stringForKey:FluxTokenKey service:TwitterService]) {
+            if (![UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]) {
                 [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"twitterLogo"]]];
                 [socialMgmtcell.socialDescriptionLabel setText:@""];
                 [socialMgmtcell setIsActivated:NO];
@@ -204,22 +204,22 @@
         case 0:
             if ([(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath] isActivated]) {
                 
-                [UIActionSheet showInView:self.view
-                                withTitle:@"Facebook"
-                        cancelButtonTitle:@"Cancel"
-                   destructiveButtonTitle:@"Unlink"
-                        otherButtonTitles:nil
-                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                         //unlink facebook
-                                         [UICKeyChainStore removeAllItemsForService:FacebookService];
-                                         //close facebook session
-                                         if (FBSession.activeSession.isOpen) {
-                                             [FBSession.activeSession closeAndClearTokenInformation];
-                                         }
-                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-                                     }
-                                 }];
+//                [UIActionSheet showInView:self.view
+//                                withTitle:@"Facebook"
+//                        cancelButtonTitle:@"Cancel"
+//                   destructiveButtonTitle:@"Unlink"
+//                        otherButtonTitles:nil
+//                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+//                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
+//                                         //unlink facebook
+//                                         [UICKeyChainStore removeAllItemsForService:FacebookService];
+//                                         //close facebook session
+//                                         if (FBSession.activeSession.isOpen) {
+//                                             [FBSession.activeSession closeAndClearTokenInformation];
+//                                         }
+//                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+//                                     }
+//                                 }];
                 
                 
             }
@@ -240,18 +240,18 @@
         case 1:
             if ([(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath] isActivated]) {
                 
-                [UIActionSheet showInView:self.view
-                                withTitle:@"Twitter"
-                        cancelButtonTitle:@"Cancel"
-                   destructiveButtonTitle:@"Unlink"
-                        otherButtonTitles:nil
-                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                         //unlick twitter
-                                         [UICKeyChainStore removeAllItemsForService:TwitterService];
-                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-                                     }
-                                 }];
+//                [UIActionSheet showInView:self.view
+//                                withTitle:@"Twitter"
+//                        cancelButtonTitle:@"Cancel"
+//                   destructiveButtonTitle:@"Unlink"
+//                        otherButtonTitles:nil
+//                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+//                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
+//                                         //unlick twitter
+//                                         [UICKeyChainStore removeAllItemsForService:TwitterService];
+//                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+//                                     }
+//                                 }];
                 
             }
             else{

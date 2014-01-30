@@ -50,7 +50,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 //        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
 //        if (isremote)
 //        {
-            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:productionServerURL]];
+            objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxProductionServerURL]];
 //        }
 //        else
 //        {
@@ -431,12 +431,11 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID
 {
-    NSString* token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:userObject
                                                                                             method:RKRequestMethodPOST
-                                                                                              path:[NSString stringWithFormat:@"/users?auth_token=%@", token]
+                                                                                              path:[NSString stringWithFormat:@"/users"]
                                                                                         parameters:nil
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
                                     {
@@ -451,11 +450,22 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                                            {
                                                if ([result count]>0)
                                                {
-                                                   FluxUserObject *userObject = [result firstObject];
-                                                   NSLog(@"Successfuly Created user %i with details: %@: %@",userObject.userID,userObject.name,userObject.username);
+                                                   FluxUserObject *newUserObject = [result firstObject];
+                                                   if (userObject.twitter) {
+                                                       [newUserObject setTwitter:userObject.twitter];
+                                                   }
+                                                   else if (userObject.facebook) {
+                                                       [newUserObject setFacebook:userObject.facebook];
+                                                   }
+                                                   else{
+                                                       
+                                                   }
+                                                   [newUserObject setSocialName:userObject.socialName];
+                                                   
+                                                   NSLog(@"Successfuly Created user %i with details: %@: %@",newUserObject.userID,newUserObject.name,newUserObject.username);
                                                    if ([delegate respondsToSelector:@selector(NetworkServices:didCreateUser:andRequestID:)])
                                                    {
-                                                       [delegate NetworkServices:self didCreateUser:userObject andRequestID:requestID];
+                                                       [delegate NetworkServices:self didCreateUser:newUserObject andRequestID:requestID];
                                                    }
                                                }
                                            }
@@ -542,10 +552,11 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
          if ([result count]>0)
          {
              FluxUserObject*userObj = [result firstObject];
+             [userObject setAuth_token:userObj.auth_token];
              NSLog(@"Successfully logged in with userID %i and token %@",userObj.userID,userObj.auth_token);
              if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUser:andRequestID:)])
              {
-                 [delegate NetworkServices:self didLoginUser:userObj andRequestID:requestID];
+                 [delegate NetworkServices:self didLoginUser:userObject andRequestID:requestID];
              }
          }
      }

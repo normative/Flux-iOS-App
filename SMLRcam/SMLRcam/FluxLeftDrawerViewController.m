@@ -61,7 +61,7 @@
     [self.view setAlpha:0.0];
     [super viewDidLoad];
     
-
+    newImageCount = -1;
     UIView*view = fakeSeparator.superview;
     [fakeSeparator removeFromSuperview];
     [fakeSeparator setTranslatesAutoresizingMaskIntoConstraints:YES];
@@ -281,8 +281,14 @@
     }
     
     else{
+        if (newImageCount >=0) {
+            
+            cell.countLabel.text = [NSString stringWithFormat:@"%i",newImageCount];
+        }
+        else{
+            cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
+        }
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
-        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
         [cell.titleLabel setEnabled:YES];
         [cell.countLabel setEnabled:YES];
     }
@@ -470,8 +476,10 @@
         leftDrawerSettingsViewController.fluxDataManager = self.fluxDataManager;
     }
     if ([[segue identifier] isEqualToString:@"pushPhotosSegue"]){
-        [(FluxProfilePhotosViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
-        [(FluxProfilePhotosViewController*)segue.destinationViewController prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService].integerValue];
+        FluxProfilePhotosViewController * photosView = (FluxProfilePhotosViewController*)segue.destinationViewController;
+        [photosView setFluxDataManager:self.fluxDataManager];
+        [photosView prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService].integerValue];
+        [photosView setDelegate:self];
     }
     if ([[segue identifier]isEqualToString:@"pushSocialList"]) {
         [(FluxSocialListViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
@@ -488,6 +496,12 @@
             [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:friendMode andIDList:nil];
         }
     }
+}
+
+- (void)FluxProfilePhotosViewController:(FluxProfilePhotosViewController *)photosViewController didPopAndDeleteImages:(int)count{
+    NSString*currentCount = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:0]objectForKey:[[[tableViewArray objectAtIndex:0]allKeys]firstObject]]intValue]];
+    newImageCount = [currentCount intValue]-count;
+    [self.tableView reloadData];
 }
 
 @end
