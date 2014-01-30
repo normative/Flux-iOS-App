@@ -1197,6 +1197,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(render) name:FluxOpenGLShouldRender object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadAlphaTexture) name:@"maskChange" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadBorderTexture) name:@"BorderChange" object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1225,6 +1226,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"maskChange" object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"BorderChange" object:nil];
     
     [self tearDownGL];
     

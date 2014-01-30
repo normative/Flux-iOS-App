@@ -29,7 +29,8 @@
     [super viewDidLoad];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [segmentedControl1 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:@"border"]intValue]+1];
+     int borderType = [[defaults objectForKey:@"Border"] integerValue];
+    [segmentedControl1 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:@"Border"]intValue]-1];
 	// Do any additional setup after loading the view.
 }
 
@@ -51,6 +52,9 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     [defaults setObject:[NSString stringWithFormat:@"%i",[(UISegmentedControl*)sender selectedSegmentIndex]+1] forKey:@"Border"];
+    [defaults synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"BorderChange"
+                                                        object:self userInfo:nil];
 }
 
 
