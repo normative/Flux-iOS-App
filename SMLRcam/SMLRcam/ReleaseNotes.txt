@@ -1,6 +1,10 @@
 Release Notes:
 - reduce memory leaked during logout
 - adjust granularity of pin grouping on map to improve accuracy of individual image locations
+- adds third party login + register
+- fixes registrationVC bugs
+- profileView bug fixes
+- debug view added
 
 Release Notes:
 ******************************************
