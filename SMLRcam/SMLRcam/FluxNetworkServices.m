@@ -497,11 +497,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
     NSLog(@"name: %@, user name: %@, email: %@, bio: %@", userObject.name, userObject.username, userObject.email, userObject.bio);
     
-    //  Parameters: {"utf8"=>"✓", "authenticity_token"=>"C19Ggqnw5MQMHxF1SVNYkoHvXa2yDuZaQWw1ogvVWR0=", "user"=>{"username"=>"denis", "name"=>"Denis Delorme", "bio"=>"more something else about myself"}, "commit"=>"Update User", "id"=>"24"}
-    //  Parameters: {"auth_token"=>"Tcv1jxYkLqGSp_iJE49e", "commit"=>"Update User", "id"=>"24", "user"=>{"bio"=>"more something else about myself", "email"=>"denis@smlr.com", "username"=>"denis"}}
-
     NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:token, @"auth_token",
-                                                                            @"Update User", @"commit",
                                                 [NSNumber numberWithInt:userObject.userID], @"id",
                                                                                             nil];
 
