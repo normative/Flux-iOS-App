@@ -9,7 +9,7 @@
 #import "FluxAppDelegate.h"
 #import <FacebookSDK/FacebookSDK.h>
 
-#import "FluxDisplayManager.h"
+#import "FluxDebugViewController.h"
 
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
@@ -31,7 +31,7 @@
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
     NSString * borderType = [defaults objectForKey:@"Border"];
-    NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDisplayManagerMatchDebugImageOutputKey];
+    NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
     
     // do not save locally by default
     if (savePic == nil) {
@@ -50,7 +50,7 @@
     }
 
     if (featureMatchDebugImageOutput == nil) {
-        [defaults setObject:@(NO) forKey:FluxDisplayManagerMatchDebugImageOutputKey];
+        [defaults setObject:@(NO) forKey:FluxDebugMatchDebugImageOutputKey];
         [defaults synchronize];
     }
 

@@ -124,22 +124,8 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="vyg-2g-yl1">
-                                <rect key="frame" x="18" y="299" width="156" height="34"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="slider3DidSlide:" destination="V4e-hA-nqo" eventType="valueChanged" id="oy0-g8-bR9"/>
-                                </connections>
-                            </slider>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gMa-co-6JK">
-                                <rect key="frame" x="75" y="270" width="42" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Border Style" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZNF-JL-1uU">
-                                <rect key="frame" x="49" y="346" width="95" height="21"/>
+                                <rect key="frame" x="49" y="273" width="95" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -195,7 +181,7 @@
                                 </connections>
                             </stepper>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="G41-CX-NvM">
-                                <rect key="frame" x="20" y="375" width="152" height="29"/>
+                                <rect key="frame" x="20" y="302" width="152" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="1"/>
@@ -205,6 +191,26 @@
                                 </segments>
                                 <connections>
                                     <action selector="segmentedControl1DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="FUt-r0-TDf"/>
+                                </connections>
+                            </segmentedControl>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Teleport" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dxm-1P-mQT">
+                                <rect key="frame" x="65" y="346" width="62" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="xNS-aq-zUu">
+                                <rect key="frame" x="20" y="375" width="152" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title="1"/>
+                                    <segment title="2"/>
+                                    <segment title="3"/>
+                                    <segment title="4"/>
+                                </segments>
+                                <connections>
+                                    <action selector="segmentedControl2DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="ZAL-Wa-LBj"/>
                                 </connections>
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P7N-x3-Awn">
@@ -222,9 +228,9 @@
                     </view>
                     <connections>
                         <outlet property="segmentedControl1" destination="G41-CX-NvM" id="FAv-w4-D8E"/>
+                        <outlet property="segmentedControl2" destination="xNS-aq-zUu" id="Y4j-ti-C05"/>
                         <outlet property="slider1" destination="V8q-tt-89J" id="J8u-bG-PIA"/>
                         <outlet property="slider2" destination="chN-Ew-RNh" id="JdO-4G-EXR"/>
-                        <outlet property="slider3" destination="vyg-2g-yl1" id="ADP-Lt-VGT"/>
                         <outlet property="stepper1" destination="Y6f-M0-Qsf" id="dj3-a4-XwA"/>
                         <outlet property="switch1" destination="Sdd-Mx-Y9G" id="eTa-ld-MWu"/>
                         <outlet property="switch2" destination="hPh-ep-mX4" id="rgF-TV-WaS"/>
