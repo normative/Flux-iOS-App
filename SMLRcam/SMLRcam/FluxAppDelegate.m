@@ -31,6 +31,7 @@
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
     NSString * borderType = [defaults objectForKey:@"Border"];
+    NSString * teleportIndex = [defaults objectForKey:FluxDebugTeleportLocationIndexKey];
     NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
     
     // do not save locally by default
@@ -46,6 +47,11 @@
     
     if (borderType == nil) {
         [defaults setObject:@"1" forKey:@"Border"];
+        [defaults synchronize];
+    }
+
+    if (teleportIndex == nil) {
+        [defaults setObject:@"1" forKey:FluxDebugTeleportLocationIndexKey];
         [defaults synchronize];
     }
 

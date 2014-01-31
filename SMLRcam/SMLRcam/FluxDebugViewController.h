@@ -10,6 +10,8 @@
 
 extern NSString* const FluxDebugDidChangeMatchDebugImageOutput;
 extern NSString* const FluxDebugMatchDebugImageOutputKey;
+extern NSString* const FluxDebugDidChangeTeleportLocationIndex;
+extern NSString* const FluxDebugTeleportLocationIndexKey;
 
 @interface FluxDebugViewController : UIViewController
 {
