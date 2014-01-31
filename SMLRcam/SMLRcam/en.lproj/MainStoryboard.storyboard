@@ -665,7 +665,7 @@
                                         </constraints>
                                     </view>
                                 </subviews>
-                                <color key="backgroundColor" red="0.18431372549019609" green="0.18431372549019609" blue="0.18431372549019609" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="PY6-5W-SRh" firstAttribute="top" secondItem="Cit-Ms-vJp" secondAttribute="bottom" id="7xB-f9-PFS"/>
                                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="PY6-5W-SRh" secondAttribute="bottom" constant="220" id="D63-C2-f7i"/>
@@ -718,16 +718,16 @@
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="KFa-PQ-1fs">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                         <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="pCz-38-tt7">
-                            <rect key="frame" x="0.0" y="250" width="320" height="165"/>
+                            <rect key="frame" x="0.0" y="380" width="320" height="119"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oYY-Vs-Dgh">
-                                    <rect key="frame" x="106" y="114" width="108" height="30"/>
+                                    <rect key="frame" x="106" y="68" width="108" height="30"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="30" id="0ln-rs-FgD"/>
@@ -743,7 +743,7 @@
                                     </connections>
                                 </button>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eTl-Gu-teW">
-                                    <rect key="frame" x="77" y="138" width="166" height="21"/>
+                                    <rect key="frame" x="77" y="92" width="166" height="21"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="21" id="bCe-8p-TqD"/>
@@ -768,36 +768,35 @@
                             </constraints>
                         </view>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileCell" rowHeight="120" id="iiI-aT-Mc7" customClass="FluxProfileCell">
-                                <rect key="frame" x="0.0" y="86" width="320" height="120"/>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileCell" rowHeight="250" id="iiI-aT-Mc7" customClass="FluxProfileCell">
+                                <rect key="frame" x="0.0" y="86" width="320" height="250"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="iiI-aT-Mc7" id="7nY-Tv-0yf">
-                                    <rect key="frame" x="0.0" y="0.0" width="287" height="119"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="287" height="249"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ceS-ms-MGe">
-                                            <rect key="frame" x="20" y="20" width="80" height="80"/>
+                                            <rect key="frame" x="94" y="20" width="132" height="132"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                            <state key="normal">
+                                            <state key="normal" image="emptyProfileImage_big">
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                             <connections>
                                                 <action selector="editProfleImageAction:" destination="iEx-Eu-CFI" eventType="touchUpInside" id="jM0-77-lGH"/>
                                             </connections>
                                         </button>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgw-RX-FNB">
-                                            <rect key="frame" x="108" y="20" width="136" height="21"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgw-RX-FNB">
+                                            <rect key="frame" x="54" y="160" width="213" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="wordWrap" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="136" translatesAutoresizingMaskIntoConstraints="NO" id="cJw-eG-xju">
-                                            <rect key="frame" x="108" y="49" width="136" height="51"/>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="246" translatesAutoresizingMaskIntoConstraints="NO" id="cJw-eG-xju">
+                                            <rect key="frame" x="37" y="189" width="246" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <attributedString key="attributedText"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
@@ -810,7 +809,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="gray" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="standardLeftCell" id="fmO-7U-VRH" customClass="FluxCountTableViewCell">
-                                <rect key="frame" x="0.0" y="206" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="336" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="fmO-7U-VRH" id="uxp-eS-X33">
                                     <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
@@ -873,7 +872,7 @@
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" delaysContentTouches="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="ka0-u7-dlm">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                         <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
@@ -1609,7 +1608,7 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="ja2-eM-Mq4">
                                 <rect key="frame" x="0.0" y="40" width="320" height="483"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                                <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="60" id="pgh-Lw-Zs7" customClass="FluxFriendFollowerCell">
@@ -1707,7 +1706,7 @@
                     <collectionView key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" minimumZoomScale="0.0" maximumZoomScale="0.0" dataMode="prototypes" id="BSi-15-rkx">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.1843137255" green="0.1843137255" blue="0.1843137255" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="YCC-gz-9aR">
                             <size key="itemSize" width="92" height="92"/>
                             <size key="headerReferenceSize" width="0.0" height="0.0"/>

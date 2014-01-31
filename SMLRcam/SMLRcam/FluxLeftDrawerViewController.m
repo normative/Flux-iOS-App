@@ -73,7 +73,15 @@
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
     
+//    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
+//                                                  forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.shadowImage = [UIImage new];
+//    self.navigationController.navigationBar.translucent = YES;
+//    self.navigationController.view.backgroundColor = [UIColor clearColor];
     
+//    NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
+//    username = [@"@" stringByAppendingString:username];
+//    [self.navigationItem setTitle:username];
     
     
     tableViewArray = [self tableViewArrayForUser:nil];
@@ -207,7 +215,7 @@
     if (indexPath.row>0) {
         return 44.0;
     }
-    return 120.0;
+    return 250.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -232,6 +240,7 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         NSString*bio = (NSString*)[defaults objectForKey:@"bio"];
         if (username) {
+            username = [@"@" stringByAppendingString:username];
             [profileCell setUsernameText:username];
         }
         
