@@ -780,7 +780,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                     
                     if (curImgRenderObj != nil)
                     {
-                        // update lastrefd time, metadata, set dirty
+                        // update lastrefd time, metadata
                         curImgRenderObj.lastReferenced = [[NSDate alloc]init];
                         FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
                         curImgRenderObj.imageMetadata = cachedMetadata;
