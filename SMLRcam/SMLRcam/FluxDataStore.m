@@ -291,6 +291,18 @@ NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID = @"FluxData
 - (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems
 {
     // Cleans up the image NSCache for now. Could also clean up metadata structure
+    
+    // Major problem is that the NSCache is a black box that you can't see inside without changing.
+    // Can only verify if something is in the cache by accessing it, and if you access something,
+    // you are telling Apple it is something to keep in the cache (possibly LRU-type scheme).
+    // Had created a separate data struction (NSMutableDictionary) to keep tabs on what is in the cache
+    // but this is quite redundant.
+    // Now going to use the existing mechanism we use as part of the FluxImageRenderElement to keep
+    // track of what images of type imageType we have in the cache.
+    // Note that this will only be updated when we request something (which "should" happen once something
+    // is downloaded) and not when we add the image to the cache.
+    // Also, when something is booted out of the cache, we will update this structure as well.
+    // We can iterate over these items so that we don't actually have to poke the cache to check.
     for (FluxLocalID *localID in [fluxMetadata allKeys])
     {
         if (![localItems containsObject:localID])
