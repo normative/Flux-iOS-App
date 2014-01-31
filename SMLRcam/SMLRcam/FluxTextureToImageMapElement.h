@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "FluxCacheImageObject.h"
 #import "FluxScanImageObject.h"
 
 @interface FluxTextureToImageMapElement : NSObject
@@ -16,6 +17,7 @@
 
 @property (nonatomic, strong)   FluxLocalID *localID;
 @property (nonatomic)           FluxImageType imageType;
+@property (nonatomic, strong)   FluxCacheImageObject *imageCacheObject;
 @property (nonatomic)           NSUInteger renderOrder;
 @property (nonatomic, readonly) int textureIndex;
 @property (nonatomic)           bool used;

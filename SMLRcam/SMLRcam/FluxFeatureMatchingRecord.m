@@ -26,6 +26,7 @@
         self.failed = NO;
         self.matched = NO;
         self.isImageDisplayed = NO;
+        self.outputDebugImages = NO;
     }
     return self;
 }
@@ -38,7 +39,7 @@
 
 - (BOOL)hasObjectImage
 {
-    return ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.imageCacheObject.image != nil));
+    return ((_ire != nil) && (_ire.imageMetadata != nil) && (_objectImageCacheObject.image != nil));
 }
 
 - (BOOL)hasObjectFeatures

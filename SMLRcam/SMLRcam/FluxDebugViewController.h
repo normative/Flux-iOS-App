@@ -8,22 +8,28 @@
 
 #import <UIKit/UIKit.h>
 
-@interface FluxDebugViewController : UIViewController{
-    
+extern NSString* const FluxDebugDidChangeMatchDebugImageOutput;
+extern NSString* const FluxDebugMatchDebugImageOutputKey;
+extern NSString* const FluxDebugDidChangeTeleportLocationIndex;
+extern NSString* const FluxDebugTeleportLocationIndexKey;
+
+@interface FluxDebugViewController : UIViewController
+{
     IBOutlet UISlider *slider1;
     IBOutlet UISlider *slider2;
-    IBOutlet UISlider *slider3;
     IBOutlet UISegmentedControl *segmentedControl1;
+    IBOutlet UISegmentedControl *segmentedControl2;
     
     IBOutlet UISwitch *switch1;
     IBOutlet UISwitch *switch2;
     IBOutlet UISwitch *switch3;
     IBOutlet UIStepper *stepper1;
 }
+
 - (IBAction)slider1DidSlide:(id)sender;
 - (IBAction)slider2DidSlide:(id)sender;
-- (IBAction)slider3DidSlide:(id)sender;
 - (IBAction)segmentedControl1DidChange:(id)sender;
+- (IBAction)segmentedControl2DidChange:(id)sender;
 
 - (IBAction)switch1DidChange:(id)sender;
 - (IBAction)switch2DidChange:(id)sender;

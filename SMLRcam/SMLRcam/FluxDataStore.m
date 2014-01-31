@@ -8,6 +8,10 @@
 
 #import "FluxDataStore.h"
 
+NSString* const FluxDataStoreDidEvictImageObjectFromCache = @"FluxDataStoreDidEvictImageObjectFromCache";
+NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyImageType = @"FluxDataStoreDidEvictImageObjectFromCacheKeyImageType";
+NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID = @"FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID";
+
 @implementation FluxDataStore
 
 - (id)init
@@ -101,9 +105,7 @@
 
 - (NSArray *) doesImageExistForImageID:(FluxImageID)imageID
 {
-    NSArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null],
-                                                             [NSNull null], [NSNull null], [NSNull null],
-                                                             nil];
+    NSArray *imageFormats = @[@(NO), @(NO), @(NO), @(NO), @(NO), @(NO)];
     
     if (imageID >= 0)
     {
@@ -119,9 +121,7 @@
 
 - (NSArray *) doesImageExistForLocalID:(FluxLocalID *)localID
 {
-    NSMutableArray *imageFormats = [NSMutableArray arrayWithObjects:[NSNull null], [NSNull null], [NSNull null],
-                                                                    [NSNull null], [NSNull null], [NSNull null],
-                                                                    nil];
+    NSMutableArray *imageFormats = [NSMutableArray arrayWithObjects:@(NO), @(NO), @(NO), @(NO), @(NO), @(NO), nil];
     
     if (localID != nil)
     {
@@ -129,19 +129,19 @@
         
         // No point searching for them for existence then searching for them again - might as well store the pointers.
         FluxCacheImageObject *imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:thumb]];
-        imageFormats[thumb] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[thumb] = @(imageCacheObj.image != nil);
         imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:quarterhd]];
-        imageFormats[quarterhd] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[quarterhd] = @(imageCacheObj.image != nil);
         imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:screen_res]];
-        imageFormats[screen_res] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[screen_res] = @(imageCacheObj.image != nil);
         imageCacheObj = [fluxImageCache objectForKey:[imageObject generateImageCacheKeyWithImageType:full_res]];
-        imageFormats[full_res] = (imageCacheObj.image != nil) ? imageCacheObj : [NSNull null];
+        imageFormats[full_res] = @(imageCacheObj.image != nil);
         imageFormats[screen_res] = imageFormats[full_res];
         
         bool foundLowest = false;
         for (int i = (lowest_res + 1); (i < highest_res); i++)
         {
-            if (imageFormats[i] != [NSNull null])
+            if ([imageFormats[i] boolValue])
             {
                 if (!foundLowest)
                 {
@@ -257,6 +257,11 @@
 
     NSString *imageCacheKey = [imageObject generateImageCacheKeyWithImageType:imageType];
     [cachedImageLocalIDList removeObjectForKey:imageCacheKey];
+    
+    NSDictionary *userInfoDict = @{FluxDataStoreDidEvictImageObjectFromCacheKeyImageType : @(imageType),
+                                   FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID : localID};
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataStoreDidEvictImageObjectFromCache
+                                                        object:self userInfo:userInfoDict];
 }
 
 - (void)debugByShowingCachedImageKeys
@@ -286,6 +291,18 @@
 - (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems
 {
     // Cleans up the image NSCache for now. Could also clean up metadata structure
+    
+    // Major problem is that the NSCache is a black box that you can't see inside without changing.
+    // Can only verify if something is in the cache by accessing it, and if you access something,
+    // you are telling Apple it is something to keep in the cache (possibly LRU-type scheme).
+    // Had created a separate data struction (NSMutableDictionary) to keep tabs on what is in the cache
+    // but this is quite redundant.
+    // Now going to use the existing mechanism we use as part of the FluxImageRenderElement to keep
+    // track of what images of type imageType we have in the cache.
+    // Note that this will only be updated when we request something (which "should" happen once something
+    // is downloaded) and not when we add the image to the cache.
+    // Also, when something is booted out of the cache, we will update this structure as well.
+    // We can iterate over these items so that we don't actually have to poke the cache to check.
     for (FluxLocalID *localID in [fluxMetadata allKeys])
     {
         if (![localItems containsObject:localID])

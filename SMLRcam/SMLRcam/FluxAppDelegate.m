@@ -9,6 +9,8 @@
 #import "FluxAppDelegate.h"
 #import <FacebookSDK/FacebookSDK.h>
 
+#import "FluxDebugViewController.h"
+
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
 
@@ -29,6 +31,8 @@
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
     NSString * borderType = [defaults objectForKey:@"Border"];
+    NSString * teleportIndex = [defaults objectForKey:FluxDebugTeleportLocationIndexKey];
+    NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
     
     // do not save locally by default
     if (savePic == nil) {
@@ -45,7 +49,17 @@
         [defaults setObject:@"1" forKey:@"Border"];
         [defaults synchronize];
     }
-    
+
+    if (teleportIndex == nil) {
+        [defaults setObject:@"1" forKey:FluxDebugTeleportLocationIndexKey];
+        [defaults synchronize];
+    }
+
+    if (featureMatchDebugImageOutput == nil) {
+        [defaults setObject:@(NO) forKey:FluxDebugMatchDebugImageOutputKey];
+        [defaults synchronize];
+    }
+
     [[UINavigationBar appearance] setTitleTextAttributes:@{
                                                            NSFontAttributeName: [UIFont fontWithName:@"Akkurat-Bold" size:17.0],
                                                            NSForegroundColorAttributeName: [UIColor whiteColor],

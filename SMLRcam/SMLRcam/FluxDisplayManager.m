@@ -7,6 +7,7 @@
 //
 
 #import "FluxDisplayManager.h"
+#import "FluxDebugViewController.h"
 #import "FluxScanImageObject.h"
 #import "FluxOpenGLViewController.h"
 
@@ -32,12 +33,13 @@ NSString* const FluxDisplayManagerDidUpdateImageFeatures = @"FluxDisplayManagerD
 
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
-const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image requesting
+const double scanImageRequestRadius = 15.0;     // radius for scan image requesting
 
 
 @implementation FluxDisplayManager
 
-- (id)init{
+- (id)init
+{
     self = [super init];
     if (self)
     {
@@ -70,8 +72,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
         dataFilter = [[FluxDataFilter alloc]init];
         
-//        currHeading = 0.0;  // due North until told otherwise...
-        
         _isScrubAnimating = false;
         _isScanMode = true;
         
@@ -86,6 +86,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         
         _fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
         
+        [self setupFeatureMatching];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -97,16 +99,18 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didStopCameraMode:) name:FluxImageCaptureDidPop object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewImage:) name:FluxImageCaptureDidCaptureImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUndoCapture:) name:FluxImageCaptureDidUndoCapture object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupFeatureMatching) name:FluxDebugDidChangeMatchDebugImageOutput object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDataStoreRemoveImageObjectFromCache:) name:FluxDataStoreDidEvictImageObjectFromCache object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
-        
     }
     
     return self;
 }
 
-- (void)dealloc{
+- (void)dealloc
+{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -117,6 +121,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidUndoCapture object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeMatchDebugImageOutput object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDataStoreDidEvictImageObjectFromCache object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
@@ -124,29 +130,27 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [self.fluxFeatureMatchingQueue shutdownMatchQueue];
 }
 
-//double getAbsAngle(double angle, double heading)
-//{
-//    double h1 = fmod((angle + 360.0), 360.0);
-//    h1 = fabs(fmod(((heading - h1) + 360.0), 360.0));
-//    if (h1 > 180.0)
-//    {
-//        h1 = 360.0 - h1;
-//    }
-//    
-//    return h1;
-//}
-
-
 #pragma mark - Notifications
+
+- (void)didDataStoreRemoveImageObjectFromCache:(NSNotification *)notification
+{
+    NSNumber *imageTypeNSNumber = [notification.userInfo objectForKey:FluxDataStoreDidEvictImageObjectFromCacheKeyImageType];
+    FluxImageType imageType = [imageTypeNSNumber unsignedIntegerValue];
+    FluxLocalID *localID = [notification.userInfo objectForKey:FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID];
+    
+    FluxImageRenderElement *ire = [self getRenderElementForKey:localID];
+    ire.imageTypesFetched = ire.imageTypesFetched & ~(1 << imageType);
+}
 
 #pragma mark Location
 
--(void)didUpdatePlacemark:(NSNotification *)notification
+- (void)didUpdatePlacemark:(NSNotification *)notification
 {
     
 }
 
-- (void)didUpdateHeading:(NSNotification *)notification{
+- (void)didUpdateHeading:(NSNotification *)notification
+{
     // first normalize to (0 <= heading < 360.0)
 //    currHeading = fmod((self.locationManager.heading + 360.0), 360.0);
 
@@ -156,7 +160,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     [self calculateTimeAdjustedImageList];
 }
 
-- (void)didUpdateLocation:(NSNotification *)notification{
+- (void)didUpdateLocation:(NSNotification *)notification
+{
     // TS: need to filter this a little better - limit to only every 5s or some distance from last request, ignore when in cam mode
     
     // setup local sensorPose object with new lat/long
@@ -228,12 +233,22 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     // Reset failure state so it doesn't get queued up again until matching is complete or fails again
                     ire.imageMetadata.matchFailed = NO;
                     
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
+                    FluxImageType rtype = none;
+                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID
+                                                                                            withSize:highest_res returnSize:&rtype];
+
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withObjectImage:imageCacheObj withOpenGLVC:fluxGLVC
+                                              isCurrentlyDisplayed:isDisplayed withDebugImageOutput:featureMatchingDebugImageOutput];
                 }
                 else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil))
                 {
                     // Also queue up any items which have not been queueud (not matched, no failure retry time set).
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC isCurrentlyDisplayed:isDisplayed];
+                    FluxImageType rtype = none;
+                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID
+                                                                                            withSize:highest_res returnSize:&rtype];
+                    
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withObjectImage:imageCacheObj withOpenGLVC:fluxGLVC
+                                              isCurrentlyDisplayed:isDisplayed withDebugImageOutput:featureMatchingDebugImageOutput];
                 }
             }
         }
@@ -253,7 +268,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     for (FluxImageRenderElement *ire in displayItems)
     {
         if (!ire.imageMetadata.features &&
-            !ire.imageMetadata.featureFetching &&
+            !(ire.imageTypesFetched & FluxImageTypeMask_features) &&
             !ire.imageMetadata.featureFetchFailed &&
             (_featureRequestCount < maxRequestCountFeatures))
         {
@@ -272,7 +287,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
-            !ire.imageMetadata.featureFetching &&
+            !(ire.imageTypesFetched & FluxImageTypeMask_features) &&
             !ire.imageMetadata.featureFetchFailed &&
             (_featureRequestCount < maxRequestCountFeatures))
         {
@@ -290,7 +305,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     for (FluxImageRenderElement *ire in nearbyItems)
     {
         if (!ire.imageMetadata.features &&
-            !ire.imageMetadata.featureFetching &&
+            !(ire.imageTypesFetched & FluxImageTypeMask_features) &&
             (_featureRequestCount < maxRequestCountFeatures))
         {
             // Reset failure status and retry
@@ -307,14 +322,13 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     featuresRequest.imageFeaturesReady=^(FluxLocalID *localID, NSData *features, FluxDataRequest *completedDataRequest){
         // assign features into SIO.features...
         ire.imageMetadata.features = features;
-        ire.imageMetadata.featureFetching = NO;
         
         [_featureRequestCountLock lock];
         _featureRequestCount--;
         [_featureRequestCountLock unlock];
     };
     featuresRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-        ire.imageMetadata.featureFetching = NO;
+        ire.imageTypesFetched = ire.imageTypesFetched & ~(FluxImageTypeMask_features);
         ire.imageMetadata.featureFetchFailed = YES;
         
         [_featureRequestCountLock lock];
@@ -326,17 +340,19 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     _featureRequestCount++;
     [_featureRequestCountLock unlock];
     
-    ire.imageMetadata.featureFetching = YES;
+    ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_features;
     [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
 }
 
 - (void)didMatchImage:(NSNotification *)notification
 {
-//    NSDictionary *userInfoDict = [notification userInfo];
-//    FluxLocalID *localID = userInfoDict[@"matchedLocalID"];
-//    FluxScanImageObject *imageObject = userInfoDict[@"matchedImageObject"];
-
     [self calculateTimeAdjustedImageList];
+}
+
+- (void)setupFeatureMatching
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    featureMatchingDebugImageOutput = [[defaults objectForKey:FluxDebugMatchDebugImageOutputKey] boolValue];
 }
 
 # pragma mark - Kalman State Changes
@@ -375,7 +391,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 #pragma mark - Filter
 
-- (void)didChangeFilter:(NSNotification*)notification{
+- (void)didChangeFilter:(NSNotification*)notification
+{
     dataFilter = [notification.userInfo objectForKey:@"filter"];
     [self requestNearbyItems];
 }
@@ -418,7 +435,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 -(void) updateImageMetadataForElement:(FluxImageRenderElement*)element
 {
-    //    NSLog(@"Adding metadata for key %@ (dictionary count is %d)", key, [fluxNearbyMetadata count]);
     GLKQuaternion quaternion;
     
     FluxScanImageObject *locationObject = element.imageMetadata;
@@ -451,13 +467,11 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     GLKMatrix4 quatMatrix =  GLKMatrix4MakeWithQuaternion(quaternion);
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
     element.imagePose->rotationMatrix =  GLKMatrix4Multiply(matrixTP, quatMatrix);
-    //    NSLog(@"Loaded metadata for image %d quaternion [%f %f %f %f]", idx, quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
 - (void)calculateTimeAdjustedImageList
 {
     static bool inCalcTimeAdjImageList = false;
-//    NSLog(@"calculateTimeAdjustedImageList, _timeRangeMinIndex: %d", _timeRangeMinIndex);
     
     if (inCalcTimeAdjImageList)
         return;
@@ -474,36 +488,17 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         {
             _nearbyPrunedList = [self.nearbyUnPrunedList mutableCopy];
         }
-//        [_nearbyListLock unlock];
-
-//        for (FluxImageRenderElement *ire in self.nearbyList)
-//        {
-//            if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Unpruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
-//        }
 
         // calculate up-to-date metadata elements (tangent-plane, relative heading) for all images in nearbyList
         // this will use a copy of the "current" value for the user pose so as to not interfere with the GL rendering loop.
         // The only time this may cause an issue is during periods of large orientation change (fast pivot by user) at which point the user will be
         // hard pressed to see the issues simply because of motion blur.
         
-        
-        
         // spin through nearbylist to update metadata and nearbylist...
         if (self.openGLVC != nil)
         {
             [(FluxOpenGLViewController *)self.openGLVC updateImageMetadataForElementList:_nearbyPrunedList andMaxIncidentThreshold:maxIncidentThreshold];
         }
-        
-//        for (FluxImageRenderElement *ire in self.nearbyList)
-//        {
-//            if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Pruned nearbylist contains localid: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
-//        }
 
         // generate the displayList...
         
@@ -515,51 +510,41 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         for (idx = 0; ((self.displayList.count < maxDisplayListCount) && ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count)); idx++)
         {
             FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
-            if (ire.imageCacheObject.image == nil)
+            
+            // Ensure we have requested/already have a thumb image
+            if (_isScanMode && !(ire.imageTypesFetched & FluxImageTypeMask_thumb) && !(ire.imageMetadata.justCaptured))
             {
-                // check to see if we have the imagery in the cache..
-                FluxImageType rtype = none;
-                FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:lowest_res returnSize:&rtype];
-                if (imageCacheObj != nil)
-                {
-                    ire.imageCacheObject = imageCacheObj;
-                    ire.imageRenderType = rtype;
-                }
-                else if (_isScanMode)
-                {
-                    // request it if it isn't there...
-                    if (ire.imageFetchType < thumb)
-                    {
-                        ire.imageFetchType = thumb;
-                        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-                        [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
-                        dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
-                            // assign image into ire.image...
-                            ire.imageCacheObject = imageCacheObj;
-                            ire.imageRenderType = thumb;
-                            [self updateImageMetadataForElement:ire];
-                            
-                            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
-                                                                                object:self userInfo:nil];
-                        };
-                        dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
-                            ire.imageFetchType = none;
-                        };
-
-                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
-                    }
-                }
+                ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_thumb;
+                
+                FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
+                dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
+                    // Once we have the image, set the imageRenderType so it can be displayed
+                    // Also, hang on to the reference count for the cached thumbnail. We want to keep it into the cache until
+                    // we move away from here and the image is no longer nearby (or some other condition).
+                    // The render code will also grab a reference count, but it will release it when it isn't being rendered.
+                    // Because of the above logic, we don't need to set the imageCacheObject here...
+                    ire.imageRenderType = thumb;
+                    [self updateImageMetadataForElement:ire];
+                    
+                    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
+                                                                        object:self userInfo:nil];
+                };
+                dataRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+                    ire.imageTypesFetched = ire.imageTypesFetched & ~(FluxImageTypeMask_thumb);
+                };
+                
+                [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:thumb];
             }
             
-            if (ire.imageCacheObject.image != nil)
+            // As long as we have an image to render, we can add it to the displayList
+            // imageRenderType is popualted once we have an image, and is only ever dropped down to thumb (during time-scrubbing)
+            // If we ever set it back to none, this will break, and will never again be increased!!!!
+            if (ire.imageRenderType > 0)
             {
                 //  calc imagePose (via openglvc call) & add to displayList
                 [self updateImageMetadataForElement:ire];
                 [self.displayList addObject:ire];
-//                if (ire.imageMetadata.justCaptured > 0)
-//                {
-//                    NSLog(@"Displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//                }
                 
                 //to get display date range
                 NSDate *date = [ire timestamp]; 
@@ -577,22 +562,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     self.latestDisplayDate = date;
                 }
             }
-//            else if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Not displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
         }
         [_nearbyListLock unlock];
 
-//        for (; ((idx + _timeRangeMinIndex) < _nearbyPrunedList.count); idx++)
-//        {
-//            FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
-//            if (ire.imageMetadata.justCaptured > 0)
-//            {
-//                NSLog(@"Not considering displaying localID: %@, imageID: %d, jc: %d, fetchtype: %@, cacheobj? %d", ire.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured, fluxImageTypeStrings[ire.imageFetchType], (ire.imageCacheObject != nil));
-//            }
-//        }
-        
         // sort by abs(heading delta with current) asc
         [self.displayList sortUsingComparator:^NSComparisonResult(FluxImageRenderElement *obj1, FluxImageRenderElement *obj2) {
             // get heading deltas relative to current...
@@ -619,20 +591,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
         inCalcTimeAdjImageList = false;
     }
     [_displayListLock unlock];
-    
-//    NSLog(@"Nearby Sort:");
-//    int i = 0;
-//    for (FluxImageRenderElement *ire in self.nearbyList)
-//    {
-//        NSLog(@"render: i=%d, key=%@, headRaw=%f timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
-//    }
-//    
-//    NSLog(@"Display Sort: localCurrHeading: %f", localCurrHeading);
-//    i = 0;
-//    for (FluxImageRenderElement *ire in self.displayList)
-//    {
-//        NSLog(@"dl: i=%d, key=%@, headDelta=%f, timestamp=%@", i++, ire.localID, ire.imageMetadata.heading, ire.timestamp);
-//    }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
                                                         object:self userInfo:nil];
@@ -684,7 +642,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     if (ire)
                     {
                         [_nearbyScanList insertObject:ire atIndex:0];
-//                        [_nearbyPrunedList insertObject:ire atIndex:0];
                     }
                 }
                 [_nearbyListLock unlock];
@@ -717,12 +674,10 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 - (void)didCaptureNewImage:(NSNotification *)notification
 {
     FluxScanImageObject *newImageObject = [[notification userInfo] objectForKey:@"imageObject"];
-    UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
+//    UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
     FluxImageRenderElement *ire = [[FluxImageRenderElement alloc]initWithImageObject:newImageObject];
-    NSString *imageCacheKey =[newImageObject generateImageCacheKeyWithImageType:full_res];
-    FluxCacheImageObject *imageCacheObject = [FluxCacheImageObject cacheImageObject:newImage withID:imageCacheKey withType:full_res];
-    ire.imageCacheObject = imageCacheObject;
     ire.imageRenderType = full_res;
+    ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_full_res;
     ire.localCaptureTime = ire.timestamp;
     [_fluxNearbyMetadata setObject:ire forKey:newImageObject.localID];
     [_nearbyCamList addObject:ire];
@@ -735,6 +690,8 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     if (_nearbyCamList.count > 0) {
         [_nearbyCamList removeObjectAtIndex:0];
     }
+    
+    // Need to remove item from fluxNearbyMetadata, fluxMetadata, and fluxImageCache
     
     [self requestNearbyItems];
 }
@@ -752,7 +709,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     // make request
     if (_isScanMode)
     {
-//        NSLog(@"requestNearbyItems");
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
         
         dataRequest.maxReturnItems = 100;
@@ -776,7 +732,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 // Iterate over the current nearbylist and clear out anything that is not local-only, or that has been local too long
                 for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
                 {
-//                    if (ire.imageMetadata.imageID < 0)
                     if (ire.imageMetadata.justCaptured > 0)
                     {
                         if (ire.imageMetadata.justCaptured++ < 10)
@@ -814,7 +769,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                         {
                             // in both lists - make sure things are transferred properly
                             curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
-                            curImgRenderObj.imageCacheObject = localImgRenderObj.imageCacheObject;
                             curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
                             curImgRenderObj.imageMetadata.justCaptured = 0;
                             localImgRenderObj.imageMetadata.justCaptured = 0;
@@ -831,7 +785,7 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                     
                     if (curImgRenderObj != nil)
                     {
-                        // update lastrefd time, metadata, set dirty
+                        // update lastrefd time, metadata
                         curImgRenderObj.lastReferenced = [[NSDate alloc]init];
                         FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
                         curImgRenderObj.imageMetadata = cachedMetadata;
@@ -901,9 +855,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             }
             [_nearbyListLock unlock];
 
-//            [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
-//                                                                object:self userInfo:nil];
-
         }];
         
         CLLocation *loc = self.locationManager.location;
@@ -925,42 +876,43 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
             [self calculateTimeAdjustedImageList];
         }
         [_nearbyListLock unlock];
-        
-//        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateNearbyList
-//                                                            object:self userInfo:nil];
-
     }
 }
 
 #pragma mark MapView Image Request
 
-- (void)mapViewWillDisplay{
+- (void)mapViewWillDisplay
+{
     //if we have items already, check if it's worth pulling again
-    if (self.fluxMapContentMetadata && previousMapViewLocation) {
-        if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50) {
+    if (self.fluxMapContentMetadata && previousMapViewLocation)
+    {
+        if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50)
+        {
             [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
         }
     }
-    else{
+    else
+    {
         [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
     }
 }
 
-- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter *)mapDataFilter{
+- (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter *)mapDataFilter
+{
     
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     
     dataRequest.maxReturnItems = 30000;
-    if (mapDataFilter) {
+    if (mapDataFilter)
+    {
         dataRequest.searchFilter = mapDataFilter;
     }
-    else{
+    else
+    {
         dataRequest.searchFilter = dataFilter;        
     }
 
-    
     dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-    
     
     [dataRequest setWideAreaListReady:^(NSArray *imageList){
         self.fluxMapContentMetadata = imageList;
@@ -1028,7 +980,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 - (NSMutableArray *)selectRenderElementsInto:(NSMutableArray *)renderList ToMaxCount:(integer_t)maxCount
 {
     [renderList removeAllObjects];
-//    NSLog(@"selectRenderElements");
     
     int maxDisplayCount = self.displayListCount;
     maxDisplayCount = MIN(maxDisplayCount, maxCount);
@@ -1052,21 +1003,9 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 if ((!dupFound) && (count < maxDisplayCount))
                 {
                     [renderList addObject:ire];
-//                    NSLog(@"id: %@ added, idx: %d, relHeading: %f", ire.localID, count, ire.imageMetadata.relHeading);
                     count++;
                 }
-//                else
-//                {
-//                    count++;
-//                    if (ire.imageMetadata.justCaptured > 0)
-//                        NSLog(@"id: %@ not included, relHeading: %f, displaycount: %d", ire.localID, ire.imageMetadata.relHeading, count);
-//                }
             }
-//            else
-//            {
-//                if (ire.imageMetadata.justCaptured > 0)
-//                    NSLog(@"id: %@ not included, relHeading: %f", ire.localID, ire.imageMetadata.relHeading);
-//            }
         }
     }
     [self unlockDisplayList];
@@ -1076,8 +1015,6 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
 
 - (void)sortRenderList:(NSMutableArray *)renderList
 {
-//    NSLog(@"Renderlist Count: %d", renderList.count);
-
     NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: /*[NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],*/
                                 [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
                                 nil];
@@ -1087,17 +1024,23 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
     {
         if (_isScanMode)
         {
+            FluxImageType higherImageResolution = quarterhd;
+            FluxImageTypeMask higherImageResolutionBitMask = FluxImageTypeMask_quarterhd;
+            
             // reset to higher-res (quarterhd) textures if already in the cache
             for (FluxImageRenderElement *ire in renderList)
             {
-//                NSLog(@"Rendering localid: %@, imageid: %d, just captured: %d", ire.imageMetadata.localID, ire.imageMetadata.imageID, ire.imageMetadata.justCaptured);
-                if (ire.imageRenderType < quarterhd)
+                if (ire.imageRenderType < higherImageResolution)
                 {
                     FluxImageType rtype = none;
-                    [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:quarterhd returnSize:&rtype];
-                    if (rtype == quarterhd)
+                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID withSize:higherImageResolution returnSize:&rtype];
+                    if (imageCacheObj.image && (rtype == higherImageResolution))
                     {
-                        ire.imageRenderType = quarterhd;
+                        ire.imageRenderType = higherImageResolution;
+                        ire.imageTypesFetched = ire.imageTypesFetched | higherImageResolutionBitMask;
+                        
+                        // Only care about existence of an image here. Decrement reference count as we are not using the object.
+                        [imageCacheObj endContentAccess];
                     }
                 }
             }
@@ -1107,10 +1050,10 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                 // look to see if can trigger load of higher resolution
                 for (FluxImageRenderElement *ire in renderList)
                 {
-                    if ((ire.imageFetchType < quarterhd) && (!ire.imageMetadata.justCaptured))
+                    if (!(ire.imageTypesFetched & higherImageResolutionBitMask) && (!ire.imageMetadata.justCaptured))
                     {
                         // fetch the quart for this element
-                        ire.imageFetchType = quarterhd;
+                        ire.imageTypesFetched = ire.imageTypesFetched | higherImageResolutionBitMask;
 
                         [_imageRequestCountLock lock];
                         _imageRequestCountQuart++;
@@ -1120,7 +1063,10 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                         [dataRequest setRequestedIDs:[NSMutableArray arrayWithObject:ire.localID]];
                         dataRequest.imageReady=^(FluxLocalID *localID, FluxCacheImageObject *imageCacheObj, FluxDataRequest *completedDataRequest){
                             // assign image into ire.image...
-                            ire.imageRenderType = ire.imageFetchType;
+                            ire.imageRenderType = higherImageResolution;
+                            
+                            // Only care about existence of an image here. Decrement reference count as we are not using the object.
+                            [imageCacheObj endContentAccess];
                             
                             [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                                 object:self userInfo:nil];
@@ -1132,9 +1078,10 @@ const double scanImageRequestRadius = 15.0;     // 10.0m radius for scan image r
                             [_imageRequestCountLock lock];
                             _imageRequestCountQuart--;
                             [_imageRequestCountLock unlock];
-                            ire.imageFetchType = none;
+
+                            ire.imageTypesFetched = ire.imageTypesFetched & ~(higherImageResolutionBitMask);
                         };
-                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:ire.imageFetchType];
+                        [self.fluxDataManager requestImagesByLocalID:dataRequest withSize:higherImageResolution];
 
                         if (_imageRequestCountQuart >= maxRequestCountQuart)
                         {
@@ -1218,8 +1165,8 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
     lontitudeH *= lontitudeH;
     double tmp = cos(p1.position.x*DEG_TO_RAD) * cos(p2.position.y*DEG_TO_RAD);
     arcInRadians = 2.0 * asin(sqrt(latitudeH + tmp*lontitudeH));
+    
     return EARTH_RADIUS_IN_METERS * arcInRadians;
-
 }
 
 -  (void)testHaversine
@@ -1232,10 +1179,8 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
     p2.position.x = 43.653527;
     p2.position.y = -79.383189;
     
-    
     distance = [self haversineBetweenPosition1:p1 andPosition2:p2];
     NSLog(@"distance = %f", distance);
-
 }
 
 @end

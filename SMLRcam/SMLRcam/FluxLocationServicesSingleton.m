@@ -8,6 +8,7 @@
 
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
+#import "FluxDebugViewController.h"
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
@@ -60,21 +61,26 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         
         locationMeasurements = [[NSMutableArray alloc] init];
         
-        useFakeLocationCoordinate = NO;
-        
         if ([CLLocationManager headingAvailable]) {
             locationManager.headingFilter = 1.0;
         }
+        
+        [self loadTeleportLocationIndex];
     }
+    
     [self initKFilter];
     [self startKFilter];
+    
     return self;
 }
 
-- (void)startLocating{
+- (void)startLocating
+{
     [locationManager startUpdatingLocation];
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadTeleportLocationIndex) name:FluxDebugDidChangeTeleportLocationIndex object:nil];
+
     [self orientationChanged:nil];
     
     if ([CLLocationManager headingAvailable]) {
@@ -87,10 +93,12 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [self startUpdateTimer];
 
 }
-- (void)endLocating{
+- (void)endLocating
+{
     [locationManager stopUpdatingLocation];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeTeleportLocationIndex object:nil];
     
     if ([CLLocationManager headingAvailable]) {
         [locationManager stopUpdatingHeading];
@@ -203,7 +211,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     }
 }
 
-
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations{
     // Grab last entry for now, since we should be getting all of them
@@ -274,10 +281,28 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 //                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
 //    }
     
-    if (useFakeLocationCoordinate)
+    if (1 == self.teleportLocationIndex)
     {
-        CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(43.65337, -79.40658);     // Normative office
-        newLocation = [[CLLocation alloc] initWithCoordinate:fakecoord altitude:newLocation.altitude
+        // Note, location of "1" is the current location. Leave data unaffected.
+    }
+    else if (2 == self.teleportLocationIndex)
+    {
+        CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(43.65337, -79.40658);     // Normative Office Location
+        newLocation = [[CLLocation alloc] initWithCoordinate:fakecoord altitude:118.0
+                                          horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+                                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    }
+    else if (3 == self.teleportLocationIndex)
+    {
+        CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(63.75, -68.53);     // Middle of Nowhere Location
+        newLocation = [[CLLocation alloc] initWithCoordinate:fakecoord altitude:0.0
+                                          horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+                                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    }
+    else if (4 == self.teleportLocationIndex)
+    {
+        CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(0.0, 0.0);     // (0,0) location - boundary condition
+        newLocation = [[CLLocation alloc] initWithCoordinate:fakecoord altitude:0.0
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
                                                       course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     }
@@ -964,9 +989,16 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 }
 */
 
-- (void)toggleLocationCoordinate:(bool)useFakeCoordinate
+- (void) loadTeleportLocationIndex
 {
-    useFakeLocationCoordinate = useFakeCoordinate;
+    // Stored as a string (starting at 1). Mapping of locations to use.
+    // 1 - Current location (default)
+    // 2 - Normative (lots of content)
+    // 3 - Location with no content
+    // 4 - Location (0,0) - special case condition
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    self.teleportLocationIndex = [[defaults objectForKey:FluxDebugTeleportLocationIndexKey] integerValue];
 }
 
 @end

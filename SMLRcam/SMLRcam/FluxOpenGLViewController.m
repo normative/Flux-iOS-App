@@ -1950,45 +1950,22 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
     
-    // If we are replacing with a different localID, then clean up references for the old localID's IRE
-    if (![localID isEqualToString:tel.localID])
+    // If we are replacing with a different localID or image size, then clean up reference counts for the old cached image
+    if (![localID isEqualToString:tel.localID] || imageType != tel.imageType)
     {
-        FluxImageRenderElement *oldIre = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-        
         // End access for existing texture element/image cache object
-        [oldIre.imageCacheObject endContentAccess];
-        oldIre.imageCacheObject = nil;
+        [tel.imageCacheObject endContentAccess];
+        tel.imageCacheObject = nil;
     }
     
     // Populate with new image data
     FluxImageType rtype = none;
-    FluxCacheImageObject *imageCacheObj;
     
-    if ((ire.imageCacheObject.image != nil) && (ire.imageCacheObject.imageType == (imageType == 0 ? thumb : imageType)))
-    {
-        // It has been fetched from the cache elsewhere. Don't re-fetch it.
-        imageCacheObj = ire.imageCacheObject;
-        rtype = imageCacheObj.imageType;
-    }
-    else
-    {
-        // If we have to replace the image object, then clean up references for the image cache
-        if ([localID isEqualToString:tel.localID])
-        {
-            // End access for existing texture element/image cache object (since this case wasn't caught above)
-            [ire.imageCacheObject endContentAccess];
-            ire.imageCacheObject = nil;
-        }
-
-        // Fetch new image cache object to replace the old one
-        imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
-    }
+    // Fetch new image cache object to replace the old one
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
     
     if (imageCacheObj.image != nil)
     {
-        ire.imageRenderType = rtype;
-        ire.imageCacheObject = imageCacheObj;
-        
         // Load texture into slot
         NSError *error = [self loadTexture:tel.textureIndex withImage:imageCacheObj.image];
         
@@ -2000,6 +1977,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         else
         {
             tel.imageType = rtype;
+            tel.imageCacheObject = imageCacheObj;
             tel.used = true;
             tel.localID = ire.localID;
         }

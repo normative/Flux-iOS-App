@@ -308,7 +308,7 @@ static FluxDataManager *_theFluxDataManager = nil;
         // First check if image is already in cache
         // use dataRequest.imageType for this check because it may be "lowest" or "highest"
         NSArray *imageExist = [fluxDataStore doesImageExistForLocalID:curLocalID];
-        if (imageExist[dataRequest.imageType] != [NSNull null])
+        if ([imageExist[dataRequest.imageType] boolValue])
         {
             // If so, we can take immediate action
             if (![[dataRequest completedIDs] containsObject:curLocalID])
@@ -320,7 +320,7 @@ static FluxDataManager *_theFluxDataManager = nil;
                     completedRequest = YES;
                 }
             }
-            FluxCacheImageObject *cacheImageObj = imageExist[dataRequest.imageType];
+            FluxCacheImageObject *cacheImageObj = [fluxDataStore getImageWithLocalID:curLocalID withSize:dataRequest.imageType];
             [dataRequest whenImageReady:curLocalID withImage:cacheImageObj withDataRequest:dataRequest];
         }
         // Now check if request has already been made

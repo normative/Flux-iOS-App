@@ -19,13 +19,10 @@
         _imageMetadata = nil;
         _lastReferenced = nil;
         _localCaptureTime = nil;
-        _imageCacheObject = nil;
-        _dirty = true;
         _imageRenderType = none;
-        _imageFetchType = none;
+        _imageTypesFetched = FluxImageTypeMaskNone;
         // TODO: this allocation needs to be de-allocated at object destruction time....
         _imagePose = malloc(sizeof(sensorPose));
-        _featureFetching = false;
     }
     
     return self;
@@ -43,9 +40,8 @@
             _timestamp = curImgObj.timestamp;
             _lastReferenced = [[NSDate alloc]init];
             _localCaptureTime = [[NSDate alloc]initWithTimeIntervalSince1970:0];
-            _imageCacheObject = nil;
-            _dirty = true;
             _imageRenderType = none;
+            _imageTypesFetched = FluxImageTypeMaskNone;
             _imagePose = malloc(sizeof(sensorPose));
         }
     }

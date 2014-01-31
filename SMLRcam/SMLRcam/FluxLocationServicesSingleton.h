@@ -23,13 +23,11 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     CLLocationManager * locationManager;
     NSMutableArray *locationMeasurements;
     
-    
     //kalman filtering
     FluxKalmanFilter *kfilter;
     NSTimer *kfilterTimer;
     bool kfStarted;
     bool kfValidData;
-    
     
     double kfDt;
     double kfMeasureX;
@@ -66,8 +64,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     sensorPose _userPose;
     
     NSTimer*updateTimer;
-    
-    bool useFakeLocationCoordinate;
 }
 
 @property (nonatomic) CLLocation* location;
@@ -81,6 +77,8 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
 @property (nonatomic) kfECEF kflocation;
 @property (nonatomic) kfDEBUG kfdebug;
+
+@property (nonatomic) int teleportLocationIndex;
 
 + (id)sharedManager;
 

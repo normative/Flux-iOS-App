@@ -12,6 +12,10 @@
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
 
+extern NSString* const FluxDataStoreDidEvictImageObjectFromCache;
+extern NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyImageType;
+extern NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID;
+
 @interface FluxDataStore : NSObject <NSCacheDelegate>
 {
     NSCache *fluxImageCache;
