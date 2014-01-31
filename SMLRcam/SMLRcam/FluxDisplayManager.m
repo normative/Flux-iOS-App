@@ -513,7 +513,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
             FluxImageRenderElement *ire = [_nearbyPrunedList objectAtIndex:(_timeRangeMinIndex + idx)];
             
             // Ensure we have requested/already have a thumb image
-            if (_isScanMode && !(ire.imageTypesFetched & FluxImageTypeMask_thumb))
+            if (_isScanMode && !(ire.imageTypesFetched & FluxImageTypeMask_thumb) && !(ire.imageMetadata.justCaptured))
             {
                 ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_thumb;
                 
