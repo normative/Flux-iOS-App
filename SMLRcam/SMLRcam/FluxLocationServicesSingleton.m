@@ -293,7 +293,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [self ComputeGeodecticFromkfECEF:&kfgeolocation];
     
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
-      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
+      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:newLocation.altitude
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
                                           course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
