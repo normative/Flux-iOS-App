@@ -770,7 +770,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                         {
                             // in both lists - make sure things are transferred properly
                             curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
-                            curImgRenderObj.imageCacheObject = localImgRenderObj.imageCacheObject;
                             curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
                             curImgRenderObj.imageMetadata.justCaptured = 0;
                             localImgRenderObj.imageMetadata.justCaptured = 0;
