@@ -36,11 +36,14 @@
     bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
     [self setSelectedBackgroundView:bgColorView];
     
-    [self.usernameLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.usernameLabel.font.pointSize]];
+    [self.usernameLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.usernameLabel.font.pointSize]];
     [self.bioLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.bioLabel.font.pointSize]];
     
     self.profileImageButton.layer.cornerRadius = self.profileImageButton.frame.size.height/2;
     self.profileImageButton.clipsToBounds = YES;
+    [self.profileImageButton.layer setShadowColor:[UIColor whiteColor].CGColor];
+    self.profileImageButton.layer.shadowOffset = CGSizeZero;
+    
     [self setSelectionStyle:UITableViewCellSelectionStyleNone];
     
     if (isEditing) {
@@ -95,13 +98,50 @@
     }
 }
 - (void)setBioText:(NSString*)text{
-    if (editLabel) {
-        [self.bioField setText:text];
+    
+//    if (editLabel) {
+//        [self.bioField setAttributedText: [[NSAttributedString alloc] initWithString:text]];
+//    }
+//    else{
+//        [self.bioField setAttributedText: [[NSAttributedString alloc] initWithString:text]];
+//    }
+    if (text) {
+        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+        style.lineSpacing = 5;
+        
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+        paragraphStyle.lineSpacing = 17;
+        paragraphStyle.alignment = NSTextAlignmentCenter;
+        
+        NSDictionary *attribs = @{
+                                  NSForegroundColorAttributeName: [UIColor whiteColor],
+                                  NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:14.0],
+                                  NSParagraphStyleAttributeName : style
+                                  };
+        NSMutableAttributedString *attributedText =
+        [[NSMutableAttributedString alloc] initWithString:text
+                                               attributes:attribs];
+        
+        
+        
+
+        
+        
+        [self.bioLabel setAttributedText:attributedText];
+        [self.bioLabel setTextAlignment:NSTextAlignmentCenter];
+        
+        [self.bioLabel setNumberOfLines:0];
+        [self.bioLabel sizeToFit];
+        //
+        CGRect myFrame = self.bioLabel.frame;
+        // Resize the frame's width to 280 (320 - margins)
+        // width could also be myOriginalLabelFrame.size.width
+        myFrame = CGRectMake(myFrame.origin.x, myFrame.origin.y, 246, myFrame.size.height+10);
+        self.bioLabel.frame = myFrame;
     }
-    else{
-        [self.bioLabel setText:text];
-    }
+
 }
+
 
 
 

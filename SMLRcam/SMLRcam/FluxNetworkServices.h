@@ -45,16 +45,20 @@ extern NSString* const FluxTestServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray*)imageList
            andRequestID:(FluxRequestID *)requestID;
 
-//users
+//USERS
+
+//registration/logout
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject
-           andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateUser:(FluxUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString*)suggestion
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithID:(int)camID andRequestID:(FluxRequestID *)requestID;
+
+//profile stuff
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateUser:(FluxUserObject*)userObject
+           andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUser:(FluxUserObject *)user
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnProfileImage:(UIImage *)image forUserID:(int)user
@@ -62,6 +66,12 @@ extern NSString* const FluxTestServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray*)images
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)images
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)images
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowerListForUser:(NSArray*)images
+           andRequestID:(FluxRequestID *)requestID;
 
 //tags
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
@@ -145,13 +155,9 @@ extern NSString* const FluxTestServerURL;
 
 #pragma mark  - Users
 
+#pragma mark  Registration / Logout
 /**
-returns a complete userObject for a given userID
- **/
-- (void)getUserForID:(int)userID withRequestID:(FluxRequestID *)requestID;
-
-/**
-Logs in a given userObject and returns an access token
+ Logs in a given userObject and returns an access token
  **/
 - (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
 
@@ -161,19 +167,26 @@ Logs in a given userObject and returns an access token
 - (void)logoutWithRequestID:(FluxRequestID *)requestID;
 
 /**
-checks the 'uniqueness' of a given username and returns a BOOL along with a suggested alternate
+ checks the 'uniqueness' of a given username and returns a BOOL along with a suggested alternate
  **/
 - (void)checkUsernameUniqueness:(NSString*)username withRequestID:(FluxRequestID *)requestID;
 
 /**
  Posts a given camera object to the database.
-**/
+ **/
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID;
 
 /**
  creates a user with the given object
-**/
+ **/
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
+
+#pragma mark Profiles
+
+/**
+returns a complete userObject for a given userID
+ **/
+- (void)getUserForID:(int)userID withRequestID:(FluxRequestID *)requestID;
 
 /**
  updates a a user profile with the supplied object
@@ -189,6 +202,24 @@ return's a profile image for a given userID and size
  return's a user's image list for a given userID
  **/
 - (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ return's a user's friend list for a given userID
+ **/
+- (void)getFriendsListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ return's a user's following list for a given userID
+ **/
+- (void)getFollowingListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ return's a user's follower list for a given userID
+ **/
+- (void)getFollowerListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+
+
 
 #pragma mark  - Tags
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;

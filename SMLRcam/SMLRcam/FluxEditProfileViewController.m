@@ -126,6 +126,7 @@
 #pragma mark UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    [bioTextField resignFirstResponder];
     int i = buttonIndex;
     switch(i)
     {
@@ -186,6 +187,7 @@
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+    [picker dismissViewControllerAnimated:YES completion:nil];
     [bioTextField becomeFirstResponder];
 }
 
