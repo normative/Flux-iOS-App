@@ -58,70 +58,61 @@ typedef enum _FluxCameraModel : NSUInteger {
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
-//location
-@property (nonatomic) double longitude;
-@property (nonatomic) double latitude;
+// Image and User properties
+@property (nonatomic) int cameraID;
+@property (nonatomic) FluxCameraModel cameraModel;
+@property (nonatomic, strong) NSString *cameraModelStr;
+@property (nonatomic) int categoryID;
+@property (nonatomic, strong) NSString* descriptionString;
+@property (nonatomic) int imageID;
+@property (nonatomic) int justCaptured;
+@property (nonatomic) FluxLocalID *localID;
+@property (nonatomic) bool privacy;
+@property (nonatomic, strong) NSDate* timestamp;
+@property (nonatomic, strong) NSString* timestampString;
+@property (nonatomic) FluxImageID userID;
+@property (nonatomic, strong) NSString* username;
+
+// Image location/orientation
+// Image location/orientation - location
 @property (nonatomic) double altitude;
-
-
-//location ecef for kalman estimated values
+@property (nonatomic) double horiz_accuracy;
+@property (nonatomic) double latitude;
+@property (nonatomic) double longitude;
+@property (nonatomic) double vert_accuracy;
+// Image location/orientation - ECEF for kalman estimated values
 @property (nonatomic) double ecefX;
 @property (nonatomic) double ecefY;
 @property (nonatomic) double ecefZ;
-
-//
+// Image location/orientation - Data type to use for projection
+@property (nonatomic) LocationDataType location_data_type; //type of location data (default, live, matched)
 @property (nonatomic) sensorPose imageHomographyPosePnP;
 @property (nonatomic) sensorPose userHomographyPose;
-
-//orientation (euler angles)
+// Image location/orientation - orientation (euler angles)
 @property (nonatomic) double yaw;
 @property (nonatomic) double pitch;
 @property (nonatomic) double roll;
 @property (nonatomic) double heading;
 @property (nonatomic) double relHeading;
 @property (nonatomic) double absHeading;
-
-// orientation (quaternions)
+// Image location/orientation - orientation (quaternions)
 @property (nonatomic) double qw;
 @property (nonatomic) double qx;
 @property (nonatomic) double qy;
 @property (nonatomic) double qz;
 
-// position accuracy and confidence levels
-@property (nonatomic) double horiz_accuracy;
-@property (nonatomic) double vert_accuracy;
-@property (nonatomic) LocationDataType location_data_type; //type of location data (default, live, matched)
-
-//other
-@property (nonatomic, strong) NSString* timestampString;
-@property (nonatomic, strong) NSDate* timestamp;
-
-@property (nonatomic, strong) NSString* username;
-@property (nonatomic, strong) NSString* descriptionString;
-
-@property (nonatomic) bool privacy;
-
-@property (nonatomic) GLKQuaternion rotation;
-
-@property (nonatomic) int categoryID;
-@property (nonatomic) int cameraID;
-@property (nonatomic, strong) NSString *cameraModelStr;
-@property (nonatomic) FluxCameraModel cameraModel;
-@property (nonatomic) int imageID;
-@property (nonatomic) FluxImageID userID;
-@property (nonatomic) FluxLocalID *localID;
-@property (nonatomic) int justCaptured;
-
+// Feature matching properties
+@property (nonatomic) bool featureFetchFailed;
+@property (nonatomic, strong) NSData *features;
 @property (nonatomic) bool matched;
 @property (nonatomic) bool matchFailed;
 @property (nonatomic, strong) NSDate* matchFailureRetryTime;
+// Feature matching properties - metrics
+@property (nonatomic) NSTimeInterval cumulativeFeatureMatchTime;
 @property (nonatomic) NSUInteger numFeatureMatchAttempts;
 @property (nonatomic) NSUInteger numFeatureMatchCancels;
 @property (nonatomic) NSUInteger numFeatureMatchFailMatchErrors;
 @property (nonatomic) NSUInteger numFeatureMatchFailHomographyErrors;
-@property (nonatomic) NSTimeInterval cumulativeFeatureMatchTime;
-@property (nonatomic, strong) NSData *features;
-@property (nonatomic) bool featureFetchFailed;
 
 + (FluxCameraModel)cameraModelFromModelStr:(NSString *)cameraModelStr;
 
