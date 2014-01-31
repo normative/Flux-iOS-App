@@ -39,7 +39,7 @@
 
 - (BOOL)hasObjectImage
 {
-    return ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.imageCacheObject.image != nil));
+    return ((_ire != nil) && (_ire.imageMetadata != nil) && (_objectImageCacheObject.image != nil));
 }
 
 - (BOOL)hasObjectFeatures

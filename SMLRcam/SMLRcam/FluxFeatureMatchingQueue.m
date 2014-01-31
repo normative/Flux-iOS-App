@@ -38,8 +38,11 @@ const double reuseCameraFrameTimeInterval = 1.0;
     return self;
 }
 
-- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch withOpenGLVC:(FluxOpenGLViewController *)openGLview
-               isCurrentlyDisplayed:(bool)isDisplayed withDebugImageOutput:(bool)outputDebugImages
+- (void)addMatchRequest:(FluxImageRenderElement *)ireToMatch
+        withObjectImage:(FluxCacheImageObject *)objectImageCacheObject
+           withOpenGLVC:(FluxOpenGLViewController *)openGLview
+   isCurrentlyDisplayed:(bool)isDisplayed
+   withDebugImageOutput:(bool)outputDebugImages
 {
     // Check to see if already feature match in progress. If so, ignore it.
     if (![self.pendingOperations.featureMatchingInProgress.allKeys containsObject:ireToMatch.localID])
@@ -48,6 +51,7 @@ const double reuseCameraFrameTimeInterval = 1.0;
         
         FluxFeatureMatchingRecord *matchRecord = [[FluxFeatureMatchingRecord alloc] init];
         matchRecord.ire = ireToMatch;
+        matchRecord.objectImageCacheObject = objectImageCacheObject;
         matchRecord.isImageDisplayed = isDisplayed;
         matchRecord.outputDebugImages = outputDebugImages;
         
@@ -100,6 +104,11 @@ const double reuseCameraFrameTimeInterval = 1.0;
         // before we attempt to clean up, so we don't delete it prematurely
         [self.pendingOperations cleanUpUnusedCameraFrames];
     }
+    else if (objectImageCacheObject.image)
+    {
+        // Didn't queue up anything so release the reference to the imageCacheObject
+        [objectImageCacheObject endContentAccess];
+    }
 }
 
 - (void)deleteMatchRequests
@@ -134,6 +143,13 @@ const double reuseCameraFrameTimeInterval = 1.0;
     FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
 
     record.ire.imageMetadata.numFeatureMatchAttempts++;
+    
+    // Decrement reference count on cached image
+    if (record.objectImageCacheObject.image)
+    {
+        [record.objectImageCacheObject endContentAccess];
+        record.objectImageCacheObject = nil;
+    }
 
     if (record.matched)
     {
@@ -150,6 +166,13 @@ const double reuseCameraFrameTimeInterval = 1.0;
 {
     FluxFeatureMatchingRecord *record = featureMatcher.matchRecord;
     
+    // Decrement reference count on cached image
+    if (record.objectImageCacheObject.image)
+    {
+        [record.objectImageCacheObject endContentAccess];
+        record.objectImageCacheObject = nil;
+    }
+
     // Don't treat this as a failure. Will need to be re-queued to try again.
     record.matched = NO;
     record.failed = NO;

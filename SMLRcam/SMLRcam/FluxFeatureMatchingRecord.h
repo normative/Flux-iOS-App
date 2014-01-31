@@ -13,7 +13,8 @@
 @interface FluxFeatureMatchingRecord : NSObject
 
 @property (nonatomic, strong) FluxCameraFrameElement *cfe; // Camera Frame Element to store scene image + metadata
-@property (nonatomic, strong) FluxImageRenderElement *ire; // Image Render Element to store object image + metadata
+@property (nonatomic, strong) FluxImageRenderElement *ire; // Image Render Element to store object features + metadata
+@property (nonatomic, strong) FluxCacheImageObject *objectImageCacheObject; // ImageCacheObject to store object image
 @property (nonatomic, readonly) BOOL hasCameraScene; // Return YES if image is downloaded.
 @property (nonatomic, readonly) BOOL hasObjectImage; // Return YES if image is downloaded.
 @property (nonatomic, readonly) BOOL hasObjectFeatures; // Return YES if object features are downloaded.

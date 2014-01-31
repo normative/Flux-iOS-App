@@ -234,13 +234,21 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                     // Reset failure state so it doesn't get queued up again until matching is complete or fails again
                     ire.imageMetadata.matchFailed = NO;
                     
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC
+                    FluxImageType rtype = none;
+                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID
+                                                                                            withSize:highest_res returnSize:&rtype];
+
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withObjectImage:imageCacheObj withOpenGLVC:fluxGLVC
                                               isCurrentlyDisplayed:isDisplayed withDebugImageOutput:featureMatchingDebugImageOutput];
                 }
                 else if (!ire.imageMetadata.matched && (ire.imageMetadata.matchFailureRetryTime == nil))
                 {
                     // Also queue up any items which have not been queueud (not matched, no failure retry time set).
-                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withOpenGLVC:fluxGLVC
+                    FluxImageType rtype = none;
+                    FluxCacheImageObject *imageCacheObj = [self.fluxDataManager fetchImagesByLocalID:ire.localID
+                                                                                            withSize:highest_res returnSize:&rtype];
+                    
+                    [self.fluxFeatureMatchingQueue addMatchRequest:ire withObjectImage:imageCacheObj withOpenGLVC:fluxGLVC
                                               isCurrentlyDisplayed:isDisplayed withDebugImageOutput:featureMatchingDebugImageOutput];
                 }
             }
