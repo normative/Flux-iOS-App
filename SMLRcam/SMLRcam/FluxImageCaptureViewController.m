@@ -151,7 +151,7 @@ static int captureImageID = -1;
         FluxScanImageObject *imgObject = [capturedImageObjects objectAtIndex:i];
         [imgObject setCategoryID:0];
         [imgObject setDescriptionString:[changes objectForKey:@"annotation"]];
-        imgObject.privacy = [changes objectForKey:@"privacy"];
+        imgObject.privacy = [(NSNumber *)[changes objectForKey:@"privacy"] boolValue];
     }
     
     NSArray*socialSelections = (NSArray*)[changes objectForKey:@"social"];
