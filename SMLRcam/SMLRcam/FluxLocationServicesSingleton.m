@@ -59,8 +59,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         // This will drain battery faster, but for now, we want to make sure that we continue to get frequent updates
         locationManager.pausesLocationUpdatesAutomatically = NO;
         
-        locationMeasurements = [[NSMutableArray alloc] init];
-        
         if ([CLLocationManager headingAvailable]) {
             locationManager.headingFilter = 1.0;
         }
@@ -253,18 +251,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 //          [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude,
 //          newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
     
-    // store all of the measurements, just so we can see what kind of data we might receive
-    [locationMeasurements addObject:newLocation];
-    
-    // truncate data to maximum size of window (i.e. 5 locations)
-    while ([locationMeasurements count] > 5)
-    {
-        [locationMeasurements removeObjectAtIndex:0];
-    }
-   
-    // TODO: add in code here to "correct" the current location based on whatever (Kalman, etc.)
-    //  Update newLocation and procede
-    
 //#warning Overriding location with fixed value
 //    {
 //    // HACK
@@ -307,40 +293,31 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
                                                       course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     }
     
-    self.location = newLocation;
     self.rawlocation = newLocation;
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);
   
-    
-    [self setMeasurementWithLocation:self.location];
+    [self setMeasurementWithLocation:newLocation];
     [self ComputeGeodecticFromkfECEF:&kfgeolocation];
     
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
-      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
-                                          horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
-                                          course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
+                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+                                                  course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
-    if (isnan(newLocation.coordinate.latitude) || isnan(newLocation.coordinate.longitude)) {
+    if (isnan(newLocation.coordinate.latitude) || isnan(newLocation.coordinate.longitude))
+    {
         self.location = self.rawlocation;
     }
-    else{
+    else
+    {
         self.location = newLocation;
     }
     
     [self updateUserPose];
     
     [self notifyLocationUpdate];
-    
-//    // Notify observers of updated position
-//    if (self.location != nil)
-//    {
-//        NSMutableDictionary* userInfo = [NSMutableDictionary dictionary];
-//        [userInfo setObject:self.location forKey:@"location"];
-//        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfo];
-//        //[self reverseGeocodeLocation:self.location];
-//    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
@@ -351,40 +328,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
 
-    // now compute orientationHeading based on current device orientation
-//    [self updateUserPose];
-//    sensorPose localUserPose = _userPose;
-//    
-//    viewParameters localUserVp;
-//    
-//    // calculate angle between user's viewpoint and North
-//    [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
-//    
-//    
-//    double x1 = 0.0;
-//    double y1 = 1.0;
-//    double x2 = localUserVp.at.x;
-//    double y2 = localUserVp.at.y;
-//    double dotx = (x1 * x2);
-//    double doty = (y1 * y2);
-//    
-//    double scalar = dotx + doty;
-//    double magsq1 = x1 * x1 + y1 * y1;
-//    double magsq2 = x2 * x2 + y2 * y2;
-//    
-//    double costheta = (scalar) / sqrt(magsq1 * magsq2);
-//    double theta = acos(costheta) * 180.0 / M_PI;
-//    
-//    if (x2 < 0)
-//    {
-//        theta = -theta;
-//    }
-//    
-//    while (theta < 0.0)
-//        theta += 360.0;
-//    
-//    self.orientationHeading = theta;
-    
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
     if (self.location != nil)

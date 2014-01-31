@@ -21,7 +21,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     CLLocationManager * locationManager;
-    NSMutableArray *locationMeasurements;
     
     //kalman filtering
     FluxKalmanFilter *kfilter;
