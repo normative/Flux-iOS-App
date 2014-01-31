@@ -429,6 +429,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 #pragma mark  - Users
 
+#pragma mark Registraion / Logout
+
 - (void)createUser:(FluxUserObject*)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID
 {
     
@@ -492,6 +494,116 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     }
 }
 
+-(void)loginUser:(FluxUserObject *)userObject withRequestID:(NSUUID *)requestID{
+    [[RKObjectManager sharedManager] postObject:userObject path:@"/users/sign_in" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         if ([result count]>0)
+         {
+             FluxUserObject*userObj = [result firstObject];
+             [userObject setAuth_token:userObj.auth_token];
+             NSLog(@"Successfully logged in with userID %i and token %@",userObj.userID,userObj.auth_token);
+             if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUser:andRequestID:)])
+             {
+                 [delegate NetworkServices:self didLoginUser:userObject andRequestID:requestID];
+             }
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+-(void)logoutWithRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
+                                                            path:[NSString stringWithFormat:@"%@users/sign_out?auth_token=%@",objectManager.baseURL, token]
+                                                      parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didLogoutWithRequestID:)])
+        {
+            [delegate NetworkServices:self didLogoutWithRequestID:requestID];
+        }
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                         if ([operation.response statusCode] == 404) {
+                                             if ([delegate respondsToSelector:@selector(NetworkServices:didLogoutWithRequestID:)])
+                                             {
+                                                 [delegate NetworkServices:self didLogoutWithRequestID:requestID];
+                                             }
+                                         }
+                                         else{
+                                             if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                                             {
+                                                 [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                                             }
+                                         }
+                                     }];
+    [operation start];
+}
+
+- (void)checkUsernameUniqueness:(NSString *)username withRequestID:(NSUUID *)requestID{
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",objectManager.baseURL,username]]];
+    
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                         
+                                                                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                                                                                            
+                                                                                            NSString* suggestion = [(NSArray*)[JSON valueForKeyPath:@"suggested_name"]firstObject];
+                                                                                            BOOL unique = [(NSString*)[(NSArray*)[JSON valueForKeyPath:@"isunique"]firstObject] boolValue];
+                                                                                            
+                                                                                            
+                                                                                            if ([delegate respondsToSelector:@selector(NetworkServices:didCheckUsernameUniqueness:andSuggestion:andRequestID:)])
+                                                                                            {
+                                                                                                [delegate NetworkServices:self didCheckUsernameUniqueness:unique andSuggestion:suggestion andRequestID:requestID];
+                                                                                            }
+                                                                                            
+                                                                                            
+                                                                                        }
+                                                                                        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                                                                                            
+                                                                                            NSLog(@"Request Failed with Error: %@, %@", error, error.userInfo);
+                                                                                            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                                                                                            {
+                                                                                                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                                                                                            }
+                                                                                        }];
+    
+    [operation start];
+}
+
+- (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    [[RKObjectManager sharedManager] postObject:cameraObject path:[NSString stringWithFormat:@"/cameras?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxCameraObject*cambject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didPostCameraWithID:cambject.cameraID andRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+
 - (void)updateUser:(FluxUserObject *)userObject withImage:(UIImage *)theImage andRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
 
@@ -546,114 +658,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
 }
 
--(void)loginUser:(FluxUserObject *)userObject withRequestID:(NSUUID *)requestID{
-    [[RKObjectManager sharedManager] postObject:userObject path:@"/users/sign_in" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
-     {
-         if ([result count]>0)
-         {
-             FluxUserObject*userObj = [result firstObject];
-             [userObject setAuth_token:userObj.auth_token];
-             NSLog(@"Successfully logged in with userID %i and token %@",userObj.userID,userObj.auth_token);
-             if ([delegate respondsToSelector:@selector(NetworkServices:didLoginUser:andRequestID:)])
-             {
-                 [delegate NetworkServices:self didLoginUser:userObject andRequestID:requestID];
-             }
-         }
-     }
-        failure:^(RKObjectRequestOperation *operation, NSError *error)
-     {
-         
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-         {
-             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-         }
-     }];
-}
-
--(void)logoutWithRequestID:(NSUUID *)requestID{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    
-    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
-    NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
-                                                            path:[NSString stringWithFormat:@"%@users/sign_out?auth_token=%@",objectManager.baseURL, token]
-                                                      parameters:nil];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        if ([delegate respondsToSelector:@selector(NetworkServices:didLogoutWithRequestID:)])
-        {
-            [delegate NetworkServices:self didLogoutWithRequestID:requestID];
-        }
-    }
-    failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        if ([operation.response statusCode] == 404) {
-            if ([delegate respondsToSelector:@selector(NetworkServices:didLogoutWithRequestID:)])
-            {
-                [delegate NetworkServices:self didLogoutWithRequestID:requestID];
-            }
-        }
-        else{
-            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-            {
-                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-            }
-        }
-    }];
-    [operation start];
-}
-
-- (void)checkUsernameUniqueness:(NSString *)username withRequestID:(NSUUID *)requestID{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",objectManager.baseURL,username]]];
-    
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                         
-        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        
-            NSString* suggestion = [(NSArray*)[JSON valueForKeyPath:@"suggested_name"]firstObject];
-            BOOL unique = [(NSString*)[(NSArray*)[JSON valueForKeyPath:@"isunique"]firstObject] boolValue];
-            
-            
-            if ([delegate respondsToSelector:@selector(NetworkServices:didCheckUsernameUniqueness:andSuggestion:andRequestID:)])
-            {
-               [delegate NetworkServices:self didCheckUsernameUniqueness:unique andSuggestion:suggestion andRequestID:requestID];
-            }
-        
-
-    }
-        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-            
-            NSLog(@"Request Failed with Error: %@, %@", error, error.userInfo);
-            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-            {
-                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-            }
-    }];
-    
-    [operation start];
-}
-
-- (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    [[RKObjectManager sharedManager] postObject:cameraObject path:[NSString stringWithFormat:@"/cameras?auth_token=%@", token] parameters:nil
-     success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
-     {
-         FluxCameraObject*cambject = [result firstObject];
-         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithID:andRequestID:)])
-         {
-             [delegate NetworkServices:self didPostCameraWithID:cambject.cameraID andRequestID:requestID];
-         }
-     }
-        failure:^(RKObjectRequestOperation *operation, NSError *error)
-     {
-         
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-         {
-             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-         }
-     }];
-}
+#pragma mark User Profiles
 
 - (void)getUserForID:(int)userID withRequestID:(NSUUID *)requestID
 {
@@ -740,6 +745,103 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
          }
      }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
+
+- (void)getFriendsListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"friends"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],userID, token]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Results",[result count]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFriendListForUser:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnFriendListForUser:result.array andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
+- (void)getFollowingListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"following"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],userID, token]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Results",[result count]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowingListForUser:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnFollowingListForUser:result.array andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
+- (void)getFollowerListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"follower"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],userID, token]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Results",[result count]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowerListForUser:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnFollowerListForUser:result.array andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])

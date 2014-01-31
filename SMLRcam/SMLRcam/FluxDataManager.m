@@ -553,6 +553,31 @@ static FluxDataManager *_theFluxDataManager = nil;
     return requestID;
 }
 
+- (FluxRequestID *) requestFriendsListForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = friendList_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getFriendsListForUserWithID:userID withRequestID:requestID];
+    return requestID;
+}
+- (FluxRequestID *) requestFollowingListForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = followingList_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getFollowingListForUserWithID:userID withRequestID:requestID];
+    return requestID;
+}
+- (FluxRequestID *) requestFollowerListForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = followerList_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getFollowerListForUserWithID:userID withRequestID:requestID];
+    return requestID;
+}
+
 #pragma mark - Request Queries
 
 // General support for managing outstanding requests (i.e. see which images in bulk request are complete)

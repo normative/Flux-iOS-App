@@ -21,6 +21,7 @@ typedef enum SocialListMode : NSUInteger {
     SocialListMode listMode;
     IBOutlet UISegmentedControl *segmentedControl;
     IBOutlet UITableView *socialTableView;
+    UIRefreshControl*refreshControl;
     NSMutableArray*socialListArray;
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;

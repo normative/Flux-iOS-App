@@ -249,8 +249,7 @@
         }
         else{
             [profileCell setBioText:bio];
-        }
-        
+        }        
 
         if ([defaults objectForKey:@"profileImage"]) {
             
@@ -296,7 +295,7 @@
     //disable social
     else{
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
-        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(NSNumber*)[[tableViewArray objectAtIndex:indexPath.row-1]objectForKey:[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject]]intValue]];
+        cell.countLabel.text = @"";
         [cell.titleLabel setEnabled:NO];
         [cell.countLabel setEnabled:NO];
         [cell.countLabel setHidden:YES];
@@ -318,7 +317,7 @@
             break;
         case 2:
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
-//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followingMode]];
+            //[self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followingMode]];
             break;
         case 3:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];

@@ -105,32 +105,41 @@
 //    else{
 //        [self.bioField setAttributedText: [[NSAttributedString alloc] initWithString:text]];
 //    }
-    
-    NSDictionary *attribs = @{
-                              NSForegroundColorAttributeName: [UIColor whiteColor],
-                              NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:13.0]
-                              };
-    NSMutableAttributedString *attributedText =
-    [[NSMutableAttributedString alloc] initWithString:text
-                                           attributes:attribs];
-    
-//    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
-//    paragraphStyle.minimumLineHeight =
-//    [self addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, self.length)];
-    
-    
-    [self.bioLabel setAttributedText:attributedText];
-    
-    self.bioLabel.textAlignment = NSTextAlignmentCenter;
-    
-    [self.bioLabel setNumberOfLines:0];
-    [self.bioLabel sizeToFit];
-    
-    CGRect myFrame = self.bioLabel.frame;
-    // Resize the frame's width to 280 (320 - margins)
-    // width could also be myOriginalLabelFrame.size.width
-    myFrame = CGRectMake(myFrame.origin.x, myFrame.origin.y, 246, myFrame.size.height+10);
-    self.bioLabel.frame = myFrame;
+    if (text) {
+        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+        style.lineSpacing = 5;
+        
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+        paragraphStyle.lineSpacing = 17;
+        paragraphStyle.alignment = NSTextAlignmentCenter;
+        
+        NSDictionary *attribs = @{
+                                  NSForegroundColorAttributeName: [UIColor whiteColor],
+                                  NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:14.0],
+                                  NSParagraphStyleAttributeName : style
+                                  };
+        NSMutableAttributedString *attributedText =
+        [[NSMutableAttributedString alloc] initWithString:text
+                                               attributes:attribs];
+        
+        
+        
+
+        
+        
+        [self.bioLabel setAttributedText:attributedText];
+        [self.bioLabel setTextAlignment:NSTextAlignmentCenter];
+        
+        [self.bioLabel setNumberOfLines:0];
+        [self.bioLabel sizeToFit];
+        //
+        CGRect myFrame = self.bioLabel.frame;
+        // Resize the frame's width to 280 (320 - margins)
+        // width could also be myOriginalLabelFrame.size.width
+        myFrame = CGRectMake(myFrame.origin.x, myFrame.origin.y, 246, myFrame.size.height+10);
+        self.bioLabel.frame = myFrame;
+    }
+
 }
 
 
