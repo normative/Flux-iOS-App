@@ -675,11 +675,8 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 - (void)didCaptureNewImage:(NSNotification *)notification
 {
     FluxScanImageObject *newImageObject = [[notification userInfo] objectForKey:@"imageObject"];
-    UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
+//    UIImage *newImage = [[notification userInfo] objectForKey:@"image"];
     FluxImageRenderElement *ire = [[FluxImageRenderElement alloc]initWithImageObject:newImageObject];
-    NSString *imageCacheKey =[newImageObject generateImageCacheKeyWithImageType:full_res];
-    FluxCacheImageObject *imageCacheObject = [FluxCacheImageObject cacheImageObject:newImage withID:imageCacheKey withType:full_res];
-    ire.imageCacheObject = imageCacheObject;
     ire.imageRenderType = full_res;
     ire.imageTypesFetched = ire.imageTypesFetched | FluxImageTypeMask_full_res;
     ire.localCaptureTime = ire.timestamp;
@@ -694,6 +691,8 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     if (_nearbyCamList.count > 0) {
         [_nearbyCamList removeObjectAtIndex:0];
     }
+    
+    // Need to remove item from fluxNearbyMetadata, fluxMetadata, and fluxImageCache
     
     [self requestNearbyItems];
 }
