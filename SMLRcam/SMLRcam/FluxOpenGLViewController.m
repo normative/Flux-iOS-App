@@ -1966,8 +1966,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (imageCacheObj.image != nil)
     {
-        ire.imageRenderType = rtype;
-        
         // Load texture into slot
         NSError *error = [self loadTexture:tel.textureIndex withImage:imageCacheObj.image];
         
