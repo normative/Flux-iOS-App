@@ -157,6 +157,22 @@
     }
 }
 
+- (void) whenUserFriendsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userFriendsReady) {
+        self.userFriendsReady(socialUserObjects, completeDataRequest);
+    }
+}
+- (void) whenUserFollowingsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userFollowingsReady) {
+        self.userFollowingsReady(socialUserObjects, completeDataRequest);
+    }
+}
+- (void) whenUserFollowersReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userFollowersReady) {
+        self.userFollowersReady(socialUserObjects, completeDataRequest);
+    }
+}
+
 #pragma mark - Other
 
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest

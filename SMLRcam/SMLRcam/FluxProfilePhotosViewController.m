@@ -215,8 +215,9 @@
     //else present a photo viewer
     else{
         NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
+        NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
         for (int i = 0; i<picturesArray.count; i++) {
-            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=%@",FluxProductionServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd]];
+            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=%@&auth_token=%@",FluxProductionServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
             [photoURLs addObject:urlString];
         }
         IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];

@@ -90,7 +90,9 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 - (FluxRequestID *) requestImageFeaturesByLocalID:(FluxDataRequest *)dataRequest;
 
-//users
+//USERS
+
+//registration / LOGOUT
 - (FluxRequestID *) uploadNewUser:(FluxUserObject *)userObject withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) updateUser:(FluxUserObject *)userObject withImage:(UIImage *)image
@@ -101,13 +103,27 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
               withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) postCamera:(FluxCameraObject *)cameraObject
               withDataRequest:(FluxDataRequest *)dataRequest;
+
+- (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest;
+
+//profiles
 - (FluxRequestID *) requestUserProfileForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestUserProfilePicForID:(int)userID andSize:(NSString*)size
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestImageListForUserWithID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest;
+
+//lists
+- (FluxRequestID *) requestFriendsListForID:(int)userID
+                    withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) requestFollowingListForID:(int)userID
+                    withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) requestFollowerListForID:(int)userID
+                    withDataRequest:(FluxDataRequest *)dataRequest;
+
+
+
 
 - (void)deleteLocations;
 - (void)debugByShowingCachedImageKeys;

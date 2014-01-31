@@ -19,6 +19,7 @@
     FluxUserObject*userObj;
     int newImageCount;
     
+    
     IBOutlet UIView *fakeSeparator;
     BOOL isEditing;
 }

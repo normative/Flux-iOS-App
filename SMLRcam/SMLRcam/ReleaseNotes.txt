@@ -9,6 +9,8 @@ Release Notes:
 - feature matching debug image enable option added to debug view
 - fix for Trello Issue #306 (Tapping does not work if the time slider is not at the latest image)
 - download thumbnails and quarterHD resolution images for newly acquired imagery to improve performance
+- add location teleport feature to debug screen to simulate location/altitude changes
+- fix for Trello Issue #380 (Location updates from CLLocation temporarily over-ride Kalman state information) 
 
 Release Notes:
 ******************************************
