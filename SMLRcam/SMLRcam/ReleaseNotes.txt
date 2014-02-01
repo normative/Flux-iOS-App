@@ -1,7 +1,8 @@
 Release Notes:
+
 - reduce memory leaked during logout
 - adjust granularity of pin grouping on map to improve accuracy of individual image locations
-- adds third party login + register
+- adds third party registration and login
 - fixes registrationVC bugs
 - profileView bug fixes
 - debug view added
@@ -11,8 +12,9 @@ Release Notes:
 - download thumbnails and quarterHD resolution images for newly acquired imagery to improve performance
 - add location teleport feature to debug screen to simulate location/altitude changes
 - fix for Trello Issue #380 (Location updates from CLLocation temporarily over-ride Kalman state information) 
+- Adds new combined "my network" tab to re-worked profile page
+- fixed edit profile photo bug
 
-Release Notes:
 ******************************************
 
 V0.19 B03
