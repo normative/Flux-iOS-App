@@ -297,12 +297,15 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     //NSLog(@"Saved lat/long: %0.15f, %0.15f", self.location.coordinate.latitude,
     //      self.location.coordinate.longitude);
-  
+    
+    [self updateAltitudeWithAlt:newLocation.altitude andError:newLocation.verticalAccuracy];
+    
+    
     [self setMeasurementWithLocation:newLocation];
     [self ComputeGeodecticFromkfECEF:&kfgeolocation];
     
     CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
-      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:newLocation.altitude
+      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
                                           course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     
@@ -456,7 +459,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     kfgeolocation->latitude  =  phi/PI * 180.0;
     kfgeolocation->longitude = lambda/PI * 180.0;
-    kfgeolocation->altitude  = h;
+    kfgeolocation->altitude  = X_alt;
     
 }
 
@@ -700,6 +703,9 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     _resetThreshold = 10.0; //in meters;
     _validCurrentLocationData = NO;
     //[self testKalman];
+    kfAltStarted = false;
+    iterations_alt = 0;
+    P_alt = 5.0;
 }
 - (void) startKFilter
 {
@@ -716,7 +722,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 {
     _kfMeasure.position.x = location.coordinate.latitude;
     _kfMeasure.position.y = location.coordinate.longitude;
-    _kfMeasure.position.z = location.altitude;
+    _kfMeasure.position.z = X_alt;
     
     
     // Check for state changes in validCurrentLocationData. Toggles to true are caught in updateKFilter and resetKFilter.
@@ -944,6 +950,34 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     self.teleportLocationIndex = [[defaults objectForKey:FluxDebugTeleportLocationIndexKey] integerValue];
 }
 
+
+-(void) updateAltitudeWithAlt:(double)altitude andError:(double)error
+{
+    double X_x;
+    double P_p;
+    double Q = 0.00001;
+    double K;
+    double R = error;
+    double z = altitude;
+    
+    
+    while(iterations_alt <5)
+    {
+        X_alt = altitude;
+        iterations_alt++;
+        return;
+    }
+    
+    
+    X_x = X_alt;
+    P_p = P_alt + Q;
+    
+    K = P_p / (P_p +R);
+    X_alt = X_x + K *(z -X_x);
+    P_alt = (1-K) * P_p;
+    
+    kfAltStarted = true;
+}
 @end
 
 

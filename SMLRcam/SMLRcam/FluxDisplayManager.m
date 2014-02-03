@@ -527,6 +527,8 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                     ire.imageRenderType = thumb;
                     [self updateImageMetadataForElement:ire];
                     
+                    [self calculateTimeAdjustedImageList];
+                    
                     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateImageTexture
                                                                         object:self userInfo:nil];
                 };

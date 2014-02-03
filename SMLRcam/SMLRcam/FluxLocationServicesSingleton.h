@@ -61,7 +61,10 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     double _horizontalAccuracy;
     
     sensorPose _userPose;
-    
+    double X_alt;
+    double P_alt;
+    int iterations_alt;
+    bool   kfAltStarted;
     NSTimer*updateTimer;
 }
 
