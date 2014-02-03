@@ -20,6 +20,7 @@ Release Notes:
 - fix for Trello Issue #380 (Location updates from CLLocation temporarily over-ride Kalman state information) 
 - Adds new combined "my network" tab to re-worked profile page
 - fixed edit profile photo bug
+- temporarily removed share view for snapshots until FB graph objects are made, all snapshot sharing is now iOS based.
 
 ******************************************
 
