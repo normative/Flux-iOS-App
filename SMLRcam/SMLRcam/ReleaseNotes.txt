@@ -4,8 +4,14 @@ Release Notes:
 - ensure that download of thumbnails has immediate effect in rendering of content and radar view
 - center content in bins in radar view to improve alignement of bars and content
 
-Release Notes:
+******************************************
 
+V0.19 B04
+
+Released: 2014-01-31 22:30:00
+
+Release Notes:
+- actually disable output of feature matching debug images to photo reel
 - reduce memory leaked during logout
 - adjust granularity of pin grouping on map to improve accuracy of individual image locations
 - adds third party registration and login
@@ -17,10 +23,8 @@ Release Notes:
 - fix for Trello Issue #306 (Tapping does not work if the time slider is not at the latest image)
 - download thumbnails and quarterHD resolution images for newly acquired imagery to improve performance
 - add location teleport feature to debug screen to simulate location/altitude changes
-- fix for Trello Issue #380 (Location updates from CLLocation temporarily over-ride Kalman state information) 
+- fix for Trello Issue #380 (Location updates from CLLocation temporarily over-ride Kalman state information)
 - Adds new combined "my network" tab to re-worked profile page
-- fixed edit profile photo bug
-- temporarily removed share view for snapshots until FB graph objects are made, all snapshot sharing is now iOS based.
 
 ******************************************
 
