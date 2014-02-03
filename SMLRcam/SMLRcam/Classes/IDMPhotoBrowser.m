@@ -164,6 +164,7 @@
         _senderViewForAnimation = nil;
         _scaleImage = nil;
         
+        
         if ([self respondsToSelector:@selector(automaticallyAdjustsScrollViewInsets)])
             self.automaticallyAdjustsScrollViewInsets = NO;
         
@@ -599,6 +600,7 @@
     _actionButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                   target:self
                                                                   action:@selector(actionButtonPressed:)];
+    [_actionButton setTintColor:[UIColor whiteColor]];
     
     // Gesture
     _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
@@ -1307,6 +1309,7 @@
             if (photo.caption) [activityItems addObject:photo.caption];
             
             self.activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:nil];
+            [self.activityViewController setExcludedActivityTypes:[NSArray arrayWithObject:UIActivityTypeSaveToCameraRoll]];
             
             __typeof__(self) __weak selfBlock = self;
             [self.activityViewController setCompletionHandler:^(NSString *activityType, BOOL completed) {

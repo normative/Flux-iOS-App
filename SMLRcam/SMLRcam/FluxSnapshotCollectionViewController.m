@@ -36,6 +36,7 @@
     NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
     
     imagesIndexArray = [[NSMutableArray alloc]init];
+    imageSourceArray = [[NSMutableArray alloc]init];
 
 
     isSelecting = NO;
@@ -44,6 +45,7 @@
     imageURLArray = [NSArray arrayWithArray:[defaults objectForKey:@"snapshotImages"]];
     if (imageURLArray) {
         [self.collectionView reloadData];
+        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:imageURLArray.count-1 inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:NO];
     }
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     [[self navigationController] setToolbarHidden:YES animated:NO];
@@ -92,35 +94,41 @@
         [cell.checkboxButton setHidden:YES];
         [cell.imageView setAlpha:1.0];
     }
-
-    NSString *mediaurl = [imageURLArray objectAtIndex:indexPath.row];
-    
-    //
-    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
-    {
-        ALAssetRepresentation *rep = [myasset defaultRepresentation];
-        CGImageRef iref = [rep fullResolutionImage];
-        if (iref) {
-            UIImage *image = [UIImage imageWithCGImage:iref];
-            [cell setTheImage:image];
+    if (imageSourceArray.count > indexPath.row) {
+        if ([imageSourceArray objectAtIndex:indexPath.row]) {
+            [cell setTheImage:(UIImage*)[(NSDictionary*)[imageSourceArray objectAtIndex:indexPath.row]objectForKey:@"smallImage"]];
         }
-    };
-    
-    //
-    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
-    {
-        NSLog(@"oops, cant get image - %@",[myerror localizedDescription]);
-    };
-    
-    NSURL *asseturl = [NSURL URLWithString:mediaurl];
-    ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
-    [assetslibrary assetForURL:asseturl
-                   resultBlock:resultblock
-                  failureBlock:failureblock];
+    }
+    else{
+        NSString *mediaurl = [imageURLArray objectAtIndex:indexPath.row];
         
-    
-
-    
+        //
+        ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+        {
+            ALAssetRepresentation *rep = [myasset defaultRepresentation];
+            CGImageRef iref = [rep fullResolutionImage];
+            if (iref) {
+                UIImage *image = [UIImage imageWithCGImage:iref];
+                
+                UIImage *smallImage = [self imageWithImage:image scaledToSize:cell.frame.size];
+                NSDictionary*imageDict = [[NSDictionary alloc]initWithObjects:@[image,smallImage] forKeys:@[@"image", @"smallImage"]];
+                [imageSourceArray addObject:imageDict];
+                [cell setTheImage:smallImage];
+            }
+        };
+        
+        //
+        ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+        {
+            NSLog(@"oops, cant get image - %@",[myerror localizedDescription]);
+        };
+        
+        NSURL *asseturl = [NSURL URLWithString:mediaurl];
+        ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
+        [assetslibrary assetForURL:asseturl
+                       resultBlock:resultblock
+                      failureBlock:failureblock];
+    }
     return cell;
 }
 
@@ -141,17 +149,18 @@
     }
     else{
         NSMutableArray*photos = [[NSMutableArray alloc]init];
-        for (int i = 0; i<imagesIndexArray.count; i++) {
-            FluxPhotoCollectionCell*cell = (FluxPhotoCollectionCell*)[self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-            IDMPhoto*photo = [[IDMPhoto alloc]initWithImage:cell.theImage];
+        for (int i = 0; i<imageSourceArray.count; i++) {
+            UIImage*img = (UIImage*)[(NSDictionary*)[imageSourceArray objectAtIndex:i]objectForKey:@"image"];
+            IDMPhoto*photo = [[IDMPhoto alloc]initWithImage:img];
             [photos addObject:photo];
         }
         IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
-        [browser setDisplayToolbar:NO];
+        [browser setDisplayToolbar:YES];
+        [browser setDisplayArrowButton:NO];
         [browser setDisplayDoneButtonBackgroundImage:NO];
         [browser setInitialPageIndex:indexPath.row];
         [browser setDelegate:self];
-        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
         [self presentViewController:browser animated:YES completion:nil];
     }
     
@@ -161,7 +170,7 @@
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
 - (IBAction)cancelButtonAction:(id)sender {
@@ -191,7 +200,7 @@
         [imagesArray addObject:cell.theImage];
     }
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:imagesArray applicationActivities:nil];
-    activityVC.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeCopyToPasteboard, UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll]; //or whichever you don't need
+    activityVC.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll]; //or whichever you don't need
     [self presentViewController:activityVC animated:YES completion:nil];
 }
 
@@ -207,6 +216,17 @@
                                                  target:self action:@selector(cancelButtonAction:)];
         
     }
+}
+
+- (UIImage *)imageWithImage:(UIImage *)image scaledToSize:(CGSize)newSize {
+    //UIGraphicsBeginImageContext(newSize);
+    // In next line, pass 0.0 to use the current device's pixel scaling factor (and thus account for Retina resolution).
+    // Pass 1.0 to force exact pixel size.
+    UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
+    [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
 }
 
 @end

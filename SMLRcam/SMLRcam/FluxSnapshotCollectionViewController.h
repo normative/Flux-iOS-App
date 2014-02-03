@@ -12,6 +12,7 @@
 
 @interface FluxSnapshotCollectionViewController : UICollectionViewController <IDMPhotoBrowserDelegate>{
     NSArray*imageURLArray;
+    NSMutableArray*imageSourceArray;
     NSMutableArray*imagesIndexArray;
     
     BOOL isSelecting;

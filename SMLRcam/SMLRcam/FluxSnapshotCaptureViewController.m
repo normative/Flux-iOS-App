@@ -9,7 +9,7 @@
 #import "FluxSnapshotCaptureViewController.h"
 #import "UIAlertView+Blocks.h"
 #import "AssetsLibrary/AssetsLibrary.h"
-
+#import "FluxImageCaptureViewController.h"
 
 
 @interface FluxSnapshotCaptureViewController ()
@@ -186,26 +186,53 @@
     }];
 }
 
-
+//this method has been modified to eliminate the ability to share from the view. sharing can only be done via cameraRoll button or through the photos.app
 - (void)showFlash:(UIColor*)color {
+    //[shareButton setHidden:NO];
+    
     [blackView setHidden:NO];
     [blackView setBackgroundColor:color];
-    [shareButton setHidden:NO];
+
     [UIView animateWithDuration:0.15 animations:^{
         [blackView setAlpha:0.9];
     } completion:^(BOOL finished) {
         [UIView animateWithDuration:0.15 animations:^{
             [blackView setAlpha:0.0];
             [shareButton setAlpha:1.0];
-            [self.snapshotRollButton setHidden:YES];
+            //[self.snapshotRollButton setHidden:YES];
             } completion:^(BOOL finished) {
                 [blackView setHidden:YES];
-                [self showNewSnapshot:newSnapshot];
+                //[self showNewSnapshot:newSnapshot];
             }];
     }];
 }
 
 - (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController{
+    [self closeButtonAction:nil];
+}
+
+- (void)ImageAnnotationViewDidPop:(FluxImageAnnotationViewController *)imageAnnotationsViewController andApproveWithChanges:(NSDictionary*)changes{
+    
+    
+    NSArray*socialSelections = (NSArray*)[changes objectForKey:@"social"];
+    
+    if (socialSelections) {
+        NSNumber*snapshot = (NSNumber*)[changes objectForKey:@"snapshot"];
+        NSString*annotation = (NSString*)[changes objectForKey:@"annotation"];
+        NSArray*capturedImages = [NSArray arrayWithObject:newSnapshot];
+        
+        
+        NSDictionary *userInfoDict = [[NSDictionary alloc]
+                                      initWithObjectsAndKeys:capturedImages, @"capturedImageObjects",
+                                      capturedImages, @"capturedImages",
+                                      socialSelections, @"social",
+                                      snapshot, @"snapshot",
+                                      annotation, @"annotation",
+                                      nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
+                                                            object:self userInfo:userInfoDict];
+    }
+
     [self closeButtonAction:nil];
 }
 

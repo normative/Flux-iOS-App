@@ -428,7 +428,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                                value:nil] build]];    // Event value
         
         [openGLController setBackgroundSnapFlag];
-        [imageCaptureButton setHidden:YES];
+        //[imageCaptureButton setHidden:YES];
     }
     else{
         [openGLController.imageCaptureViewController takePicture];

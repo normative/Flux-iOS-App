@@ -489,6 +489,8 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     NSArray *permissionsNeeded = @[@"publish_actions"];
     
     // Request the permissions the user currently has
+    FBSession.activeSession = [FBSession activeSession];
+    
     [FBRequestConnection startWithGraphPath:@"/me/permissions" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         if (!error){
           NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
