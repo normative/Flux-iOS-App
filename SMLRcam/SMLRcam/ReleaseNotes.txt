@@ -2,6 +2,7 @@ Release Notes:
 
 - fix for Trello Issue #347 (If there is no content, the compass will not show it's outer ring)
 - ensure that download of thumbnails has immediate effect in rendering of content and radar view
+- center content in bins in radar view to improve alignement of bars and content
 
 Release Notes:
 

@@ -34,8 +34,9 @@
     {
         FluxScanImageObject *imageObject = ire.imageMetadata;
         
+        int bucket_size_degrees = 30;
         double h = imageObject.absHeading;
-        int position = (((int)(h + 360) % 360)  / 30);
+        int position = (((int)(h + bucket_size_degrees/2 + 360) % 360)  / bucket_size_degrees);
         [radarStatusArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
     }
     
