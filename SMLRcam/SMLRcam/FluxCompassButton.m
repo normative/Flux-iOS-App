@@ -108,7 +108,8 @@
 // heading update from location manager
 - (void)headingUpdated:(NSNotification *)notification
 {
-    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading * (M_PI / 180.0));
+//    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading * (M_PI / 180.0));
+    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.orientationHeading * (M_PI / 180.0));
     radarView.transform = transform;
 }
 
