@@ -22,7 +22,8 @@
 #pragma mark - update methods
 
 // update radarStatusMutableArray according to the newMetaData
-- (void)updateImageList:(NSNotification*)notification{
+- (void)updateImageList:(NSNotification*)notification
+{
     NSMutableArray *newMetadata = [[notification.userInfo objectForKey:@"displayList"]mutableCopy];
     for (int i = 0; i < 12; i++)
     {
@@ -37,6 +38,7 @@
         int position = (((int)(h + 360) % 360)  / 30);
         [radarStatusArray replaceObjectAtIndex:position withObject:[NSNumber numberWithInt:1]];
     }
+    
     [self updateRadarImageView];
 }
 
@@ -45,10 +47,12 @@
 {
     for (int i = 0; i<radarStatusArray.count; i++)
     {
-        if ([radarStatusArray objectAtIndex:i] != [NSNumber numberWithInt:0]){
+        if ([[radarStatusArray objectAtIndex:i] integerValue] != 0)
+        {
             [[radarImagesArray objectAtIndex:i] setHidden:NO];
         }
-        else{
+        else
+        {
             [[radarImagesArray objectAtIndex:i] setHidden:YES];
         }
     }
@@ -93,15 +97,9 @@
     radarView.userInteractionEnabled = NO;
     radarView.exclusiveTouch = NO;
     
-    
-    
     [self addSubview:radarView];
     [self addSubview:radarHeadingImageView];
     [self bringSubviewToFront:radarHeadingImageView];
-    
-    //setup true north
-//    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)45.0 * (M_PI / 180.0));
-//    radarView.transform = transform;
 }
 
 #pragma mark - location notification
@@ -109,7 +107,7 @@
 // heading update from location manager
 - (void)headingUpdated:(NSNotification *)notification
 {
-    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.orientationHeading * (M_PI / 180.0));
+    CGAffineTransform transform = CGAffineTransformMakeRotation(-(float)locationManager.heading * (M_PI / 180.0));
     radarView.transform = transform;
 }
 
@@ -132,6 +130,7 @@
     [super awakeFromNib];
     
     locationManager = [FluxLocationServicesSingleton sharedManager];
+    
     if (locationManager != nil)
     {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(headingUpdated:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
