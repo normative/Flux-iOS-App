@@ -26,7 +26,6 @@
         for (int i = 0; i< 4; i++) {
             UIView*whiteBoxView = [[UIView alloc]initWithFrame:CGRectMake(xSpace, 0, 5, 5)];
             [whiteBoxView setBackgroundColor:[UIColor whiteColor]];
-            
             [whiteBoxView setAlpha:0.0];
             
             UIView*fadedBoxView = [[UIView alloc]initWithFrame:CGRectMake(xSpace, 0, 5, 5)];

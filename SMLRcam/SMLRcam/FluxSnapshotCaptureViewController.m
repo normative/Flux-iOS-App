@@ -64,6 +64,7 @@
     else{
         [self.snapshotRollButton setHidden:YES];
     }
+    [shareButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:shareButton.titleLabel.font.pointSize]];
 
 	// Do any additional setup after loading the view.
 }
@@ -188,7 +189,7 @@
 
 //this method has been modified to eliminate the ability to share from the view. sharing can only be done via cameraRoll button or through the photos.app
 - (void)showFlash:(UIColor*)color {
-    //[shareButton setHidden:NO];
+    [shareButton setHidden:NO];
     
     [blackView setHidden:NO];
     [blackView setBackgroundColor:color];
@@ -199,10 +200,10 @@
         [UIView animateWithDuration:0.15 animations:^{
             [blackView setAlpha:0.0];
             [shareButton setAlpha:1.0];
-            //[self.snapshotRollButton setHidden:YES];
+            [self.snapshotRollButton setHidden:YES];
             } completion:^(BOOL finished) {
                 [blackView setHidden:YES];
-                //[self showNewSnapshot:newSnapshot];
+                [self showNewSnapshot:newSnapshot];
             }];
     }];
 }
@@ -250,6 +251,8 @@
 }
 
 - (IBAction)shareButtonAction:(id)sender {
-    
+    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:[NSArray arrayWithObject:newSnapshot] applicationActivities:nil];
+    activityVC.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll]; //or whichever you don't need
+    [self presentViewController:activityVC animated:YES completion:nil];
 }
 @end

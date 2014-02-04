@@ -294,7 +294,6 @@
                                 </state>
                                 <connections>
                                     <action selector="shareButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="zgg-tx-U0J"/>
-                                    <segue destination="7MI-iQ-4jy" kind="modal" identifier="annotationSegue" id="XI0-aT-E1x"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -2229,6 +2228,5 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="cDh-QJ-kAL"/>
-        <segue reference="TKb-mp-b48"/>
     </inferredMetricsTieBreakers>
 </document>
