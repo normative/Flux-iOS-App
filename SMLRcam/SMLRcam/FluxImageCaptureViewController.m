@@ -56,8 +56,8 @@ static int captureImageID = -1;
     capturedImages = [[NSMutableArray alloc]init];
     
     [self setupAVCapture];
+    [self setupimageCountView];
     
-    [imageCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:imageCountLabel.font.pointSize]];
     [photosLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosLabel.font.pointSize]];
     [undoButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:undoButton.titleLabel.font.pointSize]];
     [approveButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:approveButton.titleLabel.font.pointSize]];
@@ -101,6 +101,10 @@ static int captureImageID = -1;
     }
 }
 
+- (void)setupimageCountView{
+    
+}
+
 - (IBAction)undoButtonAction:(id)sender {
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:[(FluxScanImageObject*)[capturedImageObjects lastObject]localID], @"localID",nil];
@@ -108,7 +112,7 @@ static int captureImageID = -1;
                                                         object:self userInfo:userInfoDict];
     [capturedImageObjects removeLastObject];
     [capturedImages removeLastObject];
-    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
+    
     if (capturedImageObjects.count == 0) {
         [approveButton setHidden:YES];
         [undoButton setHidden:YES];
@@ -127,7 +131,7 @@ static int captureImageID = -1;
     [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
     [capturedImages removeAllObjects];
-    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
                                                         object:self userInfo:nil];
 }
@@ -177,7 +181,6 @@ static int captureImageID = -1;
     [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
     [capturedImages removeAllObjects];
-    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
 }
 
 - (IBAction)approveImageAction:(id)sender
@@ -344,7 +347,7 @@ static int captureImageID = -1;
              
              
              [self saveImageObject:capturedImageObject];
-             [self incrementCountLabel];
+
              
              //UI updates
              [approveButton setHidden:NO];
@@ -469,16 +472,6 @@ static int captureImageID = -1;
 		result = AVCaptureVideoOrientationLandscapeLeft;
     }
 	return result;
-}
-
-- (void)incrementCountLabel{
-    CGPoint center = imageCountLabel.center;
-    imageCountLabel.transform = CGAffineTransformMakeScale(1.5, 1.5);
-    [imageCountLabel setText:[NSString stringWithFormat:@"%i",capturedImageObjects.count]];
-    [UIView animateWithDuration:0.3 animations:^{
-        imageCountLabel.transform = CGAffineTransformMakeScale(1, 1);
-        [imageCountLabel setCenter:center];
-    } completion:nil];
 }
 
 @end

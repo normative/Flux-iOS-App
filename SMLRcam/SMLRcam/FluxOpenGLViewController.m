@@ -817,7 +817,6 @@ void init(){
 
 - (void)imageCaptureDidCapture:(NSNotification *)notification{
     imageCaptured = YES;
-    [(FluxScanViewController*)self.parentViewController setCameraButtonEnabled:YES];
 }
 
 #pragma mark - Image Tapping

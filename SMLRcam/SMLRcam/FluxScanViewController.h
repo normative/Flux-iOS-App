@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 
 #import "FluxTimeFilterControl.h"
-#import "FluxCameraButton.h"
+#import "FluxImageCaptureButton.h"
+
 #import "FluxCompassButton.h"
 #import "FluxMapViewController.h"
 #import "FluxOpenGLViewController.h"
@@ -50,7 +51,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     UIImage *capturedImage;
     UIImageView*blurView;
-    __strong IBOutlet FluxCameraButton *imageCaptureButton;
+    __strong IBOutlet FluxImageCaptureButton *imageCaptureButton;
     IBOutlet UIButton *filterButton;
     IBOutlet BBCyclingLabel *dateRangeLabel;
     NSTimer *dateRangeLabelHideTimer;

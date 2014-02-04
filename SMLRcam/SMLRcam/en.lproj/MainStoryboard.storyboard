@@ -432,21 +432,11 @@
                                             <constraint firstAttribute="height" constant="40" id="UtT-mk-Mle"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <state key="normal" title="Done">
+                                        <state key="normal" title="Share">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
                                             <action selector="approveImageAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="ZJm-XU-V9E"/>
-                                        </connections>
-                                    </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="10L-e5-Tmx" userLabel="Snapshot share button">
-                                        <rect key="frame" x="262" y="46" width="23" height="32"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" image="actionButtonItem">
-                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                        </state>
-                                        <connections>
-                                            <action selector="approveImageAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="mmD-e0-pdV"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -462,30 +452,6 @@
                                 <rect key="frame" x="0.0" y="444" width="320" height="124"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qXq-Fu-qXY" userLabel="photosLabelView">
-                                        <rect key="frame" x="20" y="36" width="45" height="52"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <subviews>
-                                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="photosTakenBG" translatesAutoresizingMaskIntoConstraints="NO" id="SRO-NE-Owr">
-                                                <rect key="frame" x="6" y="8" width="33" height="33"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                            </imageView>
-                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="Zi1-Yb-u00">
-                                                <rect key="frame" x="6" y="10" width="33" height="33"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="45" id="hbG-rw-rmW"/>
-                                            <constraint firstAttribute="height" constant="52" id="qpK-sX-JHI"/>
-                                        </constraints>
-                                    </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rsU-2Y-4PW">
                                         <rect key="frame" x="247" y="47" width="53" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -505,9 +471,7 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.5" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="centerY" secondItem="qXq-Fu-qXY" secondAttribute="centerY" id="3vf-NZ-Ofo"/>
                                     <constraint firstAttribute="centerY" secondItem="rsU-2Y-4PW" secondAttribute="centerY" id="O7h-YA-kcB"/>
-                                    <constraint firstItem="qXq-Fu-qXY" firstAttribute="leading" secondItem="ub8-Wh-KFw" secondAttribute="leading" constant="20" id="RxK-Qx-ng4"/>
                                     <constraint firstAttribute="trailing" secondItem="rsU-2Y-4PW" secondAttribute="trailing" constant="20" id="h2a-xE-RZt"/>
                                 </constraints>
                             </view>
@@ -543,8 +507,6 @@
                         <outlet property="bottomContainerView" destination="ub8-Wh-KFw" id="LBo-Bk-uPG"/>
                         <outlet property="closeButton" destination="Mt2-5Z-isg" id="cpk-p9-jCi"/>
                         <outlet property="imageCaptureSquareView" destination="UPP-yk-7fe" id="KNp-oS-9oV"/>
-                        <outlet property="imageCountLabel" destination="Zi1-Yb-u00" id="8ro-SH-FxI"/>
-                        <outlet property="snapshotShareButton" destination="10L-e5-Tmx" id="ir4-wV-lgf"/>
                         <outlet property="topContainerView" destination="3hP-Qn-vbY" id="dBJ-m8-LOg"/>
                         <outlet property="topGradientView" destination="bYe-XU-Qb3" id="cdR-pC-1Io"/>
                         <outlet property="undoButton" destination="rsU-2Y-4PW" id="Poq-AA-9Kw"/>
@@ -1058,7 +1020,7 @@
                                             <action selector="filterButtonAction:" destination="2" eventType="touchUpInside" id="maH-yF-aX4"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Qy-BY-UGL">
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Qy-BY-UGL" userLabel="debugButton1">
                                         <rect key="frame" x="0.0" y="110" width="50" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button">
@@ -1070,7 +1032,7 @@
                                             <action selector="debugButton1Pressed:" destination="2" eventType="touchDown" id="j2K-Ku-CPW"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CqY-hu-eLa">
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CqY-hu-eLa" userLabel="debugButton2">
                                         <rect key="frame" x="90" y="110" width="50" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button">
@@ -1082,7 +1044,7 @@
                                             <action selector="debugButton2Pressed:" destination="2" eventType="touchDown" id="DSY-gj-sDI"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U50-Bo-x59">
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="U50-Bo-x59" userLabel="debugButton3">
                                         <rect key="frame" x="185" y="110" width="50" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button">
@@ -1094,7 +1056,7 @@
                                             <action selector="debugButton3Pressed:" destination="2" eventType="touchDown" id="Kqd-xV-Qf3"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eey-VP-W7S">
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eey-VP-W7S" userLabel="debugButton4">
                                         <rect key="frame" x="270" y="110" width="50" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Button">
@@ -1207,32 +1169,22 @@
                                     <constraint firstItem="sxZ-KT-aF5" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="wys-fz-KvJ"/>
                                 </constraints>
                             </view>
-                            <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c58-0p-wGY" userLabel="Image Capture Button" customClass="FluxCameraButton">
-                                <rect key="frame" x="125" y="486" width="70" height="70"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PhW-C1-wiN" customClass="FluxImageCaptureButton">
+                                <rect key="frame" x="115" y="475" width="91" height="91"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="70" id="2dk-q8-9BR"/>
-                                    <constraint firstAttribute="height" constant="70" id="I9f-Lb-zHC"/>
+                                    <constraint firstAttribute="width" constant="91" id="Mj8-fr-oB5"/>
+                                    <constraint firstAttribute="height" constant="91" id="WKq-QW-lvZ"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                                <state key="normal" image="camButton">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <state key="highlighted">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="imageCaptureButtonAction:" destination="2" eventType="touchUpInside" id="WD2-Kb-5g2"/>
-                                </connections>
-                            </button>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="jDD-EI-IPQ" secondAttribute="bottom" id="J23-hv-x9J"/>
-                            <constraint firstAttribute="bottom" secondItem="c58-0p-wGY" secondAttribute="bottom" constant="12" id="PmY-uh-dtX"/>
                             <constraint firstItem="jDD-EI-IPQ" firstAttribute="top" secondItem="3UQ-h3-q7y" secondAttribute="top" id="jia-6q-PDz"/>
-                            <constraint firstAttribute="centerX" secondItem="c58-0p-wGY" secondAttribute="centerX" id="pO9-Xi-TLM"/>
+                            <constraint firstAttribute="centerX" secondItem="PhW-C1-wiN" secondAttribute="centerX" id="r5m-VA-ySU"/>
+                            <constraint firstAttribute="bottom" secondItem="PhW-C1-wiN" secondAttribute="bottom" constant="2" id="sBA-Ly-0PK"/>
                             <constraint firstItem="jDD-EI-IPQ" firstAttribute="leading" secondItem="3UQ-h3-q7y" secondAttribute="leading" id="ybr-ee-VxU"/>
                         </constraints>
                     </view>
@@ -1247,7 +1199,7 @@
                         <outlet property="debugButton3" destination="U50-Bo-x59" id="gLJ-ti-AlT"/>
                         <outlet property="debugButton4" destination="eey-VP-W7S" id="gB1-zR-fns"/>
                         <outlet property="filterButton" destination="bo9-BI-7cK" id="0DJ-MQ-P3B"/>
-                        <outlet property="imageCaptureButton" destination="c58-0p-wGY" id="usz-3O-Mvg"/>
+                        <outlet property="imageCaptureButton" destination="PhW-C1-wiN" id="z8Y-va-x4A"/>
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
                         <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
                         <outlet property="radarButton" destination="QTA-2K-tgO" id="fZZ-Fu-W7o"/>
@@ -2251,7 +2203,6 @@
     </scenes>
     <resources>
         <image name="MapBackToggle" width="140" height="140"/>
-        <image name="actionButtonItem" width="38" height="53"/>
         <image name="backgroundGradient_bottom" width="640" height="276"/>
         <image name="backgroundGradient_top" width="640" height="276"/>
         <image name="camButton" width="140" height="140"/>
@@ -2264,7 +2215,6 @@
         <image name="filterButton" width="140" height="140"/>
         <image name="fluxlogo" width="186" height="217"/>
         <image name="inactiveTimeSlider" width="140" height="140"/>
-        <image name="photosTakenBG" width="72" height="72"/>
         <image name="profileMenuButton" width="140" height="140"/>
         <image name="shareEveryone_on" width="340" height="80"/>
         <image name="shareFacebook_off" width="80" height="80"/>
@@ -2279,6 +2229,6 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="cDh-QJ-kAL"/>
-        <segue reference="XI0-aT-E1x"/>
+        <segue reference="TKb-mp-b48"/>
     </inferredMetricsTieBreakers>
 </document>

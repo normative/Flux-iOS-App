@@ -46,7 +46,7 @@
     }
     
     if (borderType == nil) {
-        [defaults setObject:@"1" forKey:@"Border"];
+        [defaults setObject:@"3" forKey:@"Border"];
         [defaults synchronize];
     }
 

@@ -15,32 +15,46 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-
+        circleLayer = [CAShapeLayer layer];
+        circleLayer.path = [UIBezierPath bezierPathWithOvalInRect:self.frame].CGPath;
+        
+        // Center the shape, with magic numbers :(
+        circleLayer.position = CGPointMake(-10, -12);
+        
+        // Configure the apperence of the circle
+        circleLayer.fillColor = [UIColor clearColor].CGColor;
+        circleLayer.strokeColor = [UIColor whiteColor].CGColor;
+        circleLayer.lineWidth = 1;
+        
+        circleLayer.masksToBounds = NO;
+        circleLayer.shadowColor = [UIColor blackColor].CGColor;
+        circleLayer.shadowOffset = CGSizeMake(0.0f, 5.0f);
+        circleLayer.shadowOpacity = 0.5f;
+        //circleLayer.shadowPath = circleLayer.path;
+        
+        [self.layer addSublayer:circleLayer];
+        
+        //[self setContentMode:UIViewContentModeCenter];
+        
     }
     return self;
 }
 
 - (void)awakeFromNib {
-    circleView = [[UIImageView alloc]initWithFrame:self.bounds];
-    [circleView setFrame:CGRectMake(0, 0, self.frame.size.width*1.3, self.frame.size.height*1.3)];
-    [circleView setCenter:CGPointMake(self.frame.size.width/2, self.frame.size.height/2)];
-    [circleView setImage:[UIImage imageNamed:@"camCircle"]];
-    [circleView setAlpha:0.0];
-    [circleView setHidden:YES];
-    [self addSubview:circleView];
+
 }
 
-- (UIImageView*)getThumbView{
-    return circleView;
-}
-
-- (void)setCaptureMode:(FluxImageCaptureMode)captureMode{
-    _captureMode = captureMode;
-    if (captureMode == camera_mode) {
-        [self setImage:[UIImage imageNamed:@"camButton"] forState:UIControlStateNormal];
+- (void)setEnabled:(BOOL)enabled{
+    [super setEnabled:enabled];
+    if (!enabled) {
+        [self setAlpha:0.4];
+        [self setUserInteractionEnabled:NO];
+        circleLayer.strokeColor = [UIColor colorWithWhite:1.0 alpha:0.4].CGColor;
     }
     else{
-        [self setImage:[UIImage imageNamed:@"snapshotButton"] forState:UIControlStateNormal];
+        [self setAlpha:1.0];
+        [self setUserInteractionEnabled:YES];
+        circleLayer.strokeColor = [UIColor whiteColor].CGColor;
     }
 }
 

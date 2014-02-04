@@ -188,6 +188,12 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
             else{
                 if (parts.count) {
+                    UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh..."
+                                                                      message:@"It looks like your password is missing from your Twitter account. Open the Settings app and add your password to your Twitter account to share with Twitter."
+                                                                     delegate:nil
+                                                            cancelButtonTitle:@"OK"
+                                                            otherButtonTitles:nil];
+                    [message show];
                     NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [parts objectAtIndex:0]);
                 }
                 //call delegate
