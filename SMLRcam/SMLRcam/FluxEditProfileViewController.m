@@ -12,6 +12,9 @@
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
 
+#import "DZNPhotoPickerController.h"
+#import "UIImagePickerController+Edit.h"
+
 @interface FluxEditProfileViewController ()
 
 @end
@@ -132,20 +135,29 @@
     {
         case 0:
         {
-            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
-            [picker setDelegate:self];
-            picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-            [picker setAllowsEditing:YES];
-            [self presentViewController:picker animated:YES completion:^{}];
+            [self presentImagePickerForSourceType:UIImagePickerControllerSourceTypeCamera];
+            
+//            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+//            [picker setDelegate:self];
+//            picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+//            [picker setAllowsEditing:YES];
+//            [self presentViewController:picker animated:YES completion:^{}];
         }
             break;
         case 1:
         {
-            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
-            [picker setDelegate:self];
-            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            [picker setAllowsEditing:YES];
-            [self presentViewController:picker animated:YES completion:^{}];
+            [self presentImagePickerForSourceType:UIImagePickerControllerSourceTypeSavedPhotosAlbum];
+            
+//            UIImagePickerController * picker = [[UIImagePickerController alloc] init];
+//            [picker setDelegate:self];
+//            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+//            [picker setAllowsEditing:YES];
+//            [self presentViewController:picker animated:YES completion:^{}];
+        }
+            break;
+        case 2:
+        {
+            [bioTextField becomeFirstResponder];
         }
         default:
             break;
@@ -155,10 +167,25 @@
 #pragma - Image Picker Deleagte
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    // Picking Image from Camera/ Library
-    [picker dismissViewControllerAnimated:YES completion:^{}];
-    UIImage*newProfileImage = info[UIImagePickerControllerEditedImage];
-    
+    UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
+    UIImage *croppedImage = [info objectForKey:UIImagePickerControllerEditedImage];
+    if (croppedImage) {
+        [self saveImage:croppedImage];
+        [picker dismissViewControllerAnimated:YES completion:nil];
+        [bioTextField becomeFirstResponder];
+    }
+    else{
+        DZNPhotoEditViewController *photoEditViewController = [[DZNPhotoEditViewController alloc] initWithImage:image cropMode:DZNPhotoEditViewControllerCropModeCircular];
+        [picker pushViewController:photoEditViewController animated:YES];
+    }
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    [bioTextField becomeFirstResponder];
+}
+
+- (void)saveImage:(UIImage*)image{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         // Set desired maximum height and calculate width
@@ -168,27 +195,39 @@
         FluxImageTools*imageTools = [[FluxImageTools alloc]init];
         
         // Resize the image
-        UIImage * image =  [imageTools resizedImage:newProfileImage toSize:CGSizeMake(width, height) interpolationQuality:kCGInterpolationDefault];
+        UIImage * newImage =  [imageTools resizedImage:image toSize:CGSizeMake(width, height) interpolationQuality:kCGInterpolationDefault];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             [profileImageButton setBackgroundImage:image forState:UIControlStateNormal];
-            [editedDictionary setObject:image forKey:@"profilePic"];
+            [editedDictionary setObject:newImage forKey:@"profilePic"];
             [bioTextField becomeFirstResponder];
             
             self.navigationItem.rightBarButtonItem = saveButton;
             
         });
     });
-    
-    if (!newProfileImage)
-    {
-        return;
-    }
 }
 
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
-    [picker dismissViewControllerAnimated:YES completion:nil];
-    [bioTextField becomeFirstResponder];
+#pragma mark - Photo Picker status bar bug fix delegate
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+}
+
+#pragma mark - other
+
+- (void)presentImagePickerForSourceType:(UIImagePickerControllerSourceType)sourceType
+{
+    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+    picker.sourceType = sourceType;
+    picker.allowsEditing = YES;
+    picker.editingMode = DZNPhotoEditViewControllerCropModeCircular;
+    picker.delegate = self;
+    
+    [self presentViewController:picker animated:YES completion:^{
+        //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    }];
+
 }
 
 - (IBAction)editProfilePictureCell:(id)sender {

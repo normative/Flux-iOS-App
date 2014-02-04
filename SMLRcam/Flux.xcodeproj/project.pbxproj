@@ -137,6 +137,12 @@
 		AAA265CD17EA0305003AE787 /* TFFeedbackController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = AAA265CA17EA0305003AE787 /* TFFeedbackController_iPad.xib */; };
 		AAA265CE17EA0305003AE787 /* TFFeedbackController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */; };
 		AAAAD6E918A0588D00F5F3DB /* FluxImageCaptureBoxItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6E818A0588D00F5F3DB /* FluxImageCaptureBoxItem.m */; };
+		AAAAD6FD18A1791800F5F3DB /* DZNPhotoPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6F218A1791800F5F3DB /* DZNPhotoPickerController.m */; };
+		AAAAD6FE18A1791800F5F3DB /* DZNPhotoDisplayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6F418A1791800F5F3DB /* DZNPhotoDisplayViewController.m */; };
+		AAAAD6FF18A1791800F5F3DB /* DZNPhotoEditViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6F618A1791800F5F3DB /* DZNPhotoEditViewController.m */; };
+		AAAAD70018A1791800F5F3DB /* DZNPhotoDisplayViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6F818A1791800F5F3DB /* DZNPhotoDisplayViewCell.m */; };
+		AAAAD70118A1791800F5F3DB /* DZNPhotoDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6FA18A1791800F5F3DB /* DZNPhotoDescription.m */; };
+		AAAAD70218A1791800F5F3DB /* UIImagePickerController+Edit.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6FC18A1791800F5F3DB /* UIImagePickerController+Edit.m */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A381871F0EA003BC1FF /* FluxPhotoCollectionCell.m */; };
 		AAAD9A3C187B14CE003BC1FF /* FluxRegisterUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3B187B14CE003BC1FF /* FluxRegisterUsernameViewController.m */; };
@@ -422,6 +428,18 @@
 		AAA265CB17EA0305003AE787 /* TFFeedbackController_iPhone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = TFFeedbackController_iPhone.xib; sourceTree = "<group>"; };
 		AAAAD6E718A0588D00F5F3DB /* FluxImageCaptureBoxItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageCaptureBoxItem.h; sourceTree = "<group>"; };
 		AAAAD6E818A0588D00F5F3DB /* FluxImageCaptureBoxItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageCaptureBoxItem.m; sourceTree = "<group>"; };
+		AAAAD6F118A1791800F5F3DB /* DZNPhotoPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DZNPhotoPickerController.h; sourceTree = "<group>"; };
+		AAAAD6F218A1791800F5F3DB /* DZNPhotoPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DZNPhotoPickerController.m; sourceTree = "<group>"; };
+		AAAAD6F318A1791800F5F3DB /* DZNPhotoDisplayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DZNPhotoDisplayViewController.h; sourceTree = "<group>"; };
+		AAAAD6F418A1791800F5F3DB /* DZNPhotoDisplayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DZNPhotoDisplayViewController.m; sourceTree = "<group>"; };
+		AAAAD6F518A1791800F5F3DB /* DZNPhotoEditViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DZNPhotoEditViewController.h; sourceTree = "<group>"; };
+		AAAAD6F618A1791800F5F3DB /* DZNPhotoEditViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DZNPhotoEditViewController.m; sourceTree = "<group>"; };
+		AAAAD6F718A1791800F5F3DB /* DZNPhotoDisplayViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DZNPhotoDisplayViewCell.h; sourceTree = "<group>"; };
+		AAAAD6F818A1791800F5F3DB /* DZNPhotoDisplayViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DZNPhotoDisplayViewCell.m; sourceTree = "<group>"; };
+		AAAAD6F918A1791800F5F3DB /* DZNPhotoDescription.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DZNPhotoDescription.h; sourceTree = "<group>"; };
+		AAAAD6FA18A1791800F5F3DB /* DZNPhotoDescription.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DZNPhotoDescription.m; sourceTree = "<group>"; };
+		AAAAD6FB18A1791800F5F3DB /* UIImagePickerController+Edit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImagePickerController+Edit.h"; sourceTree = "<group>"; };
+		AAAAD6FC18A1791800F5F3DB /* UIImagePickerController+Edit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImagePickerController+Edit.m"; sourceTree = "<group>"; };
 		AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterControl.h; sourceTree = "<group>"; };
 		AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterControl.m; sourceTree = "<group>"; };
 		AAAD9A371871F0EA003BC1FF /* FluxPhotoCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPhotoCollectionCell.h; sourceTree = "<group>"; };
@@ -931,6 +949,7 @@
 		AA85AD7017A995F7003EBC89 /* 3rd Party */ = {
 			isa = PBXGroup;
 			children = (
+				AAAAD6EA18A178E400F5F3DB /* roundedImagePicker */,
 				AA2CBAC3188F31B8001ECF86 /* UIAlert Blocks */,
 				AAB066F11886F6EA002914B2 /* UIActionSheet Blocks */,
 				AAF1BCF2183A73A900909AFF /* Animated Label */,
@@ -1161,6 +1180,25 @@
 				AAA265C317EA02F6003AE787 /* TFFeedbackController.m */,
 			);
 			name = ComposeFeedbackView;
+			sourceTree = "<group>";
+		};
+		AAAAD6EA18A178E400F5F3DB /* roundedImagePicker */ = {
+			isa = PBXGroup;
+			children = (
+				AAAAD6F118A1791800F5F3DB /* DZNPhotoPickerController.h */,
+				AAAAD6F218A1791800F5F3DB /* DZNPhotoPickerController.m */,
+				AAAAD6F318A1791800F5F3DB /* DZNPhotoDisplayViewController.h */,
+				AAAAD6F418A1791800F5F3DB /* DZNPhotoDisplayViewController.m */,
+				AAAAD6F518A1791800F5F3DB /* DZNPhotoEditViewController.h */,
+				AAAAD6F618A1791800F5F3DB /* DZNPhotoEditViewController.m */,
+				AAAAD6F718A1791800F5F3DB /* DZNPhotoDisplayViewCell.h */,
+				AAAAD6F818A1791800F5F3DB /* DZNPhotoDisplayViewCell.m */,
+				AAAAD6F918A1791800F5F3DB /* DZNPhotoDescription.h */,
+				AAAAD6FA18A1791800F5F3DB /* DZNPhotoDescription.m */,
+				AAAAD6FB18A1791800F5F3DB /* UIImagePickerController+Edit.h */,
+				AAAAD6FC18A1791800F5F3DB /* UIImagePickerController+Edit.m */,
+			);
+			name = roundedImagePicker;
 			sourceTree = "<group>";
 		};
 		AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */ = {
@@ -1502,6 +1540,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA9F860F1868AFF600AB98A7 /* IDMCaptionView.m in Sources */,
+				AAAAD6FD18A1791800F5F3DB /* DZNPhotoPickerController.m in Sources */,
 				AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */,
 				AA4CE10317B52EDF008D04BE /* FluxMotionManagerSingleton.m in Sources */,
 				AA69DA9F18313B9F00B0BEED /* FluxCountTableViewCell.m in Sources */,
@@ -1533,9 +1572,11 @@
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA2CBAC2188F2810001ECF86 /* FluxSnapshotCollectionViewController.m in Sources */,
 				F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */,
+				AAAAD70218A1791800F5F3DB /* UIImagePickerController+Edit.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
 				AA9D0E8E184D392E0004823E /* TWSignedRequest.m in Sources */,
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,
+				AAAAD6FF18A1791800F5F3DB /* DZNPhotoEditViewController.m in Sources */,
 				AAA265C617EA02F6003AE787 /* TestFlight+OpenFeedback.m in Sources */,
 				AA984F0D18088923007F33B1 /* MIAnnotation.m in Sources */,
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
@@ -1546,6 +1587,7 @@
 				AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */,
 				AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */,
 				AA55534217F0C0EA0098C45C /* FluxDisplayManager.m in Sources */,
+				AAAAD70018A1791800F5F3DB /* DZNPhotoDisplayViewCell.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
 				AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationAnnotation.m in Sources */,
 				F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */,
@@ -1565,6 +1607,7 @@
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
 				AA984F1618088923007F33B1 /* MIZoomOutTransition.m in Sources */,
+				AAAAD6FE18A1791800F5F3DB /* DZNPhotoDisplayViewController.m in Sources */,
 				AA9F86151868AFF600AB98A7 /* IDMZoomingScrollView.m in Sources */,
 				AA3BAF251846477E009D4FAC /* FluxPublicProfileViewController.m in Sources */,
 				AAAD9A46187EF89F003BC1FF /* FluxSocialManagementCell.m in Sources */,
@@ -1601,6 +1644,7 @@
 				AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */,
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
 				AA9D0E95184D39510004823E /* NSData+Base64.m in Sources */,
+				AAAAD70118A1791800F5F3DB /* DZNPhotoDescription.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */,
 				F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */,
