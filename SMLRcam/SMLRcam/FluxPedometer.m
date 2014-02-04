@@ -10,11 +10,13 @@
 
 #include <stdio.h>
 
-
 #import "FluxPedometer.h"
 #ifdef PED_APP
 #import "ViewController.h"
 #endif
+
+NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
+NSString* const FluxPedometerDidTakeStepCountKey = @"FluxPedometerDidTakeStepCountKey";
 
 const int BLOCK_SIZE_AVG     = 10;       // setup the block size for the (averaging) low pass filter
 
@@ -737,6 +739,9 @@ ViewController *viewcontroller = nil;
     {
         [flocation registerPedDisplacementKFilter:direction];
     }
+    
+    NSDictionary *userInfoDict = @{FluxPedometerDidTakeStepCountKey : @(stepCount)};
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxPedometerDidTakeStep object:self userInfo:userInfoDict];
     
     return true;
 

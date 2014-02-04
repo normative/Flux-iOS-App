@@ -77,7 +77,9 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     IBOutlet UIButton *debugButton3;
     IBOutlet UIButton *debugButton4;
     
+    IBOutlet UILabel *pedometerLabel;
 }
+
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (strong, nonatomic) IBOutlet UIButton *cameraButton;

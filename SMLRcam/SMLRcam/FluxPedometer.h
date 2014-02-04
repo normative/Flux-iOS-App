@@ -13,6 +13,9 @@
 #import "FluxLocationServicesSingleton.h"
 #define MAXSAMPLES  512
 
+extern NSString* const FluxPedometerDidTakeStep;
+extern NSString* const FluxPedometerDidTakeStepCountKey;
+
 typedef enum _walkdir {
     BACKWARDS = -1,
     UNKNOWN = 0,

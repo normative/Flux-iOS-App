@@ -991,6 +991,13 @@
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </view>
+                                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rSM-GR-tH4" userLabel="pedometerLabel">
+                                                <rect key="frame" x="135" y="263" width="51" height="42"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="22"/>
+                                                <color key="textColor" red="1" green="0.19067410636611704" blue="0.15584812992784103" alpha="1" colorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="tintColor" red="0.0" green="0.71372549019999998" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
@@ -1200,6 +1207,7 @@
                         <outlet property="filterButton" destination="bo9-BI-7cK" id="0DJ-MQ-P3B"/>
                         <outlet property="imageCaptureButton" destination="PhW-C1-wiN" id="z8Y-va-x4A"/>
                         <outlet property="leftDrawerButton" destination="WoV-XC-xK1" id="Jz7-QK-oYO"/>
+                        <outlet property="pedometerLabel" destination="rSM-GR-tH4" id="yaJ-uJ-nOy"/>
                         <outlet property="progressView" destination="RP7-i5-SqD" id="zbk-An-oa4"/>
                         <outlet property="radarButton" destination="QTA-2K-tgO" id="fZZ-Fu-W7o"/>
                         <outlet property="timeFilterControl" destination="sxZ-KT-aF5" id="wAK-zm-eyj"/>

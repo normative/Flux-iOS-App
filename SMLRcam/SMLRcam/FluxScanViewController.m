@@ -8,13 +8,14 @@
 
 #import "FluxScanViewController.h"
 
-#import "FluxLeftDrawerViewController.h"
 #import "FluxAnnotationTableViewCell.h"
-#import "FluxTimeFilterControl.h"
 #import "FluxImageRenderElement.h"
 #import "FluxImageTools.h"
-#import "UICKeyChainStore.h"
+#import "FluxLeftDrawerViewController.h"
+#import "FluxPedometer.h"
+#import "FluxTimeFilterControl.h"
 #import "ProgressHUD.h"
+#import "UICKeyChainStore.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -53,6 +54,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     UISwitch *theSwitch = (UISwitch *)sender;
     bool useFakeCoordinate = theSwitch.on;
     [self.fluxDisplayManager toggleLocationCoordinate:useFakeCoordinate];
+}
+
+- (void)didTakeStepWithPedometer:(NSNotification*)notification
+{
+    if ([notification userInfo])
+    {
+        NSNumber *stepCount = [[notification userInfo] objectForKey:FluxPedometerDidTakeStepCountKey];
+        [pedometerLabel setText:[stepCount stringValue]];
+    }
 }
 
 #pragma mark - Drawer Methods
@@ -756,6 +766,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStepWithPedometer:) name:FluxPedometerDidTakeStep object:nil];
+    
+    [pedometerLabel setHidden:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -811,9 +824,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
 }
-
-
 
 #pragma mark - View Transition Animations
 /*
