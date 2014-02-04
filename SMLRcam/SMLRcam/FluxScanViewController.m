@@ -49,13 +49,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
 
-- (IBAction)toggleLocationCoordinate:(id)sender
-{
-    UISwitch *theSwitch = (UISwitch *)sender;
-    bool useFakeCoordinate = theSwitch.on;
-    [self.fluxDisplayManager toggleLocationCoordinate:useFakeCoordinate];
-}
-
 - (void)didTakeStepWithPedometer:(NSNotification*)notification
 {
     if ([notification userInfo])

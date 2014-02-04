@@ -197,11 +197,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     }
 }
 
-- (void)toggleLocationCoordinate:(bool)useFakeCoordinate
-{
-    [self.locationManager toggleLocationCoordinate:useFakeCoordinate];
-}
-
 #pragma mark - Feature Matching
 
 - (void)checkForFeatureMatchingTasksWithNearbyItems:(NSArray *)nearbyItems withDisplayItems:(NSArray *)displayItems

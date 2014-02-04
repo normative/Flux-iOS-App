@@ -91,6 +91,5 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 - (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 - (bool)isKalmanSolutionValid;
-- (void)toggleLocationCoordinate:(bool)useFakeCoordinate;
 
 @end

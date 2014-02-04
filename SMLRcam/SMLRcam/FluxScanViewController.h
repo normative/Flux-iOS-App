@@ -107,7 +107,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //timeScrolling
 - (void)setupTimeFilterControl;
 - (void) didTapImageFunc:(FluxScanImageObject*) fsio;
-- (IBAction)toggleLocationCoordinate:(id)sender;
 
 //debugMenu
 - (IBAction)debugButton1Pressed:(id)sender;
