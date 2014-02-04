@@ -20,9 +20,15 @@ typedef enum SocialListMode : NSUInteger {
 @interface FluxSocialListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate>{
     SocialListMode listMode;
     IBOutlet UISegmentedControl *segmentedControl;
-    IBOutlet UITableView *socialTableView;
-    UIRefreshControl*refreshControl;
+    IBOutlet UITableView *friendsTableView;
+    IBOutlet UITableView *followingTableView;
+    IBOutlet UITableView *followersTableView;
+    
+
+    NSArray*socialListTableViewVCs;
+    NSMutableArray*socialListsRefreshControls;
     NSMutableArray*socialListArray;
+    NSMutableArray*socialTableViews;
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 - (IBAction)segmentedControllerDidChange:(id)sender;

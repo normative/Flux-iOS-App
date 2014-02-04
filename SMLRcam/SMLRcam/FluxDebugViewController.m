@@ -14,6 +14,8 @@ NSString* const FluxDebugDidChangeMatchDebugImageOutput = @"FluxDebugDidChangeMa
 NSString* const FluxDebugMatchDebugImageOutputKey = @"FluxDebugMatchDebugImageOutputKey";
 NSString* const FluxDebugDidChangeTeleportLocationIndex = @"FluxDebugDidChangeTeleportLocationIndex";
 NSString* const FluxDebugTeleportLocationIndexKey = @"FluxDebugTeleportLocationIndexKey";
+NSString* const FluxDebugDidChangePedometerCountDisplay = @"FluxDebugDidChangePedometerCountDisplay";
+NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDisplayKey";
 
 @interface FluxDebugViewController ()
 
@@ -40,6 +42,7 @@ NSString* const FluxDebugTeleportLocationIndexKey = @"FluxDebugTeleportLocationI
     [segmentedControl2 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:FluxDebugTeleportLocationIndexKey] intValue] - 1];
     
     [switch1 setOn:[[defaults objectForKey:FluxDebugMatchDebugImageOutputKey] boolValue]];
+    [switch2 setOn:[[defaults objectForKey:FluxDebugPedometerCountDisplayKey] boolValue]];
     
 	// Do any additional setup after loading the view.
 }
@@ -86,7 +89,14 @@ NSString* const FluxDebugTeleportLocationIndexKey = @"FluxDebugTeleportLocationI
                                                         object:self userInfo:nil];
 }
 
-- (IBAction)switch2DidChange:(id)sender {
+- (IBAction)switch2DidChange:(id)sender
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:@([(UISwitch*)sender isOn]) forKey:FluxDebugPedometerCountDisplayKey];
+    [defaults synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangePedometerCountDisplay
+                                                        object:self userInfo:nil];
 }
 
 - (IBAction)switch3DidChange:(id)sender {

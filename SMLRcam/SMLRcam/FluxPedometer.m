@@ -10,11 +10,13 @@
 
 #include <stdio.h>
 
-
 #import "FluxPedometer.h"
 #ifdef PED_APP
 #import "ViewController.h"
 #endif
+
+NSString* const FluxPedometerDidTakeStep = @"FluxPedometerDidTakeStep";
+NSString* const FluxPedometerDidTakeStepCountKey = @"FluxPedometerDidTakeStepCountKey";
 
 const int BLOCK_SIZE_AVG     = 10;       // setup the block size for the (averaging) low pass filter
 
@@ -48,9 +50,36 @@ ViewController *viewcontroller = nil;
         [self init_FFT];
         [self setupMotionManager];
 //        [self setupLogging];
+        
+        flocation = [FluxLocationServicesSingleton sharedManager];
     }
-    flocation = [FluxLocationServicesSingleton sharedManager];
+    
     return self;
+}
+
+- (void)setupMotionManager
+{
+    [self readMotionLog];
+}
+
+- (void)startPedometer
+{
+    readyToProcessMotion = NO;
+    
+    // give motion manager 2s to settle a little before tracking...
+    motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(StartUpdateDeviceMotion:) userInfo:nil repeats:NO];
+}
+
+- (void)stopPedometer
+{
+    readyToProcessMotion = NO;
+    
+    [motionUpdateTimer invalidate];
+}
+
+- (void)StartUpdateDeviceMotion:(NSTimer*)timer
+{
+    readyToProcessMotion = YES;
 }
 
 - (void) setupFilterStateVars
@@ -133,61 +162,7 @@ ViewController *viewcontroller = nil;
 }
 #endif
 
-#pragma mark - motion manager
-
-- (void)UpdateDeviceMotion:(NSTimer*)timer
-{
-    if ((((motionManager) && ([motionManager isDeviceMotionActive])) ||
-         (motionData.count > 0))  && !_isPaused)
-    {
-        [self processMotion:motionManager.deviceMotion];
-    }
-}
-
-// this code needs to be executed/set up from whatever creates the Pedometer
-- (void)setupMotionManager
-{
-    [self readMotionLog];
-    
-    if ((motionData == nil) || (motionData.count == 0))
-    {
-        motionManager = [[CMMotionManager alloc] init];
-        motionManager.deviceMotionUpdateInterval = MOTION_POLL_INTERVAL;
-        if (!motionManager.isDeviceMotionAvailable) {
-        }
-    }
-    
-    [self startDeviceMotion];
-}
-
-- (void)startDeviceMotion
-{
-    // New in iOS 5.0: Attitude that is referenced to true north
-    if (((motionData == nil) || (motionData.count == 0)) && motionManager)
-    {
-        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
-    }
-    
-    // give motion manager 2s to settle a little before tracking...
-    motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(StartUpdateDeviceMotion:) userInfo:nil repeats:NO];
-    
-}
-
-- (void)stopDeviceMotion{
-    if (motionManager)
-    {
-        [motionManager stopDeviceMotionUpdates];
-    }
-
-    [motionUpdateTimer invalidate];
-}
-
-- (void)StartUpdateDeviceMotion:(NSTimer*)timer
-{
-    motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:MOTION_POLL_INTERVAL target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
-}
-
-- (CMAcceleration *)fetchNextAccelsInto:(CMAcceleration *)outaccels
+- (CMAcceleration *)fetchNextAccelsInto:(CMAcceleration *)outaccels withDeviceMotion:(CMDeviceMotion *)devMotion
 {
     if ((motionData != nil) && (motionData.count > 0))
     {
@@ -223,21 +198,18 @@ ViewController *viewcontroller = nil;
     }
     else
     {
-        // get them from motionManager
-        outaccels->x = motionManager.deviceMotion.userAcceleration.x;
-        outaccels->y = motionManager.deviceMotion.userAcceleration.y;
-        outaccels->z = motionManager.deviceMotion.userAcceleration.z;
+        outaccels->x = devMotion.userAcceleration.x;
+        outaccels->y = devMotion.userAcceleration.y;
+        outaccels->z = devMotion.userAcceleration.z;
     }
+    
     return outaccels;
 }
 
-- (CMAcceleration *)reorientAccels:(CMAcceleration *)outaccels
+- (CMAcceleration *)reorientAccels:(CMAcceleration *)outaccels withDeviceMotion:(CMDeviceMotion *)devM
 {
     // do whatever needs to be done to transform existing device motion / accels
     // to compensate for device orientation
-    
-    CMDeviceMotion *devM = motionManager.deviceMotion;
-    
     if ((outaccels != nil) && (devM != nil))
     {
         // Assumptions for frame transformation
@@ -661,6 +633,11 @@ ViewController *viewcontroller = nil;
 
 - (void)processMotion:(CMDeviceMotion *)devMotion
 {
+    if ((!readyToProcessMotion) || ((motionData.count > 0) && _isPaused) || ((motionData.count == 0) && !devMotion))
+    {
+        return;
+    }
+    
     int stepTaken = 0;
 
 //    if (!isPaused)
@@ -668,8 +645,8 @@ ViewController *viewcontroller = nil;
         // do the filtering prior to drawing...
         CMAcceleration newAccels;
         
-        [self fetchNextAccelsInto:&newAccels];
-        [self reorientAccels:&newAccels];
+        [self fetchNextAccelsInto:&newAccels withDeviceMotion:devMotion];
+        [self reorientAccels:&newAccels withDeviceMotion:devMotion];
         
         // raw sample
         samples[0][samplecount] = newAccels.x;    // lateral (l/r)
@@ -762,6 +739,9 @@ ViewController *viewcontroller = nil;
     {
         [flocation registerPedDisplacementKFilter:direction];
     }
+    
+    NSDictionary *userInfoDict = @{FluxPedometerDidTakeStepCountKey : @(stepCount)};
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxPedometerDidTakeStep object:self userInfo:userInfoDict];
     
     return true;
 

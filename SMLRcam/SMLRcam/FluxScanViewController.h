@@ -24,7 +24,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CoreMotion/CoreMotion.h>
 
 #import "GAITrackedViewController.h"
 
@@ -58,9 +57,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
     __weak IBOutlet UIProgressView *progressView;
     
-    //Network + Motion
-    CMMotionManager *motionManager;
-
     //time scrolling
     NSDateFormatter *dateFormatter;
     CGPoint _point;
@@ -81,7 +77,9 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     IBOutlet UIButton *debugButton3;
     IBOutlet UIButton *debugButton4;
     
+    IBOutlet UILabel *pedometerLabel;
 }
+
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
 @property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (strong, nonatomic) IBOutlet UIButton *cameraButton;
@@ -109,7 +107,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //timeScrolling
 - (void)setupTimeFilterControl;
 - (void) didTapImageFunc:(FluxScanImageObject*) fsio;
-- (IBAction)toggleLocationCoordinate:(id)sender;
 
 //debugMenu
 - (IBAction)debugButton1Pressed:(id)sender;

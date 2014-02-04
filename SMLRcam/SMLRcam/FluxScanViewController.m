@@ -8,15 +8,15 @@
 
 #import "FluxScanViewController.h"
 
-#import "FluxLeftDrawerViewController.h"
 #import "FluxAnnotationTableViewCell.h"
-#import "FluxTimeFilterControl.h"
+#import "FluxDebugViewController.h"
 #import "FluxImageRenderElement.h"
 #import "FluxImageTools.h"
-#import "UICKeyChainStore.h"
+#import "FluxLeftDrawerViewController.h"
+#import "FluxPedometer.h"
+#import "FluxTimeFilterControl.h"
 #import "ProgressHUD.h"
-
-
+#import "UICKeyChainStore.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -36,32 +36,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
 }
 
-#pragma mark - Motion Methods
-
-//starts the motion manager and sets an update interval
-- (void)setupMotionManager{
-    motionManager = [[CMMotionManager alloc] init];
-	
-	// Tell CoreMotion to show the compass calibration HUD when required to provide true north-referenced attitude
-	motionManager.showsDeviceMovementDisplay = YES;
-    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
-}
-
-- (void)startDeviceMotion
-{
-    if (motionManager) {
-        // New in iOS 5.0: Attitude that is referenced to true north
-        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
-    }
-}
-
-- (void)stopDeviceMotion
-{
-    if (motionManager) {
-        [motionManager stopDeviceMotionUpdates];
-    }
-}
-
 #pragma mark - Location Services
 
 - (void)kalmanStateChange
@@ -76,11 +50,21 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     NSLog(@"Kalman state changed. Photo acquisition %@.", currentKalmanStateValid ? @"enabled" : @"disabled");
 }
 
-- (IBAction)toggleLocationCoordinate:(id)sender
+- (void)didTakeStepWithPedometer:(NSNotification*)notification
 {
-    UISwitch *theSwitch = (UISwitch *)sender;
-    bool useFakeCoordinate = theSwitch.on;
-    [self.fluxDisplayManager toggleLocationCoordinate:useFakeCoordinate];
+    if ([notification userInfo])
+    {
+        NSNumber *stepCount = [[notification userInfo] objectForKey:FluxPedometerDidTakeStepCountKey];
+        [pedometerLabel setText:[stepCount stringValue]];
+    }
+}
+
+- (void)setupDebugPedometerCountDisplay
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    bool enablePedometerDisplay = [[defaults objectForKey:FluxDebugPedometerCountDisplayKey] boolValue];
+    
+    [pedometerLabel setHidden:(!enablePedometerDisplay)];
 }
 
 #pragma mark - Drawer Methods
@@ -489,7 +473,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          //stops drawing them
                          [ScanUIContainerView setHidden:YES];
                          [self.bottomToolbarView setHidden:YES];
-                         [self startDeviceMotion];
                          imageCaptureIsActive = YES;
                      }];
     
@@ -504,8 +487,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [imageCaptureButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
 }
 
-- (void)deactivateImageCapture{
-    [self stopDeviceMotion];
+- (void)deactivateImageCapture
+{
     [ScanUIContainerView setHidden:NO];
     [self.bottomToolbarView setHidden:NO];
     
@@ -758,7 +741,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
     [self setupCameraView];
-    [self setupMotionManager];
     [self setupOpenGLView];
     [self setupTimeFilterControl];
     [self setupAnnotationsTableView];
@@ -786,6 +768,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(imageCaptureDidPop:) name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStepWithPedometer:) name:FluxPedometerDidTakeStep object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupDebugPedometerCountDisplay) name:FluxDebugDidChangePedometerCountDisplay object:nil];
+    
+    [self setupDebugPedometerCountDisplay];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -841,9 +827,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangePedometerCountDisplay object:nil];
 }
-
-
 
 #pragma mark - View Transition Animations
 /*

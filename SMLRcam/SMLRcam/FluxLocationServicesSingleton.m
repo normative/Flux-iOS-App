@@ -631,31 +631,24 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 
  
-- (void)registerPedDisplacementKFilter:(int)direction {
- 
-     NSLog(@"disp registered");
-    // return;
-    stepcount++;
-     double enuHeadingRad;
-     //int count = motionManager.pedometerCount;
-     double stepsize =0.73;
- 
-    if(direction == -1)
-        self.heading +=180.0;
+- (void)registerPedDisplacementKFilter:(int)direction
+{
+    NSLog(@"disp registered");
     
-    // heading =self.fluxDisplayManager.locationManager.heading ;
- 
-     enuHeadingRad = (90.0 +(360- self.heading))/180.0 *PI;
-     
-     kfXDisp = stepsize * cos(enuHeadingRad);
-     kfYDisp = stepsize * sin(enuHeadingRad);
-
- 
- //[motionManager resetPedometer];
- 
- 
- 
- }
+    stepcount++;
+    double enuHeadingRad;
+    double stepsize =0.73;
+    
+    if (direction == -1)
+    {
+        self.heading +=180.0;
+    }
+    
+    enuHeadingRad = (90.0 + (360 - self.heading))/180.0 * PI;
+    
+    kfXDisp = stepsize * cos(enuHeadingRad);
+    kfYDisp = stepsize * sin(enuHeadingRad);
+}
 
 - (void) computeFilteredECEF
 {

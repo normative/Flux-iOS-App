@@ -805,7 +805,6 @@
 		AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */ = {
 			isa = PBXGroup;
 			children = (
-				AA2F9DBB189AAD300030F749 /* Debug VC */,
 				AAF1BCFA183C173900909AFF /* 2.png */,
 				AA349A2217C3BF4000C72E24 /* FluxOpenGLViewController.h */,
 				AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */,
@@ -946,6 +945,7 @@
 			isa = PBXGroup;
 			children = (
 				AA082E9517EA2B8E000B53B0 /* AVCamera */,
+				AA2F9DBB189AAD300030F749 /* Debug VC */,
 				F26EF317183D109F00536C54 /* Feature Matching */,
 				AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */,
 				AA4CE16A17B921A3008D04BE /* TopView */,

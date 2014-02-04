@@ -13,6 +13,9 @@
 #import "FluxLocationServicesSingleton.h"
 #define MAXSAMPLES  512
 
+extern NSString* const FluxPedometerDidTakeStep;
+extern NSString* const FluxPedometerDidTakeStepCountKey;
+
 typedef enum _walkdir {
     BACKWARDS = -1,
     UNKNOWN = 0,
@@ -24,11 +27,12 @@ typedef enum _fftwalkstate {
     FFT_WALKING = 1
 } fftWalkState;
 
-@interface FluxPedometer : NSObject<CLLocationManagerDelegate>{
-    CMMotionManager *motionManager;
+@interface FluxPedometer : NSObject<CLLocationManagerDelegate>
+{
     NSTimer* motionUpdateTimer;
     FluxLocationServicesSingleton *flocation;
     int loopcount;
+    bool readyToProcessMotion;
     
     int stepCount;
     BOOL isWalking;
@@ -115,6 +119,8 @@ typedef enum _fftwalkstate {
 @property (nonatomic, setter = setIsPaused:) bool isPaused;
 
 //- (void)pauseButtonTaped;
+- (void) startPedometer;
+- (void) stopPedometer;
 - (void) processMotion:(CMDeviceMotion *)devMotion;
 - (void) resetCount;
 //- (void) setViewController:(UIViewController *)vc;

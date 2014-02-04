@@ -11,7 +11,8 @@
 @implementation FluxMotionManagerSingleton
 
 
-+ (id)sharedManager {
++ (id)sharedManager
+{
     static FluxMotionManagerSingleton *sharedFluxMotionManagerSingleton = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -20,8 +21,10 @@
     return sharedFluxMotionManagerSingleton;
 }
 
-- (id)init {
-    if (self = [super init]) {
+- (id)init
+{
+    if (self = [super init])
+    {
         
         motionManager = [[CMMotionManager alloc] init];
         
@@ -37,43 +40,43 @@
         motionManager.showsDeviceMovementDisplay = YES;
         motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
     }
+    
     return self;
 }
 
-- (void)startDeviceMotion{
-    if (motionManager) {
+- (void)startDeviceMotion
+{
+    if (motionManager)
+    {
         // New in iOS 5.0: Attitude that is referenced to true north
         [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
         
-        motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
+        motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
         [[NSRunLoop currentRunLoop] addTimer:motionUpdateTimer forMode:NSRunLoopCommonModes];
+        
+        [pedometer startPedometer];
     }
 }
 
-- (void)stopDeviceMotion{
-    if (motionManager) {
+- (void)stopDeviceMotion
+{
+    if (motionManager)
+    {
         [motionManager stopDeviceMotionUpdates];
         [motionUpdateTimer invalidate];
+        
+        [pedometer stopPedometer];
     }
 }
-- (void) resetPedometer
-{
-    [pedometer resetCount];
-}
+
 - (void)UpdateDeviceMotion:(NSTimer*)timer
 {
     if ((motionManager) && ([motionManager isDeviceMotionActive]))
     {
         self.attitude = motionManager.deviceMotion.attitude;
         
-//        if (pedometer != nil)
-//        {
-//            [pedometer processMotion:motionManager.deviceMotion];
-//            _pedometerCount =   pedometer.pstepCount;
-//            
-//        }
+        [pedometer processMotion:motionManager.deviceMotion];
     }
-    
 }
 
 @end
