@@ -394,33 +394,33 @@ DZNPhotoAspect photoAspectFromSize(CGSize aspectRatio)
         UIGraphicsEndImageContext();
     }
     
-    if (_cropMode == DZNPhotoEditViewControllerCropModeCircular) {
-        
-        CGFloat diameter = bounds.size.width-(kInnerEdgeInset*2);
-        CGRect circulatRect = CGRectMake(0, 0, diameter, diameter);
-        
-        CGFloat increment = 1.0/(((kInnerEdgeInset*2)*100.0)/bounds.size.width);
-        CGFloat scale = 1.0 + round(increment * 10) / 10.0;
-        
-        UIGraphicsBeginImageContextWithOptions(circulatRect.size, NO, 0.0);{
-            
-            UIBezierPath *maskPath = [UIBezierPath bezierPathWithOvalInRect:circulatRect];
-            [maskPath addClip];
-            
-            CGContextRef context = UIGraphicsGetCurrentContext();
-            CGContextTranslateCTM(context, -kInnerEdgeInset, -kInnerEdgeInset);
-            CGContextScaleCTM(context, scale, scale);
-
-            // Draw the image
-            [_image drawInRect:circulatRect];
-            
-            CGPathRef path = [maskPath CGPath];
-            CGContextAddPath(context, path);
-            
-            _image = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-        }
-    }
+//    if (_cropMode == DZNPhotoEditViewControllerCropModeCircular) {
+//        
+//        CGFloat diameter = bounds.size.width-(kInnerEdgeInset*2);
+//        CGRect circulatRect = CGRectMake(0, 0, diameter, diameter);
+//        
+//        CGFloat increment = 1.0/(((kInnerEdgeInset*2)*100.0)/bounds.size.width);
+//        CGFloat scale = 1.0 + round(increment * 10) / 10.0;
+//        
+//        UIGraphicsBeginImageContextWithOptions(circulatRect.size, NO, 0.0);{
+//            
+//            UIBezierPath *maskPath = [UIBezierPath bezierPathWithOvalInRect:circulatRect];
+//            [maskPath addClip];
+//            
+//            CGContextRef context = UIGraphicsGetCurrentContext();
+//            CGContextTranslateCTM(context, -kInnerEdgeInset, -kInnerEdgeInset);
+//            CGContextScaleCTM(context, scale, scale);
+//
+//            // Draw the image
+//            [_image drawInRect:circulatRect];
+//            
+//            CGPathRef path = [maskPath CGPath];
+//            CGContextAddPath(context, path);
+//            
+//            _image = UIGraphicsGetImageFromCurrentImageContext();
+//            UIGraphicsEndImageContext();
+//        }
+//    }
 
     return _image;
 }
