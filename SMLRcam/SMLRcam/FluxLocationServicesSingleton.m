@@ -7,7 +7,6 @@
 //
 
 #import "FluxLocationServicesSingleton.h"
-#import "FluxMotionManagerSingleton.h"
 #import "FluxDebugViewController.h"
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
@@ -76,6 +75,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 {
     [locationManager startUpdatingLocation];
     
+    fluxMotionManager = [FluxMotionManagerSingleton sharedManager];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadTeleportLocationIndex) name:FluxDebugDidChangeTeleportLocationIndex object:nil];
 
@@ -125,9 +126,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 - (void)updateUserPose
 {
     sensorPose localUserPose;
-    FluxMotionManagerSingleton *motionManager = [FluxMotionManagerSingleton sharedManager];
     
-    CMAttitude *att = motionManager.attitude;
+    CMAttitude *att = fluxMotionManager.attitude;
     
     GLKQuaternion quat = GLKQuaternionMake(att.quaternion.x, att.quaternion.y, att.quaternion.z, att.quaternion.w);
     localUserPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
@@ -339,6 +339,9 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
+    
+    NSLog(@"Updating heading to: %f", newHeading.trueHeading);
+    fluxMotionManager.locationHeading = newHeading;
 
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location

@@ -11,6 +11,8 @@
 
 #import "FluxPedometer.h"
 
+@class FluxPedometer;
+
 @interface FluxMotionManagerSingleton : NSObject
 {
     CMMotionManager * motionManager;
@@ -18,8 +20,9 @@
     FluxPedometer *pedometer;
 }
 
-@property (nonatomic) CMAttitude* attitude;
+@property (nonatomic) CMAttitude *attitude;
 @property int pedometerCount;
+@property (nonatomic) CLHeading *locationHeading;
 
 + (id)sharedManager;
 - (void)startDeviceMotion;
