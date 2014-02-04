@@ -4,6 +4,7 @@ Release Notes:
 - ensure that download of thumbnails has immediate effect in rendering of content and radar view
 - center content in bins in radar view to improve alignement of bars and content
 - temporarily removed share view for snapshots until FB graph objects are made, all snapshot sharing is now iOS based.
+- added filter for altitude. 
 
 ******************************************
 
