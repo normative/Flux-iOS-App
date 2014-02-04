@@ -1612,6 +1612,104 @@
                                     <outlet property="delegate" destination="S59-2g-byz" id="1l6-eh-v38"/>
                                 </connections>
                             </tableView>
+                            <tableView opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="wIw-dm-VqI">
+                                <rect key="frame" x="0.0" y="40" width="320" height="483"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
+                                <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="standardSocialCell" rowHeight="60" id="Uq3-Xg-AeQ" customClass="FluxFriendFollowerCell">
+                                        <rect key="frame" x="0.0" y="22" width="320" height="60"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Uq3-Xg-AeQ" id="cAu-Dc-uzw">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="59"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Wia-q7-kY1">
+                                                    <rect key="frame" x="20" y="10" width="40" height="40"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                </imageView>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="icA-rG-q6E">
+                                                    <rect key="frame" x="68" y="15" width="194" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="atA-ck-b8U">
+                                                    <rect key="frame" x="270" y="15" width="30" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" image="emptyProfileImage_small">
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="friendFollowButtonAction:" destination="Uq3-Xg-AeQ" eventType="touchUpInside" id="Vkk-aX-aom"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outlet property="friendFollowButton" destination="atA-ck-b8U" id="XYv-u9-ya4"/>
+                                            <outlet property="profileImageView" destination="Wia-q7-kY1" id="0Zz-Yy-cEP"/>
+                                            <outlet property="titleLabel" destination="icA-rG-q6E" id="1hC-eZ-65h"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="S59-2g-byz" id="Wza-xv-fVQ"/>
+                                    <outlet property="delegate" destination="S59-2g-byz" id="Mqq-dH-qXo"/>
+                                </connections>
+                            </tableView>
+                            <tableView opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="kta-WR-QVH">
+                                <rect key="frame" x="0.0" y="40" width="320" height="483"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
+                                <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
+                                <prototypes>
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="standardSocialCell" rowHeight="60" id="VEy-ej-nv3" customClass="FluxFriendFollowerCell">
+                                        <rect key="frame" x="0.0" y="22" width="320" height="60"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="VEy-ej-nv3" id="s4M-EY-JB7">
+                                            <rect key="frame" x="0.0" y="0.0" width="320" height="59"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GQL-t0-Kac">
+                                                    <rect key="frame" x="20" y="10" width="40" height="40"/>
+                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                </imageView>
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="4GG-8V-fux">
+                                                    <rect key="frame" x="68" y="15" width="194" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QyS-8T-3N8">
+                                                    <rect key="frame" x="270" y="15" width="30" height="30"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" image="emptyProfileImage_small">
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                    <connections>
+                                                        <action selector="friendFollowButtonAction:" destination="VEy-ej-nv3" eventType="touchUpInside" id="WrS-GW-WYl"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                        </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outlet property="friendFollowButton" destination="QyS-8T-3N8" id="Qnh-NW-46x"/>
+                                            <outlet property="profileImageView" destination="GQL-t0-Kac" id="Z3B-oL-AVS"/>
+                                            <outlet property="titleLabel" destination="4GG-8V-fux" id="JAc-3I-5Rg"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="S59-2g-byz" id="f9o-va-2JR"/>
+                                    <outlet property="delegate" destination="S59-2g-byz" id="Zzq-6F-Sge"/>
+                                </connections>
+                            </tableView>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="k3p-Yq-I9i">
                                 <rect key="frame" x="0.0" y="-2" width="320" height="40"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1654,8 +1752,10 @@
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="fGz-zB-PEK"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="followersTableView" destination="kta-WR-QVH" id="FCQ-o2-wi3"/>
+                        <outlet property="followingTableView" destination="wIw-dm-VqI" id="rxu-zB-wwq"/>
+                        <outlet property="friendsTableView" destination="ja2-eM-Mq4" id="UCh-VE-dLN"/>
                         <outlet property="segmentedControl" destination="euq-fF-jBm" id="toG-pf-NRt"/>
-                        <outlet property="socialTableView" destination="ja2-eM-Mq4" id="lEi-1E-Lb1"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="f4k-Op-Ufu" userLabel="First Responder" sceneMemberID="firstResponder"/>

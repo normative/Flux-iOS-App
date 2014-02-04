@@ -26,20 +26,23 @@
     }
     
     listMode = friendMode;
+    socialTableViews = [[NSMutableArray alloc]initWithObjects:friendsTableView, followingTableView, followersTableView, nil];
     
     socialListArray = [[NSMutableArray alloc]init];
+    socialListsRefreshControls = [[NSMutableArray alloc]init];
     for (int i = 0; i<3; i++) {
         NSMutableArray*mutArr = [[NSMutableArray alloc]init];
         [socialListArray addObject:mutArr];
+        
+        UITableViewController *tableViewController = [[UITableViewController alloc] init];
+        tableViewController.tableView = (UITableView*)[socialTableViews objectAtIndex:i];
+        
+        UIRefreshControl*refreshControl = [[UIRefreshControl alloc] init];
+        [refreshControl setTintColor:[UIColor whiteColor]];
+        [refreshControl addTarget:self action:@selector(handleReresh) forControlEvents:UIControlEventValueChanged];
+        tableViewController.refreshControl = refreshControl;
+        [socialListsRefreshControls addObject:refreshControl];
     }
-    
-    UITableViewController *tableViewController = [[UITableViewController alloc] init];
-    tableViewController.tableView = socialTableView;
-    
-    refreshControl = [[UIRefreshControl alloc] init];
-    [refreshControl setTintColor:[UIColor whiteColor]];
-    [refreshControl addTarget:self action:@selector(handleReresh) forControlEvents:UIControlEventValueChanged];
-    tableViewController.refreshControl = refreshControl;
     
     
     [self updateListForActiveMode];
@@ -119,8 +122,8 @@
 
 #pragma mark - Data Model Stuff
 - (void)updateListForActiveMode{
-    if (![refreshControl isRefreshing]) {
-        [refreshControl beginRefreshing];
+    if (![(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:listMode] isRefreshing]) {
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:listMode] beginRefreshing];
     }
     
     if (listMode == friendMode) {
@@ -140,15 +143,15 @@
     [request setUserFriendsReady:^(NSArray *friendsList, FluxDataRequest*completedRequest){
         //do something with array
         [socialListArray replaceObjectAtIndex:friendMode withObject:friendsList];
-        [refreshControl endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:friendMode] endRefreshing];
         if (listMode == friendMode) {
-            [socialTableView reloadData];
+            [[socialTableViews objectAtIndex:friendMode] reloadData];
         }
 
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        [refreshControl endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:friendMode] endRefreshing];
         NSString*str = [NSString stringWithFormat:@"Friends failed to load with error %d", (int)[e code]];
         [ProgressHUD showError:str];
     }];
@@ -161,10 +164,10 @@
     
     [request setUserFollowingsReady:^(NSArray *friendsList, FluxDataRequest*completedRequest){
         //do something with array
-        [refreshControl endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followingMode] endRefreshing];
         [socialListArray replaceObjectAtIndex:friendMode withObject:friendsList];
         if (listMode == friendMode) {
-            [socialTableView reloadData];
+            [[socialTableViews objectAtIndex:followingMode] reloadData];
         }
         
     }];
@@ -172,7 +175,7 @@
         
         NSString*str = [NSString stringWithFormat:@"Following failed to load with error %d", (int)[e code]];
         [ProgressHUD showError:str];
-        [refreshControl endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followingMode] endRefreshing];
     }];
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
     [self.fluxDataManager requestFollowingListForID:[userID intValue] withDataRequest:request];
@@ -183,10 +186,10 @@
     
     [request setUserFollowersReady:^(NSArray *friendsList, FluxDataRequest*completedRequest){
         //do something with array
-        [refreshControl endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followerMode] endRefreshing];
         [socialListArray replaceObjectAtIndex:friendMode withObject:friendsList];
         if (listMode == friendMode) {
-            [socialTableView reloadData];
+            [[socialTableViews objectAtIndex:followerMode] reloadData];
         }
         
     }];
@@ -195,7 +198,7 @@
         
         NSString*str = [NSString stringWithFormat:@"Followers failed to load with error %d", (int)[e code]];
         [ProgressHUD showError:str];
-        [refreshControl endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followerMode] endRefreshing];
     }];
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
     [self.fluxDataManager requestFollowerListForID:[userID intValue] withDataRequest:request];
