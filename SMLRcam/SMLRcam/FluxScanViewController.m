@@ -16,8 +16,6 @@
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
 
-
-
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -34,32 +32,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)didUpdateNearbyImageList:(NSNotification *)notification{
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.nearbyListCount] forState:UIControlStateNormal];
     [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
-}
-
-#pragma mark - Motion Methods
-
-//starts the motion manager and sets an update interval
-- (void)setupMotionManager{
-    motionManager = [[CMMotionManager alloc] init];
-	
-	// Tell CoreMotion to show the compass calibration HUD when required to provide true north-referenced attitude
-	motionManager.showsDeviceMovementDisplay = YES;
-    motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
-}
-
-- (void)startDeviceMotion
-{
-    if (motionManager) {
-        // New in iOS 5.0: Attitude that is referenced to true north
-        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical];
-    }
-}
-
-- (void)stopDeviceMotion
-{
-    if (motionManager) {
-        [motionManager stopDeviceMotionUpdates];
-    }
 }
 
 #pragma mark - Location Services
@@ -489,7 +461,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          //stops drawing them
                          [ScanUIContainerView setHidden:YES];
                          [self.bottomToolbarView setHidden:YES];
-                         [self startDeviceMotion];
                          imageCaptureIsActive = YES;
                      }];
     
@@ -504,8 +475,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [imageCaptureButton.layer addAnimation:bounceAnimation forKey:@"bounce_open"];
 }
 
-- (void)deactivateImageCapture{
-    [self stopDeviceMotion];
+- (void)deactivateImageCapture
+{
     [ScanUIContainerView setHidden:NO];
     [self.bottomToolbarView setHidden:NO];
     
@@ -758,7 +729,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
     [self setupCameraView];
-    [self setupMotionManager];
     [self setupOpenGLView];
     [self setupTimeFilterControl];
     [self setupAnnotationsTableView];

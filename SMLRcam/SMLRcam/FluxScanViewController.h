@@ -24,7 +24,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVFoundation.h>
-#import <CoreMotion/CoreMotion.h>
 
 #import "GAITrackedViewController.h"
 
@@ -58,9 +57,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
     __weak IBOutlet UIProgressView *progressView;
     
-    //Network + Motion
-    CMMotionManager *motionManager;
-
     //time scrolling
     NSDateFormatter *dateFormatter;
     CGPoint _point;
