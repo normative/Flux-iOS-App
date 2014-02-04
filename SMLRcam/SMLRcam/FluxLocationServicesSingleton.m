@@ -148,7 +148,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 - (CLLocationDirection)orientationHeading
 {
-    CLLocationDirection newHeading = 0.0;
+    CLLocationDirection newHeading = self.heading;
     [self updateUserPose];
     sensorPose localUserPose = _userPose;
     
@@ -169,18 +169,27 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     double magsq1 = x1 * x1 + y1 * y1;
     double magsq2 = x2 * x2 + y2 * y2;
     
-    double costheta = (scalar) / sqrt(magsq1 * magsq2);
-    double theta = acos(costheta) * 180.0 / M_PI;
-    
-    if (x2 < 0)
+    if (magsq2 != 0.0)
     {
-        theta = -theta;
+        // won't freak out and will return a valid result
+        double costheta = (scalar) / sqrt(magsq1 * magsq2);
+        double theta = acos(costheta) * 180.0 / M_PI;
+        
+        if (x2 < 0)
+        {
+            theta = -theta;
+        }
+        
+        while (theta < 0.0)
+            theta += 360.0;
+        
+        if (theta != NAN)
+            newHeading = theta;
     }
     
-    while (theta < 0.0)
-        theta += 360.0;
+    if (newHeading == NAN)
+        newHeading = 0.0;
     
-    newHeading = theta;
     return newHeading;
 }
 
@@ -622,31 +631,24 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 
  
-- (void)registerPedDisplacementKFilter:(int)direction {
- 
-     NSLog(@"disp registered");
-    // return;
-    stepcount++;
-     double enuHeadingRad;
-     //int count = motionManager.pedometerCount;
-     double stepsize =0.73;
- 
-    if(direction == -1)
-        self.heading +=180.0;
+- (void)registerPedDisplacementKFilter:(int)direction
+{
+    NSLog(@"disp registered");
     
-    // heading =self.fluxDisplayManager.locationManager.heading ;
- 
-     enuHeadingRad = (90.0 +(360- self.heading))/180.0 *PI;
-     
-     kfXDisp = stepsize * cos(enuHeadingRad);
-     kfYDisp = stepsize * sin(enuHeadingRad);
-
- 
- //[motionManager resetPedometer];
- 
- 
- 
- }
+    stepcount++;
+    double enuHeadingRad;
+    double stepsize =0.73;
+    
+    if (direction == -1)
+    {
+        self.heading +=180.0;
+    }
+    
+    enuHeadingRad = (90.0 + (360 - self.heading))/180.0 * PI;
+    
+    kfXDisp = stepsize * cos(enuHeadingRad);
+    kfYDisp = stepsize * sin(enuHeadingRad);
+}
 
 - (void) computeFilteredECEF
 {

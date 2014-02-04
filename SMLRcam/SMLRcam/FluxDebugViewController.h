@@ -12,6 +12,8 @@ extern NSString* const FluxDebugDidChangeMatchDebugImageOutput;
 extern NSString* const FluxDebugMatchDebugImageOutputKey;
 extern NSString* const FluxDebugDidChangeTeleportLocationIndex;
 extern NSString* const FluxDebugTeleportLocationIndexKey;
+extern NSString* const FluxDebugDidChangePedometerCountDisplay;
+extern NSString* const FluxDebugPedometerCountDisplayKey;
 
 @interface FluxDebugViewController : UIViewController
 {
