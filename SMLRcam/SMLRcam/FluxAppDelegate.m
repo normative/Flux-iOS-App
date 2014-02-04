@@ -33,6 +33,7 @@
     NSString * borderType = [defaults objectForKey:@"Border"];
     NSString * teleportIndex = [defaults objectForKey:FluxDebugTeleportLocationIndexKey];
     NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
+    NSNumber * pedometerCountDisplay = [defaults objectForKey:FluxDebugPedometerCountDisplayKey];
     
     // do not save locally by default
     if (savePic == nil) {
@@ -57,6 +58,11 @@
 
     if (featureMatchDebugImageOutput == nil) {
         [defaults setObject:@(NO) forKey:FluxDebugMatchDebugImageOutputKey];
+        [defaults synchronize];
+    }
+
+    if (pedometerCountDisplay == nil) {
+        [defaults setObject:@(NO) forKey:FluxDebugPedometerCountDisplayKey];
         [defaults synchronize];
     }
 

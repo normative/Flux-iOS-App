@@ -9,6 +9,7 @@
 #import "FluxScanViewController.h"
 
 #import "FluxAnnotationTableViewCell.h"
+#import "FluxDebugViewController.h"
 #import "FluxImageRenderElement.h"
 #import "FluxImageTools.h"
 #import "FluxLeftDrawerViewController.h"
@@ -56,6 +57,14 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         NSNumber *stepCount = [[notification userInfo] objectForKey:FluxPedometerDidTakeStepCountKey];
         [pedometerLabel setText:[stepCount stringValue]];
     }
+}
+
+- (void)setupDebugPedometerCountDisplay
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    bool enablePedometerDisplay = [[defaults objectForKey:FluxDebugPedometerCountDisplayKey] boolValue];
+    
+    [pedometerLabel setHidden:(!enablePedometerDisplay)];
 }
 
 #pragma mark - Drawer Methods
@@ -760,8 +769,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userIsTimeSliding) name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStepWithPedometer:) name:FluxPedometerDidTakeStep object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupDebugPedometerCountDisplay) name:FluxDebugDidChangePedometerCountDisplay object:nil];
     
-    [pedometerLabel setHidden:NO];
+    [self setupDebugPedometerCountDisplay];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -818,6 +828,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxOpenGLShouldRender object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangePedometerCountDisplay object:nil];
 }
 
 #pragma mark - View Transition Animations
