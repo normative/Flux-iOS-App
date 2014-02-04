@@ -35,7 +35,6 @@
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(backAction)];
     [createAccountButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:createAccountButton.titleLabel.font.pointSize]];
     
-    
     [self setupContainerView];
 	// Do any additional setup after loading the view.
 }
@@ -98,7 +97,6 @@
     [theTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [theTextField setKeyboardType:UIKeyboardTypeDefault];
     [theTextField setSecureTextEntry:NO];
-    [theTextField setReturnKeyType:UIReturnKeyDefault];
     
     
     [theTextField setDelegate:self];
@@ -116,7 +114,7 @@
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
     //only letters and numbers
     NSCharacterSet *blockedCharacters = [[NSCharacterSet alphanumericCharacterSet] invertedSet];
-    if (!([string rangeOfCharacterFromSet:blockedCharacters].location == NSNotFound) && (textField.tag == 10 || textField.tag == 88) && ![string isEqualToString:@"."]) {
+    if (!([string rangeOfCharacterFromSet:blockedCharacters].location == NSNotFound) || [string isEqualToString:@"."] || [string isEqualToString:@"\n"]) {
         return NO;
     }
     
@@ -139,17 +137,6 @@
     
     return YES;
 }
-
-//- (BOOL)textFieldShouldReturn:(UITextField *)textField{
-//    if ([createAccountButton isEnabled]) {
-//        [self createAccountButtonAction:nil];
-//    }
-//    else{
-//        [self checkUsernameUniqueness];
-//    }
-//
-//    return YES;
-//}
 
 - (void)checkUsernameUniqueness{
 //    FluxTextFieldCell*cell = (FluxTextFieldCell*)[usernameTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];

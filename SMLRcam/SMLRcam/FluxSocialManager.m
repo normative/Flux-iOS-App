@@ -280,6 +280,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                      NSMutableDictionary*dict = [NSMutableDictionary dictionaryWithDictionary:user];
                                      [dict setObject:FBSession.activeSession.accessTokenData.accessToken forKey:@"token"];
                                      [dict setObject:user.name forKey:@"socialName"];
+                                     [dict setObject:user.username forKey:@"uniqueSocialName"];
                                      if ([delegate respondsToSelector:@selector(SocialManager:didRegisterFacebookAccountWithUserInfo:)]) {
                                          [delegate SocialManager:self didRegisterFacebookAccountWithUserInfo:dict];
                                      }
