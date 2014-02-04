@@ -5,6 +5,15 @@ Release Notes:
 
 ******************************************
 
+V0.19 B06
+
+Released: 2014-02-04 12:00:00
+
+Release Notes:
+- this build is identical to V0.19 B05 and was released to the beta community
+
+******************************************
+
 V0.19 B05
 
 Released: 2014-02-03 20:45:00
