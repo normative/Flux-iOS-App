@@ -257,8 +257,8 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         }
         
         // if the session isn't open, let's open it now and present the login UX to the user
-        NSArray *permissions = [NSArray arrayWithObjects:@"email", nil];
-        [FBSession openActiveSessionWithReadPermissions:permissions allowLoginUI:YES completionHandler:
+        NSArray *permissions = [NSArray arrayWithObjects:@"email",@"publish_actions ", nil];
+        [FBSession openActiveSessionWithPublishPermissions:permissions defaultAudience:FBSessionDefaultAudienceEveryone allowLoginUI:YES completionHandler:
          ^(FBSession *session,
            FBSessionState state, NSError *error) {
              if (!error) {
