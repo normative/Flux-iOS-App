@@ -8,6 +8,7 @@
 
 #import "FluxLocationServicesSingleton.h"
 #import "FluxDebugViewController.h"
+#import "FluxMotionManagerSingleton.h"
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
@@ -40,26 +41,26 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     if (self = [super init]) {
         
         // Create the manager object
-        locationManager = [[CLLocationManager alloc] init];
-        if (locationManager == nil)
+        self.locationManager = [[CLLocationManager alloc] init];
+        if (self.locationManager == nil)
         {
             return nil;
         }
-        locationManager.delegate = self;
+        self.locationManager.delegate = self;
         
         // This is the most important property to set for the manager. It ultimately determines how the manager will
         // attempt to acquire location and thus, the amount of power that will be consumed.
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
         
         // When "tracking" the user, the distance filter can be used to control the frequency with which location measurements
         // are delivered by the manager. If the change in distance is less than the filter, a location will not be delivered.
-        locationManager.distanceFilter = kCLDistanceFilterNone;
+        self.locationManager.distanceFilter = kCLDistanceFilterNone;
         
         // This will drain battery faster, but for now, we want to make sure that we continue to get frequent updates
-        locationManager.pausesLocationUpdatesAutomatically = NO;
+        self.locationManager.pausesLocationUpdatesAutomatically = NO;
         
         if ([CLLocationManager headingAvailable]) {
-            locationManager.headingFilter = 1.0;
+            self.locationManager.headingFilter = 1.0;
         }
         
         [self loadTeleportLocationIndex];
@@ -73,9 +74,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 - (void)startLocating
 {
-    [locationManager startUpdatingLocation];
-    
-    fluxMotionManager = [FluxMotionManagerSingleton sharedManager];
+    [self.locationManager startUpdatingLocation];
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadTeleportLocationIndex) name:FluxDebugDidChangeTeleportLocationIndex object:nil];
@@ -83,7 +82,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [self orientationChanged:nil];
     
     if ([CLLocationManager headingAvailable]) {
-        [locationManager startUpdatingHeading];
+        [self.locationManager startUpdatingHeading];
     }
     else {
         NSLog(@"No Heading Information Available");
@@ -94,13 +93,13 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 }
 - (void)endLocating
 {
-    [locationManager stopUpdatingLocation];
+    [self.locationManager stopUpdatingLocation];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeTeleportLocationIndex object:nil];
     
     if ([CLLocationManager headingAvailable]) {
-        [locationManager stopUpdatingHeading];
+        [self.locationManager stopUpdatingHeading];
     }
     
     if (updateTimer != nil)
@@ -120,13 +119,15 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         return;
     }
     
-    locationManager.headingOrientation = orientation;
+    self.locationManager.headingOrientation = orientation;
 }
 
 - (void)updateUserPose
 {
     sensorPose localUserPose;
     
+    FluxMotionManagerSingleton *fluxMotionManager = [FluxMotionManagerSingleton sharedManager];
+
     CMQuaternion att = fluxMotionManager.attitude;
     
     GLKQuaternion quat = GLKQuaternionMake(att.x, att.y, att.z, att.w);
@@ -340,9 +341,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     // Use the true heading if it is valid.
     self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
     
-    NSLog(@"Updating heading to: %f", newHeading.trueHeading);
-    fluxMotionManager.locationHeading = newHeading;
-
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
     if (self.location != nil)
@@ -733,8 +731,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     // Check for state changes in validCurrentLocationData. Toggles to true are caught in updateKFilter and resetKFilter.
     if((location.horizontalAccuracy >=0.0) && (location.horizontalAccuracy <= kalmanFilterMinHorizontalAccuracy) &&
        (location.verticalAccuracy >= 0.0) && (location.verticalAccuracy <= kalmanFilterMinVerticalAccuracy) &&
-       (locationManager.heading.headingAccuracy >= 0.0) && (locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
-       (locationManager.heading.trueHeading >= 0))
+       (self.locationManager.heading.headingAccuracy >= 0.0) && (self.locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
+       (self.locationManager.heading.trueHeading >= 0))
     {
         // if kfStarted is false, we haven't started yet, so state changes are handled elsewhere.
         // Otherwise, handle them here.

@@ -10,12 +10,15 @@
 #import <CoreMotion/CoreMotion.h>
 #import <GLKit/GLKit.h>
 
+#import "FluxLocationServicesSingleton.h"
 #import "FluxPedometer.h"
 
 @class FluxPedometer;
+@class FluxLocationServicesSingleton;
 
 @interface FluxMotionManagerSingleton : NSObject
 {
+    FluxLocationServicesSingleton *locationManager;
     CMMotionManager * motionManager;
     NSTimer *motionUpdateTimer;
     FluxPedometer *pedometer;
@@ -23,7 +26,6 @@
 
 @property (nonatomic) CMQuaternion attitude;
 @property int pedometerCount;
-@property (nonatomic) CLHeading *locationHeading;
 
 + (id)sharedManager;
 - (void)startDeviceMotion;

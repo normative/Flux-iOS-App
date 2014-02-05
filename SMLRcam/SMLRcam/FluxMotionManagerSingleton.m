@@ -25,7 +25,7 @@
 {
     if (self = [super init])
     {
-        
+        locationManager = [FluxLocationServicesSingleton sharedManager];
         motionManager = [[CMMotionManager alloc] init];
         
         if (motionManager == nil)
@@ -74,7 +74,7 @@
     if ((motionManager) && ([motionManager isDeviceMotionActive]))
     {
         CMQuaternion updatedAttitude = self.attitude;
-        [self calcAttitudeFromDeviceMotion:motionManager.deviceMotion andHeading:self.locationHeading intoQuaternion:&updatedAttitude];
+        [self calcAttitudeFromDeviceMotion:motionManager.deviceMotion andHeading:locationManager.locationManager.heading intoQuaternion:&updatedAttitude];
         self.attitude = updatedAttitude;
         
         [pedometer processMotion:motionManager.deviceMotion];

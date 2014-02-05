@@ -11,7 +11,6 @@
 
 #import <GLKit/GLKit.h>
 #import "FluxKalmanFilter.h"
-#import "FluxMotionManagerSingleton.h"
 #import "FluxOpenGLCommon.h"
 
 @class FluxMotionManagerSingleton;
@@ -23,10 +22,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
 extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
-    CLLocationManager *locationManager;
-    
-    FluxMotionManagerSingleton *fluxMotionManager;
-    
     //kalman filtering
     FluxKalmanFilter *kfilter;
     NSTimer *kfilterTimer;
@@ -73,6 +68,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     NSTimer*updateTimer;
 }
 
+@property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic) CLLocation* location;
 @property (nonatomic) CLLocation* rawlocation;
 @property (nonatomic) CLLocationDirection heading;
