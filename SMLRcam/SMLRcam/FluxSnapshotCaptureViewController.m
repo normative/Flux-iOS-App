@@ -255,123 +255,57 @@
     activityVC.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll]; //or whichever you don't need
     [self presentViewController:activityVC animated:YES completion:nil];
     
-    return;
-    
-    // Create an object
-    if (!FBSession.activeSession.isOpen) {
-        [FBSession openActiveSessionWithAllowLoginUI: NO];
-    }
-    
-//    NSMutableDictionary<FBOpenGraphObject> *restaurant = [FBGraphObject openGraphObjectForPost];
+//    // Create an object
+//    if (!FBSession.activeSession.isOpen) {
+//        [FBSession openActiveSessionWithAllowLoginUI: NO];
+//    }
+//    
+//    
+//    // Create an object
+//    NSMutableDictionary<FBOpenGraphObject> *picture = [FBGraphObject openGraphObjectForPost];
 //    
 //    // specify that this Open Graph object will be posted to Facebook
-//    restaurant.provisionedForPost = YES;
+//    picture.provisionedForPost = YES;
 //    
-//    // Add the standard object properties
-//    restaurant[@"og"] = @{ @"title":@"Restaurant Name", @"type":@"fluxapp:picture.picture", @"description":@"a description"};
+//    // Add the standard object properties, including the image you just staged
+//    picture[@"og"] = @{ @"title":@"Flux", @"type":@"picture.picture", @"description":@"my description"};
 //    
-//    // Add the properties restaurant inherits from place
-//    //restaurant[@"place"] = @{ @"location" : @{ @"longitude": @"-58.381667", @"latitude":@"-34.603333"} };
 //    
-//    // Add the properties particular to the type restaurant.restaurant
-////    restaurant[@"restaurant"] = @{@"category": @[@"Mexican"],
-////                                  @"contact_info": @{@"street_address": @"123 Some st",
-////                                                     @"locality": @"Menlo Park",
-////                                                     @"region": @"CA",
-////                                                     @"phone_number": @"555-555-555",
-////                                                     @"website": @"http://www.example.com"}};
 //    
-//    // Make the Graph API request to post the object
-//    FBRequest *request = [FBRequest requestForPostWithGraphPath:@"me/objects/fluxapp:picture.picture"
-//                                                    graphObject:@{@"object":restaurant}];
-//    [request startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-//        if (!error) {
-//            // Sucess! Include your code to handle the results here
-//            NSLog(@"result: %@", result);
-//            NSString* _objectID = [result objectForKey:@"id"];
-//            NSString*alertTitle = @"Object successfully created";
-//            NSString*alertText = [NSString stringWithFormat:@"An object with id %@ has been created", _objectID];
-//            [[[UIAlertView alloc] initWithTitle:alertTitle
-//                                        message:alertText
-//                                       delegate:self
-//                              cancelButtonTitle:@"OK!"
-//                              otherButtonTitles:nil] show];
-//        } else {
-//            // An error occurred, we need to handle the error
-//            
-//            // See: https://developers.facebook.com/docs/ios/errors
-//            NSLog(@"Error: %@, %@",error.description, error.debugDescription);
-//        }
-//    }];
-    
-    
-//    NSMutableDictionary<FBGraphObject> *object =
-//    [FBGraphObject openGraphObjectForPostWithType:@"fluxapp:picture"
-//                                            title:@"Sample Picture"
-//                                            image:@"https://fbstatic-a.akamaihd.net/images/devsite/attachment_blank.png"
-//                                              url:@"http://samples.ogp.me/597664603651091"
-//                                      description:@""];;
 //    
-//    [FBRequestConnection startForPostWithGraphPath:@"me/objects/fluxapp:picture"
-//                                       graphObject:object
-//                                 completionHandler:^(FBRequestConnection *connection,
-//                                                     id result,
-//                                                     NSError *error) {
-//                                     if (!error) {
-//                                        // Sucess! Include your code to handle the results here
-//                                        NSLog(@"result: %@", result);
-//                                        NSString* _objectID = [result objectForKey:@"id"];
-//                                        NSString*alertTitle = @"Object successfully created";
-//                                        NSString*alertText = [NSString stringWithFormat:@"An object with id %@ has been created", _objectID];
-//                                        [[[UIAlertView alloc] initWithTitle:alertTitle
-//                                                                    message:alertText
-//                                                                   delegate:self
-//                                                          cancelButtonTitle:@"OK!"
-//                                                          otherButtonTitles:nil] show];
-//                                    } else {
-//                                        // An error occurred, we need to handle the error
-//                                        
-//                                        // See: https://developers.facebook.com/docs/ios/errors
-//                                        NSLog(@"Error: %@, %@",error.description, error.debugDescription);
-//                                    }
-//                                 }];
 //    [FBRequestConnection startForUploadStagingResourceWithImage:newSnapshot completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 //        if(!error) {
 //            NSLog(@"Successfuly staged image with staged URI: %@", [result objectForKey:@"uri"]);
-//            
-//            // Package image inside a dictionary, inside an array like we'll need it for the object
+//            //Package image inside a dictionary, inside an array like we'll need it for the object
 //            NSArray *image = @[@{@"url": [result objectForKey:@"uri"], @"user_generated" : @"true" }];
 //            
-//            // Create an object
-//            NSMutableDictionary<FBOpenGraphObject> *picture = [FBGraphObject openGraphObjectForPost];
-//            
+//            NSMutableDictionary<FBOpenGraphObject> *pictureObject = [FBGraphObject openGraphObjectForPost];
+//
 //            // specify that this Open Graph object will be posted to Facebook
-//            picture.provisionedForPost = YES;
+//            pictureObject.provisionedForPost = YES;
+//
+//            // Add the standard object properties
+//            pictureObject[@"og"] = @{ @"title":@"", @"type":@"fluxapp:picture", @"description":@"OMG I took a snapshot guys", @"image":image };
 //            
-//            // Add the standard object properties, including the image you just staged
-//            picture[@"og"] = @{ @"title":@"Flux", @"type":@"picture.picture", @"description":@"", @"image":image };
 //            
-////            NSMutableDictionary<FBGraphObject> *object =
-////            [FBGraphObject openGraphObjectForPostWithType:@"fluxapp:picture"
-////                                                    title:@"My pic"
-////                                                    image:image
-////                                                      url:@"http://samples.ogp.me/597664603651091"
-////                                              description:@""];
 //            
-//            picture[@"create_object"] = @"1";
-//            picture[@"fbsdk:create_object"] = @"1";
+//            NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
+//            action[@"picture"] = pictureObject;
+//            [action setObject:@"true" forKey:@"fb:explicitly_shared"];
 //            
-//            [FBRequestConnection startForPostWithGraphPath:@"me/objects/"
-//                                               graphObject:picture
+//            [FBRequestConnection startForPostWithGraphPath:@"me/fluxapp:take"
+//                                               graphObject:action
 //                                         completionHandler:^(FBRequestConnection *connection,
 //                                                             id result,
 //                                                             NSError *error) {
+//                                             // handle the result
+//                                             __block NSString *alertText;
+//                                             __block NSString *alertTitle;
 //                                             if (!error) {
-//                                                 // Sucess! Include your code to handle the results here
-//                                                 NSLog(@"result: %@", result);
-//                                                 NSString* _objectID = [result objectForKey:@"id"];
-//                                                 NSString*alertTitle = @"Object successfully created";
-//                                                 NSString*alertText = [NSString stringWithFormat:@"An object with id %@ has been created", _objectID];
+//                                                 // Success, the restaurant has been liked
+//                                                 NSLog(@"Posted OG action, id: %@", [result objectForKey:@"id"]);
+//                                                 alertText = [NSString stringWithFormat:@"Posted OG action, id: %@", [result objectForKey:@"id"]];
+//                                                 alertTitle = @"Success";
 //                                                 [[[UIAlertView alloc] initWithTitle:alertTitle
 //                                                                             message:alertText
 //                                                                            delegate:self
@@ -379,54 +313,15 @@
 //                                                                   otherButtonTitles:nil] show];
 //                                             } else {
 //                                                 // An error occurred, we need to handle the error
-//                                                 
 //                                                 // See: https://developers.facebook.com/docs/ios/errors
 //                                                 NSLog(@"Error: %@, %@",error.description, error.debugDescription);
 //                                             }
-//                                             
 //                                         }];
-//            
-//        } else {
-//            // An error occurred, we need to handle the error
-//            // See: https://developers.facebook.com/docs/ios/errors
-//             NSLog(@"Error: %@, %@",error.description, error.debugDescription);
 //        }
+//        else{
+//            NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+//        }
+//        
 //    }];
-    
-    
-    NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
-    action[@"picture"] = @"http://samples.ogp.me/597664603651091";
-    
-//    NSMutableDictionary<FBGraphObject> *object =
-//    [FBGraphObject openGraphObjectForPostWithType:@"fluxapp:picture"
-//                                            title:@"Sample Picture"
-//                                            image:@"https://fbstatic-a.akamaihd.net/images/devsite/attachment_blank.png"
-//                                              url:@"http://samples.ogp.me/597664603651091"
-//                                      description:@""];
-    
-    [FBRequestConnection startForPostWithGraphPath:@"me/fluxapp:take"
-                                       graphObject:action
-                                 completionHandler:^(FBRequestConnection *connection,
-                                                     id result,
-                                                     NSError *error) {
-                                     if (!error) {
-                                        // Sucess! Include your code to handle the results here
-                                        NSLog(@"result: %@", result);
-                                        NSString* _objectID = [result objectForKey:@"id"];
-                                        NSString*alertTitle = @"Object successfully created";
-                                        NSString*alertText = [NSString stringWithFormat:@"An object with id %@ has been created", _objectID];
-                                        [[[UIAlertView alloc] initWithTitle:alertTitle
-                                                                    message:alertText
-                                                                   delegate:self
-                                                          cancelButtonTitle:@"OK!"
-                                                          otherButtonTitles:nil] show];
-                                    } else {
-                                        // An error occurred, we need to handle the error
-                                        
-                                        // See: https://developers.facebook.com/docs/ios/errors
-                                        NSLog(@"Error: %@, %@",error.description, error.debugDescription);
-                                    }
-
-                                 }];
 }
 @end
