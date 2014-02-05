@@ -9,6 +9,10 @@
 #import "FluxDebugViewController.h"
 #import "FluxScanViewController.h"
 #import "FluxDisplayManager.h"
+#import "FluxDataManager.h"
+
+#import "UICKeyChainStore.h"
+#import "UIActionSheet+Blocks.h"
 
 NSString* const FluxDebugDidChangeMatchDebugImageOutput = @"FluxDebugDidChangeMatchDebugImageOutput";
 NSString* const FluxDebugMatchDebugImageOutputKey = @"FluxDebugMatchDebugImageOutputKey";
@@ -99,7 +103,41 @@ NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDis
                                                         object:self userInfo:nil];
 }
 
-- (IBAction)switch3DidChange:(id)sender {
+- (IBAction)deleteAccountButtonAction:(id)sender {
+    [UIActionSheet showInView:self.view
+                    withTitle:@"Are you sure? This action cannot be undone."
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:@"Delete Account"
+            otherButtonTitles:nil
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             //NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+                             NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+                             
+                             AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://54.221.222.71/"]];
+                             NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
+                                                                                     path:[NSString stringWithFormat:@"%@users/%@.json",httpClient.baseURL,userID]
+                                                                               parameters:nil];
+                             AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+                             [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+                             [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+                                 // No success for DELETE
+                             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                 if ([operation.response statusCode] == 404) {
+                                     //done.
+                                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Good News!", nil) message:@"This account was successfully deleted." delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
+                                     [alert show];
+                                 }
+                                 else{
+                                     //things done broke :(
+                                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Things done broke :(", nil) message:error.localizedDescription delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
+                                     [alert show];
+                                 }
+                             }];
+                             [operation start];
+                         }
+                     }];
 }
 
 - (IBAction)stepper1DidStep:(id)sender {
