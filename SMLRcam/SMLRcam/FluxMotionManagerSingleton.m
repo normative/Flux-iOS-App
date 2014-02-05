@@ -99,27 +99,6 @@
     GLKQuaternion quatroll = GLKQuaternionMakeWithAngleAndAxis(roll1, 0.0, 1.0, 0.0);
     GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(quatyaw, GLKQuaternionNormalize(GLKQuaternionMultiply(quatpitch, quatroll))));
     
-//    // Create a GLKQuaternion for quaternion math to zero out the yaw (about the earth z-axis)
-//    // (this approach did not work - would get a roll component as yaw increased)
-//    CMQuaternion quat = devMotion.attitude.quaternion;
-//    GLKQuaternion quatnew = GLKQuaternionMake(quat.x, quat.y, quat.z, quat.w);
-//    quatnew.z = 0.0;
-//    quatnew = GLKQuaternionNormalize(quatnew);
-//    GLKQuaternion quatHeadingRotate = GLKQuaternionMakeWithAngleAndAxis((-heading.trueHeading)*M_PI/180.0, 0.0, 0.0, 1.0);
-//    quatHeadingRotate = GLKQuaternionNormalize(quatHeadingRotate);
-//    
-//    quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(quatHeadingRotate, quatnew));
-    
-    // Calculate Yaw-Pitch-Roll for logging
-    double pitchnew = atan2(2.0*(quatnew.y*quatnew.z + quatnew.w*quatnew.x), quatnew.w*quatnew.w - quatnew.x*quatnew.x - quatnew.y*quatnew.y + quatnew.z*quatnew.z);
-    double rollnew = asin(-2.0*(quatnew.x*quatnew.z - quatnew.w*quatnew.y));
-    double yawnew = atan2(2.0*(quatnew.x*quatnew.y + quatnew.w*quatnew.z), quatnew.w*quatnew.w + quatnew.x*quatnew.x - quatnew.y*quatnew.y - quatnew.z*quatnew.z);
-
-//    NSLog(@"Gravity x: %f, y: %f: z: %f, Heading: %f", devMotion.gravity.x, devMotion.gravity.y, devMotion.gravity.z, heading.trueHeading);
-//    NSLog(@"Yaw: %f, Pitch: %f, Roll: %f, Calc yaw: %f", devMotion.attitude.yaw*180.0/M_PI, devMotion.attitude.pitch*180.0/M_PI, devMotion.attitude.roll*180.0/M_PI, yaw*180.0/M_PI);
-//    NSLog(@"Yaw1: %f, Pitch1: %f, Roll1: %f", yaw1*180.0/M_PI, pitch1*180.0/M_PI, roll1*180.0/M_PI);
-//    NSLog(@"Yaw2: %f, Pitch2: %f, Roll2: %f, Heading: %f", yawnew*180.0/M_PI, pitchnew*180.0/M_PI, rollnew*180.0/M_PI, heading.trueHeading);
-    
     outquat->x = quatnew.x;
     outquat->y = quatnew.y;
     outquat->z = quatnew.z;
