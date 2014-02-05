@@ -2104,7 +2104,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self fixRenderList];
     }
     
-    CMAttitude *att = motionManager.attitude;
+    CMQuaternion att = motionManager.attitude;
     
 //    _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
 //    _userPose.rotationMatrix.m01 = att.rotationMatrix.m12;
@@ -2125,7 +2125,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    _userPose.rotationMatrix.m31 = 0.0;
 //    _userPose.rotationMatrix.m32 = 0.0;
 //    _userPose.rotationMatrix.m33 = 1.0;
-    GLKQuaternion quat = GLKQuaternionMake(att.quaternion.x, att.quaternion.y, att.quaternion.z, att.quaternion.w);
+    GLKQuaternion quat = GLKQuaternionMake(att.x, att.y, att.z, att.w);
    _userPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
     _userRotationRaw = _userPose.rotationMatrix;
     //_userPose.rotationMatrix = att.rotationMatrix;

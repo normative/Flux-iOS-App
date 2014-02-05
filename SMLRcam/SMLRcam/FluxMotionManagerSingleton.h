@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreMotion/CoreMotion.h>
+#import <GLKit/GLKit.h>
 
 #import "FluxPedometer.h"
 
@@ -20,7 +21,7 @@
     FluxPedometer *pedometer;
 }
 
-@property (nonatomic) CMAttitude *attitude;
+@property (nonatomic) CMQuaternion attitude;
 @property int pedometerCount;
 @property (nonatomic) CLHeading *locationHeading;
 

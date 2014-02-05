@@ -127,9 +127,9 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 {
     sensorPose localUserPose;
     
-    CMAttitude *att = fluxMotionManager.attitude;
+    CMQuaternion att = fluxMotionManager.attitude;
     
-    GLKQuaternion quat = GLKQuaternionMake(att.quaternion.x, att.quaternion.y, att.quaternion.z, att.quaternion.w);
+    GLKQuaternion quat = GLKQuaternionMake(att.x, att.y, att.z, att.w);
     localUserPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
     
     //_userPose.rotationMatrix = att.rotationMatrix;
