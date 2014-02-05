@@ -97,7 +97,7 @@
     GLKQuaternion quatyaw = GLKQuaternionMakeWithAngleAndAxis((-heading.trueHeading - 90.0)*M_PI/180.0, 0.0, 0.0, 1.0);
     GLKQuaternion quatpitch = GLKQuaternionMakeWithAngleAndAxis(pitch1, 1.0, 0.0, 0.0);
     GLKQuaternion quatroll = GLKQuaternionMakeWithAngleAndAxis(roll1, 0.0, 1.0, 0.0);
-    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(quatyaw, GLKQuaternionNormalize(GLKQuaternionMultiply(quatpitch, quatroll))));
+    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(quatyaw, GLKQuaternionNormalize(GLKQuaternionMultiply(quatroll, quatpitch))));
     
     outquat->x = quatnew.x;
     outquat->y = quatnew.y;
