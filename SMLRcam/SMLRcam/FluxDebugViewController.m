@@ -112,19 +112,19 @@ NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDis
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
-                             //NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+                             NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
                              NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
                              
                              AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://54.221.222.71/"]];
                              NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
-                                                                                     path:[NSString stringWithFormat:@"%@users/%@.json",httpClient.baseURL,userID]
+                                                                                     path:[NSString stringWithFormat:@"%@users/%@.json?auth_token=%@",httpClient.baseURL,userID, token]
                                                                                parameters:nil];
                              AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
                              [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
                              [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
                                  // No success for DELETE
                              } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                 if ([operation.response statusCode] == 404) {
+                                 if ([operation.response statusCode] == 401) {
                                      //done.
                                      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Good News!", nil) message:@"This account was successfully deleted." delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
                                      [alert show];

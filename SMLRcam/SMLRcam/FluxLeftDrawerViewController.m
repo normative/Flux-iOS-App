@@ -292,13 +292,14 @@
         [cell.titleLabel setEnabled:YES];
         [cell.countLabel setEnabled:YES];
     }
-    //disable social
+    
     else{
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
-        [cell.titleLabel setEnabled:NO];
         [cell.countLabel setEnabled:NO];
         [cell.countLabel setHidden:YES];
+      //disable social
+        [cell.titleLabel setEnabled:NO];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
     //[cell.imageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
@@ -317,7 +318,7 @@
             break;
         case 2:
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
-            //[self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followingMode]];
+            //[self performSegueWithIdentifier:@"pushSocialList" sender:nil];
             break;
         case 3:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
