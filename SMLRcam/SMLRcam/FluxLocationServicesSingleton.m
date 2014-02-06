@@ -76,11 +76,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 {
     [self.locationManager startUpdatingLocation];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadTeleportLocationIndex) name:FluxDebugDidChangeTeleportLocationIndex object:nil];
 
-    [self orientationChanged:nil];
-    
     if ([CLLocationManager headingAvailable]) {
         [self.locationManager startUpdatingHeading];
     }
@@ -95,7 +92,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 {
     [self.locationManager stopUpdatingLocation];
     
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeTeleportLocationIndex object:nil];
     
     if ([CLLocationManager headingAvailable]) {
@@ -107,19 +103,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         [updateTimer invalidate];
         updateTimer = nil;
     }
-}
-
-- (void)orientationChanged:(NSNotification *)notification
-{
-    UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-
-    if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown || orientation == UIDeviceOrientationUnknown)
-    {
-        // Face-up, face-down, and unknown will preserve the previous frame
-        return;
-    }
-    
-    self.locationManager.headingOrientation = orientation;
 }
 
 - (void)updateUserPose
