@@ -8,7 +8,7 @@
 
 #import "FluxMappingProvider.h"
 #import "FluxScanImageObject.h"
-#import "FluxUserObject.h"
+#import "FluxRegistrationUserObject.h"
 #import "FluxTagObject.h"
 #import "FluxMapImageObject.h"
 #import "FluxCameraObject.h"
@@ -63,16 +63,31 @@
                                                   @"follower_count":     @"followerCount",
                                                   @"following_count":    @"followingCount",
                                                   @"image_count":        @"imageCount",
-                                                  @"friend":             @"isFriends",
-                                                  @"amifollowing":       @"isFollowing",
-                                                  @"aretheyfollowing":   @"isFollower",
+                                                  @"friend_state":        @"friendState",
+                                                  @"am_follower":       @"isFollowing",
+                                                  @"is_following":   @"isFollower",
                                                   @"has_pic":            @"hasProfilePic"
                                                  }];
+    
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"bio"]];
+    
+    return mapping;
+}
+
++ (RKObjectMapping *)userRegistrationGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxRegistrationUserObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"id":                @"userID",
+                                                  @"has_pic":            @"hasProfilePic"
+                                                  }];
     
     [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"bio"]];
     
     return mapping;
 }
+
+
 + (RKObjectMapping *)userPOSTMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     

@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxRegistrationUserObject.h"
 #import "FluxCameraObject.h"
 #import <CoreLocation/CoreLocation.h>
 #import "RKObjectManager.h"
@@ -48,9 +49,9 @@ extern NSString* const FluxTestServerURL;
 //USERS
 
 //registration/logout
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxRegistrationUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject*)userObject
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxRegistrationUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString*)suggestion
            andRequestID:(FluxRequestID *)requestID;
@@ -66,11 +67,13 @@ extern NSString* const FluxTestServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray*)images
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)images
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)friends
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)images
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)followings
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowerListForUser:(NSArray*)images
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowerListForUser:(NSArray*)followers
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUsersListForQuery:(NSArray*)users
            andRequestID:(FluxRequestID *)requestID;
 
 //tags
@@ -159,7 +162,7 @@ extern NSString* const FluxTestServerURL;
 /**
  Logs in a given userObject and returns an access token
  **/
-- (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
+- (void)loginUser:(FluxRegistrationUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
 
 /**
  Log out the current user
@@ -179,7 +182,7 @@ extern NSString* const FluxTestServerURL;
 /**
  creates a user with the given object
  **/
-- (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
+- (void)createUser:(FluxRegistrationUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
 
 #pragma mark Profiles
 
@@ -217,6 +220,11 @@ return's a profile image for a given userID and size
  return's a user's follower list for a given userID
  **/
 - (void)getFollowerListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ return's a list of users matching a given query
+ **/
+- (void)getUsersListForQuery:(NSString*)query withRequestID:(NSUUID *)requestID;
 
 
 

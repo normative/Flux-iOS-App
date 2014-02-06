@@ -93,11 +93,11 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 //USERS
 
 //registration / LOGOUT
-- (FluxRequestID *) uploadNewUser:(FluxUserObject *)userObject withImage:(UIImage *)image
+- (FluxRequestID *) uploadNewUser:(FluxRegistrationUserObject *)userObject withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) updateUser:(FluxUserObject *)userObject withImage:(UIImage *)image
                   withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) loginUser:(FluxUserObject *)userObject
+- (FluxRequestID *) loginUser:(FluxRegistrationUserObject *)userObject
                   withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) checkUsernameUniqueness:(NSString *)username
               withDataRequest:(FluxDataRequest *)dataRequest;
@@ -121,6 +121,9 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowerListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
+//search
+- (FluxRequestID *) requestUsersListQuery:(NSString*)query
+                             withDataRequest:(FluxDataRequest *)dataRequest;
 
 
 

@@ -61,6 +61,13 @@
 //    [self.profileImageView.layer addSublayer:strokeLayer];
 }
 
+- (void)setUserObject:(FluxUserObject *)userObject{
+    _userObject = userObject;
+    
+    [self.titleLabel setText:[NSString stringWithFormat:@"@%@",userObject.username]];
+    
+}
+
 - (IBAction)friendFollowButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(FriendFollowerCellButtonWasTapped:)]) {
         [delegate FriendFollowerCellButtonWasTapped:self];

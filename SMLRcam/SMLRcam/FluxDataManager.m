@@ -463,7 +463,7 @@ static FluxDataManager *_theFluxDataManager = nil;
 }
 
 #pragma mark - Users
-- (FluxRequestID*)uploadNewUser:(FluxUserObject *)userObject withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)dataRequest{
+- (FluxRequestID*)uploadNewUser:(FluxRegistrationUserObject *)userObject withImage:(UIImage *)image withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = data_upload_request;
     [currentRequests setObject:dataRequest forKey:requestID];
@@ -481,7 +481,7 @@ static FluxDataManager *_theFluxDataManager = nil;
      return requestID;
 }
 
-- (FluxRequestID*)loginUser:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)dataRequest{
+- (FluxRequestID*)loginUser:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = data_upload_request;
     [currentRequests setObject:dataRequest forKey:requestID];
@@ -575,6 +575,15 @@ static FluxDataManager *_theFluxDataManager = nil;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
     [networkServices getFollowerListForUserWithID:userID withRequestID:requestID];
+    return requestID;
+}
+
+- (FluxRequestID *) requestUsersListQuery:(NSString*)query withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = userSearch_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getUsersListForQuery:query withRequestID:requestID];
     return requestID;
 }
 
@@ -898,7 +907,7 @@ static FluxDataManager *_theFluxDataManager = nil;
 
 #pragma mark Users
 
--(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject *)userObject andRequestID:(NSUUID *)requestID{
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxRegistrationUserObject *)userObject andRequestID:(NSUUID *)requestID{
     // Call callback of requestor
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenUploadUserComplete:userObject withDataRequest:request];
@@ -916,7 +925,7 @@ static FluxDataManager *_theFluxDataManager = nil;
     [self completeRequestWithDataRequest:request];
 }
 
--(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject *)userObject andRequestID:(NSUUID *)requestID{
+-(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxRegistrationUserObject *)userObject andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenLoginUserComplete:userObject withDataRequest:request];
     
@@ -969,6 +978,38 @@ static FluxDataManager *_theFluxDataManager = nil;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray *)images andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenUserImagesReady:images withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray *)friends andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserFriendsReady:friends withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray *)followings andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserFollowingsReady:followings withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowerListForUser:(NSArray *)followers andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserFollowersReady:followers withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUsersListForQuery:(NSArray *)users andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserSearchReady:users withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

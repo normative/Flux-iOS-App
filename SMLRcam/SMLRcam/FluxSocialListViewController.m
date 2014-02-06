@@ -10,6 +10,8 @@
 #import "ProgressHUD.h"
 #import "UICKeyChainStore.h"
 
+#import "FluxAddUserViewController.h"
+
 @interface FluxSocialListViewController ()
 
 @end
@@ -47,12 +49,6 @@
     
     
     [self updateListForActiveMode];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
@@ -69,6 +65,16 @@
     [UIView animateWithDuration:0.25 animations:^{
         [self.view setAlpha:1.0];
     }];
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    [(FluxAddUserViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
+    UIImage* snapshot = [(UIImageView*)[[[(UINavigationController*)self.parentViewController view] subviews] objectAtIndex:0] image];
+    
+    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
+    [bgView setImage:snapshot];
+    [bgView setBackgroundColor:[UIColor darkGrayColor]];
+    [[(FluxAddUserViewController*)segue.destinationViewController view] insertSubview:bgView atIndex:0];
 }
 
 - (void)didReceiveMemoryWarning

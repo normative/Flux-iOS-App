@@ -95,7 +95,7 @@
 
 #pragma mark - Users
 
-- (void)whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+- (void)whenUploadUserComplete:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.uploadUserComplete)
     {
         self.uploadUserComplete(userObject, completeDataRequest);
@@ -109,7 +109,7 @@
     }
 }
 
--(void)whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+-(void)whenLoginUserComplete:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.loginUserComplete)
     {
         self.loginUserComplete(userObject,completeDataRequest);
@@ -170,6 +170,12 @@
 - (void) whenUserFollowersReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.userFollowersReady) {
         self.userFollowersReady(socialUserObjects, completeDataRequest);
+    }
+}
+
+- (void) whenUserSearchReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userSearchReady) {
+        self.userSearchReady(socialUserObjects, completeDataRequest);
     }
 }
 

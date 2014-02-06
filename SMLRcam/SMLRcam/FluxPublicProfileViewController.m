@@ -108,7 +108,7 @@
     [followButton setTitle:(theUser.isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
     [followButton setCenter:CGPointMake(socialStatusLabel.center.x, socialStatusLabel.center.y+(socialStatusLabel.frame.size.height/2)+15+15)];
     addFriendButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
-    [addFriendButton setTitle:(theUser.isFriends) ? @"Friends" : @"Add Friend" forState:UIControlStateNormal];
+//    [addFriendButton setTitle:(theUser.isFriends) ? @"Friends" : @"Add Friend" forState:UIControlStateNormal];
     [addFriendButton setCenter:CGPointMake(socialStatusLabel.center.x, followButton.center.y+(followButton.frame.size.height/2)+15+15)];
     followButton.titleLabel.font = addFriendButton.titleLabel.font = [UIFont fontWithName:@"Akkurat-Bold" size:addFriendButton.titleLabel.font.pointSize];
     [addFriendButton addTarget:self action:@selector(addFriendButtonAction) forControlEvents:UIControlEventTouchUpInside];

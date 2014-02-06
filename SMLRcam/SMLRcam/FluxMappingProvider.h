@@ -16,6 +16,7 @@
 + (RKObjectMapping *)imagePOSTMapping;
 
 + (RKObjectMapping *)userGETMapping;
++ (RKObjectMapping *)userRegistrationGETMapping;
 + (RKObjectMapping *)userPOSTMapping;
 + (RKObjectMapping *)userPATCHMapping;
 
