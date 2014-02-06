@@ -24,7 +24,6 @@ extern NSString* const FluxDebugPedometerCountDisplayKey;
     
     IBOutlet UISwitch *switch1;
     IBOutlet UISwitch *switch2;
-    IBOutlet UISwitch *switch3;
     IBOutlet UIStepper *stepper1;
 }
 
@@ -35,7 +34,7 @@ extern NSString* const FluxDebugPedometerCountDisplayKey;
 
 - (IBAction)switch1DidChange:(id)sender;
 - (IBAction)switch2DidChange:(id)sender;
-- (IBAction)switch3DidChange:(id)sender;
+- (IBAction)deleteAccountButtonAction:(id)sender;
 - (IBAction)stepper1DidStep:(id)sender;
 
 - (IBAction)hideMenuAction:(id)sender;

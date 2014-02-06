@@ -27,6 +27,7 @@
     
     listMode = friendMode;
     socialTableViews = [[NSMutableArray alloc]initWithObjects:friendsTableView, followingTableView, followersTableView, nil];
+    followingTableView.hidden = followersTableView.hidden = YES;
     
     socialListArray = [[NSMutableArray alloc]init];
     socialListsRefreshControls = [[NSMutableArray alloc]init];
@@ -277,7 +278,10 @@
 //}
 
 - (IBAction)segmentedControllerDidChange:(id)sender {
+    [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:YES];
     listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
+    [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:NO];
+    
     if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0) {
         [self updateListForActiveMode];
     }

@@ -254,5 +254,74 @@
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:[NSArray arrayWithObject:newSnapshot] applicationActivities:nil];
     activityVC.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll]; //or whichever you don't need
     [self presentViewController:activityVC animated:YES completion:nil];
+    
+//    // Create an object
+//    if (!FBSession.activeSession.isOpen) {
+//        [FBSession openActiveSessionWithAllowLoginUI: NO];
+//    }
+//    
+//    
+//    // Create an object
+//    NSMutableDictionary<FBOpenGraphObject> *picture = [FBGraphObject openGraphObjectForPost];
+//    
+//    // specify that this Open Graph object will be posted to Facebook
+//    picture.provisionedForPost = YES;
+//    
+//    // Add the standard object properties, including the image you just staged
+//    picture[@"og"] = @{ @"title":@"Flux", @"type":@"picture.picture", @"description":@"my description"};
+//    
+//    
+//    
+//    
+//    [FBRequestConnection startForUploadStagingResourceWithImage:newSnapshot completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+//        if(!error) {
+//            NSLog(@"Successfuly staged image with staged URI: %@", [result objectForKey:@"uri"]);
+//            //Package image inside a dictionary, inside an array like we'll need it for the object
+//            NSArray *image = @[@{@"url": [result objectForKey:@"uri"], @"user_generated" : @"true" }];
+//            
+//            NSMutableDictionary<FBOpenGraphObject> *pictureObject = [FBGraphObject openGraphObjectForPost];
+//
+//            // specify that this Open Graph object will be posted to Facebook
+//            pictureObject.provisionedForPost = YES;
+//
+//            // Add the standard object properties
+//            pictureObject[@"og"] = @{ @"title":@"", @"type":@"fluxapp:picture", @"description":@"OMG I took a snapshot guys", @"image":image };
+//            
+//            
+//            
+//            NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
+//            action[@"picture"] = pictureObject;
+//            [action setObject:@"true" forKey:@"fb:explicitly_shared"];
+//            
+//            [FBRequestConnection startForPostWithGraphPath:@"me/fluxapp:take"
+//                                               graphObject:action
+//                                         completionHandler:^(FBRequestConnection *connection,
+//                                                             id result,
+//                                                             NSError *error) {
+//                                             // handle the result
+//                                             __block NSString *alertText;
+//                                             __block NSString *alertTitle;
+//                                             if (!error) {
+//                                                 // Success, the restaurant has been liked
+//                                                 NSLog(@"Posted OG action, id: %@", [result objectForKey:@"id"]);
+//                                                 alertText = [NSString stringWithFormat:@"Posted OG action, id: %@", [result objectForKey:@"id"]];
+//                                                 alertTitle = @"Success";
+//                                                 [[[UIAlertView alloc] initWithTitle:alertTitle
+//                                                                             message:alertText
+//                                                                            delegate:self
+//                                                                   cancelButtonTitle:@"OK!"
+//                                                                   otherButtonTitles:nil] show];
+//                                             } else {
+//                                                 // An error occurred, we need to handle the error
+//                                                 // See: https://developers.facebook.com/docs/ios/errors
+//                                                 NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+//                                             }
+//                                         }];
+//        }
+//        else{
+//            NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+//        }
+//        
+//    }];
 }
 @end

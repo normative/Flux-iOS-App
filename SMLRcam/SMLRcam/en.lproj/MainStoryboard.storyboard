@@ -159,20 +159,6 @@
                                     <action selector="switch2DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="sPs-fv-md6"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K16-JH-xA3">
-                                <rect key="frame" x="234" y="270" width="42" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HLL-0P-ix6">
-                                <rect key="frame" x="231" y="299" width="51" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="switch3DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="muZ-dH-xzD"/>
-                                </connections>
-                            </switch>
                             <stepper opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Y6f-M0-Qsf">
                                 <rect key="frame" x="208" y="374" width="94" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -223,6 +209,16 @@
                                     <action selector="hideMenuAction:" destination="V4e-hA-nqo" eventType="touchUpInside" id="XO4-1a-a9C"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pPa-E7-eIn">
+                                <rect key="frame" x="203" y="300" width="105" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Delete Account">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="deleteAccountButtonAction:" destination="V4e-hA-nqo" eventType="touchUpInside" id="tXf-7R-U40"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                     </view>
@@ -234,7 +230,6 @@
                         <outlet property="stepper1" destination="Y6f-M0-Qsf" id="dj3-a4-XwA"/>
                         <outlet property="switch1" destination="Sdd-Mx-Y9G" id="eTa-ld-MWu"/>
                         <outlet property="switch2" destination="hPh-ep-mX4" id="rgF-TV-WaS"/>
-                        <outlet property="switch3" destination="HLL-0P-ix6" id="MWr-py-5DJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yX8-jP-Y2K" userLabel="First Responder" sceneMemberID="firstResponder"/>

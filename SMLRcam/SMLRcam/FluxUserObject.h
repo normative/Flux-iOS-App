@@ -14,6 +14,7 @@
 @property (nonatomic, strong) NSString*facebook;
 @property (nonatomic, strong) NSDictionary*twitter;
 @property (nonatomic, strong) NSString*socialName;
+@property (nonatomic, strong) NSString*uniqueSocialName;
 
 @property (nonatomic) int userID;
 @property (nonatomic, strong) NSString*name;
