@@ -92,9 +92,38 @@
     double pitch1 = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z);
     double roll1 = asin(-2.0*(q.x*q.z - q.w*q.y));
     
+    // Apply correction to heading for any additional yaw applied after a pitch.
+    // The net effect of this rotation is that the y-vector of the device (out the top) will
+    // have a different heading than the z-vector of the device (line of sight) which is the
+    // component we care about for an AR-type app. Heading is measured in the Earth plane,
+    // so we are taking projections of these vectors down onto the Earth plane to measure heading.
+    // Therefore the correction is the angle between the heading of the y-axis vector and the
+    // heading of the z-axis vector, with the y-axis vector being the reported heading, and the
+    // z-axis vector being the desired yaw component.
+    
+    // v for each vector is obtained by taking a unit vector (in device frame) and applying the
+    // attitude rotation to get the vector in the Earth frame.
+    
+    GLKQuaternion device_to_earth = (GLKQuaternionMake(q.x, q.y, q.z, q.w));
+    GLKVector3 y_device = GLKVector3Make(0.0, 1.0, 0.0);
+    GLKVector3 los_device = GLKVector3Make(0.0, 0.0, -1.0); // LOS of the device is -ve z-axis
+    GLKVector3 y_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(device_to_earth, y_device));
+    GLKVector3 los_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(device_to_earth, los_device));
+    GLKVector3 n_earth = GLKVector3Make(0.0, 0.0, 1.0);
+    
+    GLKVector3 y_projection_earth = [self projectVector:y_device_earth ontoPlaneWithNormal:n_earth];
+    GLKVector3 los_projection_earth = [self projectVector:los_device_earth ontoPlaneWithNormal:n_earth];
+    
+//    NSLog(@"y_device: (%f, %f, %f) los_device: (%f, %f, %f)", y_projection_earth.x, y_projection_earth.y, y_projection_earth.z, los_projection_earth.x, los_projection_earth.y, los_projection_earth.z);
+
+    // Then we can get the angle between the two projection vectors as our correction
+    double heading_delta = [self calculateAngleBetweenVector:y_projection_earth andVector:los_projection_earth];
+    
+//    NSLog(@"Angle correction: %f", heading_delta * 180.0/M_PI);
+    
     // Re-create quaternion using heading as the new yaw component. Note that heading needs correction to match earth axes.
     // Heading is top of phone (y-axis) wrt North. At attitude YPR (0,0,0) y-axis points due West.
-    GLKQuaternion quatyaw = GLKQuaternionMakeWithAngleAndAxis((-heading.trueHeading - 90.0)*M_PI/180.0, 0.0, 0.0, 1.0);
+    GLKQuaternion quatyaw = GLKQuaternionMakeWithAngleAndAxis((-heading.trueHeading - 90.0)*M_PI/180.0 - heading_delta, 0.0, 0.0, 1.0);
     GLKQuaternion quatpitch = GLKQuaternionMakeWithAngleAndAxis(pitch1, 1.0, 0.0, 0.0);
     GLKQuaternion quatroll = GLKQuaternionMakeWithAngleAndAxis(roll1, 0.0, 1.0, 0.0);
     GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(quatyaw, GLKQuaternionNormalize(GLKQuaternionMultiply(quatroll, quatpitch))));
@@ -103,6 +132,27 @@
     outquat->y = quatnew.y;
     outquat->z = quatnew.z;
     outquat->w = quatnew.w;
+}
+
+- (GLKVector3) projectVector:(GLKVector3)v ontoPlaneWithNormal:(GLKVector3)n
+{
+    // A projection of a vector v onto a plane P (with normal n) is u:
+    // u = v - <v dot n>n
+    // where <v dot n>n is orthogonal to P.
+    
+    GLKVector3 projection;
+    
+    // Calculate w = <v dot n>n
+    GLKVector3 w = GLKVector3MultiplyScalar(n, GLKVector3DotProduct(v, n));
+    
+    projection = GLKVector3Subtract(v, w);
+    
+    return projection;
+}
+
+- (double) calculateAngleBetweenVector:(GLKVector3)u andVector:(GLKVector3)v
+{
+    return acos(GLKVector3DotProduct(u, v) / (GLKVector3Length(u) * GLKVector3Length(v)));
 }
 
 @end
