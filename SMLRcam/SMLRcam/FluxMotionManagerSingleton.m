@@ -87,14 +87,16 @@
     // Earth reference frame: x north, y west, z up
     // Earth to phone (using attitude): Yaw (z) - Pitch (x) - Roll (y)
     
-    NSLog(@"YPR (origi): %f, %f, %f", devMotion.attitude.yaw * 180.0/M_PI, devMotion.attitude.pitch * 180.0/M_PI, devMotion.attitude.roll * 180.0/M_PI);
+    // YPR extraction from quaternions, using formula for Euler Angle Sequence (2,1,3)
+    // "Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors"
+    // James Diebel, Stanford University, 20 October, 2006
     
     CMQuaternion q = devMotion.attitude.quaternion;
-    double yaw1 = atan2(2.0*(q.x*q.y + q.w*q.z), q.w*q.w + q.x*q.x - q.y*q.y - q.z*q.z);
-    double pitch1 = atan2(2.0*(q.y*q.z + q.w*q.x), q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z);
-    double roll1 = asin(-2.0*(q.x*q.z - q.w*q.y));
+    double roll1 = atan2(-2.0*q.x*q.z + 2.0*q.w*q.y, q.z*q.z - q.y*q.y - q.x*q.x + q.w*q.w);
+    double pitch1 = asin(2.0*q.y*q.z + 2.0*q.w*q.x);
+    double yaw1 = atan2(-2.0*q.x*q.y + 2.0*q.w*q.z, q.y*q.y - q.z*q.z + q.w*q.w - q.x*q.x);
     
-    NSLog(@"YPR (deriv): %f, %f, %f", yaw1 * 180.0/M_PI, pitch1 * 180.0/M_PI, roll1 * 180.0/M_PI);
+//    NSLog(@"YPR (derived): %f, %f, %f", yaw1 * 180.0/M_PI, pitch1 * 180.0/M_PI, roll1 * 180.0/M_PI);
 
     // Apply correction to heading for any additional yaw applied after a pitch.
     // The net effect of this rotation is that the y-vector of the device (out the top) will
@@ -128,17 +130,17 @@
     
     // Re-create quaternion using heading as the new yaw component. Note that heading needs correction to match earth axes.
     // Heading is top of phone (y-axis) wrt North. At attitude YPR (0,0,0) y-axis points due West.
-    GLKQuaternion quatyaw = GLKQuaternionMakeWithAngleAndAxis(-(-heading.trueHeading - 90.0)*M_PI/180.0 - heading_delta, 0.0, 0.0, 1.0);
+    GLKQuaternion quatyaw = GLKQuaternionMakeWithAngleAndAxis(((heading.trueHeading + 90.0)*M_PI/180.0 - heading_delta), 0.0, 0.0, 1.0);
     GLKQuaternion quatpitch = GLKQuaternionMakeWithAngleAndAxis(-pitch1, 1.0, 0.0, 0.0);
     GLKQuaternion quatroll = GLKQuaternionMakeWithAngleAndAxis(-roll1, 0.0, 1.0, 0.0);
     GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionInvert(GLKQuaternionNormalize(GLKQuaternionMultiply(quatroll, GLKQuaternionNormalize(GLKQuaternionMultiply(quatpitch, quatyaw))))));
     
     // Calculate Yaw-Pitch-Roll for logging
-    double pitchnew = atan2(2.0*(quatnew.y*quatnew.z + quatnew.w*quatnew.x), quatnew.w*quatnew.w - quatnew.x*quatnew.x - quatnew.y*quatnew.y + quatnew.z*quatnew.z);
-    double rollnew = asin(-2.0*(quatnew.x*quatnew.z - quatnew.w*quatnew.y));
-    double yawnew = atan2(2.0*(quatnew.x*quatnew.y + quatnew.w*quatnew.z), quatnew.w*quatnew.w + quatnew.x*quatnew.x - quatnew.y*quatnew.y - quatnew.z*quatnew.z);
+    double rollnew = atan2(-2.0*quatnew.x*quatnew.z + 2.0*quatnew.w*quatnew.y, quatnew.z*quatnew.z - quatnew.y*quatnew.y - quatnew.x*quatnew.x + quatnew.w*quatnew.w);
+    double pitchnew = asin(2.0*quatnew.y*quatnew.z + 2.0*quatnew.w*quatnew.x);
+    double yawnew = atan2(-2.0*quatnew.x*quatnew.y + 2.0*quatnew.w*quatnew.z, quatnew.y*quatnew.y - quatnew.z*quatnew.z + quatnew.w*quatnew.w - quatnew.x*quatnew.x);
     
-    NSLog(@"YPR (updat): %f, %f, %f", yawnew * 180.0/M_PI, pitchnew * 180.0/M_PI, rollnew * 180.0/M_PI);
+//    NSLog(@"YPR (updated): %f, %f, %f", yawnew * 180.0/M_PI, pitchnew * 180.0/M_PI, rollnew * 180.0/M_PI);
 
     outquat->x = quatnew.x;
     outquat->y = quatnew.y;
