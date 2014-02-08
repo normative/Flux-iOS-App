@@ -149,38 +149,57 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 - (CLLocationDirection)orientationHeading
 {
     CLLocationDirection newHeading = 0.0;
-    [self updateUserPose];
-    sensorPose localUserPose = _userPose;
     
-    viewParameters localUserVp;
-    
-    // calculate angle between user's viewpoint and North
-    [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
-    
-    
-    double x1 = 0.0;
-    double y1 = 1.0;
-    double x2 = localUserVp.at.x;
-    double y2 = localUserVp.at.y;
-    double dotx = (x1 * x2);
-    double doty = (y1 * y2);
-    
-    double scalar = dotx + doty;
-    double magsq1 = x1 * x1 + y1 * y1;
-    double magsq2 = x2 * x2 + y2 * y2;
-    
-    double costheta = (scalar) / sqrt(magsq1 * magsq2);
-    double theta = acos(costheta) * 180.0 / M_PI;
-    
-    if (x2 < 0)
+    @try
     {
-        theta = -theta;
+        newHeading = self.heading;
+        [self updateUserPose];
+        sensorPose localUserPose = _userPose;
+        
+        viewParameters localUserVp;
+        
+        // calculate angle between user's viewpoint and North
+        [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
+        
+        
+        double x1 = 0.0;
+        double y1 = 1.0;
+        double x2 = localUserVp.at.x;
+        double y2 = localUserVp.at.y;
+        if (!(isnan(x2) || isnan(y2)))
+        {
+            double dotx = (x1 * x2);
+            double doty = (y1 * y2);
+            
+            double scalar = dotx + doty;
+            double magsq1 = x1 * x1 + y1 * y1;
+            double magsq2 = x2 * x2 + y2 * y2;
+            
+            if (magsq2 != 0.0)
+            {
+                // won't freak out and will return a valid result
+                double costheta = (scalar) / sqrt(magsq1 * magsq2);
+                double theta = acos(costheta) * 180.0 / M_PI;
+                
+                if (x2 < 0)
+                {
+                    theta = -theta;
+                }
+                
+                while (theta < 0.0)
+                    theta += 360.0;
+                
+                if (!isnan(theta))
+                    newHeading = theta;
+            }
+        }
+    }
+    @catch (NSException *theException)
+    {
+        NSLog(@"An exception occurred: %@", theException.name);
+        NSLog(@"Here are some details: %@", theException.reason);
     }
     
-    while (theta < 0.0)
-        theta += 360.0;
-    
-    newHeading = theta;
     return newHeading;
 }
 
@@ -622,31 +641,24 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 
  
-- (void)registerPedDisplacementKFilter:(int)direction {
- 
-     NSLog(@"disp registered");
-    // return;
-    stepcount++;
-     double enuHeadingRad;
-     //int count = motionManager.pedometerCount;
-     double stepsize =0.73;
- 
-    if(direction == -1)
-        self.heading +=180.0;
+- (void)registerPedDisplacementKFilter:(int)direction
+{
+    NSLog(@"disp registered");
     
-    // heading =self.fluxDisplayManager.locationManager.heading ;
- 
-     enuHeadingRad = (90.0 +(360- self.heading))/180.0 *PI;
-     
-     kfXDisp = stepsize * cos(enuHeadingRad);
-     kfYDisp = stepsize * sin(enuHeadingRad);
-
- 
- //[motionManager resetPedometer];
- 
- 
- 
- }
+    stepcount++;
+    double enuHeadingRad;
+    double stepsize =0.73;
+    
+    if (direction == -1)
+    {
+        self.heading +=180.0;
+    }
+    
+    enuHeadingRad = (90.0 + (360 - self.heading))/180.0 * PI;
+    
+    kfXDisp = stepsize * cos(enuHeadingRad);
+    kfYDisp = stepsize * sin(enuHeadingRad);
+}
 
 - (void) computeFilteredECEF
 {

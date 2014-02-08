@@ -98,6 +98,9 @@
     radarView.userInteractionEnabled = NO;
     radarView.exclusiveTouch = NO;
     
+    CGAffineTransform transform = CGAffineTransformMakeRotation(0.0);
+    radarView.transform = transform;
+    
     [self addSubview:radarView];
     [self addSubview:radarHeadingImageView];
     [self bringSubviewToFront:radarHeadingImageView];
