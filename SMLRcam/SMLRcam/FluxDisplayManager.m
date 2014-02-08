@@ -414,6 +414,16 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         return;
     
 //    _timeRangeMinIndex = ((self.nearbyList.count + 4) * value);
+    if (value >= self.nearbyListCount)
+    {
+        value = self.nearbyListCount - 1;
+    }
+
+    if (value < 0)
+    {
+        value = 0;
+    }
+
     _timeRangeMinIndex = value;
     
 //    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
