@@ -99,31 +99,49 @@ typedef struct{
     CMQuaternion q_cmquat = devMotion.attitude.quaternion;
     GLKQuaternion q = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
 
-    // 3-1-3 (ideal for attitude 90 degrees)
-    euler_angles originalAngles = [self calculateAngleSequence313FromQuaterion:&q];
-    
-//    // 2-1-3 (ideal for attitude of 0 or 180 degrees)
-//    euler_angles originalAngles = [self calculateAngleSequence213FromQuaterion:&q];
-
+    // Calculate correction delta for heading, based on separation of y-axis and LOS-axis
     double heading_delta = [self calculateHeadingCorrectionAngleWithQuaternion:q];
-    heading_delta = 0.0;
-    
 //    NSLog(@"Angle correction: %f, Heading: %f", heading_delta * 180.0/M_PI, heading.trueHeading);
 
-    // Re-create quaternion using heading as the new yaw component. Note that heading needs correction to match earth axes.
-    // Heading is top of phone (y-axis) wrt North. At attitude YPR (0,0,0) y-axis points due West.
-
-    GLKQuaternion quat_angle1 = GLKQuaternionMakeWithAngleAndAxis(((heading.trueHeading + 90.0)*M_PI/180.0 - heading_delta), 0.0, 0.0, 1.0);
-//    GLKQuaternion quat_angle1 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta1, 0.0, 0.0, 1.0);       // Original unmodified angle
-    GLKQuaternion quat_angle2 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta2, 1.0, 0.0, 0.0);
-    GLKQuaternion quat_angle3 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta3, 0.0, 0.0, 1.0);       // Using 3-1-3 rotation sequence
-//    GLKQuaternion quat_angle3 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta3, 0.0, 1.0, 0.0);       // Using 2-1-3 rotation sequence
+    // Alternative method - calculate theta between y-axis (Earth) and y-axis device (clip the z-component)
+    // Remove this component, then re-add actual yaw from heading
+    GLKVector3 y_device = GLKVector3Make(0.0, 1.0, 0.0);
+    GLKVector3 y_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(q, y_device));
+    y_device_earth.z = 0.0;
+    GLKVector3 y_axis_earth = GLKVector3Make(0.0, 1.0, 0.0);
     
-    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionInvert(GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle3, GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle2, quat_angle1))))));
+    double theta = [self calculateAngleBetweenVector:y_device_earth andVector:y_axis_earth];
 
-//    // Calculate Yaw-Pitch-Roll for logging
-//    euler_angles finalAngles = [self calculateAngleSequence213FromQuaterion:&quatnew];
-//    NSLog(@"YPR (updated): %f, %f, %f", finalAngles.theta1 * 180.0/M_PI, finalAngles.theta2 * 180.0/M_PI, finalAngles.theta3 * 180.0/M_PI);
+    NSLog(@"Y-axis: (%f, %f, %f) Theta: %f", y_device_earth.x, y_device_earth.y, y_device_earth.z, theta * 180.0/M_PI);
+    
+    // Rotate attitude back by theta, then forward by heading
+    GLKQuaternion theta_yaw_original = GLKQuaternionMakeWithAngleAndAxis(-theta, 0.0, 0.0, 1.0);
+    GLKQuaternion quat_noyaw = GLKQuaternionNormalize(GLKQuaternionMultiply(GLKQuaternionInvert(theta_yaw_original), q));
+    GLKQuaternion theta_yaw_new = GLKQuaternionMakeWithAngleAndAxis(-(heading.trueHeading + 90.0)*M_PI/180.0 + heading_delta, 0.0, 0.0, 1.0);
+    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(theta_yaw_new, quat_noyaw));
+
+//    // Original method (extract Euler angle sequences and replace values)
+//    
+//    // 3-1-3 (ideal for attitude 90 degrees)
+//    euler_angles originalAngles = [self calculateAngleSequence313FromQuaterion:&q];
+//    
+////    // 2-1-3 (ideal for attitude of 0 or 180 degrees)
+////    euler_angles originalAngles = [self calculateAngleSequence213FromQuaterion:&q];
+//
+//    // Re-create quaternion using heading as the new yaw component. Note that heading needs correction to match earth axes.
+//    // Heading is top of phone (y-axis) wrt North. At attitude YPR (0,0,0) y-axis points due West.
+//
+//    GLKQuaternion quat_angle1 = GLKQuaternionMakeWithAngleAndAxis(((heading.trueHeading + 90.0)*M_PI/180.0 - heading_delta), 0.0, 0.0, 1.0);
+////    GLKQuaternion quat_angle1 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta1, 0.0, 0.0, 1.0);       // Original unmodified angle
+//    GLKQuaternion quat_angle2 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta2, 1.0, 0.0, 0.0);
+//    GLKQuaternion quat_angle3 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta3, 0.0, 0.0, 1.0);       // Using 3-1-3 rotation sequence
+////    GLKQuaternion quat_angle3 = GLKQuaternionMakeWithAngleAndAxis(-originalAngles.theta3, 0.0, 1.0, 0.0);       // Using 2-1-3 rotation sequence
+//    
+//    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionInvert(GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle3, GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle2, quat_angle1))))));
+
+    // Calculate Yaw-Pitch-Roll for logging
+    euler_angles finalAngles = [self calculateAngleSequence213FromQuaterion:&quatnew];
+    NSLog(@"YPR (updated): %f, %f, %f", finalAngles.theta1 * 180.0/M_PI, finalAngles.theta2 * 180.0/M_PI, finalAngles.theta3 * 180.0/M_PI);
 
     outquat->x = quatnew.x;
     outquat->y = quatnew.y;
