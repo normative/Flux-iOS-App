@@ -9,6 +9,7 @@
 #import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
 #import "FluxTagObject.h"
+#import "FluxConnectionObject.h"
 #import "FluxMappingProvider.h"
 #import "FluxLocationServicesSingleton.h"
 #import "UICKeyChainStore.h"
@@ -84,6 +85,12 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                                                                                                         keyPath:nil
                                                                                                     statusCodes:statusCodes];
         
+        RKResponseDescriptor *connectionResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
+                                                                                                              method:RKRequestMethodAny
+                                                                                                         pathPattern:@"connections"
+                                                                                                             keyPath:nil
+                                                                                                         statusCodes:statusCodes];
+        
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -101,14 +108,28 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                                                                                            rootKeyPath:@"user"
                                                                                                 method:RKRequestMethodPATCH];
         
+        RKRequestDescriptor *connectionRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider connectionPOSTMapping]
+                                                                                          objectClass:[FluxConnectionObject class]
+                                                                                          rootKeyPath:@"connection"
+                                                                                               method:RKRequestMethodPOST];
+        
+        RKRequestDescriptor *connectionDeleteRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider connectionPOSTMapping]
+                                                                                                 objectClass:[FluxConnectionObject class]
+                                                                                                 rootKeyPath:@"connection"
+                                                                                                      method:RKRequestMethodPUT];
+        
         
         [objectManager addRequestDescriptor:userRequestDescriptor];
         [objectManager addRequestDescriptor:userUpdateDescriptor];
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
+        [objectManager addRequestDescriptor:connectionRequestDescriptor];
+        [objectManager addRequestDescriptor:connectionDeleteRequestDescriptor];
+        
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:registrationResponseDescriptor];
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
         [objectManager addResponseDescriptor:cameraCreationResponseDescriptor];
+        [objectManager addResponseDescriptor:connectionResponseDescriptor];
         
         //and again for image-related calls
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
@@ -758,6 +779,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     [operation start];
 }
 
+#pragma mark Social Stuff
 
 - (void)getFriendsListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
@@ -765,7 +787,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/connections/friends.json"
+                                                                                       pathPattern:@"/users/friends.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -797,7 +819,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/connections/following.json"
+                                                                                       pathPattern:@"/users/following.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -829,7 +851,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/connections/followers.json"
+                                                                                       pathPattern:@"/users/followers.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -885,6 +907,189 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
          }
      }];
     [operation start];
+}
+
+
+- (void)followUserID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:activeUserID];
+    [connObj setConnectionsUserID:userID];
+    
+
+    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/follow?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxConnectionObject*conObject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFollowUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFollowUserWithID:conObject.connectionsUserID andRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+
+- (void)unfollowUserID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:activeUserID];
+    [connObj setConnectionsUserID:userID];
+    [connObj setConnetionType:FluxConnectionState_follow];
+    
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/disconnect?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxConnectionObject*conObject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didUnfollowUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didUnfollowUserWithID:conObject.connectionsUserID andRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+
+- (void)sendFriendRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:activeUserID];
+    [connObj setConnectionsUserID:userID];
+    
+    
+    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/addfriend?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxConnectionObject*conObject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didSendFriendRequestToUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didSendFriendRequestToUserWithID:conObject.connectionsUserID andRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+
+- (void)acceptFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:activeUserID];
+    [connObj setConnectionsUserID:userID];
+    [connObj setFriendState:FluxFriendState_accept];
+    
+    
+    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxConnectionObject*conObject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didAcceptFriendRequestFromUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didAcceptFriendRequestFromUserWithID:conObject.connectionsUserID andRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+
+- (void)ignoreFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:activeUserID];
+    [connObj setConnectionsUserID:userID];
+    [connObj setFriendState:FluxFriendState_ignore];
+    
+    
+    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxConnectionObject*conObject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didIgnoreFriendRequestFromUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didIgnoreFriendRequestFromUserWithID:conObject.connectionsUserID andRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+
+- (void)unfriedUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:activeUserID];
+    [connObj setConnectionsUserID:userID];
+    [connObj setConnetionType:FluxConnectionState_friend];
+    
+    
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/disconnect?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxConnectionObject*conObject = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didUnfriendUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didUnfriendUserWithID:conObject.connectionsUserID andRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
 }
 
 

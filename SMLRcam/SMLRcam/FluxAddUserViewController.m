@@ -40,6 +40,8 @@
     [topToolbar setItems:arr];
     
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setFont:[UIFont fontWithName:@"Akkurat" size:14.0]];
+    [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor blackColor]];
+    [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor blackColor]];
     
     resultsArray = [[NSMutableArray alloc]init];
     resultsImageArray = [[NSMutableArray alloc]init];
@@ -79,23 +81,26 @@
     [cell setDelegate:self];
     [cell initCell];
     [cell setUserObject:[resultsArray objectAtIndex:indexPath.row]];
-    if ([(NSNumber*)[resultsImageArray objectAtIndex:indexPath.row]boolValue]) {
+    if ([[resultsImageArray objectAtIndex:indexPath.row] isKindOfClass:[UIImage class]]) {
         [cell.profileImageView setImage:[resultsImageArray objectAtIndex:indexPath.row]];
     }
     else{
         __weak FluxFriendFollowerCell *weakCell = cell;
         NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
         
-        NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxProductionServerURL,cell.userObject.userID,fluxImageTypeStrings[thumb], token];
+        NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxTestServerURL,cell.userObject.userID,@"thumb", token];
         
         [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                               placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
                                        success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
-                                           [resultsImageArray replaceObjectAtIndex:indexPath.row withObject:image];
-                                           [weakCell.profileImageView setImage:image];
-                                           //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                           //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                           [weakCell setNeedsLayout];
+                                           if (resultsImageArray.count > indexPath.row) {
+                                               [resultsImageArray replaceObjectAtIndex:indexPath.row withObject:image];
+                                               [weakCell.profileImageView setImage:image];
+                                               //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                               //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                               [weakCell setNeedsLayout];
+                                           }
+
                                            //}
                                        }
                                        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
@@ -125,18 +130,48 @@
     int index = [addUsersTableView indexPathForCell:friendFollowerCell].row;
     
     [UIActionSheet showInView:self.view
-                    withTitle:friendFollowerCell.titleLabel.text
+                    withTitle:nil
             cancelButtonTitle:@"Cancel"
        destructiveButtonTitle:nil
-            otherButtonTitles:@[@"Friend", @"Follow"]
+            otherButtonTitles:@[@"Send Friend Request", @"Follow"]
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
                              //link facebook
                              if (buttonIndex == 0) {
                                  NSLog(@"Friend");
+                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                                 
+                                 [request setSendFriendRequestReady:^(int userID, FluxDataRequest*completedRequest){
+                                     //do something with the UserID
+                                     NSLog(@"friended");
+                                     //[addUsersTableView reloadData];
+                                 }];
+                                 
+                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                     
+                                     NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                     [ProgressHUD showError:str];
+                                     
+                                 }];
+                                 [self.fluxDataManager sendFriendRequestToUserWithID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
                              }
                              else{
                                  NSLog(@"follow");
+                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                                 
+                                 [request setFollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+                                     //do something with the UserID
+                                     NSLog(@"Followed");
+                                     //[addUsersTableView reloadData];
+                                 }];
+                                 
+                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                     
+                                     NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                     [ProgressHUD showError:str];
+                                     
+                                 }];
+                                 [self.fluxDataManager addFollowerWithUserID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
                              }
                          }
                      }];
@@ -145,20 +180,31 @@
 #pragma mark SearchBar Delegate
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
+    
+    if (searchQuery.length > searchText.length) {
+        [resultsArray removeAllObjects];
+        [resultsImageArray removeAllObjects];
+        [addUsersTableView reloadData];
+    }
+    
     searchState = notSearching;
     searchQuery = searchText;
     [searchTimer invalidate];
     searchTimer = nil;
     
     if (searchText.length > 0) {
-        searchTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(searchUsersFromQuery) userInfo:nil repeats:NO];
+        searchTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(searchUsersFromQuery) userInfo:nil repeats:NO];
     }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
     [searchTimer invalidate];
     searchTimer = nil;
-    [self searchUsersFromQuery];
+    
+    if (searchQuery.length > 0) {
+        [self searchUsersFromQuery];
+    }
+    [searchBar becomeFirstResponder];
 }
 
 
@@ -170,6 +216,7 @@
         [request setUserSearchReady:^(NSArray *userList, FluxDataRequest*completedRequest){
             //do something with array
             resultsArray = [userList mutableCopy];
+            [resultsImageArray removeAllObjects];
             for (int i = 0; i<resultsArray.count; i++) {
                 [resultsImageArray addObject:[NSNumber numberWithBool:NO]];
             }

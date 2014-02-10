@@ -114,17 +114,28 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestImageListForUserWithID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 
-//lists
+//social
 - (FluxRequestID *) requestFriendsListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowingListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowerListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
-//search
 - (FluxRequestID *) requestUsersListQuery:(NSString*)query
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
+- (FluxRequestID *) addFollowerWithUserID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) unfollowUserWIthID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) sendFriendRequestToUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) acceptFriendRequestFromUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) ignoreFriendRequestFromUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) unfriendWithUserID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
 
 
 

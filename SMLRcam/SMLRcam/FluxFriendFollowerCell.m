@@ -38,33 +38,21 @@
     
     self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2;
     self.profileImageView.clipsToBounds = YES;
-    
     //add a white stroke to the image
-//    UIRectCorner corners = UIRectCornerBottomLeft | UIRectCornerBottomRight;
-//    CGSize radii = CGSizeMake(self.profileImageView.frame.size.height/2, self.profileImageView.frame.size.height/2);
-//    
-//    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.profileImageView.bounds
-//                                               byRoundingCorners:corners
-//                                                     cornerRadii:radii];
-//    
-//    // Mask the container view’s layer to round the corners.
-//    CAShapeLayer *cornerMaskLayer = [CAShapeLayer layer];
-//    [cornerMaskLayer setPath:path.CGPath];
-//    
-//    // Make a transparent, stroked layer which will dispay the stroke.
-//    CAShapeLayer *strokeLayer = [CAShapeLayer layer];
-//    strokeLayer.path = path.CGPath;
-//    strokeLayer.fillColor = [UIColor clearColor].CGColor;
-//    strokeLayer.strokeColor = [UIColor whiteColor].CGColor;
-//    strokeLayer.lineWidth = 1; // the stroke splits the width evenly inside and outside,
-//    // but the outside part will be clipped by the containerView’s mask.
-//    [self.profileImageView.layer addSublayer:strokeLayer];
+    self.profileImageView.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.7].CGColor;
+    self.profileImageView.layer.borderWidth = 1;
 }
 
 - (void)setUserObject:(FluxUserObject *)userObject{
     _userObject = userObject;
     
     [self.titleLabel setText:[NSString stringWithFormat:@"@%@",userObject.username]];
+    if (userObject.bio) {
+        [self.bioLabel setText:[NSString stringWithFormat:@"%@",userObject.bio]];
+    }
+    else{
+        [self.bioLabel setText:@""];
+    }
     
 }
 

@@ -145,6 +145,7 @@
 		AAAAD70218A1791800F5F3DB /* UIImagePickerController+Edit.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD6FC18A1791800F5F3DB /* UIImagePickerController+Edit.m */; };
 		AAAAD70518A2D55C00F5F3DB /* FluxAddUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD70418A2D55C00F5F3DB /* FluxAddUserViewController.m */; };
 		AAAAD70918A3E56700F5F3DB /* FluxRegistrationUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD70818A3E56700F5F3DB /* FluxRegistrationUserObject.m */; };
+		AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD70F18A5267200F5F3DB /* FluxConnectionObject.m */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A381871F0EA003BC1FF /* FluxPhotoCollectionCell.m */; };
 		AAAD9A3C187B14CE003BC1FF /* FluxRegisterUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3B187B14CE003BC1FF /* FluxRegisterUsernameViewController.m */; };
@@ -446,6 +447,8 @@
 		AAAAD70418A2D55C00F5F3DB /* FluxAddUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAddUserViewController.m; sourceTree = "<group>"; };
 		AAAAD70718A3E56700F5F3DB /* FluxRegistrationUserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxRegistrationUserObject.h; sourceTree = "<group>"; };
 		AAAAD70818A3E56700F5F3DB /* FluxRegistrationUserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegistrationUserObject.m; sourceTree = "<group>"; };
+		AAAAD70E18A5267200F5F3DB /* FluxConnectionObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxConnectionObject.h; sourceTree = "<group>"; };
+		AAAAD70F18A5267200F5F3DB /* FluxConnectionObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxConnectionObject.m; sourceTree = "<group>"; };
 		AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterControl.h; sourceTree = "<group>"; };
 		AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterControl.m; sourceTree = "<group>"; };
 		AAAD9A371871F0EA003BC1FF /* FluxPhotoCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPhotoCollectionCell.h; sourceTree = "<group>"; };
@@ -930,7 +933,7 @@
 				AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */,
 				AAA265A517E89EAE003AE787 /* FluxTagObject.h */,
 				AAA265A617E89EAE003AE787 /* FluxTagObject.m */,
-				AAAAD70618A3E54A00F5F3DB /* User Objects */,
+				AAAAD70D18A5264D00F5F3DB /* Social */,
 			);
 			name = "Data Objects";
 			sourceTree = "<group>";
@@ -1215,6 +1218,16 @@
 				AAAAD70818A3E56700F5F3DB /* FluxRegistrationUserObject.m */,
 			);
 			name = "User Objects";
+			sourceTree = "<group>";
+		};
+		AAAAD70D18A5264D00F5F3DB /* Social */ = {
+			isa = PBXGroup;
+			children = (
+				AAAAD70618A3E54A00F5F3DB /* User Objects */,
+				AAAAD70E18A5267200F5F3DB /* FluxConnectionObject.h */,
+				AAAAD70F18A5267200F5F3DB /* FluxConnectionObject.m */,
+			);
+			name = Social;
 			sourceTree = "<group>";
 		};
 		AAAC6C0D17C65F3300B7EAD1 /* Left Drawer */ = {
@@ -1670,6 +1683,7 @@
 				F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */,
 				F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,
+				AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,
 				AA984F1218088923007F33B1 /* MIMapView.m in Sources */,

@@ -31,12 +31,12 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
 
-    [self.navigationController setNavigationBarHidden:YES animated:YES];
+    //[self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    //[self.navigationController setNavigationBarHidden:NO animated:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -48,6 +48,17 @@
 {
     [self setTitle:@"Info"];
     [super viewDidLoad];
+    
+    [nameLabel setFont:[UIFont fontWithName:@"Akkurat" size:nameLabel.font.pointSize]];
+    [bioLabel setFont:[UIFont fontWithName:@"Akkurat" size:bioLabel.font.pointSize]];
+    [photosTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosTitleLabel.font.pointSize]];
+    [photosCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosCountLabel.font.pointSize]];
+    [followersTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:followersTitleLabel.font.pointSize]];
+    [followersCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:followersCountLabel.font.pointSize]];
+    [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialStatusLabel.font.pointSize]];
+    [followingTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:followingTitleLabel.font.pointSize]];
+    [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialStatusLabel.font.pointSize]];
+    
 }
 
 - (void)prepareViewWithUser:(FluxUserObject*)user{
@@ -56,23 +67,40 @@
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     [request setUserReady:^(FluxUserObject*userObject, FluxDataRequest*completedRequest){
         theUser = userObject;
-        [profileTableView reloadData];
         if (theUser.hasProfilePic) {
             FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
             [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
-                [profileTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                [profielImageButton setBackgroundImage:img forState:UIControlStateNormal];
             }];
             [self.fluxDataManager requestUserProfilePicForID:user.userID andSize:@"thumb" withDataRequest:picRequest];
         }
+        [nameLabel setText:[NSString stringWithFormat:@"@%@",theUser.username]];
+        [bioLabel setText:theUser.bio];
+        [photosCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
+        [followersCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
+        [followingCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
+        
+        if (theUser.friendState == 3) {
+            [socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",theUser.username]];
+        }
+        else if (theUser.isFollowing) {
+            [socialStatusLabel setText:[NSString stringWithFormat:@"@%@ is following you",theUser.username]];
+        }
+        else if (theUser.isFollower) {
+            [socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",theUser.username]];
+        }
+        else{
+            [socialStatusLabel setText:@""];
+        }
     }];
-    
     [self.fluxDataManager requestUserProfileForID:user.userID withDataRequest:request];
+    self.title = [NSString stringWithFormat:@"@%@",user.username];
 }
 
 #pragma mark - TableView Methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return 3;
+    return 1;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
@@ -81,94 +109,98 @@
 
 
 -(float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == 0) {
-        return 120.0;
-    }
-    else{
-        return 44.0;
-    }
+    return 400.0;
 }
 
-- (float)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-    return 150.0;
-}
+//- (float)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+//    return 150.0;
+//}
 
-- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
-    UIView*footerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, [self tableView:tableView heightForFooterInSection:section])];
-    socialStatusLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 20, 250.0, 15.0)];
-    [socialStatusLabel setCenter:CGPointMake(footerView.center.x, socialStatusLabel.center.y)];
-    [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:13.0]];
-    [socialStatusLabel setTextColor:[UIColor colorWithRed:44/255.0 green:53/255.0 blue:59/255.0 alpha:1.0]];
-    [socialStatusLabel setBackgroundColor:[UIColor clearColor]];
-    [socialStatusLabel setText:(theUser.isFollower) ? [NSString stringWithFormat:@"%@ is following you",theUser.username] : [NSString stringWithFormat:@"%@ is not following you",theUser.username]];
-    [socialStatusLabel setTextAlignment:NSTextAlignmentCenter];
-    [footerView addSubview:socialStatusLabel];
-    
-    followButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 57, 30)];
-    [followButton setTitle:(theUser.isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
-    [followButton setCenter:CGPointMake(socialStatusLabel.center.x, socialStatusLabel.center.y+(socialStatusLabel.frame.size.height/2)+15+15)];
-    addFriendButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
-//    [addFriendButton setTitle:(theUser.isFriends) ? @"Friends" : @"Add Friend" forState:UIControlStateNormal];
-    [addFriendButton setCenter:CGPointMake(socialStatusLabel.center.x, followButton.center.y+(followButton.frame.size.height/2)+15+15)];
-    followButton.titleLabel.font = addFriendButton.titleLabel.font = [UIFont fontWithName:@"Akkurat-Bold" size:addFriendButton.titleLabel.font.pointSize];
-    [addFriendButton addTarget:self action:@selector(addFriendButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    [followButton addTarget:self action:@selector(followButtonAction) forControlEvents:UIControlEventTouchUpInside];
-    
-    [footerView addSubview:followButton];
-    [footerView addSubview:addFriendButton];
-    
-    UIView*separator = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0.5)];
-    [separator setBackgroundColor:[UIColor colorWithRed:101/255.0 green:108/255.0 blue:112/255.0 alpha:0.7]];
-    [footerView addSubview:separator];
-
-    
-    return footerView;
-}
+//- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+//    UIView*footerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, [self tableView:tableView heightForFooterInSection:section])];
+//    socialStatusLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 20, 250.0, 15.0)];
+//    [socialStatusLabel setCenter:CGPointMake(footerView.center.x, socialStatusLabel.center.y)];
+//    [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:13.0]];
+//    [socialStatusLabel setTextColor:[UIColor colorWithRed:44/255.0 green:53/255.0 blue:59/255.0 alpha:1.0]];
+//    [socialStatusLabel setBackgroundColor:[UIColor clearColor]];
+//    [socialStatusLabel setText:(theUser.isFollower) ? [NSString stringWithFormat:@"%@ is following you",theUser.username] : [NSString stringWithFormat:@"%@ is not following you",theUser.username]];
+//    [socialStatusLabel setTextAlignment:NSTextAlignmentCenter];
+//    [footerView addSubview:socialStatusLabel];
+//    
+//    followButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 57, 30)];
+//    [followButton setTitle:(theUser.isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
+//    [followButton setCenter:CGPointMake(socialStatusLabel.center.x, socialStatusLabel.center.y+(socialStatusLabel.frame.size.height/2)+15+15)];
+//    addFriendButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
+////    [addFriendButton setTitle:(theUser.isFriends) ? @"Friends" : @"Add Friend" forState:UIControlStateNormal];
+//    [addFriendButton setCenter:CGPointMake(socialStatusLabel.center.x, followButton.center.y+(followButton.frame.size.height/2)+15+15)];
+//    followButton.titleLabel.font = addFriendButton.titleLabel.font = [UIFont fontWithName:@"Akkurat-Bold" size:addFriendButton.titleLabel.font.pointSize];
+//    [addFriendButton addTarget:self action:@selector(addFriendButtonAction) forControlEvents:UIControlEventTouchUpInside];
+//    [followButton addTarget:self action:@selector(followButtonAction) forControlEvents:UIControlEventTouchUpInside];
+//    
+//    [footerView addSubview:followButton];
+//    [footerView addSubview:addFriendButton];
+//    
+//    UIView*separator = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0.5)];
+//    [separator setBackgroundColor:[UIColor colorWithRed:101/255.0 green:108/255.0 blue:112/255.0 alpha:0.7]];
+//    [footerView addSubview:separator];
+//
+//    
+//    return footerView;
+//}
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.row == 0) {
-        static NSString *cellIdentifier = @"profileDetailsCell";
-        FluxProfileCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-        if (!cell) {
-            cell = [[FluxProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-        }
-        //HACK
-        [cell.bioLabel setText:theUser.bio];
-        [cell.usernameLabel setText:theUser.username];
-        [cell.profileImageButton setBackgroundImage:(theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"] forState:UIControlStateNormal];
-        [cell.imageCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
-        [cell initCellisEditing:NO];
-        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-        return cell;
+    static NSString *cellIdentifier = @"profileDetailsCell";
+    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (!cell) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
-    else if (indexPath.row == 1){
-        static NSString *cellIdentifier = @"publicProfileNumberCell";
-        FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-        if (!cell) {
-            cell = [[FluxCountTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-        }
-        [cell initCell];
-        [cell.titleLabel setText:@"Following"];
-        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
-        
-        [cell.titleLabel setEnabled:NO];
-        [cell.countLabel setEnabled:NO];
-        return cell;
-    }
-    else{
-        static NSString *cellIdentifier = @"publicProfileNumberCell";
-        FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-        if (!cell) {
-            cell = [[FluxCountTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-        }
-        [cell initCell];
-        [cell.titleLabel setText:@"Followers"];
-        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
-        
-        [cell.titleLabel setEnabled:NO];
-        [cell.countLabel setEnabled:NO];
-        return cell;
-    }
+    
+    
+    
+    
+//    if (indexPath.row == 0) {
+//        static NSString *cellIdentifier = @"profileDetailsCell";
+//        FluxProfileCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+//        if (!cell) {
+//            cell = [[FluxProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+//        }
+//        //HACK
+//        [cell.bioLabel setText:theUser.bio];
+//        [cell.usernameLabel setText:theUser.username];
+//        [cell.profileImageButton setBackgroundImage:(theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"] forState:UIControlStateNormal];
+//        [cell.imageCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
+//        [cell initCellisEditing:NO];
+//        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+//        return cell;
+//    }
+//    else if (indexPath.row == 1){
+//        static NSString *cellIdentifier = @"publicProfileNumberCell";
+//        FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+//        if (!cell) {
+//            cell = [[FluxCountTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+//        }
+//        [cell initCell];
+//        [cell.titleLabel setText:@"Following"];
+//        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
+//        
+//        [cell.titleLabel setEnabled:NO];
+//        [cell.countLabel setEnabled:NO];
+//        return cell;
+//    }
+//    else{
+//        static NSString *cellIdentifier = @"publicProfileNumberCell";
+//        FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+//        if (!cell) {
+//            cell = [[FluxCountTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+//        }
+//        [cell initCell];
+//        [cell.titleLabel setText:@"Followers"];
+//        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
+//        
+//        [cell.titleLabel setEnabled:NO];
+//        [cell.countLabel setEnabled:NO];
+//        return cell;
+//    }
 
 }
 

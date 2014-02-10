@@ -28,6 +28,7 @@ typedef enum SocialListMode : NSUInteger {
     NSArray*socialListTableViewVCs;
     NSMutableArray*socialListsRefreshControls;
     NSMutableArray*socialListArray;
+    NSMutableArray*socialListImagesArray;
     NSMutableArray*socialTableViews;
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;

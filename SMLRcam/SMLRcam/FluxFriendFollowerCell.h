@@ -25,6 +25,7 @@
 
 @property (nonatomic, strong)FluxUserObject* userObject;
 @property (strong, nonatomic) IBOutlet UILabel *titleLabel;
+@property (strong, nonatomic) IBOutlet UILabel *bioLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (strong, nonatomic) IBOutlet UIButton *friendFollowButton;
 - (IBAction)friendFollowButtonAction:(id)sender;

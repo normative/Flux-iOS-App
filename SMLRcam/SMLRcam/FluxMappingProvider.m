@@ -10,6 +10,7 @@
 #import "FluxScanImageObject.h"
 #import "FluxRegistrationUserObject.h"
 #import "FluxTagObject.h"
+#import "FluxConnectionObject.h"
 #import "FluxMapImageObject.h"
 #import "FluxCameraObject.h"
 #import "FluxProfileImageObject.h"
@@ -138,6 +139,32 @@
                                                   @"model":    @"model",
                                                   @"id":        @"cameraID"
                                                   }];
+    return mapping;
+}
+
+#pragma mark - Social Mapping
++ (RKObjectMapping *)connectionGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxConnectionObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":   @"userID",
+                                                  @"connections_id":     @"connectionsUserID",
+                                                   @"id":   @"connectionID",
+                                                   @"am_following":   @"amFollowing",
+                                                   @"friend_state":   @"friendState"
+                                                  }];
+    return mapping;
+}
++ (RKObjectMapping *)connectionPOSTMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"userID":            @"user_id",
+                                                  @"connectionsUserID":   @"connections_id",
+                                                  @"connetionType":   @"connection_type",
+                                                  @"friendState":   @"friend_state"
+                                                  }];
+    
     return mapping;
 }
 

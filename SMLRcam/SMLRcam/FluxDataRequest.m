@@ -95,6 +95,9 @@
 
 #pragma mark - Users
 
+
+#pragma mark Registration
+
 - (void)whenUploadUserComplete:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.uploadUserComplete)
     {
@@ -137,6 +140,8 @@
     }
 }
 
+#pragma mark Profile Stuff
+
 -(void)whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.userReady)
     {
@@ -157,6 +162,8 @@
     }
 }
 
+#pragma mark Social Stuff
+
 - (void) whenUserFriendsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.userFriendsReady) {
         self.userFriendsReady(socialUserObjects, completeDataRequest);
@@ -176,6 +183,37 @@
 - (void) whenUserSearchReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.userSearchReady) {
         self.userSearchReady(socialUserObjects, completeDataRequest);
+    }
+}
+
+- (void) whenFollowUserReady:(int)followingUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.followUserReady) {
+        self.followUserReady(followingUserID, completeDataRequest);
+    }
+}
+- (void) whenUnfollowingUserReady:(int)unfollowedUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.unfollowUserReady) {
+        self.unfollowUserReady(unfollowedUserID, completeDataRequest);
+    }
+}
+- (void) whenSendFriendRequestReady:(int)userIdForFriendRequest withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.sendFriendRequestReady) {
+        self.sendFriendRequestReady(userIdForFriendRequest, completeDataRequest);
+    }
+}
+- (void) whenAcceptFriendRequestReady:(int)newFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.acceptFriendRequestReady) {
+        self.acceptFriendRequestReady(newFriendUserID, completeDataRequest);
+    }
+}
+- (void) whenIgnoreFriendRequestReady:(int)ignoreUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.ignoreFriendRequestReady) {
+        self.ignoreFriendRequestReady(ignoreUserID, completeDataRequest);
+    }
+}
+- (void) whenUnFriendUserReady:(int)oldFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.unfriendUserReady) {
+        self.unfriendUserReady(oldFriendUserID, completeDataRequest);
     }
 }
 

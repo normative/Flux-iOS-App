@@ -67,6 +67,8 @@ extern NSString* const FluxTestServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray*)images
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(FluxRequestID *)requestID;
+
+//social stuff
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)friends
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)followings
@@ -74,6 +76,18 @@ extern NSString* const FluxTestServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowerListForUser:(NSArray*)followers
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUsersListForQuery:(NSArray*)users
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFollowUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfollowUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFriendRequestToUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didAcceptFriendRequestFromUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didIgnoreFriendRequestFromUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfriendUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
 
 //tags
@@ -206,6 +220,8 @@ return's a profile image for a given userID and size
  **/
 - (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
+
+#pragma mark Social Stuff
 /**
  return's a user's friend list for a given userID
  **/
@@ -226,6 +242,35 @@ return's a profile image for a given userID and size
  **/
 - (void)getUsersListForQuery:(NSString*)query withRequestID:(NSUUID *)requestID;
 
+/**
+ Adds the supplied userID as a follower of the activeUser
+ **/
+- (void)followUserID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ removes the supplied userID as a follower of the activeUser
+ **/
+- (void)unfollowUserID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ sends the supplied userID as a friend request from the activeUser
+ **/
+- (void)sendFriendRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ accepts the friend request from the supplied userID from the activeUser
+ **/
+- (void)acceptFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ ignores the friend request from the supplied userID from the activeUser
+ **/
+- (void)ignoreFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ removes the supplied userID from the ativeUser's friend list
+ **/
+- (void)unfriedUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 
 

@@ -17,9 +17,21 @@
     IBOutlet UITableView *profileTableView;
     FluxUserObject*theUser;
     
-    UILabel *socialStatusLabel;
-    UIButton *followButton;
-    UIButton *addFriendButton;
+
+    IBOutlet UIButton *profielImageButton;
+    IBOutlet UILabel *nameLabel;
+    IBOutlet UILabel *bioLabel;
+    IBOutlet UILabel *photosTitleLabel;
+    IBOutlet UILabel *photosCountLabel;
+    IBOutlet UILabel *followersTitleLabel;
+    IBOutlet UILabel *followersCountLabel;
+    IBOutlet UILabel *followingTitleLabel;
+    IBOutlet UILabel *followingCountLabel;
+    IBOutlet UILabel *socialStatusLabel;
+    
+    
+    IBOutlet UIButton *followButton;
+    IBOutlet UIButton *addFriendButton;
 }
 @property (nonatomic, strong)FluxDataManager*fluxDataManager;
 
