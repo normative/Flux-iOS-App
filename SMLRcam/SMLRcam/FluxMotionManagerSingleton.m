@@ -100,7 +100,8 @@ typedef struct{
     GLKQuaternion q = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
 
     // Calculate correction delta for heading, based on separation of y-axis and LOS-axis
-    double heading_delta = [self calculateHeadingCorrectionAngleWithQuaternion:q];
+//    double heading_delta = [self calculateHeadingCorrectionAngleWithQuaternion:q];
+    double heading_delta = 0.0;
 //    NSLog(@"Angle correction: %f, Heading: %f", heading_delta * 180.0/M_PI, heading.trueHeading);
 
     // Alternative method - calculate theta between y-axis (Earth) and y-axis device (clip the z-component)
@@ -110,9 +111,15 @@ typedef struct{
     y_device_earth.z = 0.0;
     GLKVector3 y_axis_earth = GLKVector3Make(0.0, 1.0, 0.0);
     
-    double theta = [self calculateAngleBetweenVector:y_device_earth andVector:y_axis_earth];
+    double theta = [self calculateAngleBetweenVector:y_axis_earth andVector:y_device_earth];
+    if (y_device_earth.x < 0.0)
+    {
+        // We can get the sign based on the x-component of y_device_earth. Angle is valid 0-180 degrees, but sign was unknown.
+        theta = - theta;
+    }
 
-    NSLog(@"Y-axis: (%f, %f, %f) Theta: %f", y_device_earth.x, y_device_earth.y, y_device_earth.z, theta * 180.0/M_PI);
+//    NSLog(@"Y-axis: (%f, %f, %f) Theta: %f", y_device_earth.x, y_device_earth.y, y_device_earth.z, theta * 180.0/M_PI);
+    NSLog(@"Heading: %f, Theta: %f", heading.trueHeading, theta * 180.0/M_PI - 90.0);
     
     // Rotate attitude back by theta, then forward by heading
     GLKQuaternion theta_yaw_original = GLKQuaternionMakeWithAngleAndAxis(-theta, 0.0, 0.0, 1.0);
