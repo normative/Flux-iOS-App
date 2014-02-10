@@ -106,26 +106,41 @@ typedef struct{
 
     // Alternative method - calculate theta between y-axis (Earth) and y-axis device (clip the z-component)
     // Remove this component, then re-add actual yaw from heading
+    GLKVector3 y_axis_earth = GLKVector3Make(0.0, 1.0, 0.0);
     GLKVector3 y_device = GLKVector3Make(0.0, 1.0, 0.0);
     GLKVector3 y_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(q, y_device));
-    y_device_earth.z = 0.0;
-    GLKVector3 y_axis_earth = GLKVector3Make(0.0, 1.0, 0.0);
     
-    double theta = [self calculateAngleBetweenVector:y_axis_earth andVector:y_device_earth];
-    if (y_device_earth.x < 0.0)
+    // Before clipping z, check if perpendicular to the Earth plane
+    // If so, rotate to correct
+    const double min_vert_angle = 20.0 * M_PI/180.0;
+    GLKVector3 z_axis_earth = GLKVector3Make(0.0, 0.0, 1.0);
+    double theta_vert = [self calculateAngleBetweenVector:y_device_earth andVector:z_axis_earth];
+    if (theta_vert < min_vert_angle)
+    {
+        GLKQuaternion theta_pitch_correction = GLKQuaternionMakeWithAngleAndAxis(-(min_vert_angle - theta_vert), 1.0, 0.0, 0.0);
+        GLKQuaternion quat_pitch_correction = GLKQuaternionNormalize(GLKQuaternionMultiply(q, theta_pitch_correction));
+        y_device_earth = GLKQuaternionRotateVector3(quat_pitch_correction, y_device);
+    }
+
+    // Now clip the z and calculate the yaw correction
+    GLKVector3 n_earth = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 y_device_earth_projected = [self projectVector:y_device_earth ontoPlaneWithNormal:n_earth];
+    
+    double theta = [self calculateAngleBetweenVector:y_axis_earth andVector:y_device_earth_projected];
+    if (y_device_earth_projected.x < 0.0)
     {
         // We can get the sign based on the x-component of y_device_earth. Angle is valid 0-180 degrees, but sign was unknown.
-        theta = - theta;
+        theta = -theta;
     }
 
 //    NSLog(@"Y-axis: (%f, %f, %f) Theta: %f", y_device_earth.x, y_device_earth.y, y_device_earth.z, theta * 180.0/M_PI);
-    NSLog(@"Heading: %f, Theta: %f", heading.trueHeading, theta * 180.0/M_PI - 90.0);
+//    NSLog(@"Heading: %f, Theta: %f", heading.trueHeading, theta * 180.0/M_PI - 90.0);
     
     // Rotate attitude back by theta, then forward by heading
-    GLKQuaternion theta_yaw_original = GLKQuaternionMakeWithAngleAndAxis(-theta, 0.0, 0.0, 1.0);
-    GLKQuaternion quat_noyaw = GLKQuaternionNormalize(GLKQuaternionMultiply(GLKQuaternionInvert(theta_yaw_original), q));
-    GLKQuaternion theta_yaw_new = GLKQuaternionMakeWithAngleAndAxis(-(heading.trueHeading + 90.0)*M_PI/180.0 + heading_delta, 0.0, 0.0, 1.0);
-    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(theta_yaw_new, quat_noyaw));
+    GLKQuaternion theta_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(theta-(heading.trueHeading + 90.0)*M_PI/180.0, 0.0, 0.0, 1.0);
+    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(theta_yaw_delta, q));
+
+//    NSLog(@"delta: %f", (theta-(heading.trueHeading + 90.0)*M_PI/180.0) * 180.0/M_PI);
 
 //    // Original method (extract Euler angle sequences and replace values)
 //    
@@ -146,9 +161,9 @@ typedef struct{
 //    
 //    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionInvert(GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle3, GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle2, quat_angle1))))));
 
-    // Calculate Yaw-Pitch-Roll for logging
-    euler_angles finalAngles = [self calculateAngleSequence213FromQuaterion:&quatnew];
-    NSLog(@"YPR (updated): %f, %f, %f", finalAngles.theta1 * 180.0/M_PI, finalAngles.theta2 * 180.0/M_PI, finalAngles.theta3 * 180.0/M_PI);
+//    // Calculate Yaw-Pitch-Roll for logging
+//    euler_angles finalAngles = [self calculateAngleSequence213FromQuaterion:&quatnew];
+//    NSLog(@"YPR (updated): %f, %f, %f", finalAngles.theta1 * 180.0/M_PI, finalAngles.theta2 * 180.0/M_PI, finalAngles.theta3 * 180.0/M_PI);
 
     outquat->x = quatnew.x;
     outquat->y = quatnew.y;
