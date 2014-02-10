@@ -9,31 +9,22 @@
 #import <UIKit/UIKit.h>
 #import "FluxUserObject.h"
 #import "FluxDataManager.h"
-
+#import "FluxPublicProfileCell.h"
 #import "GAITrackedViewController.h"
 
-@interface FluxPublicProfileViewController : GAITrackedViewController<UITableViewDelegate, UITableViewDataSource>{
+typedef enum ProfileViewSource : NSUInteger {
+    socialLists = 0,
+    search = 1,
+    imageTapping = 2
+} ProfileViewSource;
+
+@interface FluxPublicProfileViewController : GAITrackedViewController<UITableViewDelegate, UITableViewDataSource, FluxPublicProfileCellDelegate>{
     
     IBOutlet UITableView *profileTableView;
-    FluxUserObject*theUser;
-    
-
-    IBOutlet UIButton *profielImageButton;
-    IBOutlet UILabel *nameLabel;
-    IBOutlet UILabel *bioLabel;
-    IBOutlet UILabel *photosTitleLabel;
-    IBOutlet UILabel *photosCountLabel;
-    IBOutlet UILabel *followersTitleLabel;
-    IBOutlet UILabel *followersCountLabel;
-    IBOutlet UILabel *followingTitleLabel;
-    IBOutlet UILabel *followingCountLabel;
-    IBOutlet UILabel *socialStatusLabel;
-    
-    
-    IBOutlet UIButton *followButton;
-    IBOutlet UIButton *addFriendButton;
+    FluxUserObject*theUser;    
 }
 @property (nonatomic, strong)FluxDataManager*fluxDataManager;
+@property (nonatomic)ProfileViewSource viewSource;
 
 - (void)prepareViewWithUser:(FluxUserObject*)user;
 

@@ -24,6 +24,13 @@
 {
     [super viewDidLoad];
     
+    id<UIApplicationDelegate> appDelegate = [[UIApplication sharedApplication] delegate];
+    if ([appDelegate respondsToSelector:@selector(window)])
+		self.window = [appDelegate performSelector:@selector(window)];
+	else self.window = [[UIApplication sharedApplication] keyWindow];
+    
+    
+    
     [self.view setAlpha:0.0];
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
@@ -51,6 +58,28 @@
         [socialListsRefreshControls addObject:refreshControl];
     }
     
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+
+    // first get an instance from storyboard
+    self.searchUserVC = [myStoryboard instantiateViewControllerWithIdentifier:@"searchUserVC"];
+    
+    self.childNavC = [[UINavigationController alloc]initWithRootViewController:self.searchUserVC];
+    self.childNavC.interactivePopGestureRecognizer.enabled = NO;
+    // then add the imageCaptureView as the subview of the parent view
+    [self.window addSubview:self.childNavC.view];
+    // add the glkViewController as the child of self
+    [self addChildViewController:self.childNavC];
+    [self.childNavC didMoveToParentViewController:self];
+    [self.searchUserVC setFluxDataManager:self.fluxDataManager];
+    self.childNavC.view.frame = self.view.bounds;
+    [self setSearchVCHidden:YES animated:NO];
+    
+    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.childNavC.view.frame];
+    [bgView setImage:[(UIImageView*)[self.navigationController.view.subviews firstObject] image]];
+    [bgView setBackgroundColor:[UIColor darkGrayColor]];
+    [self.childNavC.view insertSubview:bgView atIndex:0];
+    
     
     [self updateListForActiveMode];
 }
@@ -61,6 +90,9 @@
     [UIView animateWithDuration:0.2 animations:^{
         [self.view setAlpha:0.0];
     }];
+    
+    [self.searchUserVC removeFromParentViewController];
+    [self.searchUserVC.view removeFromSuperview];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -92,6 +124,37 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setSearchVCHidden:(BOOL)hidden animated:(BOOL)animated{
+    if (animated) {
+        if (hidden) {
+            [UIView animateWithDuration:0.3 animations:^{
+                [self.childNavC.view setAlpha:0.0];
+                
+            } completion:^(BOOL finished){
+                [self.childNavC.view setHidden:YES];
+            }];
+        }
+        
+        else{
+            [self.childNavC.view setHidden:NO];
+            [UIView animateWithDuration:0.3 animations:^{
+                [self.childNavC.view setAlpha:1.0];
+            }];
+        }
+    }
+    else{
+        if (hidden) {
+            [self.childNavC.view setAlpha:0.0];
+            [self.childNavC.view setHidden:YES];
+        }
+        else{
+            [self.childNavC.view setAlpha:1.0];
+            [self.childNavC.view setHidden:NO];
+        }
+    }
+
 }
 
 #pragma mark - Table view data source
@@ -128,12 +191,13 @@
         NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
         
         NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxTestServerURL,cell.userObject.userID,@"thumb", token];
-        
+        int currentMode = listMode;
         [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                      placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
-                                                  [[(NSMutableArray*)socialListImagesArray objectAtIndex:listMode] replaceObjectAtIndex:indexPath.row withObject:image];
+                                                  [[(NSMutableArray*)socialListImagesArray objectAtIndex:currentMode] replaceObjectAtIndex:indexPath.row withObject:image];
                                                   [weakCell.profileImageView setImage:image];
+                                                  weakCell.userObject.hasProfilePic = YES;
                                                   //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
                                                   //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
                                                   [weakCell setNeedsLayout];
@@ -155,7 +219,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     FluxFriendFollowerCell*cell = (FluxFriendFollowerCell*)[(UITableView*)[socialTableViews objectAtIndex:listMode] cellForRowAtIndexPath:indexPath];
+    if ([[[(NSMutableArray*)socialListImagesArray objectAtIndex:listMode] objectAtIndex:indexPath.row] isKindOfClass:[UIImage class]]) {
+        [cell.userObject setProfilePic:(UIImage*)[[(NSMutableArray*)socialListImagesArray objectAtIndex:listMode] objectAtIndex:indexPath.row]];
+    }
     [self performSegueWithIdentifier:@"pushProfileSegue" sender:cell.userObject];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell{
@@ -401,6 +469,16 @@
     
     if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0) {
         [self updateListForActiveMode];
+    }
+}
+
+- (IBAction)searchButtonAction:(id)sender {
+    if ([self.childNavC.view isHidden]) {
+        [self.searchUserVC willAppear];
+        [self setSearchVCHidden:NO animated:YES];
+    }
+    else{
+        [self setSearchVCHidden:YES animated:YES];
     }
 }
 @end

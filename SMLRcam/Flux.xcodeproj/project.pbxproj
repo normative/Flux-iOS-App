@@ -146,6 +146,7 @@
 		AAAAD70518A2D55C00F5F3DB /* FluxAddUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD70418A2D55C00F5F3DB /* FluxAddUserViewController.m */; };
 		AAAAD70918A3E56700F5F3DB /* FluxRegistrationUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD70818A3E56700F5F3DB /* FluxRegistrationUserObject.m */; };
 		AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD70F18A5267200F5F3DB /* FluxConnectionObject.m */; };
+		AAAAD71318A912CE00F5F3DB /* FluxPublicProfileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD71218A912CE00F5F3DB /* FluxPublicProfileCell.m */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A381871F0EA003BC1FF /* FluxPhotoCollectionCell.m */; };
 		AAAD9A3C187B14CE003BC1FF /* FluxRegisterUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3B187B14CE003BC1FF /* FluxRegisterUsernameViewController.m */; };
@@ -449,6 +450,8 @@
 		AAAAD70818A3E56700F5F3DB /* FluxRegistrationUserObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxRegistrationUserObject.m; sourceTree = "<group>"; };
 		AAAAD70E18A5267200F5F3DB /* FluxConnectionObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxConnectionObject.h; sourceTree = "<group>"; };
 		AAAAD70F18A5267200F5F3DB /* FluxConnectionObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxConnectionObject.m; sourceTree = "<group>"; };
+		AAAAD71118A912CE00F5F3DB /* FluxPublicProfileCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPublicProfileCell.h; sourceTree = "<group>"; };
+		AAAAD71218A912CE00F5F3DB /* FluxPublicProfileCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPublicProfileCell.m; sourceTree = "<group>"; };
 		AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterControl.h; sourceTree = "<group>"; };
 		AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterControl.m; sourceTree = "<group>"; };
 		AAAD9A371871F0EA003BC1FF /* FluxPhotoCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPhotoCollectionCell.h; sourceTree = "<group>"; };
@@ -1287,6 +1290,8 @@
 			children = (
 				AA3BAF231846477E009D4FAC /* FluxPublicProfileViewController.h */,
 				AA3BAF241846477E009D4FAC /* FluxPublicProfileViewController.m */,
+				AAAAD71118A912CE00F5F3DB /* FluxPublicProfileCell.h */,
+				AAAAD71218A912CE00F5F3DB /* FluxPublicProfileCell.m */,
 			);
 			name = "Public Profile";
 			sourceTree = "<group>";
@@ -1686,6 +1691,7 @@
 				AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,
+				AAAAD71318A912CE00F5F3DB /* FluxPublicProfileCell.m in Sources */,
 				AA984F1218088923007F33B1 /* MIMapView.m in Sources */,
 				AA9D0EA2185646DB0004823E /* FluxCameraObject.m in Sources */,
 				F2A04431187B48A00044DDC4 /* FluxCacheImageObject.m in Sources */,

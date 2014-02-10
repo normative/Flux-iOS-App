@@ -35,6 +35,8 @@
     [self setSelectedBackgroundView:bgColorView];
     
     self.titleLabel.font = [UIFont fontWithName:@"Akkurat" size:self.titleLabel.font.pointSize];
+    self.socialStatusLabel.font = [UIFont fontWithName:@"Akkurat" size:self.socialStatusLabel.font.pointSize];
+    [self.socialStatusLabel setTextColor:[UIColor colorWithWhite:1.0 alpha:0.8]];
     
     self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2;
     self.profileImageView.clipsToBounds = YES;
@@ -53,13 +55,33 @@
     else{
         [self.bioLabel setText:@""];
     }
-    
 }
 
 - (IBAction)friendFollowButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(FriendFollowerCellButtonWasTapped:)]) {
         [delegate FriendFollowerCellButtonWasTapped:self];
     }
-    
 }
+
+- (void)setSocialMode:(int)socialMode{
+    [self.socialStatusLabel setText:@""];
+    if (socialMode > 0) {
+        switch (socialMode) {
+            case 1:
+                [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",_userObject.username]];
+                break;
+            case 2:
+                [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",_userObject.username]];
+                break;
+            case 3:
+                [self.socialStatusLabel setText:[NSString stringWithFormat:@"is following you"]];
+                break;
+                
+            default:
+                break;
+        }
+        [self layoutSubviews];
+    }
+}
+
 @end

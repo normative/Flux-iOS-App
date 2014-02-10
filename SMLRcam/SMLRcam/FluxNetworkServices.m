@@ -85,11 +85,17 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                                                                                                         keyPath:nil
                                                                                                     statusCodes:statusCodes];
         
-        RKResponseDescriptor *connectionResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
+        RKResponseDescriptor *connectionFollowResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
                                                                                                               method:RKRequestMethodAny
-                                                                                                         pathPattern:@"connections"
+                                                                                                         pathPattern:@"connections/follow"
                                                                                                              keyPath:nil
                                                                                                          statusCodes:statusCodes];
+        
+        RKResponseDescriptor *connectionFriendResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
+                                                                                                          method:RKRequestMethodAny
+                                                                                                     pathPattern:@"connections/addfriend"
+                                                                                                         keyPath:nil
+                                                                                                     statusCodes:statusCodes];
         
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
@@ -129,7 +135,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         [objectManager addResponseDescriptor:registrationResponseDescriptor];
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
         [objectManager addResponseDescriptor:cameraCreationResponseDescriptor];
-        [objectManager addResponseDescriptor:connectionResponseDescriptor];
+        [objectManager addResponseDescriptor:connectionFollowResponseDescriptor];
+        [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
         
         //and again for image-related calls
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]

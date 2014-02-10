@@ -299,8 +299,8 @@
         [cell.countLabel setEnabled:NO];
         [cell.countLabel setHidden:YES];
       //disable social
-//        [cell.titleLabel setEnabled:NO];
-//        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+        [cell.titleLabel setEnabled:NO];
+        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
     //[cell.imageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
     return cell;
@@ -317,8 +317,8 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-            //[tableView deselectRowAtIndexPath:indexPath animated:NO];
-            [self performSegueWithIdentifier:@"pushSocialList" sender:nil];
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            //[self performSegueWithIdentifier:@"pushSocialList" sender:nil];
             break;
         case 3:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];

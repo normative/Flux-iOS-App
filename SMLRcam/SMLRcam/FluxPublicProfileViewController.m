@@ -7,9 +7,9 @@
 //
 
 #import "FluxPublicProfileViewController.h"
-
+#import "UIImageView+AFNetworking.h"
 #import "FluxCountTableViewCell.h"
-#import "FluxProfileCell.h"
+#import "UICKeyChainStore.h"
 
 @interface FluxPublicProfileViewController ()
 
@@ -18,15 +18,6 @@
 @implementation FluxPublicProfileViewController
 
 #pragma mark - View Init
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
@@ -48,50 +39,17 @@
 {
     [self setTitle:@"Info"];
     [super viewDidLoad];
-    
-    [nameLabel setFont:[UIFont fontWithName:@"Akkurat" size:nameLabel.font.pointSize]];
-    [bioLabel setFont:[UIFont fontWithName:@"Akkurat" size:bioLabel.font.pointSize]];
-    [photosTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosTitleLabel.font.pointSize]];
-    [photosCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:photosCountLabel.font.pointSize]];
-    [followersTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:followersTitleLabel.font.pointSize]];
-    [followersCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:followersCountLabel.font.pointSize]];
-    [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialStatusLabel.font.pointSize]];
-    [followingTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:followingTitleLabel.font.pointSize]];
-    [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialStatusLabel.font.pointSize]];
-    
 }
 
 - (void)prepareViewWithUser:(FluxUserObject*)user{
     theUser = user;
-    
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     [request setUserReady:^(FluxUserObject*userObject, FluxDataRequest*completedRequest){
         theUser = userObject;
-        if (theUser.hasProfilePic) {
-            FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
-            [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
-                [profielImageButton setBackgroundImage:img forState:UIControlStateNormal];
-            }];
-            [self.fluxDataManager requestUserProfilePicForID:user.userID andSize:@"thumb" withDataRequest:picRequest];
+        if (user.profilePic) {
+            theUser.profilePic = user.profilePic;
         }
-        [nameLabel setText:[NSString stringWithFormat:@"@%@",theUser.username]];
-        [bioLabel setText:theUser.bio];
-        [photosCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
-        [followersCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
-        [followingCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
-        
-        if (theUser.friendState == 3) {
-            [socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",theUser.username]];
-        }
-        else if (theUser.isFollowing) {
-            [socialStatusLabel setText:[NSString stringWithFormat:@"@%@ is following you",theUser.username]];
-        }
-        else if (theUser.isFollower) {
-            [socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",theUser.username]];
-        }
-        else{
-            [socialStatusLabel setText:@""];
-        }
+        [profileTableView reloadData];
     }];
     [self.fluxDataManager requestUserProfileForID:user.userID withDataRequest:request];
     self.title = [NSString stringWithFormat:@"@%@",user.username];
@@ -109,7 +67,7 @@
 
 
 -(float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 400.0;
+    return 600.0;
 }
 
 //- (float)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
@@ -149,59 +107,91 @@
 //}
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *cellIdentifier = @"profileDetailsCell";
-    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    static NSString *cellIdentifier = @"publicProfileCell";
+    FluxPublicProfileCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+        cell = [[FluxPublicProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+    }
+    [cell setDelegate:self];
+    [cell initCell];
+
+    //disable the profile button for now
+    [cell.profielImageButton setUserInteractionEnabled:NO];
+    
+    if (theUser.hasProfilePic) {
+        if (theUser.profilePic) {
+            [cell.profielImageButton setBackgroundImage:theUser.profilePic forState:UIControlStateNormal];
+        }
+        else{
+            __weak FluxPublicProfileCell *weakCell = cell;
+            NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+            NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxTestServerURL,theUser.userID,@"thumb", token];
+            [cell.profielImageButton.imageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
+                                                     placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
+                                                              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
+                                                                  //[[(NSMutableArray*)socialListImagesArray objectAtIndex:listMode] replaceObjectAtIndex:indexPath.row withObject:image];
+                                                                  [weakCell.profielImageButton setBackgroundImage:image forState:UIControlStateNormal];
+                                                                  //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                                  //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                                  [weakCell setNeedsLayout];
+                                                                  //}
+                                                              }
+                                                              failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
+                                                                  NSLog(@"profile image done broke :(");
+                                                              }];
+        }
     }
     
+    if (theUser.isFollowing) {
+        [cell.followerButton.titleLabel setText:@"Unfollow"];
+    }
+    switch (theUser.friendState) {
+        case 0:
+            [cell.friendButton.titleLabel setText:@"Add as friend"];
+            break;
+        case 1:
+            [cell.friendButton.titleLabel setText:@"Add as friend"];
+            cell.friendButton.userInteractionEnabled = NO;
+            break;
+        case 2:
+            [cell.friendButton.titleLabel setText:@"Accept friend request"];
+            break;
+        case 3:
+            [cell.friendButton.titleLabel setText:@"Unfriend"];
+            break;
+            
+        default:
+            break;
+    }
     
-    
-    
-//    if (indexPath.row == 0) {
-//        static NSString *cellIdentifier = @"profileDetailsCell";
-//        FluxProfileCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-//        if (!cell) {
-//            cell = [[FluxProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-//        }
-//        //HACK
-//        [cell.bioLabel setText:theUser.bio];
-//        [cell.usernameLabel setText:theUser.username];
-//        [cell.profileImageButton setBackgroundImage:(theUser.profilePic) ? theUser.profilePic : [UIImage imageNamed:@"profileImage"] forState:UIControlStateNormal];
-//        [cell.imageCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
-//        [cell initCellisEditing:NO];
-//        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-//        return cell;
-//    }
-//    else if (indexPath.row == 1){
-//        static NSString *cellIdentifier = @"publicProfileNumberCell";
-//        FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-//        if (!cell) {
-//            cell = [[FluxCountTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-//        }
-//        [cell initCell];
-//        [cell.titleLabel setText:@"Following"];
-//        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
-//        
-//        [cell.titleLabel setEnabled:NO];
-//        [cell.countLabel setEnabled:NO];
-//        return cell;
-//    }
-//    else{
-//        static NSString *cellIdentifier = @"publicProfileNumberCell";
-//        FluxCountTableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-//        if (!cell) {
-//            cell = [[FluxCountTableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
-//        }
-//        [cell initCell];
-//        [cell.titleLabel setText:@"Followers"];
-//        [cell.countLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
-//        
-//        [cell.titleLabel setEnabled:NO];
-//        [cell.countLabel setEnabled:NO];
-//        return cell;
-//    }
 
+    [cell.nameLabel setText:[NSString stringWithFormat:@"@%@",theUser.username]];
+    [cell.bioLabel setText:theUser.bio];
+    [cell.photosCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
+    [cell.followersCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
+    [cell.followingCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
+    
+    if (theUser.friendState == 3) {
+        [cell.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",theUser.username]];
+    }
+    else if (theUser.isFollower) {
+        [cell.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ is following you",theUser.username]];
+    }
+    else if (theUser.isFollowing) {
+        [cell.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",theUser.username]];
+    }
+    else{
+        [cell.socialStatusLabel setText:@""];
+    }
+    return cell;
+}
+
+- (void)PublicProfileCellFriendButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell{
+    
+}
+
+- (void)PublicProfileCellFollowerButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell{
+    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -216,9 +206,4 @@
 
 #pragma mark - IB Actions
 
-- (void)followButtonAction {
-}
-
-- (void)addFriendButtonAction {
-}
 @end

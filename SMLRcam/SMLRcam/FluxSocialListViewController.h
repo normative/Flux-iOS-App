@@ -10,6 +10,7 @@
 #import "FluxDataManager.h"
 #import "FluxUserObject.h"
 #import "FluxFriendFollowerCell.h"
+#import "FluxAddUserViewController.h"
 
 typedef enum SocialListMode : NSUInteger {
     friendMode = 0,
@@ -32,7 +33,16 @@ typedef enum SocialListMode : NSUInteger {
     NSMutableArray*socialTableViews;
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
+@property (nonatomic, strong) FluxAddUserViewController*searchUserVC;
+@property (nonatomic, strong) UINavigationController*childNavC;
+
+@property (atomic, strong) UIWindow *window;
+
 - (IBAction)segmentedControllerDidChange:(id)sender;
+- (IBAction)searchButtonAction:(id)sender;
+
+- (void)setSearchVCHidden:(BOOL)hidden animated:(BOOL)animated;
+
 
 //-(void)prepareViewforMode:(SocialListMode)mode andIDList:(NSArray*)idList;
 

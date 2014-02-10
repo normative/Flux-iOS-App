@@ -12,6 +12,8 @@
 #import "UIImageView+AFNetworking.h"
 #import "FluxUserObject.h"
 #import "UIActionSheet+Blocks.h"
+#import "FluxSocialListViewController.h"
+#import "FluxPublicProfileViewController.h"
 
 
 @interface FluxAddUserViewController ()
@@ -32,6 +34,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [topBarColored setFrame:CGRectMake(topBarColored.frame.origin.x, topBarColored.frame.origin.y, topBarColored.frame.size.width, 64)];
     
     UIBarButtonItem *negativeSeperator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
     negativeSeperator.width = -16;
@@ -45,9 +48,28 @@
     
     resultsArray = [[NSMutableArray alloc]init];
     resultsImageArray = [[NSMutableArray alloc]init];
-    [userSearchBar becomeFirstResponder];
     
     searchState = searched;
+    
+    //to set the clear button's selected state image
+    //[userSearchBar setImage:@"" forSearchBarIcon:UISearchBarIconClear state:UIControlStateHighlighted];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [self.view setAlpha:0.0];
+    }];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.view setAlpha:1.0];
+    }];
+    [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -68,12 +90,22 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+    if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] == 3)) {
+        return 70.0;
+    }
     return 60.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"standardSocialCell";
+    NSString *cellIdentifier;
+    if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] == 3)) {
+        cellIdentifier = @"statusSocialCell";
+    }
+    else{
+        cellIdentifier = @"standardSocialCell";
+    }
+
     FluxFriendFollowerCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
         cell = [[FluxFriendFollowerCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
@@ -108,16 +140,36 @@
                                        }];
     }
     
-    
+    if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] == 3)) {
+        if (([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] == 3)) {
+            [cell setSocialMode:1];
+        }
+        else if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing]){
+            [cell setSocialMode:2];
+        }
+        else{
+            [cell setSocialMode:3];
+        }
+    }
     
     [cell setDelegate:self];
     
     return cell;
 }
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    FluxFriendFollowerCell*cell = (FluxFriendFollowerCell*)[addUsersTableView cellForRowAtIndexPath:indexPath];
+    self.title = @"Search";
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
     
-    NSLog(@"tapped cell with userID %@",[(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] username]);
+    // first get an instance from storyboard
+    FluxPublicProfileViewController *publicProfileVC = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
+    [publicProfileVC setFluxDataManager:self.fluxDataManager];
+    [publicProfileVC prepareViewWithUser:cell.userObject];
+    
+    [self.navigationController setNavigationBarHidden:NO animated:NO];
+    [self.navigationController pushViewController:publicProfileVC animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - ScrollViewDelegate
@@ -128,23 +180,70 @@
 #pragma mark - Social Cell Delegate
 - (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell{
     int index = [addUsersTableView indexPathForCell:friendFollowerCell].row;
+    NSMutableArray*options = [[NSMutableArray alloc]init];
+    
+    NSString*sendFriendRequest = @"Send Friend Request";
+    NSString*addFollower = @"Follow";
+    NSString*acceptFriendRequest = @"Accept Friend Request";
+    if (!friendFollowerCell.userObject.isFollowing) {
+        [options addObject:addFollower];
+    }
+    if (!friendFollowerCell.userObject.friendState) {
+        [options addObject:sendFriendRequest];
+    }
+    else{
+        if (friendFollowerCell.userObject.friendState == 2) {
+            [options addObject:acceptFriendRequest];
+        }
+    }
     
     [UIActionSheet showInView:self.view
                     withTitle:nil
             cancelButtonTitle:@"Cancel"
        destructiveButtonTitle:nil
-            otherButtonTitles:@[@"Send Friend Request", @"Follow"]
+            otherButtonTitles:options
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
                              //link facebook
-                             if (buttonIndex == 0) {
-                                 NSLog(@"Friend");
+                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:addFollower]) {
+                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                                 
+                                 [request setFollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+                                     //do something with the UserID
+                                     NSLog(@"Followed");
+                                     if (resultsArray.count > index) {
+                                         //...and it's still the same cell
+                                         if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
+                                             //update it
+                                             [(FluxUserObject*)[resultsArray objectAtIndex:index] setIsFollowing:YES];
+                                             [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                         }
+                                     }
+                                 }];
+                                 
+                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                     
+                                     NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                     [ProgressHUD showError:str];
+                                     
+                                 }];
+                                 [self.fluxDataManager addFollowerWithUserID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
+                             }
+                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:sendFriendRequest]) {
                                  FluxDataRequest*request = [[FluxDataRequest alloc]init];
                                  
                                  [request setSendFriendRequestReady:^(int userID, FluxDataRequest*completedRequest){
                                      //do something with the UserID
                                      NSLog(@"friended");
-                                     //[addUsersTableView reloadData];
+                                     //if it hasn;t been cleared
+                                     if (resultsArray.count > index) {
+                                         //...and it's still the same cell
+                                         if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
+                                             //update it
+                                             [(FluxUserObject*)[resultsArray objectAtIndex:index] setFriendState:1];
+                                             [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                         }
+                                     }
                                  }];
                                  
                                  [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -155,23 +254,8 @@
                                  }];
                                  [self.fluxDataManager sendFriendRequestToUserWithID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
                              }
-                             else{
-                                 NSLog(@"follow");
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:acceptFriendRequest]) {
                                  
-                                 [request setFollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"Followed");
-                                     //[addUsersTableView reloadData];
-                                 }];
-                                 
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-                                     
-                                     NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
-                                     [ProgressHUD showError:str];
-                                     
-                                 }];
-                                 [self.fluxDataManager addFollowerWithUserID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
                              }
                          }
                      }];
@@ -225,8 +309,8 @@
         }];
         
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            
-            NSString*str = [NSString stringWithFormat:@"Followers failed to load with error %d", (int)[e code]];
+            searchState = notSearching;
+            NSString*str = [NSString stringWithFormat:@"Search failed to load with error %d", (int)[e code]];
             [ProgressHUD showError:str];
             
         }];
@@ -234,9 +318,18 @@
     }
 }
 
-
+-(void)willAppear{
+    [userSearchBar becomeFirstResponder];
+    [self.navigationController setNavigationBarHidden:YES];
+}
 
 - (IBAction)doneButtonAction:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [userSearchBar resignFirstResponder];
+    [userSearchBar setText:@""];
+    [resultsArray removeAllObjects];
+    [resultsImageArray removeAllObjects];
+    searchState = searched;
+    [addUsersTableView reloadData];
+    [(FluxSocialListViewController*)self.navigationController.parentViewController setSearchVCHidden:YES animated:YES];
 }
 @end

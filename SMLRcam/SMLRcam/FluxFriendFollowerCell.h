@@ -26,9 +26,13 @@
 @property (nonatomic, strong)FluxUserObject* userObject;
 @property (strong, nonatomic) IBOutlet UILabel *titleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *bioLabel;
+@property (strong, nonatomic) IBOutlet UILabel*socialStatusLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (strong, nonatomic) IBOutlet UIButton *friendFollowButton;
+@property (strong, nonatomic) IBOutlet UIView *contentContainerView;
 - (IBAction)friendFollowButtonAction:(id)sender;
 -(void)initCell;
+
+- (void)setSocialMode:(int)socialMode;
 
 @end

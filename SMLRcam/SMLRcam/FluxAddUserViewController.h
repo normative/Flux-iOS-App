@@ -21,6 +21,7 @@ typedef enum QuerySearchState : NSUInteger {
     IBOutlet UISearchBar *userSearchBar;
     IBOutlet UITableView *addUsersTableView;
     IBOutlet UIToolbar *topToolbar;
+    IBOutlet UIToolbar *topBarColored;
     
     NSMutableArray*resultsArray;
     NSMutableArray*resultsImageArray;
@@ -30,5 +31,5 @@ typedef enum QuerySearchState : NSUInteger {
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 - (IBAction)doneButtonAction:(id)sender;
-
+-(void)willAppear;
 @end
