@@ -99,9 +99,16 @@ typedef struct{
     CMQuaternion q_cmquat = devMotion.attitude.quaternion;
     GLKQuaternion q = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
 
+//    outquat->x = q.x;
+//    outquat->y = q.y;
+//    outquat->z = q.z;
+//    outquat->w = q.w;
+//    
+//    return;
+
     // Calculate correction delta for heading, based on separation of y-axis and LOS-axis
-//    double heading_delta = [self calculateHeadingCorrectionAngleWithQuaternion:q];
-    double heading_delta = 0.0;
+    double heading_delta = [self calculateHeadingCorrectionAngleWithQuaternion:q];
+//    double heading_delta = 0.0;
 //    NSLog(@"Angle correction: %f, Heading: %f", heading_delta * 180.0/M_PI, heading.trueHeading);
 
     // Alternative method - calculate theta between y-axis (Earth) and y-axis device (clip the z-component)
@@ -137,8 +144,9 @@ typedef struct{
 //    NSLog(@"Heading: %f, Theta: %f", heading.trueHeading, theta * 180.0/M_PI - 90.0);
     
     // Rotate attitude back by theta, then forward by heading
-    GLKQuaternion theta_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(theta-(heading.trueHeading + 90.0)*M_PI/180.0, 0.0, 0.0, 1.0);
-    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(theta_yaw_delta, q));
+    double theta_delta = theta-(heading.trueHeading + 90.0)*M_PI/180.0 - heading_delta;
+    GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(theta_delta, 0.0, 0.0, 1.0);
+    GLKQuaternion quatnew = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, q));
 
 //    NSLog(@"delta: %f", (theta-(heading.trueHeading + 90.0)*M_PI/180.0) * 180.0/M_PI);
 
@@ -193,12 +201,15 @@ typedef struct{
     
     GLKVector3 y_projection_earth = [self projectVector:y_device_earth ontoPlaneWithNormal:n_earth];
     GLKVector3 los_projection_earth = [self projectVector:los_device_earth ontoPlaneWithNormal:n_earth];
-    
-//    NSLog(@"y_device: (%f, %f, %f) los_device: (%f, %f, %f)", y_projection_earth.x, y_projection_earth.y, y_projection_earth.z, los_projection_earth.x, los_projection_earth.y, los_projection_earth.z);
+    y_projection_earth = GLKVector3Normalize(y_projection_earth);
+    los_projection_earth = GLKVector3Normalize(los_projection_earth);
     
     // Then we can get the angle between the two projection vectors as our correction
     double heading_delta = [self calculateAngleBetweenVector:y_projection_earth andVector:los_projection_earth];
     
+    NSLog(@"y_device: (%f, %f, %f) los_device: (%f, %f, %f), delta: %f", y_projection_earth.x, y_projection_earth.y, y_projection_earth.z,
+          los_projection_earth.x, los_projection_earth.y, los_projection_earth.z, heading_delta*180.0/M_PI);
+
     return heading_delta;
 }
 
