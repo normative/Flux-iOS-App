@@ -453,6 +453,7 @@ const int auto_threshold_inc = 10;
     std::cout << "World coordinates:" << std::endl;
     
     std::vector<cv::Point3_<double> > planar_3d_points;
+    std::vector<cv::Point3f> reproject_3d_points;
     
     for( size_t i = 0; i < scene_corners.size(); i++ )
     {
@@ -466,6 +467,7 @@ const int auto_threshold_inc = 10;
         cv::Mat result = projection_distance * K.inv() * pt1;
         
         planar_3d_points.push_back(cv::Point3_<double>(result.at<double>(0),result.at<double>(1),0.0));
+        reproject_3d_points.push_back(cv::Point3f(result.at<double>(0),result.at<double>(1),projection_distance));
         
         std::cout << i << ": " << planar_3d_points[i] << std::endl;
     }
@@ -555,6 +557,31 @@ const int auto_threshold_inc = 10;
     std::cout << "R_matchcam_origin: " << std::endl;
     std::cout << "theta 1: " << 180.0/M_PI*euler_matchcam_origin.theta1 << ", theta 2: " << 180.0/M_PI*euler_matchcam_origin.theta2
     << ", theta 3: " << 180.0/M_PI*euler_matchcam_origin.theta3 << std::endl;
+    
+    if ((object_img.rows > 0) && (object_img.cols > 0))
+    {
+        cv::Mat testOutMat;
+        std::vector<cv::Point2f> reproject_2d_points;
+        
+//        cv::Mat R_usercam_matchcam = R_matchcam_usercam.t();
+//        cv::Mat rvec_usercam_matchcam;
+//        cv::Rodrigues(R_usercam_matchcam, rvec_usercam_matchcam);
+//        cv::Mat tvec_usercam_matchcam = -R_usercam_matchcam*tvec_matchcam_usercam;
+        
+        cv::projectPoints(reproject_3d_points, rvec_matchcam_usercam, -tvec_matchcam_usercam, K, dist, reproject_2d_points);
+        
+        scene_img.copyTo(testOutMat);
+        
+        line( testOutMat, reproject_2d_points[0], reproject_2d_points[1], cv::Scalar( 0, 255, 0), 4 );
+        line( testOutMat, reproject_2d_points[1], reproject_2d_points[2], cv::Scalar( 0, 255, 0), 4 );
+        line( testOutMat, reproject_2d_points[2], reproject_2d_points[3], cv::Scalar( 0, 255, 0), 4 );
+        line( testOutMat, reproject_2d_points[3], reproject_2d_points[0], cv::Scalar( 0, 255, 0), 4 );
+        line( testOutMat, reproject_2d_points[0], reproject_2d_points[2], cv::Scalar( 0, 255, 0), 4 );
+        line( testOutMat, reproject_2d_points[1], reproject_2d_points[3], cv::Scalar( 0, 255, 0), 4 );
+
+        UIImage *testOutImg = [UIImage imageWithCVMat:testOutMat];
+        UIImageWriteToSavedPhotosAlbum(testOutImg, nil, nil, nil);
+    }
     
     R_final = R_matchcam_usercam;
     t_final = tvec_matchcam_usercam;
