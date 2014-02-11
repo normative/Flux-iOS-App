@@ -460,6 +460,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)activateImageCaptureForMode:(FluxImageCaptureMode)captureMode{
     [imageCaptureButton setHidden:NO];
     [imageCaptureButton setCaptureMode:captureMode];
+    [imageCaptureButton setSingleImageCaptureMode:historicalPhotoPickerEnabled];
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [imageCaptureButton setAlpha:1.0];
@@ -667,7 +668,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self activateImageCaptureForMode:snapshot_mode];
 }
 
-
+- (void)setupHistoricalPhotoPicker
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    historicalPhotoPickerEnabled = [[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue];
+    
+    //    [pedometerLabel setHidden:(!enablePedometerDisplay)];
+}
 
 #pragma mark Image Capture Helper Methods
 -(UIImage*)blurImage:(UIImage *)img{
@@ -770,8 +777,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStepWithPedometer:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupDebugPedometerCountDisplay) name:FluxDebugDidChangePedometerCountDisplay object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupHistoricalPhotoPicker) name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
     
     [self setupDebugPedometerCountDisplay];
+    [self setupHistoricalPhotoPicker];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -829,6 +838,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangePedometerCountDisplay object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
 }
 
 #pragma mark - View Transition Animations

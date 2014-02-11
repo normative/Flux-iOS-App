@@ -78,6 +78,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     IBOutlet UIButton *debugButton4;
     
     IBOutlet UILabel *pedometerLabel;
+    
+    bool historicalPhotoPickerEnabled;
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;

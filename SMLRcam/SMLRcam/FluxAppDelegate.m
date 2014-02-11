@@ -34,6 +34,7 @@
     NSString * teleportIndex = [defaults objectForKey:FluxDebugTeleportLocationIndexKey];
     NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
     NSNumber * pedometerCountDisplay = [defaults objectForKey:FluxDebugPedometerCountDisplayKey];
+    NSNumber * historicalPhotoPicker = [defaults objectForKey:FluxDebugHistoricalPhotoPickerKey];
     
     // do not save locally by default
     if (savePic == nil) {
@@ -63,6 +64,11 @@
 
     if (pedometerCountDisplay == nil) {
         [defaults setObject:@(NO) forKey:FluxDebugPedometerCountDisplayKey];
+        [defaults synchronize];
+    }
+
+    if (historicalPhotoPicker == nil) {
+        [defaults setObject:@(NO) forKey:FluxDebugHistoricalPhotoPickerKey];
         [defaults synchronize];
     }
 
