@@ -138,7 +138,7 @@ extern NSString* const FluxTestServerURL;
 /**
  uploads an image. All account info is stored within the FluxScanImageObject
  **/
-- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
 
 /**
  Removes an image from the Flux DB given an imageID.

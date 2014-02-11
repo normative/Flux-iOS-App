@@ -595,6 +595,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)uploadImages:(NSDictionary*)imagesDict{
     NSArray*objectsArr = [imagesDict objectForKey:@"capturedImageObjects"];
     NSArray*imagesArr = [imagesDict objectForKey:@"capturedImages"];
+    UIImage *historicalImg = [imagesDict objectForKey:@"historicalImage"];
     
     [UIView animateWithDuration:0.1f
                      animations:^{
@@ -658,7 +659,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                  progressView.progress = 0;
                              }];
         }];
-        [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
+        [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest withHistoricalImage:historicalImg];
     }
 }
 

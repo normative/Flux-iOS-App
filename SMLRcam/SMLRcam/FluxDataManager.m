@@ -63,6 +63,7 @@ static FluxDataManager *_theFluxDataManager = nil;
 
 - (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest
+                   withHistoricalImage:(UIImage *)historicalImg
 {
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = data_upload_request;
@@ -80,7 +81,7 @@ static FluxDataManager *_theFluxDataManager = nil;
     }
     
     // Begin upload of image to server
-    [networkServices uploadImage:metadata andImage:image andRequestID:requestID];
+    [networkServices uploadImage:metadata andImage:image andRequestID:requestID andHistoricalImage:historicalImg];
     
     // Set up global upload progress count (add new image to overall total)
     

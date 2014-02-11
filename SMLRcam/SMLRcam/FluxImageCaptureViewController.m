@@ -176,6 +176,7 @@ static int captureImageID = -1;
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects",
                                   capturedImages, @"capturedImages",
+                                  historicalImageView.image, @"historicalImage",
                                   socialSelections, @"social",
                                   privacy, @"privacy",
                                   snapshot, @"snapshot",
