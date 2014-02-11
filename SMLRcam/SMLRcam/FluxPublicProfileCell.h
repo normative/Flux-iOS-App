@@ -7,22 +7,28 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "FluxUserObject.h"
 
 @class FluxPublicProfileCell;
 @protocol FluxPublicProfileCellDelegate <NSObject>
 @optional
 - (void)PublicProfileCellButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell;
-- (void)PublicProfileCellFriendButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell;
-- (void)PublicProfileCellFollowerButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFriendRequestToUser:(FluxUserObject*)userObject;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFriendRequestToUser:(FluxUserObject*)userObject;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfriendUser:(FluxUserObject*)userObject;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldFollowUser:(FluxUserObject*)userObject;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfollowUser:(FluxUserObject*)userObject;
 @end
 
 @interface FluxPublicProfileCell : UITableViewCell{
     
     id __unsafe_unretained delegate;
+    IBOutlet UIView *contentContainerView;
+    IBOutlet UIView *socialStatusContainerView;
 }
 
 @property (unsafe_unretained) id <FluxPublicProfileCellDelegate> delegate;
-
+@property (nonatomic, strong) FluxUserObject*userObject;
 
 @property (strong, nonatomic) IBOutlet UIButton *profielImageButton;
 @property (strong, nonatomic) IBOutlet UILabel *nameLabel;
@@ -35,7 +41,9 @@
 @property (strong, nonatomic) IBOutlet UILabel *followingCountLabel;
 @property (strong, nonatomic) IBOutlet UILabel *socialStatusLabel;
 @property (strong, nonatomic) IBOutlet UIButton *friendButton;
+@property (strong, nonatomic) IBOutlet UILabel *friendStatusLabel;
 @property (strong, nonatomic) IBOutlet UIButton *followerButton;
+@property (strong, nonatomic) IBOutlet UILabel *followerStatusLabel;
 
 - (void)initCell;
 - (IBAction)profilePictureButtonAction:(id)sender;

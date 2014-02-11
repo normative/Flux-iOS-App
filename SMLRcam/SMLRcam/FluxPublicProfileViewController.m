@@ -107,7 +107,13 @@
 //}
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *cellIdentifier = @"publicProfileCell";
+    NSString *cellIdentifier;
+    if (theUser.bio) {
+        cellIdentifier = @"publicProfileCell";
+    }
+    else{
+        cellIdentifier = @"publicProfileCellNoBio";
+    }
     FluxPublicProfileCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
         cell = [[FluxPublicProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
@@ -117,6 +123,7 @@
 
     //disable the profile button for now
     [cell.profielImageButton setUserInteractionEnabled:NO];
+    [cell setUserObject:theUser];
     
     if (theUser.hasProfilePic) {
         if (theUser.profilePic) {
@@ -142,55 +149,22 @@
         }
     }
     
-    if (theUser.isFollowing) {
-        [cell.followerButton.titleLabel setText:@"Unfollow"];
-    }
-    switch (theUser.friendState) {
-        case 0:
-            [cell.friendButton.titleLabel setText:@"Add as friend"];
-            break;
-        case 1:
-            [cell.friendButton.titleLabel setText:@"Add as friend"];
-            cell.friendButton.userInteractionEnabled = NO;
-            break;
-        case 2:
-            [cell.friendButton.titleLabel setText:@"Accept friend request"];
-            break;
-        case 3:
-            [cell.friendButton.titleLabel setText:@"Unfriend"];
-            break;
-            
-        default:
-            break;
-    }
-    
-
-    [cell.nameLabel setText:[NSString stringWithFormat:@"@%@",theUser.username]];
-    [cell.bioLabel setText:theUser.bio];
-    [cell.photosCountLabel setText:[NSString stringWithFormat:@"%i",theUser.imageCount]];
-    [cell.followersCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followerCount]];
-    [cell.followingCountLabel setText:[NSString stringWithFormat:@"%i",theUser.followingCount]];
-    
-    if (theUser.friendState == 3) {
-        [cell.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",theUser.username]];
-    }
-    else if (theUser.isFollower) {
-        [cell.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ is following you",theUser.username]];
-    }
-    else if (theUser.isFollowing) {
-        [cell.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",theUser.username]];
-    }
-    else{
-        [cell.socialStatusLabel setText:@""];
-    }
     return cell;
 }
 
-- (void)PublicProfileCellFriendButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell{
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFriendRequestToUser:(FluxUserObject*)userObject{
     
 }
-
-- (void)PublicProfileCellFollowerButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell{
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFriendRequestToUser:(FluxUserObject*)userObject{
+    
+}
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfriendUser:(FluxUserObject*)userObject{
+    
+}
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldFollowUser:(FluxUserObject*)userObject{
+    
+}
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfollowUser:(FluxUserObject*)userObject{
     
 }
 
