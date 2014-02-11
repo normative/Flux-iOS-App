@@ -10,12 +10,6 @@
 
 @interface FluxUserObject : NSObject
 
-@property (nonatomic, strong) NSString*auth_token;
-@property (nonatomic, strong) NSString*facebook;
-@property (nonatomic, strong) NSDictionary*twitter;
-@property (nonatomic, strong) NSString*socialName;
-@property (nonatomic, strong) NSString*uniqueSocialName;
-
 @property (nonatomic) int userID;
 @property (nonatomic, strong) NSString*name;
 @property (nonatomic, strong) NSString*username;
@@ -28,14 +22,9 @@
 @property (nonatomic) int friendCount;
 @property (nonatomic) int followingCount;
 @property (nonatomic) int followerCount;
-@property (nonatomic) BOOL isFriends;
+@property (nonatomic) int friendState;
 @property (nonatomic) BOOL isFollower;
 @property (nonatomic) BOOL isFollowing;
 @property (nonatomic) BOOL hasProfilePic;
-
-
-
-
-
 
 @end
