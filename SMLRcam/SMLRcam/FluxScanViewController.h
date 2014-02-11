@@ -35,7 +35,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //extern NSString* const FluxDidTapImage;
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
     
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;

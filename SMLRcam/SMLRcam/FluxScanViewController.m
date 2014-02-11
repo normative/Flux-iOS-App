@@ -389,7 +389,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (IBAction)cameraButtonAction:(id)sender {
     
-    if (self.cameraButton.alpha < 1.0) {
+    if (self.cameraButton.alpha < 1.0)
+    {
         UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh..."
                                                           message:@"Taking pictures is disabled because the device's location accuracy is poor. Try going outside, or avoid standing next to large metal objects."
                                                          delegate:nil
@@ -397,10 +398,28 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                 otherButtonTitles:nil];
         [message show];
     }
-    else{
-        [openGLController activateNewImageCapture];
-        [self activateImageCaptureForMode:camera_mode];
+    else
+    {
+        if (historicalPhotoPickerEnabled)
+        {
+            UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+            picker.delegate = self;
+            picker.allowsEditing = YES;
+            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            
+            [self presentViewController:picker animated:YES completion:NULL];
+        }
+        else
+        {
+            [self configureNewCameraCapture];
+        }
     }
+}
+
+- (void)configureNewCameraCapture
+{
+    [openGLController activateNewImageCapture];
+    [self activateImageCaptureForMode:camera_mode];
 }
 
 - (IBAction)imageCaptureButtonAction:(id)sender {
@@ -890,6 +909,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	
 	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
 	[view.layer addAnimation:group forKey:nil];
+}
+
+#pragma mark - ImagePicker delegate methods
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+    
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+    
+    [self configureNewCameraCapture];
+}
+
+//Tells the delegate that the user cancelled the pick operation.
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark - Debug Menu
