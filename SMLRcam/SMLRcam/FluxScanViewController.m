@@ -416,10 +416,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
 }
 
+- (void)configureNewCameraCaptureWithImage:(UIImage *)image
+{
+    [openGLController activateNewImageCaptureWithImage:image];
+    [self activateImageCaptureForMode:camera_mode];
+}
+
 - (void)configureNewCameraCapture
 {
-    [openGLController activateNewImageCapture];
-    [self activateImageCaptureForMode:camera_mode];
+    [self configureNewCameraCaptureWithImage:nil];
 }
 
 - (IBAction)imageCaptureButtonAction:(id)sender {
@@ -919,7 +924,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [picker dismissViewControllerAnimated:YES completion:NULL];
     
-    [self configureNewCameraCapture];
+    [self configureNewCameraCaptureWithImage:chosenImage];
 }
 
 //Tells the delegate that the user cancelled the pick operation.

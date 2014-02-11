@@ -776,9 +776,12 @@ void init(){
 
 
 
-- (void)activateNewImageCapture{
+- (void)activateNewImageCaptureWithImage:(UIImage *)image
+{
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self.imageCaptureViewController setHidden:NO];
+    [self.imageCaptureViewController setHistoricalTransparentImage:image];
+    
     camIsOn = YES;
 
     // TS: need to call back into fluxDisplayManager to switch to image capture mode - could be a notification send (FluxImageCaptureDidPush)
