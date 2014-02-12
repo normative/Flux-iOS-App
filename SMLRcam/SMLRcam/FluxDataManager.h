@@ -39,6 +39,9 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
     NSMutableDictionary *uploadQueueReceivers;
 }
 
+@property (nonatomic) bool isLoggedIn;
+@property (nonatomic) bool haveAPNSToken;
+
 + (NSString*)thisDeviceName;
 + (FluxCameraModel)thisCameraModel;
 + (FluxDataManager *)theFluxDataManager;
@@ -103,6 +106,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
               withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) postCamera:(FluxCameraObject *)cameraObject
               withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) updateAPNsDeviceTokenWithRequest:(FluxDataRequest *)dataRequest;
 
 - (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest;
 

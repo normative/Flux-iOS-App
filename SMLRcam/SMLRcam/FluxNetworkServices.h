@@ -15,6 +15,10 @@
 
 typedef NSUUID FluxRequestID;
 
+extern NSString* const AWSProductionServerURL;
+extern NSString* const AWSTestServerURL;
+extern NSString* const DSDLocalTestServerURL;
+
 extern NSString* const FluxProductionServerURL;
 extern NSString* const FluxTestServerURL;
 
@@ -175,6 +179,11 @@ extern NSString* const FluxTestServerURL;
  Posts a given camera object to the database.
  **/
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID;
+
+/**
+ Updates the APNs device token for the user.
+ **/
+-(void) updateAPNsDeviceTokenWithRequestID:(FluxRequestID *)requestID;
 
 /**
  creates a user with the given object
