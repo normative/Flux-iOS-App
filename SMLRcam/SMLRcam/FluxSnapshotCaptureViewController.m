@@ -241,7 +241,7 @@
 #pragma mark - IBActions
 - (IBAction)closeButtonAction:(id)sender {
     [self.view setHidden:YES];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxImageCaptureDidPop"
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
                                                         object:self userInfo:nil];
     [self viewDidExit];
 }

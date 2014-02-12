@@ -27,6 +27,7 @@
 
 - (void)commonInit{
     self.picCount = 0;
+    self.singleImageCaptureMode = NO;
     self.button = [[FluxCameraButton alloc]initWithFrame:CGRectMake(10, 14, 70, 70)];
     boxedCountView = [[FluxBoxedImageCountView alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 8)];
     [boxedCountView setCenter:CGPointMake(88, boxedCountView.center.y)];
@@ -63,10 +64,12 @@
     }
     [boxedCountView addImageCapture];
     
-    if (self.picCount == 4) {
+    if ((self.picCount == 4) || self.singleImageCaptureMode)
+    {
         [self.button setEnabled:NO];
     }
-    else{
+    else
+    {
         [self.button setEnabled:YES];
     }
 
@@ -78,7 +81,8 @@
             [boxedCountView setFrame:CGRectMake(boxedCountView.frame.origin.x+3.5, boxedCountView.frame.origin.y, boxedCountView.frame.size.width,boxedCountView.frame.size.height)];
         }];
     }
-    if (self.picCount == 3) {
+    if ((self.picCount == 3) || self.singleImageCaptureMode)
+    {
         [self.button setEnabled:YES];
     }
 

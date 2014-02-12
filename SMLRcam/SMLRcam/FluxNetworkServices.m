@@ -22,8 +22,8 @@ NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-//NSString* const FluxServerURL = _AWSProductionServerURL;
-NSString* const FluxServerURL = _AWSTestServerURL;
+NSString* const FluxServerURL = _AWSProductionServerURL;
+//NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 
@@ -190,7 +190,7 @@ NSString* const FluxServerURL = _AWSTestServerURL;
 - (void)getImageForID:(int)imageID withStringSize:(NSString *)sizeString andRequestID:(FluxRequestID *)requestID
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?auth_token=%@&size=%@",objectManager.baseURL,imageID,token,sizeString];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/renderimage?auth_token=%@&size=%@",objectManager.baseURL,imageID,token,sizeString];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
@@ -347,7 +347,7 @@ NSString* const FluxServerURL = _AWSTestServerURL;
     [operation start];
 }
 
-- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
 
@@ -364,6 +364,14 @@ NSString* const FluxServerURL = _AWSTestServerURL;
                                     name:@"image[image]"
                                 fileName:@"photo.jpeg"
                                 mimeType:@"image/jpeg"];
+        
+        if (theHistoricalImg)
+        {
+            [formData appendPartWithFileData:UIImageJPEGRepresentation(theHistoricalImg, 0.7)
+                                        name:@"image[historical]"
+                                    fileName:@"photo.jpeg"
+                                    mimeType:@"image/jpeg"];
+        }
     }];
     
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request

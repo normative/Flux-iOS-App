@@ -173,7 +173,7 @@
         [cell.checkboxButton setHidden:YES];
     }
     if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/image?size=%@&auth_token=%@",FluxServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],fluxImageTypeStrings[thumb], [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],fluxImageTypeStrings[thumb], [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
         [cell.imageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
         [cell.imageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -217,7 +217,7 @@
         NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
         NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
         for (int i = 0; i<picturesArray.count; i++) {
-            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=%@&auth_token=%@",FluxServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
+            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
             [photoURLs addObject:urlString];
         }
         IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];

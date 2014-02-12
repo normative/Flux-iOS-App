@@ -32,6 +32,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     UIImageView *gridView;
     UIImage *capturedImage;
     UIView *blackView;
+    UIImageView *historicalImageView;
     
     UIImage*snapshotImage;
     UIImage*bgImage;
@@ -71,6 +72,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
 
 - (IBAction)shareButtonAction:(id)sender;
 
+- (void) setHistoricalTransparentImage:(UIImage *)image;
 
 - (void)setHidden:(BOOL)hidden;
 
