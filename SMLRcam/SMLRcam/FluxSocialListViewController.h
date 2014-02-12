@@ -11,6 +11,7 @@
 #import "FluxUserObject.h"
 #import "FluxFriendFollowerCell.h"
 #import "FluxAddUserViewController.h"
+#import "FluxPublicProfileViewController.h"
 
 typedef enum SocialListMode : NSUInteger {
     friendMode = 0,
@@ -18,7 +19,7 @@ typedef enum SocialListMode : NSUInteger {
     followerMode = 2
 } SocialListMode;
 
-@interface FluxSocialListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate>{
+@interface FluxSocialListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate>{
     SocialListMode listMode;
     IBOutlet UISegmentedControl *segmentedControl;
     IBOutlet UITableView *friendsTableView;
@@ -31,6 +32,8 @@ typedef enum SocialListMode : NSUInteger {
     NSMutableArray*socialListArray;
     NSMutableArray*socialListImagesArray;
     NSMutableArray*socialTableViews;
+    
+    NSIndexPath*selectedIndexPath;
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxAddUserViewController*searchUserVC;

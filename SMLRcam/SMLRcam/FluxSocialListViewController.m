@@ -12,7 +12,7 @@
 #import "UIImageView+AFNetworking.h"
 #import "UIActionSheet+Blocks.h"
 #import "FluxAddUserViewController.h"
-#import "FluxPublicProfileViewController.h"
+
 
 @interface FluxSocialListViewController ()
 
@@ -107,6 +107,7 @@
     if ([[segue identifier] isEqualToString:@"pushProfileSegue"]) {
         [(FluxPublicProfileViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
         [(FluxPublicProfileViewController*)segue.destinationViewController prepareViewWithUser:(FluxUserObject*)sender];
+        [(FluxPublicProfileViewController*)segue.destinationViewController setDelegate:self];
     }
     else{
         [(FluxAddUserViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
@@ -224,7 +225,11 @@
     }
     [self performSegueWithIdentifier:@"pushProfileSegue" sender:cell.userObject];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    selectedIndexPath = indexPath;
 }
+
+#pragma mark TableViewCell Delegate
 
 - (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell{
     if (listMode == friendMode) {
@@ -295,6 +300,53 @@
     else{
         
     }
+}
+
+#pragma mark - Public Profile Delegate
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
+    
+    //go through the array and find where to insert the new guy
+    NSUInteger insPoint = [(NSMutableArray*)[socialListArray objectAtIndex:followingMode]
+                           indexOfObject:userObject
+                           inSortedRange:NSMakeRange(0, [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] count])
+                           options:NSBinarySearchingInsertionIndex
+                           usingComparator:^(id lhs, id rhs) {
+                               NSString *first = [(FluxUserObject*)lhs username];
+                               NSString *second = [(FluxUserObject*)rhs username];
+                               return [first compare:second];
+                           }
+                        ];
+    [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] insertObject:userObject atIndex:insPoint];
+    [[(NSMutableArray*)socialListImagesArray objectAtIndex:followingMode] insertObject:[NSNumber numberWithBool:NO] atIndex:insPoint];
+    [(UITableView*)[socialTableViews objectAtIndex:followingMode] insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insPoint inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
+    [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] removeObjectAtIndex:selectedIndexPath.row];
+    [(UITableView*)[socialTableViews objectAtIndex:followingMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFriend:(FluxUserObject *)userObject{
+    
+    //go through the array and find where to insert the new guy
+    NSUInteger insPoint = [(NSMutableArray*)[socialListArray objectAtIndex:friendMode]
+                           indexOfObject:userObject
+                           inSortedRange:NSMakeRange(0, [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] count])
+                           options:NSBinarySearchingInsertionIndex
+                           usingComparator:^(id lhs, id rhs) {
+                               NSString *first = [(FluxUserObject*)lhs username];
+                               NSString *second = [(FluxUserObject*)rhs username];
+                               return [first compare:second];
+                           }
+                           ];
+    [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] insertObject:userObject atIndex:insPoint];
+    [[(NSMutableArray*)socialListImagesArray objectAtIndex:friendMode] insertObject:[NSNumber numberWithBool:NO] atIndex:insPoint];
+    [(UITableView*)[socialTableViews objectAtIndex:friendMode] insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insPoint inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+}
+
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didRemoveFriend:(FluxUserObject *)userObject{
+    [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] removeObjectAtIndex:selectedIndexPath.row];
+    [(UITableView*)[socialTableViews objectAtIndex:friendMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 #pragma mark - Data Model Stuff

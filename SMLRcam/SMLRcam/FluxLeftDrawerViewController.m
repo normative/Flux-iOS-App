@@ -318,7 +318,7 @@
             break;
         case 2:
             [tableView deselectRowAtIndexPath:indexPath animated:NO];
-            //[self performSegueWithIdentifier:@"pushSocialList" sender:nil];
+            [self performSegueWithIdentifier:@"pushSocialList" sender:nil];
             break;
         case 3:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];

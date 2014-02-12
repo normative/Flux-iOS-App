@@ -234,7 +234,7 @@
                                  
                                  [request setSendFriendRequestReady:^(int userID, FluxDataRequest*completedRequest){
                                      //do something with the UserID
-                                     NSLog(@"friended");
+                                     NSLog(@"friend request sent");
                                      //if it hasn;t been cleared
                                      if (resultsArray.count > index) {
                                          //...and it's still the same cell

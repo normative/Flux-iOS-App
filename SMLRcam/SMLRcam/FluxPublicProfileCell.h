@@ -39,11 +39,11 @@
 @property (strong, nonatomic) IBOutlet UILabel *followersCountLabel;
 @property (strong, nonatomic) IBOutlet UILabel *followingTitleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *followingCountLabel;
-@property (strong, nonatomic) IBOutlet UILabel *socialStatusLabel;
 @property (strong, nonatomic) IBOutlet UIButton *friendButton;
-@property (strong, nonatomic) IBOutlet UILabel *friendStatusLabel;
+@property (strong, nonatomic) IBOutlet UILabel *friendButtonEllipsis;
 @property (strong, nonatomic) IBOutlet UIButton *followerButton;
-@property (strong, nonatomic) IBOutlet UILabel *followerStatusLabel;
+@property (strong, nonatomic) IBOutlet UILabel *firstStatusLabel;
+@property (strong, nonatomic) IBOutlet UILabel *secondStatusLabel;
 
 - (void)initCell;
 - (IBAction)profilePictureButtonAction:(id)sender;

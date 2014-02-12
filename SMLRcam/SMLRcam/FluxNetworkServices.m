@@ -51,7 +51,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 //        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
 //        if (isremote)
 //        {
-        objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxProductionServerURL]];
+        objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxTestServerURL]];
+        self.serverString = objectManager.baseURL;
 //        }
 //        else
 //        {

@@ -41,8 +41,8 @@
     self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2;
     self.profileImageView.clipsToBounds = YES;
     //add a white stroke to the image
-    self.profileImageView.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.7].CGColor;
-    self.profileImageView.layer.borderWidth = 1;
+//    self.profileImageView.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.7].CGColor;
+//    self.profileImageView.layer.borderWidth = 1;
 }
 
 - (void)setUserObject:(FluxUserObject *)userObject{

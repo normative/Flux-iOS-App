@@ -18,11 +18,22 @@ typedef enum ProfileViewSource : NSUInteger {
     imageTapping = 2
 } ProfileViewSource;
 
+@class FluxPublicProfileViewController;
+@protocol PublicProfileDelegate <NSObject>
+@optional
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject*)userObject;
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject*)userObject;
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFriend:(FluxUserObject*)userObject;
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didRemoveFriend:(FluxUserObject*)userObject;
+@end
+
 @interface FluxPublicProfileViewController : GAITrackedViewController<UITableViewDelegate, UITableViewDataSource, FluxPublicProfileCellDelegate>{
     
     IBOutlet UITableView *profileTableView;
-    FluxUserObject*theUser;    
+    FluxUserObject*theUser;
+    id __unsafe_unretained delegate;
 }
+@property (unsafe_unretained) id <PublicProfileDelegate> delegate;
 @property (nonatomic, strong)FluxDataManager*fluxDataManager;
 @property (nonatomic)ProfileViewSource viewSource;
 

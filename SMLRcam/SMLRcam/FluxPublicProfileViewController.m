@@ -10,12 +10,15 @@
 #import "UIImageView+AFNetworking.h"
 #import "FluxCountTableViewCell.h"
 #import "UICKeyChainStore.h"
+#import "ProgressHUD.h"
 
 @interface FluxPublicProfileViewController ()
 
 @end
 
 @implementation FluxPublicProfileViewController
+
+@synthesize delegate;
 
 #pragma mark - View Init
 
@@ -37,7 +40,7 @@
 
 - (void)viewDidLoad
 {
-    [self setTitle:@"Info"];
+//    [self setTitle:@"Info"];
     [super viewDidLoad];
 }
 
@@ -70,49 +73,13 @@
     return 600.0;
 }
 
-//- (float)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
-//    return 150.0;
-//}
-
-//- (UIView*)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
-//    UIView*footerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, [self tableView:tableView heightForFooterInSection:section])];
-//    socialStatusLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 20, 250.0, 15.0)];
-//    [socialStatusLabel setCenter:CGPointMake(footerView.center.x, socialStatusLabel.center.y)];
-//    [socialStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:13.0]];
-//    [socialStatusLabel setTextColor:[UIColor colorWithRed:44/255.0 green:53/255.0 blue:59/255.0 alpha:1.0]];
-//    [socialStatusLabel setBackgroundColor:[UIColor clearColor]];
-//    [socialStatusLabel setText:(theUser.isFollower) ? [NSString stringWithFormat:@"%@ is following you",theUser.username] : [NSString stringWithFormat:@"%@ is not following you",theUser.username]];
-//    [socialStatusLabel setTextAlignment:NSTextAlignmentCenter];
-//    [footerView addSubview:socialStatusLabel];
-//    
-//    followButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 57, 30)];
-//    [followButton setTitle:(theUser.isFollowing) ? @"Unfollow" : @"Follow" forState:UIControlStateNormal];
-//    [followButton setCenter:CGPointMake(socialStatusLabel.center.x, socialStatusLabel.center.y+(socialStatusLabel.frame.size.height/2)+15+15)];
-//    addFriendButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 100, 30)];
-////    [addFriendButton setTitle:(theUser.isFriends) ? @"Friends" : @"Add Friend" forState:UIControlStateNormal];
-//    [addFriendButton setCenter:CGPointMake(socialStatusLabel.center.x, followButton.center.y+(followButton.frame.size.height/2)+15+15)];
-//    followButton.titleLabel.font = addFriendButton.titleLabel.font = [UIFont fontWithName:@"Akkurat-Bold" size:addFriendButton.titleLabel.font.pointSize];
-//    [addFriendButton addTarget:self action:@selector(addFriendButtonAction) forControlEvents:UIControlEventTouchUpInside];
-//    [followButton addTarget:self action:@selector(followButtonAction) forControlEvents:UIControlEventTouchUpInside];
-//    
-//    [footerView addSubview:followButton];
-//    [footerView addSubview:addFriendButton];
-//    
-//    UIView*separator = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 0.5)];
-//    [separator setBackgroundColor:[UIColor colorWithRed:101/255.0 green:108/255.0 blue:112/255.0 alpha:0.7]];
-//    [footerView addSubview:separator];
-//
-//    
-//    return footerView;
-//}
-
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     NSString *cellIdentifier;
     if (theUser.bio) {
         cellIdentifier = @"publicProfileCell";
     }
     else{
-        cellIdentifier = @"publicProfileCellNoBio";
+        cellIdentifier = @"publicProfileCell";
     }
     FluxPublicProfileCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
@@ -153,19 +120,92 @@
 }
 
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFriendRequestToUser:(FluxUserObject*)userObject{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
+    [request setSendFriendRequestReady:^(int userID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"friend request sent");
+        theUser.friendState = 1;
+        [profileTableView reloadData];
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Friend request failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+        
+    }];
+    [self.fluxDataManager sendFriendRequestToUserWithID:userObject.userID withDataRequest:request];
 }
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFriendRequestToUser:(FluxUserObject*)userObject{
     
 }
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfriendUser:(FluxUserObject*)userObject{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
+    [request setUnfriendUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"unfriended");
+        theUser.friendState = 0;
+        [profileTableView reloadData];
+        
+        if ([delegate respondsToSelector:@selector(PublicProfile:didRemoveFriend:)]) {
+            [delegate PublicProfile:self didRemoveFriend:theUser];
+        }
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Unfriending %@ failed with error %d",userObject.username, (int)[e code]];
+        [ProgressHUD showError:str];
+        
+    }];
+    [self.fluxDataManager unfriendWithUserID:userObject.userID withDataRequest:request];
 }
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldFollowUser:(FluxUserObject*)userObject{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
+    [request setFollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"Followed");
+        theUser.isFollowing = YES;
+        [profileTableView reloadData];
+        
+        if ([delegate respondsToSelector:@selector(PublicProfile:didAddFollower:)]) {
+            [delegate PublicProfile:self didAddFollower:theUser];
+        }
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Following %@ failed with error %d", userObject.username, (int)[e code]];
+        [ProgressHUD showError:str];
+        
+    }];
+    [self.fluxDataManager addFollowerWithUserID:userObject.userID withDataRequest:request];
 }
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfollowUser:(FluxUserObject*)userObject{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
+    [request setUnfollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"unfollowed");
+        theUser.isFollowing = NO;
+        [profileTableView reloadData];
+        
+        if ([delegate respondsToSelector:@selector(PublicProfile:didremoveFollower:)]) {
+            [delegate PublicProfile:self didremoveFollower:theUser];
+        }
+
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Unfollowing %@ failed with error %d",userObject.username, (int)[e code]];
+        [ProgressHUD showError:str];
+        
+    }];
+    [self.fluxDataManager unfollowUserWIthID:userObject.userID withDataRequest:request];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
