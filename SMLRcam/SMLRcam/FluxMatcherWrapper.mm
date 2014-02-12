@@ -485,25 +485,9 @@ const int auto_threshold_inc = 10;
     cv::Mat dist;
     cv::solvePnP(planar_3d_points, object_corners, K, dist, rvec, tvec);
     
-    // Outputs origin of world reference frame (center of user's camera FOV on projection plane)
-    // in camera frame (camera of matched image)
-    std::cout << "Rvec: " << rvec << std::endl;
-    std::cout << "Tvec: " << tvec << std::endl;
-    
-    // Calculate camera position in world reference frame
+    // Frame transformations
     cv::Mat rotM;
     cv::Rodrigues(rvec, rotM);
-    cv::Mat camera_pos = -tvec;
-    
-    std::cout << "camera_pos: " << camera_pos << std::endl;
-    std::cout << "camera_mat: " << rotM.t() << std::endl;
-    
-    // Calculate Euler angles for verification
-    euler_angles rot_euler = [self calculateEulerAngles:rotM.t()];
-    std::cout << "theta 1: " << 180.0/M_PI*rot_euler.theta1 << ", theta 2: " << 180.0/M_PI*rot_euler.theta2
-    << ", theta 3: " << 180.0/M_PI*rot_euler.theta3 << std::endl;
-    
-    // Frame transformations
     
     // User camera position (of background image) to center of image plane (where camera axis intersects rendering plane)
     cv::Mat R_imageplane_usercam = cv::Mat::eye(3, 3, CV_64F);
