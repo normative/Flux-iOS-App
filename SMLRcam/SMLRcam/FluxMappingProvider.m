@@ -8,8 +8,9 @@
 
 #import "FluxMappingProvider.h"
 #import "FluxScanImageObject.h"
-#import "FluxUserObject.h"
+#import "FluxRegistrationUserObject.h"
 #import "FluxTagObject.h"
+#import "FluxConnectionObject.h"
 #import "FluxMapImageObject.h"
 #import "FluxCameraObject.h"
 #import "FluxProfileImageObject.h"
@@ -63,16 +64,31 @@
                                                   @"follower_count":     @"followerCount",
                                                   @"following_count":    @"followingCount",
                                                   @"image_count":        @"imageCount",
-                                                  @"friend":             @"isFriends",
-                                                  @"amifollowing":       @"isFollowing",
-                                                  @"aretheyfollowing":   @"isFollower",
+                                                  @"friend_state":        @"friendState",
+                                                  @"am_follower":       @"isFollowing",
+                                                  @"is_following":   @"isFollower",
                                                   @"has_pic":            @"hasProfilePic"
                                                  }];
+    
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"bio"]];
+    
+    return mapping;
+}
+
++ (RKObjectMapping *)userRegistrationGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxRegistrationUserObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"id":                @"userID",
+                                                  @"has_pic":            @"hasProfilePic"
+                                                  }];
     
     [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"bio"]];
     
     return mapping;
 }
+
+
 + (RKObjectMapping *)userPOSTMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
@@ -123,6 +139,32 @@
                                                   @"model":    @"model",
                                                   @"id":        @"cameraID"
                                                   }];
+    return mapping;
+}
+
+#pragma mark - Social Mapping
++ (RKObjectMapping *)connectionGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxConnectionObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":   @"userID",
+                                                  @"connections_id":     @"connectionsUserID",
+                                                   @"id":   @"connectionID",
+                                                   @"am_following":   @"amFollowing",
+                                                   @"friend_state":   @"friendState"
+                                                  }];
+    return mapping;
+}
++ (RKObjectMapping *)connectionPOSTMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"userID":            @"user_id",
+                                                  @"connectionsUserID":   @"connections_id",
+                                                  @"connetionType":   @"connection_type",
+                                                  @"friendState":   @"friend_state"
+                                                  }];
+    
     return mapping;
 }
 

@@ -96,11 +96,11 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 //USERS
 
 //registration / LOGOUT
-- (FluxRequestID *) uploadNewUser:(FluxUserObject *)userObject withImage:(UIImage *)image
+- (FluxRequestID *) uploadNewUser:(FluxRegistrationUserObject *)userObject withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) updateUser:(FluxUserObject *)userObject withImage:(UIImage *)image
                   withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) loginUser:(FluxUserObject *)userObject
+- (FluxRequestID *) loginUser:(FluxRegistrationUserObject *)userObject
                   withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) checkUsernameUniqueness:(NSString *)username
               withDataRequest:(FluxDataRequest *)dataRequest;
@@ -118,14 +118,28 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestImageListForUserWithID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 
-//lists
+//social
 - (FluxRequestID *) requestFriendsListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowingListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowerListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) requestUsersListQuery:(NSString*)query
+                             withDataRequest:(FluxDataRequest *)dataRequest;
 
+- (FluxRequestID *) addFollowerWithUserID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) unfollowUserWIthID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) sendFriendRequestToUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) acceptFriendRequestFromUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) ignoreFriendRequestFromUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) unfriendWithUserID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
 
 
 

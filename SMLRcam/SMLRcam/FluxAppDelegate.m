@@ -33,12 +33,12 @@ bool registeredForAPNS = false;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
 #ifdef DEBUG
-    NSLog(@"startup: debug=1, server=%@", FluxProductionServerURL);
-    if (FluxProductionServerURL != AWSProductionServerURL)
+    NSLog(@"startup: debug=1, server=%@", FluxServerURL);
+    if (FluxServerURL != AWSProductionServerURL)
     {
         // Let the device know we want to receive push notifications - will hook into APNs sandbox.
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-         (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+         (/*UIRemoteNotificationTypeBadge |*/ UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
         registeredForAPNS = true;
         apnsTokenKey = @"sandboxAPNSToken";
         [defaults setObject:@"" forKey:@"currAPNSToken"];
@@ -50,12 +50,12 @@ bool registeredForAPNS = false;
         [defaults setObject:[defaults objectForKey:apnsTokenKey] forKey:@"currAPNSToken"];
     }
 #else
-    NSLog(@"startup: debug=0, server=%@", FluxProductionServerURL);
-    if (FluxProductionServerURL == AWSProductionServerURL)
+    NSLog(@"startup: debug=0, server=%@", FluxServerURL);
+    if (FluxServerURL == AWSProductionServerURL)
     {
         // Let the device know we want to receive push notifications - will hook into APNs production server.
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-         (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+         (/*UIRemoteNotificationTypeBadge |*/ UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
         registeredForAPNS = true;
         apnsTokenKey = @"productionAPNSToken";
         [defaults setObject:@"" forKey:@"currAPNSToken"];
@@ -146,8 +146,8 @@ bool registeredForAPNS = false;
     //testFlight analytics
     [TestFlight takeOff:TestFlightAppToken];
     
-    RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
-    //RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+    //RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     //RKLogConfigureByName("*", RKLogLevelOff);
     
     // Apple Push Notifications

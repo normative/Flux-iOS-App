@@ -14,6 +14,7 @@
 #import "FluxNetworkServices.h"
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxRegistrationUserObject.h"
 #import "FluxTagObject.h"
 
 typedef enum FluxDataRequestType : NSUInteger {
@@ -34,6 +35,14 @@ typedef enum FluxDataRequestType : NSUInteger {
     friendList_request = 14,
     followingList_request = 15,
     followerList_request = 16,
+    userSearch_request = 17,
+    follow_request = 18,
+    unfollow_request = 19,
+    sendFriend_request = 20,
+    acceptFriend_request = 21,
+    ignoreFriend_request = 22,
+    unfriend_request = 23,
+    
 } FluxDataRequestType;
 
 @class FluxDataRequest;
@@ -52,8 +61,8 @@ typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSData *, FluxDataRequest
 //USERS
 
 //registration / logout
-typedef void (^UploadUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
-typedef void (^LoginUserCompleteBlock)(FluxUserObject*, FluxDataRequest *);
+typedef void (^UploadUserCompleteBlock)(FluxRegistrationUserObject *, FluxDataRequest *);
+typedef void (^LoginUserCompleteBlock)(FluxRegistrationUserObject*, FluxDataRequest *);
 typedef void (^LogoutCompleteBlock)(FluxDataRequest *);
 typedef void (^UsernameUniquenessCompleteBlock)(BOOL, NSString*, FluxDataRequest *);
 typedef void (^PostCameraCompleteBlock)(int, FluxDataRequest *);
@@ -62,9 +71,18 @@ typedef void (^UpdateUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
 typedef void (^UserReadyBlock)(FluxUserObject*, FluxDataRequest *);
 typedef void (^UserProfilePicReadyBlock)(UIImage*,int, FluxDataRequest *);
 typedef void (^UserImagesReadyBlock)(NSArray *, FluxDataRequest *);
+
+//social
 typedef void (^UserFriendsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^UserFollowingsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^UserFollowersReadyBlock)(NSArray *, FluxDataRequest *);
+typedef void (^UserSearchReadyBlock)(NSArray *, FluxDataRequest *);
+typedef void (^FollowUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^UnfollowUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^SendFriendRequestUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^AcceptFriendRequestUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^IgnoreFriendRequestUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^UnfriendUserReadyBlock)(int, FluxDataRequest *);
 
 //other
 typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
@@ -164,6 +182,23 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for successful friends list returned
 @property (strong) UserFollowersReadyBlock userFollowersReady;
 
+// Callback for successful friends list returned
+@property (strong) UserSearchReadyBlock userSearchReady;
+
+// Callback for successful friends list returned
+@property (strong) FollowUserReadyBlock followUserReady;
+// Callback for successful friends list returned
+@property (strong) UnfollowUserReadyBlock unfollowUserReady;
+// Callback for successful friends list returned
+@property (strong) SendFriendRequestUserReadyBlock sendFriendRequestReady;
+// Callback for successful friends list returned
+@property (strong) AcceptFriendRequestUserReadyBlock acceptFriendRequestReady;
+// Callback for successful friends list returned
+@property (strong) IgnoreFriendRequestUserReadyBlock ignoreFriendRequestReady;
+// Callback for successful friends list returned
+@property (strong) UnfriendUserReadyBlock unfriendUserReady;
+
+
 // Callback for list of tags retrieved
 @property (strong) TagsReadyBlock tagsReady;
 
@@ -184,8 +219,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 //USERS
 //registration / logout
-- (void) whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
-- (void) whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUploadUserComplete:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenLoginUserComplete:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenLogoutComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString*)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest;
@@ -195,9 +230,19 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserProfilePicReady:(UIImage *)profilePic forUserID:(int)userID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserImagesReady:(NSArray *)profileImageObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
+
+//social stuff
 - (void) whenUserFriendsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserFollowingsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserFollowersReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUserSearchReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
+
+- (void) whenFollowUserReady:(int)followingUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUnfollowingUserReady:(int)unfollowedUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenSendFriendRequestReady:(int)userIdForFriendRequest withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenAcceptFriendRequestReady:(int)newFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenIgnoreFriendRequestReady:(int)ignoreUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUnFriendUserReady:(int)oldFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 
 //other
