@@ -2,6 +2,7 @@ Release Notes:
 
 - consolidate device motion managers
 - add pedometer count display debug option to debug view
+- fix issue with R and t transforms in feature matching (Trello #391)
 
 ******************************************
 
