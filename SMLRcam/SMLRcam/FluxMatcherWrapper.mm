@@ -524,7 +524,7 @@ const int auto_threshold_inc = 10;
     
     // Center of image plane to camera frame of matched image
     cv::Mat R_matchcam_imageplane = rotM;
-    cv::Mat t_matchcam_imageplane = camera_pos;
+    cv::Mat t_matchcam_imageplane = -tvec;
     cv::Mat rvec_matchcam_imageplane;
     cv::Rodrigues(R_matchcam_imageplane, rvec_matchcam_imageplane);
     
@@ -534,8 +534,10 @@ const int auto_threshold_inc = 10;
     cv::composeRT(rvec_imageplane_usercam, t_imageplane_usercam, rvec_matchcam_imageplane, t_matchcam_imageplane, rvec_matchcam_usercam, tvec_matchcam_usercam);
     
     cv::Mat R_matchcam_usercam;
-    cv::Rodrigues(rvec_matchcam_usercam, R_matchcam_usercam);
+    cv::Rodrigues(rvec_matchcam_usercam.t(), R_matchcam_usercam);
     euler_angles euler_matchcam_usercam = [self calculateEulerAngles:R_matchcam_usercam];
+    
+    tvec_matchcam_usercam = R_matchcam_usercam.t()*tvec_matchcam_usercam;
     
     std::cout << "tvec_matchcam_usercam: " << tvec_matchcam_usercam << std::endl;
     std::cout << "R_matchcam_usercam: " << std::endl;
