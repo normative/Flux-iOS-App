@@ -507,27 +507,21 @@ const int auto_threshold_inc = 10;
     
     // User camera position (of background image) to center of image plane (where camera axis intersects rendering plane)
     cv::Mat R_imageplane_usercam = cv::Mat::eye(3, 3, CV_64F);
-    cv::Mat t_imageplane_usercam = cv::Mat::zeros(3, 1, CV_64F);
-    t_imageplane_usercam.at<double>(2,0) = projection_distance;
+    cv::Mat t_imageplane_usercam_Fimageplane = cv::Mat::zeros(3, 1, CV_64F);
+    t_imageplane_usercam_Fimageplane.at<double>(2,0) = projection_distance;
     cv::Mat rvec_imageplane_usercam;
     cv::Rodrigues(R_imageplane_usercam, rvec_imageplane_usercam);
     
     // Center of image plane to camera frame of matched image
     cv::Mat R_matchcam_imageplane = rotM;
-    cv::Mat t_matchcam_imageplane = -tvec;
+    cv::Mat t_matchcam_imageplane_Fmatchcam = -tvec;
     cv::Mat rvec_matchcam_imageplane;
     cv::Rodrigues(R_matchcam_imageplane, rvec_matchcam_imageplane);
     
     // User camera position (of background image) to camera frame of matched image
-    cv::Mat rvec_matchcam_usercam;
-    cv::Mat tvec_matchcam_usercam;
-    cv::composeRT(rvec_imageplane_usercam, t_imageplane_usercam, rvec_matchcam_imageplane, t_matchcam_imageplane, rvec_matchcam_usercam, tvec_matchcam_usercam);
-    
-    cv::Mat R_matchcam_usercam;
-    cv::Rodrigues(rvec_matchcam_usercam.t(), R_matchcam_usercam);
+    cv::Mat R_matchcam_usercam = R_matchcam_imageplane*R_imageplane_usercam;
+    cv::Mat tvec_matchcam_usercam = R_imageplane_usercam.t()*(R_matchcam_imageplane.t()*t_matchcam_imageplane_Fmatchcam + t_imageplane_usercam_Fimageplane);
     euler_angles euler_matchcam_usercam = [self calculateEulerAngles:R_matchcam_usercam];
-    
-    tvec_matchcam_usercam = R_matchcam_usercam.t()*tvec_matchcam_usercam;
     
     std::cout << "tvec_matchcam_usercam: " << tvec_matchcam_usercam << std::endl;
     std::cout << "R_matchcam_usercam: " << std::endl;
