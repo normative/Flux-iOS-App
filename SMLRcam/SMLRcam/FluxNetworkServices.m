@@ -14,17 +14,18 @@
 #import "FluxLocationServicesSingleton.h"
 #import "UICKeyChainStore.h"
 
+#define _AWSProductionServerURL  @"http://54.221.254.230/"
+#define _AWSTestServerURL        @"http://54.221.222.71/"
+#define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
 
+NSString* const AWSProductionServerURL = _AWSProductionServerURL;
+NSString* const AWSTestServerURL       = _AWSTestServerURL;
+NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxProductionServerURL = @"http://54.221.254.230/";
-//NSString* const FluxProductionServerURL = @"http://54.221.222.71/";
-//NSString* const FluxProductionServerURL = @"http://54.205.83.75/";
-//NSString* const FluxProductionServerURL = @"http://192.168.2.18:3101/";
-NSString* const FluxTestServerURL = @"http://54.221.222.71/";
+//NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSTestServerURL;
+//NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
-//serverURL
-#define productionServerURL FluxProductionServerURL
-#define testServerURL   FluxTestServerURL
 
 @implementation FluxNetworkServices
 
@@ -51,7 +52,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 //        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
 //        if (isremote)
 //        {
-        objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxProductionServerURL]];
+        objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxServerURL]];
 //        }
 //        else
 //        {
@@ -687,6 +688,56 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
          }
      }];
 }
+
+
+-(void) updateAPNsDeviceTokenWithRequestID:(FluxRequestID *)requestID
+{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+//    NSLog(@"name: %@, user name: %@, email: %@, bio: %@", userObject.name, userObject.username, userObject.email, userObject.bio);
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *apnstoken = [defaults objectForKey:@"currAPNSToken"];
+    
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:token, @"auth_token",
+//                                   [NSNumber numberWithInt:0], @"id",
+                                   apnstoken, @"apns_token",
+                                   nil];
+    
+    // Serialize the Article attributes then attach a file
+    NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:nil
+                                                                                            method:RKRequestMethodPUT
+                                                                                              path:[NSString stringWithFormat:@"/users/updateapnstoken"]
+                                                                                        parameters:params
+                                                                         constructingBodyWithBlock:^(id<AFMultipartFormData> formData){}
+                                    ];
+    
+    RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
+                                                                                                     success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+                                           {
+                                               //               if ([result count]>0)
+                                               {
+                                                   //                   FluxUserObject *userObject = [result firstObject];
+                                                   NSLog(@"Successfuly updated device token for user");
+                                                   if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateUser:andRequestID:)])
+                                                   {
+                                                       [delegate NetworkServices:self didUpdateUser:nil andRequestID:requestID];
+                                                   }
+                                               }
+                                           }
+                                                                                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+                                           {
+                                               NSLog(@"Failed with error: %@", [error localizedDescription]);
+                                               if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                                               {
+                                                   [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                                               }
+                                           }];
+    
+    [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
+    
+}
+
 
 
 #pragma mark User Profiles

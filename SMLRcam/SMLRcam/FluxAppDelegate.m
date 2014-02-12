@@ -10,6 +10,8 @@
 #import <FacebookSDK/FacebookSDK.h>
 
 #import "FluxDebugViewController.h"
+#import "FluxNetworkServices.h"
+#import "FluxDataManager.h"
 
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
@@ -23,11 +25,51 @@
 
 @implementation FluxAppDelegate
 
+NSString *apnsTokenKey;
+bool registeredForAPNS = false;
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions{
 
-    
-    //set settings defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+#ifdef DEBUG
+    NSLog(@"startup: debug=1, server=%@", FluxServerURL);
+    if (FluxServerURL != AWSProductionServerURL)
+    {
+        // Let the device know we want to receive push notifications - will hook into APNs sandbox.
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+         (/*UIRemoteNotificationTypeBadge |*/ UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+        registeredForAPNS = true;
+        apnsTokenKey = @"sandboxAPNSToken";
+        [defaults setObject:@"" forKey:@"currAPNSToken"];
+        [defaults setObject:@"" forKey:apnsTokenKey];
+    }
+    else
+    {
+        apnsTokenKey = @"productionAPNSToken";
+        [defaults setObject:[defaults objectForKey:apnsTokenKey] forKey:@"currAPNSToken"];
+    }
+#else
+    NSLog(@"startup: debug=0, server=%@", FluxServerURL);
+    if (FluxServerURL == AWSProductionServerURL)
+    {
+        // Let the device know we want to receive push notifications - will hook into APNs production server.
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+         (/*UIRemoteNotificationTypeBadge |*/ UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+        registeredForAPNS = true;
+        apnsTokenKey = @"productionAPNSToken";
+        [defaults setObject:@"" forKey:@"currAPNSToken"];
+        [defaults setObject:@"" forKey:apnsTokenKey];
+    }
+    else
+    {
+        apnsTokenKey = @"sandboxAPNSToken";
+        [defaults setObject:[defaults objectForKey:apnsTokenKey] forKey:@"currAPNSToken"];
+    }
+    
+#endif
+
+    //set settings defaults
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
     NSString * borderType = [defaults objectForKey:@"Border"];
@@ -108,7 +150,49 @@
     RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     //RKLogConfigureByName("*", RKLogLevelOff);
     
+    // Apple Push Notifications
+    if ((launchOptions != nil) && (registeredForAPNS))
+	{
+		NSDictionary *dictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+		if (dictionary != nil)
+		{
+			NSLog(@"Launched from push notification: %@", dictionary);
+		}
+	}
     return YES;
+}
+
+- (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken
+{
+	NSString *newToken = [deviceToken description];
+	newToken = [newToken stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+	newToken = [newToken stringByReplacingOccurrencesOfString:@" " withString:@""];
+    
+	NSLog(@"My APNs device token is: %@", newToken);
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:newToken forKey:apnsTokenKey];
+    [defaults setObject:newToken forKey:@"currAPNSToken"];
+    
+    FluxDataManager *fdm = [FluxDataManager theFluxDataManager];
+    fdm.haveAPNSToken = true;
+    
+    if (fdm.isLoggedIn)
+    {
+        FluxDataRequest *dataRequest2 = [[FluxDataRequest alloc] init];
+        [fdm updateAPNsDeviceTokenWithRequest:dataRequest2];
+    }
+}
+
+- (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo
+{
+	NSLog(@"Received notification: %@", userInfo);
+}
+
+
+- (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error
+{
+	NSLog(@"Failed to get token, error: %@", error);
 }
 
 - (BOOL)application:(UIApplication *)application

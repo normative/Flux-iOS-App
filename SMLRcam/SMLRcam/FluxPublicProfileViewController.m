@@ -132,7 +132,7 @@
         else{
             __weak FluxPublicProfileCell *weakCell = cell;
             NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-            NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxTestServerURL,theUser.userID,@"thumb", token];
+            NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxServerURL,theUser.userID,@"thumb", token];
             [cell.profielImageButton.imageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                                      placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
                                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
