@@ -35,36 +35,53 @@
     [self setSelectedBackgroundView:bgColorView];
     
     self.titleLabel.font = [UIFont fontWithName:@"Akkurat" size:self.titleLabel.font.pointSize];
+    self.socialStatusLabel.font = [UIFont fontWithName:@"Akkurat" size:self.socialStatusLabel.font.pointSize];
+    [self.socialStatusLabel setTextColor:[UIColor colorWithWhite:1.0 alpha:0.8]];
     
     self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2;
     self.profileImageView.clipsToBounds = YES;
-    
     //add a white stroke to the image
-//    UIRectCorner corners = UIRectCornerBottomLeft | UIRectCornerBottomRight;
-//    CGSize radii = CGSizeMake(self.profileImageView.frame.size.height/2, self.profileImageView.frame.size.height/2);
-//    
-//    UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:self.profileImageView.bounds
-//                                               byRoundingCorners:corners
-//                                                     cornerRadii:radii];
-//    
-//    // Mask the container view’s layer to round the corners.
-//    CAShapeLayer *cornerMaskLayer = [CAShapeLayer layer];
-//    [cornerMaskLayer setPath:path.CGPath];
-//    
-//    // Make a transparent, stroked layer which will dispay the stroke.
-//    CAShapeLayer *strokeLayer = [CAShapeLayer layer];
-//    strokeLayer.path = path.CGPath;
-//    strokeLayer.fillColor = [UIColor clearColor].CGColor;
-//    strokeLayer.strokeColor = [UIColor whiteColor].CGColor;
-//    strokeLayer.lineWidth = 1; // the stroke splits the width evenly inside and outside,
-//    // but the outside part will be clipped by the containerView’s mask.
-//    [self.profileImageView.layer addSublayer:strokeLayer];
+    self.profileImageView.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.7].CGColor;
+    self.profileImageView.layer.borderWidth = 1;
+}
+
+- (void)setUserObject:(FluxUserObject *)userObject{
+    _userObject = userObject;
+    
+    [self.titleLabel setText:[NSString stringWithFormat:@"@%@",userObject.username]];
+    if (userObject.bio) {
+        [self.bioLabel setText:[NSString stringWithFormat:@"%@",userObject.bio]];
+    }
+    else{
+        [self.bioLabel setText:@""];
+    }
 }
 
 - (IBAction)friendFollowButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(FriendFollowerCellButtonWasTapped:)]) {
         [delegate FriendFollowerCellButtonWasTapped:self];
     }
-    
 }
+
+- (void)setSocialMode:(int)socialMode{
+    [self.socialStatusLabel setText:@""];
+    if (socialMode > 0) {
+        switch (socialMode) {
+            case 1:
+                [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",_userObject.username]];
+                break;
+            case 2:
+                [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",_userObject.username]];
+                break;
+            case 3:
+                [self.socialStatusLabel setText:[NSString stringWithFormat:@"is following you"]];
+                break;
+                
+            default:
+                break;
+        }
+        [self layoutSubviews];
+    }
+}
+
 @end

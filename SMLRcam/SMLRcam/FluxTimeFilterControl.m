@@ -73,8 +73,16 @@
     
     
     float height = [[UIScreen mainScreen] bounds].size.height;
-    float heightPerCell = height/CELLS_PER_VIEW;
-    self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell*count);
+    float heightPerCell = height / CELLS_PER_VIEW;
+
+    // add extra to allow to scroll to last image
+    if (count > 1)
+    {
+        // add buffer to count
+        count += (CELLS_PER_VIEW - 1);
+    }
+
+    self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell * count);
     if (self.timeScrollView.contentSize.height < self.frame.size.height) {
         self.timeScrollView.contentSize = CGSizeMake(self.timeScrollView.contentSize.width, self.frame.size.height);
     }
@@ -84,12 +92,6 @@
     
     CGFloat circleStartAngle;
     CGFloat circleEndAngle;
-    
-    if (count > 1)
-    {
-        // add buffer to count
-        count += (CELLS_PER_VIEW - 1);
-    }
     
     if (count <= CELLS_PER_VIEW) {
         circleStartAngle = 0;
@@ -147,15 +149,19 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
     
     //if it's outside the bounds of the scrollView
-    if ((scrollView.contentOffset.y < scrollView.contentSize.height - scrollView.frame.size.height) && scrollView.contentOffset.y > 0) {
-        if (self.fluxDisplayManager && self.fluxDisplayManager.nearbyListCount > 1) {
+//    if ((scrollView.contentOffset.y < (scrollView.contentSize.height - scrollView.frame.size.height)) && (scrollView.contentOffset.y > 0))
+    if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y > 0))
+    {
+        int nlc = self.fluxDisplayManager.nearbyListCount;
+        if (self.fluxDisplayManager && (nlc > 1))
+        {
             // adjust for the buffer to allow scrolling to the last item in the real list.  Make sure it doesn't go beyond that.
             int nlc = self.fluxDisplayManager.nearbyListCount;
-            int idx = (nlc + (CELLS_PER_VIEW - 1)) * (scrollView.contentOffset.y/scrollView.contentSize.height);
+            int idx = (nlc + (CELLS_PER_VIEW - 1)) * (scrollView.contentOffset.y / scrollView.contentSize.height);
             if (idx >= nlc)
                 idx = nlc - 1;
             [self.fluxDisplayManager timeBracketDidChange:idx];
-            
+
         }
     }
     

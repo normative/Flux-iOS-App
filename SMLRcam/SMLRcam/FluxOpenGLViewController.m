@@ -2206,50 +2206,37 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     FluxScanImageObject *sio;
     float sepia;
+    
+    if(_videotexture==NULL)
+        return;
+    
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-    // Render the object again with ES2
     glUseProgram(_program);
     
     glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
     
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX0], 1, 0, _tBiasMVP[0].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX1], 1, 0, _tBiasMVP[1].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX2], 1, 0, _tBiasMVP[2].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX3], 1, 0, _tBiasMVP[3].m);
-//    glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX4], 1, 0, _tBiasMVP[4].m);
+
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX7], 1, 0, _tBiasMVP[7].m);
     glUniformMatrix4fv(uniforms[UNIFORM_TBIASMVP_MATRIX6], 1, 0, _tBiasMVP[6].m);
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, texture[0]);
     
-    // Set our "myTextureSampler" sampler to user Texture Unit 0
-
-    // draw background first...
     if(_videotexture != NULL)
     {
-            glActiveTexture(GL_TEXTURE7);
-            glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
+        glActiveTexture(GL_TEXTURE7);
+        glBindTexture(CVOpenGLESTextureGetTarget(_videotexture), CVOpenGLESTextureGetName(_videotexture));
+        glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER7], 7);
     }
+  
     
     
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(_texture[5].target, _texture[5].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER5], 5);
 
     glActiveTexture(GL_TEXTURE6);
     glBindTexture(_texture[6].target, _texture[6].name);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER6], 6);
     
     // then spin through the images...
@@ -2268,13 +2255,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             glUniform1i(uniforms[UNIFORM_RENDER_ENABLE0+c],1);
             glActiveTexture(GL_TEXTURE0 + c);
             glBindTexture(_texture[i].target, _texture[i].name);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glUniform1i(uniforms[UNIFORM_MYTEXTURE_SAMPLER0 + c], c);
             c++;
         }
     }
-    
+
     for ( ; c < number_textures; c++)
     {
 //        NSLog(@"Blank binding unused gltexture %d", c);

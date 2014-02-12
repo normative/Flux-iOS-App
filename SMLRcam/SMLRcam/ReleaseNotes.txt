@@ -2,6 +2,17 @@ Release Notes:
 
 - consolidate device motion managers
 - add pedometer count display debug option to debug view
+- fix issue with R and t transforms in feature matching (Trello #391)
+
+******************************************
+
+V0.19 B07
+
+Released: 2014-02-07 21:00:00
+
+Release Notes:
+- fix to properly display compass ring at startup
+- fix time scrolling to allow full scrolling (Trello #396)
 
 ******************************************
 

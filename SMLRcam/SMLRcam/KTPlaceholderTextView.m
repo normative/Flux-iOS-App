@@ -99,8 +99,6 @@ static size_t const kDashedCount            = (2.0f);
         [theDelegate PlaceholderTextViewDidEdit:self];
     }
     
-    NSLog(@"Text Length: %i",self.text.length);
-    NSLog(@"My Calculated remaining: %i",maxCount-self.text.length);
     if (![self.text isEqualToString:[NSString stringWithFormat:@""]]) {
         [placeholderLabel setHidden:YES];
         [charCount setHidden:NO];
