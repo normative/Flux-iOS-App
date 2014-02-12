@@ -3,6 +3,7 @@ Release Notes:
 - consolidate device motion managers
 - add pedometer count display debug option to debug view
 - fix issue with R and t transforms in feature matching (Trello #391)
+- add support for APNs registration and device token registration to Flux server
 
 ******************************************
 

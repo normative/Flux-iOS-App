@@ -190,7 +190,7 @@
         __weak FluxFriendFollowerCell *weakCell = cell;
         NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
         
-        NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxTestServerURL,cell.userObject.userID,@"thumb", token];
+        NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxServerURL,cell.userObject.userID,@"thumb", token];
         int currentMode = listMode;
         [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                      placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
