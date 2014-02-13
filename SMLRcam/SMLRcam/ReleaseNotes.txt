@@ -19,6 +19,7 @@ Release Notes:
    - can follow other users
    - can invite other users to be friends
    - can accept or reject others friend invites to you
+- (HIDDEN) ability to upload historical imagery (from camera roll)
 
 ******************************************
 
