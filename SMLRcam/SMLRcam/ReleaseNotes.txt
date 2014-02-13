@@ -1,5 +1,12 @@
 Release Notes:
 
+******************************************
+
+V0.20 B01
+
+Released: 2014-02-12 21:45:00
+
+Release Notes:
 - consolidate device motion managers
 - add pedometer count display debug option to debug view
 - fix issue with R and t transforms in feature matching (Trello #391)
@@ -7,6 +14,11 @@ Release Notes:
 - add historical content upload capabilities
 - repoint to production server
 - disable verbose logging of network activity
+- preliminary support for social features
+   - can search for flux users
+   - can follow other users
+   - can invite other users to be friends
+   - can accept or reject others friend invites to you
 
 ******************************************
 
