@@ -39,7 +39,8 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
     NSMutableDictionary *uploadQueueReceivers;
 }
 
-@property(nonatomic, strong)NSString*baseURL;
+@property (nonatomic) bool isLoggedIn;
+@property (nonatomic) bool haveAPNSToken;
 
 + (NSString*)thisDeviceName;
 + (FluxCameraModel)thisCameraModel;

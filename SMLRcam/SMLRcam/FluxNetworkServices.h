@@ -106,7 +106,6 @@ extern NSString* const FluxServerURL;
     __weak id <NetworkServicesDelegate> delegate;
 }
 @property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
-@property (nonatomic, strong)NSString*serverString;
 //@property (nonatomic, getter = get_token) NSString *token;
 
 

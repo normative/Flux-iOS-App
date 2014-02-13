@@ -52,8 +52,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 //        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
 //        if (isremote)
 //        {
-        objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxProductionServerURL]];
-        self.serverString = [objectManager.baseURL absoluteString];
+        objectManager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:FluxServerURL]];
 //        }
 //        else
 //        {
