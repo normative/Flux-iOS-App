@@ -29,5 +29,6 @@ FluxImageCaptureMode: NSUInteger {
 @property (nonatomic) int picCount;
 @property (nonatomic, strong) FluxCameraButton*button;
 @property (nonatomic) FluxImageCaptureMode captureMode;
+@property (nonatomic) bool singleImageCaptureMode;
 
 @end

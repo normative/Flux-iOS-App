@@ -16,8 +16,11 @@
 
 typedef NSUUID FluxRequestID;
 
-extern NSString* const FluxProductionServerURL;
-extern NSString* const FluxTestServerURL;
+extern NSString* const AWSProductionServerURL;
+extern NSString* const AWSTestServerURL;
+extern NSString* const DSDLocalTestServerURL;
+
+extern NSString* const FluxServerURL;
 
 @class FluxNetworkServices;
 @protocol NetworkServicesDelegate <NSObject>
@@ -158,7 +161,7 @@ extern NSString* const FluxTestServerURL;
 /**
  uploads an image. All account info is stored within the FluxScanImageObject
  **/
-- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
 
 /**
  Removes an image from the Flux DB given an imageID.
@@ -195,6 +198,11 @@ extern NSString* const FluxTestServerURL;
  Posts a given camera object to the database.
  **/
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID;
+
+/**
+ Updates the APNs device token for the user.
+ **/
+-(void) updateAPNsDeviceTokenWithRequestID:(FluxRequestID *)requestID;
 
 /**
  creates a user with the given object

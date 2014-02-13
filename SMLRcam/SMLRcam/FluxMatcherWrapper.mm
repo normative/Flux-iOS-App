@@ -475,7 +475,7 @@ const int auto_threshold_inc = 10;
     // Origin of this frame is at the center of the camera with x to the right and y down.
     // z is away from the camera
     // 2D points are the object image
-    // We assume that the "box" calculate from the homography resides on the plane perpendicular to the user's camera.
+    // We assume that the "box" calculated from the homography resides on the plane perpendicular to the user's camera.
     // It will have a shape dependent on the warping resulting from matching.
     // The original image which was matched will have a defined rectangular shape which projects this shape on the plane
     // because of the R and t transformations.
@@ -485,56 +485,26 @@ const int auto_threshold_inc = 10;
     cv::Mat dist;
     cv::solvePnP(planar_3d_points, object_corners, K, dist, rvec, tvec);
     
-    // Outputs origin of world reference frame (center of user's camera FOV on projection plane)
-    // in camera frame (camera of matched image)
-    std::cout << "Rvec: " << rvec << std::endl;
-    std::cout << "Tvec: " << tvec << std::endl;
-    
-    // Calculate camera position in world reference frame
+    // Frame transformations
     cv::Mat rotM;
     cv::Rodrigues(rvec, rotM);
-    cv::Mat camera_pos = -tvec;
-    
-    std::cout << "camera_pos: " << camera_pos << std::endl;
-    std::cout << "camera_mat: " << rotM.t() << std::endl;
-    
-    // Calculate Euler angles for verification
-    euler_angles rot_euler = [self calculateEulerAngles:rotM.t()];
-    std::cout << "theta 1: " << 180.0/M_PI*rot_euler.theta1 << ", theta 2: " << 180.0/M_PI*rot_euler.theta2
-    << ", theta 3: " << 180.0/M_PI*rot_euler.theta3 << std::endl;
-    
-    // Frame transformations
-    
-    // Origin frame of reference
-    // x right, y up, -z is in front
-    
-    // Origin (OpenGL/tangent plane) to user camera position (of background image)
-    cv::Mat R_usercam_origin = [self R_x:M_PI];
-    cv::Mat t_usercam_origin = cv::Mat::zeros(3, 1, CV_64F);
-    
-    cv::Mat rvec_usercam_origin;
-    cv::Rodrigues(R_usercam_origin, rvec_usercam_origin);
     
     // User camera position (of background image) to center of image plane (where camera axis intersects rendering plane)
     cv::Mat R_imageplane_usercam = cv::Mat::eye(3, 3, CV_64F);
-    cv::Mat t_imageplane_usercam = cv::Mat::zeros(3, 1, CV_64F);
-    t_imageplane_usercam.at<double>(2,0) = projection_distance;
+    cv::Mat t_imageplane_usercam_Fimageplane = cv::Mat::zeros(3, 1, CV_64F);
+    t_imageplane_usercam_Fimageplane.at<double>(2,0) = projection_distance;
     cv::Mat rvec_imageplane_usercam;
     cv::Rodrigues(R_imageplane_usercam, rvec_imageplane_usercam);
     
     // Center of image plane to camera frame of matched image
     cv::Mat R_matchcam_imageplane = rotM;
-    cv::Mat t_matchcam_imageplane = camera_pos;
+    cv::Mat t_matchcam_imageplane_Fmatchcam = -tvec;
     cv::Mat rvec_matchcam_imageplane;
     cv::Rodrigues(R_matchcam_imageplane, rvec_matchcam_imageplane);
     
     // User camera position (of background image) to camera frame of matched image
-    cv::Mat rvec_matchcam_usercam;
-    cv::Mat tvec_matchcam_usercam;
-    cv::composeRT(rvec_imageplane_usercam, t_imageplane_usercam, rvec_matchcam_imageplane, t_matchcam_imageplane, rvec_matchcam_usercam, tvec_matchcam_usercam);
-    
-    cv::Mat R_matchcam_usercam;
-    cv::Rodrigues(rvec_matchcam_usercam, R_matchcam_usercam);
+    cv::Mat R_matchcam_usercam = R_matchcam_imageplane*R_imageplane_usercam;
+    cv::Mat tvec_matchcam_usercam = R_imageplane_usercam.t()*(R_matchcam_imageplane.t()*t_matchcam_imageplane_Fmatchcam + t_imageplane_usercam_Fimageplane);
     euler_angles euler_matchcam_usercam = [self calculateEulerAngles:R_matchcam_usercam];
     
     std::cout << "tvec_matchcam_usercam: " << tvec_matchcam_usercam << std::endl;
@@ -542,24 +512,8 @@ const int auto_threshold_inc = 10;
     std::cout << "theta 1: " << 180.0/M_PI*euler_matchcam_usercam.theta1 << ", theta 2: " << 180.0/M_PI*euler_matchcam_usercam.theta2
     << ", theta 3: " << 180.0/M_PI*euler_matchcam_usercam.theta3 << std::endl;
     
-    // User camera position (of background image) to camera frame of matched image
-    // Also include conversion from matched image camera frame (Open CV) to matched image camera frame (Open GL) - transpose of this transform
-    cv::Mat tvec_matchcam_origin;
-    
-    cv::Mat R_matchcam_origin = R_usercam_origin.t() * R_matchcam_usercam * R_usercam_origin;
-    tvec_matchcam_origin = R_usercam_origin.t() * tvec_matchcam_usercam;
-    
-    euler_angles euler_matchcam_origin = [self calculateEulerAngles:R_matchcam_origin];
-    
-    std::cout << "tvec_matchcam_origin: " << tvec_matchcam_origin << std::endl;
-    std::cout << "R_matchcam_origin: " << std::endl;
-    std::cout << "theta 1: " << 180.0/M_PI*euler_matchcam_origin.theta1 << ", theta 2: " << 180.0/M_PI*euler_matchcam_origin.theta2
-    << ", theta 3: " << 180.0/M_PI*euler_matchcam_origin.theta3 << std::endl;
-    
     R_final = R_matchcam_usercam;
     t_final = tvec_matchcam_usercam;
-//    R_final = R_matchcam_origin;
-//    t_final = tvec_matchcam_origin;
 }
 
 - (cv::Mat)R_x:(double)theta

@@ -50,6 +50,8 @@ static FluxDataManager *_theFluxDataManager = nil;
 {
     if (self = [super init])
     {
+        _isLoggedIn = false;
+        _haveAPNSToken = false;
         fluxDataStore = [[FluxDataStore alloc] init];
         currentRequests = [[NSMutableDictionary alloc] init];
         downloadQueueReceivers = [[NSMutableDictionary alloc] init];
@@ -63,6 +65,7 @@ static FluxDataManager *_theFluxDataManager = nil;
 
 - (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest
+                   withHistoricalImage:(UIImage *)historicalImg
 {
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = data_upload_request;
@@ -80,7 +83,7 @@ static FluxDataManager *_theFluxDataManager = nil;
     }
     
     // Begin upload of image to server
-    [networkServices uploadImage:metadata andImage:image andRequestID:requestID];
+    [networkServices uploadImage:metadata andImage:image andRequestID:requestID andHistoricalImage:historicalImg];
     
     // Set up global upload progress count (add new image to overall total)
     
@@ -593,6 +596,19 @@ static FluxDataManager *_theFluxDataManager = nil;
     return requestID;
 }
 
+- (FluxRequestID *) updateAPNsDeviceTokenWithRequest:(FluxDataRequest *)dataRequest
+{
+    FluxRequestID *requestID = dataRequest.requestID;
+    if (self.haveAPNSToken)
+    {
+        dataRequest.requestType = data_upload_request;
+        [currentRequests setObject:dataRequest forKey:requestID];
+        // Begin update of device ID to server
+        [networkServices updateAPNsDeviceTokenWithRequestID:requestID];
+    }
+    return requestID;
+}
+
 - (FluxRequestID *) requestUsersListQuery:(NSString*)query withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = userSearch_request;
@@ -995,7 +1011,8 @@ static FluxDataManager *_theFluxDataManager = nil;
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxRegistrationUserObject *)userObject andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenLoginUserComplete:userObject withDataRequest:request];
-    
+    // flag that a user is logged in to be used for device registration
+    _isLoggedIn = true;
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
@@ -1003,7 +1020,8 @@ static FluxDataManager *_theFluxDataManager = nil;
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenLogoutComplete:request];
-    
+    // unflag that a user is logged in to be used for device registration
+    _isLoggedIn = false;
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
@@ -1022,8 +1040,16 @@ static FluxDataManager *_theFluxDataManager = nil;
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenCameraPostCompleteWithID:camID andDataRequest:request];
     
+    // flag that a user is logged in to be used for device registration
+    _isLoggedIn = true;
+    
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
+
+    // register/update the APNS device token
+    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+    [self updateAPNsDeviceTokenWithRequest:dataRequest];
+    
 }
 
 #pragma mark Profile Stuff

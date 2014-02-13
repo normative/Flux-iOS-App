@@ -20,6 +20,8 @@ NSString* const FluxDebugDidChangeTeleportLocationIndex = @"FluxDebugDidChangeTe
 NSString* const FluxDebugTeleportLocationIndexKey = @"FluxDebugTeleportLocationIndexKey";
 NSString* const FluxDebugDidChangePedometerCountDisplay = @"FluxDebugDidChangePedometerCountDisplay";
 NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDisplayKey";
+NSString* const FluxDebugDidChangeHistoricalPhotoPicker = @"FluxDebugDidChangeHistoricalPhotoPicker";
+NSString* const FluxDebugHistoricalPhotoPickerKey = @"FluxDebugHistoricalPhotoPickerKey";
 
 @interface FluxDebugViewController ()
 
@@ -47,6 +49,7 @@ NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDis
     
     [switch1 setOn:[[defaults objectForKey:FluxDebugMatchDebugImageOutputKey] boolValue]];
     [switch2 setOn:[[defaults objectForKey:FluxDebugPedometerCountDisplayKey] boolValue]];
+    [switch3 setOn:[[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue]];
     
 	// Do any additional setup after loading the view.
 }
@@ -103,6 +106,16 @@ NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDis
                                                         object:self userInfo:nil];
 }
 
+- (IBAction)switch3DidChange:(id)sender
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:@([(UISwitch*)sender isOn]) forKey:FluxDebugHistoricalPhotoPickerKey];
+    [defaults synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeHistoricalPhotoPicker
+                                                        object:self userInfo:nil];
+}
+
 - (IBAction)deleteAccountButtonAction:(id)sender {
     [UIActionSheet showInView:self.view
                     withTitle:@"Are you sure? This action cannot be undone."
@@ -138,9 +151,6 @@ NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDis
                              [operation start];
                          }
                      }];
-}
-
-- (IBAction)stepper1DidStep:(id)sender {
 }
 
 - (IBAction)hideMenuAction:(id)sender {

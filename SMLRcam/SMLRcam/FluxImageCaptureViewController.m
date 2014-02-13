@@ -47,6 +47,11 @@ static int captureImageID = -1;
     [blackView setHidden:YES];
     [self.view addSubview:blackView];
     
+    historicalImageView = [[UIImageView alloc] initWithFrame:imageCaptureSquareView.frame];
+    [historicalImageView setAlpha:0.5];
+    [historicalImageView setHidden:NO];
+    [self.view addSubview:historicalImageView];
+
     snapshotImageView = [[UIImageView alloc]initWithFrame:self.view.bounds];
     [snapshotImageView setAlpha:0.0];
     [snapshotImageView setBackgroundColor:[UIColor blackColor]];
@@ -171,6 +176,7 @@ static int captureImageID = -1;
     NSDictionary *userInfoDict = [[NSDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects",
                                   capturedImages, @"capturedImages",
+                                  historicalImageView.image, @"historicalImage",
                                   socialSelections, @"social",
                                   privacy, @"privacy",
                                   snapshot, @"snapshot",
@@ -472,6 +478,11 @@ static int captureImageID = -1;
 		result = AVCaptureVideoOrientationLandscapeLeft;
     }
 	return result;
+}
+
+- (void) setHistoricalTransparentImage:(UIImage *)image
+{
+    historicalImageView.image = image;
 }
 
 @end

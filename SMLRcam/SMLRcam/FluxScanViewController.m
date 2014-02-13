@@ -324,7 +324,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     IDMPhoto *photo = nil;
 
-    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType];
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:quarterhd returnSize:&actualType];
     if (actualType >= quarterhd)
     {
         photo = [[IDMPhoto alloc]initWithImage:imageCacheObj.image];
@@ -333,7 +333,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     else if (tappedImageObject.imageID > 0)
     {
         // last resort
-        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=%@",FluxProductionServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];
+        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];
         photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
     }
     
@@ -389,7 +389,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (IBAction)cameraButtonAction:(id)sender {
     
-    if (self.cameraButton.alpha < 1.0) {
+    if (self.cameraButton.alpha < 1.0)
+    {
         UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh..."
                                                           message:@"Taking pictures is disabled because the device's location accuracy is poor. Try going outside, or avoid standing next to large metal objects."
                                                          delegate:nil
@@ -397,10 +398,33 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                 otherButtonTitles:nil];
         [message show];
     }
-    else{
-        [openGLController activateNewImageCapture];
-        [self activateImageCaptureForMode:camera_mode];
+    else
+    {
+        if (historicalPhotoPickerEnabled)
+        {
+            UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+            picker.delegate = self;
+            picker.allowsEditing = YES;
+            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            
+            [self presentViewController:picker animated:YES completion:NULL];
+        }
+        else
+        {
+            [self configureNewCameraCapture];
+        }
     }
+}
+
+- (void)configureNewCameraCaptureWithImage:(UIImage *)image
+{
+    [openGLController activateNewImageCaptureWithImage:image];
+    [self activateImageCaptureForMode:camera_mode];
+}
+
+- (void)configureNewCameraCapture
+{
+    [self configureNewCameraCaptureWithImage:nil];
 }
 
 - (IBAction)imageCaptureButtonAction:(id)sender {
@@ -460,6 +484,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)activateImageCaptureForMode:(FluxImageCaptureMode)captureMode{
     [imageCaptureButton setHidden:NO];
     [imageCaptureButton setCaptureMode:captureMode];
+    [imageCaptureButton setSingleImageCaptureMode:historicalPhotoPickerEnabled];
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [imageCaptureButton setAlpha:1.0];
@@ -570,6 +595,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)uploadImages:(NSDictionary*)imagesDict{
     NSArray*objectsArr = [imagesDict objectForKey:@"capturedImageObjects"];
     NSArray*imagesArr = [imagesDict objectForKey:@"capturedImages"];
+    UIImage *historicalImg = [imagesDict objectForKey:@"historicalImage"];
     
     [UIView animateWithDuration:0.1f
                      animations:^{
@@ -633,7 +659,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                  progressView.progress = 0;
                              }];
         }];
-        [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
+        [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest withHistoricalImage:historicalImg];
     }
 }
 
@@ -693,7 +719,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self activateImageCaptureForMode:snapshot_mode];
 }
 
-
+- (void)setupHistoricalPhotoPicker
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    historicalPhotoPickerEnabled = [[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue];
+    
+    //    [pedometerLabel setHidden:(!enablePedometerDisplay)];
+}
 
 #pragma mark Image Capture Helper Methods
 -(UIImage*)blurImage:(UIImage *)img{
@@ -806,8 +838,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStepWithPedometer:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupDebugPedometerCountDisplay) name:FluxDebugDidChangePedometerCountDisplay object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupHistoricalPhotoPicker) name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
     
     [self setupDebugPedometerCountDisplay];
+    [self setupHistoricalPhotoPicker];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -871,6 +905,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangePedometerCountDisplay object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
 }
 
 #pragma mark - View Transition Animations
@@ -922,6 +957,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	
 	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
 	[view.layer addAnimation:group forKey:nil];
+}
+
+#pragma mark - ImagePicker delegate methods
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+    
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+    
+    [self configureNewCameraCaptureWithImage:chosenImage];
+}
+
+//Tells the delegate that the user cancelled the pick operation.
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark - Debug Menu
