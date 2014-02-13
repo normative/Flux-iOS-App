@@ -39,6 +39,8 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
     NSMutableDictionary *uploadQueueReceivers;
 }
 
+@property(nonatomic, strong)NSString*baseURL;
+
 + (NSString*)thisDeviceName;
 + (FluxCameraModel)thisCameraModel;
 + (FluxDataManager *)theFluxDataManager;

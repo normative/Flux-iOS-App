@@ -315,17 +315,18 @@
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
         [cell.countLabel setEnabled:NO];
-      //disable social
+
         if (self.badgeCount > 0) {
             [cell addBadge:self.badgeCount];
         }
         else{
             [cell clearBadge];
         }
-        [cell.titleLabel setEnabled:NO];
-        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+        
+        //disable social
+//        [cell.titleLabel setEnabled:NO];
+//        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
-    //[cell.imageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
     return cell;
 }
 
@@ -340,7 +341,7 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            //[tableView deselectRowAtIndexPath:indexPath animated:NO];
             [self performSegueWithIdentifier:@"pushSocialList" sender:nil];
             break;
         case 3:

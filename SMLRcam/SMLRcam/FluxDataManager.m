@@ -668,6 +668,7 @@ static FluxDataManager *_theFluxDataManager = nil;
 - (void)setupNetworkServices{
     networkServices = [[FluxNetworkServices alloc]init];
     [networkServices setDelegate:self];
+    self.baseURL = networkServices.serverString;
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError *)e andNaturalString:(NSString *)string andRequestID:(NSUUID *)requestID
