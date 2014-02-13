@@ -192,7 +192,7 @@
         [options addObject:sendFriendRequest];
     }
     else{
-        if (friendFollowerCell.userObject.friendState == 2) {
+        if (friendFollowerCell.userObject.friendState == 1) {
             [options addObject:acceptFriendRequest];
         }
     }
@@ -240,7 +240,7 @@
                                          //...and it's still the same cell
                                          if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
                                              //update it
-                                             [(FluxUserObject*)[resultsArray objectAtIndex:index] setFriendState:1];
+                                             [(FluxUserObject*)[resultsArray objectAtIndex:index] setFriendState:2];
                                              [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                          }
                                      }

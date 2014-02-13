@@ -58,27 +58,7 @@
         [socialListsRefreshControls addObject:refreshControl];
     }
     
-    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
-                                                           bundle:[NSBundle mainBundle]];
-
-    // first get an instance from storyboard
-    self.searchUserVC = [myStoryboard instantiateViewControllerWithIdentifier:@"searchUserVC"];
     
-    self.childNavC = [[UINavigationController alloc]initWithRootViewController:self.searchUserVC];
-    self.childNavC.interactivePopGestureRecognizer.enabled = NO;
-    // then add the imageCaptureView as the subview of the parent view
-    [self.window addSubview:self.childNavC.view];
-    // add the glkViewController as the child of self
-    [self addChildViewController:self.childNavC];
-    [self.childNavC didMoveToParentViewController:self];
-    [self.searchUserVC setFluxDataManager:self.fluxDataManager];
-    self.childNavC.view.frame = self.view.bounds;
-    [self setSearchVCHidden:YES animated:NO];
-    
-    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.childNavC.view.frame];
-    [bgView setImage:[(UIImageView*)[self.navigationController.view.subviews firstObject] image]];
-    [bgView setBackgroundColor:[UIColor darkGrayColor]];
-    [self.childNavC.view insertSubview:bgView atIndex:0];
     
     
     [self updateListForActiveMode];
@@ -110,13 +90,7 @@
         [(FluxPublicProfileViewController*)segue.destinationViewController setDelegate:self];
     }
     else{
-        [(FluxAddUserViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
-        UIImage* snapshot = [(UIImageView*)[[[(UINavigationController*)self.parentViewController view] subviews] objectAtIndex:0] image];
-        
-        UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
-        [bgView setImage:snapshot];
-        [bgView setBackgroundColor:[UIColor darkGrayColor]];
-        [[(FluxAddUserViewController*)segue.destinationViewController view] insertSubview:bgView atIndex:0];
+
     }
 
 }
@@ -127,6 +101,36 @@
     // Dispose of any resources that can be recreated.
 }
 
+
+- (IBAction)searchButtonAction:(id)sender {
+    
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+    
+    // first get an instance from storyboard
+    self.searchUserVC = [myStoryboard instantiateViewControllerWithIdentifier:@"searchUserVC"];
+    
+    self.childNavC = [[UINavigationController alloc]initWithRootViewController:self.searchUserVC];
+    self.childNavC.interactivePopGestureRecognizer.enabled = NO;
+    
+    [self.window addSubview:self.childNavC.view];
+    
+    // add the glkViewController as the child of self
+    [self addChildViewController:self.childNavC];
+    [self.childNavC didMoveToParentViewController:self];
+    [self.searchUserVC setFluxDataManager:self.fluxDataManager];
+    self.childNavC.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height+64);
+    [self setSearchVCHidden:YES animated:NO];
+    
+    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.childNavC.view.frame];
+    [bgView setImage:[(UIImageView*)[self.navigationController.view.subviews firstObject] image]];
+    [bgView setBackgroundColor:[UIColor darkGrayColor]];
+    [self.childNavC.view insertSubview:bgView atIndex:0];
+    
+    [self.searchUserVC willAppear];
+    [self setSearchVCHidden:NO animated:YES];
+}
+
 - (void)setSearchVCHidden:(BOOL)hidden animated:(BOOL)animated{
     if (animated) {
         if (hidden) {
@@ -134,7 +138,11 @@
                 [self.childNavC.view setAlpha:0.0];
                 
             } completion:^(BOOL finished){
-                [self.childNavC.view setHidden:YES];
+                [self.childNavC removeFromParentViewController];
+                [self.childNavC.view removeFromSuperview];
+                
+                self.childNavC = nil;
+                self.searchUserVC = nil;
             }];
         }
         
@@ -147,10 +155,12 @@
     }
     else{
         if (hidden) {
+            //[self.childNavC.view removeFromSuperview];
             [self.childNavC.view setAlpha:0.0];
             [self.childNavC.view setHidden:YES];
         }
         else{
+//            [self.window addSubview:self.childNavC.view];
             [self.childNavC.view setAlpha:1.0];
             [self.childNavC.view setHidden:NO];
         }
@@ -176,7 +186,23 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *cellIdentifier = @"standardSocialCell";
+    NSString*cellIdentifier;
+    if (tableView == friendsTableView && [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] friendState] == 1) {
+        if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] bio]) {
+            cellIdentifier = @"standardSocialCellRequest";
+        }
+        else{
+            cellIdentifier = @"standardSocialCellRequestNoBio";
+        }
+    }
+    else{
+        if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] bio]) {
+            cellIdentifier = @"standardSocialCell";
+        }
+        else{
+            cellIdentifier = @"standardSocialCellNoBio";
+        }
+    }
     FluxFriendFollowerCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
         cell = [[FluxFriendFollowerCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
@@ -300,6 +326,55 @@
     else{
         
     }
+}
+
+- (void)FriendFollowerCellShouldAcceptFriendRequest:(FluxFriendFollowerCell *)friendFollowerCell{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [friendFollowerCell setUserInteractionEnabled:NO];
+    [request setAcceptFriendRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"friended");
+        if (listMode == friendMode) {
+            [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:friendMode] objectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row] setFriendState:3];
+            [(UITableView*)[socialTableViews objectAtIndex:friendMode] reloadRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+        }
+        [friendFollowerCell setUserInteractionEnabled:YES];
+        //[addUsersTableView reloadData];
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Accepting friend request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+        [ProgressHUD showError:str];
+        [friendFollowerCell setUserInteractionEnabled:YES];
+        
+    }];
+    [self.fluxDataManager acceptFriendRequestFromUserWithID:friendFollowerCell.userObject.userID withDataRequest:request];
+}
+
+- (void)FriendFollowerCellShouldIgnoreFriendRequest:(FluxFriendFollowerCell *)friendFollowerCell{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [friendFollowerCell setUserInteractionEnabled:NO];
+    [request setIgnoreFriendRequestReady:^(int ignoredUserID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"friend request ignored");
+        if (listMode == friendMode) {
+            [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row];
+            [(UITableView*)[socialTableViews objectAtIndex:friendMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+        }
+        [friendFollowerCell setUserInteractionEnabled:YES];
+        
+        //[addUsersTableView reloadData];
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Ignoring firend request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+        [ProgressHUD showError:str];
+        [friendFollowerCell setUserInteractionEnabled:YES];
+        
+    }];
+    [self.fluxDataManager ignoreFriendRequestFromUserWithID:friendFollowerCell.userObject.userID withDataRequest:request];
 }
 
 #pragma mark - Public Profile Delegate
@@ -521,16 +596,6 @@
     
     if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0) {
         [self updateListForActiveMode];
-    }
-}
-
-- (IBAction)searchButtonAction:(id)sender {
-    if ([self.childNavC.view isHidden]) {
-        [self.searchUserVC willAppear];
-        [self setSearchVCHidden:NO animated:YES];
-    }
-    else{
-        [self setSearchVCHidden:YES animated:YES];
     }
 }
 @end

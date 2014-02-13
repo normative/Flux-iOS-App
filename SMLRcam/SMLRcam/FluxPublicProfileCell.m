@@ -94,7 +94,7 @@
                              }];
         }
             break;
-        case 1:{
+        case 2:{
             [UIActionSheet showInView:self.superview
                             withTitle:nil
                     cancelButtonTitle:@"Cancel"
@@ -110,7 +110,7 @@
         }
             return;
             break;
-        case 2:{
+        case 1:{
             [UIActionSheet showInView:self.superview
                             withTitle:nil
                     cancelButtonTitle:@"Cancel"
@@ -199,11 +199,11 @@
         case 0:
             [self.friendButton setSelected:NO];
             break;
-        case 1:
+        case 2:
             [self.friendButton setSelected:NO];
             [self.friendButtonEllipsis setHidden:NO];
             break;
-        case 2:
+        case 1:
             [self.friendButton setSelected:NO];
             break;
         case 3:

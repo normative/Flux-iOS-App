@@ -42,6 +42,7 @@ typedef enum FluxDataRequestType : NSUInteger {
     acceptFriend_request = 21,
     ignoreFriend_request = 22,
     unfriend_request = 23,
+    friendRequest_request = 24,
     
 } FluxDataRequestType;
 
@@ -73,6 +74,7 @@ typedef void (^UserProfilePicReadyBlock)(UIImage*,int, FluxDataRequest *);
 typedef void (^UserImagesReadyBlock)(NSArray *, FluxDataRequest *);
 
 //social
+typedef void (^UserFriendRequestsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^UserFriendsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^UserFollowingsReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^UserFollowersReadyBlock)(NSArray *, FluxDataRequest *);
@@ -173,6 +175,9 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for successful user pics returned
 @property (strong) UserImagesReadyBlock userImagesReady;
 
+// Callback for successful friend requests returned
+@property (strong) UserFriendRequestsReadyBlock userFriendRequestsReady;
+
 // Callback for successful friends list returned
 @property (strong) UserFriendsReadyBlock userFriendsReady;
 
@@ -232,6 +237,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUserImagesReady:(NSArray *)profileImageObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 //social stuff
+- (void) whenUserFriendRequestsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserFriendsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserFollowingsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUserFollowersReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;

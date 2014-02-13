@@ -125,7 +125,7 @@
     [request setSendFriendRequestReady:^(int userID, FluxDataRequest*completedRequest){
         //do something with the UserID
         NSLog(@"friend request sent");
-        theUser.friendState = 1;
+        theUser.friendState = 2;
         [profileTableView reloadData];
     }];
     
@@ -196,7 +196,6 @@
         if ([delegate respondsToSelector:@selector(PublicProfile:didremoveFollower:)]) {
             [delegate PublicProfile:self didremoveFollower:theUser];
         }
-
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){

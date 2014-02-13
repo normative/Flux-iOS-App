@@ -115,6 +115,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                     withDataRequest:(FluxDataRequest *)dataRequest;
 
 //social
+- (FluxRequestID *) requestFriendRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFriendsListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowingListForID:(int)userID

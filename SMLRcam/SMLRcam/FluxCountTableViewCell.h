@@ -7,12 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CustomBadge.h"
 
-@interface FluxCountTableViewCell : UITableViewCell
+@interface FluxCountTableViewCell : UITableViewCell{
+    CustomBadge*badge;
+}
 @property (strong, nonatomic) IBOutlet UILabel *titleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *countLabel;
 @property (strong, nonatomic) IBOutlet UIImageView *imageView;
 
 - (void)initCell;
+- (void)addBadge:(int)count;
+- (void)clearBadge;
 
 @end

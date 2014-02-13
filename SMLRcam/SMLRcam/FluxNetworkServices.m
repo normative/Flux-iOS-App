@@ -97,6 +97,11 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
                                                                                                      pathPattern:@"connections/addfriend"
                                                                                                          keyPath:nil
                                                                                                      statusCodes:statusCodes];
+        RKResponseDescriptor *connectionAcceptFriendResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
+                                                                                                                method:RKRequestMethodAny
+                                                                                                           pathPattern:@"connections/respondtofriend"
+                                                                                                               keyPath:nil
+                                                                                                           statusCodes:statusCodes];
         
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
@@ -138,6 +143,8 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
         [objectManager addResponseDescriptor:cameraCreationResponseDescriptor];
         [objectManager addResponseDescriptor:connectionFollowResponseDescriptor];
         [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
+        [objectManager addResponseDescriptor:connectionAcceptFriendResponseDescriptor];
+        
         
         //and again for image-related calls
         RKResponseDescriptor *imageObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
@@ -789,6 +796,39 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
 
 #pragma mark Social Stuff
 
+- (void)getFriendRequestsForUserWithRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"/users/friendinvites.json"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]]];
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Results",[result count]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFriendRequestsForUser:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnFriendRequestsForUser:result.array andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
+
 - (void)getFriendsListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
@@ -1018,7 +1058,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     [connObj setFriendState:FluxFriendState_accept];
     
     
-    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
@@ -1049,7 +1089,7 @@ NSString* const FluxTestServerURL = @"http://54.221.222.71/";
     [connObj setFriendState:FluxFriendState_ignore];
     
     
-    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];

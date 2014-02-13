@@ -69,6 +69,8 @@ extern NSString* const FluxTestServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(FluxRequestID *)requestID;
 
 //social stuff
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendRequestsForUser:(NSArray*)friendRequests
+           andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)friends
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)followings
@@ -223,6 +225,11 @@ return's a profile image for a given userID and size
 
 
 #pragma mark Social Stuff
+/**
+ return's a user's active friend requests
+ **/
+- (void)getFriendRequestsForUserWithRequestID:(NSUUID *)requestID;
+
 /**
  return's a user's friend list for a given userID
  **/

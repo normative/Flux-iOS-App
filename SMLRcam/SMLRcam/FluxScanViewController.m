@@ -648,6 +648,32 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [ProgressHUD showError:[NSString stringWithFormat:@"Failed to post to %@",socialType]];
 }
 
+#pragma mark Friend Requests
+- (void)checkForFriendRequests{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    
+    [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        if (requestsArr.count>0) {
+            [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",requestsArr.count]];
+            [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
+            if (!friendRequestsBadge.superview) {
+                [self.leftDrawerButton addSubview:friendRequestsBadge];
+            }
+        }
+        else{
+            [friendRequestsBadge setBadgeText:@""];
+            [friendRequestsBadge removeFromSuperview];
+        }
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSLog(@"Friend request check failed with error %d",(int)[e code]);
+    }];
+    [self.fluxDisplayManager.fluxDataManager requestFriendRequestsForUserWithDataRequest:request];
+}
+
 #pragma mark Other Camera view methods
 
 
@@ -757,6 +783,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self.bottomToolbarView setTranslatesAutoresizingMaskIntoConstraints:YES];
     [ScanUIContainerView addSubview:self.bottomToolbarView];
     
+    friendRequestsBadge = [CustomBadge customBadgeWithString:@"0"
+                                             withStringColor:[UIColor whiteColor]
+                                              withInsetColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]
+                                              withBadgeFrame:NO
+                                         withBadgeFrameColor:[UIColor clearColor]
+                                                   withScale:1.0
+                                                 withShining:NO];
+    [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
+
+    
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
         [self.cameraButton setAlpha:0.4];
@@ -777,6 +813,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     self.screenName = @"Scan View";
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+        [self checkForFriendRequests];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -805,6 +846,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [[(UINavigationController*)segue.destinationViewController view] insertSubview:bgView atIndex:0];
         
         FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
+        [settingsVC setBadgeCount:friendRequestsBadge.badgeText.intValue];
         [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         
     }

@@ -163,6 +163,11 @@
 }
 
 #pragma mark Social Stuff
+- (void) whenUserFriendRequestsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userFriendRequestsReady) {
+        self.userFriendRequestsReady(socialUserObjects, completeDataRequest);
+    }
+}
 
 - (void) whenUserFriendsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.userFriendsReady) {

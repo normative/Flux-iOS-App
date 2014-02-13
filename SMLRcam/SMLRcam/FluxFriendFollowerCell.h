@@ -13,6 +13,8 @@
 @protocol FluxFriendFollowerCellDelegate <NSObject>
 @optional
 - (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell;
+- (void)FriendFollowerCellShouldAcceptFriendRequest:(FluxFriendFollowerCell *)friendFollowerCell;
+- (void)FriendFollowerCellShouldIgnoreFriendRequest:(FluxFriendFollowerCell *)friendFollowerCell;
 @end
 
 
@@ -30,7 +32,9 @@
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (strong, nonatomic) IBOutlet UIButton *friendFollowButton;
 @property (strong, nonatomic) IBOutlet UIView *contentContainerView;
+- (IBAction)acceptFriendButtonAction:(id)sender;
 - (IBAction)friendFollowButtonAction:(id)sender;
+- (IBAction)ignoreFriendButtonAction:(id)sender;
 -(void)initCell;
 
 - (void)setSocialMode:(int)socialMode;

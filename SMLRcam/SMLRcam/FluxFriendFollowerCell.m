@@ -57,6 +57,19 @@
     }
 }
 
+- (IBAction)acceptFriendButtonAction:(id)sender {
+    if ([delegate respondsToSelector:@selector(FriendFollowerCellShouldAcceptFriendRequest:)]) {
+        [delegate FriendFollowerCellShouldAcceptFriendRequest:self];
+    }
+}
+
+
+- (IBAction)ignoreFriendButtonAction:(id)sender {
+    if ([delegate respondsToSelector:@selector(FriendFollowerCellShouldIgnoreFriendRequest:)]) {
+        [delegate FriendFollowerCellShouldIgnoreFriendRequest:self];
+    }
+}
+
 - (IBAction)friendFollowButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(FriendFollowerCellButtonWasTapped:)]) {
         [delegate FriendFollowerCellButtonWasTapped:self];

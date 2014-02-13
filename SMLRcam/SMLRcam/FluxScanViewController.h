@@ -28,6 +28,8 @@
 #import "GAITrackedViewController.h"
 
 #import "FluxDebugViewController.h"
+#import "CustomBadge.h"
+
 
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
@@ -69,6 +71,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int totalUploads;
     
     FluxDataFilter *currentDataFilter;
+    CustomBadge *friendRequestsBadge;
     
     //debugMenu
     int debugPressCount;

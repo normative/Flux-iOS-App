@@ -559,6 +559,15 @@ static FluxDataManager *_theFluxDataManager = nil;
 
 #pragma mark Social Stuff
 
+- (FluxRequestID *) requestFriendRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = friendRequest_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getFriendRequestsForUserWithRequestID:requestID];
+    return requestID;
+}
+
 - (FluxRequestID *) requestFriendsListForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = friendList_request;
@@ -1043,6 +1052,14 @@ static FluxDataManager *_theFluxDataManager = nil;
 }
 
 #pragma mark Social
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendRequestsForUser:(NSArray *)friendRequests andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUserFriendRequestsReady:friendRequests withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray *)friends andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
