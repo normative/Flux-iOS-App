@@ -13,10 +13,11 @@
 #import "FluxNetworkServices.h"
 #import "FluxDataManager.h"
 
+#import "TestFlight.h"
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
 
-#import "TestFlight.h"
+
 // Normative
 //#define TestFlightAppToken @"ef9c1a90-3dc3-4db5-8fad-867e31b66e8c"
 // SMLR

@@ -7,8 +7,8 @@
 //
 
 #import "FluxLeftDrawerViewController.h"
-#import "TestFlight.h"
-#import "TestFlight+OpenFeedback.h"
+#import <TestFlight.h>
+#import <TestFlight+OpenFeedback.h>
 #import "FluxCountTableViewCell.h"
 #import "FluxProfileCell.h"
 #import "UICKeyChainStore.h"
@@ -366,7 +366,7 @@
 
 - (IBAction)onSendFeedBackBtn:(id)sender
 {
-    [TestFlight openFeedbackViewFromView:self];
+    [TestFlight openFeedbackViewFromVC:self];
 }
 
 - (IBAction)doneButtonAction {
