@@ -1,9 +1,15 @@
 Release Notes:
+******************************************
 
+V0.20 B03
+
+Released: 2014-02-14 17:00:00
+
+Release Notes:
 - re-enable My Network access
 - re-enable APNs registration
 - Adds social filters (filter by friends & those I'm following)
-- Updates TestfLight to Version 2.2.1
+- Updates TestFlight to Version 2.2.1
 
 ******************************************
 
