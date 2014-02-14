@@ -71,9 +71,9 @@
 
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:theDataFilter.isActiveUserFiltered];
     
-//    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andFilterType:followers_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter isFollowingActive]];
+    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People I follow" andFilterType:followers_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:theDataFilter.isFollowingFiltered];
 //    
-//    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter isFriendActive]];
+    FluxFilterDrawerObject *friendsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:theDataFilter.isFriendsFiltered];
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
@@ -81,7 +81,7 @@
     imageCount = [NSNumber numberWithInt:count];
     self.radius = 15;
     
-    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, /*followingFilterObject, favouritesFilterObject, */nil];
+    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, friendsFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
     if ([theDataFilter.hashTags isEqualToString:@""]) {
         selectedTags = [[NSMutableArray alloc]init];
