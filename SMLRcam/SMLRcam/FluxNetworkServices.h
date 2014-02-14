@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxDataFilter.h"
 #import "FluxRegistrationUserObject.h"
 #import "FluxCameraObject.h"
 #import <CoreLocation/CoreLocation.h>
@@ -133,11 +134,8 @@ extern NSString* const FluxServerURL;
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
                            andMaxAlt:(float)altMax
-                     andMinTimestamp:(NSDate *)timeMin
-                     andMaxTimestamp:(NSDate *)timeMax
-                         andHashTags:(NSString *)hashTags
-                            andUsers:(NSString *)users
-                         andMaxCount:(int)maxCount
+                      andMaxReturned:(int)maxCount
+                           andFilter:(FluxDataFilter*)dataFilter
                         andRequestID:(FluxRequestID *)requestID;
 
 /**
@@ -147,11 +145,8 @@ extern NSString* const FluxServerURL;
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
                            andMaxAlt:(float)altMax
-                     andMinTimestamp:(NSDate *)timeMin
-                     andMaxTimestamp:(NSDate *)timeMax
-                         andHashTags:(NSString *)hashTags
-                            andUsers:(NSString *)users
-                         andMaxCount:(int)maxCount
+                      andMaxReturned:(int)maxCount
+                           andFilter:(FluxDataFilter*)dataFilter
                         andRequestID:(FluxRequestID *)requestID;
 
 // execute the request
@@ -298,11 +293,8 @@ return's a profile image for a given userID and size
                          andRadius:(float)radius
                          andMinAlt:(float)altMin
                          andMaxAlt:(float)altMax
-                   andMinTimestamp:(NSDate *)timeMin
-                   andMaxTimestamp:(NSDate *)timeMax
-                       andHashTags:(NSString *)hashTags
-                          andUsers:(NSString *)users
-                       andMaxCount:(int)maxCount
+                    andMaxReturned:(int)maxCount
+                         andFilter:(FluxDataFilter*)dataFilter
                       andRequestID:(FluxRequestID *)requestID;
 
 

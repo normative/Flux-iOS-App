@@ -85,16 +85,6 @@
     self.hashTags = [self RemoveString:tag fromFilter:self.hashTags];
 }
 
--(void)addActiveUserToFilter:(NSString*)userID{
-    self.isActiveUserFiltered = YES;
-    self.users = [self addString:userID toFilter:self.users];
-}
-
--(void)removeActiveUserFromFilter:(NSString*)userID{
-    self.isActiveUserFiltered = NO;
-    self.users = [self RemoveString:userID fromFilter:self.users];
-}
-
 - (NSString*)addString:(NSString*)parameter toFilter:(NSString*)filter{
     if ([filter isEqualToString:@""]) {
         filter = parameter;

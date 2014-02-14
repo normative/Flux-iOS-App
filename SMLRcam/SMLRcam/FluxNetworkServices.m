@@ -281,11 +281,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
                            andMaxAlt:(float)altMax
-                     andMinTimestamp:(NSDate *)timeMin
-                     andMaxTimestamp:(NSDate *)timeMax
-                         andHashTags:(NSString *)hashTags
-                            andUsers:(NSString *)users
-                         andMaxCount:(int)maxCount
+                      andMaxReturned:(int)maxCount
+                           andFilter:(FluxDataFilter*)dataFilter
                         andRequestID:(FluxRequestID *)requestID;
 
 {
@@ -307,17 +304,17 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@';&userlist='%@'&maxcount=%d&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@';&userlist='%@'&maxcount=%d&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
 
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
     
@@ -1244,11 +1241,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                          andRadius:(float)radius
                          andMinAlt:(float)altMin
                          andMaxAlt:(float)altMax
-                   andMinTimestamp:(NSDate *)timeMin
-                   andMaxTimestamp:(NSDate *)timeMax
-                       andHashTags:(NSString *)hashTags
-                          andUsers:(NSString *)users
-                       andMaxCount:(int)maxCount
+                    andMaxReturned:(int)maxCount
+                         andFilter:(FluxDataFilter*)dataFilter
                       andRequestID:(FluxRequestID *)requestID;
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
@@ -1265,15 +1259,15 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
   
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1304,11 +1298,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                               andRadius:(float)radius
                               andMinAlt:(float)altMin
                               andMaxAlt:(float)altMax
-                        andMinTimestamp:(NSDate *)timeMin
-                        andMaxTimestamp:(NSDate *)timeMax
-                            andHashTags:(NSString *)hashTags
-                               andUsers:(NSString *)users
-                            andMaxCount:(int)maxCount
+                         andMaxReturned:(int)maxCount
+                              andFilter:(FluxDataFilter*)dataFilter
                            andRequestID:(FluxRequestID *)requestID{
     
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
@@ -1320,17 +1311,17 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
 
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               hashTags, users, maxCount, token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];

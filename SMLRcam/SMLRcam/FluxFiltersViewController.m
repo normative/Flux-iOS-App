@@ -386,23 +386,32 @@
     switch (checkCell.filterType) {
         case myPhotos_filterType:
         {
-            NSString*userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
             if (checked) {
-                [dataFilter addActiveUserToFilter:userID];
+                dataFilter.isActiveUserFiltered = YES;
             }
             else{
-                [dataFilter removeActiveUserFromFilter:userID];
+                dataFilter.isActiveUserFiltered = NO;
             }
         }
             break;
         case followers_filterType:
         {
-            
+            if (checked) {
+                dataFilter.isFollowingFiltered = YES;
+            }
+            else{
+                dataFilter.isFollowingFiltered = NO;
+            }
         }
             break;
         case friends_filterType:
         {
-            
+            if (checked) {
+                dataFilter.isFriendsFiltered = YES;
+            }
+            else{
+                dataFilter.isFriendsFiltered = NO;
+            }
         }
             break;
         default:

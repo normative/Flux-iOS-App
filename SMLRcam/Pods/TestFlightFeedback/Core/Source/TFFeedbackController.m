@@ -36,7 +36,9 @@
     [super viewDidLoad];
     _textViewBottomSpacingConstraintInitialValue = _textViewBottomSpacingConstraint.constant;
     _versionLabel.text = [TestFlight of_ApplicationVersionBuild];
-    _textView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    _textView.layer.borderColor = [UIColor clearColor].CGColor;
+    [_titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:_titleLabel.font.pointSize]];
+    [_versionLabel setFont:[UIFont fontWithName:@"Akkurat" size:_versionLabel.font.pointSize]];
     _titleLabel.text = NSLocalizedStringFromTable(@"title_label_text", @"TestFlightFeedbackLocalizable", nil);
 }
 

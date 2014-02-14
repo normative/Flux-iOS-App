@@ -133,11 +133,8 @@ static FluxDataManager *_theFluxDataManager = nil;
 //                                            andMaxAlt:dataRequest.searchFilter.altMax
                                             andMinAlt:location.altitude - altitudeLowRange
                                             andMaxAlt:location.altitude + altitudeHighRange
-                                      andMinTimestamp:dataRequest.searchFilter.timeMin
-                                      andMaxTimestamp:dataRequest.searchFilter.timeMax
-                                          andHashTags:dataRequest.searchFilter.hashTags
-                                             andUsers:dataRequest.searchFilter.users
-                                          andMaxCount:dataRequest.maxReturnItems
+                                       andMaxReturned:dataRequest.maxReturnItems
+                                            andFilter:dataRequest.searchFilter
                                          andRequestID:requestID];
     }
     
@@ -159,11 +156,7 @@ static FluxDataManager *_theFluxDataManager = nil;
                                         andRadius:radius
                                         andMinAlt:dataRequest.searchFilter.altMin
                                         andMaxAlt:dataRequest.searchFilter.altMax
-                                  andMinTimestamp:dataRequest.searchFilter.timeMin
-                                  andMaxTimestamp:dataRequest.searchFilter.timeMax
-                                      andHashTags:dataRequest.searchFilter.hashTags
-                                         andUsers:dataRequest.searchFilter.users
-                                      andMaxCount:dataRequest.maxReturnItems
+                                   andMaxReturned:dataRequest.maxReturnItems andFilter:dataRequest.searchFilter
                                      andRequestID:requestID];
     
     return requestID;
@@ -451,15 +444,11 @@ static FluxDataManager *_theFluxDataManager = nil;
     else
     {
         [networkServices getTagsForLocationFiltered:location.coordinate
-                                            andRadius:radius
+                                          andRadius:radius
                                           andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
-                                            andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
-                                      andMinTimestamp:dataRequest.searchFilter.timeMin
-                                      andMaxTimestamp:dataRequest.searchFilter.timeMax
-                                          andHashTags:dataRequest.searchFilter.hashTags
-                                             andUsers:dataRequest.searchFilter.users
-                                          andMaxCount:maxCount
-                                         andRequestID:requestID];
+                                          andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
+                                     andMaxReturned:maxCount andFilter:dataRequest.searchFilter
+                                       andRequestID:requestID];
     }
     
     return requestID;
