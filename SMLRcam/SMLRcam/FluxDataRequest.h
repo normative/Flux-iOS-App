@@ -16,6 +16,7 @@
 #import "FluxUserObject.h"
 #import "FluxRegistrationUserObject.h"
 #import "FluxTagObject.h"
+#import "FluxFilterImageCountObject.h"
 
 typedef enum FluxDataRequestType : NSUInteger {
     no_request_specified = 0,
@@ -43,6 +44,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     ignoreFriend_request = 22,
     unfriend_request = 23,
     friendRequest_request = 24,
+    imageCounts_request = 25,
+    totalImageCount_request = 26,
     
 } FluxDataRequestType;
 
@@ -88,6 +91,8 @@ typedef void (^UnfriendUserReadyBlock)(int, FluxDataRequest *);
 
 //other
 typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
+typedef void (^ImageCountsReadyBlock)(FluxFilterImageCountObject *, FluxDataRequest *);
+typedef void (^TotalImageCountReadyBlock)(int, FluxDataRequest *);
 typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 // Data request object can store many things (parameters are optional depending on request type).
@@ -206,6 +211,10 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 // Callback for list of tags retrieved
 @property (strong) TagsReadyBlock tagsReady;
+// Callback for list of tags retrieved
+@property (strong) ImageCountsReadyBlock imageCountsReady;
+// Callback for list of tags retrieved
+@property (strong) TotalImageCountReadyBlock totalImageCountReady;
 
 // Callback for error occurred
 @property (strong) ErrorBlock errorOccurred;
@@ -251,8 +260,12 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUnFriendUserReady:(int)oldFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 
-//other
+//Filters
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenImageCountsReady:(FluxFilterImageCountObject *)countObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenTotalImageCountReady:(int)imageCount withDataRequest:(FluxDataRequest *)completeDataRequest;
+
+//other
 - (void) whenErrorOccurred:(NSError *)e withDescription:(NSString*)description withDataRequest:(FluxDataRequest *)errorDataRequest;
 
 @end

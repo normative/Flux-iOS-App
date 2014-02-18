@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "KTCheckboxButton.h"
 #import "FluxDataFilter.h"
+#import "FluxCheckboxCell.h"
 
 
 
@@ -18,20 +19,13 @@
 - (void)SocialCell:(FluxSocialFilterCell *)checkCell boxWasChecked:(BOOL)checked;
 @end
 
-@interface FluxSocialFilterCell : UITableViewCell <KTCheckboxButtonDelegate>{
-    BOOL active;
-    id __unsafe_unretained delegate;
+@interface FluxSocialFilterCell : FluxCheckboxCell <KTCheckboxButtonDelegate>{
+    id __unsafe_unretained socialCellDelegate;
 }
-@property (weak, nonatomic) IBOutlet UILabel *descriptorLabel;
-@property (weak, nonatomic) IBOutlet KTCheckboxButton *checkbox;
+
 @property (nonatomic)FluxFilterType filterType;
 
 
-@property (unsafe_unretained) id <SocialFilterTableViewCellDelegate> delegate;
-
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier;
--(void)setIsActive:(BOOL)bActive;
--(BOOL)isChecked;
-- (void)cellWasTapped;
+@property (unsafe_unretained) id <SocialFilterTableViewCellDelegate> socialCellDelegate;
 
 @end

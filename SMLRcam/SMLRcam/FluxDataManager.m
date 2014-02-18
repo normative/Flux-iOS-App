@@ -423,7 +423,7 @@ static FluxDataManager *_theFluxDataManager = nil;
     return requestID;
 }
 
-#pragma mark - Tag Requests
+#pragma mark - Filters
 
 - (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
                                   withRadius:(float)radius
@@ -451,6 +451,40 @@ static FluxDataManager *_theFluxDataManager = nil;
                                        andRequestID:requestID];
     }
     
+    return requestID;
+}
+
+- (FluxRequestID *) requestImageCountstAtLocation:(CLLocation *)location
+                                       withRadius:(float)radius
+                             andAltitudeSensitive:(BOOL)altitudeSensitive
+                                  withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = imageCounts_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getImageCountsForLocationFiltered:location.coordinate
+                                             andRadius:radius
+                                             andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
+                                             andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
+                                             andFilter:dataRequest.searchFilter
+                                          andRequestID:requestID];
+    return requestID;
+}
+
+- (FluxRequestID *) requestTotalImageCountAtLocation:(CLLocation *)location
+                                          withRadius:(float)radius
+                                andAltitudeSensitive:(BOOL)altitudeSensitive
+                                     withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = totalImageCount_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices getFilteredImageCountForLocation:location.coordinate
+                                             andRadius:radius
+                                             andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
+                                             andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
+                                             andFilter:dataRequest.searchFilter
+                                          andRequestID:requestID];
     return requestID;
 }
 
@@ -963,13 +997,33 @@ static FluxDataManager *_theFluxDataManager = nil;
     [self completeRequestWithDataRequest:request];
 }
 
-#pragma mark Tags
+#pragma mark Filters
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList andRequestID:(NSUUID *)requestID
 {
     // Call callback of requestor
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenTagsReady:tagList withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageCounts:(FluxFilterImageCountObject *)countObject andRequestID:(NSUUID *)requestID
+{
+    // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenImageCountsReady:countObject withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTotalImageCount:(int)count andRequestID:(NSUUID *)requestID
+{
+    // Call callback of requestor
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenTotalImageCountReady:count withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

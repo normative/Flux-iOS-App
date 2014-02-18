@@ -127,7 +127,6 @@
     [bgView setBackgroundColor:[UIColor darkGrayColor]];
     [self.childNavC.view insertSubview:bgView atIndex:0];
     
-    [self.searchUserVC willAppear];
     [self setSearchVCHidden:NO animated:YES];
 }
 
@@ -150,6 +149,8 @@
             [self.childNavC.view setHidden:NO];
             [UIView animateWithDuration:0.3 animations:^{
                 [self.childNavC.view setAlpha:1.0];
+            }completion:^(BOOL finished){
+                
             }];
         }
     }

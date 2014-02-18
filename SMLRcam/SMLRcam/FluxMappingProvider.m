@@ -14,6 +14,7 @@
 #import "FluxMapImageObject.h"
 #import "FluxCameraObject.h"
 #import "FluxProfileImageObject.h"
+#import "FluxFilterImageCountObject.h"
 
 @implementation FluxMappingProvider
 
@@ -168,7 +169,7 @@
     return mapping;
 }
 
-#pragma mark - Tag Mapping
+#pragma mark - Filters Mapping
 
 + (RKObjectMapping *)tagGetMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxTagObject class]];
@@ -177,6 +178,18 @@
                                                   @"tagtext":   @"tagText",
                                                   @"count":     @"count"
                                                  }];
+    return mapping;
+}
+
++ (RKObjectMapping *)filterImageCountsGetMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxFilterImageCountObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"totalimgcount":   @"totalImageCount",
+                                                  @"myimgcount":     @"activeUserImageCount",
+                                                  @"friendimgcount":   @"activerUserFriendsImageCount",
+                                                  @"followingimgcount":   @"activerUserFollowingsImageCount"
+                                                  }];
     return mapping;
 }
 

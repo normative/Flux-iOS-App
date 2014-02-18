@@ -73,10 +73,20 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(FluxImageType)imageType;
 - (void) completeRequestWithDataRequest:(FluxDataRequest *)dataRequest;
 
-//Tags
+//Filters
 - (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
                                   withRadius:(float)radius
                                  andMaxCount:(int)maxCount
+                        andAltitudeSensitive:(BOOL)altitudeSensitive
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+
+- (FluxRequestID *) requestImageCountstAtLocation:(CLLocation *)location
+                                  withRadius:(float)radius
+                        andAltitudeSensitive:(BOOL)altitudeSensitive
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+
+- (FluxRequestID *) requestTotalImageCountAtLocation:(CLLocation *)location
+                                  withRadius:(float)radius
                         andAltitudeSensitive:(BOOL)altitudeSensitive
                              withDataRequest:(FluxDataRequest *)dataRequest;
 

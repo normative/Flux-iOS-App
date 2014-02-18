@@ -222,7 +222,7 @@
     }
 }
 
-#pragma mark - Other
+#pragma mark - Filters
 
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
 {
@@ -232,6 +232,19 @@
     }
 }
 
+- (void) whenImageCountsReady:(FluxFilterImageCountObject *)countObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.imageCountsReady) {
+        self.imageCountsReady(countObject, completeDataRequest);
+    }
+}
+- (void) whenTotalImageCountReady:(int)imageCount withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.totalImageCountReady) {
+        self.totalImageCountReady(imageCount, completeDataRequest);
+    }
+}
+
+
+#pragma mark - Other
 - (void) whenErrorOccurred:(NSError *)e withDescription:(NSString *)description withDataRequest:(FluxDataRequest *)errorDataRequest{
     if (self.errorOccurred)
     {

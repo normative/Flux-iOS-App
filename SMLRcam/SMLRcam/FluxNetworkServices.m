@@ -130,6 +130,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                  rootKeyPath:@"connection"
                                                                                                       method:RKRequestMethodPUT];
         
+
+        
         
         [objectManager addRequestDescriptor:userRequestDescriptor];
         [objectManager addRequestDescriptor:userUpdateDescriptor];
@@ -1196,7 +1198,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 }
 
 
-#pragma mark  - Tags
+#pragma mark  - Filters
 
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount
               andRequestID:(FluxRequestID *)requestID
@@ -1278,6 +1280,109 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnTagList:result.array andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
+- (void)getImageCountsForLocationFiltered:(CLLocationCoordinate2D)location
+                                andRadius:(float)radius
+                                andMinAlt:(float)altMin
+                                andMaxAlt:(float)altMax
+                                andFilter:(FluxDataFilter*)dataFilter
+                             andRequestID:(FluxRequestID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider filterImageCountsGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"/images/filteredimgcounts.json"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&auth_token=%@",
+                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                                location.latitude, location.longitude, radius,
+                                                                                altMin, altMax,
+                                                                                token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxFilterImageCountObject *countsObject = [result firstObject];
+         
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnImageCounts:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnImageCounts:countsObject andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
+- (void)getFilteredImageCountForLocation:(CLLocationCoordinate2D)location
+                               andRadius:(float)radius
+                               andMinAlt:(float)altMin
+                               andMaxAlt:(float)altMax
+                               andFilter:(FluxDataFilter*)dataFilter
+                            andRequestID:(FluxRequestID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider filterImageCountsGetMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"/images/filteredimgcounts.json"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+    
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
+                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                                location.latitude, location.longitude, radius,
+                                                                                altMin, altMax,
+                                                                                timestampMin, timestampMax,
+                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxFilterImageCountObject *countsObject = [result firstObject];
+         
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTotalImageCount:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnTotalImageCount:countsObject.totalImageCount andRequestID:requestID];
          }
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)

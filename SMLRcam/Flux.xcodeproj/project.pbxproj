@@ -160,6 +160,7 @@
 		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
 		AADFF1CE18AE63A1003BEE8C /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1CD18AE63A1003BEE8C /* libGoogleAnalyticsServices.a */; };
 		AADFF1D018AE6505003BEE8C /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1CF18AE6505003BEE8C /* libTestFlight.a */; };
+		AADFF1EB18B3E8A1003BEE8C /* FluxFilterImageCountObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */; };
 		AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */; };
 		AAF1BCFF183C173900909AFF /* 2.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFA183C173900909AFF /* 2.png */; };
 		AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */; };
@@ -466,6 +467,8 @@
 		AAD2DFF917BD54BA00D572A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AADFF1CD18AE63A1003BEE8C /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGoogleAnalyticsServices.a; path = "Pods/GoogleAnalytics-iOS-SDK/libGoogleAnalyticsServices.a"; sourceTree = "<group>"; };
 		AADFF1CF18AE6505003BEE8C /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
+		AADFF1E918B3E8A1003BEE8C /* FluxFilterImageCountObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterImageCountObject.h; sourceTree = "<group>"; };
+		AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterImageCountObject.m; sourceTree = "<group>"; };
 		AAF1BCEF183A73A300909AFF /* BBCyclingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBCyclingLabel.h; sourceTree = "<group>"; };
 		AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBCyclingLabel.m; sourceTree = "<group>"; };
 		AAF1BCFA183C173900909AFF /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
@@ -902,6 +905,8 @@
 				AA4CE15E17B58433008D04BE /* FluxScanImageObject.m */,
 				AAA265A517E89EAE003AE787 /* FluxTagObject.h */,
 				AAA265A617E89EAE003AE787 /* FluxTagObject.m */,
+				AADFF1E918B3E8A1003BEE8C /* FluxFilterImageCountObject.h */,
+				AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */,
 				AAAAD70D18A5264D00F5F3DB /* Social */,
 			);
 			name = "Data Objects";
@@ -1625,6 +1630,7 @@
 				F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */,
 				F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,
+				AADFF1EB18B3E8A1003BEE8C /* FluxFilterImageCountObject.m in Sources */,
 				AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,

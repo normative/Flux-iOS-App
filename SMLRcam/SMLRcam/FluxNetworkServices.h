@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxFilterImageCountObject.h"
 #import "FluxDataFilter.h"
 #import "FluxRegistrationUserObject.h"
 #import "FluxCameraObject.h"
@@ -96,8 +97,12 @@ extern NSString* const FluxServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfriendUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
 
-//tags
+//fil†ers
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageCounts:(FluxFilterImageCountObject*)countObject
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTotalImageCount:(int)count
            andRequestID:(FluxRequestID *)requestID;
 
 @end
@@ -284,7 +289,7 @@ return's a profile image for a given userID and size
 
 
 
-#pragma mark  - Tags
+#pragma mark  - Filters
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;
 
 
@@ -296,6 +301,22 @@ return's a profile image for a given userID and size
                     andMaxReturned:(int)maxCount
                          andFilter:(FluxDataFilter*)dataFilter
                       andRequestID:(FluxRequestID *)requestID;
+
+
+
+- (void)getImageCountsForLocationFiltered:(CLLocationCoordinate2D)location
+                         andRadius:(float)radius
+                         andMinAlt:(float)altMin
+                         andMaxAlt:(float)altMax
+                         andFilter:(FluxDataFilter*)dataFilter
+                      andRequestID:(FluxRequestID *)requestID;
+
+- (void)getFilteredImageCountForLocation:(CLLocationCoordinate2D)location
+                                andRadius:(float)radius
+                                andMinAlt:(float)altMin
+                                andMaxAlt:(float)altMax
+                                andFilter:(FluxDataFilter*)dataFilter
+                             andRequestID:(FluxRequestID *)requestID;
 
 
 #pragma mark  - Other

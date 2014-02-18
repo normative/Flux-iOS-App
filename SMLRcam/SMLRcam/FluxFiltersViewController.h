@@ -24,7 +24,7 @@
 @end
 
 
-@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
+@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;

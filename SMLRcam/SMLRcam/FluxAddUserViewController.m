@@ -69,6 +69,9 @@
     [UIView animateWithDuration:0.25 animations:^{
         [self.view setAlpha:1.0];
     }];
+    if (userSearchBar.text.length == 0) {
+        [userSearchBar becomeFirstResponder];
+    }
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
@@ -316,11 +319,6 @@
         }];
         [self.fluxDataManager requestUsersListQuery:searchQuery withDataRequest:request];
     }
-}
-
--(void)willAppear{
-    [userSearchBar becomeFirstResponder];
-    [self.navigationController setNavigationBarHidden:YES];
 }
 
 - (IBAction)doneButtonAction:(id)sender {

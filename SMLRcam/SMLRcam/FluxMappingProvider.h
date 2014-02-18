@@ -30,6 +30,8 @@
 
 + (RKObjectMapping *)tagGetMapping;
 
++ (RKObjectMapping *)filterImageCountsGetMapping;
+
 + (RKObjectMapping *)mapImageGetMapping;
 
 @end

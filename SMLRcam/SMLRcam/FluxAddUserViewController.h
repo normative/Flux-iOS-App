@@ -31,5 +31,4 @@ typedef enum QuerySearchState : NSUInteger {
 }
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 - (IBAction)doneButtonAction:(id)sender;
--(void)willAppear;
 @end

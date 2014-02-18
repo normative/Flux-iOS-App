@@ -8,6 +8,7 @@
 
 #import "FluxFiltersViewController.h"
 #import "FluxFilterDrawerObject.h"
+#import "FluxFilterImageCountObject.h"
 
 #import "FluxImageTools.h"
 #import "ProgressHUD.h"
@@ -59,6 +60,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self sendTagRequest];
+    [self getSocialImageCounts];
     [self updateImageCount];
 }
 
@@ -70,11 +72,11 @@
 //must be called from presenting VC
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
 
-    FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:theDataFilter.isActiveUserFiltered];
+    FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType];
     
-    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People I follow" andFilterType:followers_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:theDataFilter.isFollowingFiltered];
+    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People I follow" andFilterType:followers_filterType];
 //    
-    FluxFilterDrawerObject *friendsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:theDataFilter.isFriendsFiltered];
+    FluxFilterDrawerObject *friendsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType];
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
@@ -141,7 +143,7 @@
             [selectedTags removeObjectsAtIndexes:removalSet];
             
         }
-        [self.filterTableView reloadData];
+        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -159,8 +161,48 @@
 
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
-    topTagsArray = tagList;
+- (void)getSocialImageCounts{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    FluxDataFilter*tmp = [[FluxDataFilter alloc] init];
+    [request setSearchFilter:tmp];
+    
+    [request setImageCountsReady:^(FluxFilterImageCountObject*countObject, FluxDataRequest*completedRequest){
+        //do something with array
+        
+        for (int i = 0; i<socialFiltersArray.count; i++) {
+            FluxFilterDrawerObject*obj = [socialFiltersArray objectAtIndex:i];
+            if (obj.filterType == myPhotos_filterType) {
+                [obj setCount:countObject.activeUserImageCount];
+            }
+            else if (obj.filterType == followers_filterType){
+                [obj setCount:countObject.activerUserFollowingsImageCount];
+            }
+            else if (obj.filterType == friends_filterType){
+                [obj setCount:countObject.activerUserFriendsImageCount];
+            }
+            else{
+                
+            }
+        }
+//        
+//        FluxFilterDrawerObject*obj
+//        socialFiltersArray objectAtIndex:
+//        [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:arr];
+        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Image counts failed to load with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    
+    if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
+        [self.fluxDataManager requestImageCountstAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
+    }
+    else{
+        [self.fluxDataManager requestImageCountstAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
+    }
 }
 
 
@@ -341,20 +383,21 @@
                 cell = [[FluxSocialFilterCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             }
             [cell.checkbox setDelegate:cell];
-            [cell setDelegate:self];
+            [cell setSocialCellDelegate:self];
+            
+            cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
+            cell.countLabel.text = [NSString stringWithFormat:@"%i",[(FluxFilterDrawerObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
             
 //            //disable the cell for now
 //            [cell setUserInteractionEnabled:NO];
 //            [cell.descriptorLabel setEnabled:NO];
             
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
+            [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             
             //set the cell properties to the array elements declared above
             [cell setFilterType:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]filterType]];
-
-            cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
-            [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             
             return cell;
         }
@@ -367,7 +410,7 @@
                 cell = [[FluxCheckboxCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             }
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
-            [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
+            [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
             cell.descriptorLabel.text = [NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]];
             cell.countLabel.text = [NSString stringWithFormat:@"%i",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
@@ -500,17 +543,24 @@
     [request setSearchFilter:tmp];
     
     
-    [request setNearbyListReady:^(NSArray *imageList){
+    [request setTotalImageCountReady:^(int imgCount,FluxDataRequest*completedRequest){
         //do something with array
-        [imageCountLabel setText:[NSString stringWithFormat:@"%i",imageList.count]];
+        imageCount = [NSNumber numberWithInt:imgCount];
+        [imageCountLabel setText:[NSString stringWithFormat:@"%i",imgCount]];
         [imageCountActivityIndicatorView setAlpha:0.0];
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*str = [NSString stringWithFormat:@"Hashtags failed to load with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Image count failed to load with error %d", (int)[e code]];
         [ProgressHUD showError:str];
     }];
-    [self.fluxDataManager requestImageListAtLocation:locationManager.location withRadius:self.radius withDataRequest:request];
+    
+    if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
+        [self.fluxDataManager requestTotalImageCountAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
+    }
+    else{
+        [self.fluxDataManager requestTotalImageCountAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
+    }
 }
 
 
