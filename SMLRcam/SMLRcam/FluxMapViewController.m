@@ -28,22 +28,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 @synthesize myViewOrientation;
 
 #pragma mark - Callbacks
-- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
-    [self animationPopFrontScaleUp];
-    
-    if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
-        currentDataFilter = [dataFilter copy];
-        [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:lastRadius andFilter:currentDataFilter];
-        outstandingRequests++;
-    }
-    
-    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
-        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
-    }
-    else{
-        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
-    }
-}
 
 - (void)didUpdateMapPins:(NSNotification*)notification{
     if (self.fluxDisplayManager.fluxMapContentMetadata) {
@@ -99,7 +83,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     BOOL radiusFlag = (screenDistance/2)>lastRadius;
     
     if (distanceFlag || radiusFlag) {
-        [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:screenDistance/2 andFilter:currentDataFilter];
+        [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:screenDistance/2 andFilter:self.currentDataFilter];
         outstandingRequests++;
     }
 
@@ -162,6 +146,29 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
      }];
 }
 
+#pragma mark - Filters
+- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+    [self animationPopFrontScaleUp];
+    
+    if (![dataFilter isEqualToFilter:self.currentDataFilter] && dataFilter !=nil) {
+        [self setCurrentDataFilter:[dataFilter copy]];
+        [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:lastRadius andFilter:self.currentDataFilter];
+        outstandingRequests++;
+    }
+    
+}
+
+- (void)setCurrentDataFilter:(FluxDataFilter *)currentDataFilter{
+    _currentDataFilter = currentDataFilter;
+    
+    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
+    }
+    else{
+        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
+    }
+}
+
 #pragma mark - view lifecycle
 
 - (void)viewDidLoad
@@ -171,8 +178,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self setupLocationManager];
     
     firstRunDone = NO;
-    
-    currentDataFilter = [[FluxDataFilter alloc] init];
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
     [transitionFadeView setBackgroundColor:[UIColor blackColor]];
     [transitionFadeView setAlpha:0.0];
@@ -224,8 +229,16 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     filterButton.contentEdgeInsets = UIEdgeInsetsMake(2.0, 0.0, 0.0, 0.0);
     
-    if (currentDataFilter == nil) {
-        currentDataFilter = [[FluxDataFilter alloc] init];
+    if (self.currentDataFilter == nil) {
+        self.currentDataFilter = [[FluxDataFilter alloc] init];
+    }
+    else{
+        if ([self.currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+            [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
+        }
+        else{
+            [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
+        }
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
@@ -250,7 +263,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-    [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
+    [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
     [self animationPushBackScaleDown];
     [filtersVC setRadius:lastRadius];
 }

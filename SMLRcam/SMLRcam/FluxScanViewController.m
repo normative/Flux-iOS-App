@@ -862,6 +862,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     {
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
+        [mapViewController setCurrentDataFilter:currentDataFilter];
     }
     else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
         //set the delegate of the navControllers top view (our filters View)
