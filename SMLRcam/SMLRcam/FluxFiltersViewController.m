@@ -59,6 +59,7 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self sendTagRequest];
+    [self updateImageCount];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -243,6 +244,28 @@
             imageCountLabel.textAlignment = NSTextAlignmentCenter;
             [view addSubview:imageCountLabel];
             
+            imageCountActivityIndicatorView = [[UIView alloc]initWithFrame:CGRectMake(imageCountLabel.frame.origin.x+10, imageCountLabel.frame.origin.y+10, 30, 30)];
+            [imageCountActivityIndicatorView setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:1.0]];
+            imageCountActivityIndicatorView.layer.cornerRadius = imageCountActivityIndicatorView.frame.size.width;
+            
+            imageCountActivityIndicatorView.layer.shadowColor = [[UIColor clearColor] CGColor];
+            imageCountActivityIndicatorView.layer.shadowRadius = 1.0f;
+            imageCountActivityIndicatorView.layer.shadowOpacity = 1.0;
+            imageCountActivityIndicatorView.layer.shadowOffset = CGSizeMake(1, 1);
+            [imageCountActivityIndicatorView setAlpha:0.0];
+            
+            UIActivityIndicatorView*activityView = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0,0, 30, 30)];
+            [activityView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhite];
+            [activityView startAnimating];
+            [imageCountActivityIndicatorView addSubview:activityView];
+            [view addSubview:imageCountActivityIndicatorView];
+            
+            UIButton*doneHeaderButton = [[UIButton alloc]initWithFrame:imageCountLabel.frame];
+            [doneHeaderButton addTarget:self action:@selector(doneButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+            [view addSubview:doneHeaderButton];
+            
+            
+            
             // Save this shape layer in a class property for future reference,
             // namely so we can remove it later if we tap elsewhere on the screen.
         }
@@ -417,6 +440,7 @@
         default:
             break;
     }
+    [self sendTagRequest];
     
     //update the cell
     for (FluxSocialFilterCell* cell in [self.filterTableView visibleCells]) {
@@ -425,17 +449,12 @@
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
+    [self shouldUpdateImageCount];
 }
 
 - (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{
     NSString * tag = [checkCell.descriptorLabel.text substringFromIndex:1];
     [self modifyDataFilter:dataFilter filterSting:tag forType:tags_filterType andAdd:checked];
-    
-    if (checked) {
-        [self updateImageCount:[checkCell.countLabel.text intValue]];
-    }
-    else
-        [self updateImageCount:-[checkCell.countLabel.text intValue]];
     
     
     //update the cell
@@ -452,6 +471,7 @@
             break;
         }
     }
+    [self shouldUpdateImageCount];
 }
 
 -(void)modifyDataFilter:(FluxDataFilter*)filter filterSting:(NSString*)string forType:(FluxFilterType)type andAdd:(BOOL)add{
@@ -465,24 +485,32 @@
     }
 }
 
-- (void)updateImageCount:(int)num{
-    //if it's the first filter applied, make it the only active filter
-    if (imageCount.intValue == startImageCount) {
-        imageCount = [NSNumber numberWithInt:num];
-    }
+- (void)shouldUpdateImageCount{
+    [newImageCountTimer invalidate];
+    newImageCountTimer = nil;
     
-    //if not, add it up
-    else{
-        imageCount = [NSNumber numberWithInt:[imageCount intValue]+num];
-    }
+    newImageCountTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(updateImageCount) userInfo:nil repeats:NO];
+}
 
-    //if we've subtracted back to 0, show the initial count (no filters applied anymore)
-    if (imageCount.intValue == 0) {
-        imageCount = [NSNumber numberWithInt:startImageCount];
-    }
+- (void)updateImageCount{
+    [imageCountActivityIndicatorView setAlpha:1.0];
     
-    [imageCountLabel setText:[NSString stringWithFormat:@"%i",imageCount.intValue]];
-
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    FluxDataFilter*tmp = [[FluxDataFilter alloc] initWithFilter:dataFilter];
+    [request setSearchFilter:tmp];
+    
+    
+    [request setNearbyListReady:^(NSArray *imageList){
+        //do something with array
+        [imageCountLabel setText:[NSString stringWithFormat:@"%i",imageList.count]];
+        [imageCountActivityIndicatorView setAlpha:0.0];
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSString*str = [NSString stringWithFormat:@"Hashtags failed to load with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    [self.fluxDataManager requestImageListAtLocation:locationManager.location withRadius:self.radius withDataRequest:request];
 }
 
 

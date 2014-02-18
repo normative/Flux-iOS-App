@@ -174,9 +174,8 @@
             [self.followerButton setUserInteractionEnabled:YES];
         }
     }
-    
-    
 }
+
 - (void)setUserObject:(FluxUserObject *)userObject{
     _userObject = userObject;
     

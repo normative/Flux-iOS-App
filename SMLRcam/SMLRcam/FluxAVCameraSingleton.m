@@ -37,7 +37,9 @@ static dispatch_once_t sharedFluxAVCameraSingleton_onceToken = 0;
         BOOL locked = [self.device lockForConfiguration:nil];
         if (locked)
         {
-            self.device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
+            if ([self.device isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+                self.device.focusMode = AVCaptureFocusModeContinuousAutoFocus;
+            }
             [self.device unlockForConfiguration];
         }
         

@@ -808,11 +808,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [imageCaptureButton removeFromSuperview];
     [imageCaptureButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [imageCaptureButton setFrame:CGRectMake(imageCaptureButton.frame.origin.x, self.view.frame.size.height-imageCaptureButton.frame.size.height-2, imageCaptureButton.frame.size.width, imageCaptureButton.frame.size.height)];
     [self.view addSubview:imageCaptureButton];
     [imageCaptureButton setHidden:YES];
     
     [self.bottomToolbarView removeFromSuperview];
     [self.bottomToolbarView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.bottomToolbarView setFrame:CGRectMake(0, self.view.frame.size.height-83, self.bottomToolbarView.frame.size.width, self.bottomToolbarView.frame.size.height)];
     [ScanUIContainerView addSubview:self.bottomToolbarView];
     
     friendRequestsBadge = [CustomBadge customBadgeWithString:@"0"

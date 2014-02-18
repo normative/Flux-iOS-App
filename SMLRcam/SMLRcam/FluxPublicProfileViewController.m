@@ -12,6 +12,8 @@
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
 
+#define isiPhone5  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+
 @interface FluxPublicProfileViewController ()
 
 @end
@@ -75,12 +77,15 @@
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     NSString *cellIdentifier;
-    if (theUser.bio) {
+    if (isiPhone5)
+    {
         cellIdentifier = @"publicProfileCell";
     }
-    else{
-        cellIdentifier = @"publicProfileCell";
+    else
+    {
+        cellIdentifier = @"publicProfileCellSmall";
     }
+    
     FluxPublicProfileCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
         cell = [[FluxPublicProfileCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];

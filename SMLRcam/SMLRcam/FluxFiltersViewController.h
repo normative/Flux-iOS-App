@@ -35,6 +35,8 @@
     UIImage*bgImage;
     
     UILabel*imageCountLabel;
+    UIView*imageCountActivityIndicatorView;
+    NSTimer*newImageCountTimer;
     int startImageCount;
     
     FluxDataFilter *dataFilter;
@@ -45,9 +47,9 @@
 @property (nonatomic, weak) id <FiltersTableViewDelegate> delegate;
 @property (nonatomic, weak) FluxDataManager *fluxDataManager;
 @property (strong, nonatomic) IBOutlet UISearchBar *tagsSearchBar;
-@property (nonatomic)int radius;
 @property (strong, nonatomic) IBOutlet UIImageView *backgroundImageView;
 @property (strong, nonatomic) IBOutlet UITableView *filterTableView;
+@property (nonatomic) double radius;
 
 @property (strong, nonatomic) IBOutlet NSNumber *imageCount;
 

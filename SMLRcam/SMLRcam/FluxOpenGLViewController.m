@@ -793,6 +793,7 @@ void init(){
 - (void)activateSnapshotCapture{
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self.snapshotViewController.view setHidden:NO];
+    [self.snapshotViewController updateSnapshotButton];
 }
 
 
