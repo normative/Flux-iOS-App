@@ -1,4 +1,7 @@
 Release Notes:
+
+- Add code to clean out APNs notifications at startup and as they come in
+
 ******************************************
 
 V0.20 B03
