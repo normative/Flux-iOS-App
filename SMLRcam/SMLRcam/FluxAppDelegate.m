@@ -158,13 +158,22 @@ bool registeredForAPNS = false;
     //RKLogConfigureByName("*", RKLogLevelOff);
     
     // Apple Push Notifications
-    if ((launchOptions != nil) && (registeredForAPNS))
+    if (registeredForAPNS)
 	{
-		NSDictionary *dictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
-		if (dictionary != nil)
-		{
-			NSLog(@"Launched from push notification: %@", dictionary);
-		}
+        if (launchOptions != nil)
+        {
+            NSDictionary *dictionary = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+            if (dictionary != nil)
+            {
+                NSLog(@"Launched from push notification: %@", dictionary);
+
+            }
+        }
+        
+        // clear all notifications in the Notification Center
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
+        [[UIApplication sharedApplication] cancelAllLocalNotifications];
+
 	}
     return YES;
 }
@@ -194,6 +203,10 @@ bool registeredForAPNS = false;
 - (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo
 {
 	NSLog(@"Received notification: %@", userInfo);
+
+    // clear all notifications in the Notification Center
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
 }
 
 
