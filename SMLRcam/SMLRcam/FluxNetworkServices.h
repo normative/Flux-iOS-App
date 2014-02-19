@@ -282,6 +282,12 @@ return's a profile image for a given userID and size
  **/
 - (void)unfriedUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
+//aliases
+/**
+ creates a new alias of the current user to social_name under the service_id service, if one doesn't already exist
+ **/
+- (void) createAliasWithName:(NSString *)social_name andServiceID:(int)service_id andRequestID:(NSUUID *)requestID;
+
 
 
 #pragma mark  - Tags

@@ -12,6 +12,7 @@
 #import "FluxConnectionObject.h"
 #import "FluxMappingProvider.h"
 #import "FluxLocationServicesSingleton.h"
+#import "FluxAliasObject.h"
 #import "UICKeyChainStore.h"
 
 #define _AWSProductionServerURL  @"http://54.221.254.230/"
@@ -1193,6 +1194,29 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
+}
+
+#pragma mark Aliases
+
+- (void) createAliasWithName:(NSString *)social_name andServiceID:(int)service_id andRequestID:(NSUUID *)requestID
+{
+    FluxAliasObject *aliasObject = [[FluxAliasObject alloc] initWithName: social_name andServiceID: service_id];
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    [[RKObjectManager sharedManager] postObject:aliasObject path:[NSString stringWithFormat:@"/aliases?auth_token=%@", token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         // FluxAliasObject *newAliasObject = [result firstObject];
+     }
+     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+   
 }
 
 
