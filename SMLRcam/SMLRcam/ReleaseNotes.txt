@@ -1,6 +1,9 @@
 Release Notes:
 
 - Add code to clean out APNs notifications at startup and as they come in
+- App now uses a single filter for both scan and map views
+- Social filters now include counts + overall image count is now more accurate
+- Other minor visual tweaks + improvements
 
 ******************************************
 
