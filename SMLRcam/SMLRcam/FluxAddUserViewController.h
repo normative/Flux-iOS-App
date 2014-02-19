@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "FluxFriendFollowerCell.h"
 #import "FluxDataManager.h"
+#import "FluxSocialImportCell.h"
+#import "FluxSocialManager.h"
 
 typedef enum QuerySearchState : NSUInteger {
     notSearching = 0,
@@ -16,7 +18,7 @@ typedef enum QuerySearchState : NSUInteger {
     searched = 2
 } QuerySearchState;
 
-@interface FluxAddUserViewController : UIViewController<UISearchBarDelegate, UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, UIScrollViewDelegate>{
+@interface FluxAddUserViewController : UIViewController<UISearchBarDelegate, UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, UIScrollViewDelegate, FluxSocialManagerDelegate>{
     QuerySearchState searchState;
     IBOutlet UISearchBar *userSearchBar;
     IBOutlet UITableView *addUsersTableView;
@@ -25,6 +27,7 @@ typedef enum QuerySearchState : NSUInteger {
     
     NSMutableArray*resultsArray;
     NSMutableArray*resultsImageArray;
+    NSArray * socialImportArray;
     
     NSTimer*searchTimer;
     NSString*searchQuery;

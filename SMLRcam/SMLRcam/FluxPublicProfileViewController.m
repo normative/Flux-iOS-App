@@ -42,7 +42,7 @@
 
 - (void)viewDidLoad
 {
-//    [self setTitle:@"Info"];
+    [self setTitle:@"Info"];
     [super viewDidLoad];
 }
 
@@ -57,7 +57,7 @@
         [profileTableView reloadData];
     }];
     [self.fluxDataManager requestUserProfileForID:user.userID withDataRequest:request];
-    self.title = [NSString stringWithFormat:@"@%@",user.username];
+//    self.title = [NSString stringWithFormat:@"@%@",user.username];
 }
 
 #pragma mark - TableView Methods

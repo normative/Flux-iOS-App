@@ -161,6 +161,9 @@
 		AADFF1CE18AE63A1003BEE8C /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1CD18AE63A1003BEE8C /* libGoogleAnalyticsServices.a */; };
 		AADFF1D018AE6505003BEE8C /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1CF18AE6505003BEE8C /* libTestFlight.a */; };
 		AADFF1EB18B3E8A1003BEE8C /* FluxFilterImageCountObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */; };
+		AADFF1EF18B54109003BEE8C /* FluxSocialImportCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF1EE18B54109003BEE8C /* FluxSocialImportCell.m */; };
+		AADFF1F118B544D9003BEE8C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1F018B544D9003BEE8C /* AddressBook.framework */; };
+		AADFF1F618B54BEA003BEE8C /* FluxSocialImportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF1F518B54BEA003BEE8C /* FluxSocialImportViewController.m */; };
 		AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */; };
 		AAF1BCFF183C173900909AFF /* 2.png in Resources */ = {isa = PBXBuildFile; fileRef = AAF1BCFA183C173900909AFF /* 2.png */; };
 		AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */; };
@@ -469,6 +472,12 @@
 		AADFF1CF18AE6505003BEE8C /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
 		AADFF1E918B3E8A1003BEE8C /* FluxFilterImageCountObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterImageCountObject.h; sourceTree = "<group>"; };
 		AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterImageCountObject.m; sourceTree = "<group>"; };
+		AADFF1ED18B54109003BEE8C /* FluxSocialImportCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialImportCell.h; sourceTree = "<group>"; };
+		AADFF1EE18B54109003BEE8C /* FluxSocialImportCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialImportCell.m; sourceTree = "<group>"; };
+		AADFF1F018B544D9003BEE8C /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		AADFF1F218B544E2003BEE8C /* AddressBookUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBookUI.framework; path = System/Library/Frameworks/AddressBookUI.framework; sourceTree = SDKROOT; };
+		AADFF1F418B54BEA003BEE8C /* FluxSocialImportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialImportViewController.h; sourceTree = "<group>"; };
+		AADFF1F518B54BEA003BEE8C /* FluxSocialImportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSocialImportViewController.m; sourceTree = "<group>"; };
 		AAF1BCEF183A73A300909AFF /* BBCyclingLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BBCyclingLabel.h; sourceTree = "<group>"; };
 		AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BBCyclingLabel.m; sourceTree = "<group>"; };
 		AAF1BCFA183C173900909AFF /* 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = 2.png; sourceTree = "<group>"; };
@@ -518,6 +527,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AADFF1F118B544D9003BEE8C /* AddressBook.framework in Frameworks */,
 				17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */,
 				F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */,
 				F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */,
@@ -587,6 +597,8 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AADFF1F218B544E2003BEE8C /* AddressBookUI.framework */,
+				AADFF1F018B544D9003BEE8C /* AddressBook.framework */,
 				AADFF1CF18AE6505003BEE8C /* libTestFlight.a */,
 				AADFF1CD18AE63A1003BEE8C /* libGoogleAnalyticsServices.a */,
 				F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */,
@@ -1254,13 +1266,12 @@
 		AAB066F21889947E002914B2 /* Social Lists */ = {
 			isa = PBXGroup;
 			children = (
+				AADFF1EC18B540AF003BEE8C /* Add Users */,
 				AAAD9A43187EF86C003BC1FF /* Public Profile */,
 				AAB066F3188994BC002914B2 /* FluxSocialListViewController.h */,
 				AAB066F4188994BC002914B2 /* FluxSocialListViewController.m */,
 				AAB066F61889978B002914B2 /* FluxFriendFollowerCell.h */,
 				AAB066F71889978B002914B2 /* FluxFriendFollowerCell.m */,
-				AAAAD70318A2D55C00F5F3DB /* FluxAddUserViewController.h */,
-				AAAAD70418A2D55C00F5F3DB /* FluxAddUserViewController.m */,
 			);
 			name = "Social Lists";
 			sourceTree = "<group>";
@@ -1286,6 +1297,19 @@
 				AAC1BF091811AF67001D3C01 /* ProgressHUD.m */,
 			);
 			path = ProgressHUD;
+			sourceTree = "<group>";
+		};
+		AADFF1EC18B540AF003BEE8C /* Add Users */ = {
+			isa = PBXGroup;
+			children = (
+				AAAAD70318A2D55C00F5F3DB /* FluxAddUserViewController.h */,
+				AAAAD70418A2D55C00F5F3DB /* FluxAddUserViewController.m */,
+				AADFF1ED18B54109003BEE8C /* FluxSocialImportCell.h */,
+				AADFF1EE18B54109003BEE8C /* FluxSocialImportCell.m */,
+				AADFF1F418B54BEA003BEE8C /* FluxSocialImportViewController.h */,
+				AADFF1F518B54BEA003BEE8C /* FluxSocialImportViewController.m */,
+			);
+			name = "Add Users";
 			sourceTree = "<group>";
 		};
 		AAF1BCF2183A73A900909AFF /* Animated Label */ = {
@@ -1627,6 +1651,7 @@
 				AAAAD70118A1791800F5F3DB /* DZNPhotoDescription.m in Sources */,
 				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */,
+				AADFF1EF18B54109003BEE8C /* FluxSocialImportCell.m in Sources */,
 				F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */,
 				F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,
@@ -1634,6 +1659,7 @@
 				AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,
+				AADFF1F618B54BEA003BEE8C /* FluxSocialImportViewController.m in Sources */,
 				AAAAD71318A912CE00F5F3DB /* FluxPublicProfileCell.m in Sources */,
 				AA984F1218088923007F33B1 /* MIMapView.m in Sources */,
 				AA9D0EA2185646DB0004823E /* FluxCameraObject.m in Sources */,

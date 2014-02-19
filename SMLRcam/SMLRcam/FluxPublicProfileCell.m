@@ -102,9 +102,11 @@
                     otherButtonTitles:nil
                              tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                  if (buttonIndex != actionSheet.cancelButtonIndex) {
-//                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldUnfriendUser:)]) {
-//                                         [delegate PublicProfileCell:self shouldUnfriendUser:self.userObject];
-//                                     }
+                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldUnfriendUser:)]) {
+                                         [self.friendButton setUserInteractionEnabled:NO];
+                                         [delegate PublicProfileCell:self shouldUnfriendUser:self.userObject];
+                                         [self.friendButton setUserInteractionEnabled:YES];
+                                     }
                                  }
                              }];
         }
