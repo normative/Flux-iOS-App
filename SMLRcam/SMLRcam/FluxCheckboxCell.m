@@ -17,20 +17,25 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
+        [self commonInit];
     }
     return self;
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder{
     if(self = [super initWithCoder:aDecoder]) {
-        [self setBackgroundColor:[UIColor clearColor]];
-        [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
-        [self.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.countLabel.font.pointSize]];
-        [self.descriptorLabel setTextColor:[UIColor whiteColor]];
-        [self.countLabel setTextColor:[UIColor whiteColor]];
-        [self.checkbox setDelegate:self];
+        [self commonInit];
     }
     return self;
+}
+
+- (void)commonInit{
+    [self setBackgroundColor:[UIColor clearColor]];
+    [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
+    [self.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.countLabel.font.pointSize]];
+    [self.descriptorLabel setTextColor:[UIColor whiteColor]];
+    [self.countLabel setTextColor:[UIColor whiteColor]];
+    [self.checkbox setDelegate:self];
 }
 
 //- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
@@ -42,6 +47,13 @@
 -(void)setIsActive:(BOOL)bActive{
     active = bActive;
     [self.checkbox setChecked:active];
+    
+    if (active) {
+        [self.countLabel setAlpha:1.0];
+    }
+    else{
+        [self.countLabel setAlpha:0.5];
+    }
 }
 
 -(void)cellWasTapped{
@@ -53,6 +65,34 @@
     [self setIsActive:checked];
     if ([delegate respondsToSelector:@selector(checkboxCell:boxWasChecked:)]) {
         [delegate checkboxCell:self boxWasChecked:checked];
+    }
+}
+
+- (void)setTextTitle:(NSString*)title{
+    if (self.isNotApplicable) {
+//        NSNumber *strikeSize = [NSNumber numberWithInt:2];
+//        
+//        NSDictionary *attribs = @{
+//                                  NSForegroundColorAttributeName: [UIColor whiteColor],
+//                                  NSFontAttributeName: self.descriptorLabel.font,
+//                                  NSStrikethroughStyleAttributeName : strikeSize
+//                                  };
+//        
+//        NSAttributedString* strikeThroughText = [[NSAttributedString alloc] initWithString:title attributes:attribs];
+//        
+//        self.descriptorLabel.attributedText = strikeThroughText;
+        
+        [self.descriptorLabel setText:title];
+        [self.countLabel setEnabled:NO];
+        
+        [self.descriptorLabel setAlpha:0.2];
+        [self.checkbox setAlpha:0.5];
+        [self.countLabel setAlpha:0.2];
+    }
+    else{
+        [self.countLabel setEnabled:YES];
+        [self.descriptorLabel setAlpha:1.0];
+        [self.descriptorLabel setText:title];
     }
 }
 

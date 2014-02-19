@@ -10,6 +10,15 @@
 
 @implementation FluxTagObject
 
+- (id)initWithTitle:(NSString*)tagText andApplicable:(BOOL)applicable{
+    self = [super init];
+    if (self) {
+        self.tagText = tagText;
+        self.isNotApplicable = applicable;
+    }
+    return self;
+}
+
 - (BOOL)isEqual:(id)object
 {
     //compare nsstirng to tagObject

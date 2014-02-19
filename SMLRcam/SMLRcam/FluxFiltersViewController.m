@@ -31,8 +31,6 @@
 {
     [super viewDidLoad];
     
-    [self setupLocationManager];
-    
     if (dataFilter == nil) {
         dataFilter = [[FluxDataFilter alloc] init];
     }
@@ -61,7 +59,10 @@
     [super viewWillAppear:animated];
     [self sendTagRequest];
     [self getSocialImageCounts];
-    [self updateImageCount];
+    
+//    if (![dataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+//        [self updateImageCount];
+//    }
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -73,10 +74,18 @@
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
 
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType];
-    
     FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People I follow" andFilterType:followers_filterType];
-//    
     FluxFilterDrawerObject *friendsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType];
+    
+    if (theDataFilter.isActiveUserFiltered) {
+        [myPicsFilterObject setIsActive:YES];
+    }
+    if (theDataFilter.isFollowingFiltered) {
+        [followingFilterObject setIsActive:YES];
+    }
+    if (theDataFilter.isFriendsFiltered) {
+        [friendsFilterObject setIsActive:YES];
+    }
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
@@ -90,7 +99,7 @@
         selectedTags = [[NSMutableArray alloc]init];
     }
     else{
-        selectedTags = [[theDataFilter.hashTags componentsSeparatedByString:@"%20"]mutableCopy];
+        selectedTags = [[theDataFilter.hashTags componentsSeparatedByString:@" "]mutableCopy];
     }
 
     rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:socialFiltersArray,topTagsArray, nil];
@@ -109,11 +118,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setupLocationManager
-{
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-}
-
 #pragma mark - network methods
 - (void)sendTagRequest{
     // viewController is visible
@@ -123,24 +127,28 @@
     [request setSearchFilter:tmp];
     [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
         //do something with array
-        topTagsArray = tagList;
+        topTagsArray = [tagList mutableCopy];
         [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:topTagsArray];
         if ([selectedTags count]>0) {
-            NSMutableIndexSet * removalSet = [[NSMutableIndexSet alloc]init];
+            
+            //deal with selected tags
             for (int i = 0; i<selectedTags.count; i++) {
                 NSString*str = [selectedTags objectAtIndex:i];
                 FluxTagObject*tmp = [[FluxTagObject alloc]init];
                 [tmp setTagText:str];
+                
+                //if they no longer exist, set then not applicable and bump them to the top
                 if (![topTagsArray containsObject:tmp]) {
-                    [removalSet addIndex:i];
+                    [tmp setIsNotApplicable:YES];
+                    [tmp setIsChecked:YES];
+                    [topTagsArray insertObject:tmp atIndex:0];
                 }
-                // set it selected
+                //if they still exist, set it selected
                 else{
                     int subArrayIndex = [[rightDrawerTableViewArray objectAtIndex:1] indexOfObject:tmp];
                     [[[rightDrawerTableViewArray objectAtIndex:1] objectAtIndex:subArrayIndex] setIsActive:YES];
                 }
             }
-            [selectedTags removeObjectsAtIndexes:removalSet];
             
         }
         [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -153,10 +161,10 @@
     }];
     
     if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
-        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:NO withDataRequest:request];
+        [self.fluxDataManager requestTagListAtLocation:self.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:NO withDataRequest:request];
     }
     else{
-        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:YES withDataRequest:request];
+        [self.fluxDataManager requestTagListAtLocation:self.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:YES withDataRequest:request];
     }
 
 }
@@ -198,10 +206,10 @@
     }];
     
     if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
-        [self.fluxDataManager requestImageCountstAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
+        [self.fluxDataManager requestImageCountstAtLocation:self.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
     }
     else{
-        [self.fluxDataManager requestImageCountstAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
+        [self.fluxDataManager requestImageCountstAtLocation:self.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
     }
 }
 
@@ -387,10 +395,7 @@
             
             cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
             cell.countLabel.text = [NSString stringWithFormat:@"%i",[(FluxFilterDrawerObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
-            
-//            //disable the cell for now
-//            [cell setUserInteractionEnabled:NO];
-//            [cell.descriptorLabel setEnabled:NO];
+            [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
             [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
@@ -411,19 +416,20 @@
             }
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
             [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
-            cell.descriptorLabel.text = [NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]];
+            
+            if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row] isNotApplicable]) {
+                [cell setIsNotApplicable:YES];
+            }
+            else{
+                [cell setIsNotApplicable:NO];
+            }
+            
             cell.countLabel.text = [NSString stringWithFormat:@"%i",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
+            [cell setTextTitle:[NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]]];
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
-            
-            if ([[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]) {
-                [cell.countLabel setAlpha:1.0];
-            }
-            else{
-                [cell.countLabel setAlpha:0.5];
-            }
             
             return cell;
         }
@@ -496,22 +502,29 @@
 }
 
 - (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{
+    NSIndexPath *path = [self.filterTableView indexPathForCell:checkCell];
+    
     NSString * tag = [checkCell.descriptorLabel.text substringFromIndex:1];
     [self modifyDataFilter:dataFilter filterSting:tag forType:tags_filterType andAdd:checked];
     
-    
-    //update the cell
-    for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
-        if (cell == checkCell) {
-            NSIndexPath *path = [self.filterTableView indexPathForCell:cell];
-            [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
-            if ([[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] isChecked]) {
-                [cell.countLabel setAlpha:1.0];
+    //if it's not applicable, remove the cell
+    if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row]isNotApplicable]) {
+        [[rightDrawerTableViewArray objectAtIndex:path.section] removeObjectAtIndex:path.row];
+        [self.filterTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:path] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    //else, update it's appearance
+    else{
+        for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
+            if (cell == checkCell) {
+                [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
+                if ([[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] isChecked]) {
+                    [cell.countLabel setAlpha:1.0];
+                }
+                else{
+                    [cell.countLabel setAlpha:0.5];
+                }
+                break;
             }
-            else{
-                [cell.countLabel setAlpha:0.5];
-            }
-            break;
         }
     }
     [self shouldUpdateImageCount];
@@ -556,10 +569,10 @@
     }];
     
     if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
-        [self.fluxDataManager requestTotalImageCountAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
+        [self.fluxDataManager requestTotalImageCountAtLocation:self.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
     }
     else{
-        [self.fluxDataManager requestTotalImageCountAtLocation:locationManager.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
+        [self.fluxDataManager requestTotalImageCountAtLocation:self.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
     }
 }
 
@@ -570,7 +583,7 @@
     if (topTagsArray.count == 0) {
         FluxTagObject*tag = [[FluxTagObject alloc]init];
         [tag setTagText:@""];
-        topTagsArray = [NSArray arrayWithObject:tag];
+        topTagsArray = [NSMutableArray arrayWithObject:tag];
         [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:topTagsArray];
         [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
     }

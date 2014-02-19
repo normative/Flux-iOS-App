@@ -70,7 +70,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int uploadsCompleted;
     int totalUploads;
     
-    FluxDataFilter *currentDataFilter;
+    
     CustomBadge *friendRequestsBadge;
     
     //debugMenu
@@ -94,6 +94,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 
 @property (nonatomic, strong) FluxDebugViewController *debugViewController;
+@property (nonatomic, strong) FluxDataFilter *currentDataFilter;
+
 - (void)hideDebugMenu;
 
 - (IBAction)showLeftDrawer:(id)sender;

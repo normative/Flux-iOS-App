@@ -16,9 +16,9 @@
 @property (nonatomic, weak) NSString *title;
 @property (nonatomic)int count;
 @property (nonatomic)FluxFilterType filterType;
+@property (nonatomic) BOOL isChecked;
 
-
-
+- (void)setIsActive:(BOOL)active;
 
 - (id)initWithTitle:(NSString*)atitle andFilterType:(FluxFilterType)type;
 

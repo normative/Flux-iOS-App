@@ -8,6 +8,7 @@
 
 #import "FluxMapViewController.h"
 #import "ProgressHUD.h"
+#import "FluxScanViewController.h"
 
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -140,10 +141,14 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 //mapKit uses openGL, this clears the context for our openGlView
 - (IBAction)closeButtonAction:(id)sender{
+    
+    [(FluxScanViewController*)self.presentingViewController setCurrentDataFilter:self.currentDataFilter];
+    
     [self dismissViewControllerAnimated:YES completion:^(void)
      {
          [EAGLContext setCurrentContext:nil];
      }];
+    
 }
 
 #pragma mark - Filters
@@ -263,6 +268,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
     [filtersVC setDelegate:self];
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
+    CLLocation*loc = [[CLLocation alloc]initWithCoordinate:fluxMapView.centerCoordinate altitude:self.locationManager.location.altitude horizontalAccuracy:self.locationManager.location.horizontalAccuracy verticalAccuracy:self.locationManager.location.verticalAccuracy course:self.locationManager.location.course speed:self.locationManager.location.speed timestamp:self.locationManager.location.timestamp];
+    [filtersVC setLocation:loc];
     [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
     [self animationPushBackScaleDown];
     [filtersVC setRadius:lastRadius];

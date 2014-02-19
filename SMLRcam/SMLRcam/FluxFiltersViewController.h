@@ -28,9 +28,8 @@
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;
-    NSArray *topTagsArray;
+    NSMutableArray *topTagsArray;
     NSMutableArray *selectedTags;
-    FluxLocationServicesSingleton *locationManager;
     
     UIImage*bgImage;
     
@@ -52,6 +51,8 @@
 @property (nonatomic) double radius;
 
 @property (strong, nonatomic) IBOutlet NSNumber *imageCount;
+
+@property (strong, nonatomic) CLLocation *location;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)doneButtonAction:(id)sender;

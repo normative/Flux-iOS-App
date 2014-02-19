@@ -29,4 +29,11 @@
     }
 }
 
+- (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
+    [self setIsActive:checked];
+    if ([socialCellDelegate respondsToSelector:@selector(SocialCell:boxWasChecked:)]) {
+        [socialCellDelegate SocialCell:self boxWasChecked:checked];
+    }
+}
+
 @end

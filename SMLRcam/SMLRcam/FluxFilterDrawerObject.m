@@ -24,4 +24,8 @@ self = [super init];
     return self;
 }
 
+- (void)setIsActive:(BOOL)active{
+    self.isChecked = active;
+}
+
 @end

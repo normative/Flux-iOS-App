@@ -19,6 +19,7 @@
     BOOL active;
     id __unsafe_unretained delegate;
 }
+@property (nonatomic)BOOL isNotApplicable;
 @property (strong, nonatomic) IBOutlet UILabel *countLabel;
 @property (weak, nonatomic) IBOutlet UILabel *descriptorLabel;
 @property (weak, nonatomic) IBOutlet KTCheckboxButton *checkbox;
@@ -30,5 +31,7 @@
 -(void)setIsActive:(BOOL)bActive;
 -(BOOL)isChecked;
 -(void)cellWasTapped;
+
+- (void)setTextTitle:(NSString*)title;
 
 @end

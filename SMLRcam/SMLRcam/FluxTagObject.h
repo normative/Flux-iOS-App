@@ -13,7 +13,10 @@
 @property (nonatomic, strong) NSString*tagText;
 @property (nonatomic) int count;
 @property (nonatomic) BOOL isChecked;
+@property (nonatomic) BOOL isNotApplicable;
 
 - (void)setIsActive:(BOOL)active;
+
+- (id)initWithTitle:(NSString*)tagText andApplicable:(BOOL)applicable;
 
 @end

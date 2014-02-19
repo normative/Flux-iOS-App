@@ -91,15 +91,15 @@
     }
     else{
         if ([filter rangeOfString:parameter].location == NSNotFound) {
-            filter = [filter stringByAppendingString:[NSString stringWithFormat:@"%%20%@",parameter]];
+            filter = [filter stringByAppendingString:[NSString stringWithFormat:@" %@",parameter]];
         }
     }
     return filter;
 }
 
 - (NSString*)RemoveString:(NSString*)parameter fromFilter:(NSString*)filter{
-    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%%20%@",parameter] withString:@""];
-    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@%%20",parameter] withString:@""];
+    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@" %@",parameter] withString:@""];
+    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@ ",parameter] withString:@""];
     filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@",parameter] withString:@""];
     return filter;
 }

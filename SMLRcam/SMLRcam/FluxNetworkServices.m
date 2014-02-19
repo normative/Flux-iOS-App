@@ -1316,11 +1316,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
                                                                                 objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                 location.latitude, location.longitude, radius,
                                                                                 altMin, altMax,
-                                                                                token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                                timestampMin, timestampMax,
+                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];

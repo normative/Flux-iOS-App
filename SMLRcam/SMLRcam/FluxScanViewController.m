@@ -772,22 +772,34 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
 }
 
-#pragma mark Filters Delegate
-
-- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
-    //[self animationPopFrontScaleUp];
-    
-    if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
-        NSDictionary *userInfoDict = @{@"filter" : dataFilter};
+- (void)setCurrentDataFilter:(FluxDataFilter *)currentDataFilter{
+    if (![_currentDataFilter isEqualToFilter:currentDataFilter]) {
+        NSDictionary *userInfoDict = @{@"filter" : currentDataFilter};
         [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
-        currentDataFilter = [dataFilter copy];
+        _currentDataFilter = currentDataFilter;
     }
-    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+    _currentDataFilter = currentDataFilter;
+    
+    [self updateFilterIcon];
+}
+
+- (void)updateFilterIcon{
+    if ([self.currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
     }
     else{
         [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
     }
+}
+
+#pragma mark Filters Delegate
+
+- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+
+    if (![dataFilter isEqualToFilter:self.currentDataFilter] && dataFilter !=nil) {
+        [self setCurrentDataFilter:dataFilter];
+    }
+    [self updateFilterIcon];
 }
 
 #pragma mark - view lifecycle
@@ -804,7 +816,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupAnnotationsTableView];
     [self setupDebugView];
 
-    currentDataFilter = [[FluxDataFilter alloc] init];
+    self.currentDataFilter = [[FluxDataFilter alloc] init];
     
     [imageCaptureButton removeFromSuperview];
     [imageCaptureButton setTranslatesAutoresizingMaskIntoConstraints:YES];
@@ -862,15 +874,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     {
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
-        [mapViewController setCurrentDataFilter:currentDataFilter];
+        [mapViewController setCurrentDataFilter:self.currentDataFilter];
     }
     else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
         //set the delegate of the navControllers top view (our filters View)
         FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [filtersVC setDelegate:self];
         [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-        [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
-        
+        [filtersVC setLocation:self.fluxDisplayManager.locationManager.location];
+        [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
         [filtersVC setBackgroundView:snapshotBGImage];
         
         //[self animationPushBackScaleDown];

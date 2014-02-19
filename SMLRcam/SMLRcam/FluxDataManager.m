@@ -466,7 +466,7 @@ static FluxDataManager *_theFluxDataManager = nil;
                                              andRadius:radius
                                              andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
                                              andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
-                                             andFilter:dataRequest.searchFilter
+                                             andFilter:[[FluxDataFilter alloc]init]
                                           andRequestID:requestID];
     return requestID;
 }
