@@ -26,6 +26,9 @@
 + (RKObjectMapping *)connectionGETMapping;
 + (RKObjectMapping *)connectionPOSTMapping;
 
++ (RKObjectMapping *)aliasPOSTMapping;
++ (RKObjectMapping *)aliasGETMapping;
+
 + (RKObjectMapping *)userImagesGetMapping;
 
 + (RKObjectMapping *)tagGetMapping;

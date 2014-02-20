@@ -14,6 +14,7 @@
 #import "FluxMapImageObject.h"
 #import "FluxCameraObject.h"
 #import "FluxProfileImageObject.h"
+#import "FluxAliasObject.h"
 
 @implementation FluxMappingProvider
 
@@ -167,6 +168,31 @@
     
     return mapping;
 }
+
+
+
++ (RKObjectMapping *)aliasGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxAliasObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":     @"userID",
+                                                  @"alias_name":  @"alias_name",
+                                                  @"service_id":  @"serviceID"
+                                                  }];
+    return mapping;
+}
++ (RKObjectMapping *)aliasPOSTMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"userID":      @"user_id",
+                                                  @"alias_name":  @"alias_name",
+                                                  @"serviceID":   @"service_id"
+                                                  }];
+    
+    return mapping;
+}
+
 
 #pragma mark - Tag Mapping
 

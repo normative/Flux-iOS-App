@@ -104,6 +104,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                                keyPath:nil
                                                                                                            statusCodes:statusCodes];
         
+        RKResponseDescriptor *aliasCreateResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider aliasGETMapping]
+                                                                                                                      method:RKRequestMethodAny
+                                                                                                                 pathPattern:@"aliases"
+                                                                                                                     keyPath:nil
+                                                                                                                 statusCodes:statusCodes];
+        
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -131,12 +137,17 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                  rootKeyPath:@"connection"
                                                                                                       method:RKRequestMethodPUT];
         
+        RKRequestDescriptor *aliasCreateRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider aliasPOSTMapping]
+                                                                                                       objectClass:[FluxAliasObject class]
+                                                                                                       rootKeyPath:@"alias"
+                                                                                                            method:RKRequestMethodPOST];
         
         [objectManager addRequestDescriptor:userRequestDescriptor];
         [objectManager addRequestDescriptor:userUpdateDescriptor];
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addRequestDescriptor:connectionRequestDescriptor];
         [objectManager addRequestDescriptor:connectionDeleteRequestDescriptor];
+        [objectManager addRequestDescriptor:aliasCreateRequestDescriptor];
         
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:registrationResponseDescriptor];
@@ -145,6 +156,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         [objectManager addResponseDescriptor:connectionFollowResponseDescriptor];
         [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
         [objectManager addResponseDescriptor:connectionAcceptFriendResponseDescriptor];
+        [objectManager addResponseDescriptor:aliasCreateResponseDescriptor];
+        
         
         
         //and again for image-related calls
@@ -1205,7 +1218,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     [[RKObjectManager sharedManager] postObject:aliasObject path:[NSString stringWithFormat:@"/aliases?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         // FluxAliasObject *newAliasObject = [result firstObject];
+         FluxAliasObject *newAliasObject = [result firstObject];
+         NSLog(@"Alias created successfully");
      }
      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
