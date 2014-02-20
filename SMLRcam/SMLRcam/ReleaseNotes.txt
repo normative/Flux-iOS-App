@@ -1,5 +1,11 @@
 Release Notes:
+******************************************
 
+V0.20 B04
+
+Released: 2014-02-19 19:10:00
+
+Release Notes:
 - Add code to clean out APNs notifications at startup and as they come in
 - App now uses a single filter for both scan and map views
 - Social filters now include counts + overall image count is now more accurate
