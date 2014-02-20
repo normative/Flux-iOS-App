@@ -1215,11 +1215,13 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 {
     FluxAliasObject *aliasObject = [[FluxAliasObject alloc] initWithName: social_name andServiceID: service_id];
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    [[RKObjectManager sharedManager] postObject:aliasObject path:[NSString stringWithFormat:@"/aliases?auth_token=%@", token] parameters:nil
+    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:token, @"auth_token", nil];
+    [[RKObjectManager sharedManager] postObject:aliasObject path:@"/aliases"
+                                     parameters:params
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxAliasObject *newAliasObject = [result firstObject];
-         NSLog(@"Alias created successfully");
+         NSLog(@"Alias created successfully to %@ for service %d", newAliasObject.alias_name, newAliasObject.serviceID);
      }
      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
