@@ -19,7 +19,7 @@ typedef enum SocialListMode : NSUInteger {
     followerMode = 2
 } SocialListMode;
 
-@interface FluxSocialListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate>{
+@interface FluxSocialListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate, FluxAddUserViewControllerDelegate>{
     SocialListMode listMode;
     IBOutlet UISegmentedControl *segmentedControl;
     IBOutlet UITableView *friendsTableView;
@@ -32,6 +32,8 @@ typedef enum SocialListMode : NSUInteger {
     NSMutableArray*socialListArray;
     NSMutableArray*socialListImagesArray;
     NSMutableArray*socialTableViews;
+    
+    NSMutableArray*shouldReloadArray;
     
     NSIndexPath*selectedIndexPath;
 }

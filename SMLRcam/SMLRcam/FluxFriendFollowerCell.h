@@ -37,6 +37,6 @@
 - (IBAction)ignoreFriendButtonAction:(id)sender;
 -(void)initCell;
 
-- (void)setSocialMode:(int)socialMode;
+
 
 @end

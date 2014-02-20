@@ -132,6 +132,11 @@
         NSLog(@"friend request sent");
         theUser.friendState = 2;
         [profileTableView reloadData];
+        
+        
+        if ([delegate respondsToSelector:@selector(PublicProfile:didSendFriendRequest:)]) {
+            [delegate PublicProfile:self didSendFriendRequest:theUser];
+        }
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -143,7 +148,26 @@
     [self.fluxDataManager sendFriendRequestToUserWithID:userObject.userID withDataRequest:request];
 }
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFriendRequestToUser:(FluxUserObject*)userObject{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
+    [request setAcceptFriendRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"friended");
+        theUser.friendState = 3;
+        [profileTableView reloadData];
+        
+        if ([delegate respondsToSelector:@selector(PublicProfile:didAddFriend:)]) {
+            [delegate PublicProfile:self didAddFriend:theUser];
+        }
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Accepting the friend request failed with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+        
+    }];
+    [self.fluxDataManager acceptFriendRequestFromUserWithID:userObject.userID withDataRequest:request];
 }
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfriendUser:(FluxUserObject*)userObject{
     FluxDataRequest*request = [[FluxDataRequest alloc]init];

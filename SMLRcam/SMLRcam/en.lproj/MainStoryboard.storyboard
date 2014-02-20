@@ -1648,7 +1648,7 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RrY-sy-oiS">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RrY-sy-oiS">
                                                     <rect key="frame" x="224" y="22" width="35" height="35"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="friend_accept">
@@ -1658,7 +1658,7 @@
                                                         <action selector="acceptFriendButtonAction:" destination="xnv-m6-Ue3" eventType="touchUpInside" id="XVU-X4-F3P"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9YZ-Rc-Jp7">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9YZ-Rc-Jp7">
                                                     <rect key="frame" x="265" y="22" width="35" height="35"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="friend_dismiss">
@@ -1701,7 +1701,7 @@
                                                     <color key="textColor" white="0.84999999999999998" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CoD-UI-EK6">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CoD-UI-EK6">
                                                     <rect key="frame" x="224" y="22" width="35" height="35"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="friend_accept">
@@ -1711,7 +1711,7 @@
                                                         <action selector="acceptFriendButtonAction:" destination="CHJ-BK-f6q" eventType="touchUpInside" id="5vE-eg-dPD"/>
                                                     </connections>
                                                 </button>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ow4-cp-Epf">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ow4-cp-Epf">
                                                     <rect key="frame" x="265" y="22" width="35" height="35"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="friend_dismiss">
@@ -2061,7 +2061,7 @@
                                                         <action selector="friendFollowButtonAction:" destination="Spt-ml-z2h" eventType="touchUpInside" id="771-Qd-dJW"/>
                                                     </connections>
                                                 </button>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="u8T-FJ-Ob9">
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="u8T-FJ-Ob9">
                                                     <rect key="frame" x="68" y="45" width="200" height="10"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
@@ -2509,20 +2509,6 @@
                                                     <color key="textColor" white="1" alpha="0.80000000000000004" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mHw-Tm-cEU">
-                                                    <rect key="frame" x="0.0" y="385" width="320" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" white="0.90011975359999996" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jfo-hj-bmw">
-                                                    <rect key="frame" x="0.0" y="363" width="320" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" white="0.90011975359999996" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0kp-eN-DNR">
                                                     <rect key="frame" x="20" y="217" width="280" height="70"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -2583,11 +2569,11 @@
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 </view>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="43Y-hB-Zuf">
-                                                    <rect key="frame" x="20" y="295" width="280" height="60"/>
+                                                    <rect key="frame" x="20" y="321" width="280" height="60"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
-                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JSF-Zc-eAf">
-                                                            <rect key="frame" x="193" y="10" width="40" height="40"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JSF-Zc-eAf">
+                                                            <rect key="frame" x="130" y="10" width="150" height="40"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <state key="normal" image="follow">
@@ -2597,8 +2583,8 @@
                                                                 <action selector="followButtonAction:" destination="bO0-0a-ghe" eventType="touchUpInside" id="wZF-Bs-eM9"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jUm-ku-rok">
-                                                            <rect key="frame" x="48" y="10" width="40" height="40"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jUm-ku-rok">
+                                                            <rect key="frame" x="0.0" y="10" width="150" height="40"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <state key="normal" image="friend">
@@ -2608,13 +2594,6 @@
                                                                 <action selector="friendButtonAction:" destination="bO0-0a-ghe" eventType="touchUpInside" id="Das-cz-v6S"/>
                                                             </connections>
                                                         </button>
-                                                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CQI-bG-Pzh">
-                                                            <rect key="frame" x="77" y="25" width="25" height="21"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="23"/>
-                                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 </view>
@@ -2624,19 +2603,16 @@
                                         <connections>
                                             <outlet property="bioLabel" destination="T7L-CU-nkW" id="1kT-00-8ax"/>
                                             <outlet property="contentContainerView" destination="0kp-eN-DNR" id="wVw-zk-yFa"/>
-                                            <outlet property="firstStatusLabel" destination="Jfo-hj-bmw" id="JG4-k1-eG7"/>
                                             <outlet property="followerButton" destination="JSF-Zc-eAf" id="EYW-6t-5NC"/>
                                             <outlet property="followersCountLabel" destination="PNo-9a-K9P" id="o6W-Aw-GQs"/>
                                             <outlet property="followersTitleLabel" destination="3rt-wN-bCw" id="T1F-cj-dyv"/>
                                             <outlet property="followingCountLabel" destination="Pi1-Qu-6z0" id="fwi-9y-1rO"/>
                                             <outlet property="followingTitleLabel" destination="idK-Le-yqx" id="4sx-ZY-8ZP"/>
                                             <outlet property="friendButton" destination="jUm-ku-rok" id="0NI-vb-vW8"/>
-                                            <outlet property="friendButtonEllipsis" destination="CQI-bG-Pzh" id="zdv-CA-3qF"/>
                                             <outlet property="nameLabel" destination="78K-DM-UI9" id="0WE-sA-l8F"/>
                                             <outlet property="photosCountLabel" destination="GKy-5k-A2Y" id="EaJ-Xr-ffQ"/>
                                             <outlet property="photosTitleLabel" destination="RdP-ck-kZD" id="5vL-bE-Y1U"/>
                                             <outlet property="profielImageButton" destination="SEn-e9-ZSK" id="FQv-db-JLg"/>
-                                            <outlet property="secondStatusLabel" destination="mHw-Tm-cEU" id="Eau-ce-WRj"/>
                                             <outlet property="socialStatusContainerView" destination="43Y-hB-Zuf" id="gHM-ZR-vsJ"/>
                                         </connections>
                                     </tableViewCell>
@@ -2670,20 +2646,6 @@
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                     <color key="textColor" white="1" alpha="0.80000000000000004" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jFk-m6-CYP">
-                                                    <rect key="frame" x="0.0" y="476" width="320" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" white="0.90011975359999996" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Soc-ge-xtn">
-                                                    <rect key="frame" x="0.0" y="454" width="320" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" white="0.90011975359999996" alpha="1" colorSpace="calibratedWhite"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="uAC-Ns-sR7">
@@ -2749,8 +2711,8 @@
                                                     <rect key="frame" x="20" y="369" width="280" height="80"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <subviews>
-                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ica-cT-PV3">
-                                                            <rect key="frame" x="193" y="20" width="40" height="40"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ica-cT-PV3">
+                                                            <rect key="frame" x="130" y="20" width="150" height="40"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <state key="normal" image="follow">
@@ -2760,8 +2722,8 @@
                                                                 <action selector="followButtonAction:" destination="tAp-rQ-nDl" eventType="touchUpInside" id="RKU-qP-lYd"/>
                                                             </connections>
                                                         </button>
-                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HNj-Xi-fwZ">
-                                                            <rect key="frame" x="48" y="20" width="40" height="40"/>
+                                                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HNj-Xi-fwZ">
+                                                            <rect key="frame" x="0.0" y="20" width="150" height="40"/>
                                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                             <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                             <state key="normal" image="friend">
@@ -2771,13 +2733,6 @@
                                                                 <action selector="friendButtonAction:" destination="tAp-rQ-nDl" eventType="touchUpInside" id="Wko-wL-OSH"/>
                                                             </connections>
                                                         </button>
-                                                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="..." lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Djh-LP-4yW">
-                                                            <rect key="frame" x="77" y="35" width="25" height="21"/>
-                                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                            <fontDescription key="fontDescription" type="system" pointSize="23"/>
-                                                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                                            <nil key="highlightedColor"/>
-                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 </view>
@@ -2787,19 +2742,16 @@
                                         <connections>
                                             <outlet property="bioLabel" destination="QUg-A4-9zK" id="tnF-ZW-Lup"/>
                                             <outlet property="contentContainerView" destination="uAC-Ns-sR7" id="0Mg-B5-IxT"/>
-                                            <outlet property="firstStatusLabel" destination="Soc-ge-xtn" id="qtn-g3-qc7"/>
                                             <outlet property="followerButton" destination="Ica-cT-PV3" id="Rd0-DD-5SH"/>
                                             <outlet property="followersCountLabel" destination="9kl-DO-GV4" id="enA-af-RrG"/>
                                             <outlet property="followersTitleLabel" destination="EDN-1p-c7S" id="4zN-ot-EkB"/>
                                             <outlet property="followingCountLabel" destination="dt4-Qn-GGq" id="pjj-Oo-gci"/>
                                             <outlet property="followingTitleLabel" destination="I6c-JI-Jbi" id="DKO-LD-a4b"/>
                                             <outlet property="friendButton" destination="HNj-Xi-fwZ" id="Ned-e0-dDO"/>
-                                            <outlet property="friendButtonEllipsis" destination="Djh-LP-4yW" id="llx-cs-hzb"/>
                                             <outlet property="nameLabel" destination="oNA-E8-oAT" id="tWv-LL-SaI"/>
                                             <outlet property="photosCountLabel" destination="kAu-nq-8IS" id="2yk-RQ-Gy3"/>
                                             <outlet property="photosTitleLabel" destination="733-ep-Ooa" id="tvw-UI-Y14"/>
                                             <outlet property="profielImageButton" destination="s48-Qz-Mcy" id="fAx-jP-3a2"/>
-                                            <outlet property="secondStatusLabel" destination="jFk-m6-CYP" id="06W-DH-COj"/>
                                             <outlet property="socialStatusContainerView" destination="Kvt-wb-AsV" id="Wls-hn-F7o"/>
                                         </connections>
                                     </tableViewCell>
@@ -3081,8 +3033,8 @@
         <image name="facebook_mini" width="221" height="50"/>
         <image name="filterButton" width="140" height="140"/>
         <image name="fluxlogo" width="186" height="217"/>
-        <image name="follow" width="80" height="80"/>
-        <image name="friend" width="80" height="80"/>
+        <image name="follow" width="300" height="80"/>
+        <image name="friend" width="300" height="80"/>
         <image name="friend_accept" width="80" height="80"/>
         <image name="friend_dismiss" width="80" height="80"/>
         <image name="inactiveTimeSlider" width="140" height="140"/>

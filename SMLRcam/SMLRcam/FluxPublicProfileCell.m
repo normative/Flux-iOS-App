@@ -37,9 +37,7 @@
     [self.photosCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.photosCountLabel.font.pointSize]];
     [self.followersTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.followersTitleLabel.font.pointSize]];
     [self.followersCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.followersCountLabel.font.pointSize]];
-    [self.firstStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.firstStatusLabel.font.pointSize]];
     [self.followingTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.followingTitleLabel.font.pointSize]];
-    [self.secondStatusLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.secondStatusLabel.font.pointSize]];
     
     [self.friendButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.friendButton.titleLabel.font.pointSize]];
     [self.followerButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.followerButton.titleLabel.font.pointSize]];
@@ -64,8 +62,6 @@
     contentContainerView.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.8].CGColor;
     contentContainerView.layer.borderWidth = 0.5;
     
-    [self.firstStatusLabel setText:@""];
-    [self.secondStatusLabel setText:@""];
 }
 
 - (IBAction)profilePictureButtonAction:(id)sender {
@@ -113,20 +109,11 @@
             return;
             break;
         case 1:{
-            [UIActionSheet showInView:self.superview
-                            withTitle:nil
-                    cancelButtonTitle:@"Cancel"
-               destructiveButtonTitle:nil
-                    otherButtonTitles:@[@"Accept Friend Request"]
-                             tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                                 if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldAcceptFriendRequestToUser:)]) {
-                                         [self.friendButton setUserInteractionEnabled:NO];
-                                         [delegate PublicProfileCell:self shouldAcceptFriendRequestToUser:self.userObject];
-                                         [self.friendButton setUserInteractionEnabled:YES];
-                                     }
-                                 }
-                             }];
+            if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldAcceptFriendRequestToUser:)]) {
+                [self.friendButton setUserInteractionEnabled:NO];
+                [delegate PublicProfileCell:self shouldAcceptFriendRequestToUser:self.userObject];
+                [self.friendButton setUserInteractionEnabled:YES];
+            }
             
         }
             break;
@@ -195,17 +182,20 @@
         [self.followerButton setSelected:NO];
     }
     
-    [self.friendButtonEllipsis setHidden:YES];
     switch (userObject.friendState) {
         case 0:
             [self.friendButton setSelected:NO];
+            [self.friendButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
             break;
         case 2:
             [self.friendButton setSelected:NO];
-            [self.friendButtonEllipsis setHidden:NO];
+            [self.friendButton setImage:[UIImage imageNamed:@"friendSent"] forState:UIControlStateNormal];
             break;
         case 1:
             [self.friendButton setSelected:NO];
+                        [self.friendButton setFrame:CGRectMake(self.friendButton.frame.origin.x, self.frame.origin.y, self.frame.size.width+20, self.frame.size.height)];
+            [self.friendButton setImage:[UIImage imageNamed:@"friendAccept"] forState:UIControlStateNormal];
+
             break;
         case 3:
             [self.friendButton setSelected:YES];
@@ -219,35 +209,6 @@
     [self.photosCountLabel setText:[NSString stringWithFormat:@"%i",userObject.imageCount]];
     [self.followersCountLabel setText:[NSString stringWithFormat:@"%i",userObject.followerCount]];
     [self.followingCountLabel setText:[NSString stringWithFormat:@"%i",userObject.followingCount]];
-    
-    if (userObject.friendState == 3) {
-        [self setStatusText:[NSString stringWithFormat:@"You and @%@ are friends",userObject.username] forSocialType:2];
-    }
-    else if (userObject.isFollower) {
-        [self setStatusText:[NSString stringWithFormat:@"@%@ is following you",userObject.username] forSocialType:2];
-    }
-    else if (userObject.isFollowing) {
-        [self setStatusText:[NSString stringWithFormat:@"You're following @%@",userObject.username] forSocialType:2];
-    }
-    else{
-    }
-}
-
-- (void)setStatusText:(NSString*) text forSocialType:(int)type{
-    if (type == 1) {
-        if (self.secondStatusLabel.text.length > 0) {
-            [self.firstStatusLabel setText:self.secondStatusLabel.text];
-            [self.secondStatusLabel setText:text];
-        }
-    }
-    else{
-        if (self.secondStatusLabel.text.length > 0) {
-            [self.firstStatusLabel setText:text];
-        }
-        else{
-            [self.secondStatusLabel setText:text];
-        }
-    }
 }
 
 @end

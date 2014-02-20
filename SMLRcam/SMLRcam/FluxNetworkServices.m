@@ -1325,6 +1325,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
+    
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxFilterImageCountObject *countsObject = [result firstObject];

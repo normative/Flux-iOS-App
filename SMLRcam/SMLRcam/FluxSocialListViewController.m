@@ -11,7 +11,6 @@
 #import "UICKeyChainStore.h"
 #import "UIImageView+AFNetworking.h"
 #import "UIActionSheet+Blocks.h"
-#import "FluxAddUserViewController.h"
 
 
 @interface FluxSocialListViewController ()
@@ -57,8 +56,8 @@
         tableViewController.refreshControl = refreshControl;
         [socialListsRefreshControls addObject:refreshControl];
     }
-    
-    
+    shouldReloadArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO],[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO],nil];
+    selectedIndexPath = nil;
     
     
     [self updateListForActiveMode];
@@ -119,6 +118,7 @@
     [self addChildViewController:self.childNavC];
     [self.childNavC didMoveToParentViewController:self];
     [self.searchUserVC setFluxDataManager:self.fluxDataManager];
+    [self.searchUserVC setDelegate:self];
     self.childNavC.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height+64);
     [self setSearchVCHidden:YES animated:NO];
     
@@ -128,6 +128,7 @@
     [self.childNavC.view insertSubview:bgView atIndex:0];
     
     [self setSearchVCHidden:NO animated:YES];
+    selectedIndexPath = nil;
 }
 
 - (void)setSearchVCHidden:(BOOL)hidden animated:(BOOL)animated{
@@ -273,8 +274,10 @@
                                  [request setUnfriendUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
                                      //do something with the UserID
                                      if (listMode == friendMode) {
-                                         [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row];
-                                         [(UITableView*)[socialTableViews objectAtIndex:friendMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+                                         if ([(NSMutableArray*)[socialListArray objectAtIndex:friendMode] count] > [(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row) {
+                                             [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row];
+                                             [(UITableView*)[socialTableViews objectAtIndex:friendMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+                                         }
                                      }
                                      NSLog(@"unfollowed");
                                      
@@ -307,8 +310,10 @@
                                      //do something with the UserID
                                      NSLog(@"unfollowed");
                                      if (listMode == followingMode) {
-                                         [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:followingMode] indexPathForCell:friendFollowerCell].row];
-                                         [(UITableView*)[socialTableViews objectAtIndex:followingMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:followingMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+                                         if ([(NSMutableArray*)[socialListArray objectAtIndex:followingMode] count] > [(UITableView*)[socialTableViews objectAtIndex:followingMode] indexPathForCell:friendFollowerCell].row){
+                                             [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:followingMode] indexPathForCell:friendFollowerCell].row];
+                                             [(UITableView*)[socialTableViews objectAtIndex:followingMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:followingMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+                                         }
                                      }
                                      
                                      //[addUsersTableView reloadData];
@@ -360,8 +365,11 @@
         //do something with the UserID
         NSLog(@"friend request ignored");
         if (listMode == friendMode) {
-            [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row];
-            [(UITableView*)[socialTableViews objectAtIndex:friendMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+            if ([(NSMutableArray*)[socialListArray objectAtIndex:friendMode] count] > [(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row){
+                [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell].row];
+                [(UITableView*)[socialTableViews objectAtIndex:friendMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:friendMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+            }
+
         }
         [friendFollowerCell setUserInteractionEnabled:YES];
         
@@ -380,34 +388,60 @@
 
 #pragma mark - Public Profile Delegate
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
-    
-    //go through the array and find where to insert the new guy
-    NSUInteger insPoint = [(NSMutableArray*)[socialListArray objectAtIndex:followingMode]
-                           indexOfObject:userObject
-                           inSortedRange:NSMakeRange(0, [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] count])
-                           options:NSBinarySearchingInsertionIndex
-                           usingComparator:^(id lhs, id rhs) {
-                               NSString *first = [(FluxUserObject*)lhs username];
-                               NSString *second = [(FluxUserObject*)rhs username];
-                               return [first compare:second];
-                           }
-                        ];
-    [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] insertObject:userObject atIndex:insPoint];
-    [[(NSMutableArray*)socialListImagesArray objectAtIndex:followingMode] insertObject:[NSNumber numberWithBool:NO] atIndex:insPoint];
-    [(UITableView*)[socialTableViews objectAtIndex:followingMode] insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insPoint inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    [self addUser:userObject toListMode:followingMode];
 }
 
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
-    [(NSMutableArray*)[socialListArray objectAtIndex:followingMode] removeObjectAtIndex:selectedIndexPath.row];
-    [(UITableView*)[socialTableViews objectAtIndex:followingMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+    [self removeSelectedUserFromListMode:followingMode];
 }
 
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFriend:(FluxUserObject *)userObject{
-    
+    [self addUser:userObject toListMode:friendMode];
+}
+
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didRemoveFriend:(FluxUserObject *)userObject{
+    [self removeSelectedUserFromListMode:friendMode];
+}
+
+#pragma mark - Add User VC Delegate
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didAddFriend:(FluxUserObject*)userObject{
+    [self addUser:userObject toListMode:friendMode];
+}
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfriendUser:(FluxUserObject*)userObject{
+    [self removeUser:userObject fromListMode:friendMode];
+}
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didFollowUser:(FluxUserObject*)userObject{
+    [self addUser:userObject toListMode:followingMode];
+}
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfollowUser:(FluxUserObject*)userObject{
+    [self removeUser:userObject fromListMode:followingMode];
+}
+
+#pragma mark shared delegate insert / delete methods
+
+- (void)addUser:(FluxUserObject*)userObject toListMode:(SocialListMode)theListMode{
     //go through the array and find where to insert the new guy
-    NSUInteger insPoint = [(NSMutableArray*)[socialListArray objectAtIndex:friendMode]
+    if (theListMode == friendMode) {
+        
+        
+        if (listMode == friendMode) {
+            NSArray*list = (NSMutableArray*)[socialListArray objectAtIndex:theListMode];
+            for (int i = 0; i< list.count ; i++) {
+                if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] userID] == userObject.userID) {
+                    [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] setFriendState:3];
+                    break;
+                }
+            }
+            [(UITableView*)[socialTableViews objectAtIndex:listMode] reloadData];
+        }
+        else{
+            [shouldReloadArray replaceObjectAtIndex:friendMode withObject:[NSNumber numberWithBool:YES]];
+        }
+        return;
+    }
+    NSUInteger insPoint = [(NSMutableArray*)[socialListArray objectAtIndex:theListMode]
                            indexOfObject:userObject
-                           inSortedRange:NSMakeRange(0, [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] count])
+                           inSortedRange:NSMakeRange(0, [(NSMutableArray*)[socialListArray objectAtIndex:theListMode] count])
                            options:NSBinarySearchingInsertionIndex
                            usingComparator:^(id lhs, id rhs) {
                                NSString *first = [(FluxUserObject*)lhs username];
@@ -415,15 +449,51 @@
                                return [first compare:second];
                            }
                            ];
-    [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] insertObject:userObject atIndex:insPoint];
-    [[(NSMutableArray*)socialListImagesArray objectAtIndex:friendMode] insertObject:[NSNumber numberWithBool:NO] atIndex:insPoint];
-    [(UITableView*)[socialTableViews objectAtIndex:friendMode] insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insPoint inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    [(NSMutableArray*)[socialListArray objectAtIndex:theListMode] insertObject:userObject atIndex:insPoint];
+    [[(NSMutableArray*)socialListImagesArray objectAtIndex:theListMode] insertObject:[NSNumber numberWithBool:NO] atIndex:insPoint];
+    if (listMode == theListMode) {
+            [(UITableView*)[socialTableViews objectAtIndex:theListMode] insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insPoint inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+    }
+    else{
+        [shouldReloadArray replaceObjectAtIndex:theListMode withObject:[NSNumber numberWithBool:YES]];
+    }
+
 }
 
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didRemoveFriend:(FluxUserObject *)userObject{
-    [(NSMutableArray*)[socialListArray objectAtIndex:friendMode] removeObjectAtIndex:selectedIndexPath.row];
-    [(UITableView*)[socialTableViews objectAtIndex:friendMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+- (void)removeSelectedUserFromListMode:(SocialListMode)theListMode{
+    if (selectedIndexPath) {
+        if ([(NSMutableArray*)[socialListArray objectAtIndex:theListMode] count] > selectedIndexPath.row) {
+            [(NSMutableArray*)[socialListArray objectAtIndex:theListMode] removeObjectAtIndex:selectedIndexPath.row];
+            if (listMode == theListMode) {
+                [(UITableView*)[socialTableViews objectAtIndex:theListMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            }
+            else{
+                [shouldReloadArray replaceObjectAtIndex:theListMode withObject:[NSNumber numberWithBool:YES]];
+            }
+        }
+    }
 }
+
+- (void)removeUser:(FluxUserObject*)theUserObject fromListMode:(SocialListMode)theListMode{
+    
+    //make temporary array so we don't delete while enumerating
+    NSArray*list = (NSMutableArray*)[socialListArray objectAtIndex:theListMode];
+    for (int i = 0; i< list.count ; i++) {
+        if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] userID] == theUserObject.userID) {
+            [(NSMutableArray*)[socialListArray objectAtIndex:theListMode] removeObjectAtIndex:i];
+            if (listMode == theListMode) {
+                [(UITableView*)[socialTableViews objectAtIndex:theListMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+            }
+            else{
+                [shouldReloadArray replaceObjectAtIndex:theListMode withObject:[NSNumber numberWithBool:YES]];
+            }
+            
+            return;
+        }
+    }
+}
+
+
 
 #pragma mark - Data Model Stuff
 - (void)updateListForActiveMode{
@@ -440,6 +510,7 @@
     else{
         [self updateFollowerList];
     }
+    [shouldReloadArray replaceObjectAtIndex:listMode withObject:[NSNumber numberWithBool:NO]];
 }
 
 - (void)updateFriendsList{
@@ -595,7 +666,7 @@
     listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
     [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:NO];
     
-    if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0) {
+    if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0  || [(NSNumber*)[shouldReloadArray objectAtIndex:listMode]boolValue]){
         [self updateListForActiveMode];
     }
 }

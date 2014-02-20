@@ -11,6 +11,7 @@
 #import "FluxDataManager.h"
 #import "FluxSocialImportCell.h"
 #import "FluxSocialManager.h"
+#import "FluxPublicProfileViewController.h"
 
 typedef enum QuerySearchState : NSUInteger {
     notSearching = 0,
@@ -18,7 +19,16 @@ typedef enum QuerySearchState : NSUInteger {
     searched = 2
 } QuerySearchState;
 
-@interface FluxAddUserViewController : UIViewController<UISearchBarDelegate, UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, UIScrollViewDelegate, FluxSocialManagerDelegate>{
+@class FluxAddUserViewController;
+@protocol FluxAddUserViewControllerDelegate <NSObject>
+@optional
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didAddFriend:(FluxUserObject*)userObject;
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfriendUser:(FluxUserObject*)userObject;
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didFollowUser:(FluxUserObject*)userObject;
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfollowUser:(FluxUserObject*)userObject;
+@end
+
+@interface FluxAddUserViewController : UIViewController<UISearchBarDelegate, UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, UIScrollViewDelegate, FluxSocialManagerDelegate, PublicProfileDelegate>{
     QuerySearchState searchState;
     IBOutlet UISearchBar *userSearchBar;
     IBOutlet UITableView *addUsersTableView;
@@ -31,7 +41,13 @@ typedef enum QuerySearchState : NSUInteger {
     
     NSTimer*searchTimer;
     NSString*searchQuery;
+    
+    NSIndexPath*selectedIndexPath;
+    
+    id __unsafe_unretained delegate;
 }
+
+@property (unsafe_unretained) id <FluxAddUserViewControllerDelegate> delegate;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 - (IBAction)doneButtonAction:(id)sender;
 @end

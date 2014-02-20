@@ -55,6 +55,34 @@
     else{
         [self.bioLabel setText:@""];
     }
+    
+    if (userObject.friendState == 3) {
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",_userObject.username]];
+        [self layoutSubviews];
+    }
+    else if (userObject.friendState == 2){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You've sent a friend request to @%@",_userObject.username]];
+        [self layoutSubviews];
+    }
+    else if (userObject.friendState == 1){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ has sent you a friend request",_userObject.username]];
+        [self layoutSubviews];
+    }
+    else if (userObject.isFollower && userObject.isFollowing){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ follow each other",_userObject.username]];
+        [self layoutSubviews];
+    }
+    else if (userObject.isFollowing){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",_userObject.username]];
+        [self layoutSubviews];
+    }
+    else if (userObject.isFollowing){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"is following you"]];
+        [self layoutSubviews];
+    }
+    else{
+        //nthing else
+    }
 }
 
 - (IBAction)acceptFriendButtonAction:(id)sender {
@@ -73,27 +101,6 @@
 - (IBAction)friendFollowButtonAction:(id)sender {
     if ([delegate respondsToSelector:@selector(FriendFollowerCellButtonWasTapped:)]) {
         [delegate FriendFollowerCellButtonWasTapped:self];
-    }
-}
-
-- (void)setSocialMode:(int)socialMode{
-    [self.socialStatusLabel setText:@""];
-    if (socialMode > 0) {
-        switch (socialMode) {
-            case 1:
-                [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",_userObject.username]];
-                break;
-            case 2:
-                [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",_userObject.username]];
-                break;
-            case 3:
-                [self.socialStatusLabel setText:[NSString stringWithFormat:@"is following you"]];
-                break;
-                
-            default:
-                break;
-        }
-        [self layoutSubviews];
     }
 }
 
