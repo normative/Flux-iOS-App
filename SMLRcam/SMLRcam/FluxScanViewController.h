@@ -28,6 +28,8 @@
 #import "GAITrackedViewController.h"
 
 #import "FluxDebugViewController.h"
+#import "CustomBadge.h"
+
 
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
@@ -35,7 +37,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //extern NSString* const FluxDidTapImage;
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterScrollViewTapDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
     
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;
@@ -68,7 +70,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     int uploadsCompleted;
     int totalUploads;
     
-    FluxDataFilter *currentDataFilter;
+    
+    CustomBadge *friendRequestsBadge;
     
     //debugMenu
     int debugPressCount;
@@ -78,6 +81,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     IBOutlet UIButton *debugButton4;
     
     IBOutlet UILabel *pedometerLabel;
+    
+    bool historicalPhotoPickerEnabled;
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
@@ -89,6 +94,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 
 @property (nonatomic, strong) FluxDebugViewController *debugViewController;
+@property (nonatomic, strong) FluxDataFilter *currentDataFilter;
+
 - (void)hideDebugMenu;
 
 - (IBAction)showLeftDrawer:(id)sender;

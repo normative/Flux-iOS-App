@@ -24,17 +24,18 @@
 @end
 
 
-@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, NetworkServicesDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
+@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;
-    NSArray *topTagsArray;
+    NSMutableArray *topTagsArray;
     NSMutableArray *selectedTags;
-    FluxLocationServicesSingleton *locationManager;
     
     UIImage*bgImage;
     
     UILabel*imageCountLabel;
+    UIView*imageCountActivityIndicatorView;
+    NSTimer*newImageCountTimer;
     int startImageCount;
     
     FluxDataFilter *dataFilter;
@@ -45,11 +46,13 @@
 @property (nonatomic, weak) id <FiltersTableViewDelegate> delegate;
 @property (nonatomic, weak) FluxDataManager *fluxDataManager;
 @property (strong, nonatomic) IBOutlet UISearchBar *tagsSearchBar;
-@property (nonatomic)int radius;
 @property (strong, nonatomic) IBOutlet UIImageView *backgroundImageView;
 @property (strong, nonatomic) IBOutlet UITableView *filterTableView;
+@property (nonatomic) double radius;
 
 @property (strong, nonatomic) IBOutlet NSNumber *imageCount;
+
+@property (strong, nonatomic) CLLocation *location;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)doneButtonAction:(id)sender;

@@ -39,12 +39,16 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
     NSMutableDictionary *uploadQueueReceivers;
 }
 
+@property (nonatomic) bool isLoggedIn;
+@property (nonatomic) bool haveAPNSToken;
+
 + (NSString*)thisDeviceName;
 + (FluxCameraModel)thisCameraModel;
 + (FluxDataManager *)theFluxDataManager;
 
 - (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image
-                withDataRequest:(FluxDataRequest *)dataRequest;
+                      withDataRequest:(FluxDataRequest *)dataRequest
+                  withHistoricalImage:(UIImage *)historicalImg;
 
 //used for image capture
 - (void) addCameraDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image;
@@ -69,10 +73,20 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestImagesByLocalID:(FluxDataRequest *)dataRequest withSize:(FluxImageType)imageType;
 - (void) completeRequestWithDataRequest:(FluxDataRequest *)dataRequest;
 
-//Tags
+//Filters
 - (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
                                   withRadius:(float)radius
                                  andMaxCount:(int)maxCount
+                        andAltitudeSensitive:(BOOL)altitudeSensitive
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+
+- (FluxRequestID *) requestImageCountstAtLocation:(CLLocation *)location
+                                  withRadius:(float)radius
+                        andAltitudeSensitive:(BOOL)altitudeSensitive
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+
+- (FluxRequestID *) requestTotalImageCountAtLocation:(CLLocation *)location
+                                  withRadius:(float)radius
                         andAltitudeSensitive:(BOOL)altitudeSensitive
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
@@ -93,16 +107,17 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 //USERS
 
 //registration / LOGOUT
-- (FluxRequestID *) uploadNewUser:(FluxUserObject *)userObject withImage:(UIImage *)image
+- (FluxRequestID *) uploadNewUser:(FluxRegistrationUserObject *)userObject withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) updateUser:(FluxUserObject *)userObject withImage:(UIImage *)image
                   withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) loginUser:(FluxUserObject *)userObject
+- (FluxRequestID *) loginUser:(FluxRegistrationUserObject *)userObject
                   withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) checkUsernameUniqueness:(NSString *)username
               withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) postCamera:(FluxCameraObject *)cameraObject
               withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) updateAPNsDeviceTokenWithRequest:(FluxDataRequest *)dataRequest;
 
 - (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest;
 
@@ -114,14 +129,29 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestImageListForUserWithID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 
-//lists
+//social
+- (FluxRequestID *) requestFriendRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFriendsListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowingListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowerListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) requestUsersListQuery:(NSString*)query
+                             withDataRequest:(FluxDataRequest *)dataRequest;
 
+- (FluxRequestID *) addFollowerWithUserID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) unfollowUserWIthID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) sendFriendRequestToUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) acceptFriendRequestFromUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) ignoreFriendRequestFromUserWithID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) unfriendWithUserID:(int)userID
+                             withDataRequest:(FluxDataRequest *)dataRequest;
 
 
 

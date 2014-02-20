@@ -22,5 +22,6 @@
 - (IBAction)snapshotRollButtonAction:(id)sender;
 - (void)addsnapshot:(NSNotification*)notification;
 - (IBAction)shareButtonAction:(id)sender;
+- (void)updateSnapshotButton;
 
 @end

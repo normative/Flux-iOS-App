@@ -14,14 +14,12 @@
 }
 
 @property (nonatomic, weak) NSString *title;
-@property (nonatomic, weak) UIImage *titleImage;
-@property (nonatomic)BOOL isChecked;
+@property (nonatomic)int count;
 @property (nonatomic)FluxFilterType filterType;
+@property (nonatomic) BOOL isChecked;
 
-
-
-
-- (id)initWithTitle:(NSString*)atitle andFilterType:(FluxFilterType)type andtitleImage:(UIImage*)atitleImage andActive:(BOOL)bActive;
 - (void)setIsActive:(BOOL)active;
+
+- (id)initWithTitle:(NSString*)atitle andFilterType:(FluxFilterType)type;
 
 @end

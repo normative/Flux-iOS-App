@@ -95,7 +95,10 @@
 
 #pragma mark - Users
 
-- (void)whenUploadUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+
+#pragma mark Registration
+
+- (void)whenUploadUserComplete:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.uploadUserComplete)
     {
         self.uploadUserComplete(userObject, completeDataRequest);
@@ -109,7 +112,7 @@
     }
 }
 
--(void)whenLoginUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+-(void)whenLoginUserComplete:(FluxRegistrationUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.loginUserComplete)
     {
         self.loginUserComplete(userObject,completeDataRequest);
@@ -137,6 +140,8 @@
     }
 }
 
+#pragma mark Profile Stuff
+
 -(void)whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.userReady)
     {
@@ -157,6 +162,13 @@
     }
 }
 
+#pragma mark Social Stuff
+- (void) whenUserFriendRequestsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userFriendRequestsReady) {
+        self.userFriendRequestsReady(socialUserObjects, completeDataRequest);
+    }
+}
+
 - (void) whenUserFriendsReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.userFriendsReady) {
         self.userFriendsReady(socialUserObjects, completeDataRequest);
@@ -173,7 +185,44 @@
     }
 }
 
-#pragma mark - Other
+- (void) whenUserSearchReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.userSearchReady) {
+        self.userSearchReady(socialUserObjects, completeDataRequest);
+    }
+}
+
+- (void) whenFollowUserReady:(int)followingUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.followUserReady) {
+        self.followUserReady(followingUserID, completeDataRequest);
+    }
+}
+- (void) whenUnfollowingUserReady:(int)unfollowedUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.unfollowUserReady) {
+        self.unfollowUserReady(unfollowedUserID, completeDataRequest);
+    }
+}
+- (void) whenSendFriendRequestReady:(int)userIdForFriendRequest withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.sendFriendRequestReady) {
+        self.sendFriendRequestReady(userIdForFriendRequest, completeDataRequest);
+    }
+}
+- (void) whenAcceptFriendRequestReady:(int)newFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.acceptFriendRequestReady) {
+        self.acceptFriendRequestReady(newFriendUserID, completeDataRequest);
+    }
+}
+- (void) whenIgnoreFriendRequestReady:(int)ignoreUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.ignoreFriendRequestReady) {
+        self.ignoreFriendRequestReady(ignoreUserID, completeDataRequest);
+    }
+}
+- (void) whenUnFriendUserReady:(int)oldFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.unfriendUserReady) {
+        self.unfriendUserReady(oldFriendUserID, completeDataRequest);
+    }
+}
+
+#pragma mark - Filters
 
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
 {
@@ -183,6 +232,19 @@
     }
 }
 
+- (void) whenImageCountsReady:(FluxFilterImageCountObject *)countObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.imageCountsReady) {
+        self.imageCountsReady(countObject, completeDataRequest);
+    }
+}
+- (void) whenTotalImageCountReady:(int)imageCount withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.totalImageCountReady) {
+        self.totalImageCountReady(imageCount, completeDataRequest);
+    }
+}
+
+
+#pragma mark - Other
 - (void) whenErrorOccurred:(NSError *)e withDescription:(NSString *)description withDataRequest:(FluxDataRequest *)errorDataRequest{
     if (self.errorOccurred)
     {

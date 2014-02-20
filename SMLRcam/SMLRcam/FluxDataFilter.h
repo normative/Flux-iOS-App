@@ -38,9 +38,6 @@ FluxFilterType: NSUInteger {
 - (void)addHashTagToFilter:(NSString*)tag;
 - (void)removeHashTagFromFilter:(NSString*)tag;
 
--(void)addActiveUserToFilter:(NSString*)userID;
--(void)removeActiveUserFromFilter:(NSString*)userID;
-
 - (void)addUsersToFilter:(NSArray*)filteredUsers andType:(FluxFilterType)type;
 - (void)removeUsersFromFilter:(NSArray*)filteredUsers andType:(FluxFilterType)type;
 

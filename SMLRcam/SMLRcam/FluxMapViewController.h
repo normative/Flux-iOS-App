@@ -38,7 +38,6 @@
     
     
     IBOutlet UIButton *filterButton;
-    FluxDataFilter *currentDataFilter;
     FluxDataFilter *previousDataFilter;
     
     UIView*transitionFadeView;
@@ -47,6 +46,8 @@
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
 @property (nonatomic, weak) FluxLocationServicesSingleton *locationManager;
+
+@property (nonatomic, strong) FluxDataFilter *currentDataFilter;
 
 - (IBAction)closeButtonAction:(id)sender;
 

@@ -10,15 +10,15 @@
 
 @implementation FluxFilterDrawerObject
 
-@synthesize title, titleImage, isChecked;
+@synthesize title;
 
-- (id)initWithTitle:(NSString *)atitle andFilterType:(FluxFilterType)type andtitleImage:(UIImage *)atitleImage andActive:(BOOL)bActive{
-    self = [super init];
+
+- (id)initWithTitle:(NSString*)atitle andFilterType:(FluxFilterType)type{
+self = [super init];
     if (self) {
         self.title = atitle;
-        self.titleImage = atitleImage;
-        self.isChecked = bActive;
         self.filterType = type;
+        self.count = 0;
     }
     
     return self;

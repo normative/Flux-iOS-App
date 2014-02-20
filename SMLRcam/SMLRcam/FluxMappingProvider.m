@@ -8,11 +8,13 @@
 
 #import "FluxMappingProvider.h"
 #import "FluxScanImageObject.h"
-#import "FluxUserObject.h"
+#import "FluxRegistrationUserObject.h"
 #import "FluxTagObject.h"
+#import "FluxConnectionObject.h"
 #import "FluxMapImageObject.h"
 #import "FluxCameraObject.h"
 #import "FluxProfileImageObject.h"
+#import "FluxFilterImageCountObject.h"
 
 @implementation FluxMappingProvider
 
@@ -63,16 +65,31 @@
                                                   @"follower_count":     @"followerCount",
                                                   @"following_count":    @"followingCount",
                                                   @"image_count":        @"imageCount",
-                                                  @"friend":             @"isFriends",
-                                                  @"amifollowing":       @"isFollowing",
-                                                  @"aretheyfollowing":   @"isFollower",
+                                                  @"friend_state":        @"friendState",
+                                                  @"am_follower":       @"isFollowing",
+                                                  @"is_following":   @"isFollower",
                                                   @"has_pic":            @"hasProfilePic"
                                                  }];
+    
+    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"bio"]];
+    
+    return mapping;
+}
+
++ (RKObjectMapping *)userRegistrationGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxRegistrationUserObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"id":                @"userID",
+                                                  @"has_pic":            @"hasProfilePic"
+                                                  }];
     
     [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"bio"]];
     
     return mapping;
 }
+
+
 + (RKObjectMapping *)userPOSTMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
@@ -126,7 +143,33 @@
     return mapping;
 }
 
-#pragma mark - Tag Mapping
+#pragma mark - Social Mapping
++ (RKObjectMapping *)connectionGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxConnectionObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":   @"userID",
+                                                  @"connections_id":     @"connectionsUserID",
+                                                   @"id":   @"connectionID",
+                                                   @"am_following":   @"amFollowing",
+                                                   @"friend_state":   @"friendState"
+                                                  }];
+    return mapping;
+}
++ (RKObjectMapping *)connectionPOSTMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"userID":            @"user_id",
+                                                  @"connectionsUserID":   @"connections_id",
+                                                  @"connetionType":   @"connection_type",
+                                                  @"friendState":   @"friend_state"
+                                                  }];
+    
+    return mapping;
+}
+
+#pragma mark - Filters Mapping
 
 + (RKObjectMapping *)tagGetMapping{
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxTagObject class]];
@@ -135,6 +178,18 @@
                                                   @"tagtext":   @"tagText",
                                                   @"count":     @"count"
                                                  }];
+    return mapping;
+}
+
++ (RKObjectMapping *)filterImageCountsGetMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxFilterImageCountObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"totalimgcount":   @"totalImageCount",
+                                                  @"myimgcount":     @"activeUserImageCount",
+                                                  @"friendimgcount":   @"activerUserFriendsImageCount",
+                                                  @"followingimgcount":   @"activerUserFollowingsImageCount"
+                                                  }];
     return mapping;
 }
 

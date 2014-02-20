@@ -12,6 +12,12 @@
 #define COCOAPODS_VERSION_MINOR_AFNetworking 3
 #define COCOAPODS_VERSION_PATCH_AFNetworking 3
 
+// GoogleAnalytics-iOS-SDK
+#define COCOAPODS_POD_AVAILABLE_GoogleAnalytics_iOS_SDK
+#define COCOAPODS_VERSION_MAJOR_GoogleAnalytics_iOS_SDK 3
+#define COCOAPODS_VERSION_MINOR_GoogleAnalytics_iOS_SDK 0
+#define COCOAPODS_VERSION_PATCH_GoogleAnalytics_iOS_SDK 3
+
 // ISO8601DateFormatterValueTransformer
 #define COCOAPODS_POD_AVAILABLE_ISO8601DateFormatterValueTransformer
 #define COCOAPODS_VERSION_MAJOR_ISO8601DateFormatterValueTransformer 0
@@ -65,6 +71,24 @@
 #define COCOAPODS_VERSION_MAJOR_SOCKit 1
 #define COCOAPODS_VERSION_MINOR_SOCKit 1
 #define COCOAPODS_VERSION_PATCH_SOCKit 0
+
+// TestFlightFeedback
+#define COCOAPODS_POD_AVAILABLE_TestFlightFeedback
+#define COCOAPODS_VERSION_MAJOR_TestFlightFeedback 2
+#define COCOAPODS_VERSION_MINOR_TestFlightFeedback 1
+#define COCOAPODS_VERSION_PATCH_TestFlightFeedback 0
+
+// TestFlightFeedback/Core
+#define COCOAPODS_POD_AVAILABLE_TestFlightFeedback_Core
+#define COCOAPODS_VERSION_MAJOR_TestFlightFeedback_Core 2
+#define COCOAPODS_VERSION_MINOR_TestFlightFeedback_Core 1
+#define COCOAPODS_VERSION_PATCH_TestFlightFeedback_Core 0
+
+// TestFlightSDK
+#define COCOAPODS_POD_AVAILABLE_TestFlightSDK
+#define COCOAPODS_VERSION_MAJOR_TestFlightSDK 2
+#define COCOAPODS_VERSION_MINOR_TestFlightSDK 2
+#define COCOAPODS_VERSION_PATCH_TestFlightSDK 1
 
 // TransitionKit
 #define COCOAPODS_POD_AVAILABLE_TransitionKit

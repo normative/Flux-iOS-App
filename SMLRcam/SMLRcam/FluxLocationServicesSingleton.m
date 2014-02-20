@@ -132,48 +132,58 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 - (CLLocationDirection)orientationHeading
 {
-    CLLocationDirection newHeading = self.heading;
-    [self updateUserPose];
-    sensorPose localUserPose = _userPose;
+    CLLocationDirection newHeading = 0.0;
     
-    viewParameters localUserVp;
-    
-    // calculate angle between user's viewpoint and North
-    [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
-    
-    
-    double x1 = 0.0;
-    double y1 = 1.0;
-    double x2 = localUserVp.at.x;
-    double y2 = localUserVp.at.y;
-    double dotx = (x1 * x2);
-    double doty = (y1 * y2);
-    
-    double scalar = dotx + doty;
-    double magsq1 = x1 * x1 + y1 * y1;
-    double magsq2 = x2 * x2 + y2 * y2;
-    
-    if (magsq2 != 0.0)
+    @try
     {
-        // won't freak out and will return a valid result
-        double costheta = (scalar) / sqrt(magsq1 * magsq2);
-        double theta = acos(costheta) * 180.0 / M_PI;
+        newHeading = self.heading;
+        [self updateUserPose];
+        sensorPose localUserPose = _userPose;
         
-        if (x2 < 0)
+        viewParameters localUserVp;
+        
+        // calculate angle between user's viewpoint and North
+        [self computeTangentParametersForUserPose:&localUserPose toViewParameters:&localUserVp];
+        
+        
+        double x1 = 0.0;
+        double y1 = 1.0;
+        double x2 = localUserVp.at.x;
+        double y2 = localUserVp.at.y;
+        if (!(isnan(x2) || isnan(y2)))
         {
-            theta = -theta;
+            double dotx = (x1 * x2);
+            double doty = (y1 * y2);
+            
+            double scalar = dotx + doty;
+            double magsq1 = x1 * x1 + y1 * y1;
+            double magsq2 = x2 * x2 + y2 * y2;
+            
+            if (magsq2 != 0.0)
+            {
+                // won't freak out and will return a valid result
+                double costheta = (scalar) / sqrt(magsq1 * magsq2);
+                double theta = acos(costheta) * 180.0 / M_PI;
+                
+                if (x2 < 0)
+                {
+                    theta = -theta;
+                }
+                
+                while (theta < 0.0)
+                    theta += 360.0;
+                
+                if (!isnan(theta))
+                    newHeading = theta;
+            }
         }
-        
-        while (theta < 0.0)
-            theta += 360.0;
-        
-        if (theta != NAN)
-            newHeading = theta;
     }
-    
-    if (newHeading == NAN)
-        newHeading = 0.0;
-    
+    @catch (NSException *theException)
+    {
+        NSLog(@"An exception occurred: %@", theException.name);
+        NSLog(@"Here are some details: %@", theException.reason);
+    }
+
     return newHeading;
 }
 

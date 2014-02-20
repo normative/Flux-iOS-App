@@ -8,7 +8,7 @@
 
 #import "FluxRegisterViewController.h"
 #import "ProgressHUD.h"
-#import "FluxUserObject.h"
+#import "FluxRegistrationUserObject.h"
 #import "FluxCameraObject.h"
 #import "FluxTextFieldCell.h"
 #import "UICKeyChainStore.h"
@@ -432,7 +432,7 @@
 }
 
 - (void)registerSocialPartnerWithUserInfo:(NSDictionary*)userInfo{
-    FluxUserObject *newUser = [[FluxUserObject alloc]init];
+    FluxRegistrationUserObject *newUser = [[FluxRegistrationUserObject alloc]init];
     
     NSString*username = (NSString*)[userInfo objectForKey:@"username"];
     NSString*email = (NSString*)[userInfo objectForKey:@"email"];
@@ -546,13 +546,13 @@
 #pragma mark - Social Manager Delegate
 
 - (void)SocialManager:(FluxSocialManager*)socialManager didRegisterFacebookAccountWithUserInfo: (NSDictionary*)userInfo{
-    FluxUserObject *newUser = [[FluxUserObject alloc]init];
+    FluxRegistrationUserObject *newUser = [[FluxRegistrationUserObject alloc]init];
     NSString*facebook = (NSString*)[userInfo objectForKey:@"token"];
     [newUser setFacebook:facebook];
     
     //try to log in with facebook first, if no account exists then move to register
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setLoginUserComplete:^(FluxUserObject*userObject, FluxDataRequest * completedDataRequest){
+    [dataRequest setLoginUserComplete:^(FluxRegistrationUserObject*userObject, FluxDataRequest * completedDataRequest){
         UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:FluxService];
         
         [store setString:userObject.username forKey:FluxUsernameKey];
@@ -574,14 +574,14 @@
     [self.fluxDataManager loginUser:newUser withDataRequest:dataRequest];
 }
 - (void)SocialManager:(FluxSocialManager*)socialManager didRegisterTwitterAccountWithUserInfo: (NSDictionary*)userInfo{
-    FluxUserObject *newUser = [[FluxUserObject alloc]init];
+    FluxRegistrationUserObject *newUser = [[FluxRegistrationUserObject alloc]init];
     NSDictionary*twitter = [NSDictionary dictionaryWithObjectsAndKeys:(NSString*)[userInfo objectForKey:@"token"],@"access_token",(NSString*)[userInfo objectForKey:@"secret"],@"access_token_secret",  nil];
     [newUser setTwitter:twitter];
     
     
     //try to log in with Twitter first, if no account exists then move to register
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setLoginUserComplete:^(FluxUserObject*userObject, FluxDataRequest * completedDataRequest){
+    [dataRequest setLoginUserComplete:^(FluxRegistrationUserObject*userObject, FluxDataRequest * completedDataRequest){
         UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:FluxService];
         
         [store setString:userObject.username forKey:FluxUsernameKey];
@@ -624,7 +624,7 @@
 -(void)loginSignupWithPin:(NSString*)pin{
     if (isInSignUp) {
         
-        FluxUserObject *newUser = [[FluxUserObject alloc]init];
+        FluxRegistrationUserObject *newUser = [[FluxRegistrationUserObject alloc]init];
         
         FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
         NSString*username = cell.textField.text;
@@ -642,7 +642,7 @@
         [self createAccountForUser:newUser];
     }
     else{
-        FluxUserObject *signingInUser = [[FluxUserObject alloc]init];
+        FluxRegistrationUserObject *signingInUser = [[FluxRegistrationUserObject alloc]init];
         
         FluxTextFieldCell*cell = (FluxTextFieldCell*)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
         NSString*username = cell.textField.text;
@@ -657,9 +657,9 @@
     }
 }
 
-- (void)createAccountForUser:(FluxUserObject*)user{
+- (void)createAccountForUser:(FluxRegistrationUserObject*)user{
         FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        [dataRequest setUploadUserComplete:^(FluxUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
+        [dataRequest setUploadUserComplete:^(FluxRegistrationUserObject*createdUserObject, FluxDataRequest *completedDataRequest){
         [createdUserObject setPassword:user.password];
             [self loginWithUserObject:createdUserObject andDidJustRegister:YES];
 
@@ -677,20 +677,24 @@
     }
 }
 
-- (void)loginWithUserObject:(FluxUserObject*)user andDidJustRegister:(BOOL)new{
+- (void)loginWithUserObject:(FluxRegistrationUserObject*)user andDidJustRegister:(BOOL)new{
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setLoginUserComplete:^(FluxUserObject*userObject, FluxDataRequest * completedDataRequest){
+    [dataRequest setLoginUserComplete:^(FluxRegistrationUserObject*userObject, FluxDataRequest * completedDataRequest){
         UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:FluxService];
         
         [store setString:userObject.username forKey:FluxUsernameKey];
         [store setString:userObject.password forKey:FluxPasswordKey];
         [store setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey];
-        [store setString:userObject.auth_token forKey:FluxTokenKey];
+        [store setString:[NSString stringWithString:userObject.auth_token] forKey:FluxTokenKey];
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
 
         if (![NSString stringWithFormat:@"%i",userObject.userID]) {
             NSLog(@"Login didn't return a valid userID");
+        }
+        
+        if (![NSString stringWithFormat:@"%@",userObject.auth_token]) {
+            NSLog(@"Login didn't return a valid token");
         }
         
         //I have a socialName, just not which social service it is yet. maybe check for @?

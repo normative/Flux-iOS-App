@@ -8,6 +8,7 @@
 
 #import "FluxFiltersViewController.h"
 #import "FluxFilterDrawerObject.h"
+#import "FluxFilterImageCountObject.h"
 
 #import "FluxImageTools.h"
 #import "ProgressHUD.h"
@@ -29,8 +30,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    [self setupLocationManager];
     
     if (dataFilter == nil) {
         dataFilter = [[FluxDataFilter alloc] init];
@@ -59,6 +58,11 @@
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self sendTagRequest];
+    [self getSocialImageCounts];
+    
+//    if (![dataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+//        [self updateImageCount];
+//    }
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -69,11 +73,19 @@
 //must be called from presenting VC
 - (void)prepareViewWithFilter:(FluxDataFilter*)theDataFilter andInitialCount:(int)count{
 
-    FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType andtitleImage:[UIImage imageNamed:@"filter_MyNetwork.png"] andActive:theDataFilter.isActiveUserFiltered];
+    FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType];
+    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People I follow" andFilterType:followers_filterType];
+    FluxFilterDrawerObject *friendsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType];
     
-//    FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Following" andFilterType:followers_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter isFollowingActive]];
-//    
-//    FluxFilterDrawerObject *favouritesFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType andtitleImage:[UIImage imageNamed:@"filter_People.png"] andActive:[theDataFilter isFriendActive]];
+    if (theDataFilter.isActiveUserFiltered) {
+        [myPicsFilterObject setIsActive:YES];
+    }
+    if (theDataFilter.isFollowingFiltered) {
+        [followingFilterObject setIsActive:YES];
+    }
+    if (theDataFilter.isFriendsFiltered) {
+        [friendsFilterObject setIsActive:YES];
+    }
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         startImageCount = count;
@@ -81,13 +93,13 @@
     imageCount = [NSNumber numberWithInt:count];
     self.radius = 15;
     
-    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, /*followingFilterObject, favouritesFilterObject, */nil];
+    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, friendsFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
     if ([theDataFilter.hashTags isEqualToString:@""]) {
         selectedTags = [[NSMutableArray alloc]init];
     }
     else{
-        selectedTags = [[theDataFilter.hashTags componentsSeparatedByString:@"%20"]mutableCopy];
+        selectedTags = [[theDataFilter.hashTags componentsSeparatedByString:@" "]mutableCopy];
     }
 
     rightDrawerTableViewArray = [[NSMutableArray alloc]initWithObjects:socialFiltersArray,topTagsArray, nil];
@@ -106,11 +118,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setupLocationManager
-{
-    locationManager = [FluxLocationServicesSingleton sharedManager];
-}
-
 #pragma mark - network methods
 - (void)sendTagRequest{
     // viewController is visible
@@ -120,27 +127,31 @@
     [request setSearchFilter:tmp];
     [request setTagsReady:^(NSArray *tagList, FluxDataRequest*completedRequest){
         //do something with array
-        topTagsArray = tagList;
+        topTagsArray = [tagList mutableCopy];
         [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:topTagsArray];
         if ([selectedTags count]>0) {
-            NSMutableIndexSet * removalSet = [[NSMutableIndexSet alloc]init];
+            
+            //deal with selected tags
             for (int i = 0; i<selectedTags.count; i++) {
                 NSString*str = [selectedTags objectAtIndex:i];
                 FluxTagObject*tmp = [[FluxTagObject alloc]init];
                 [tmp setTagText:str];
+                
+                //if they no longer exist, set then not applicable and bump them to the top
                 if (![topTagsArray containsObject:tmp]) {
-                    [removalSet addIndex:i];
+                    [tmp setIsNotApplicable:YES];
+                    [tmp setIsChecked:YES];
+                    [topTagsArray insertObject:tmp atIndex:0];
                 }
-                // set it selected
+                //if they still exist, set it selected
                 else{
                     int subArrayIndex = [[rightDrawerTableViewArray objectAtIndex:1] indexOfObject:tmp];
                     [[[rightDrawerTableViewArray objectAtIndex:1] objectAtIndex:subArrayIndex] setIsActive:YES];
                 }
             }
-            [selectedTags removeObjectsAtIndexes:removalSet];
             
         }
-        [self.filterTableView reloadData];
+        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -150,16 +161,56 @@
     }];
     
     if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
-        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:NO withDataRequest:request];
+        [self.fluxDataManager requestTagListAtLocation:self.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:NO withDataRequest:request];
     }
     else{
-        [self.fluxDataManager requestTagListAtLocation:locationManager.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:YES withDataRequest:request];
+        [self.fluxDataManager requestTagListAtLocation:self.location withRadius:self.radius andMaxCount:20 andAltitudeSensitive:YES withDataRequest:request];
     }
 
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray *)tagList{
-    topTagsArray = tagList;
+- (void)getSocialImageCounts{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    FluxDataFilter*tmp = [[FluxDataFilter alloc] init];
+    [request setSearchFilter:tmp];
+    
+    [request setImageCountsReady:^(FluxFilterImageCountObject*countObject, FluxDataRequest*completedRequest){
+        //do something with array
+        
+        for (int i = 0; i<socialFiltersArray.count; i++) {
+            FluxFilterDrawerObject*obj = [socialFiltersArray objectAtIndex:i];
+            if (obj.filterType == myPhotos_filterType) {
+                [obj setCount:countObject.activeUserImageCount];
+            }
+            else if (obj.filterType == followers_filterType){
+                [obj setCount:countObject.activerUserFollowingsImageCount];
+            }
+            else if (obj.filterType == friends_filterType){
+                [obj setCount:countObject.activerUserFriendsImageCount];
+            }
+            else{
+                
+            }
+        }
+//        
+//        FluxFilterDrawerObject*obj
+//        socialFiltersArray objectAtIndex:
+//        [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:arr];
+        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Image counts failed to load with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    
+    if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
+        [self.fluxDataManager requestImageCountstAtLocation:self.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
+    }
+    else{
+        [self.fluxDataManager requestImageCountstAtLocation:self.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
+    }
 }
 
 
@@ -243,6 +294,28 @@
             imageCountLabel.textAlignment = NSTextAlignmentCenter;
             [view addSubview:imageCountLabel];
             
+            imageCountActivityIndicatorView = [[UIView alloc]initWithFrame:CGRectMake(imageCountLabel.frame.origin.x+10, imageCountLabel.frame.origin.y+10, 30, 30)];
+            [imageCountActivityIndicatorView setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:1.0]];
+            imageCountActivityIndicatorView.layer.cornerRadius = imageCountActivityIndicatorView.frame.size.width;
+            
+            imageCountActivityIndicatorView.layer.shadowColor = [[UIColor clearColor] CGColor];
+            imageCountActivityIndicatorView.layer.shadowRadius = 1.0f;
+            imageCountActivityIndicatorView.layer.shadowOpacity = 1.0;
+            imageCountActivityIndicatorView.layer.shadowOffset = CGSizeMake(1, 1);
+            [imageCountActivityIndicatorView setAlpha:0.0];
+            
+            UIActivityIndicatorView*activityView = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0,0, 30, 30)];
+            [activityView setActivityIndicatorViewStyle:UIActivityIndicatorViewStyleWhite];
+            [activityView startAnimating];
+            [imageCountActivityIndicatorView addSubview:activityView];
+            [view addSubview:imageCountActivityIndicatorView];
+            
+            UIButton*doneHeaderButton = [[UIButton alloc]initWithFrame:imageCountLabel.frame];
+            [doneHeaderButton addTarget:self action:@selector(doneButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+            [view addSubview:doneHeaderButton];
+            
+            
+            
             // Save this shape layer in a class property for future reference,
             // namely so we can remove it later if we tap elsewhere on the screen.
         }
@@ -318,20 +391,18 @@
                 cell = [[FluxSocialFilterCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             }
             [cell.checkbox setDelegate:cell];
-            [cell setDelegate:self];
+            [cell setSocialCellDelegate:self];
             
-//            //disable the cell for now
-//            [cell setUserInteractionEnabled:NO];
-//            [cell.descriptorLabel setEnabled:NO];
+            cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
+            cell.countLabel.text = [NSString stringWithFormat:@"%i",[(FluxFilterDrawerObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
+            [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
+            [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             
             //set the cell properties to the array elements declared above
             [cell setFilterType:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]filterType]];
-
-            cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
-            [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             
             return cell;
         }
@@ -344,20 +415,21 @@
                 cell = [[FluxCheckboxCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             }
             [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
-            [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
-            cell.descriptorLabel.text = [NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]];
+            [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
+            
+            if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row] isNotApplicable]) {
+                [cell setIsNotApplicable:YES];
+            }
+            else{
+                [cell setIsNotApplicable:NO];
+            }
+            
             cell.countLabel.text = [NSString stringWithFormat:@"%i",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
+            [cell setTextTitle:[NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]]];
             [cell.checkbox setDelegate:cell];
             [cell setDelegate:self];
-            
-            if ([[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]) {
-                [cell.countLabel setAlpha:1.0];
-            }
-            else{
-                [cell.countLabel setAlpha:0.5];
-            }
             
             return cell;
         }
@@ -386,28 +458,38 @@
     switch (checkCell.filterType) {
         case myPhotos_filterType:
         {
-            NSString*userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
             if (checked) {
-                [dataFilter addActiveUserToFilter:userID];
+                dataFilter.isActiveUserFiltered = YES;
             }
             else{
-                [dataFilter removeActiveUserFromFilter:userID];
+                dataFilter.isActiveUserFiltered = NO;
             }
         }
             break;
         case followers_filterType:
         {
-            
+            if (checked) {
+                dataFilter.isFollowingFiltered = YES;
+            }
+            else{
+                dataFilter.isFollowingFiltered = NO;
+            }
         }
             break;
         case friends_filterType:
         {
-            
+            if (checked) {
+                dataFilter.isFriendsFiltered = YES;
+            }
+            else{
+                dataFilter.isFriendsFiltered = NO;
+            }
         }
             break;
         default:
             break;
     }
+    [self sendTagRequest];
     
     //update the cell
     for (FluxSocialFilterCell* cell in [self.filterTableView visibleCells]) {
@@ -416,33 +498,36 @@
             [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
+    [self shouldUpdateImageCount];
 }
 
 - (void)checkboxCell:(FluxCheckboxCell *)checkCell boxWasChecked:(BOOL)checked{
+    NSIndexPath *path = [self.filterTableView indexPathForCell:checkCell];
+    
     NSString * tag = [checkCell.descriptorLabel.text substringFromIndex:1];
     [self modifyDataFilter:dataFilter filterSting:tag forType:tags_filterType andAdd:checked];
     
-    if (checked) {
-        [self updateImageCount:[checkCell.countLabel.text intValue]];
+    //if it's not applicable, remove the cell
+    if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row]isNotApplicable]) {
+        [[rightDrawerTableViewArray objectAtIndex:path.section] removeObjectAtIndex:path.row];
+        [self.filterTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:path] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
-    else
-        [self updateImageCount:-[checkCell.countLabel.text intValue]];
-    
-    
-    //update the cell
-    for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
-        if (cell == checkCell) {
-            NSIndexPath *path = [self.filterTableView indexPathForCell:cell];
-            [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
-            if ([[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] isChecked]) {
-                [cell.countLabel setAlpha:1.0];
+    //else, update it's appearance
+    else{
+        for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
+            if (cell == checkCell) {
+                [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
+                if ([[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] isChecked]) {
+                    [cell.countLabel setAlpha:1.0];
+                }
+                else{
+                    [cell.countLabel setAlpha:0.5];
+                }
+                break;
             }
-            else{
-                [cell.countLabel setAlpha:0.5];
-            }
-            break;
         }
     }
+    [self shouldUpdateImageCount];
 }
 
 -(void)modifyDataFilter:(FluxDataFilter*)filter filterSting:(NSString*)string forType:(FluxFilterType)type andAdd:(BOOL)add{
@@ -456,24 +541,39 @@
     }
 }
 
-- (void)updateImageCount:(int)num{
-    //if it's the first filter applied, make it the only active filter
-    if (imageCount.intValue == startImageCount) {
-        imageCount = [NSNumber numberWithInt:num];
-    }
+- (void)shouldUpdateImageCount{
+    [newImageCountTimer invalidate];
+    newImageCountTimer = nil;
     
-    //if not, add it up
+    newImageCountTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 target:self selector:@selector(updateImageCount) userInfo:nil repeats:NO];
+}
+
+- (void)updateImageCount{
+    [imageCountActivityIndicatorView setAlpha:1.0];
+    
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    FluxDataFilter*tmp = [[FluxDataFilter alloc] initWithFilter:dataFilter];
+    [request setSearchFilter:tmp];
+    
+    
+    [request setTotalImageCountReady:^(int imgCount,FluxDataRequest*completedRequest){
+        //do something with array
+        imageCount = [NSNumber numberWithInt:imgCount];
+        [imageCountLabel setText:[NSString stringWithFormat:@"%i",imgCount]];
+        [imageCountActivityIndicatorView setAlpha:0.0];
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSString*str = [NSString stringWithFormat:@"Image count failed to load with error %d", (int)[e code]];
+        [ProgressHUD showError:str];
+    }];
+    
+    if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
+        [self.fluxDataManager requestTotalImageCountAtLocation:self.location withRadius:self.radius andAltitudeSensitive:NO withDataRequest:request];
+    }
     else{
-        imageCount = [NSNumber numberWithInt:[imageCount intValue]+num];
+        [self.fluxDataManager requestTotalImageCountAtLocation:self.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
     }
-
-    //if we've subtracted back to 0, show the initial count (no filters applied anymore)
-    if (imageCount.intValue == 0) {
-        imageCount = [NSNumber numberWithInt:startImageCount];
-    }
-    
-    [imageCountLabel setText:[NSString stringWithFormat:@"%i",imageCount.intValue]];
-
 }
 
 
@@ -483,7 +583,7 @@
     if (topTagsArray.count == 0) {
         FluxTagObject*tag = [[FluxTagObject alloc]init];
         [tag setTagText:@""];
-        topTagsArray = [NSArray arrayWithObject:tag];
+        topTagsArray = [NSMutableArray arrayWithObject:tag];
         [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:topTagsArray];
         [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
     }

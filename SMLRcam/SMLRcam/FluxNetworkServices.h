@@ -9,14 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "FluxScanImageObject.h"
 #import "FluxUserObject.h"
+#import "FluxFilterImageCountObject.h"
+#import "FluxDataFilter.h"
+#import "FluxRegistrationUserObject.h"
 #import "FluxCameraObject.h"
 #import <CoreLocation/CoreLocation.h>
 #import "RKObjectManager.h"
 
 typedef NSUUID FluxRequestID;
 
-extern NSString* const FluxProductionServerURL;
-extern NSString* const FluxTestServerURL;
+extern NSString* const AWSProductionServerURL;
+extern NSString* const AWSTestServerURL;
+extern NSString* const DSDLocalTestServerURL;
+
+extern NSString* const FluxServerURL;
 
 @class FluxNetworkServices;
 @protocol NetworkServicesDelegate <NSObject>
@@ -48,9 +54,9 @@ extern NSString* const FluxTestServerURL;
 //USERS
 
 //registration/logout
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxUserObject*)userObject
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCreateUser:(FluxRegistrationUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxUserObject*)userObject
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLoginUser:(FluxRegistrationUserObject*)userObject
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString*)suggestion
            andRequestID:(FluxRequestID *)requestID;
@@ -66,15 +72,37 @@ extern NSString* const FluxTestServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageListForUser:(NSArray*)images
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)images
+
+//social stuff
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendRequestsForUser:(NSArray*)friendRequests
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)images
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)friends
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowerListForUser:(NSArray*)images
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)followings
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowerListForUser:(NSArray*)followers
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUsersListForQuery:(NSArray*)users
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFollowUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfollowUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFriendRequestToUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didAcceptFriendRequestFromUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didIgnoreFriendRequestFromUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfriendUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
 
-//tags
+//fil†ers
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnImageCounts:(FluxFilterImageCountObject*)countObject
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTotalImageCount:(int)count
            andRequestID:(FluxRequestID *)requestID;
 
 @end
@@ -111,11 +139,8 @@ extern NSString* const FluxTestServerURL;
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
                            andMaxAlt:(float)altMax
-                     andMinTimestamp:(NSDate *)timeMin
-                     andMaxTimestamp:(NSDate *)timeMax
-                         andHashTags:(NSString *)hashTags
-                            andUsers:(NSString *)users
-                         andMaxCount:(int)maxCount
+                      andMaxReturned:(int)maxCount
+                           andFilter:(FluxDataFilter*)dataFilter
                         andRequestID:(FluxRequestID *)requestID;
 
 /**
@@ -125,11 +150,8 @@ extern NSString* const FluxTestServerURL;
                            andRadius:(float)radius
                            andMinAlt:(float)altMin
                            andMaxAlt:(float)altMax
-                     andMinTimestamp:(NSDate *)timeMin
-                     andMaxTimestamp:(NSDate *)timeMax
-                         andHashTags:(NSString *)hashTags
-                            andUsers:(NSString *)users
-                         andMaxCount:(int)maxCount
+                      andMaxReturned:(int)maxCount
+                           andFilter:(FluxDataFilter*)dataFilter
                         andRequestID:(FluxRequestID *)requestID;
 
 // execute the request
@@ -138,7 +160,7 @@ extern NSString* const FluxTestServerURL;
 /**
  uploads an image. All account info is stored within the FluxScanImageObject
  **/
-- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID;
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
 
 /**
  Removes an image from the Flux DB given an imageID.
@@ -159,7 +181,7 @@ extern NSString* const FluxTestServerURL;
 /**
  Logs in a given userObject and returns an access token
  **/
-- (void)loginUser:(FluxUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
+- (void)loginUser:(FluxRegistrationUserObject*)userObject withRequestID:(FluxRequestID *)requestID;
 
 /**
  Log out the current user
@@ -177,9 +199,14 @@ extern NSString* const FluxTestServerURL;
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID;
 
 /**
+ Updates the APNs device token for the user.
+ **/
+-(void) updateAPNsDeviceTokenWithRequestID:(FluxRequestID *)requestID;
+
+/**
  creates a user with the given object
  **/
-- (void)createUser:(FluxUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
+- (void)createUser:(FluxRegistrationUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
 
 #pragma mark Profiles
 
@@ -203,6 +230,13 @@ return's a profile image for a given userID and size
  **/
 - (void)getImagesListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
+
+#pragma mark Social Stuff
+/**
+ return's a user's active friend requests
+ **/
+- (void)getFriendRequestsForUserWithRequestID:(NSUUID *)requestID;
+
 /**
  return's a user's friend list for a given userID
  **/
@@ -218,10 +252,44 @@ return's a profile image for a given userID and size
  **/
 - (void)getFollowerListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
+/**
+ return's a list of users matching a given query
+ **/
+- (void)getUsersListForQuery:(NSString*)query withRequestID:(NSUUID *)requestID;
+
+/**
+ Adds the supplied userID as a follower of the activeUser
+ **/
+- (void)followUserID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ removes the supplied userID as a follower of the activeUser
+ **/
+- (void)unfollowUserID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ sends the supplied userID as a friend request from the activeUser
+ **/
+- (void)sendFriendRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ accepts the friend request from the supplied userID from the activeUser
+ **/
+- (void)acceptFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ ignores the friend request from the supplied userID from the activeUser
+ **/
+- (void)ignoreFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ removes the supplied userID from the ativeUser's friend list
+ **/
+- (void)unfriedUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 
 
-#pragma mark  - Tags
+#pragma mark  - Filters
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;
 
 
@@ -230,12 +298,25 @@ return's a profile image for a given userID and size
                          andRadius:(float)radius
                          andMinAlt:(float)altMin
                          andMaxAlt:(float)altMax
-                   andMinTimestamp:(NSDate *)timeMin
-                   andMaxTimestamp:(NSDate *)timeMax
-                       andHashTags:(NSString *)hashTags
-                          andUsers:(NSString *)users
-                       andMaxCount:(int)maxCount
+                    andMaxReturned:(int)maxCount
+                         andFilter:(FluxDataFilter*)dataFilter
                       andRequestID:(FluxRequestID *)requestID;
+
+
+
+- (void)getImageCountsForLocationFiltered:(CLLocationCoordinate2D)location
+                         andRadius:(float)radius
+                         andMinAlt:(float)altMin
+                         andMaxAlt:(float)altMax
+                         andFilter:(FluxDataFilter*)dataFilter
+                      andRequestID:(FluxRequestID *)requestID;
+
+- (void)getFilteredImageCountForLocation:(CLLocationCoordinate2D)location
+                                andRadius:(float)radius
+                                andMinAlt:(float)altMin
+                                andMaxAlt:(float)altMax
+                                andFilter:(FluxDataFilter*)dataFilter
+                             andRequestID:(FluxRequestID *)requestID;
 
 
 #pragma mark  - Other

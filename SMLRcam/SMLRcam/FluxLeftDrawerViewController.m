@@ -7,8 +7,8 @@
 //
 
 #import "FluxLeftDrawerViewController.h"
-#import "TestFlight.h"
-#import "TestFlight+OpenFeedback.h"
+#import <TestFlight.h>
+#import <TestFlight+OpenFeedback.h>
 #import "FluxCountTableViewCell.h"
 #import "FluxProfileCell.h"
 #import "UICKeyChainStore.h"
@@ -52,6 +52,24 @@
     [UIView animateWithDuration:0.25 animations:^{
         [self.tableView setAlpha:1.0];
     }];
+    
+    
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    
+    [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        if (self.badgeCount != requestsArr.count) {
+            self.badgeCount = requestsArr.count;
+            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
+        }
+
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSLog(@"Friend request check failed with error %d",(int)[e code]);
+    }];
+    [self.fluxDataManager requestFriendRequestsForUserWithDataRequest:request];
 }
 
 
@@ -297,12 +315,18 @@
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
         [cell.countLabel setEnabled:NO];
-        [cell.countLabel setHidden:YES];
-      //disable social
-        [cell.titleLabel setEnabled:NO];
-        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
+
+        if (self.badgeCount > 0) {
+            [cell addBadge:self.badgeCount];
+        }
+        else{
+            [cell clearBadge];
+        }
+        
+        //disable social
+//        [cell.titleLabel setEnabled:NO];
+//        [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
-    //[cell.imageView setImage:[UIImage imageNamed:@"imageViewerClock"]];
     return cell;
 }
 
@@ -317,8 +341,8 @@
             [self performSegueWithIdentifier:@"pushPhotosSegue" sender:nil];
             break;
         case 2:
-            [tableView deselectRowAtIndexPath:indexPath animated:NO];
-            //[self performSegueWithIdentifier:@"pushSocialList" sender:nil];
+            //[tableView deselectRowAtIndexPath:indexPath animated:NO];
+            [self performSegueWithIdentifier:@"pushSocialList" sender:nil];
             break;
         case 3:
             [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
@@ -342,7 +366,7 @@
 
 - (IBAction)onSendFeedBackBtn:(id)sender
 {
-    [TestFlight openFeedbackViewFromView:self];
+    [TestFlight openFeedbackViewFromVC:self];
 }
 
 - (IBAction)doneButtonAction {

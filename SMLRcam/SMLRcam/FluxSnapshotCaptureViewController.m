@@ -50,20 +50,7 @@
     [newSnapshotView setHidden:YES];
     [self.view insertSubview:newSnapshotView atIndex:0];
     
-    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
-        NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
-        NSArray*picsArr = [NSArray arrayWithArray:[defaults objectForKey:@"snapshotImages"]];
-        if (picsArr.count) {
-            [self setSnapshotButtonImage:[picsArr lastObject]];
-        }
-        else
-        {
-            [self.snapshotRollButton setHidden:YES];
-        }
-    }
-    else{
-        [self.snapshotRollButton setHidden:YES];
-    }
+    [self updateSnapshotButton];
     [shareButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:shareButton.titleLabel.font.pointSize]];
 
 	// Do any additional setup after loading the view.
@@ -75,7 +62,7 @@
     [newSnapshotView setAlpha:0.0];
     
     [shareButton setHidden:YES];
-    [self.snapshotRollButton setHidden:NO];
+    [self.snapshotRollButton setHidden:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -92,7 +79,23 @@
         [annotationsVC prepareSnapShotViewWithImage:newSnapshot withLocation:nil andDate:[NSDate date]];
         [annotationsVC setDelegate:self];
     }
+}
 
+- (void)updateSnapshotButton{
+    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+        NSUserDefaults *defaults=[NSUserDefaults standardUserDefaults];
+        NSArray*picsArr = [NSArray arrayWithArray:[defaults objectForKey:@"snapshotImages"]];
+        if (picsArr.count) {
+            [self setSnapshotButtonImage:[picsArr lastObject]];
+        }
+        else
+        {
+            [self.snapshotRollButton setHidden:YES];
+        }
+    }
+    else{
+        [self.snapshotRollButton setHidden:YES];
+    }
 }
 
 
@@ -103,6 +106,7 @@
         ALAssetRepresentation *rep = [myasset defaultRepresentation];
         CGImageRef iref = [rep fullResolutionImage];
         if (iref) {
+            [self.snapshotRollButton setHidden:NO];
             UIImage *image = [UIImage imageWithCGImage:iref];
             [self.snapshotRollButton addImage:image];
         }
@@ -241,7 +245,7 @@
 #pragma mark - IBActions
 - (IBAction)closeButtonAction:(id)sender {
     [self.view setHidden:YES];
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxImageCaptureDidPop"
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
                                                         object:self userInfo:nil];
     [self viewDidExit];
 }

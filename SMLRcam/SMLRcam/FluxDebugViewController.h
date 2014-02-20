@@ -14,6 +14,8 @@ extern NSString* const FluxDebugDidChangeTeleportLocationIndex;
 extern NSString* const FluxDebugTeleportLocationIndexKey;
 extern NSString* const FluxDebugDidChangePedometerCountDisplay;
 extern NSString* const FluxDebugPedometerCountDisplayKey;
+extern NSString* const FluxDebugDidChangeHistoricalPhotoPicker;
+extern NSString* const FluxDebugHistoricalPhotoPickerKey;
 
 @interface FluxDebugViewController : UIViewController
 {
@@ -24,7 +26,7 @@ extern NSString* const FluxDebugPedometerCountDisplayKey;
     
     IBOutlet UISwitch *switch1;
     IBOutlet UISwitch *switch2;
-    IBOutlet UIStepper *stepper1;
+    IBOutlet UISwitch *switch3;
 }
 
 - (IBAction)slider1DidSlide:(id)sender;
@@ -34,8 +36,8 @@ extern NSString* const FluxDebugPedometerCountDisplayKey;
 
 - (IBAction)switch1DidChange:(id)sender;
 - (IBAction)switch2DidChange:(id)sender;
+- (IBAction)switch3DidChange:(id)sender;
 - (IBAction)deleteAccountButtonAction:(id)sender;
-- (IBAction)stepper1DidStep:(id)sender;
 
 - (IBAction)hideMenuAction:(id)sender;
 

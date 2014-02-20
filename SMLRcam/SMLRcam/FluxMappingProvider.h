@@ -16,15 +16,21 @@
 + (RKObjectMapping *)imagePOSTMapping;
 
 + (RKObjectMapping *)userGETMapping;
++ (RKObjectMapping *)userRegistrationGETMapping;
 + (RKObjectMapping *)userPOSTMapping;
 + (RKObjectMapping *)userPATCHMapping;
 
 + (RKObjectMapping *)cameraPostMapping;
 + (RKObjectMapping *)cameraGETMapping;
 
++ (RKObjectMapping *)connectionGETMapping;
++ (RKObjectMapping *)connectionPOSTMapping;
+
 + (RKObjectMapping *)userImagesGetMapping;
 
 + (RKObjectMapping *)tagGetMapping;
+
++ (RKObjectMapping *)filterImageCountsGetMapping;
 
 + (RKObjectMapping *)mapImageGetMapping;
 

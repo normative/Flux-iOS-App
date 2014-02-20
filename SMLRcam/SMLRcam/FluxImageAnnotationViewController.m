@@ -45,8 +45,6 @@
     
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
-    [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
-    
     removedImages = [[NSMutableIndexSet alloc]init];
     
     CALayer *roundBorderLayer = [CALayer layer];
@@ -57,7 +55,7 @@
     roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
     [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
     
-    [privacyButton setHidden:YES];
+//    [privacyButton setHidden:YES];
 //    [facebookButton setHidden:YES];
 //    [twitterButton setHidden:YES];
     
@@ -77,7 +75,7 @@
     [self.view insertSubview:bgView belowSubview:containerView];
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you capture?"]];
-
+    [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
     [facebookButton setHidden:YES];
     [twitterButton setHidden:YES];
     
@@ -91,6 +89,7 @@
     [self.view insertSubview:bgView belowSubview:containerView];
     
     isSnapshot = YES;
+    [privacyButton setHidden:YES];
     
     //[saveButton setTitle:@"Save to Photos"];
     

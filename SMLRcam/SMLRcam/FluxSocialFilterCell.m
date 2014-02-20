@@ -10,47 +10,30 @@
 
 @implementation FluxSocialFilterCell
 
-@synthesize delegate;
+@synthesize socialCellDelegate;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        // Initialization code
+
+-(void)setFilterType:(FluxFilterType)filterType{
+    _filterType = filterType;
+    if (filterType == myPhotos_filterType) {
+        [self.descriptorLabel setText:@"My Photos"];
     }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder{
-    if(self = [super initWithCoder:aDecoder]) {
-        [self setBackgroundColor:[UIColor clearColor]];
-        [self.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.descriptorLabel.font.pointSize]];
-        [self.descriptorLabel setTextColor:[UIColor whiteColor]];
-        [self.checkbox setDelegate:self];
+    else if (filterType == followers_filterType){
+        [self.descriptorLabel setText:@"People I follow"];
     }
-    return self;
+    else if (filterType == friends_filterType){
+        [self.descriptorLabel setText:@"Friends"];
+    }
+    else{
+        
+    }
 }
 
-//for now setting the cell active just makes it bold, checks the checkmark
--(void)setIsActive:(BOOL)bActive{
-    active = bActive;
-    [self.checkbox setChecked:active];
-}
-
--(void)cellWasTapped{
-    [self CheckBoxButtonWasTapped:self.checkbox andChecked:!active];
-}
-
-//the checkbox was tapped
 - (void)CheckBoxButtonWasTapped:(KTCheckboxButton *)checkButton andChecked:(BOOL)checked{
     [self setIsActive:checked];
-    if ([delegate respondsToSelector:@selector(SocialCell:boxWasChecked:)]) {
-        [delegate SocialCell:self boxWasChecked:checked];
+    if ([socialCellDelegate respondsToSelector:@selector(SocialCell:boxWasChecked:)]) {
+        [socialCellDelegate SocialCell:self boxWasChecked:checked];
     }
-}
-
--(BOOL)isChecked{
-    return active;
 }
 
 @end

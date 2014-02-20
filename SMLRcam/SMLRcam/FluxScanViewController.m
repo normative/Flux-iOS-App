@@ -324,7 +324,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     IDMPhoto *photo = nil;
 
-    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:highest_res returnSize:&actualType];
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:quarterhd returnSize:&actualType];
     if (actualType >= quarterhd)
     {
         photo = [[IDMPhoto alloc]initWithImage:imageCacheObj.image];
@@ -333,7 +333,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     else if (tappedImageObject.imageID > 0)
     {
         // last resort
-        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/image?size=%@",FluxProductionServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];
+        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];
         photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
     }
     
@@ -389,7 +389,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (IBAction)cameraButtonAction:(id)sender {
     
-    if (self.cameraButton.alpha < 1.0) {
+    if (self.cameraButton.alpha < 1.0)
+    {
         UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Uh oh..."
                                                           message:@"Taking pictures is disabled because the device's location accuracy is poor. Try going outside, or avoid standing next to large metal objects."
                                                          delegate:nil
@@ -397,10 +398,33 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                 otherButtonTitles:nil];
         [message show];
     }
-    else{
-        [openGLController activateNewImageCapture];
-        [self activateImageCaptureForMode:camera_mode];
+    else
+    {
+        if (historicalPhotoPickerEnabled)
+        {
+            UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+            picker.delegate = self;
+            picker.allowsEditing = YES;
+            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            
+            [self presentViewController:picker animated:YES completion:NULL];
+        }
+        else
+        {
+            [self configureNewCameraCapture];
+        }
     }
+}
+
+- (void)configureNewCameraCaptureWithImage:(UIImage *)image
+{
+    [openGLController activateNewImageCaptureWithImage:image];
+    [self activateImageCaptureForMode:camera_mode];
+}
+
+- (void)configureNewCameraCapture
+{
+    [self configureNewCameraCaptureWithImage:nil];
 }
 
 - (IBAction)imageCaptureButtonAction:(id)sender {
@@ -460,6 +484,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)activateImageCaptureForMode:(FluxImageCaptureMode)captureMode{
     [imageCaptureButton setHidden:NO];
     [imageCaptureButton setCaptureMode:captureMode];
+    [imageCaptureButton setSingleImageCaptureMode:historicalPhotoPickerEnabled];
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [imageCaptureButton setAlpha:1.0];
@@ -570,6 +595,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)uploadImages:(NSDictionary*)imagesDict{
     NSArray*objectsArr = [imagesDict objectForKey:@"capturedImageObjects"];
     NSArray*imagesArr = [imagesDict objectForKey:@"capturedImages"];
+    UIImage *historicalImg = [imagesDict objectForKey:@"historicalImage"];
     
     [UIView animateWithDuration:0.1f
                      animations:^{
@@ -633,7 +659,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                  progressView.progress = 0;
                              }];
         }];
-        [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest];
+        [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest withHistoricalImage:historicalImg];
     }
 }
 
@@ -646,6 +672,32 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)SocialManager:(FluxSocialManager *)socialManager didFailToMakeSocialPostWithType:(NSString *)socialType{
     [ProgressHUD showError:[NSString stringWithFormat:@"Failed to post to %@",socialType]];
+}
+
+#pragma mark Friend Requests
+- (void)checkForFriendRequests{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    
+    [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        if (requestsArr.count>0) {
+            [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",requestsArr.count]];
+            [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
+            if (!friendRequestsBadge.superview) {
+                [self.leftDrawerButton addSubview:friendRequestsBadge];
+            }
+        }
+        else{
+            [friendRequestsBadge setBadgeText:@""];
+            [friendRequestsBadge removeFromSuperview];
+        }
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSLog(@"Friend request check failed with error %d",(int)[e code]);
+    }];
+    [self.fluxDisplayManager.fluxDataManager requestFriendRequestsForUserWithDataRequest:request];
 }
 
 #pragma mark Other Camera view methods
@@ -667,7 +719,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self activateImageCaptureForMode:snapshot_mode];
 }
 
-
+- (void)setupHistoricalPhotoPicker
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    historicalPhotoPickerEnabled = [[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue];
+    
+    //    [pedometerLabel setHidden:(!enablePedometerDisplay)];
+}
 
 #pragma mark Image Capture Helper Methods
 -(UIImage*)blurImage:(UIImage *)img{
@@ -714,22 +772,34 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
 }
 
-#pragma mark Filters Delegate
-
-- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
-    //[self animationPopFrontScaleUp];
-    
-    if (![dataFilter isEqualToFilter:currentDataFilter] && dataFilter !=nil) {
-        NSDictionary *userInfoDict = @{@"filter" : dataFilter};
+- (void)setCurrentDataFilter:(FluxDataFilter *)currentDataFilter{
+    if (![_currentDataFilter isEqualToFilter:currentDataFilter]) {
+        NSDictionary *userInfoDict = @{@"filter" : currentDataFilter};
         [[NSNotificationCenter defaultCenter] postNotificationName:@"FluxFilterViewDidChangeFilter" object:self userInfo:userInfoDict];
-        currentDataFilter = [dataFilter copy];
+        _currentDataFilter = currentDataFilter;
     }
-    if ([currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+    _currentDataFilter = currentDataFilter;
+    
+    [self updateFilterIcon];
+}
+
+- (void)updateFilterIcon{
+    if ([self.currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
         [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
     }
     else{
         [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
     }
+}
+
+#pragma mark Filters Delegate
+
+- (void)FiltersTableViewDidPop:(FluxFiltersViewController *)filtersTable andChangeFilter:(FluxDataFilter *)dataFilter{
+
+    if (![dataFilter isEqualToFilter:self.currentDataFilter] && dataFilter !=nil) {
+        [self setCurrentDataFilter:dataFilter];
+    }
+    [self updateFilterIcon];
 }
 
 #pragma mark - view lifecycle
@@ -746,16 +816,28 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupAnnotationsTableView];
     [self setupDebugView];
 
-    currentDataFilter = [[FluxDataFilter alloc] init];
+    self.currentDataFilter = [[FluxDataFilter alloc] init];
     
     [imageCaptureButton removeFromSuperview];
     [imageCaptureButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [imageCaptureButton setFrame:CGRectMake(imageCaptureButton.frame.origin.x, self.view.frame.size.height-imageCaptureButton.frame.size.height-2, imageCaptureButton.frame.size.width, imageCaptureButton.frame.size.height)];
     [self.view addSubview:imageCaptureButton];
     [imageCaptureButton setHidden:YES];
     
     [self.bottomToolbarView removeFromSuperview];
     [self.bottomToolbarView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.bottomToolbarView setFrame:CGRectMake(0, self.view.frame.size.height-83, self.bottomToolbarView.frame.size.width, self.bottomToolbarView.frame.size.height)];
     [ScanUIContainerView addSubview:self.bottomToolbarView];
+    
+    friendRequestsBadge = [CustomBadge customBadgeWithString:@"0"
+                                             withStringColor:[UIColor whiteColor]
+                                              withInsetColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]
+                                              withBadgeFrame:NO
+                                         withBadgeFrameColor:[UIColor clearColor]
+                                                   withScale:1.0
+                                                 withShining:NO];
+    [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
+
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
@@ -770,13 +852,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(kalmanStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didTakeStepWithPedometer:) name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupDebugPedometerCountDisplay) name:FluxDebugDidChangePedometerCountDisplay object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setupHistoricalPhotoPicker) name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
     
     [self setupDebugPedometerCountDisplay];
+    [self setupHistoricalPhotoPicker];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     self.screenName = @"Scan View";
+}
+
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+        [self checkForFriendRequests];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -785,14 +874,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     {
         mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
+        [mapViewController setCurrentDataFilter:self.currentDataFilter];
     }
     else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
         //set the delegate of the navControllers top view (our filters View)
         FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [filtersVC setDelegate:self];
         [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-        [filtersVC prepareViewWithFilter:currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
-        
+        [filtersVC setLocation:self.fluxDisplayManager.locationManager.location];
+        [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:self.fluxDisplayManager.nearbyListCount];
         [filtersVC setBackgroundView:snapshotBGImage];
         
         //[self animationPushBackScaleDown];
@@ -805,6 +895,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [[(UINavigationController*)segue.destinationViewController view] insertSubview:bgView atIndex:0];
         
         FluxLeftDrawerViewController* settingsVC = (FluxLeftDrawerViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
+        [settingsVC setBadgeCount:friendRequestsBadge.badgeText.intValue];
         [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         
     }
@@ -829,6 +920,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangePedometerCountDisplay object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
 }
 
 #pragma mark - View Transition Animations
@@ -880,6 +972,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 	
 	UIView* view = self.navigationController.view?self.navigationController.view:self.view;
 	[view.layer addAnimation:group forKey:nil];
+}
+
+#pragma mark - ImagePicker delegate methods
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
+    
+    [picker dismissViewControllerAnimated:YES completion:NULL];
+    
+    [self configureNewCameraCaptureWithImage:chosenImage];
+}
+
+//Tells the delegate that the user cancelled the pick operation.
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:NULL];
 }
 
 #pragma mark - Debug Menu

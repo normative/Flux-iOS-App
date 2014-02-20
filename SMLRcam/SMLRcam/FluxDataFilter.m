@@ -85,31 +85,21 @@
     self.hashTags = [self RemoveString:tag fromFilter:self.hashTags];
 }
 
--(void)addActiveUserToFilter:(NSString*)userID{
-    self.isActiveUserFiltered = YES;
-    self.users = [self addString:userID toFilter:self.users];
-}
-
--(void)removeActiveUserFromFilter:(NSString*)userID{
-    self.isActiveUserFiltered = NO;
-    self.users = [self RemoveString:userID fromFilter:self.users];
-}
-
 - (NSString*)addString:(NSString*)parameter toFilter:(NSString*)filter{
     if ([filter isEqualToString:@""]) {
         filter = parameter;
     }
     else{
         if ([filter rangeOfString:parameter].location == NSNotFound) {
-            filter = [filter stringByAppendingString:[NSString stringWithFormat:@"%%20%@",parameter]];
+            filter = [filter stringByAppendingString:[NSString stringWithFormat:@" %@",parameter]];
         }
     }
     return filter;
 }
 
 - (NSString*)RemoveString:(NSString*)parameter fromFilter:(NSString*)filter{
-    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%%20%@",parameter] withString:@""];
-    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@%%20",parameter] withString:@""];
+    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@" %@",parameter] withString:@""];
+    filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@ ",parameter] withString:@""];
     filter = [filter stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@",parameter] withString:@""];
     return filter;
 }
