@@ -1,4 +1,6 @@
 Release Notes:
+- updates to address at least one of the iPad issues
+
 ******************************************
 
 V0.20 B04
