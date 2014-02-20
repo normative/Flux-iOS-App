@@ -727,7 +727,12 @@ static FluxDataManager *_theFluxDataManager = nil;
     FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
     NSMutableArray *completedRequestIDs = [[NSMutableArray alloc] init];
     
-    for (id curRequestID in [downloadQueueReceivers objectForKey:imageObj.localID])
+    // make a shallow copy of [downloadQueueReceivers objectForKey:imageObj.localID] to iterate through,
+    // or go through the pain of setting up locking
+    NSMutableArray *enumray = [NSMutableArray arrayWithArray:[downloadQueueReceivers objectForKey:imageObj.localID]];
+    
+    for (id curRequestID in enumray)
+//    for (id curRequestID in [downloadQueueReceivers objectForKey:imageObj.localID])
     {
         FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
         if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
@@ -825,7 +830,13 @@ static FluxDataManager *_theFluxDataManager = nil;
         
         NSMutableArray *completedRequestIDs = [[NSMutableArray alloc] init];
         
-        for (id curRequestID in [downloadQueueReceivers objectForKey:imageObj.localID])
+        //ZZZZ
+        // make a shallow copy of [downloadQueueReceivers objectForKey:imageObj.localID] to iterate through,
+        // or go through the pain of setting up locking
+        NSMutableArray *enumray = [NSMutableArray arrayWithArray:[downloadQueueReceivers objectForKey:imageObj.localID]];
+        
+        for (id curRequestID in enumray)
+//        for (id curRequestID in [downloadQueueReceivers objectForKey:imageObj.localID])
         {
             FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
             if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
@@ -893,7 +904,11 @@ static FluxDataManager *_theFluxDataManager = nil;
         
         NSMutableArray *completedRequestIDs = [[NSMutableArray alloc] init];
         
-        for (id curRequestID in [downloadQueueReceivers objectForKey:imageObj.localID])
+        // make a shallow copy of [downloadQueueReceivers objectForKey:imageObj.localID] to iterate through,
+        // or go through the pain of setting up locking
+        NSMutableArray *enumray = [NSMutableArray arrayWithArray:[downloadQueueReceivers objectForKey:imageObj.localID]];
+        
+        for (id curRequestID in enumray)
         {
             FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
             if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
