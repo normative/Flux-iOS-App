@@ -22,6 +22,8 @@
     CMMotionManager * motionManager;
     NSTimer *motionUpdateTimer;
     FluxPedometer *pedometer;
+    
+    GLKQuaternion quat_prev;
 }
 
 @property (nonatomic) CMQuaternion attitude;
