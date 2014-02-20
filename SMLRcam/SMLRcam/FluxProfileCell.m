@@ -130,14 +130,14 @@
         [self.bioLabel setAttributedText:attributedText];
         [self.bioLabel setTextAlignment:NSTextAlignmentCenter];
         
-        [self.bioLabel setNumberOfLines:0];
-        [self.bioLabel sizeToFit];
-        //
-        CGRect myFrame = self.bioLabel.frame;
-        // Resize the frame's width to 280 (320 - margins)
-        // width could also be myOriginalLabelFrame.size.width
-        myFrame = CGRectMake(myFrame.origin.x, myFrame.origin.y, 246, myFrame.size.height+10);
-        self.bioLabel.frame = myFrame;
+//        [self.bioLabel setNumberOfLines:0];
+//        [self.bioLabel sizeToFit];
+//        //
+//        CGRect myFrame = self.bioLabel.frame;
+//        // Resize the frame's width to 280 (320 - margins)
+//        // width could also be myOriginalLabelFrame.size.width
+//        myFrame = CGRectMake(myFrame.origin.x, myFrame.origin.y, 246, myFrame.size.height+10);
+//        self.bioLabel.frame = myFrame;
     }
 
 }

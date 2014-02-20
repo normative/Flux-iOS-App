@@ -170,7 +170,24 @@
     
     [self.nameLabel setText:[NSString stringWithFormat:@"@%@",userObject.username]];
     if (userObject.bio) {
-        [self.bioLabel setText:[NSString stringWithFormat:@"%@",userObject.bio]];
+        NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+        style.lineSpacing = 5;
+        
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+        paragraphStyle.lineSpacing = 17;
+        paragraphStyle.alignment = NSTextAlignmentCenter;
+        
+        NSDictionary *attribs = @{
+                                  NSForegroundColorAttributeName: self.bioLabel.textColor,
+                                  NSFontAttributeName: self.bioLabel.font,
+                                  NSParagraphStyleAttributeName : style
+                                  };
+        NSMutableAttributedString *attributedText =
+        [[NSMutableAttributedString alloc] initWithString:userObject.bio
+                                               attributes:attribs];
+        
+        [self.bioLabel setAttributedText:attributedText];
+        [self.bioLabel setTextAlignment:NSTextAlignmentCenter];
     }
     else{
         [self.bioLabel setText:@""];
