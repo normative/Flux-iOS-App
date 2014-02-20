@@ -200,7 +200,7 @@
                                 </connections>
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P7N-x3-Awn">
-                                <rect key="frame" x="102" y="440" width="117" height="30"/>
+                                <rect key="frame" x="20" y="452" width="117" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Hide This Menu">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -210,7 +210,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pPa-E7-eIn">
-                                <rect key="frame" x="205" y="373" width="105" height="30"/>
+                                <rect key="frame" x="196" y="452" width="105" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Delete Account">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -219,6 +219,20 @@
                                     <action selector="deleteAccountButtonAction:" destination="V4e-hA-nqo" eventType="touchUpInside" id="tXf-7R-U40"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Heading" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="814-ak-u4v">
+                                <rect key="frame" x="209" y="346" width="92" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="JXk-DJ-I7D">
+                                <rect key="frame" x="231" y="375" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="switch4DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="eb0-9O-fjk"/>
+                                </connections>
+                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                     </view>
@@ -230,6 +244,7 @@
                         <outlet property="switch1" destination="Sdd-Mx-Y9G" id="eTa-ld-MWu"/>
                         <outlet property="switch2" destination="hPh-ep-mX4" id="rgF-TV-WaS"/>
                         <outlet property="switch3" destination="sgK-fP-eKO" id="1DG-78-FBq"/>
+                        <outlet property="switch4" destination="JXk-DJ-I7D" id="rHJ-tR-UtC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yX8-jP-Y2K" userLabel="First Responder" sceneMemberID="firstResponder"/>

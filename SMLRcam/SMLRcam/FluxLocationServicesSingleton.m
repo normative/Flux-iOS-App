@@ -77,6 +77,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [self.locationManager startUpdatingLocation];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadTeleportLocationIndex) name:FluxDebugDidChangeTeleportLocationIndex object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeHeadingCorrectedMotionMode) name:FluxDebugDidChangeHeadingCorrectedMotion object:nil];
 
     if ([CLLocationManager headingAvailable]) {
         [self.locationManager startUpdatingHeading];
@@ -84,6 +85,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     else {
         NSLog(@"No Heading Information Available");
     }
+    
+    [self changeHeadingCorrectedMotionMode];
     
     [self startUpdateTimer];
 
@@ -93,6 +96,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [self.locationManager stopUpdatingLocation];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeTeleportLocationIndex object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeHeadingCorrectedMotion object:nil];
     
     if ([CLLocationManager headingAvailable]) {
         [self.locationManager stopUpdatingHeading];
@@ -210,6 +214,15 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         [userInfo setObject:self.location forKey:@"location"];
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidUpdateLocation object:self userInfo:userInfo];
     }
+}
+
+- (void)changeHeadingCorrectedMotionMode
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    bool headingCorrectedMotion = [[defaults objectForKey:FluxDebugHeadingCorrectedMotionKey] boolValue];
+    
+    FluxMotionManagerSingleton *fluxMotionManager = [FluxMotionManagerSingleton sharedManager];
+    [fluxMotionManager changeHeadingCorrectedMotionMode:headingCorrectedMotion];
 }
 
 #pragma mark - LocationManager Delegate Methods

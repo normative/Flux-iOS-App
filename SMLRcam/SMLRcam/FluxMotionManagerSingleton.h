@@ -22,6 +22,8 @@
     CMMotionManager * motionManager;
     NSTimer *motionUpdateTimer;
     FluxPedometer *pedometer;
+    bool motionEnabled;
+    bool enableHeadingCorrectedMotionMode;
     
     GLKQuaternion quat_prev;
 }
@@ -32,5 +34,6 @@
 + (id)sharedManager;
 - (void)startDeviceMotion;
 - (void)stopDeviceMotion;
+- (void)changeHeadingCorrectedMotionMode:(bool)enableMode;
 
 @end

@@ -46,6 +46,9 @@ const float quaternion_slerp_interpolation_factor = 0.25;
         //ths is the ugly figure 8 on the screen. We might scrap this doen the road.
         motionManager.showsDeviceMovementDisplay = YES;
         motionManager.deviceMotionUpdateInterval = 1.0 / 60.0;
+        
+        motionEnabled = NO;
+        enableHeadingCorrectedMotionMode = YES;
     }
     
     return self;
@@ -53,26 +56,30 @@ const float quaternion_slerp_interpolation_factor = 0.25;
 
 - (void)startDeviceMotion
 {
-    if (motionManager)
+    if (motionManager && !motionEnabled)
     {
         // New in iOS 5.0: Attitude that is referenced to true north
-        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryZVertical];
+        [motionManager startDeviceMotionUpdatesUsingReferenceFrame:(enableHeadingCorrectedMotionMode ? CMAttitudeReferenceFrameXArbitraryZVertical : CMAttitudeReferenceFrameXTrueNorthZVertical)];
         
         motionUpdateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 target:self selector:@selector(UpdateDeviceMotion:) userInfo:nil repeats:YES];
         [[NSRunLoop currentRunLoop] addTimer:motionUpdateTimer forMode:NSRunLoopCommonModes];
         
         [pedometer startPedometer];
+        
+        motionEnabled = YES;
     }
 }
 
 - (void)stopDeviceMotion
 {
-    if (motionManager)
+    if (motionManager && motionEnabled)
     {
         [motionManager stopDeviceMotionUpdates];
         [motionUpdateTimer invalidate];
         
         [pedometer stopPedometer];
+        
+        motionEnabled = NO;
     }
 }
 
@@ -80,9 +87,16 @@ const float quaternion_slerp_interpolation_factor = 0.25;
 {
     if ((motionManager) && ([motionManager isDeviceMotionActive]))
     {
-        CMQuaternion updatedAttitude = self.attitude;
-        [self calcAttitudeFromDeviceMotion:motionManager.deviceMotion andHeading:locationManager.locationManager.heading intoQuaternion:&updatedAttitude];
-        self.attitude = updatedAttitude;
+        if (enableHeadingCorrectedMotionMode)
+        {
+            CMQuaternion updatedAttitude = self.attitude;
+            [self calcAttitudeFromDeviceMotion:motionManager.deviceMotion andHeading:locationManager.locationManager.heading intoQuaternion:&updatedAttitude];
+            self.attitude = updatedAttitude;
+        }
+        else
+        {
+            self.attitude = motionManager.deviceMotion.attitude.quaternion;
+        }
         
         [pedometer processMotion:motionManager.deviceMotion];
     }
@@ -204,6 +218,18 @@ const float quaternion_slerp_interpolation_factor = 0.25;
     angleSequence.theta1 = atan2(-2.0*q->x*q->y + 2.0*q->w*q->z, q->y*q->y - q->z*q->z + q->w*q->w - q->x*q->x);
     
     return angleSequence;
+}
+
+- (void)changeHeadingCorrectedMotionMode:(bool)enableMode
+{
+    enableHeadingCorrectedMotionMode = enableMode;
+    
+    if (motionEnabled)
+    {
+        // Force a restart to change reference frame
+        [self stopDeviceMotion];
+        [self startDeviceMotion];
+    }
 }
 
 @end
