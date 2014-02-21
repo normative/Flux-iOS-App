@@ -276,7 +276,7 @@
                                 </state>
                                 <connections>
                                     <action selector="snapshotRollButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="jsc-7j-q3Z"/>
-                                    <segue destination="ArK-zK-ko3" kind="modal" modalTransitionStyle="coverVertical" id="gTR-yF-0e1"/>
+                                    <segue destination="ArK-zK-ko3" kind="modal" identifier="" modalTransitionStyle="coverVertical" id="gTR-yF-0e1"/>
                                 </connections>
                             </button>
                             <button hidden="YES" opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tG4-RH-Imp">
@@ -310,6 +310,7 @@
                     <connections>
                         <outlet property="shareButton" destination="tG4-RH-Imp" id="wZJ-6m-xRR"/>
                         <outlet property="snapshotRollButton" destination="e21-oY-W5S" id="PO8-DD-eHz"/>
+                        <segue destination="7MI-iQ-4jy" kind="modal" identifier="annotationSegue" id="UqM-tx-VCb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H59-Ts-FUU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -3052,5 +3053,6 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="cDh-QJ-kAL"/>
+        <segue reference="UqM-tx-VCb"/>
     </inferredMetricsTieBreakers>
 </document>

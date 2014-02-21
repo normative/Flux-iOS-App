@@ -573,7 +573,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             
             [socialManager socialPostTo:[notification.userInfo objectForKey:@"social"]
                              withStatus:[notification.userInfo objectForKey:@"annotation"]
-                               andImage:(UIImage*)[(NSArray*)[notification.userInfo objectForKey:@"capturedImages"]firstObject]];
+                               andImage:(UIImage*)[(NSArray*)[notification.userInfo objectForKey:@"capturedImages"]firstObject] andSnapshot:[(NSNumber*)[[notification userInfo] objectForKey:@"snapshot"]boolValue]];
             
             if ([(NSArray*)[notification.userInfo objectForKey:@"social"]containsObject:TwitterService]) {
                 id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
