@@ -27,6 +27,11 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    
+    // pull Twitter/fb credentials from keychain and pass up through API for contact request
+    // get results back and use rows to populate the self.importUserArray
+    // then regen the tableview data with [tableview reload data]
+    NSString *contactType = self.title;
 }
 
 - (void)didReceiveMemoryWarning
