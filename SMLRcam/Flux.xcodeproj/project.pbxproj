@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		171510191811BF7F006727EB /* FluxPedometer.m in Sources */ = {isa = PBXBuildFile; fileRef = 171510181811BF7F006727EB /* FluxPedometer.m */; };
+		175E04F218B5356B00CCAC0B /* FluxAliasObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 175E04F118B5356B00CCAC0B /* FluxAliasObject.m */; };
 		17604B671785CA59005CF054 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B661785CA59005CF054 /* UIKit.framework */; };
 		17604B691785CA59005CF054 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B681785CA59005CF054 /* Foundation.framework */; };
 		17604B6B1785CA59005CF054 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B6A1785CA59005CF054 /* CoreGraphics.framework */; };
@@ -202,6 +203,8 @@
 /* Begin PBXFileReference section */
 		171510171811BF7F006727EB /* FluxPedometer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPedometer.h; sourceTree = "<group>"; };
 		171510181811BF7F006727EB /* FluxPedometer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPedometer.m; sourceTree = "<group>"; };
+		175E04F018B5356B00CCAC0B /* FluxAliasObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxAliasObject.h; sourceTree = "<group>"; };
+		175E04F118B5356B00CCAC0B /* FluxAliasObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxAliasObject.m; sourceTree = "<group>"; };
 		17604B631785CA59005CF054 /* Flux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flux.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17604B661785CA59005CF054 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		17604B681785CA59005CF054 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1175,6 +1178,8 @@
 		AAAAD70D18A5264D00F5F3DB /* Social */ = {
 			isa = PBXGroup;
 			children = (
+				175E04F018B5356B00CCAC0B /* FluxAliasObject.h */,
+				175E04F118B5356B00CCAC0B /* FluxAliasObject.m */,
 				AAAAD70618A3E54A00F5F3DB /* User Objects */,
 				AAAAD70E18A5267200F5F3DB /* FluxConnectionObject.h */,
 				AAAAD70F18A5267200F5F3DB /* FluxConnectionObject.m */,
@@ -1571,6 +1576,7 @@
 				AA9F86081868AFF600AB98A7 /* DACircularProgressView.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
+				175E04F218B5356B00CCAC0B /* FluxAliasObject.m in Sources */,
 				AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA2CBAC2188F2810001ECF86 /* FluxSnapshotCollectionViewController.m in Sources */,

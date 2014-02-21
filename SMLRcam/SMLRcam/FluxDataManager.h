@@ -153,6 +153,11 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) unfriendWithUserID:(int)userID
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
+//aliases
+- (FluxRequestID *) createAliasWithName:(NSString *)name
+                           andServiceID:(int) service_id
+                             andRequest:(FluxDataRequest *)dataRequest;
+
 
 
 - (void)deleteLocations;

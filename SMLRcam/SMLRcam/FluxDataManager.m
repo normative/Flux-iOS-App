@@ -690,6 +690,18 @@ static FluxDataManager *_theFluxDataManager = nil;
     return requestID;
 }
 
+#pragma mark Aliases
+
+- (FluxRequestID *) createAliasWithName:(NSString *)name andServiceID:(int) service_id andRequest:(FluxDataRequest *)dataRequest
+{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = unfriend_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices createAliasWithName:name andServiceID:service_id andRequestID:requestID];
+    return requestID;
+}
+
 
 #pragma mark - Request Queries
 

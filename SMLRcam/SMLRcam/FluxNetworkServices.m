@@ -12,6 +12,7 @@
 #import "FluxConnectionObject.h"
 #import "FluxMappingProvider.h"
 #import "FluxLocationServicesSingleton.h"
+#import "FluxAliasObject.h"
 #import "UICKeyChainStore.h"
 
 #define _AWSProductionServerURL  @"http://54.221.254.230/"
@@ -103,6 +104,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                                keyPath:nil
                                                                                                            statusCodes:statusCodes];
         
+        RKResponseDescriptor *aliasCreateResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider aliasGETMapping]
+                                                                                                                      method:RKRequestMethodAny
+                                                                                                                 pathPattern:@"aliases"
+                                                                                                                     keyPath:nil
+                                                                                                                 statusCodes:statusCodes];
+        
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -130,14 +137,17 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                  rootKeyPath:@"connection"
                                                                                                       method:RKRequestMethodPUT];
         
-
-        
+        RKRequestDescriptor *aliasCreateRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider aliasPOSTMapping]
+                                                                                                       objectClass:[FluxAliasObject class]
+                                                                                                       rootKeyPath:@"alias"
+                                                                                                            method:RKRequestMethodPOST];
         
         [objectManager addRequestDescriptor:userRequestDescriptor];
         [objectManager addRequestDescriptor:userUpdateDescriptor];
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addRequestDescriptor:connectionRequestDescriptor];
         [objectManager addRequestDescriptor:connectionDeleteRequestDescriptor];
+        [objectManager addRequestDescriptor:aliasCreateRequestDescriptor];
         
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:registrationResponseDescriptor];
@@ -146,6 +156,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         [objectManager addResponseDescriptor:connectionFollowResponseDescriptor];
         [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
         [objectManager addResponseDescriptor:connectionAcceptFriendResponseDescriptor];
+        [objectManager addResponseDescriptor:aliasCreateResponseDescriptor];
+        
         
         
         //and again for image-related calls
@@ -1195,6 +1207,32 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
+}
+
+#pragma mark Aliases
+
+- (void) createAliasWithName:(NSString *)social_name andServiceID:(int)service_id andRequestID:(NSUUID *)requestID
+{
+    FluxAliasObject *aliasObject = [[FluxAliasObject alloc] initWithName: social_name andServiceID: service_id];
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:token, @"auth_token", nil];
+    [[RKObjectManager sharedManager] postObject:aliasObject path:@"/aliases"
+                                     parameters:params
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxAliasObject *newAliasObject = [result firstObject];
+         NSLog(@"Alias created successfully to %@ for service %d", newAliasObject.alias_name, newAliasObject.serviceID);
+     }
+     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+   
 }
 
 
