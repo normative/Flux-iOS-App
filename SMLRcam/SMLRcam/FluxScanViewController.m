@@ -308,14 +308,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [openGLController imageTappedAtPoint:point];
         _point = point;
     }
-    
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [photoViewerPlacementView removeFromSuperview];
 }
 
--(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject
+-(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject withBGImage:(UIImage *)bgImage
 {
     if(tappedImageObject == nil)
         return;
@@ -339,6 +338,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     photo.userID = tappedImageObject.userID;
     photo.caption = tappedImageObject.descriptionString;
+    photo.username = tappedImageObject.username;
     NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
     [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
     photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
@@ -348,13 +348,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         photoViewerPlacementView = [[UIView alloc]init];
     }
     [ScanUIContainerView addSubview:photoViewerPlacementView];
-    [photoViewerPlacementView setFrame:CGRectMake(_point.x, _point.y, 5, 5)];
+    if (IS_RETINA) {
+        _point = CGPointMake(_point.x/2, _point.y/2);
+    }
+    [photoViewerPlacementView setFrame:CGRectMake(0, 0, 40, 40)];
+    [photoViewerPlacementView setCenter:CGPointMake(_point.x, _point.y)];
     IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
     [browser setDelegate:self];
     [browser setDisplayToolbar:NO];
     //[browser setDisplayDoneButtonBackgroundImage:NO];
     UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
-    [nav setNavigationBarHidden:YES];
+    [nav.view setBackgroundColor:[UIColor clearColor]];
+    
+    UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
+    [bgView setImage:snapshotBGImage];
+    [bgView setBackgroundColor:[UIColor darkGrayColor]];
+    [nav.view insertSubview:bgView atIndex:0];
+    
     [self presentViewController:nav animated:YES completion:nil];
    
 }

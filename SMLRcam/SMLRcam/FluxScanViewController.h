@@ -113,7 +113,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 
 //timeScrolling
 - (void)setupTimeFilterControl;
-- (void) didTapImageFunc:(FluxScanImageObject*) fsio;
+- (void) didTapImageFunc:(FluxScanImageObject*) fsio withBGImage:(UIImage*)bgImage;
 
 //debugMenu
 - (IBAction)debugButton1Pressed:(id)sender;

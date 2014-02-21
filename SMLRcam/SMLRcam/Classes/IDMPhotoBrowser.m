@@ -374,7 +374,8 @@
         /*CGAffineTransform zoom = CGAffineTransformScale(CGAffineTransformIdentity, _backgroundScaleFactor, _backgroundScaleFactor);
         [_applicationRootViewController.view setTransform:zoom];*/
         
-        fadeView.backgroundColor = self.useWhiteBackgroundColor ? [UIColor whiteColor] : [UIColor blackColor];
+        fadeView.backgroundColor = [UIColor colorWithWhite:0.05 alpha:0.6];
+        [fadeView setBackgroundColor:[UIColor clearColor]];
 
         float scaleFactor = (imageFromView ? imageFromView.size.width : screenWidth) / screenWidth;
         
@@ -401,6 +402,7 @@
     
     UIView *fadeView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, screenWidth, screenHeight)];
     fadeView.backgroundColor = self.useWhiteBackgroundColor ? [UIColor whiteColor] : [UIColor blackColor];
+    [fadeView setBackgroundColor:[UIColor clearColor]];
     fadeView.alpha = fadeAlpha;
     [_applicationWindow addSubview:fadeView];
     
@@ -622,6 +624,10 @@
     
     // Super
 	[super viewWillAppear:animated];
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.view setAlpha:1.0];
+    }];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
     
     // Status Bar
     /*if (self.wantsFullScreenLayout && UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -636,6 +642,13 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     _viewIsActive = YES;
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [super viewWillDisappear:animated];
+    [UIView animateWithDuration:0.2 animations:^{
+        [self.view setAlpha:0.0];
+    }];
 }
 
 // Release any retained subviews of the main view.
@@ -1001,15 +1014,19 @@
 }
 
 - (void)CaptionView:(IDMCaptionView *)captionView didSelectUsername:(NSString *)username andProfileImage:(UIImage *)profPic{
-    [self cancelControlHiding];
-    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:[NSBundle mainBundle]];
-
-    // setup the opengl controller
-    // first get an instance from storyboard
-    FluxPublicProfileViewController*profileView = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
-    [profileView view];
-    [profileView prepareViewWithUser:[[FluxUserObject alloc]init]];
-    [self.navigationController pushViewController:profileView animated:YES];
+//    [self cancelControlHiding];
+//    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:[NSBundle mainBundle]];
+//
+//    // setup the opengl controller
+//    // first get an instance from storyboard
+//    FluxPublicProfileViewController*profileView = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
+//    [profileView view];
+//    FluxUserObject*userObj = [[FluxUserObject alloc]init];
+//    [userObj setUsername:[(IDMPhoto*)[_photos objectAtIndex:0] username]];
+//    [userObj setUserID:[(IDMPhoto*)[_photos objectAtIndex:0] userID]];
+//    [profileView prepareViewWithUser:userObj];
+//    [self.navigationController setNavigationBarHidden:NO animated:YES];
+//    [self.navigationController pushViewController:profileView animated:YES];
     
 }
 
