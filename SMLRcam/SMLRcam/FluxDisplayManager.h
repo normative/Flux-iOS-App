@@ -58,6 +58,7 @@ extern NSString* const FluxOpenGLShouldRender;
     NSLock *_imageRequestCountLock;
     NSLock *_featureRequestCountLock;
     bool featureMatchingDebugImageOutput;
+    bool featureMatchingSupported;
     
     sensorPose lastMotionPose;
     NSDate *lastMotionTime;
