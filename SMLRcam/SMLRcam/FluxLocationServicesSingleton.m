@@ -95,8 +95,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     else{
         
     }
-    
-
 }
 
 - (void)beginLocatingAfterPermissions{
