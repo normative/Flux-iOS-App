@@ -87,18 +87,21 @@ static const CGFloat labelPadding = 10;
     [self addSubview:captionLabel];
     
     userameButton = [[UIButton alloc]initWithFrame:CGRectMake(37, self.bounds.size.height, 145, 20)];
-    userameButton.backgroundColor = [UIColor clearColor];
-    userameButton.titleLabel.textAlignment = NSTextAlignmentLeft;
-    userameButton.titleLabel.textColor = [UIColor whiteColor];
+    userameButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    userameButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    [userameButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [userameButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:14]];
+
     if ([_photo respondsToSelector:@selector(username)]) {
-        userameButton.titleLabel.text = [_photo username] ? [_photo username] : @" ";
+        [userameButton setTitle:[_photo username] ? [_photo username] : @" " forState:UIControlStateNormal];
     }
     [userameButton addTarget:self action:@selector(profileTapped) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:userameButton];
     
     userProfileImageButton = [[UIButton alloc]initWithFrame:CGRectMake(10, self.bounds.size.height, 20, 20)];
     [userProfileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage_small"]forState:UIControlStateNormal];
+    userProfileImageButton.layer.cornerRadius = userProfileImageButton.frame.size.height/2;
+    userProfileImageButton.layer.masksToBounds = YES;
     
     // request the image
     FluxDataRequest *picRequest = [[FluxDataRequest alloc]init];
@@ -107,8 +110,8 @@ static const CGFloat labelPadding = 10;
 
     }];
     [picRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+//        NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
+//        [ProgressHUD showError:str];
     }];
     [[FluxDataManager theFluxDataManager] requestUserProfilePicForID:[_photo userID] andSize:@"smallthumb" withDataRequest:picRequest];
 
@@ -131,6 +134,10 @@ static const CGFloat labelPadding = 10;
     [clockImageView setCenter:CGPointMake(clockImageView.center.x, userameButton.center.y)];
     [self addSubview:clockImageView];
     
+    [userameButton setCenter:CGPointMake(userameButton.center.x, userProfileImageButton.center.y)];
+    [clockImageView setCenter:CGPointMake(clockImageView.center.x, userProfileImageButton.center.y)];
+    [timestampLabel setCenter:CGPointMake(timestampLabel.center.x, userProfileImageButton.center.y)];
+    
     if (!displaysProfileInfo) {
         [userameButton removeFromSuperview];
         [userProfileImageButton removeFromSuperview];
@@ -149,8 +156,8 @@ static const CGFloat labelPadding = 10;
 
 
 - (void)profileTapped{
-//    if ([delegate respondsToSelector:@selector(CaptionView:didSelectUsername:andProfileImage:)]) {
-//        [delegate CaptionView:self didSelectUsername:[_photo username] ? [_photo username] : @"" andProfileImage:nil];
-//    }
+    if ([delegate respondsToSelector:@selector(CaptionView:didSelectUsername:andProfileImage:)]) {
+        [delegate CaptionView:self didSelectUsername:[_photo username] ? [_photo username] : @"" andProfileImage:nil];
+    }
 }
 @end

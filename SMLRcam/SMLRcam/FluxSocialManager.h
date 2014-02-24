@@ -58,7 +58,7 @@
 - (void)registerWithFacebook;
 - (void)registerWithTwitter;
 
-- (void)socialPostTo:(NSArray*)socialPartners withStatus:(NSString*)status andImage:(UIImage*)image;
+- (void)socialPostTo:(NSArray*)socialPartners withStatus:(NSString*)status andImage:(UIImage*)image andSnapshot:(BOOL)snapshot;
 
 
 @end
