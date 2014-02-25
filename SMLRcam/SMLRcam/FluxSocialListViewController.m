@@ -59,6 +59,15 @@
     shouldReloadArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO],[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO],nil];
     selectedIndexPath = nil;
     
+    //fix decenders in title label
+    UILabel*label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 140, 18)];
+    [label setText:@"My Network"];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:17.0]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setCenter:CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y)];
+    [self.navigationItem setTitleView:label];
+//    [self.navigationController.navigationBar addSubview:label];
     
     [self updateListForActiveMode];
 }
@@ -69,9 +78,10 @@
     [UIView animateWithDuration:0.2 animations:^{
         [self.view setAlpha:0.0];
     }];
-    
+    [self setTitle:@"My Network"];
     [self.searchUserVC removeFromParentViewController];
     [self.searchUserVC.view removeFromSuperview];
+    [self.navigationController.navigationBar setTitleVerticalPositionAdjustment:0.0 forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -79,7 +89,10 @@
     [super viewWillAppear:animated];
     [UIView animateWithDuration:0.25 animations:^{
         [self.view setAlpha:1.0];
+        //[self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
     }];
+    [self setTitle:@""];
+    
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
