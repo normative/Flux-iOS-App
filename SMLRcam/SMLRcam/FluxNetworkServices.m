@@ -109,7 +109,13 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                                  pathPattern:@"aliases"
                                                                                                                      keyPath:nil
                                                                                                                  statusCodes:statusCodes];
-        
+
+        RKResponseDescriptor *contactListResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider contactGETMapping]
+                                                                                                           method:RKRequestMethodAny
+                                                                                                      pathPattern:@"aliases/importcontacts"
+                                                                                                          keyPath:nil
+                                                                                                      statusCodes:statusCodes];
+
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -157,6 +163,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
         [objectManager addResponseDescriptor:connectionAcceptFriendResponseDescriptor];
         [objectManager addResponseDescriptor:aliasCreateResponseDescriptor];
+        [objectManager addResponseDescriptor:contactListResponseDescriptor];
         
         
         
@@ -1242,7 +1249,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider contactGETMapping]
                                                                                             method:RKRequestMethodAny
                                                                                        pathPattern:@"/aliases/importcontacts"
                                                                                            keyPath:nil

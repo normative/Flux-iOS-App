@@ -8,6 +8,7 @@
 
 #import "FluxSocialImportViewController.h"
 #import "FluxDataManager.h"
+#import "FluxContactObject.h"
 #import "ProgressHUD.h"
 #import "UICKeyChainStore.h"
 
@@ -67,7 +68,13 @@
             NSLog(@"Contacts returned");
             if (contacts.count > 0)
             {
-                // add the contacts into the importUserArray
+                // spin through and add the contacts into the importUserArray
+                for (FluxContactObject *c in contacts)
+                {
+                    NSLog(@"contact userid: %d, username: %@, social name: %@, display name: %@, pic URL: %@", c.userID, c.username, c.alias_name, c.display_name, c.profile_pic_URL);
+                }
+                
+                // now regenerate the data
             }
         }];
         

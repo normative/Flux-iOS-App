@@ -16,6 +16,7 @@
 #import "FluxProfileImageObject.h"
 #import "FluxFilterImageCountObject.h"
 #import "FluxAliasObject.h"
+#import "FluxContactObject.h"
 
 @implementation FluxMappingProvider
 
@@ -193,7 +194,20 @@
     
     return mapping;
 }
++ (RKObjectMapping *)contactGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxContactObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":        @"userID",
+                                                  @"am_follower":    @"amFollower",
+                                                  @"is_following":   @"isFollowing",
+                                                  @"friend_state":   @"friendState"
+                                                  }];
+    
+    [mapping addAttributeMappingsFromArray:@[@"username",@"alias_name", @"display_name", @"profile_pic_URL"]];
 
+    return mapping;
+}
 
 #pragma mark - Filters Mapping
 

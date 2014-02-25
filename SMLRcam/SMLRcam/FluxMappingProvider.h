@@ -28,6 +28,7 @@
 
 + (RKObjectMapping *)aliasPOSTMapping;
 + (RKObjectMapping *)aliasGETMapping;
++ (RKObjectMapping *)contactGETMapping;
 
 + (RKObjectMapping *)userImagesGetMapping;
 
