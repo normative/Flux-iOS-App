@@ -594,11 +594,11 @@
         [store synchronize];
 
         
-        // [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
-        store = [UICKeyChainStore keyChainStoreWithService:TwitterService];
-        [store setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey];
-        [store setString:access_token forKey:FluxAccessTokenKey];
-        [store setString:access_token_secret forKey:FluxAccessTokenSecretKey];
+//        // [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
+//        store = [UICKeyChainStore keyChainStoreWithService:TwitterService];
+//        [store setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey];
+//        [store setString:access_token forKey:FluxAccessTokenKey];
+//        [store setString:access_token_secret forKey:FluxAccessTokenSecretKey];
 
         [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
         [self didLoginSuccessfullyWithUserID:userObject.userID];

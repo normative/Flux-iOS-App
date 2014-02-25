@@ -45,7 +45,7 @@
         NSString *twtokensecret = [UICKeyChainStore stringForKey:FluxAccessTokenSecretKey service:TwitterService];
         credentials = [[NSDictionary alloc] initWithObjectsAndKeys:twtoken, @"access_token", twtokensecret, @"access_token_secret", nil];
 
-        serviceID = 1;
+        serviceID = 2;
     }
     else if ([contactType compare:@"Facebook"] == NSOrderedSame )
     {
@@ -54,7 +54,7 @@
         NSString *fbtokensecret = [UICKeyChainStore stringForKey:FluxAccessTokenSecretKey service:FacebookService];
         credentials = [[NSDictionary alloc] initWithObjectsAndKeys:fbtoken, @"access_token", fbtokensecret, @"access_token_secret", nil];
         
-        serviceID = 2;
+        serviceID = 3;
     }
     
     if (serviceID > 0)

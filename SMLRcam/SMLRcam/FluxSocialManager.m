@@ -10,6 +10,7 @@
 #import "UICKeyChainStore.h"
 #import "UIActionSheet+Blocks.h"
 #import "FluxDataManager.h"
+#import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
 
 #define ERROR_TITLE_MSG @"Uh oh..."
@@ -181,6 +182,14 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                     [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
                     [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
                 }
+                
+                // [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
+                UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:TwitterService];
+                [store setString:[parts objectAtIndex:3] forKey:FluxUsernameKey];
+                [store setString:[parts objectAtIndex:0] forKey:FluxAccessTokenKey];
+                [store setString:[parts objectAtIndex:1] forKey:FluxAccessTokenSecretKey];
+                [store synchronize];
+
                 
                 //call delegate
                 if (isRegister) {
