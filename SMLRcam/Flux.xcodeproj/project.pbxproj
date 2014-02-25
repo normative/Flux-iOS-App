@@ -1788,13 +1788,7 @@
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					SMLRcam,
-					SMLRcam,
-					"$(SRCROOT)/SMLRcam/Pods/GoogleAnaltyics-iOS-SDK",
-					"$(SRCROOT)/SMLRcam/Pods/TestFlightSDK",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-force_load",
@@ -1825,13 +1819,7 @@
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					SMLRcam,
-					SMLRcam,
-					"$(SRCROOT)/SMLRcam/Pods/GoogleAnaltyics-iOS-SDK",
-					"$(SRCROOT)/SMLRcam/Pods/TestFlightSDK",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					"-force_load",
 					"$(BUILT_PRODUCTS_DIR)/libPods.a",
