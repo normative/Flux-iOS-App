@@ -96,6 +96,9 @@ extern NSString* const FluxServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfriendUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnContactList:(NSArray *)contacts
+           andRequestID:requestID;
+
 
 //fil†ers
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnTagList:(NSArray*)tagList
@@ -292,7 +295,10 @@ return's a profile image for a given userID and size
  creates a new alias of the current user to social_name under the service_id service, if one doesn't already exist
  **/
 - (void) createAliasWithName:(NSString *)social_name andServiceID:(int)service_id andRequestID:(NSUUID *)requestID;
-
+/**
+ returns the list of contacts extracted from the service_id service, cross referenced against existing Flux users via aliases
+ **/
+- (void)requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withRequestID:(NSUUID *)requestID;
 
 
 #pragma mark  - Filters

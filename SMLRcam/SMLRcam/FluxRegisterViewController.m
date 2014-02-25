@@ -575,9 +575,11 @@
 }
 - (void)SocialManager:(FluxSocialManager*)socialManager didRegisterTwitterAccountWithUserInfo: (NSDictionary*)userInfo{
     FluxRegistrationUserObject *newUser = [[FluxRegistrationUserObject alloc]init];
-    NSDictionary*twitter = [NSDictionary dictionaryWithObjectsAndKeys:(NSString*)[userInfo objectForKey:@"token"],@"access_token",(NSString*)[userInfo objectForKey:@"secret"],@"access_token_secret",  nil];
-    [newUser setTwitter:twitter];
+    NSString *access_token = (NSString*)[userInfo objectForKey:@"token"];
+    NSString *access_token_secret = (NSString*)[userInfo objectForKey:@"secret"];
     
+    NSDictionary*twitter = [NSDictionary dictionaryWithObjectsAndKeys:access_token, @"access_token",access_token_secret, @"access_token_secret",  nil];
+    [newUser setTwitter:twitter];
     
     //try to log in with Twitter first, if no account exists then move to register
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
@@ -590,9 +592,14 @@
         [store setString:userObject.auth_token forKey:FluxTokenKey];
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
+
         
-        [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
-        
+        // [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
+        store = [UICKeyChainStore keyChainStoreWithService:TwitterService];
+        [store setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey];
+        [store setString:access_token forKey:FluxAccessTokenKey];
+        [store setString:access_token_secret forKey:FluxAccessTokenSecretKey];
+
         [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];

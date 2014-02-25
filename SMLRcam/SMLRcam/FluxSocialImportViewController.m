@@ -7,6 +7,9 @@
 //
 
 #import "FluxSocialImportViewController.h"
+#import "FluxDataManager.h"
+#import "ProgressHUD.h"
+#import "UICKeyChainStore.h"
 
 @interface FluxSocialImportViewController ()
 
@@ -28,10 +31,56 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    int serviceID = 0;
     // pull Twitter/fb credentials from keychain and pass up through API for contact request
     // get results back and use rows to populate the self.importUserArray
     // then regen the tableview data with [tableview reload data]
+    NSDictionary *credentials = nil;
     NSString *contactType = self.title;
+    if ([contactType compare:@"Twitter"] == NSOrderedSame )
+    {
+        // pull Twitter credentials and fire them up to the import API
+        NSString *twtoken = [UICKeyChainStore stringForKey:FluxAccessTokenKey service:TwitterService];
+        NSString *twtokensecret = [UICKeyChainStore stringForKey:FluxAccessTokenSecretKey service:TwitterService];
+        credentials = [[NSDictionary alloc] initWithObjectsAndKeys:twtoken, @"access_token", twtokensecret, @"access_token_secret", nil];
+
+        serviceID = 1;
+    }
+    else if ([contactType compare:@"Facebook"] == NSOrderedSame )
+    {
+        // pull Facebook credentials and fire them up to the import API
+        NSString *fbtoken = [UICKeyChainStore stringForKey:FluxAccessTokenKey service:FacebookService];
+        NSString *fbtokensecret = [UICKeyChainStore stringForKey:FluxAccessTokenSecretKey service:FacebookService];
+        credentials = [[NSDictionary alloc] initWithObjectsAndKeys:fbtoken, @"access_token", fbtokensecret, @"access_token_secret", nil];
+        
+        serviceID = 2;
+    }
+    
+    if (serviceID > 0)
+    {
+        // call the API...
+        // build the request...
+        FluxDataRequest*request = [[FluxDataRequest alloc]init];
+        
+        [request setContactListReady:^(NSArray *contacts, FluxDataRequest *completedRequest){
+            //do something with the contacts - an array of FluxContacts
+            NSLog(@"Contacts returned");
+            if (contacts.count > 0)
+            {
+                // add the contacts into the importUserArray
+            }
+        }];
+        
+        
+        [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            
+            NSString*str = [NSString stringWithFormat:@"Contact fetch failed with error %d", (int)[e code]];
+            [ProgressHUD showError:str];
+            
+        }];
+       
+        [[FluxDataManager theFluxDataManager] requestContactsFromService:serviceID withCredentials:credentials withDataRequest:request];
+    }
 }
 
 - (void)didReceiveMemoryWarning

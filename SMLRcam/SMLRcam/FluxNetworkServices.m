@@ -1209,6 +1209,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
      }];
 }
 
+
 #pragma mark Aliases
 
 - (void) createAliasWithName:(NSString *)social_name andServiceID:(int)service_id andRequestID:(NSUUID *)requestID
@@ -1216,7 +1217,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     FluxAliasObject *aliasObject = [[FluxAliasObject alloc] initWithName: social_name andServiceID: service_id];
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:token, @"auth_token", nil];
-    [[RKObjectManager sharedManager] postObject:aliasObject path:@"/aliases"
+    [[RKObjectManager sharedManager] postObject:aliasObject
+                                           path:@"/aliases"
                                      parameters:params
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
@@ -1233,6 +1235,58 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
          }
      }];
    
+}
+
+- (void)requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withRequestID:(NSUUID *)requestID
+{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"/aliases/importcontacts"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSMutableString *fullurl = [NSMutableString stringWithFormat:@"%@%@?auth_token=%@&serviceid=%d", objectManager.baseURL, [responseDescriptor.pathPattern substringFromIndex:1], token, serviceID];
+    
+    switch (serviceID)
+    {
+        case 1: // contact list
+            // treat credentials as a list of email addresses and add them in as one key
+            break;
+        case 2: // Twitter
+        case 3: // Facebook
+            for (id key in credentials)
+            {
+                [fullurl appendString:[NSString stringWithFormat:@"&%@=%@", (NSString *)key, (NSString *)[credentials objectForKey:key]]];
+            }
+            break;
+    }
+
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullurl]];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Results",[result count]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnContactListForUser:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnContactList:result.array andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+    
 }
 
 
