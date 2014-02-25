@@ -1930,6 +1930,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             for (int i=0; i<[unusedSlots count]; i++)
             {
                 FluxLocalID *localID = ((FluxTextureToImageMapElement *)self.textureMap[[unusedSlots[i] integerValue]]).localID;
+                
+                if (!localID || [localID isEqualToString:@""])
+                {
+                    // localID was previously not set (slot has never been used), so just pick this one
+                    slotToUse = [unusedSlots[i] integerValue];
+                    indexToRemove = i;
+                    break;
+                }
+                
                 FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
                 if (fabs(ire.imageMetadata.relHeading) > maxRelativeHeadingFound)
                 {
