@@ -1,7 +1,53 @@
 Release Notes:
 - updates to address at least one of the iPad issues
-- Trello Issue #432: change heading accuracy for Kalman Filter enable/disable to 30 degrees from 20 degrees
 - release memory used by MapView when exiting view
+
+******************************************
+
+V0.20 B08
+
+TEST build.  Not for general distribution
+
+Released: 2014-02-25 14:30:00
+
+Release Notes:
+- Incorporate changes to disable feature matching for iPad mini memory testing
+- Trello Issue #432: change heading accuracy for Kalman Filter enable/disable to 30 degrees from 20 degrees
+- Open up altitude range to +- 60m fro testing purposes
+
+******************************************
+
+V0.20 B07
+
+Closed Beta Release 07
+
+Released: 2014-02-21 18:30:00
+
+Release Notes:
+- set default mode to use original device heading scheme
+  - new scheme can still be reached via debugVC switch
+
+******************************************
+
+V0.20 B06
+
+Released: 2014-02-20 20:20:00
+
+Release Notes:
+- implement new device heading scheme and reworking device orientation calculations
+- bio label bug fixes
+- friend / follower updates to make the system more responsive to change
+- friend / follower assets updated
+
+******************************************
+
+V0.20 B05
+
+Released: 2014-02-20 16:10:00
+
+Release Notes:
+- updates to address at least one of the iPad issues
+- friend/follower assets updated
 
 ******************************************
 

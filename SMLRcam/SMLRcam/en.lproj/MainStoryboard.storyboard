@@ -276,7 +276,7 @@
                                 </state>
                                 <connections>
                                     <action selector="snapshotRollButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="jsc-7j-q3Z"/>
-                                    <segue destination="ArK-zK-ko3" kind="modal" modalTransitionStyle="coverVertical" id="gTR-yF-0e1"/>
+                                    <segue destination="ArK-zK-ko3" kind="modal" identifier="" modalTransitionStyle="coverVertical" id="gTR-yF-0e1"/>
                                 </connections>
                             </button>
                             <button hidden="YES" opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tG4-RH-Imp">
@@ -310,6 +310,7 @@
                     <connections>
                         <outlet property="shareButton" destination="tG4-RH-Imp" id="wZJ-6m-xRR"/>
                         <outlet property="snapshotRollButton" destination="e21-oY-W5S" id="PO8-DD-eHz"/>
+                        <segue destination="7MI-iQ-4jy" kind="modal" identifier="annotationSegue" id="UqM-tx-VCb"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H59-Ts-FUU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1231,9 +1232,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="xZG-ie-JbE">
+                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="xZG-ie-JbE">
                                 <rect key="frame" x="114" y="230" width="93" height="108"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="108" id="ta3-TI-lq4"/>
+                                    <constraint firstAttribute="width" constant="93" id="wjv-g4-wgN"/>
+                                </constraints>
                             </imageView>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RuW-dy-GsI">
                                 <rect key="frame" x="0.0" y="568" width="320" height="408"/>
@@ -1362,6 +1367,10 @@
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="0.91764705882352937" green="0.24705882352941178" blue="0.24705882352941178" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstItem="xZG-ie-JbE" firstAttribute="top" secondItem="S58-5P-rnV" secondAttribute="top" constant="230" id="DOv-yx-Fa8"/>
+                            <constraint firstAttribute="centerX" secondItem="xZG-ie-JbE" secondAttribute="centerX" id="eHq-To-4PY"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="kOI-MA-uNB"/>
                     <nil key="simulatedTopBarMetrics"/>
@@ -3051,6 +3060,7 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="cDh-QJ-kAL"/>
+        <segue reference="UqM-tx-VCb"/>
+        <segue reference="03e-8S-vGN"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -26,7 +26,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-
+    //[self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 

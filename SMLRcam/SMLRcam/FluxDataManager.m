@@ -17,8 +17,8 @@ NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidComplete
 
 NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImageLocalID";
 
-float const altitudeLowRange = 6.0;
-float const altitudeHighRange = 6.0;
+float const altitudeLowRange = 60.0;
+float const altitudeHighRange = 60.0;
 float const altitudeMin = -100000;
 float const altitudeMax =  100000;
 
@@ -36,10 +36,10 @@ static FluxDataManager *_theFluxDataManager = nil;
                               encoding:NSUTF8StringEncoding];
 }
 
-+ (FluxCameraModel)thisCameraModel
-{
-    return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager thisDeviceName]];
-}
+//+ (FluxCameraModelEnum)thisCameraModel
+//{
+//    return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager thisDeviceName]];
+//}
 
 + (FluxDataManager *)theFluxDataManager
 {
