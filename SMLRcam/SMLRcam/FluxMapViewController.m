@@ -182,7 +182,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupLocationManager];
     
-    firstRunDone = NO;
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
     [transitionFadeView setBackgroundColor:[UIColor blackColor]];
     [transitionFadeView setAlpha:0.0];
@@ -190,21 +189,15 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self.view addSubview:transitionFadeView];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
-    
-    if (!firstRunDone)
-    {
-        [self setupMapView];
-        firstRunDone = YES;
-    }
-    else
-    {
-        [self didUpdateLocation:nil];
-    }
+
+    [self setupMapView];
 }
 
-- (void)viewDidAppear:(BOOL)animated{
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     self.screenName = @"Map View";
 }

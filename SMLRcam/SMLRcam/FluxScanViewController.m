@@ -882,7 +882,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     if ([[segue identifier] isEqualToString:@"pushMapModalView"])
     {
-        mapViewController = (FluxMapViewController *)segue.destinationViewController;
+        FluxMapViewController *mapViewController = (FluxMapViewController *)segue.destinationViewController;
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
         [mapViewController setCurrentDataFilter:self.currentDataFilter];
     }
