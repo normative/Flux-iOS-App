@@ -30,6 +30,7 @@ NSString* const FluxDisplayManagerDidUpdateMapPinList = @"FluxDisplayManagerDidU
 NSString* const FluxDisplayManagerDidFailToUpdateMapPinList = @"FluxDisplayManagerDidFailToUpdateMapPinList";
 NSString* const FluxDisplayManagerDidMatchImage = @"FluxDisplayManagerDidMatchImage";
 NSString* const FluxDisplayManagerDidUpdateImageFeatures = @"FluxDisplayManagerDidUpdateImageFeatures";
+NSString* const FluxDisplayManagerMapPinListKey = @"FluxDisplayManagerMapPinListKey";
 
 NSString* const FluxOpenGLShouldRender = @"FluxOpenGLShouldRender";
 
@@ -59,8 +60,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         _fluxDataManager = [[FluxDataManager alloc] init];
         
         _fluxNearbyMetadata = [[NSMutableDictionary alloc]init];
-        
-        _fluxMapContentMetadata = [[NSArray alloc]init];
         
         _nearbyListLock = [[NSRecursiveLock alloc] init];
         _nearbyScanList = [[NSMutableArray alloc]init];
@@ -888,25 +887,8 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 
 #pragma mark MapView Image Request
 
-- (void)mapViewWillDisplay
-{
-    //if we have items already, check if it's worth pulling again
-    if (self.fluxMapContentMetadata && previousMapViewLocation)
-    {
-        if ([previousMapViewLocation distanceFromLocation:self.locationManager.location] > 50)
-        {
-            [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
-        }
-    }
-    else
-    {
-        [self requestMapPinsForLocation:self.locationManager.location.coordinate withRadius:500.0 andFilter:nil];
-    }
-}
-
 - (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter *)mapDataFilter
 {
-    
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     
     dataRequest.maxReturnItems = 30000;
@@ -922,11 +904,9 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
     
     [dataRequest setWideAreaListReady:^(NSArray *imageList){
-        self.fluxMapContentMetadata = imageList;
-        CLLocation*temp = [[CLLocation alloc]initWithLatitude:location.latitude longitude:location.longitude];
-        previousMapViewLocation = temp;
+        NSDictionary *userInfo = @{FluxDisplayManagerMapPinListKey : imageList};
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidUpdateMapPinList
-                                                            object:self userInfo:nil];
+                                                            object:self userInfo:userInfo];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         NSString*errorString = @"Unknown network error occured";
