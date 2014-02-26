@@ -323,4 +323,21 @@ NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID = @"FluxData
     }
 }
 
+- (void)removeUnusedItemsFromImageCache
+{
+    for (FluxLocalID *localID in [fluxMetadata allKeys])
+    {
+        FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+        for (NSUInteger imageType = thumb; imageType <= full_res; imageType++)
+        {
+            NSString *imageCacheKey = [imageObject generateImageCacheKeyWithImageType:imageType];
+            if (cachedImageLocalIDList[imageCacheKey])
+            {
+                FluxCacheImageObject *cacheImageObj = cachedImageLocalIDList[imageCacheKey];
+                [cacheImageObj discardContentIfPossible];
+            }
+        }
+    }
+}
+
 @end

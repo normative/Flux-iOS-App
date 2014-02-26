@@ -115,6 +115,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     }
     
     return self;
@@ -137,6 +138,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     
     if (featureMatchingSupported)
     {
@@ -154,6 +156,11 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     
     FluxImageRenderElement *ire = [self getRenderElementForKey:localID];
     ire.imageTypesFetched = ire.imageTypesFetched & ~(1 << imageType);
+}
+
+- (void)didReceiveMemoryWarning:(NSNotification *)notification
+{
+    [self.fluxDataManager removeUnusedItemsFromImageCache];
 }
 
 #pragma mark Location

@@ -158,5 +158,6 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (void)deleteLocations;
 - (void)debugByShowingCachedImageKeys;
 - (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems;
+- (void)removeUnusedItemsFromImageCache;
 
 @end

@@ -1237,4 +1237,9 @@ static FluxDataManager *_theFluxDataManager = nil;
     [fluxDataStore cleanupNonLocalContentWithLocalIDArray:localItems];
 }
 
+- (void)removeUnusedItemsFromImageCache
+{
+    [fluxDataStore removeUnusedItemsFromImageCache];
+}
+
 @end
