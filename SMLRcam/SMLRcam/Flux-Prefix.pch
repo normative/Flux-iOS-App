@@ -29,4 +29,13 @@
 #ifdef __OBJC__
 // Make RestKit globally available
 #import <RestKit/RestKit.h>
+
+#import "FluxLogger.h"
+#ifdef DEBUG
+int const ddLogLevel = LOG_LEVEL_VERBOSE;
+#else
+int const ddLogLevel = LOG_LEVEL_ERROR;
 #endif
+
+#endif
+

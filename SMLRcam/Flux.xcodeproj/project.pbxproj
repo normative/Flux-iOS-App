@@ -501,6 +501,7 @@
 		F245162117E206DC0027BD1F /* FluxDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataManager.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F245162317E23FAA0027BD1F /* FluxDataFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDataFilter.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F245162417E23FAA0027BD1F /* FluxDataFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataFilter.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		F2574DD818BEA22400253E52 /* FluxLogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FluxLogger.h; sourceTree = "<group>"; };
 		F26EF318183D10EF00536C54 /* FluxFeatureMatchingQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingQueue.h; sourceTree = "<group>"; };
 		F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingQueue.m; sourceTree = "<group>"; };
 		F26EF31E183D138F00536C54 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = OpenCV_mod/opencv2.framework; sourceTree = "<group>"; };
@@ -855,6 +856,7 @@
 				171510181811BF7F006727EB /* FluxPedometer.m */,
 				AA61527B1822DC9300B8F2C8 /* FluxImageTools.h */,
 				AA61527C1822DC9300B8F2C8 /* FluxImageTools.m */,
+				F2574DD818BEA22400253E52 /* FluxLogger.h */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
