@@ -432,6 +432,8 @@ typedef void (^_MIMapViewChange)(void);
 		return pulsingView;
     }
     
+    
+    
 	MKAnnotationView *view = nil;
 	if (_flags.delegateViewForAnnotation)
 	{
@@ -453,13 +455,29 @@ typedef void (^_MIMapViewChange)(void);
 	{
 		[view setAnnotation:annotation];
 	}
-
-	[(MKPinAnnotationView *)view setPinColor:
-		[annotation class] == [MIAnnotation class] ?
-		MKPinAnnotationColorGreen :
-		MKPinAnnotationColorGreen];
-
-	return view;
+    
+    //adds semi-custom map pin
+    MKAnnotationView *pinView = nil;
+    static NSString *defaultPinID = @"com.invasivecode.pin";
+    pinView = (MKAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:defaultPinID];
+    if ( pinView == nil )
+        pinView = [[MKAnnotationView alloc]
+                   initWithAnnotation:annotation reuseIdentifier:defaultPinID];
+    
+    //pinView.pinColor = MKPinAnnotationColorGreen;
+    pinView.canShowCallout = YES;
+    //pinView.animatesDrop = YES;
+    pinView.image = [UIImage imageNamed:@"mapPin"];    //as suggested by Squatch
+    return pinView;
+    
+    
+    //not called
+//	[(MKPinAnnotationView *)view setPinColor:
+//		[annotation class] == [MIAnnotation class] ?
+//		MKPinAnnotationColorRed :
+//		MKPinAnnotationColorRed];
+//
+//	return view;
 }
 
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated

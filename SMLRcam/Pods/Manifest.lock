@@ -28,7 +28,7 @@ PODS:
     - TestFlightSDK (>= 2.0)
   - TestFlightFeedback/Core (2.1.0):
     - TestFlightSDK (>= 2.0)
-  - TestFlightSDK (2.2.1)
+  - TestFlightSDK (3.0.0)
   - TransitionKit (1.1.1)
   - UICKeyChainStore (1.0.4)
 
@@ -47,8 +47,8 @@ SPEC CHECKSUMS:
   RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581
   TestFlightFeedback: 2e6862118f7c753ed910df173deb608bd27d8c18
-  TestFlightSDK: 030fa8a1bc8aa9ba5c9ae1be05ceaba775368c0c
+  TestFlightSDK: 71e3e78d3a46144dbad975a4bf80a14dae6a818a
   TransitionKit: d0e3344aac92991395d4c2e72d9c5a8ceeb12910
   UICKeyChainStore: b42c6252b8bfd7fbf6326668467572b6b231e11a
 
-COCOAPODS: 0.22.3
+COCOAPODS: 0.29.0

@@ -1,6 +1,6 @@
 Release Notes:
 - updates to address at least one of the iPad issues
-
+- Trello Issue #432: change heading accuracy for Kalman Filter enable/disable to 30 degrees from 20 degrees
 ******************************************
 
 V0.20 B04

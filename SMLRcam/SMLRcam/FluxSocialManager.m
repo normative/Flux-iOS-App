@@ -331,7 +331,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 }
 
 #pragma mark - Social Posting
-- (void)socialPostTo:(NSArray*)socialPartners withStatus:(NSString*)status andImage:(UIImage*)image{
+- (void)socialPostTo:(NSArray*)socialPartners withStatus:(NSString*)status andImage:(UIImage*)image andSnapshot:(BOOL)snapshot{
     outstandingPosts = [socialPartners mutableCopy];
     posts = [socialPartners mutableCopy];
     
@@ -339,7 +339,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         [self postToTwitterWithStatus:status andImage:image];
     }
     if ([socialPartners containsObject:FacebookService]) {
-        [self postToFacebookWithStatus:status andImage:image];
+        if (snapshot) {
+            [self postSnapshotToFacebookWithStatus:status andImage:image];
+        }
+        else{
+            [self postToFacebookWithStatus:status andImage:image];
+        }
+        
     }
 }
 
@@ -446,11 +452,86 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     
 }
 
-
+//uses different workding than the standard image post
+- (void)postSnapshotToFacebookWithStatus:(NSString*)status andImage:(UIImage*)image{
+    //fb graph object post
+    // Create an object
+    if (!FBSession.activeSession.isOpen) {
+        [FBSession openActiveSessionWithAllowLoginUI: NO];
+    }
+    
+    
+    // Create an object
+    NSMutableDictionary<FBOpenGraphObject> *picture = [FBGraphObject openGraphObjectForPost];
+    
+    // specify that this Open Graph object will be posted to Facebook
+    picture.provisionedForPost = YES;
+    
+    // Add the standard object properties, including the image you just staged
+    picture[@"og"] = @{ @"title":@"Flux", @"type":@"scene.scene", @"description":@"my description"};
+    
+    
+    
+    
+    [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if(!error) {
+            NSLog(@"Successfuly staged image with staged URI: %@", [result objectForKey:@"uri"]);
+            //Package image inside a dictionary, inside an array like we'll need it for the object
+            NSArray *image = @[@{@"url": [result objectForKey:@"uri"], @"user_generated" : @"true" }];
+            
+            NSMutableDictionary<FBOpenGraphObject> *pictureObject = [FBGraphObject openGraphObjectForPost];
+            
+            // specify that this Open Graph object will be posted to Facebook
+            pictureObject.provisionedForPost = YES;
+            
+            // Add the standard object properties
+            pictureObject[@"og"] = @{ @"title":@"picture titleeee", @"type":@"fluxapp:scene", @"description":@"OMG I took a snapshot guys", @"image":image };
+            
+            
+            
+            NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
+            action[@"scene"] = pictureObject;
+            [action setObject:@"true" forKey:@"fb:explicitly_shared"];
+            
+            [FBRequestConnection startForPostWithGraphPath:@"me/fluxapp:capture"
+                                               graphObject:action
+                                         completionHandler:^(FBRequestConnection *connection,
+                                                             id result,
+                                                             NSError *error) {
+                                             // handle the result
+                                             //                                             __block NSString *alertText;
+                                             //                                             __block NSString *alertTitle;
+                                             if (!error) {
+                                                 // Success, the restaurant has been liked
+                                                 NSLog(@"Posted OG action, id: %@", [result objectForKey:@"id"]);
+                                                 //                                                 alertText = [NSString stringWithFormat:@"Posted OG action, id: %@", [result objectForKey:@"id"]];
+                                                 //                                                 alertTitle = @"Success";
+                                                 //                                                 [[[UIAlertView alloc] initWithTitle:alertTitle
+                                                 //                                                                             message:alertText
+                                                 //                                                                            delegate:self
+                                                 //                                                                   cancelButtonTitle:@"OK!"
+                                                 //                                                                   otherButtonTitles:nil] show];
+                                                 
+                                                 [self completedRequestWithType:FacebookService];
+                                                 
+                                             } else {
+                                                 // An error occurred, we need to handle the error
+                                                 // See: https://developers.facebook.com/docs/ios/errors
+                                                 NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+                                             }
+                                         }];
+        }
+        else{
+            NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+        }
+        
+    }];
+}
 
 //this won't work until we have an app backend from the looks of it
 - (void)postToFacebookWithStatus:(NSString*)status andImage:(UIImage*)image{
     
+    //link to SMLR post
 ////    [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
 ////        if (!error){
 ////            NSString *uri = [result valueForKey:@"uri"];
@@ -485,106 +566,81 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 //                                           }];
 ////        }
 ////    }];
-    
-    
-    
-    NSArray *permissionsNeeded = @[@"publish_actions"];
-    
-    // Request the permissions the user currently has
-    FBSession.activeSession = [FBSession activeSession];
-    
-    [FBRequestConnection startWithGraphPath:@"/me/permissions" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-        if (!error){
-          NSDictionary *currentPermissions= [(NSArray *)[result data] objectAtIndex:0];
-          NSMutableArray *requestPermissions = [[NSMutableArray alloc] initWithArray:@[]];
-          
-          // Check if all the permissions we need are present in the user's current permissions
-          // If they are not present add them to the permissions to be requested
-          for (NSString *permission in permissionsNeeded){
-              if (![currentPermissions objectForKey:permission]){
-                  [requestPermissions addObject:permission];
-              }
-          }
-          
-          // If we have permissions to request
-          if ([requestPermissions count] > 0){
-              // Ask for the missing permissions
-              [FBSession.activeSession requestNewPublishPermissions:requestPermissions
-                                                    defaultAudience:FBSessionDefaultAudienceFriends
-                                                  completionHandler:^(FBSession *session, NSError *error) {
-                                                      if (!error) {
-                                                          // Permission granted, we can request the user information
-                                                          [self postToFacebookWithPermissionsWithStatus:status andImage:image];
-                                                      } else {
-                                                          // An error occurred, handle the error
-                                                          // See our Handling Errors guide: https://developers.facebook.com/docs/ios/errors/
-                                                          NSLog(@"%@", error.description);
-                                                      }
-                                                  }];
-          } else {
-              [self postToFacebookWithPermissionsWithStatus:status andImage:image];
-          }
-          
-        } else {
-          // There was an error requesting the permission information
-          // See our Handling Errors guide: https://developers.facebook.com/docs/ios/errors/
-          NSLog(@"%@", error.description);
-        }
-        }];
-    
-    
-    
-    
-    
-//    NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
-//    [params setObject:status forKey:@"message"];
-//    [params setObject:UIImagePNGRepresentation(image) forKey:@"picture"];
-//    
-//    [FBRequestConnection startWithGraphPath:@"me/photos"
-//                                 parameters:params
-//                                 HTTPMethod:@"POST"
-//                          completionHandler:^(FBRequestConnection *connection,
-//                                              id result,
-//                                              NSError *error)
-//     {
-//         if (error)
-//         {
-//             NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-//             NSLog(@"Facebook Post Error: %@",errorstring);
-//             [self failedToCompleteRequestWithType:FacebookService];
-//         }
-//         else
-//         {
-//             [self completedRequestWithType:FacebookService];
-//         }
-//     }];
-}
 
-- (void)postToFacebookWithPermissionsWithStatus:(NSString*)status andImage:(UIImage*)image{
-    // Permissions are present, we can request the user information
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                   @"Flux", @"name",
-                                   @"See a place like you’ve never seen it before.", @"caption",
-                                   @"Flux gives you and your friends the ability to automatically place photos in the real world, the rest is up to you.",@"description",
-                                   @"http://www.smlr.is/", @"link",
-                                   @"http://imgur.com/ADMTzLB", @"picture",
-                                   nil];
-    
-    // Make the request
-    [FBRequestConnection startWithGraphPath:@"/me/feed"
-                                 parameters:params
-                                 HTTPMethod:@"POST"
-                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-        if (!error) {
-            // Link posted successfully to Facebook
-            [self completedRequestWithType:FacebookService];
-        } else {
-            // An error occurred, we need to handle the error
-            NSString * errorstring = [NSString stringWithFormat:@"Error: %@",error.localizedDescription];
-            NSLog(@"Facebook Post Error: %@",errorstring);
-            [self failedToCompleteRequestWithType:FacebookService];
+
+    //fb graph object post
+    // Create an object
+    if (!FBSession.activeSession.isOpen) {
+        [FBSession openActiveSessionWithAllowLoginUI: NO];
+    }
+
+
+    // Create an object
+    NSMutableDictionary<FBOpenGraphObject> *picture = [FBGraphObject openGraphObjectForPost];
+
+    // specify that this Open Graph object will be posted to Facebook
+    picture.provisionedForPost = YES;
+
+    // Add the standard object properties, including the image you just staged
+    picture[@"og"] = @{ @"title":@"Flux", @"type":@"picture.picture", @"description":@"my description"};
+
+
+
+
+    [FBRequestConnection startForUploadStagingResourceWithImage:image completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+        if(!error) {
+            NSLog(@"Successfuly staged image with staged URI: %@", [result objectForKey:@"uri"]);
+            //Package image inside a dictionary, inside an array like we'll need it for the object
+            NSArray *image = @[@{@"url": [result objectForKey:@"uri"], @"user_generated" : @"true" }];
+
+            NSMutableDictionary<FBOpenGraphObject> *pictureObject = [FBGraphObject openGraphObjectForPost];
+
+            // specify that this Open Graph object will be posted to Facebook
+            pictureObject.provisionedForPost = YES;
+
+            // Add the standard object properties
+            pictureObject[@"og"] = @{ @"title":@"", @"type":@"fluxapp:picture", @"description":@"OMG I took a snapshot guys", @"image":image };
+
+
+
+            NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
+            action[@"picture"] = pictureObject;
+            [action setObject:@"true" forKey:@"fb:explicitly_shared"];
+
+            [FBRequestConnection startForPostWithGraphPath:@"me/fluxapp:take"
+                                               graphObject:action
+                                         completionHandler:^(FBRequestConnection *connection,
+                                                             id result,
+                                                             NSError *error) {
+                                             // handle the result
+//                                             __block NSString *alertText;
+//                                             __block NSString *alertTitle;
+                                             if (!error) {
+                                                 // Success, the restaurant has been liked
+                                                 NSLog(@"Posted OG action, id: %@", [result objectForKey:@"id"]);
+//                                                 alertText = [NSString stringWithFormat:@"Posted OG action, id: %@", [result objectForKey:@"id"]];
+//                                                 alertTitle = @"Success";
+//                                                 [[[UIAlertView alloc] initWithTitle:alertTitle
+//                                                                             message:alertText
+//                                                                            delegate:self
+//                                                                   cancelButtonTitle:@"OK!"
+//                                                                   otherButtonTitles:nil] show];
+                                                 
+                                                 [self completedRequestWithType:FacebookService];
+                                                 
+                                             } else {
+                                                 // An error occurred, we need to handle the error
+                                                 // See: https://developers.facebook.com/docs/ios/errors
+                                                 NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+                                             }
+                                         }];
         }
+        else{
+            NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+        }
+        
     }];
 }
+
 
 @end

@@ -167,6 +167,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         
         [RKObjectMapping addDefaultDateFormatter:dateFormatter];
+
         
         //general init
         
@@ -181,8 +182,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         //show alert if there is no network connectivity
         [objectManager.HTTPClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             if (status == AFNetworkReachabilityStatusNotReachable) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No network connection"
-                                                                message:@"You must be connected to the internet to use this app."
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Uh Oh..."
+                                                                message:@"It loks like you've lost your connection to the internet. You must be connected to the internet to use Flux."
                                                                delegate:nil
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
