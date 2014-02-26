@@ -71,6 +71,7 @@
                 // spin through and add the contacts into the importUserArray
                 for (FluxContactObject *c in contacts)
                 {
+                    // TODO: so something real here, like add them to the table view...
                     NSLog(@"contact userid: %d, username: %@, social name: %@, display name: %@, pic URL: %@", c.userID, c.username, c.alias_name, c.display_name, c.profile_pic_URL);
                 }
                 
