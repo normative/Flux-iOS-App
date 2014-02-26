@@ -23,8 +23,8 @@ NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
-//NSString* const FluxServerURL = _AWSTestServerURL;
+//NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 
@@ -1278,8 +1278,8 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Results",[result count]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnContactListForUser:andRequestID:)])
+         NSLog(@"Found %i Contacts",[result count]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnContactList:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnContactList:result.array andRequestID:requestID];
          }

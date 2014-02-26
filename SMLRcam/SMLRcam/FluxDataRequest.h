@@ -46,6 +46,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     friendRequest_request = 24,
     imageCounts_request = 25,
     totalImageCount_request = 26,
+    createalias_request = 27,
+    contactFromService_request = 28
     
 } FluxDataRequestType;
 
@@ -88,7 +90,7 @@ typedef void (^SendFriendRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^AcceptFriendRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^IgnoreFriendRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^UnfriendUserReadyBlock)(int, FluxDataRequest *);
-typedef void (^ContactListReady)(NSArray *, FluxDataRequest *);
+typedef void (^ContactListReadyBlock)(NSArray *, FluxDataRequest *);
 
 
 //other
@@ -210,7 +212,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for successful friends list returned
 @property (strong) UnfriendUserReadyBlock unfriendUserReady;
 // Callback for successful contact list returned
-@property (strong) ContactListReady contactListReady;
+@property (strong) ContactListReadyBlock contactListReady;
 
 
 // Callback for list of tags retrieved

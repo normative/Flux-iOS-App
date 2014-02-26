@@ -97,7 +97,7 @@ extern NSString* const FluxServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfriendUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnContactList:(NSArray *)contacts
-           andRequestID:requestID;
+           andRequestID:(FluxRequestID *)requestID;
 
 
 //fil†ers

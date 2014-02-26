@@ -16,7 +16,7 @@
 @property (nonatomic, strong) NSString *display_name;
 @property (nonatomic, strong) NSString *profile_pic_URL;
 @property (nonatomic) int friendState;
-@property (nonatomic) BOOL isFollower;
+@property (nonatomic) BOOL amFollower;
 @property (nonatomic) BOOL isFollowing;
 
 @end

@@ -38,7 +38,7 @@
     // then regen the tableview data with [tableview reload data]
     NSDictionary *credentials = nil;
     NSString *contactType = self.title;
-    if ([contactType compare:@"Twitter"] == NSOrderedSame )
+    if ([contactType isEqualToString:@"Twitter"])
     {
         // pull Twitter credentials and fire them up to the import API
         NSString *twtoken = [UICKeyChainStore stringForKey:FluxAccessTokenKey service:TwitterService];
@@ -47,7 +47,7 @@
 
         serviceID = 2;
     }
-    else if ([contactType compare:@"Facebook"] == NSOrderedSame )
+    else if ([contactType isEqualToString:@"Facebook"])
     {
         // pull Facebook credentials and fire them up to the import API
         NSString *fbtoken = [UICKeyChainStore stringForKey:FluxAccessTokenKey service:FacebookService];

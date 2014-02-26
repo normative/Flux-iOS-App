@@ -693,9 +693,9 @@ static FluxDataManager *_theFluxDataManager = nil;
 -(FluxRequestID *) requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withDataRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = sendFriend_request;
+    dataRequest.requestType = contactFromService_request;
     [currentRequests setObject:dataRequest forKey:requestID];
-    // Begin upload of image to server
+    // Begin request of contacts from server
     [networkServices requestContactsFromService:serviceID withCredentials: credentials withRequestID:requestID];
     return requestID;
 }
@@ -705,9 +705,9 @@ static FluxDataManager *_theFluxDataManager = nil;
 - (FluxRequestID *) createAliasWithName:(NSString *)name andServiceID:(int) service_id andRequest:(FluxDataRequest *)dataRequest
 {
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = unfriend_request;
+    dataRequest.requestType = createalias_request;
     [currentRequests setObject:dataRequest forKey:requestID];
-    // Begin upload of image to server
+    // Begin upload of alias to server
     [networkServices createAliasWithName:name andServiceID:service_id andRequestID:requestID];
     return requestID;
 }
