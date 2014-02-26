@@ -20,6 +20,7 @@ extern NSString* const FluxDisplayManagerDidUpdateImageTexture;
 extern NSString* const FluxDisplayManagerDidUpdateMapPinList;
 extern NSString* const FluxDisplayManagerDidFailToUpdateMapPinList;
 extern NSString* const FluxDisplayManagerDidMatchImage;
+extern NSString* const FluxDisplayManagerMapPinListKey;
 
 extern NSString* const FluxOpenGLShouldRender;
 
@@ -45,8 +46,6 @@ extern NSString* const FluxOpenGLShouldRender;
 //    int oldTimeBracket;
 //    NSRange timeSliderRange;
     
-    CLLocation*previousMapViewLocation;
-    
 //    float currHeading;
     
     bool _isScrubAnimating;
@@ -71,7 +70,6 @@ extern NSString* const FluxOpenGLShouldRender;
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxLocationServicesSingleton *locationManager;
 @property (nonatomic, strong) FluxFeatureMatchingQueue *fluxFeatureMatchingQueue;
-@property (nonatomic, strong) NSArray *fluxMapContentMetadata;
 @property (nonatomic, weak) GLKViewController *openGLVC;
 
 @property (readonly, nonatomic, strong) NSMutableArray *nearbyList;
@@ -86,7 +84,6 @@ extern NSString* const FluxOpenGLShouldRender;
 
 - (void)timeBracketDidChange:(int)value;
 
-- (void)mapViewWillDisplay;
 - (void)requestMapPinsForLocation:(CLLocationCoordinate2D)location withRadius:(float)radius andFilter:(FluxDataFilter*)mapDataFilter;
 
 - (void)lockDisplayList;
