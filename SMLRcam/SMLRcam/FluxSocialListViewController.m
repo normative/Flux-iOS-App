@@ -237,13 +237,16 @@
         [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                      placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
-                                                  [[(NSMutableArray*)socialListImagesArray objectAtIndex:currentMode] replaceObjectAtIndex:indexPath.row withObject:image];
-                                                  [weakCell.profileImageView setImage:image];
-                                                  weakCell.userObject.hasProfilePic = YES;
-                                                  //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                                  //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                                  [weakCell setNeedsLayout];
-                                                  //}
+                                                  if (image) {
+                                                      [[(NSMutableArray*)socialListImagesArray objectAtIndex:currentMode] replaceObjectAtIndex:indexPath.row withObject:image];
+                                                      [weakCell.profileImageView setImage:image];
+                                                      weakCell.userObject.hasProfilePic = YES;
+                                                      //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                      //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                      [weakCell setNeedsLayout];
+                                                      //}
+                                                  }
+
                                               }
                                               failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
                                                   NSLog(@"profile image done broke :(");
@@ -675,12 +678,29 @@
 //}
 
 - (IBAction)segmentedControllerDidChange:(id)sender {
-    [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:YES];
-    listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
-    [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:NO];
-    
-    if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0  || [(NSNumber*)[shouldReloadArray objectAtIndex:listMode]boolValue]){
-        [self updateListForActiveMode];
+    if (listMode == [(UISegmentedControl*)sender selectedSegmentIndex]) {
+        if ([(UITableView*) [socialTableViews objectAtIndex:listMode] numberOfRowsInSection:0] > 0) {
+            [(UITableView*) [socialTableViews objectAtIndex:listMode] scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            
+            //disable user interaction to avoid crashes during animation
+            [segmentedControl setUserInteractionEnabled:NO];
+        }
+    }
+    else{
+        [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:YES];
+        listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
+        [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:NO];
+        
+        if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0  || [(NSNumber*)[shouldReloadArray objectAtIndex:listMode]boolValue]){
+            [self updateListForActiveMode];
+        }
     }
 }
+
+//re-enable interaction after animation
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
+    [segmentedControl setUserInteractionEnabled:YES];
+}
+
+
 @end

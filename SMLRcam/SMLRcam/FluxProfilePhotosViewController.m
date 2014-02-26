@@ -202,14 +202,17 @@
         [cell.imageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
         [cell.imageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//                 CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*0.68, image.size.width*0.68));
-//                 // or use the UIImage wherever you like
-//                 UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
-//                 CGImageRelease(imageRef);
-//
-//                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
-                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
-                 [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
+                 if (image) {
+                     //                 CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*0.68, image.size.width*0.68));
+                     //                 // or use the UIImage wherever you like
+                     //                 UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+                     //                 CGImageRelease(imageRef);
+                     //
+                     //                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
+                     [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
+                     [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
+                 }
+
              }
              failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
                  NSLog(@"failed image loading: %@", error);
