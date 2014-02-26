@@ -3,10 +3,11 @@
 //  Flux
 //
 //  Created by Denis Delorme on 2/24/14.
-//  Copyright (c) 2014 Normative. All rights reserved.
+//  Copyright (c) 2014 SMLR. All rights reserved.
 //
 
 #import "FluxDeviceInfoSingleton.h"
+#import "FluxCameraModel.h"
 #import <sys/utsname.h>
 
 const NSString *fluxDeviceModelStrings[] = {
@@ -73,22 +74,7 @@ typedef enum {
 } fluxDeviceModel;
 
 
-typedef enum {
-    fdp_unknown,
-    fdp_simulator,
-    fdp_iPad2,
-    fdp_iPad3,
-    fdp_iPad4,
-    fdp_iPadAir,
-    fdp_iPadMini1,
-    fdp_iPadMini2,
-    fdp_iPhone4s,
-    fdp_iPhone5,
-    fdp_iPhone5c,
-    fdp_iPhone5s
-} fluxDevicePlatform;
-
-const NSString *fluxDevicePlatformStrings[] = {
+const NSString *FluxDevicePlatformStrings[] = {
     @"unknown",
     @"simulator",
     @"iPad 2G",
@@ -106,7 +92,7 @@ const NSString *fluxDevicePlatformStrings[] = {
 
 @implementation FluxDeviceInfoSingleton
 
-+ (id)sharedInfo {
++ (id)sharedDeviceInfo {
     static FluxDeviceInfoSingleton *sharedFluxDeviceInfoSingleton = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -117,9 +103,6 @@ const NSString *fluxDevicePlatformStrings[] = {
 
 - (id)init
 {
-    NSString *_modelStr;
-    NSString *_platformStr;
-    bool _featureMatchingIsEnabled = false;
     if (self = [super init])
     {
         // fetch device model and set up everything else
@@ -127,50 +110,47 @@ const NSString *fluxDevicePlatformStrings[] = {
         uname(&systemInfo);
         
         // model id for DB
-        _modelStr = [NSString stringWithCString:systemInfo.machine
+        _deviceModelStr = [NSString stringWithCString:systemInfo.machine
                                        encoding:NSUTF8StringEncoding];
         
-        fluxDevicePlatform _devPlatform = [self devicePlatformFromModelStr:_modelStr];
+        FluxDevicePlatform _devicePlatform = [self devicePlatformForModelStr:_deviceModelStr];
         
         // model string for logs
-        _platformStr = fluxDevicePlatformStrings[_devPlatform];
+        _platformStr = (NSString *)FluxDevicePlatformStrings[_devicePlatform];
         
         // camera model
         // should be able to index off of _devPlatform
+        _cameraModel = [self getCameraModelForPlatform:_devicePlatform];
 
-        // memory limits / functional restrictions
-        //  - number of textures to render
-        //  - enable/disable feature matching
+        // memory limits & functional restrictions
         
-        // gate feature matching
-        switch (_devPlatform)
-        {
-            case fdp_unknown:
-            case fdp_simulator:
-            case fdp_iPadMini1:
-            case fdp_iPadMini2:
-                _featureMatchingIsEnabled = false;
-                break;
-            default:
-                _featureMatchingIsEnabled = true;
-                break;
-        }
+        //  - number of textures to render
+        _renderTextureCount = [self calcRenderTextureCountForPlatform:_devicePlatform];
+
+        //  - enable/disable feature matching
+        _isFeatureMatching = [self getFeatureMatchingForPlatform:_devicePlatform];
+        
+        //  - NSCache count limit
+        _cacheCountLimit = [self getCacheCountLimitForPlatform:_devicePlatform];
+        
     }
+    
+    NSLog(@"DeviceInfo singleton initialized, device platform = %@", _platformStr);
     
     return self;
 }
 
 
-- (fluxDevicePlatform)devicePlatformFromModelStr:(NSString *)cameraModelStr
+- (FluxDevicePlatform)devicePlatformForModelStr:(NSString *)deviceModelStr
 {
-    fluxDevicePlatform devicePlatform = fdp_unknown;
+    FluxDevicePlatform devicePlatform = fdp_unknown;
     
     int stridx = 0;
     
     // i
     for (int i = 1; (i < (sizeof(fluxDeviceModelStrings) / sizeof(NSString *))); i++)
     {
-        if ([cameraModelStr compare:(NSString *)fluxDeviceModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
+        if ([deviceModelStr compare:(NSString *)fluxDeviceModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
         {
             stridx = i;
             break;
@@ -241,6 +221,135 @@ const NSString *fluxDevicePlatformStrings[] = {
     return devicePlatform;
 }
 
+- (FluxCameraModel *) getCameraModelForPlatform:(FluxDevicePlatform)devplatform
+{
+ 
+    FluxCameraModel *cm = [FluxCameraModel alloc];
+  
+    switch (devplatform)
+    {
+            // TODO: iPad camera models need to be defined
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadAir:
+        case fdp_iPadMini1:
+        case fdp_iPadMini2:
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00412];
+            break;
+        case fdp_iPhone4s:
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00428];
+            break;
+        case fdp_iPhone5s:
+            cm = [cm initWithPixelSize:0.0000015 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00412];
+            break;
+        case fdp_unknown:
+        case fdp_simulator:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+        default:
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00412];
+            break;
+    }
+    
+    return cm;
+}
+
+- (int) calcRenderTextureCountForPlatform:(FluxDevicePlatform)devplatform
+{
+    int tc = 0;
+    
+    switch (devplatform)
+    {
+            // TODO: iPad camera models need to be defined
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            tc = 5;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            tc = 3;
+            break;
+    }
+
+    return tc;
+}
+
+//  - enable/disable feature matching
+- (bool) getFeatureMatchingForPlatform:(FluxDevicePlatform)devplatform
+{
+    bool fm = true;
+    
+    switch (devplatform)
+    {
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            fm = true;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            fm = false;
+            break;
+    }
+    
+    return fm;
+}
+
+- (int) getCacheCountLimitForPlatform:(FluxDevicePlatform)devplatform
+{
+    
+    int ccl = 100;
+    
+    // TODO: need to determine proper values for this setting...
+    /*
+    switch (devplatform)
+    {
+            // TODO: iPad camera models need to be defined
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            ccl = 5;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            ccl = 3;
+            break;
+    }
+    */
+    
+    return ccl;
+}
+
+- (FluxCameraModel *) cameraModelForDeviceModelString:(NSString *)deviceModelString;
+{
+    return [self getCameraModelForPlatform:[self devicePlatformForModelStr:(NSString *)deviceModelString]];
+}
 
 
 @end

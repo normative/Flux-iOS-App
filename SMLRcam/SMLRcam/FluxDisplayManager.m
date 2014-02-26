@@ -10,6 +10,7 @@
 #import "FluxDebugViewController.h"
 #import "FluxScanImageObject.h"
 #import "FluxOpenGLViewController.h"
+#import "FluxDeviceInfoSingleton.h"
 
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
@@ -83,7 +84,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         _openGLVC = nil;
         
         // Check if feature matching is supported
-        if (0)
+        if ([[FluxDeviceInfoSingleton sharedDeviceInfo] isFeatureMatching])
         {
             featureMatchingSupported = YES;
             

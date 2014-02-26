@@ -43,7 +43,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 @property (nonatomic) bool haveAPNSToken;
 
 + (NSString*)thisDeviceName;
-+ (FluxCameraModel)thisCameraModel;
+//+ (FluxCameraModelEnum)thisCameraModel;
 + (FluxDataManager *)theFluxDataManager;
 
 - (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image

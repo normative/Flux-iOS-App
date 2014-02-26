@@ -11,6 +11,8 @@
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
 #import <Accelerate/Accelerate.h>
+#import "FluxDeviceInfoSingleton.h"
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #pragma mark - OpenGL globals and types
@@ -1150,7 +1152,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _displayListHasChanged = 0;
     
     // TODO: Make a call here to set the maximum number of textures
-    number_textures = 3;
+    number_textures = [[FluxDeviceInfoSingleton sharedDeviceInfo] renderTextureCount];
     
     if (number_textures > (MAX_TEXTURES - 1))
     {

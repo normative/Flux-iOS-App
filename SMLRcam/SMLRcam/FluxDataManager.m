@@ -36,10 +36,10 @@ static FluxDataManager *_theFluxDataManager = nil;
                               encoding:NSUTF8StringEncoding];
 }
 
-+ (FluxCameraModel)thisCameraModel
-{
-    return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager thisDeviceName]];
-}
+//+ (FluxCameraModelEnum)thisCameraModel
+//{
+//    return [FluxScanImageObject cameraModelFromModelStr:[FluxDataManager thisDeviceName]];
+//}
 
 + (FluxDataManager *)theFluxDataManager
 {
