@@ -316,6 +316,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 -(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject withBGImage:(UIImage *)bgImage
 {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                          action:@"action"  // Event action (required)
+                                                           label:@"tap image"          // Event label
+                                                           value:nil] build]];    // Event value
     if(tappedImageObject == nil)
         return;
     
@@ -817,7 +822,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    self.screenName = @"Scan View";
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
     [self setupCameraView];
@@ -870,7 +875,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    self.screenName = @"Scan View";
 }
 
 - (void)viewWillAppear:(BOOL)animated{

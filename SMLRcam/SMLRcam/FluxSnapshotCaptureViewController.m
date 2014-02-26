@@ -11,6 +11,11 @@
 #import "AssetsLibrary/AssetsLibrary.h"
 #import "FluxImageCaptureViewController.h"
 
+#import "UICKeyChainStore.h"
+
+#import "GAI.h"
+#import "GAIFields.h"
+#import "GAIDictionaryBuilder.h"
 
 @interface FluxSnapshotCaptureViewController ()
 
@@ -69,6 +74,20 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setHidden:(BOOL)hidden{
+    [self.view setHidden:hidden];
+    if (!hidden) {
+        id tracker = [[GAI sharedInstance] defaultTracker];
+        
+        // This screen name value will remain set on the tracker and sent with
+        // hits until it is set to a new value or to nil.
+        [tracker set:kGAIScreenName
+               value:@"Snapshot Capture View"];
+        
+        [tracker send:[[GAIDictionaryBuilder createAppView] build]];
+    }
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{

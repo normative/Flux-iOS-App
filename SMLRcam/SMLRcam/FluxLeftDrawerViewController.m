@@ -20,6 +20,10 @@
 #import "FluxEditProfileViewController.h"
 #import "FluxSocialListViewController.h"
 
+#import "GAI.h"
+#import "GAIFields.h"
+#import "GAIDictionaryBuilder.h"
+
 @interface FluxLeftDrawerViewController ()
 
 @end
@@ -90,6 +94,17 @@
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
+    
+    // May return nil if a tracker has not already been initialized with a
+    // property ID.
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    
+    // This screen name value will remain set on the tracker and sent with
+    // hits until it is set to a new value or to nil.
+    [tracker set:kGAIScreenName
+           value:@"Left Drawer View"];
+    
+    [tracker send:[[GAIDictionaryBuilder createAppView] build]];
     
 //    [self.navigationController.navigationBar setBackgroundImage:[UIImage new]
 //                                                  forBarMetrics:UIBarMetricsDefault];

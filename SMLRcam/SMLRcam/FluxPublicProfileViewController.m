@@ -37,12 +37,12 @@
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    self.screenName = @"Public Profile View";
 }
 
 - (void)viewDidLoad
 {
     [self setTitle:@"Info"];
+    self.screenName = @"Public Profile View";
     [super viewDidLoad];
 }
 

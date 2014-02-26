@@ -11,6 +11,8 @@
 #import "FluxScanViewController.h"
 
 #import "UICKeyChainStore.h"
+#import "GAIFields.h"
+#import "GAIDictionaryBuilder.h"
 
 
 NSString* const FluxImageCaptureDidPop = @"FluxImageCaptureDidPop";
@@ -74,7 +76,6 @@ static int captureImageID = -1;
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    self.screenName = @"Image Capture View";
 }
 
 - (void)didReceiveMemoryWarning
@@ -94,6 +95,16 @@ static int captureImageID = -1;
                              [self.view setAlpha:1.0];
                          }
                          completion:nil];
+        // May return nil if a tracker has not already been initialized with a
+        // property ID.
+        id tracker = [[GAI sharedInstance] defaultTracker];
+        
+        // This screen name value will remain set on the tracker and sent with
+        // hits until it is set to a new value or to nil.
+        [tracker set:kGAIScreenName
+               value:@"Image Capture View"];
+        
+        [tracker send:[[GAIDictionaryBuilder createAppView] build]];
     }
     else{
         [UIView animateWithDuration:0.3f
