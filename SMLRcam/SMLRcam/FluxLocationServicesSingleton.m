@@ -65,12 +65,26 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         }
         
         [self loadTeleportLocationIndex];
+        
+        [self setupLogger];
     }
     
     [self initKFilter];
     [self startKFilter];
     
     return self;
+}
+
+- (void)setupLogger
+{
+    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
+    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
+    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;
+    
+    [DDLog addLogger:fileLogger];
+    [DDLog addLogger:[DDTTYLogger sharedInstance]];
+    
+    DDLogVerbose(@"Logging is setup (\"%@\")", [fileLogger.logFileManager logsDirectory]);
 }
 
 - (void)startLocating
@@ -351,6 +365,11 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
       newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
                                           course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    
+    DDLogVerbose(@"loc: %.8f, %.8f, alt: %.6f, h_acc: %.2f, v_acc: %.2f, head: %.2f, loc_kal: %.8f, %.8f, alt_kal: %.6f",
+                 self.rawlocation.coordinate.latitude, self.rawlocation.coordinate.longitude, self.rawlocation.altitude,
+                 self.rawlocation.horizontalAccuracy, self.rawlocation.verticalAccuracy, self.heading,
+                 newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
     
     if (isnan(newLocation.coordinate.latitude) || isnan(newLocation.coordinate.longitude))
     {
