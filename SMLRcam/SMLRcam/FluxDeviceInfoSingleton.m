@@ -228,7 +228,7 @@ const NSString *FluxDevicePlatformStrings[] = {
   
     switch (devplatform)
     {
-            // TODO: iPad camera models need to be defined
+        // TODO: iPad camera models need to be defined
         case fdp_iPad2:
         case fdp_iPad3:
         case fdp_iPad4:
@@ -261,7 +261,6 @@ const NSString *FluxDevicePlatformStrings[] = {
     
     switch (devplatform)
     {
-            // TODO: iPad camera models need to be defined
         case fdp_simulator:
         case fdp_iPadAir:
         case fdp_iPadMini2:
@@ -318,8 +317,6 @@ const NSString *FluxDevicePlatformStrings[] = {
     
     int ccl = 100;
     
-    // TODO: need to determine proper values for this setting...
-    /*
     switch (devplatform)
     {
             // TODO: iPad camera models need to be defined
@@ -329,7 +326,7 @@ const NSString *FluxDevicePlatformStrings[] = {
         case fdp_iPhone5s:
         case fdp_iPhone5:
         case fdp_iPhone5c:
-            ccl = 5;
+            ccl = 100;
             break;
         case fdp_unknown:
         case fdp_iPad2:
@@ -338,10 +335,9 @@ const NSString *FluxDevicePlatformStrings[] = {
         case fdp_iPadMini1:
         case fdp_iPhone4s:
         default:
-            ccl = 3;
+            ccl = 10;
             break;
     }
-    */
     
     return ccl;
 }

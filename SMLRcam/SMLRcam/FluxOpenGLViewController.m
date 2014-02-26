@@ -1151,7 +1151,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     _displayListHasChanged = 0;
     
-    // TODO: Make a call here to set the maximum number of textures
+    // Make a call here to set the maximum number of textures
     number_textures = [[FluxDeviceInfoSingleton sharedDeviceInfo] renderTextureCount];
     
     if (number_textures > (MAX_TEXTURES - 1))
