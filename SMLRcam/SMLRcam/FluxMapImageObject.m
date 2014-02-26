@@ -7,12 +7,24 @@
 //
 
 #import "FluxMapImageObject.h"
+#import "FluxLocationServicesSingleton.h"
 
 @implementation FluxMapImageObject
 
 - (NSString*)title
 {
-    return @"1 image";
+    return @"1";
+}
+
+- (NSString*)subtitle
+{
+    BOOL isMetric = [[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue];
+    if (isMetric) {
+        return [NSString stringWithFormat:@"±%.fm altitude", fabs(self.altitudeDiff)];
+    }
+    else{
+        return [NSString stringWithFormat:@"±%.fft altitude", fabs(self.altitudeDiff*0.3048)];
+    }
 }
 
 - (CLLocationCoordinate2D)coordinate
@@ -22,6 +34,11 @@
     theCoordinate.longitude = self.longitude;
     
     return theCoordinate;
+}
+
+- (double)altitudeDiff{
+    FluxLocationServicesSingleton*singleton = [FluxLocationServicesSingleton sharedManager];
+    return self.altitude-singleton.location.altitude;
 }
 
 @end

@@ -23,6 +23,7 @@
 
 #import "MIAnnotation.h"
 #import "MIAnnotation+Package.h"
+#import "FluxMapImageObject.h"
 
 @interface MIAnnotation ()
 {
@@ -85,21 +86,43 @@
 {
 	if (_title == nil && _readAvailable)
 	{
-		_title = [[NSString alloc] initWithFormat:@"%d Images", _count];
+		_title = [[NSString alloc] initWithFormat:@"%d", _count];
 	}
+    NSLog(@"Count: %i",_annotations.count);
 
 	return _title;
 }
 
-//- (NSString *)subtitle
-//{
-//	if (_subtitle == nil && _readAvailable)
-//	{
-//		_subtitle = [[NSString alloc] initWithFormat:@"lat:%.6f lon:%.6f", _coordinate.latitude, _coordinate.longitude];
-//	}
-//
-//	return _subtitle;
-//}
+
+- (NSString *)subtitle
+{
+    FluxMapImageObject*tmp = (FluxMapImageObject*)[self.allAnnotations anyObject];
+    //double smallest = tmp.latitude;
+    double largest = fabs(tmp.altitudeDiff);
+    
+    for(FluxMapImageObject* obj in self.allAnnotations) {
+//        if (obj.latitude < smallest) {
+//            smallest = obj.latitude;
+//        }
+        if (fabs(obj.latitude) > largest) {
+            largest = fabs(obj.altitudeDiff);
+        }
+    }
+    
+	if (_subtitle == nil && _readAvailable)
+	{
+        BOOL isMetric = [[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue];
+        if (isMetric) {
+            _subtitle = [[NSString alloc] initWithFormat:@"±%.fm altitude", largest];
+        }
+        else{
+            _subtitle = [[NSString alloc] initWithFormat:@"±%.fft altitude", largest*0.3048];
+        }
+		
+	}
+
+	return _subtitle;
+}
 
 #pragma mark - MIAnnotation
 
