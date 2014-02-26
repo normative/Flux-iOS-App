@@ -26,7 +26,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
-
+    //[self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
     //[self.navigationController setNavigationBarHidden:YES animated:YES];
 }
 
@@ -108,12 +108,14 @@
             [cell.profielImageButton.imageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                                      placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
                                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
-                                                                  //[[(NSMutableArray*)socialListImagesArray objectAtIndex:listMode] replaceObjectAtIndex:indexPath.row withObject:image];
-                                                                  [weakCell.profielImageButton setBackgroundImage:image forState:UIControlStateNormal];
-                                                                  //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                                                  //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                                                  [weakCell setNeedsLayout];
-                                                                  //}
+                                                                  if (image) {
+                                                                      //[[(NSMutableArray*)socialListImagesArray objectAtIndex:listMode] replaceObjectAtIndex:indexPath.row withObject:image];
+                                                                      [weakCell.profielImageButton setBackgroundImage:image forState:UIControlStateNormal];
+                                                                      //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                                      //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                                      [weakCell setNeedsLayout];
+                                                                      //}
+                                                                  }
                                                               }
                                                               failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
                                                                   NSLog(@"profile image done broke :(");

@@ -26,6 +26,10 @@ const long int auto_threshold_min = 100;
 const long int auto_threshold_max = 10000;
 const int auto_threshold_inc = 10;
 
+uint32_t const  fluxMagic = 0x58554C46;	// "FLUX" backwards so it reads correct if you cat the file
+uint16_t const  majorVersion = 1;
+uint16_t const  minorVersion = 0;
+
 @interface FluxMatcherWrapper ()
 {
     // Convert to grayscale before populating for performance improvement

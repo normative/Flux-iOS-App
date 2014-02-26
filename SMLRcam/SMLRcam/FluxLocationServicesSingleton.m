@@ -9,6 +9,7 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxMotionManagerSingleton.h"
 #import "FluxDebugViewController.h"
+#import "UIAlertView+Blocks.h"
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
@@ -22,7 +23,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 
 const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notification
 
-const double kalmanFilterMinHeadingAccuracy = 20.0;
+const double kalmanFilterMinHeadingAccuracy = 30.0;
 const double kalmanFilterMinHorizontalAccuracy = 20.0;
 const double kalmanFilterMinVerticalAccuracy = 20.0;
 
@@ -74,11 +75,34 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 - (void)startLocating
 {
+    NSLog(@"Location Services Status:%u",CLLocationManager.authorizationStatus);
+    
+    if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorized){
+        [self beginLocatingAfterPermissions];
+    }
+
+    else if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Welcome.", nil) message:@"Flux needs to know your location to place images, and find images around the world. Your location is never shared to anyone outside Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"Ok, I get It", nil) otherButtonTitles: nil];
+        [alert showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            [self beginLocatingAfterPermissions];
+        }];
+    }
+    else if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusDenied || CLLocationManager.authorizationStatus == kCLAuthorizationStatusRestricted){
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Uh oh...", nil) message:@"Location services is disabled for Flux. Go to the Settings app and enable location services for Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
+        [alert show];
+    }
+    //won't ever hit
+    else{
+        
+    }
+}
+
+- (void)beginLocatingAfterPermissions{
     [locationManager startUpdatingLocation];
     
     [[NSNotificationCenter defaultCenter] addObserver:self  selector:@selector(orientationChanged:)  name:UIDeviceOrientationDidChangeNotification  object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loadTeleportLocationIndex) name:FluxDebugDidChangeTeleportLocationIndex object:nil];
-
+    
     [self orientationChanged:nil];
     
     if ([CLLocationManager headingAvailable]) {
@@ -89,8 +113,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     }
     
     [self startUpdateTimer];
-
 }
+
 - (void)endLocating
 {
     [locationManager stopUpdatingLocation];

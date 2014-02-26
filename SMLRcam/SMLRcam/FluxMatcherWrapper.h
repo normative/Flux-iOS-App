@@ -23,10 +23,6 @@ typedef struct {
     int32_t class_id; //!< object class (if the keypoints need to be clustered by an object they belong to)
 } FluxKeyPoint;
 
-const uint32_t fluxMagic = 0x58554C46;	// "FLUX" backwards so it reads correct if you cat the file
-const uint16_t majorVersion = 1;
-const uint16_t minorVersion = 0;
-
 typedef struct {
 	uint32_t magic;
     char buff[28];
@@ -44,6 +40,10 @@ enum feature_matching_error_codes {
   feature_matching_homography_error = -2,
   feature_matching_extract_camera_features_error = -3
 };
+
+extern const uint32_t fluxMagic;// "FLUX" backwards so it reads correct if you cat the file
+extern const uint16_t majorVersion;
+extern const uint16_t minorVersion;
     
 @interface FluxMatcherWrapper : NSObject
 

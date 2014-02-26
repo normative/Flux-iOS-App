@@ -59,6 +59,15 @@
     shouldReloadArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO],[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO],nil];
     selectedIndexPath = nil;
     
+    //fix decenders in title label
+    UILabel*label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 140, 18)];
+    [label setText:@"My Network"];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:17.0]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setCenter:CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y)];
+    [self.navigationItem setTitleView:label];
+//    [self.navigationController.navigationBar addSubview:label];
     
     [self updateListForActiveMode];
 }
@@ -69,9 +78,10 @@
     [UIView animateWithDuration:0.2 animations:^{
         [self.view setAlpha:0.0];
     }];
-    
+    [self setTitle:@"My Network"];
     [self.searchUserVC removeFromParentViewController];
     [self.searchUserVC.view removeFromSuperview];
+    [self.navigationController.navigationBar setTitleVerticalPositionAdjustment:0.0 forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -79,7 +89,10 @@
     [super viewWillAppear:animated];
     [UIView animateWithDuration:0.25 animations:^{
         [self.view setAlpha:1.0];
+        //[self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
     }];
+    [self setTitle:@""];
+    
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
@@ -224,13 +237,16 @@
         [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                      placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
-                                                  [[(NSMutableArray*)socialListImagesArray objectAtIndex:currentMode] replaceObjectAtIndex:indexPath.row withObject:image];
-                                                  [weakCell.profileImageView setImage:image];
-                                                  weakCell.userObject.hasProfilePic = YES;
-                                                  //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                                  //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                                  [weakCell setNeedsLayout];
-                                                  //}
+                                                  if (image) {
+                                                      [[(NSMutableArray*)socialListImagesArray objectAtIndex:currentMode] replaceObjectAtIndex:indexPath.row withObject:image];
+                                                      [weakCell.profileImageView setImage:image];
+                                                      weakCell.userObject.hasProfilePic = YES;
+                                                      //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                      //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                      [weakCell setNeedsLayout];
+                                                      //}
+                                                  }
+
                                               }
                                               failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
                                                   NSLog(@"profile image done broke :(");
@@ -662,12 +678,29 @@
 //}
 
 - (IBAction)segmentedControllerDidChange:(id)sender {
-    [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:YES];
-    listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
-    [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:NO];
-    
-    if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0  || [(NSNumber*)[shouldReloadArray objectAtIndex:listMode]boolValue]){
-        [self updateListForActiveMode];
+    if (listMode == [(UISegmentedControl*)sender selectedSegmentIndex]) {
+        if ([(UITableView*) [socialTableViews objectAtIndex:listMode] numberOfRowsInSection:0] > 0) {
+            [(UITableView*) [socialTableViews objectAtIndex:listMode] scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            
+            //disable user interaction to avoid crashes during animation
+            [segmentedControl setUserInteractionEnabled:NO];
+        }
+    }
+    else{
+        [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:YES];
+        listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
+        [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:NO];
+        
+        if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0  || [(NSNumber*)[shouldReloadArray objectAtIndex:listMode]boolValue]){
+            [self updateListForActiveMode];
+        }
     }
 }
+
+//re-enable interaction after animation
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView{
+    [segmentedControl setUserInteractionEnabled:YES];
+}
+
+
 @end

@@ -81,9 +81,13 @@
     
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
     
+    [logoImageView removeFromSuperview];
+    [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [logoImageView setCenter:self.view.center];
+    [self.view addSubview:logoImageView];
     
     //[logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y+60, logoImageView.frame.size.width, logoImageView.frame.size.height)];
-    [logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
+    //[logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
     
     self.accountStore = [[ACAccountStore alloc] init];
     self.apiManager = [[TWAPIManager alloc] init];

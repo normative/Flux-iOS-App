@@ -64,8 +64,6 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     CGPoint _point;
     //openGL
     FluxOpenGLViewController*openGLController;
-    //map
-    FluxMapViewController *mapViewController;
     
     int uploadsCompleted;
     int totalUploads;

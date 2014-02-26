@@ -71,14 +71,39 @@
             [editBarButton setEnabled:YES];
         }
         else{
-            UILabel*noImagesLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 300, 100)];
-            [noImagesLabel setCenter:self.view.center];
+            UIView*emptyImagesView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 300, 300)];
+            UILabel*noImagesLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 265, 100)];
+            [noImagesLabel setCenter:CGPointMake(emptyImagesView.center.y, 230)];
+            [emptyImagesView setCenter:self.view.center];
+            [noImagesLabel setFont:[UIFont fontWithName:@"Akkurat" size:15.0]];
+            [noImagesLabel setTextColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
+            
+            NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+            paragraphStyle.lineSpacing = 6;
+            paragraphStyle.alignment = NSTextAlignmentCenter;
+            
+            NSDictionary *attribs = @{
+                                      NSForegroundColorAttributeName: noImagesLabel.textColor,
+                                      NSFontAttributeName: noImagesLabel.font,
+                                      NSParagraphStyleAttributeName : paragraphStyle
+                                      };
+            NSMutableAttributedString *attributedText =
+            [[NSMutableAttributedString alloc] initWithString:@"You haven't taken any pictures yet, but it doesn't have to be this way."
+                                                   attributes:attribs];
+            
+            [noImagesLabel setAttributedText:attributedText];
+            
+            
             [noImagesLabel setNumberOfLines:3];
-            [noImagesLabel setText:@"No images yet...\n \nGo snap some!"];
-            [noImagesLabel setTextAlignment:NSTextAlignmentCenter];
-            [noImagesLabel setFont:[UIFont fontWithName:@"Akkurat" size:20.0]];
-            [noImagesLabel setTextColor:[UIColor colorWithRed:74/255.0 green:92/255.0 blue:104/255.0 alpha:1.0]];
-            [self.view addSubview:noImagesLabel];
+            [emptyImagesView addSubview:noImagesLabel];
+            
+            UIImageView*imgView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 200, 200)];
+            [imgView setCenter:CGPointMake(emptyImagesView.center.x, imgView.frame.size.width/2)];
+            [imgView setImage:[UIImage imageNamed:@"empytPics"]];
+            [imgView setContentMode:UIViewContentModeScaleAspectFit];
+            [emptyImagesView addSubview:imgView];
+            
+            [self.view addSubview:emptyImagesView];
         }
         
     }];
@@ -177,14 +202,17 @@
         [cell.imageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
         [cell.imageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-//                 CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*0.68, image.size.width*0.68));
-//                 // or use the UIImage wherever you like
-//                 UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
-//                 CGImageRelease(imageRef);
-//
-//                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
-                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
-                 [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
+                 if (image) {
+                     //                 CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*0.68, image.size.width*0.68));
+                     //                 // or use the UIImage wherever you like
+                     //                 UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];
+                     //                 CGImageRelease(imageRef);
+                     //
+                     //                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
+                     [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
+                     [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
+                 }
+
              }
              failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
                  NSLog(@"failed image loading: %@", error);

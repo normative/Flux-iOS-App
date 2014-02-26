@@ -46,6 +46,13 @@
 //    label.adjustsFontSizeToFitWidth = YES;
 //    label.text = self.title;
 //    self.navigationItem.titleView = label;
+    [self setTitle:@""];
+    [self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
+}
+
+- (void)viewWillDisappear:(BOOL)animated{
+    [self setTitle:@"Settings"];
+    [self.navigationController.navigationBar setTitleVerticalPositionAdjustment:0.0 forBarMetrics:UIBarMetricsDefault];
 }
 
 - (void)viewDidLoad
@@ -54,10 +61,26 @@
     
     [self setTitle:@"Settings"];
     
+    UILabel*label = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 140, 18)];
+    [label setText:@"Settings"];
+    [label setTextAlignment:NSTextAlignmentCenter];
+    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:17.0]];
+    [label setTextColor:[UIColor whiteColor]];
+    [label setCenter:CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y)];
+    [self.navigationItem setTitleView:label];
+    
 //    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 //    initialMask = [[defaults objectForKey:@"Mask"] integerValue];
     
     [self.logoutButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.logoutButton.titleLabel.font.pointSize]];
+    UILabel*logoutLabel = [[UILabel alloc]initWithFrame:self.logoutButton.bounds];
+    [logoutLabel setTextAlignment:NSTextAlignmentCenter];
+    [logoutLabel setFont:self.logoutButton.titleLabel.font];
+    [logoutLabel setText:self.logoutButton.titleLabel.text];
+    [logoutLabel setTextColor:self.logoutButton.titleLabel.textColor];
+    [self.logoutButton setTitle:@"" forState:UIControlStateNormal];
+    [self.logoutButton setShowsTouchWhenHighlighted:YES];
+    [self.logoutButton addSubview:logoutLabel];
     
     self.accountStore = [[ACAccountStore alloc] init];
     self.apiManager = [[TWAPIManager alloc] init];

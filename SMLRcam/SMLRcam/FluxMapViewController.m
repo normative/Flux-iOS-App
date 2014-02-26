@@ -30,27 +30,32 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 #pragma mark - Callbacks
 
-- (void)didUpdateMapPins:(NSNotification*)notification{
-    if (self.fluxDisplayManager.fluxMapContentMetadata) {
+- (void)didUpdateMapPins:(NSNotification*)notification
+{
+    NSDictionary *userInfo = notification.userInfo;
+    NSArray *fluxMapContentMetadata = userInfo[FluxDisplayManagerMapPinListKey];
+    if (fluxMapContentMetadata)
+    {
         outstandingRequests--;
-        [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.fluxMapContentMetadata.count] forState:UIControlStateNormal];
+        [filterButton setTitle:[NSString stringWithFormat:@"%i",fluxMapContentMetadata.count] forState:UIControlStateNormal];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^
        {
-           if (self.fluxDisplayManager.fluxMapContentMetadata) {
+           if (fluxMapContentMetadata)
+           {
                
                dispatch_async(dispatch_get_main_queue(), ^
                               {
                                   [fluxMapView removeAnnotations:fluxMapView.annotations];
-                                  [fluxMapView addAnnotations:self.fluxDisplayManager.fluxMapContentMetadata];
-                                  //clear it.
-                                  [self.fluxDisplayManager setFluxMapContentMetadata:nil];
+                                  [fluxMapView addAnnotations:fluxMapContentMetadata];
                               });
            }
        });
     }
 }
 
-- (void)didFailToUpdatePins:(NSNotification*)notification{
+- (void)didFailToUpdatePins:(NSNotification*)notification
+{
+    outstandingRequests--;
     NSString*str = [[notification userInfo]objectForKey:@"errorString"];
     [ProgressHUD showError:str];
 }
@@ -182,7 +187,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupLocationManager];
     
-    firstRunDone = NO;
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
     [transitionFadeView setBackgroundColor:[UIColor blackColor]];
     [transitionFadeView setAlpha:0.0];
@@ -190,21 +194,15 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self.view addSubview:transitionFadeView];
 }
 
-- (void)viewWillAppear:(BOOL)animated{
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
-    
-    if (!firstRunDone)
-    {
-        [self setupMapView];
-        firstRunDone = YES;
-    }
-    else
-    {
-        [self didUpdateLocation:nil];
-    }
+
+    [self setupMapView];
 }
 
-- (void)viewDidAppear:(BOOL)animated{
+- (void)viewDidAppear:(BOOL)animated
+{
     [super viewDidAppear:animated];
     self.screenName = @"Map View";
 }
@@ -256,8 +254,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidUpdateLocation object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidUpdateMapPinList object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidFailToUpdateMapPinList object:nil];
-    
-    
 }
 
 #pragma mark Transitions
