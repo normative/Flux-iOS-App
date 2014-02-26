@@ -1658,7 +1658,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     init();
     
-    _projectionDistance = 15.0;
+    _projectionDistance = MAX_IMAGE_RADIUS;
     glEnable(GL_DEPTH_TEST);
     
     _takesnapshot =0;
