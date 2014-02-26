@@ -83,7 +83,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         _openGLVC = nil;
         
         // Check if feature matching is supported
-        if (1)
+        if (0)
         {
             featureMatchingSupported = YES;
             
