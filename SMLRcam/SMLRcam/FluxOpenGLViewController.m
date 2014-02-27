@@ -1257,7 +1257,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)didReceiveMemoryWarning
 {
     
-//    [super didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 //    
 //    if ([self isViewLoaded] && ([[self view] window] == nil)) {
 //        self.view = nil;
