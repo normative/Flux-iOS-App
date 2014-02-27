@@ -6,6 +6,8 @@ Release Notes:
 - snapshots can now be shared via Facebook + Twitter
 - new message when no profile images are available for display
 - other visual tweaks + enhancements
+- use vertical accuracy to help determine altitude range for queries
+- add fix so that empty feature file doesn't cause segfault
 
 ******************************************
 
