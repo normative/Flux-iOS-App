@@ -29,8 +29,10 @@
 		17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B961785F4B5005CF054 /* AssetsLibrary.framework */; };
 		17604B9E1785F522005CF054 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9D1785F522005CF054 /* CoreMedia.framework */; };
 		17604B9F1785FF78005CF054 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9A1785F4DA005CF054 /* QuartzCore.framework */; };
+		176BFA5218BBA23A00ABE99D /* FluxDeviceInfoSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 176BFA5118BBA23A00ABE99D /* FluxDeviceInfoSingleton.m */; };
 		17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */; };
 		17891FC3181D6C840064B2F9 /* FluxImageRenderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 17891FC2181D6C840064B2F9 /* FluxImageRenderElement.m */; };
+		17913EE418BD869A0045FC86 /* FluxCameraModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 17913EE318BD869A0045FC86 /* FluxCameraModel.m */; };
 		2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2204371917B925870017EA93 /* FluxMapViewController.m */; };
 		2204371C17B926260017EA93 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2204371B17B926260017EA93 /* MapKit.framework */; };
 		220FE06D17BEACAD00A7E379 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FE06C17BEACAD00A7E379 /* SenTestingKit.framework */; };
@@ -229,11 +231,15 @@
 		17604B981785F4CA005CF054 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		17604B9A1785F4DA005CF054 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		17604B9D1785F522005CF054 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		176BFA5018BBA23A00ABE99D /* FluxDeviceInfoSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDeviceInfoSingleton.h; sourceTree = "<group>"; };
+		176BFA5118BBA23A00ABE99D /* FluxDeviceInfoSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDeviceInfoSingleton.m; sourceTree = "<group>"; };
 		17891FBE181D69D80064B2F9 /* FluxTextureToImageMapElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTextureToImageMapElement.h; sourceTree = "<group>"; };
 		17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTextureToImageMapElement.m; sourceTree = "<group>"; };
 		17891FC1181D6C840064B2F9 /* FluxImageRenderElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageRenderElement.h; sourceTree = "<group>"; };
 		17891FC2181D6C840064B2F9 /* FluxImageRenderElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageRenderElement.m; sourceTree = "<group>"; };
 		17891FC4181D6D5C0064B2F9 /* FluxOpenGLCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FluxOpenGLCommon.h; sourceTree = "<group>"; };
+		17913EE218BD869A0045FC86 /* FluxCameraModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraModel.h; sourceTree = "<group>"; };
+		17913EE318BD869A0045FC86 /* FluxCameraModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraModel.m; sourceTree = "<group>"; };
 		2204371817B925870017EA93 /* FluxMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapViewController.h; sourceTree = "<group>"; };
 		2204371917B925870017EA93 /* FluxMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMapViewController.m; sourceTree = "<group>"; };
 		2204371B17B926260017EA93 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -855,6 +861,10 @@
 				171510181811BF7F006727EB /* FluxPedometer.m */,
 				AA61527B1822DC9300B8F2C8 /* FluxImageTools.h */,
 				AA61527C1822DC9300B8F2C8 /* FluxImageTools.m */,
+				176BFA5018BBA23A00ABE99D /* FluxDeviceInfoSingleton.h */,
+				176BFA5118BBA23A00ABE99D /* FluxDeviceInfoSingleton.m */,
+				17913EE218BD869A0045FC86 /* FluxCameraModel.h */,
+				17913EE318BD869A0045FC86 /* FluxCameraModel.m */,
 			);
 			name = Tools;
 			sourceTree = "<group>";
@@ -1573,6 +1583,7 @@
 				17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */,
 				AA2CBABB188F029C001ECF86 /* FluxCameraRollButton.m in Sources */,
 				AA9D0E8D184D392E0004823E /* TWAPIManager.m in Sources */,
+				176BFA5218BBA23A00ABE99D /* FluxDeviceInfoSingleton.m in Sources */,
 				AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */,
 				AA9F86081868AFF600AB98A7 /* DACircularProgressView.m in Sources */,
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
@@ -1599,6 +1610,7 @@
 				AAAAD70018A1791800F5F3DB /* DZNPhotoDisplayViewCell.m in Sources */,
 				AA4CE10017B43579008D04BE /* FluxLocationServicesSingleton.m in Sources */,
 				AAAD9A3F187DAE6B003BC1FF /* FluxUserLocationAnnotation.m in Sources */,
+				17913EE418BD869A0045FC86 /* FluxCameraModel.m in Sources */,
 				F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */,
 				AA9F86131868AFF600AB98A7 /* IDMTapDetectingImageView.m in Sources */,
 				AA2CBAC6188F31C2001ECF86 /* UIAlertView+Blocks.m in Sources */,

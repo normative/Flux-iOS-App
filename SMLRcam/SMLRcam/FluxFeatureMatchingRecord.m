@@ -46,6 +46,7 @@
 {
     BOOL retval = false;
     retval = ((_ire != nil) && (_ire.imageMetadata != nil) && (_ire.imageMetadata.features != nil));
+    
     if (retval)
     {
         // secondary tests...
@@ -53,7 +54,7 @@
         binHeader *header = (binHeader *)[_ire.imageMetadata.features bytes];
         
         // parse out and validate the header
-        retval = ((header->magic == fluxMagic) && (header->major == 1));
+        retval = (header && (header->magic == fluxMagic) && (header->major == 1));
     }
     
     return  retval;

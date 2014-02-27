@@ -11,6 +11,8 @@
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
 #import <Accelerate/Accelerate.h>
+#import "FluxDeviceInfoSingleton.h"
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #pragma mark - OpenGL globals and types
@@ -29,7 +31,7 @@ err = glGetError();								\
 
 const float MAX_IMAGE_RADIUS = 15.0;
 
-const int number_textures = 5;
+const int default_number_textures = 5;
 
 // Uniform index.
 enum
@@ -1148,6 +1150,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [super viewDidLoad];
     
     _displayListHasChanged = 0;
+    
+    // Make a call here to set the maximum number of textures
+    number_textures = [[FluxDeviceInfoSingleton sharedDeviceInfo] renderTextureCount];
+    
+    if (number_textures > (MAX_TEXTURES - 1))
+    {
+        // Need to keep a texture for the background
+        NSLog(@"Requested number of textures exceeds maximum. Setting to default value of %d.", default_number_textures);
+        number_textures = default_number_textures;
+    }
 
     self.renderList = [[NSMutableArray alloc] initWithCapacity:number_textures];
     

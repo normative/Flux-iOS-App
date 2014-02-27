@@ -32,6 +32,7 @@
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix4 _tBiasMVP[MAX_TEXTURES];
     float _projectionDistance;
+    int number_textures;
     
     int _validMetaData[MAX_TEXTURES];
     float _rotation;

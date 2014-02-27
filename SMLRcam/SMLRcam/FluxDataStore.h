@@ -38,5 +38,6 @@ extern NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID;
 
 - (void)debugByShowingCachedImageKeys;
 - (void)cleanupNonLocalContentWithLocalIDArray:(NSArray *)localItems;
+- (void)removeUnusedItemsFromImageCache;
 
 @end
