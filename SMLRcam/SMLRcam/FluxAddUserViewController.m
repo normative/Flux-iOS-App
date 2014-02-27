@@ -37,6 +37,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.screenName = @"Add Users View";
     [topBarColored setFrame:CGRectMake(topBarColored.frame.origin.x, topBarColored.frame.origin.y, topBarColored.frame.size.width, 64)];
     
     UIBarButtonItem *negativeSeperator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
@@ -188,14 +189,14 @@
                                          placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
                                                   success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
                                                       if (resultsImageArray.count > indexPath.row) {
-                                                          [resultsImageArray replaceObjectAtIndex:indexPath.row withObject:image];
-                                                          [weakCell.profileImageView setImage:image];
-                                                          //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                                          //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                                          [weakCell setNeedsLayout];
+                                                          if (image) {
+                                                              [resultsImageArray replaceObjectAtIndex:indexPath.row withObject:image];
+                                                              [weakCell.profileImageView setImage:image];
+                                                              //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                              //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                              [weakCell setNeedsLayout];
+                                                          }
                                                       }
-                                                      
-                                                      //}
                                                   }
                                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
                                                       NSLog(@"profile image done broke :(");

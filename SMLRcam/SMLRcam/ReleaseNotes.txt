@@ -1,6 +1,11 @@
 Release Notes:
 - updates to address at least one of the iPad issues
 - release memory used by MapView when exiting view
+- social management updates
+- new map pins
+- snapshots can now be shared via Facebook + Twitter
+- new message when no profile images are available for display
+- other visual tweaks + enhancements
 
 ******************************************
 
@@ -60,6 +65,7 @@ Release Notes:
 - App now uses a single filter for both scan and map views
 - Social filters now include counts + overall image count is now more accurate
 - Other minor visual tweaks + improvements
+
 
 ******************************************
 

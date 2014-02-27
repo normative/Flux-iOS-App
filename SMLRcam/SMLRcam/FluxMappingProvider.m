@@ -201,7 +201,7 @@
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"id":   @"imageID"}];
     
-    [mapping addAttributeMappingsFromArray:@[@"longitude", @"latitude"]];
+    [mapping addAttributeMappingsFromArray:@[@"longitude", @"latitude", @"altitude"]];
     
     return mapping;
 }

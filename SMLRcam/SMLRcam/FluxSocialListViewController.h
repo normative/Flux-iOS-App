@@ -12,6 +12,9 @@
 #import "FluxFriendFollowerCell.h"
 #import "FluxAddUserViewController.h"
 #import "FluxPublicProfileViewController.h"
+#import "FluxSegmentedControl.h"
+
+#import "GAITrackedViewController.h"
 
 typedef enum SocialListMode : NSUInteger {
     friendMode = 0,
@@ -19,9 +22,9 @@ typedef enum SocialListMode : NSUInteger {
     followerMode = 2
 } SocialListMode;
 
-@interface FluxSocialListViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate, FluxAddUserViewControllerDelegate>{
+@interface FluxSocialListViewController : GAITrackedViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate, FluxAddUserViewControllerDelegate>{
     SocialListMode listMode;
-    IBOutlet UISegmentedControl *segmentedControl;
+    IBOutlet FluxSegmentedControl *segmentedControl;
     IBOutlet UITableView *friendsTableView;
     IBOutlet UITableView *followingTableView;
     IBOutlet UITableView *followersTableView;

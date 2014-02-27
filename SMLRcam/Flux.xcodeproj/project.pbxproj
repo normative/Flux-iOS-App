@@ -142,6 +142,7 @@
 		AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD70F18A5267200F5F3DB /* FluxConnectionObject.m */; };
 		AAAAD71318A912CE00F5F3DB /* FluxPublicProfileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD71218A912CE00F5F3DB /* FluxPublicProfileCell.m */; };
 		AAAAD71718AC03E800F5F3DB /* CustomBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAAD71618AC03E800F5F3DB /* CustomBadge.m */; };
+		AAAB37E118BE46F000A334BB /* FluxSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAB37E018BE46F000A334BB /* FluxSegmentedControl.m */; };
 		AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */; };
 		AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A381871F0EA003BC1FF /* FluxPhotoCollectionCell.m */; };
 		AAAD9A3C187B14CE003BC1FF /* FluxRegisterUsernameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AAAD9A3B187B14CE003BC1FF /* FluxRegisterUsernameViewController.m */; };
@@ -440,6 +441,8 @@
 		AAAAD71218A912CE00F5F3DB /* FluxPublicProfileCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPublicProfileCell.m; sourceTree = "<group>"; };
 		AAAAD71518AC03E800F5F3DB /* CustomBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomBadge.h; sourceTree = "<group>"; };
 		AAAAD71618AC03E800F5F3DB /* CustomBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomBadge.m; sourceTree = "<group>"; };
+		AAAB37DF18BE46F000A334BB /* FluxSegmentedControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSegmentedControl.h; sourceTree = "<group>"; };
+		AAAB37E018BE46F000A334BB /* FluxSegmentedControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSegmentedControl.m; sourceTree = "<group>"; };
 		AAAC6C0A17C553AF00B7EAD1 /* FluxTimeFilterControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTimeFilterControl.h; sourceTree = "<group>"; };
 		AAAC6C0B17C553AF00B7EAD1 /* FluxTimeFilterControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterControl.m; sourceTree = "<group>"; };
 		AAAD9A371871F0EA003BC1FF /* FluxPhotoCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPhotoCollectionCell.h; sourceTree = "<group>"; };
@@ -1282,6 +1285,8 @@
 				AAB066F4188994BC002914B2 /* FluxSocialListViewController.m */,
 				AAB066F61889978B002914B2 /* FluxFriendFollowerCell.h */,
 				AAB066F71889978B002914B2 /* FluxFriendFollowerCell.m */,
+				AAAB37DF18BE46F000A334BB /* FluxSegmentedControl.h */,
+				AAAB37E018BE46F000A334BB /* FluxSegmentedControl.m */,
 			);
 			name = "Social Lists";
 			sourceTree = "<group>";
@@ -1568,6 +1573,7 @@
 				AAAAD70518A2D55C00F5F3DB /* FluxAddUserViewController.m in Sources */,
 				AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */,
 				AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */,
+				AAAB37E118BE46F000A334BB /* FluxSegmentedControl.m in Sources */,
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
 				AA2F9DBE189AAD450030F749 /* FluxDebugViewController.m in Sources */,
 				F2B2C1F7183E41CE00D32084 /* FluxMatcherWrapper.mm in Sources */,
