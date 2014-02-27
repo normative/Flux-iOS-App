@@ -17,8 +17,9 @@ NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidComplete
 
 NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImageLocalID";
 
-float const altitudeLowRange = 60.0;
-float const altitudeHighRange = 60.0;
+float const minAltitudeRange = 6.0;
+//float const altitudeLowRange = 60.0;
+//float const altitudeHighRange = 60.0;
 float const altitudeMin = -100000;
 float const altitudeMax =  100000;
 
@@ -63,6 +64,17 @@ static FluxDataManager *_theFluxDataManager = nil;
     return self;
 }
 
+- (float) altitudeLowRangeWithVerticalAccuracy:(double)va
+{
+    return MAX(minAltitudeRange, va);
+}
+
+- (float) altitudeHighRangeWithVerticalAccuracy:(double)va
+{
+    return MAX(minAltitudeRange, va);
+}
+
+float const altitudeHighRange = 60.0;
 - (FluxRequestID *) uploadImageryData:(FluxScanImageObject *)metadata withImage:(UIImage *)image
                    withDataRequest:(FluxDataRequest *)dataRequest
                    withHistoricalImage:(UIImage *)historicalImg
@@ -131,8 +143,8 @@ static FluxDataManager *_theFluxDataManager = nil;
                                             andRadius:radius
 //                                            andMinAlt:dataRequest.searchFilter.altMin
 //                                            andMaxAlt:dataRequest.searchFilter.altMax
-                                            andMinAlt:location.altitude - altitudeLowRange
-                                            andMaxAlt:location.altitude + altitudeHighRange
+                                            andMinAlt:location.altitude - [self altitudeLowRangeWithVerticalAccuracy:location.verticalAccuracy]
+                                            andMaxAlt:location.altitude + [self altitudeHighRangeWithVerticalAccuracy:location.verticalAccuracy]
                                        andMaxReturned:dataRequest.maxReturnItems
                                             andFilter:dataRequest.searchFilter
                                          andRequestID:requestID];
@@ -323,7 +335,7 @@ static FluxDataManager *_theFluxDataManager = nil;
         else
         {
             dataRequest.imageType = imageType;      // reset image type to specific rather than relative
-            sizeString = fluxImageTypeStrings[imageType];
+            sizeString = (NSString *)fluxImageTypeStrings[imageType];
 
             NSMutableArray *downloadRequestsForID = [downloadQueueReceivers objectForKey:curLocalID];
             BOOL validDownloadInProgress = NO;
@@ -445,8 +457,8 @@ static FluxDataManager *_theFluxDataManager = nil;
     {
         [networkServices getTagsForLocationFiltered:location.coordinate
                                           andRadius:radius
-                                          andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
-                                          andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
+                                          andMinAlt:(altitudeSensitive ? (location.altitude - [self altitudeLowRangeWithVerticalAccuracy:location.verticalAccuracy]) : altitudeMin)
+                                          andMaxAlt:(altitudeSensitive ? (location.altitude + [self altitudeHighRangeWithVerticalAccuracy:location.verticalAccuracy]) : altitudeMax)
                                      andMaxReturned:maxCount andFilter:dataRequest.searchFilter
                                        andRequestID:requestID];
     }
@@ -464,8 +476,8 @@ static FluxDataManager *_theFluxDataManager = nil;
     // Begin upload of image to server
     [networkServices getImageCountsForLocationFiltered:location.coordinate
                                              andRadius:radius
-                                             andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
-                                             andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
+                                             andMinAlt:(altitudeSensitive ? (location.altitude - [self altitudeLowRangeWithVerticalAccuracy:location.verticalAccuracy]) : altitudeMin)
+                                             andMaxAlt:(altitudeSensitive ? (location.altitude + [self altitudeHighRangeWithVerticalAccuracy:location.verticalAccuracy]) : altitudeMax)
                                              andFilter:[[FluxDataFilter alloc]init]
                                           andRequestID:requestID];
     return requestID;
@@ -481,8 +493,8 @@ static FluxDataManager *_theFluxDataManager = nil;
     // Begin upload of image to server
     [networkServices getFilteredImageCountForLocation:location.coordinate
                                              andRadius:radius
-                                             andMinAlt:(altitudeSensitive ? (location.altitude - altitudeLowRange) : altitudeMin)
-                                             andMaxAlt:(altitudeSensitive ? (location.altitude + altitudeHighRange) : altitudeMax)
+                                             andMinAlt:(altitudeSensitive ? (location.altitude - [self altitudeLowRangeWithVerticalAccuracy:location.verticalAccuracy]) : altitudeMin)
+                                             andMaxAlt:(altitudeSensitive ? (location.altitude + [self altitudeHighRangeWithVerticalAccuracy:location.verticalAccuracy]) : altitudeMax)
                                              andFilter:dataRequest.searchFilter
                                           andRequestID:requestID];
     return requestID;
