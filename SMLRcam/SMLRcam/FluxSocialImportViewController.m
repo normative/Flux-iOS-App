@@ -69,6 +69,7 @@
     if (self.serviceType == TwitterService) {
         // pull Twitter credentials and fire them up to the import API
         [self setTitle:@"Twitter"];
+                [ProgressHUD show:@"Retrieving Twitter Contacts"];
         NSString *twtoken = [UICKeyChainStore stringForKey:FluxAccessTokenKey service:TwitterService];
         NSString *twtokensecret = [UICKeyChainStore stringForKey:FluxAccessTokenSecretKey service:TwitterService];
         credentials = [[NSDictionary alloc] initWithObjectsAndKeys:twtoken, @"access_token", twtokensecret, @"access_token_secret", nil];
@@ -78,6 +79,7 @@
 
     else if (self.serviceType == FacebookService)
     {
+                [ProgressHUD show:@"Retrieving Facebook Contacts"];
         [self setTitle:@"Facebook"];
         // pull Facebook credentials and fire them up to the import API
 //        [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
@@ -129,6 +131,7 @@
             for (int i = 0; i<self.importFluxUserArray.count; i++) {
                 [self.importFluxUserImagesArray addObject:[NSNumber numberWithBool:NO]];
             }
+            [ProgressHUD dismiss];
             [self.importUserTableView reloadData];
         }];
         
