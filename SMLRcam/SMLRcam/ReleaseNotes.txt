@@ -1,4 +1,11 @@
 Release Notes:
+******************************************
+
+V0.21 B01
+
+Released: 2014-02-28 17:30:00
+
+Release Notes:
 - updates to address iPad mini 1G memory issues
 - release memory used by MapView when exiting view
 - social management updates
