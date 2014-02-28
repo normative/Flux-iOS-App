@@ -24,4 +24,6 @@
 - (IBAction)shareButtonAction:(id)sender;
 - (void)updateSnapshotButton;
 
+- (void)setHidden:(BOOL)hidden;
+
 @end

@@ -22,6 +22,8 @@ NSString* const FluxDebugDidChangePedometerCountDisplay = @"FluxDebugDidChangePe
 NSString* const FluxDebugPedometerCountDisplayKey = @"FluxDebugPedometerCountDisplayKey";
 NSString* const FluxDebugDidChangeHistoricalPhotoPicker = @"FluxDebugDidChangeHistoricalPhotoPicker";
 NSString* const FluxDebugHistoricalPhotoPickerKey = @"FluxDebugHistoricalPhotoPickerKey";
+NSString* const FluxDebugDidChangeHeadingCorrectedMotion = @"FluxDebugDidChangeHeadingCorrectedMotion";
+NSString* const FluxDebugHeadingCorrectedMotionKey = @"FluxDebugHeadingCorrectedMotionKey";
 
 @interface FluxDebugViewController ()
 
@@ -50,6 +52,7 @@ NSString* const FluxDebugHistoricalPhotoPickerKey = @"FluxDebugHistoricalPhotoPi
     [switch1 setOn:[[defaults objectForKey:FluxDebugMatchDebugImageOutputKey] boolValue]];
     [switch2 setOn:[[defaults objectForKey:FluxDebugPedometerCountDisplayKey] boolValue]];
     [switch3 setOn:[[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue]];
+    [switch4 setOn:[[defaults objectForKey:FluxDebugHeadingCorrectedMotionKey] boolValue]];
     
 	// Do any additional setup after loading the view.
 }
@@ -113,6 +116,16 @@ NSString* const FluxDebugHistoricalPhotoPickerKey = @"FluxDebugHistoricalPhotoPi
     [defaults setObject:@([(UISwitch*)sender isOn]) forKey:FluxDebugHistoricalPhotoPickerKey];
     [defaults synchronize];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeHistoricalPhotoPicker
+                                                        object:self userInfo:nil];
+}
+
+- (IBAction)switch4DidChange:(id)sender
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:@([(UISwitch*)sender isOn]) forKey:FluxDebugHeadingCorrectedMotionKey];
+    [defaults synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeHeadingCorrectedMotion
                                                         object:self userInfo:nil];
 }
 

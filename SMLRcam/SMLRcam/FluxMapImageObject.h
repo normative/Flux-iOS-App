@@ -13,6 +13,8 @@
 
 @property (nonatomic) double longitude;
 @property (nonatomic) double latitude;
+@property (nonatomic) double altitude;
+@property (nonatomic) double altitudeDiff;
 
 @property (nonatomic) int imageID;
 

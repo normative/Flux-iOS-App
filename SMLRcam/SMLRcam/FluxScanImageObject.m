@@ -78,16 +78,16 @@ const NSString *fluxCameraModelStrings[] = {
 
 #pragma mark -- utility / class methods
 
-+ (FluxCameraModel)cameraModelFromModelStr:(NSString *)cameraModelStr
++ (FluxCameraModelEnum)cameraModelFromModelStr:(NSString *)cameraModelStr
 {
-    FluxCameraModel cameraModel = unknown_cam;
+    FluxCameraModelEnum cameraModel = unknown_cam;
     
     int stridx = 0;
     
     // i
     for (int i = 1; (i < (sizeof(fluxCameraModelStrings) / sizeof(NSString *))); i++)
     {
-        if ([cameraModelStr compare:fluxCameraModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
+        if ([cameraModelStr compare:(NSString *)fluxCameraModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
         {
             stridx = i;
             break;

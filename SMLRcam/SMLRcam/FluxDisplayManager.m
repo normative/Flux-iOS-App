@@ -10,6 +10,7 @@
 #import "FluxDebugViewController.h"
 #import "FluxScanImageObject.h"
 #import "FluxOpenGLViewController.h"
+#import "FluxDeviceInfoSingleton.h"
 
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
@@ -76,16 +77,27 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         
         _imageRequestCountThumb = 0;
         _imageRequestCountQuart = 0;
-        _featureRequestCount = 0;
 
         _imageRequestCountLock = [[NSLock alloc]init];
-        _featureRequestCountLock = [[NSLock alloc] init];
         
         _openGLVC = nil;
         
-        _fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
-        
-        [self setupFeatureMatching];
+        // Check if feature matching is supported
+        if ([[FluxDeviceInfoSingleton sharedDeviceInfo] isFeatureMatching])
+        {
+            featureMatchingSupported = YES;
+            
+            _fluxFeatureMatchingQueue = [[FluxFeatureMatchingQueue alloc] init];
+            
+            [self setupFeatureMatching];
+            
+            _featureRequestCount = 0;
+            _featureRequestCountLock = [[NSLock alloc] init];
+        }
+        else
+        {
+            featureMatchingSupported = NO;
+        }
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
@@ -103,6 +115,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMatchImage:) name:FluxDisplayManagerDidMatchImage object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didResetKalmanFilter:) name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(featureMatchingKalmanFilterStateChange) name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     }
     
     return self;
@@ -125,8 +138,12 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDisplayManagerDidMatchImage object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidResetKalmanFilter object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidChangeKalmanFilterState object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     
-    [self.fluxFeatureMatchingQueue shutdownMatchQueue];
+    if (featureMatchingSupported)
+    {
+        [self.fluxFeatureMatchingQueue shutdownMatchQueue];
+    }
 }
 
 #pragma mark - Notifications
@@ -139,6 +156,11 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     
     FluxImageRenderElement *ire = [self getRenderElementForKey:localID];
     ire.imageTypesFetched = ire.imageTypesFetched & ~(1 << imageType);
+}
+
+- (void)didReceiveMemoryWarning:(NSNotification *)notification
+{
+    [self.fluxDataManager removeUnusedItemsFromImageCache];
 }
 
 #pragma mark Location
@@ -355,11 +377,14 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 {
     NSLog(@"Kalman Reset: All cached quantities being reset.");
     
-    // Delete all queued matching tasks
-    [self.fluxFeatureMatchingQueue deleteMatchRequests];
+    if (featureMatchingSupported)
+    {
+        // Delete all queued matching tasks
+        [self.fluxFeatureMatchingQueue deleteMatchRequests];
 
-    // Reset cached quantities
-    [self.fluxDataManager resetAllFeatureMatches];
+        // Reset cached quantities
+        [self.fluxDataManager resetAllFeatureMatches];
+    }
     
     // Request a new list of nearby content based on the possibly different location
     [self requestNearbyItems];
@@ -376,7 +401,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         // This has the side-effect of queueing up jobs for feature matching, but we probably should be doing it anyways
         [self calculateTimeAdjustedImageList];
     }
-    else
+    else if (featureMatchingSupported)
     {
         // Delete any feature matching jobs in the queue (probably not valid).
         [self.fluxFeatureMatchingQueue deleteMatchRequests];
@@ -588,12 +613,15 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
             }
         }];
         
-        // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
-        // We are checking the un-filtered list to maximize chances of finding a match
-        // Also pass in display list so that priority can be given to images currently viewed
-        // Since this code is called very frequently, the retry logic will also be handled here for failed matches
-        [self checkForFeatureMatchingTasksWithNearbyItems:self.nearbyUnPrunedList withDisplayItems:self.displayList];
-
+        if (featureMatchingSupported)
+        {
+            // Check nearbyList for feature matching tasks to spawn off (since tasks are spawned off, this routine is quick)
+            // We are checking the un-filtered list to maximize chances of finding a match
+            // Also pass in display list so that priority can be given to images currently viewed
+            // Since this code is called very frequently, the retry logic will also be handled here for failed matches
+            [self checkForFeatureMatchingTasksWithNearbyItems:self.nearbyUnPrunedList withDisplayItems:self.displayList];
+        }
+        
         inCalcTimeAdjImageList = false;
     }
     [_displayListLock unlock];

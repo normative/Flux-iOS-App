@@ -28,7 +28,7 @@
 		self.window = [appDelegate performSelector:@selector(window)];
 	else self.window = [[UIApplication sharedApplication] keyWindow];
     
-    
+    self.screenName = @"Social List View";
     
     [self.view setAlpha:0.0];
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
