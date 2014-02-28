@@ -308,6 +308,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                      }
                                  }
                                  else{
+                                     [self createAliasWithName:user.username andServiceID: 3];
                                      if ([delegate respondsToSelector:@selector(SocialManager:didLinkFacebookAccountWithName:)]) {
                                          [delegate SocialManager:self didLinkFacebookAccountWithName:user.name];
                                      }
