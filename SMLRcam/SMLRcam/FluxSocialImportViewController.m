@@ -50,8 +50,12 @@
     else if ([contactType isEqualToString:@"Facebook"])
     {
         // pull Facebook credentials and fire them up to the import API
-        NSString *fbtoken = [UICKeyChainStore stringForKey:FluxAccessTokenKey service:FacebookService];
-        NSString *fbtokensecret = [UICKeyChainStore stringForKey:FluxAccessTokenSecretKey service:FacebookService];
+//        [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
+//        [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
+//        [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
+
+        NSString *fbtoken = [UICKeyChainStore stringForKey:FluxTokenKey service:FacebookService];
+        NSString *fbtokensecret = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
         credentials = [[NSDictionary alloc] initWithObjectsAndKeys:fbtoken, @"access_token", fbtokensecret, @"access_token_secret", nil];
         
         serviceID = 3;
