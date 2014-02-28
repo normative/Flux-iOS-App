@@ -274,7 +274,7 @@ static int captureImageID = -1;
     // Collect position and orientation information prior to copying image
     CLLocation *location = self.locationManager.rawlocation;
     //CLLocation *bestlocation = locationManager.location;
-    CMAttitude *att = self.motionManager.attitude;
+    CMQuaternion att = self.motionManager.attitude;
     CLLocationDirection heading = self.locationManager.heading;
     
     __block NSDate *endTime = [NSDate date];
@@ -334,13 +334,13 @@ static int captureImageID = -1;
                                                                  andlongitude:location.coordinate.longitude
                                                                   andaltitude:location.altitude
                                                                    andHeading:heading
-                                                                       andYaw:att.yaw
-                                                                     andPitch:att.pitch
-                                                                      andRoll:att.roll
-                                                                        andQW:att.quaternion.w
-                                                                        andQX:att.quaternion.x
-                                                                        andQY:att.quaternion.y
-                                                                        andQZ:att.quaternion.z
+                                                                       andYaw:0.0
+                                                                     andPitch:0.0
+                                                                      andRoll:0.0
+                                                                        andQW:att.w
+                                                                        andQX:att.x
+                                                                        andQY:att.y
+                                                                        andQZ:att.z
                                                                         andHorizAccuracy:location.horizontalAccuracy
                                                                         andVertAccuracy:location.verticalAccuracy];
              
