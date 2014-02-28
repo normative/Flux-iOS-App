@@ -67,8 +67,15 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 - (void)linkTwitter{
     
     NSString*username = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
+    
+    //If we've already linked then return the active account info
     if (username) {
-        [UICKeyChainStore removeAllItemsForService:TwitterService];
+        if (!isRegister) {
+            if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
+                [delegate SocialManager:self didLinkTwitterAccountWithUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
+                return;
+            }
+        }
     }
     
     
@@ -178,10 +185,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
             
             if (parts.count > 1) {
-                if (!isRegister) {
-                    [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
-                    [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
-                }
                 
                 // [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
                 UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:TwitterService];

@@ -67,6 +67,7 @@
 		AA2F9DD0189AEA690030F749 /* border2.png in Resources */ = {isa = PBXBuildFile; fileRef = AA2F9DCC189AEA690030F749 /* border2.png */; };
 		AA2F9DD1189AEA690030F749 /* border4.png in Resources */ = {isa = PBXBuildFile; fileRef = AA2F9DCD189AEA690030F749 /* border4.png */; };
 		AA2F9DD2189AEA690030F749 /* border3.png in Resources */ = {isa = PBXBuildFile; fileRef = AA2F9DCE189AEA690030F749 /* border3.png */; };
+		AA30B6D018BF93D200E60E49 /* FluxImportContactCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA30B6CF18BF93D200E60E49 /* FluxImportContactCell.m */; };
 		AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */; };
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
@@ -91,6 +92,7 @@
 		AA69DA96182D4DF800B0BEED /* FluxTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA95182D4DF800B0BEED /* FluxTextField.m */; };
 		AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */; };
 		AA69DA9F18313B9F00B0BEED /* FluxCountTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA9E18313B9E00B0BEED /* FluxCountTableViewCell.m */; };
+		AA6D071D18BFFDE00082CBC3 /* FluxSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA6D071C18BFFDE00082CBC3 /* FluxSearchCell.m */; };
 		AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxCheckboxCell.m */; };
 		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
 		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
@@ -289,6 +291,8 @@
 		AA2F9DCC189AEA690030F749 /* border2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = border2.png; sourceTree = "<group>"; };
 		AA2F9DCD189AEA690030F749 /* border4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = border4.png; sourceTree = "<group>"; };
 		AA2F9DCE189AEA690030F749 /* border3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = border3.png; sourceTree = "<group>"; };
+		AA30B6CE18BF93D200E60E49 /* FluxImportContactCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImportContactCell.h; sourceTree = "<group>"; };
+		AA30B6CF18BF93D200E60E49 /* FluxImportContactCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImportContactCell.m; sourceTree = "<group>"; };
 		AA349A1717C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDrawerSegmentedTableViewCell.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA349A1F17C3BB4C00C72E24 /* ImageViewerImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageViewerImageUtil.h; sourceTree = "<group>"; };
@@ -333,6 +337,8 @@
 		AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTextFieldCell.m; sourceTree = "<group>"; };
 		AA69DA9D18313B9E00B0BEED /* FluxCountTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCountTableViewCell.h; sourceTree = "<group>"; };
 		AA69DA9E18313B9E00B0BEED /* FluxCountTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCountTableViewCell.m; sourceTree = "<group>"; };
+		AA6D071B18BFFDE00082CBC3 /* FluxSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSearchCell.h; sourceTree = "<group>"; };
+		AA6D071C18BFFDE00082CBC3 /* FluxSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSearchCell.m; sourceTree = "<group>"; };
 		AA70841217B2B93D005D4F9F /* FluxCheckboxCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCheckboxCell.h; sourceTree = "<group>"; };
 		AA70841317B2B93D005D4F9F /* FluxCheckboxCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCheckboxCell.m; sourceTree = "<group>"; };
 		AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTCheckboxButton.h; sourceTree = "<group>"; };
@@ -1323,6 +1329,10 @@
 				AADFF1EE18B54109003BEE8C /* FluxSocialImportCell.m */,
 				AADFF1F418B54BEA003BEE8C /* FluxSocialImportViewController.h */,
 				AADFF1F518B54BEA003BEE8C /* FluxSocialImportViewController.m */,
+				AA30B6CE18BF93D200E60E49 /* FluxImportContactCell.h */,
+				AA30B6CF18BF93D200E60E49 /* FluxImportContactCell.m */,
+				AA6D071B18BFFDE00082CBC3 /* FluxSearchCell.h */,
+				AA6D071C18BFFDE00082CBC3 /* FluxSearchCell.m */,
 			);
 			name = "Add Users";
 			sourceTree = "<group>";
@@ -1580,6 +1590,7 @@
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
 				F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */,
 				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
+				AA30B6D018BF93D200E60E49 /* FluxImportContactCell.m in Sources */,
 				17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */,
 				AA2CBABB188F029C001ECF86 /* FluxCameraRollButton.m in Sources */,
 				AA9D0E8D184D392E0004823E /* TWAPIManager.m in Sources */,
@@ -1594,6 +1605,7 @@
 				F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */,
 				AAAAD70218A1791800F5F3DB /* UIImagePickerController+Edit.m in Sources */,
 				AA984F1418088923007F33B1 /* MIMoveTransition.m in Sources */,
+				AA6D071D18BFFDE00082CBC3 /* FluxSearchCell.m in Sources */,
 				AA9D0E8E184D392E0004823E /* TWSignedRequest.m in Sources */,
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,
 				AAAAD6FF18A1791800F5F3DB /* DZNPhotoEditViewController.m in Sources */,

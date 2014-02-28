@@ -11,12 +11,14 @@
 @interface FluxContactObject : NSObject
 
 @property (nonatomic) int userID;
-@property (nonatomic, strong) NSString *alias_name;
+@property (nonatomic, strong) NSString *aliasName;
 @property (nonatomic, strong) NSString *username;
-@property (nonatomic, strong) NSString *display_name;
-@property (nonatomic, strong) NSString *profile_pic_URL;
+@property (nonatomic, strong) NSString *displayName;
+@property (nonatomic, strong) NSString *profilePicURL;
+@property (nonatomic, strong) NSArray *emails;
+@property (nonatomic, strong) UIImage* profilePic;
 @property (nonatomic) int friendState;
-@property (nonatomic) BOOL amFollower;
 @property (nonatomic) BOOL isFollowing;
+@property (nonatomic) BOOL isFollower;
 
 @end

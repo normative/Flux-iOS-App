@@ -199,12 +199,15 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"user_id":        @"userID",
-                                                  @"am_follower":    @"amFollower",
+                                                  @"am_follower":    @"isFollower",
                                                   @"is_following":   @"isFollowing",
-                                                  @"friend_state":   @"friendState"
+                                                  @"friend_state":   @"friendState",
+                                                  @"alias_name":   @"aliasName",
+                                                  @"display_name":   @"displayName",
+                                                  @"profile_pic_URL":   @"profilePicURL",
                                                   }];
     
-    [mapping addAttributeMappingsFromArray:@[@"username",@"alias_name", @"display_name", @"profile_pic_URL"]];
+    [mapping addAttributeMappingsFromArray:@[@"username"]];
 
     return mapping;
 }

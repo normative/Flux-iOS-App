@@ -43,6 +43,7 @@ typedef enum QuerySearchState : NSUInteger {
     NSString*searchQuery;
     
     NSIndexPath*selectedIndexPath;
+    BOOL didImport;
     
     id __unsafe_unretained delegate;
 }
