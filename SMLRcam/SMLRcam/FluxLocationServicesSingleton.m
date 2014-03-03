@@ -691,7 +691,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     enuHeadingRad = (90.0 + (360 - ((direction == -1) ? self.heading + 180.0 : self.heading)))/180.0 * PI;
     
-    DDLogVerbose(@"#Event: Took step of size %.2f in direction %.2f (raw heading: %.2f)", stepsize, enuHeadingRad*180.0/PI, self.heading);
+    DDLogVerbose(@"#Event: STEP step_size %.2f, direction %.2f, raw_heading: %.2f", stepsize, enuHeadingRad*180.0/PI, self.heading);
 
     kfXDisp = stepsize * cos(enuHeadingRad);
     kfYDisp = stepsize * sin(enuHeadingRad);
@@ -824,7 +824,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [self computeKInitKFilter];
     [kfilter resetKalmanFilter];
     
-    DDLogVerbose(@"#Event: Reset of Kalman filter as a result of large delta between measurement and estimate.");
+    DDLogVerbose(@"#Event: RESET Kalman filter reset as a result of large delta between measurement and estimate.");
     
     // Post notification of Kalman reset
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidResetKalmanFilter object:self];
