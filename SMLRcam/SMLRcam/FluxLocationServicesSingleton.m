@@ -689,12 +689,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     double enuHeadingRad;
     double stepsize =0.73;
     
-    if (direction == -1)
-    {
-        self.heading +=180.0;
-    }
-    
-    enuHeadingRad = (90.0 + (360 - self.heading))/180.0 * PI;
+    enuHeadingRad = (90.0 + (360 - ((direction == -1) ? self.heading + 180.0 : self.heading)))/180.0 * PI;
     
     kfXDisp = stepsize * cos(enuHeadingRad);
     kfYDisp = stepsize * sin(enuHeadingRad);
