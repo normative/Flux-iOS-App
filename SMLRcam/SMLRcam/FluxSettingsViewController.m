@@ -188,13 +188,13 @@
             [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
             
             if (![UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]) {
-                [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"facebookLogo"]]];
+                [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_facebook"]]];
                 [socialMgmtcell.socialDescriptionLabel setText:@""];
                 [socialMgmtcell setIsActivated:NO];
             }
             else{
                 [socialMgmtcell setIsActivated:YES];
-                [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"facebookLogo"]];
+                [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_facebook"]];
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]];
             }
             
@@ -203,13 +203,13 @@
             [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
             
             if (![UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]) {
-                [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"twitterLogo"]]];
+                [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_twitter"]]];
                 [socialMgmtcell.socialDescriptionLabel setText:@""];
                 [socialMgmtcell setIsActivated:NO];
             }
             else{
                 [socialMgmtcell setIsActivated:YES];
-                [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"twitterLogo"]];
+                [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_twitter"]];
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
             }
             

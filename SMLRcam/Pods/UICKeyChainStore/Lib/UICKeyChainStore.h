@@ -16,6 +16,9 @@ extern NSString* const FluxPasswordKey;
 extern NSString* const FluxUserIDKey;
 extern NSString* const FluxEmailKey;
 extern NSString* const FluxTokenKey;
+extern NSString* const FluxAccessTokenSecretKey;
+extern NSString* const FluxAccessTokenKey;
+
 extern NSString* const FluxService;
 extern NSString* const FacebookService;
 extern NSString* const TwitterService;

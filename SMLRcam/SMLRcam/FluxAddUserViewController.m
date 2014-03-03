@@ -13,7 +13,7 @@
 #import "FluxUserObject.h"
 #import "UIActionSheet+Blocks.h"
 #import "FluxSocialListViewController.h"
-
+#import "FluxSocialImportViewController.h"
 
 
 
@@ -75,9 +75,10 @@
     [UIView animateWithDuration:0.25 animations:^{
         [self.view setAlpha:1.0];
     }];
-    if (userSearchBar.text.length == 0) {
+    if (userSearchBar.text.length == 0 && !didImport) {
         [userSearchBar becomeFirstResponder];
     }
+    didImport = NO;
     [self.navigationController setNavigationBarHidden:YES animated:NO];
 }
 
@@ -90,7 +91,8 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     if ([segue.identifier isEqualToString:@"socialImportPush"]) {
-        [(UIViewController*)segue.destinationViewController setTitle:(NSString*)sender];
+        [(FluxSocialImportViewController*)segue.destinationViewController setServiceType:sender];
+        didImport = YES;
     }
 }
 
@@ -98,7 +100,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return 2;
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -186,7 +188,7 @@
             NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxServerURL,cell.userObject.userID,@"thumb", token];
             
             [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
-                                         placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
+                                         placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
                                                   success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
                                                       if (resultsImageArray.count > indexPath.row) {
                                                           if (image) {
@@ -411,11 +413,11 @@
 
 #pragma mark - Social Manager Delegate
 - (void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
-    [self performSegueWithIdentifier:@"socialImportPush" sender:@"Twitter"];
+    [self performSegueWithIdentifier:@"socialImportPush" sender:TwitterService];
 }
 
 - (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
-    [self performSegueWithIdentifier:@"socialImportPush" sender:@"Facebook"];
+    [self performSegueWithIdentifier:@"socialImportPush" sender:FacebookService];
 }
 
 - (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{

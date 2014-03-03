@@ -15,6 +15,8 @@
 #import "FluxCameraObject.h"
 #import "FluxProfileImageObject.h"
 #import "FluxFilterImageCountObject.h"
+#import "FluxAliasObject.h"
+#import "FluxContactObject.h"
 
 @implementation FluxMappingProvider
 
@@ -166,6 +168,47 @@
                                                   @"friendState":   @"friend_state"
                                                   }];
     
+    return mapping;
+}
+
+#pragma mark Alias Mapping
+
++ (RKObjectMapping *)aliasGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxAliasObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":     @"userID",
+                                                  @"alias_name":  @"alias_name",
+                                                  @"service_id":  @"serviceID"
+                                                  }];
+    return mapping;
+}
++ (RKObjectMapping *)aliasPOSTMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"userID":      @"user_id",
+                                                  @"alias_name":  @"alias_name",
+                                                  @"serviceID":   @"service_id"
+                                                  }];
+    
+    return mapping;
+}
++ (RKObjectMapping *)contactGETMapping{
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxContactObject class]];
+    
+    [mapping addAttributeMappingsFromDictionary:@{
+                                                  @"user_id":        @"userID",
+                                                  @"am_follower":    @"isFollower",
+                                                  @"is_following":   @"isFollowing",
+                                                  @"friend_state":   @"friendState",
+                                                  @"alias_name":   @"aliasName",
+                                                  @"display_name":   @"displayName",
+                                                  @"profile_pic_URL":   @"profilePicURL",
+                                                  }];
+    
+    [mapping addAttributeMappingsFromArray:@[@"username"]];
+
     return mapping;
 }
 

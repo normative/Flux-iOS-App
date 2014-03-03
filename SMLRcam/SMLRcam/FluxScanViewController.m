@@ -529,34 +529,38 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)deactivateImageCapture
 {
-    [ScanUIContainerView setHidden:NO];
-    [self.bottomToolbarView setHidden:NO];
-    
-    [UIView animateWithDuration:0.3f
-                     animations:^{
-                         [imageCaptureButton setAlpha:0.0];
-                         [ScanUIContainerView setAlpha:1.0];
-                         [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y+21)];
-                         
-                         [self.bottomToolbarView setAlpha:1];
-                         self.bottomToolbarView.center = CGPointMake(self.bottomToolbarView.center.x, self.bottomToolbarView.center.y-30);
-                     }
-                     completion:^(BOOL finished){
-                         //stops drawing them
-                         [imageCaptureButton setHidden:YES];
-                     }];
-    
-    CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
-    bounceAnimation.values = [NSArray arrayWithObjects:
-                              [NSNumber numberWithFloat:1.0],
-                              [NSNumber numberWithFloat:0.7],
-                              [NSNumber numberWithFloat:0.9],
-                              [NSNumber numberWithFloat:1.0], nil];
-    bounceAnimation.duration = 0.3;
-    [imageCaptureButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
-    [imageCaptureButton restoreAllImages];
-    
-    imageCaptureIsActive = NO;
+    //check if it's already de-activated
+    if (ScanUIContainerView.isHidden) {
+        [ScanUIContainerView setHidden:NO];
+        [self.bottomToolbarView setHidden:NO];
+        
+        [UIView animateWithDuration:0.3f
+                         animations:^{
+                             [imageCaptureButton setAlpha:0.0];
+                             [ScanUIContainerView setAlpha:1.0];
+                             [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y+21)];
+                             
+                             [self.bottomToolbarView setAlpha:1];
+                             self.bottomToolbarView.center = CGPointMake(self.bottomToolbarView.center.x, self.bottomToolbarView.center.y-30);
+                         }
+                         completion:^(BOOL finished){
+                             //stops drawing them
+                             [imageCaptureButton setHidden:YES];
+                         }];
+        
+        CAKeyframeAnimation *bounceAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.scale"];
+        bounceAnimation.values = [NSArray arrayWithObjects:
+                                  [NSNumber numberWithFloat:1.0],
+                                  [NSNumber numberWithFloat:0.7],
+                                  [NSNumber numberWithFloat:0.9],
+                                  [NSNumber numberWithFloat:1.0], nil];
+        bounceAnimation.duration = 0.3;
+        [imageCaptureButton.layer addAnimation:bounceAnimation forKey:@"bounce_closed"];
+        [imageCaptureButton restoreAllImages];
+        
+        imageCaptureIsActive = NO;
+    }
+
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{

@@ -7,11 +7,26 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "FluxFriendFollowerCell.h"
+#import "FluxImportContactCell.h"
+#import "FluxSearchCell.h"
+#import "FluxPublicProfileViewController.h"
 
-@interface FluxSocialImportViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, FluxFriendFollowerCellDelegate>
+@interface FluxSocialImportViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, FluxImportContactCellDelegate, PublicProfileDelegate,FluxSearchCellDelegate>{
+    BOOL isSearching;
+}
 @property (strong, nonatomic) IBOutlet UITableView *importUserTableView;
-@property (strong, nonatomic) IBOutlet UISearchBar *importSearchBar;
+
+@property (nonatomic, strong) NSString*serviceType;
 @property (strong, nonatomic) NSMutableArray*importUserArray;
+@property (strong, nonatomic) NSMutableArray*importUserImagesArray;
+
+
+@property (strong, nonatomic) NSMutableArray*importFluxUserArray;
+@property (strong, nonatomic) NSMutableArray*importFluxUserImagesArray;
+
+@property (strong, nonatomic) NSMutableArray*searchResultsUserArray;
+@property (strong, nonatomic) NSMutableArray*searchResultsImagesArray;
+
+
 
 @end

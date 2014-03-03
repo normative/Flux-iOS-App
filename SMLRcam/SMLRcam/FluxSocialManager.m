@@ -9,6 +9,9 @@
 #import "FluxSocialManager.h"
 #import "UICKeyChainStore.h"
 #import "UIActionSheet+Blocks.h"
+#import "FluxDataManager.h"
+#import "UICKeyChainStore.h"
+#import "ProgressHUD.h"
 
 #define ERROR_TITLE_MSG @"Uh oh..."
 #define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the Settings app to sign in with Twitter"
@@ -16,7 +19,7 @@
 #define ERROR_OK @"OK"
 
 typedef enum FluxSocialManagerReturnType : NSUInteger {
-    no_request_specified = 0,
+    smr_no_request_specified = 0,
     returnTypeBlock = 1,
     returnTypeDelegate = 2,
 } FluxSocialManagerReturnType;
@@ -64,8 +67,15 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 - (void)linkTwitter{
     
     NSString*username = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
+    
+    //If we've already linked then return the active account info
     if (username) {
-        [UICKeyChainStore removeAllItemsForService:TwitterService];
+        if (!isRegister) {
+            if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
+                [delegate SocialManager:self didLinkTwitterAccountWithUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
+                return;
+            }
+        }
     }
     
     
@@ -149,6 +159,18 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     }];
 }
 
+- (void)createAliasWithName:(NSString *)alias_name andServiceID:(int) service_id
+{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Ignoring alias creation for external name %@. Failed with error %d",alias_name, (int)[e code]];
+        [ProgressHUD showError:str];
+        
+    }];
+    [[FluxDataManager theFluxDataManager] createAliasWithName: alias_name andServiceID: service_id andRequest: request];
+}
+
 - (void)loginWithTwitterForAccountIndex:(int)index{
     [self.TWApiManager performReverseAuthForAccount:self.TWAccounts[index] withHandler:^(NSData *responseData, NSError *error) {
         if (responseData) {
@@ -163,10 +185,14 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
             
             if (parts.count > 1) {
-                if (!isRegister) {
-                    [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
-                    [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
-                }
+                
+                // [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
+                UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:TwitterService];
+                [store setString:[parts objectAtIndex:3] forKey:FluxUsernameKey];
+                [store setString:[parts objectAtIndex:0] forKey:FluxAccessTokenKey];
+                [store setString:[parts objectAtIndex:1] forKey:FluxAccessTokenSecretKey];
+                [store synchronize];
+
                 
                 //call delegate
                 if (isRegister) {
@@ -176,6 +202,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                     }
                 }
                 else{
+                    [self createAliasWithName: [parts objectAtIndex:3] andServiceID: 2];
                     if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
                         [delegate SocialManager:self didLinkTwitterAccountWithUsername:(NSString*)[parts objectAtIndex:3]];
                     }
@@ -281,6 +308,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                      }
                                  }
                                  else{
+                                     [self createAliasWithName:user.username andServiceID: 3];
                                      if ([delegate respondsToSelector:@selector(SocialManager:didLinkFacebookAccountWithName:)]) {
                                          [delegate SocialManager:self didLinkFacebookAccountWithName:user.name];
                                      }

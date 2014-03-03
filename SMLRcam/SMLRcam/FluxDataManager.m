@@ -702,6 +702,28 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+-(FluxRequestID *) requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withDataRequest:(FluxDataRequest *)dataRequest
+{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = contactFromService_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin request of contacts from server
+    [networkServices requestContactsFromService:serviceID withCredentials: credentials withRequestID:requestID];
+    return requestID;
+}
+
+#pragma mark Aliases
+
+- (FluxRequestID *) createAliasWithName:(NSString *)name andServiceID:(int) service_id andRequest:(FluxDataRequest *)dataRequest
+{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = createalias_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of alias to server
+    [networkServices createAliasWithName:name andServiceID:service_id andRequestID:requestID];
+    return requestID;
+}
+
 
 #pragma mark - Request Queries
 
@@ -1095,8 +1117,6 @@ float const altitudeHighRange = 60.0;
     [self completeRequestWithDataRequest:request];
 }
 
-
-
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString *)suggestion andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenUsernameCheckComplete:unique andSuggestion:suggestion withDataRequest:request];
@@ -1120,6 +1140,8 @@ float const altitudeHighRange = 60.0;
     [self updateAPNsDeviceTokenWithRequest:dataRequest];
     
 }
+
+
 
 #pragma mark Profile Stuff
 
@@ -1231,6 +1253,15 @@ float const altitudeHighRange = 60.0;
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnContactList:(NSArray *)contacts andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenContactListReady:contacts withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
 
 #pragma mark Other
 
