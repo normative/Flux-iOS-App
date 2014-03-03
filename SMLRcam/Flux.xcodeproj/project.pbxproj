@@ -31,6 +31,7 @@
 		17604B9E1785F522005CF054 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9D1785F522005CF054 /* CoreMedia.framework */; };
 		17604B9F1785FF78005CF054 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9A1785F4DA005CF054 /* QuartzCore.framework */; };
 		176BFA5218BBA23A00ABE99D /* FluxDeviceInfoSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 176BFA5118BBA23A00ABE99D /* FluxDeviceInfoSingleton.m */; };
+		176BFA5518BC307600ABE99D /* FluxContactObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 176BFA5418BC307600ABE99D /* FluxContactObject.m */; };
 		17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */; };
 		17891FC3181D6C840064B2F9 /* FluxImageRenderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 17891FC2181D6C840064B2F9 /* FluxImageRenderElement.m */; };
 		17913EE418BD869A0045FC86 /* FluxCameraModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 17913EE318BD869A0045FC86 /* FluxCameraModel.m */; };
@@ -238,6 +239,8 @@
 		17604B9D1785F522005CF054 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		176BFA5018BBA23A00ABE99D /* FluxDeviceInfoSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDeviceInfoSingleton.h; sourceTree = "<group>"; };
 		176BFA5118BBA23A00ABE99D /* FluxDeviceInfoSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDeviceInfoSingleton.m; sourceTree = "<group>"; };
+		176BFA5318BC307600ABE99D /* FluxContactObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxContactObject.h; sourceTree = "<group>"; };
+		176BFA5418BC307600ABE99D /* FluxContactObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxContactObject.m; sourceTree = "<group>"; };
 		17891FBE181D69D80064B2F9 /* FluxTextureToImageMapElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTextureToImageMapElement.h; sourceTree = "<group>"; };
 		17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTextureToImageMapElement.m; sourceTree = "<group>"; };
 		17891FC1181D6C840064B2F9 /* FluxImageRenderElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageRenderElement.h; sourceTree = "<group>"; };
