@@ -1034,6 +1034,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)showDebugMenu{
     [self.debugViewController.view setHidden:NO];
+    //google analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                          action:@"action"  // Event action (required)
+                                                           label:@"show debug menu"          // Event label
+                                                           value:nil] build]];    // Event value
 }
 - (void)hideDebugMenu{
     [self.debugViewController.view setHidden:YES];
