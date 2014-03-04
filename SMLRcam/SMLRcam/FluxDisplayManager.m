@@ -422,7 +422,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 // value is % of displayListCount and reps the top of the list.  List is fixed size of X
 - (void)timeBracketDidChange:(int)value
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
+    
     // TODO: these notifications may come thick and fast (especially when using momentum) so we may want to limit them
     //          track the "latest" (order of call, not value) value in a "pending" variable
     //          only allow through when > min time has elapsed from last adjustment calc
@@ -447,6 +447,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     
 //    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
     [self calculateTimeAdjustedImageList];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
 }
 
 - (void)timeBracketWillBeginScrolling

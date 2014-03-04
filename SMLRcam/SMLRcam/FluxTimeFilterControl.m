@@ -100,7 +100,7 @@
     CGFloat circleStartAngle;
     CGFloat circleEndAngle;
     
-    if (count <= CELLS_PER_VIEW) {
+    if (count <= (CELLS_PER_VIEW + CELLS_PER_VIEW - 1)) {
         circleStartAngle = 0;
         circleEndAngle = 0;
     }
@@ -146,37 +146,47 @@
     }
     
     if (reverseAnimated) {
+        isAnimating = YES;
         CGPoint bottomOffset = CGPointMake(0, self.timeScrollView.contentSize.height - self.timeScrollView.bounds.size.height);
         [self.timeScrollView setContentOffset:bottomOffset animated:NO];
+        [self scrollScrollerToCalculatedPosition];
         
-        isAnimating = YES;
         
-        [self performSelector:@selector(startAnimationTimer) withObject:nil afterDelay:0.1];
-        [UIView animateWithDuration:1.0
-                              delay:0.1
-                            options:UIViewAnimationOptionCurveEaseInOut
-                         animations:^{
-                             [self.timeScrollView setContentOffset:CGPointZero animated:NO];
-
-                             //shouldbe rotating the circle by the correct amount here. ran into trouble rotating the correct direction.
-                             
-//                             circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(-360));
-//                             circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
-//                             CGFloat angle = atan2f(circularScrollerView.transform.b*circularScrollerView.transform.b, circularScrollerView.transform.b*circularScrollerView.transform.a);
-//                             
-//                             circularScrollerView.transform = CGAffineTransformRotate(circularScrollerView.transform, (DEGREES_TO_RADIANS(360)-angle)*3);
-//                             circularScrollerView.transform = CGAffineTransformRotate(circularScrollerView.transform, <#CGFloat angle#>);
-                                     }
-                         completion:^(BOOL finished){
-//                             [animationTimer invalidate];
-//                             animationTimer = nil;
-                             isAnimating = NO;
-                         }];
+        int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
+        if (numberOfDegrees > -180) {
+            //if it's less than halfway to 0 degrees already, just go to 0
+            [UIView animateWithDuration:1.0 animations:^{
+                circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0));
+                //circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
+                [self.timeScrollView setContentOffset:CGPointZero animated:NO];
+            }completion:^(BOOL finished){
+                isAnimating = NO;
+            }];
+        }
+        else{
+            //else, stage it at 180 degrees first, then go to 0
+            [UIView animateWithDuration:0.5
+                                  delay:0.1
+                                options:UIViewAnimationOptionCurveEaseIn
+                             animations:^{
+                                 circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(180));
+                                 //circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
+                             }
+                             completion:^(BOOL finished){
+                                 [UIView animateWithDuration:0.5
+                                                       delay:0.0
+                                                     options:UIViewAnimationOptionCurveEaseOut
+                                                  animations:^{
+                                                    circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0));
+                                                    [self.timeScrollView setContentOffset:CGPointZero animated:NO];
+                                                  }
+                                                  completion:^(BOOL finished){
+                                                    isAnimating = NO;
+                                                    circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
+                                                  }];
+                             }];
+        }
     }
-}
-
-- (void)startAnimationTimer{
-    animationTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(rotateScroller) userInfo:nil repeats:YES];
 }
 
 #pragma mark - UIScrollView delegate
@@ -187,13 +197,11 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    if (isAnimating) {
-        return;
-    }
+
     NSLog(@" Offset = %@ ",NSStringFromCGPoint(scrollView.contentOffset));
     //if it's outside the bounds of the scrollView
 //    if ((scrollView.contentOffset.y < (scrollView.contentSize.height - scrollView.frame.size.height)) && (scrollView.contentOffset.y > 0))
-    if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y > 0))
+    if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y >= 0))
     {
         int nlc = self.fluxDisplayManager.nearbyListCount;
         if (self.fluxDisplayManager && (nlc > 1))
@@ -207,13 +215,15 @@
 
         }
     }
+    if (!isAnimating) {
+        [self scrollScrollerToCalculatedPosition];
+    }
     
-    [self rotateScroller];
     
     oldScrollPos = scrollView.contentOffset.y;
 }
 
-- (void)rotateScroller{
+- (void)scrollScrollerToCalculatedPosition{
     int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
     NSLog(@" Degrees = %i ",numberOfDegrees);
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));

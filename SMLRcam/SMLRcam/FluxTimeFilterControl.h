@@ -19,7 +19,6 @@
     UIView *circularScrollerView;
     CAShapeLayer *circleLayer;
     
-    NSTimer*animationTimer;
     BOOL isAnimating;
     
     float oldScrollPos;
