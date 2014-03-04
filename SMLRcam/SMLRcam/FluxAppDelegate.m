@@ -181,6 +181,29 @@ bool registeredForAPNS = false;
         [[UIApplication sharedApplication] cancelAllLocalNotifications];
 
 	}
+    
+    
+    // Whenever a person opens the app, check for a cached session
+    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+        
+        // If there's one, just open the session silently, without showing the user the login UI
+        [FBSession openActiveSessionWithReadPermissions:@[@"basic_info"]
+                                           allowLoginUI:NO
+                                      completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+                                          if (!error) {
+                                              NSLog(@"re-logged into facebook");
+                                          }
+                                          else{
+                                              NSLog(@"re-logging into facebook failed: Error: %@",error.localizedDescription);
+                                          }
+                                          // Handler for session state changes
+                                          // This method will be called EACH time the session state changes,
+                                          // also for intermediate states and NOT just when the session open
+//                                          [self sessionStateChanged:session state:state error:error];
+                                      }];
+    }
+    
+    
     return YES;
 }
 

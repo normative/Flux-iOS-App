@@ -46,6 +46,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     friendRequest_request = 24,
     imageCounts_request = 25,
     totalImageCount_request = 26,
+    createalias_request = 27,
+    contactFromService_request = 28
     
 } FluxDataRequestType;
 
@@ -88,6 +90,8 @@ typedef void (^SendFriendRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^AcceptFriendRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^IgnoreFriendRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^UnfriendUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^ContactListReadyBlock)(NSArray *, FluxDataRequest *);
+
 
 //other
 typedef void (^TagsReadyBlock)(NSArray *, FluxDataRequest *);
@@ -207,6 +211,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 @property (strong) IgnoreFriendRequestUserReadyBlock ignoreFriendRequestReady;
 // Callback for successful friends list returned
 @property (strong) UnfriendUserReadyBlock unfriendUserReady;
+// Callback for successful contact list returned
+@property (strong) ContactListReadyBlock contactListReady;
 
 
 // Callback for list of tags retrieved
@@ -258,6 +264,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenAcceptFriendRequestReady:(int)newFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenIgnoreFriendRequestReady:(int)ignoreUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUnFriendUserReady:(int)oldFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
+
+- (void) whenContactListReady:(NSArray *)contacts withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 
 //Filters

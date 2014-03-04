@@ -24,12 +24,16 @@
 - (void)SocialManager:(FluxSocialManager*)socialManager didLinkTwitterAccountWithUsername: (NSString*)username;
 - (void)SocialManager:(FluxSocialManager*)socialManager didFailToLinkSocialAccount:(NSString*)accountType;
 
+- (void)SocialManagerDidAddFacebookPublishPermissions:(FluxSocialManager*)socialManager;
+- (void)SocialManagerDidFailToAddAddFacebookPublishPermissions:(FluxSocialManager*)socialManager andDidShowError:(BOOL)errorShownAlready;
+
+
 - (void)SocialManager:(FluxSocialManager*)socialManager didRegisterFacebookAccountWithUserInfo: (NSDictionary*)userInfo;
 - (void)SocialManager:(FluxSocialManager*)socialManager didRegisterTwitterAccountWithUserInfo: (NSDictionary*)userInfo;
 - (void)SocialManager:(FluxSocialManager*)socialManager didFailToRegisterSocialAccount:(NSString*)accountType;
 
 - (void)SocialManager:(FluxSocialManager*)socialManager didMakeSocialPosts:(NSArray*)socialPartners;
-- (void)SocialManager:(FluxSocialManager*)socialManager didFailToMakeSocialPostWithType:(NSString*)socialType;
+- (void)SocialManager:(FluxSocialManager*)socialManager didFailToMakeSocialPostWithType:(NSString*)socialType andDidShowError:(BOOL)errorShownAlready;
 @end
 
 
@@ -54,6 +58,8 @@
 
 - (void)linkFacebook;
 - (void)linkTwitter;
+
+- (void)linkFacebookWithPublishPermissions;
 
 - (void)registerWithFacebook;
 - (void)registerWithTwitter;

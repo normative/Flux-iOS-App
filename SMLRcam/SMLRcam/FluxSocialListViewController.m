@@ -235,7 +235,7 @@
         NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxServerURL,cell.userObject.userID,@"thumb", token];
         int currentMode = listMode;
         [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
-                                     placeholderImage:[UIImage imageNamed:@"emptyProfileImage_small"]
+                                     placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
                                               success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
                                                   if (image) {
                                                       [[(NSMutableArray*)socialListImagesArray objectAtIndex:currentMode] replaceObjectAtIndex:indexPath.row withObject:image];
@@ -394,7 +394,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Ignoring firend request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Ignoring friend request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
         [ProgressHUD showError:str];
         [friendFollowerCell setUserInteractionEnabled:YES];
         

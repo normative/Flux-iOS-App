@@ -12,6 +12,7 @@
 #import "FluxConnectionObject.h"
 #import "FluxMappingProvider.h"
 #import "FluxLocationServicesSingleton.h"
+#import "FluxAliasObject.h"
 #import "UICKeyChainStore.h"
 
 #define _AWSProductionServerURL  @"http://54.221.254.230/"
@@ -22,8 +23,8 @@ NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
+//NSString* const FluxServerURL = _AWSProductionServerURL;
 NSString* const FluxServerURL = _AWSProductionServerURL;
-//NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 
@@ -103,6 +104,18 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                                keyPath:nil
                                                                                                            statusCodes:statusCodes];
         
+        RKResponseDescriptor *aliasCreateResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider aliasGETMapping]
+                                                                                                                      method:RKRequestMethodAny
+                                                                                                                 pathPattern:@"aliases"
+                                                                                                                     keyPath:nil
+                                                                                                                 statusCodes:statusCodes];
+
+        RKResponseDescriptor *contactListResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider contactGETMapping]
+                                                                                                           method:RKRequestMethodAny
+                                                                                                      pathPattern:@"aliases/importcontacts"
+                                                                                                          keyPath:nil
+                                                                                                      statusCodes:statusCodes];
+
         
         RKRequestDescriptor *cameraRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider cameraPostMapping]
                                                                                            objectClass:[FluxCameraObject class]
@@ -130,14 +143,17 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                  rootKeyPath:@"connection"
                                                                                                       method:RKRequestMethodPUT];
         
-
-        
+        RKRequestDescriptor *aliasCreateRequestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[FluxMappingProvider aliasPOSTMapping]
+                                                                                                       objectClass:[FluxAliasObject class]
+                                                                                                       rootKeyPath:@"alias"
+                                                                                                            method:RKRequestMethodPOST];
         
         [objectManager addRequestDescriptor:userRequestDescriptor];
         [objectManager addRequestDescriptor:userUpdateDescriptor];
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
         [objectManager addRequestDescriptor:connectionRequestDescriptor];
         [objectManager addRequestDescriptor:connectionDeleteRequestDescriptor];
+        [objectManager addRequestDescriptor:aliasCreateRequestDescriptor];
         
         [objectManager addResponseDescriptor:userResponseDescriptor];
         [objectManager addResponseDescriptor:registrationResponseDescriptor];
@@ -146,6 +162,9 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         [objectManager addResponseDescriptor:connectionFollowResponseDescriptor];
         [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
         [objectManager addResponseDescriptor:connectionAcceptFriendResponseDescriptor];
+        [objectManager addResponseDescriptor:aliasCreateResponseDescriptor];
+        [objectManager addResponseDescriptor:contactListResponseDescriptor];
+        
         
         
         //and again for image-related calls
@@ -1196,6 +1215,86 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
          }
      }];
+}
+
+
+#pragma mark Aliases
+
+- (void) createAliasWithName:(NSString *)social_name andServiceID:(int)service_id andRequestID:(NSUUID *)requestID
+{
+    FluxAliasObject *aliasObject = [[FluxAliasObject alloc] initWithName: social_name andServiceID: service_id];
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:token, @"auth_token", nil];
+    [[RKObjectManager sharedManager] postObject:aliasObject
+                                           path:@"/aliases"
+                                     parameters:params
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxAliasObject *newAliasObject = [result firstObject];
+         NSLog(@"Alias created successfully to %@ for service %d", newAliasObject.alias_name, newAliasObject.serviceID);
+     }
+     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+   
+}
+
+- (void)requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withRequestID:(NSUUID *)requestID
+{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider contactGETMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:@"/aliases/importcontacts"
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSMutableString *fullurl = [NSMutableString stringWithFormat:@"%@%@?auth_token=%@&serviceid=%d", objectManager.baseURL, [responseDescriptor.pathPattern substringFromIndex:1], token, serviceID];
+    
+    switch (serviceID)
+    {
+        case 1: // contact list
+            // treat credentials as a list of email addresses and add them in as one key
+            break;
+        case 2: // Twitter
+        case 3: // Facebook
+            for (id key in credentials)
+            {
+                [fullurl appendString:[NSString stringWithFormat:@"&%@=%@", (NSString *)key, (NSString *)[credentials objectForKey:key]]];
+            }
+            break;
+    }
+
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullurl]];
+    
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         NSLog(@"Found %i Contacts",[result count]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnContactList:andRequestID:)])
+         {
+             [delegate NetworkServices:self didReturnContactList:result.array andRequestID:requestID];
+         }
+     }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+    
 }
 
 

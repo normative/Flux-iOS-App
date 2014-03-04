@@ -222,6 +222,12 @@
     }
 }
 
+- (void) whenContactListReady:(NSArray *)contacts withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.contactListReady) {
+        self.contactListReady(contacts, completeDataRequest);
+    }
+}
+
 #pragma mark - Filters
 
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest

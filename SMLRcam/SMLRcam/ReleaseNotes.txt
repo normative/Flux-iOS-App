@@ -1,5 +1,12 @@
 Release Notes:
-- updates to address at least one of the iPad issues
+******************************************
+
+V0.21 B01
+
+Released: 2014-02-28 17:30:00
+
+Release Notes:
+- updates to address iPad mini 1G memory issues
 - release memory used by MapView when exiting view
 - social management updates
 - new map pins
@@ -8,6 +15,7 @@ Release Notes:
 - other visual tweaks + enhancements
 - use vertical accuracy to help determine altitude range for queries
 - add fix so that empty feature file doesn't cause segfault
+- new heading scheme from V0.20B07 included here (is not in V0.20B08)
 
 ******************************************
 

@@ -9,6 +9,9 @@
 #import "FluxSocialManager.h"
 #import "UICKeyChainStore.h"
 #import "UIActionSheet+Blocks.h"
+#import "FluxDataManager.h"
+#import "UICKeyChainStore.h"
+#import "ProgressHUD.h"
 
 #define ERROR_TITLE_MSG @"Uh oh..."
 #define ERROR_NO_ACCOUNTS @"You must add a Twitter account in the Settings app to sign in with Twitter"
@@ -16,7 +19,7 @@
 #define ERROR_OK @"OK"
 
 typedef enum FluxSocialManagerReturnType : NSUInteger {
-    no_request_specified = 0,
+    smr_no_request_specified = 0,
     returnTypeBlock = 1,
     returnTypeDelegate = 2,
 } FluxSocialManagerReturnType;
@@ -64,8 +67,15 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 - (void)linkTwitter{
     
     NSString*username = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
+    
+    //If we've already linked then return the active account info
     if (username) {
-        [UICKeyChainStore removeAllItemsForService:TwitterService];
+        if (!isRegister) {
+            if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
+                [delegate SocialManager:self didLinkTwitterAccountWithUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
+                return;
+            }
+        }
     }
     
     
@@ -149,6 +159,18 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     }];
 }
 
+- (void)createAliasWithName:(NSString *)alias_name andServiceID:(int) service_id
+{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Ignoring alias creation for external name %@. Failed with error %d",alias_name, (int)[e code]];
+        NSLog(str);
+        
+    }];
+    [[FluxDataManager theFluxDataManager] createAliasWithName: alias_name andServiceID: service_id andRequest: request];
+}
+
 - (void)loginWithTwitterForAccountIndex:(int)index{
     [self.TWApiManager performReverseAuthForAccount:self.TWAccounts[index] withHandler:^(NSData *responseData, NSError *error) {
         if (responseData) {
@@ -163,10 +185,14 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
             
             if (parts.count > 1) {
-                if (!isRegister) {
-                    [UICKeyChainStore setString:[parts objectAtIndex:0] forKey:FluxTokenKey service:TwitterService];
-                    [UICKeyChainStore setString:[parts objectAtIndex:3] forKey:FluxUsernameKey service:TwitterService];
-                }
+                
+                // [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:TwitterService];
+                UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:TwitterService];
+                [store setString:[parts objectAtIndex:3] forKey:FluxUsernameKey];
+                [store setString:[parts objectAtIndex:0] forKey:FluxAccessTokenKey];
+                [store setString:[parts objectAtIndex:1] forKey:FluxAccessTokenSecretKey];
+                [store synchronize];
+
                 
                 //call delegate
                 if (isRegister) {
@@ -176,6 +202,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                     }
                 }
                 else{
+                    [self createAliasWithName: [parts objectAtIndex:3] andServiceID: 2];
                     if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
                         [delegate SocialManager:self didLinkTwitterAccountWithUsername:(NSString*)[parts objectAtIndex:3]];
                     }
@@ -243,6 +270,125 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 
 #pragma mark Facebook
 
+- (void)linkFacebookWithPublishPermissions{
+    NSArray *permissions = [NSArray arrayWithObjects:@"publish_actions ", nil];
+    //else, check if the active session has publush permission
+    if (FBSession.activeSession.state == FBSessionStateOpen) {
+        // there is no active session, so start a new one with publish permissions
+        [self checkIfActiveFBSessionHasPublishPermission];
+    }
+    else{
+        if (FBSession.activeSession.state != FBSessionStateCreated) {
+            // Create a new, logged out session.
+            FBSession.activeSession = [[FBSession alloc] init];
+        }
+        
+        
+        [FBSession openActiveSessionWithPublishPermissions:permissions defaultAudience:FBSessionDefaultAudienceEveryone allowLoginUI:YES completionHandler:
+         ^(FBSession *session,
+           FBSessionState state, NSError *error) {
+             if (!error) {
+                 if (FBSession.activeSession.isOpen) {
+                     [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
+                         if (!error) {
+                             [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
+                             [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
+                             [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
+                             
+                             [self createAliasWithName:user.username andServiceID: 3];
+                             if ([delegate respondsToSelector:@selector(SocialManagerDidAddFacebookPublishPermissions:)]) {
+                                 [delegate SocialManagerDidAddFacebookPublishPermissions:self];
+                             }
+                             
+                         }
+                         
+                         else{
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 NSLog(@"Facebook Publish Link Error: %@",error.localizedDescription);
+                                 if ([delegate respondsToSelector:@selector(SocialManagerDidFailToAddAddFacebookPublishPermissions:andDidShowError:)]) {
+                                     [delegate SocialManagerDidFailToAddAddFacebookPublishPermissions:self andDidShowError:NO];
+                                 }
+                                 
+                             });
+                             
+                         }
+                     }];
+                 }
+                 else{
+                     
+                 }
+             }
+             else{
+                 NSLog(@"Facebook Publish Link Error: %@",error.localizedDescription);
+                 if ([delegate respondsToSelector:@selector(SocialManagerDidFailToAddAddFacebookPublishPermissions:)]) {
+                     [delegate SocialManagerDidFailToAddAddFacebookPublishPermissions:self andDidShowError:NO];
+                 }
+             }
+         }];
+    }
+}
+
+- (void)checkIfActiveFBSessionHasPublishPermission{
+    [FBRequestConnection startWithGraphPath:@"/me/permissions"
+                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error){
+                                  NSDictionary *permissions= [(NSArray *)[result data] objectAtIndex:0];
+                                  if (![permissions objectForKey:@"publish_actions"]){
+                                      // Publish permissions not found, ask for publish_actions
+                                      [self addPublishPermissionToActiveFBSession];
+                                      
+                                  } else {
+                                      // Publish permissions found
+                                      if ([delegate respondsToSelector:@selector(SocialManagerDidAddFacebookPublishPermissions:)]) {
+                                          [delegate SocialManagerDidAddFacebookPublishPermissions:self];
+                                      }
+                                  }
+                                  
+                              } else {
+                                  // There was an error, handle it
+                                  // See https://developers.facebook.com/docs/ios/errors/
+                                  NSLog(@"Facebook Link Error: %@",error.localizedDescription);
+                                  NSLog(@"%@",[FBErrorUtility userMessageForError:error]);
+                                  [ProgressHUD showError:[FBErrorUtility userMessageForError:error]];
+                                  if ([delegate respondsToSelector:@selector(SocialManagerDidFailToAddAddFacebookPublishPermissions: andDidShowError:)]) {
+                                      [delegate SocialManagerDidFailToAddAddFacebookPublishPermissions:self andDidShowError:YES];
+                                  }
+                              }
+                          }];
+}
+
+- (void)addPublishPermissionToActiveFBSession{
+    [FBSession.activeSession requestNewPublishPermissions:[NSArray arrayWithObject:@"publish_actions"]
+                                          defaultAudience:FBSessionDefaultAudienceFriends
+                                        completionHandler:^(FBSession *session, NSError *error) {
+                                            if (!error) {
+                                                if ([FBSession.activeSession.permissions
+                                                     indexOfObject:@"publish_actions"] == NSNotFound){
+                                                    // Permission not granted, tell the user we will not publish
+                                                    NSString*str = [NSString stringWithFormat:@"Access to publish to facebook denied."];
+                                                    [ProgressHUD showError:str];
+                                                    NSLog(@"%@",[FBErrorUtility userMessageForError:error]);
+                                                    if ([delegate respondsToSelector:@selector(SocialManagerDidFailToAddAddFacebookPublishPermissions:andDidShowError:)]) {
+                                                        [delegate SocialManagerDidFailToAddAddFacebookPublishPermissions:self andDidShowError:YES];
+                                                    }
+                                                    
+                                                } else {
+                                                    // Permission granted
+                                                    if ([delegate respondsToSelector:@selector(SocialManagerDidAddFacebookPublishPermissions:)]) {
+                                                        [delegate SocialManagerDidAddFacebookPublishPermissions:self];
+                                                    }
+                                                }
+                                                
+                                            } else {
+                                                // There was an error, handle it
+                                                // See https://developers.facebook.com/docs/ios/errors/
+                                                NSLog(@"Facebook Permissions request error: %@",error.localizedDescription);
+                                                if ([delegate respondsToSelector:@selector(SocialManagerDidFailToAddAddFacebookPublishPermissions:andDidShowError:)]) {
+                                                    [delegate SocialManagerDidFailToAddAddFacebookPublishPermissions:self andDidShowError:NO];
+                                                }
+                                            }
+                                        }];
+}
 
 - (void)linkFacebook{
     if (!FBSession.activeSession.isOpen) {
@@ -252,85 +398,94 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         }
         
         // if the session isn't open, let's open it now and present the login UX to the user
-        NSArray *permissions = [NSArray arrayWithObjects:@"email",@"publish_actions ", nil];
-        [FBSession openActiveSessionWithPublishPermissions:permissions defaultAudience:FBSessionDefaultAudienceEveryone allowLoginUI:YES completionHandler:
-         ^(FBSession *session,
-           FBSessionState state, NSError *error) {
-             if (!error) {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     if (FBSession.activeSession.isOpen) {
-                         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
-                             if (!error) {
-                                 if (!isRegister) {
-                                     [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
-                                     [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
-                                     [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
-                                 }
-                                 
-                                 
-
-                                 
-                                 //call delegate
-                                 if (isRegister) {
-                                     NSMutableDictionary*dict = [NSMutableDictionary dictionaryWithDictionary:user];
-                                     [dict setObject:FBSession.activeSession.accessTokenData.accessToken forKey:@"token"];
-                                     [dict setObject:user.name forKey:@"socialName"];
-                                     [dict setObject:user.username forKey:@"uniqueSocialName"];
-                                     if ([delegate respondsToSelector:@selector(SocialManager:didRegisterFacebookAccountWithUserInfo:)]) {
-                                         [delegate SocialManager:self didRegisterFacebookAccountWithUserInfo:dict];
-                                     }
-                                 }
-                                 else{
-                                     if ([delegate respondsToSelector:@selector(SocialManager:didLinkFacebookAccountWithName:)]) {
-                                         [delegate SocialManager:self didLinkFacebookAccountWithName:user.name];
-                                     }
-                                 }
-                                 
-                             }
-                             
-                             else{
-                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                     NSLog(@"Facebook Link Error: %@",error.localizedDescription);
-                                     if (isRegister) {
-                                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                                             [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
-                                         }
-                                     }
-                                     else{
-                                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                                             [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
-                                         }
-                                     }
-                                     
-                                 });
-                                 
-                             }
-                         }];
-                     }
-                 });
-             }
-             else{
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     NSLog(@"Facebook Link Error: %@",error.localizedDescription);
-                     if (isRegister) {
-                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                             [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
-                         }
-                     }
-                     else{
-                         if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                             [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
-                         }
-                     }
-                     
-                 });
-                 
-             }
-         }];
+        //NSArray *permissions = [NSArray arrayWithObjects:@"email",@"publish_actions ", nil];
+        NSArray *permissions = [NSArray arrayWithObjects:@"email",@"basic_info", nil];
+        [FBSession openActiveSessionWithReadPermissions:permissions
+                                           allowLoginUI:YES
+                                      completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
+                                          /* handle success + failure in block */
+                                          if (!error) {
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  if (FBSession.activeSession.isOpen) {
+                                                      [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
+                                                          if (!error) {
+                                                              if (!isRegister) {
+                                                                  [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
+                                                                  [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
+                                                                  [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
+                                                              }
+                                                              
+                                                              
+                                                              
+                                                              
+                                                              //call delegate
+                                                              if (isRegister) {
+                                                                  NSMutableDictionary*dict = [NSMutableDictionary dictionaryWithDictionary:user];
+                                                                  [dict setObject:FBSession.activeSession.accessTokenData.accessToken forKey:@"token"];
+                                                                  [dict setObject:user.name forKey:@"socialName"];
+                                                                  [dict setObject:user.username forKey:@"uniqueSocialName"];
+                                                                  if ([delegate respondsToSelector:@selector(SocialManager:didRegisterFacebookAccountWithUserInfo:)]) {
+                                                                      [delegate SocialManager:self didRegisterFacebookAccountWithUserInfo:dict];
+                                                                  }
+                                                              }
+                                                              else{
+                                                                  [self createAliasWithName:user.username andServiceID: 3];
+                                                                  if ([delegate respondsToSelector:@selector(SocialManager:didLinkFacebookAccountWithName:)]) {
+                                                                      [delegate SocialManager:self didLinkFacebookAccountWithName:user.name];
+                                                                  }
+                                                              }
+                                                              
+                                                          }
+                                                          
+                                                          else{
+                                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                                  NSLog(@"Facebook Link Error: %@",error.localizedDescription);
+                                                                  if (isRegister) {
+                                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                                                                          [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
+                                                                      }
+                                                                  }
+                                                                  else{
+                                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                                                                          [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                                                                      }
+                                                                  }
+                                                                  
+                                                              });
+                                                              
+                                                          }
+                                                      }];
+                                                  }
+                                              });
+                                          }
+                                          else{
+                                              dispatch_async(dispatch_get_main_queue(), ^{
+                                                  NSLog(@"Facebook Link Error: %@",error.localizedDescription);
+                                                  if (isRegister) {
+                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                                                          [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
+                                                      }
+                                                  }
+                                                  else{
+                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                                                          [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                                                      }
+                                                  }
+                                                  
+                                              });
+                                              
+                                          }
+                                      }];
+//        [FBSession openActiveSessionWithPublishPermissions:permissions defaultAudience:FBSessionDefaultAudienceEveryone allowLoginUI:YES completionHandler:
+//         ^(FBSession *session,
+//           FBSessionState state, NSError *error) {
+//             
+//         }];
     }
 }
 
 #pragma mark - Social Posting
+//assumes there are active link sessions (should check before calling)
 - (void)socialPostTo:(NSArray*)socialPartners withStatus:(NSString*)status andImage:(UIImage*)image andSnapshot:(BOOL)snapshot{
     outstandingPosts = [socialPartners mutableCopy];
     posts = [socialPartners mutableCopy];
@@ -340,6 +495,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     }
     if ([socialPartners containsObject:FacebookService]) {
         if (snapshot) {
+//            [self checkFacebookPermissionsForPost:[NSDictionary dictionaryWithObjectsAndKeys:status, @"status", image, @"image", nil]];
             [self postSnapshotToFacebookWithStatus:status andImage:image];
         }
         else{
@@ -359,13 +515,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     }
 }
 
-- (void)failedToCompleteRequestWithType:(NSString*)socialType{
+- (void)failedToCompleteRequestWithType:(NSString*)socialType andAlreadyShownError:(BOOL)alreadyShownError{
     [outstandingPosts removeObject:socialType];
     [posts removeObject:socialType];
     
     if (outstandingPosts == 0) {
-        if ([delegate respondsToSelector:@selector(SocialManager:didFailToMakeSocialPostWithType:)]) {
-            [delegate SocialManager:self didFailToMakeSocialPostWithType:socialType];
+        if ([delegate respondsToSelector:@selector(SocialManager:didFailToMakeSocialPostWithType: andDidShowError:)]) {
+            [delegate SocialManager:self didFailToMakeSocialPostWithType:socialType andDidShowError:alreadyShownError];
         }
     }
 }
@@ -397,12 +553,12 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             else {
                 NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
                       [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
-                [self failedToCompleteRequestWithType:TwitterService];
+                [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
             }
         }
         else {
             NSLog(@"[ERROR] An error occurred while posting: %@", [error localizedDescription]);
-            [self failedToCompleteRequestWithType:TwitterService];
+            [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
         }
     };
     
@@ -436,7 +592,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             
             NSLog(@"[ERROR] An error occurred while asking for user authorization: %@",
                   [error localizedDescription]);
-            [self failedToCompleteRequestWithType:TwitterService];
+            [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
         }
     };
     
@@ -459,6 +615,18 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     if (!FBSession.activeSession.isOpen) {
         [FBSession openActiveSessionWithAllowLoginUI: NO];
     }
+//    
+//
+//    
+//    // can include any of the "publish" or "manage" permissions
+//    NSArray *permissions =
+//    [NSArray arrayWithObjects:@"publish_actions", nil];
+//    
+//    [[FBSession activeSession] reauthorizeWithPublishPermissions:permissions
+//                                                 defaultAudience:FBSessionDefaultAudienceFriends
+//                                               completionHandler:^(FBSession *session, NSError *error) {
+//                                                   /* handle success + failure in block */
+//                                               }];
     
     
     // Create an object
@@ -485,7 +653,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             pictureObject.provisionedForPost = YES;
             
             // Add the standard object properties
-            pictureObject[@"og"] = @{ @"title":@"picture titleeee", @"type":@"fluxapp:scene", @"description":@"OMG I took a snapshot guys", @"image":image };
+            pictureObject[@"og"] = @{ @"title":status, @"type":@"fluxapp:scene", @"description":@"", @"image":image };
             
             
             
@@ -498,31 +666,22 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                          completionHandler:^(FBRequestConnection *connection,
                                                              id result,
                                                              NSError *error) {
-                                             // handle the result
-                                             //                                             __block NSString *alertText;
-                                             //                                             __block NSString *alertTitle;
                                              if (!error) {
                                                  // Success, the restaurant has been liked
                                                  NSLog(@"Posted OG action, id: %@", [result objectForKey:@"id"]);
-                                                 //                                                 alertText = [NSString stringWithFormat:@"Posted OG action, id: %@", [result objectForKey:@"id"]];
-                                                 //                                                 alertTitle = @"Success";
-                                                 //                                                 [[[UIAlertView alloc] initWithTitle:alertTitle
-                                                 //                                                                             message:alertText
-                                                 //                                                                            delegate:self
-                                                 //                                                                   cancelButtonTitle:@"OK!"
-                                                 //                                                                   otherButtonTitles:nil] show];
-                                                 
                                                  [self completedRequestWithType:FacebookService];
                                                  
                                              } else {
                                                  // An error occurred, we need to handle the error
                                                  // See: https://developers.facebook.com/docs/ios/errors
                                                  NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+                                                 [self failedToCompleteRequestWithType:FacebookService andAlreadyShownError:NO];
                                              }
                                          }];
         }
         else{
             NSLog(@"Error: %@, %@",error.description, error.debugDescription);
+            [self failedToCompleteRequestWithType:FacebookService andAlreadyShownError:NO];
         }
         
     }];
@@ -612,20 +771,9 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                          completionHandler:^(FBRequestConnection *connection,
                                                              id result,
                                                              NSError *error) {
-                                             // handle the result
-//                                             __block NSString *alertText;
-//                                             __block NSString *alertTitle;
                                              if (!error) {
                                                  // Success, the restaurant has been liked
                                                  NSLog(@"Posted OG action, id: %@", [result objectForKey:@"id"]);
-//                                                 alertText = [NSString stringWithFormat:@"Posted OG action, id: %@", [result objectForKey:@"id"]];
-//                                                 alertTitle = @"Success";
-//                                                 [[[UIAlertView alloc] initWithTitle:alertTitle
-//                                                                             message:alertText
-//                                                                            delegate:self
-//                                                                   cancelButtonTitle:@"OK!"
-//                                                                   otherButtonTitles:nil] show];
-                                                 
                                                  [self completedRequestWithType:FacebookService];
                                                  
                                              } else {
