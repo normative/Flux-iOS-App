@@ -275,7 +275,6 @@
                                 </state>
                                 <connections>
                                     <action selector="closeButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="DON-8W-vN1"/>
-                                    <action selector="closeButtonAction:" destination="ln0-L9-YaG" eventType="touchUpInside" id="ZeY-gl-EPo"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="e21-oY-W5S" customClass="FluxCameraRollButton">
@@ -295,16 +294,15 @@
                                 </connections>
                             </button>
                             <button hidden="YES" opaque="NO" alpha="0.0" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tG4-RH-Imp">
-                                <rect key="frame" x="247" y="47" width="53" height="30"/>
+                                <rect key="frame" x="234" y="47" width="66" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="53" id="NRx-AD-oBD"/>
+                                    <constraint firstAttribute="width" constant="66" id="NRx-AD-oBD"/>
                                     <constraint firstAttribute="height" constant="30" id="hdM-OK-f3w"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                 <state key="normal" title="Share">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
                                     <action selector="shareButtonAction:" destination="pna-MN-DvY" eventType="touchUpInside" id="zgg-tx-U0J"/>
@@ -3112,8 +3110,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="sbm-gJ-83e"/>
         <segue reference="03e-8S-vGN"/>
+        <segue reference="sbm-gJ-83e"/>
         <segue reference="UqM-tx-VCb"/>
     </inferredMetricsTieBreakers>
 </document>
