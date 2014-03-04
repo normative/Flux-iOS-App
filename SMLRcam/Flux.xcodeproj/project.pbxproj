@@ -176,6 +176,8 @@
 		AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */; };
 		AAFB4DC418159F2500EB8DBA /* FluxTimeFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */; };
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
+		F206B62718C630E900ABAD99 /* FluxLoggerService.m in Sources */ = {isa = PBXBuildFile; fileRef = F206B62618C630E900ABAD99 /* FluxLoggerService.m */; };
+		F206B62918C63E9B00ABAD99 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F206B62818C63E9B00ABAD99 /* MessageUI.framework */; };
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
 		F240346017E103140088CA2D /* FluxDataRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345F17E103140088CA2D /* FluxDataRequest.m */; };
 		F2434C21187F42E100D08B6B /* SVPulsingAnnotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = F2434C20187F42E100D08B6B /* SVPulsingAnnotationView.m */; };
@@ -509,6 +511,9 @@
 		AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTSegmentedButtonControl.m; sourceTree = "<group>"; };
 		CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		DCDC5AB9480146C1BC963853 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F206B62518C630E900ABAD99 /* FluxLoggerService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLoggerService.h; sourceTree = "<group>"; };
+		F206B62618C630E900ABAD99 /* FluxLoggerService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLoggerService.m; sourceTree = "<group>"; };
+		F206B62818C63E9B00ABAD99 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
 		F240345B17E102F50088CA2D /* FluxDataStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDataStore.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		F240345C17E102F50088CA2D /* FluxDataStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxDataStore.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F240345E17E103140088CA2D /* FluxDataRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxDataRequest.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -549,6 +554,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F206B62918C63E9B00ABAD99 /* MessageUI.framework in Frameworks */,
 				AADFF1F118B544D9003BEE8C /* AddressBook.framework in Frameworks */,
 				17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */,
 				F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */,
@@ -619,6 +625,7 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F206B62818C63E9B00ABAD99 /* MessageUI.framework */,
 				AADFF1F218B544E2003BEE8C /* AddressBookUI.framework */,
 				AADFF1F018B544D9003BEE8C /* AddressBook.framework */,
 				AADFF1CF18AE6505003BEE8C /* libTestFlight.a */,
@@ -875,6 +882,8 @@
 				AA4CE0FE17B43579008D04BE /* FluxLocationServicesSingleton.h */,
 				AA4CE0FF17B43579008D04BE /* FluxLocationServicesSingleton.m */,
 				F2574DD818BEA22400253E52 /* FluxLogger.h */,
+				F206B62518C630E900ABAD99 /* FluxLoggerService.h */,
+				F206B62618C630E900ABAD99 /* FluxLoggerService.m */,
 				AA4CE10117B52EDF008D04BE /* FluxMotionManagerSingleton.h */,
 				AA4CE10217B52EDF008D04BE /* FluxMotionManagerSingleton.m */,
 				171510171811BF7F006727EB /* FluxPedometer.h */,
@@ -1612,6 +1621,7 @@
 				AA984F1318088923007F33B1 /* MITransition.m in Sources */,
 				AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */,
 				175E04F218B5356B00CCAC0B /* FluxAliasObject.m in Sources */,
+				F206B62718C630E900ABAD99 /* FluxLoggerService.m in Sources */,
 				AAAD9A391871F0EA003BC1FF /* FluxPhotoCollectionCell.m in Sources */,
 				17604B731785CA59005CF054 /* main.m in Sources */,
 				AA2CBAC2188F2810001ECF86 /* FluxSnapshotCollectionViewController.m in Sources */,

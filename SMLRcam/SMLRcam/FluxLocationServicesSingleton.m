@@ -65,26 +65,12 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         }
         
         [self loadTeleportLocationIndex];
-        
-        [self setupLogger];
     }
     
     [self initKFilter];
     [self startKFilter];
     
     return self;
-}
-
-- (void)setupLogger
-{
-    DDFileLogger *fileLogger = [[DDFileLogger alloc] init];
-    fileLogger.rollingFrequency = 60 * 60 * 24; // 24 hour rolling
-    fileLogger.logFileManager.maximumNumberOfLogFiles = 7;
-    
-    [DDLog addLogger:fileLogger];
-    [DDLog addLogger:[DDTTYLogger sharedInstance]];
-    
-    DDLogVerbose(@"Logging is setup (\"%@\")", [fileLogger.logFileManager logsDirectory]);
 }
 
 - (void)startLocating

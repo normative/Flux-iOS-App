@@ -27,7 +27,6 @@ NSString* const FluxDebugDidChangeHeadingCorrectedMotion = @"FluxDebugDidChangeH
 NSString* const FluxDebugHeadingCorrectedMotionKey = @"FluxDebugHeadingCorrectedMotionKey";
 NSString* const FluxDebugDidChangeDetailLoggerEnabled = @"FluxDebugDidChangeDetailLoggerEnabled";
 NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabledKey";
-NSString* const FluxDebugDidRequestDetailLoggerSendEmail = @"FluxDebugDidRequestDetailLoggerSendEmail";
 
 @interface FluxDebugViewController ()
 
@@ -199,8 +198,28 @@ NSString* const FluxDebugDidRequestDetailLoggerSendEmail = @"FluxDebugDidRequest
         [alertView showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
             if (buttonIndex != alertView.cancelButtonIndex)
             {
-                [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidRequestDetailLoggerSendEmail
-                                                                    object:self userInfo:nil];
+                if ([MFMailComposeViewController canSendMail])
+                {
+                    FluxLoggerService *fluxLoggerService = [FluxLoggerService sharedLoggerService];
+                    
+                    MFMailComposeViewController *mailViewController = [[MFMailComposeViewController alloc] init];
+                    mailViewController.mailComposeDelegate = self;
+                    NSMutableData *errorLogData = [NSMutableData data];
+                    for (NSData *errorLogFileData in [fluxLoggerService errorLogData])
+                    {
+                        [errorLogData appendData:errorLogFileData];
+                    }
+                    [mailViewController addAttachmentData:errorLogData mimeType:@"text/plain" fileName:@"errorLog.txt"];
+                    [mailViewController setSubject:NSLocalizedString(@"Flux Detailed Log File", @"")];
+                    [mailViewController setToRecipients:[NSArray arrayWithObject:@"ryan@smlr.is"]];
+                    
+                    [self presentViewController:mailViewController animated:YES completion:nil];
+                }
+                else
+                {
+                    NSString *message = NSLocalizedString(@"Sorry, your issue can't be reported right now. This is most likely because no mail accounts are set up on your mobile device.", @"");
+                    [[[UIAlertView alloc] initWithTitle:nil message:message delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", @"") otherButtonTitles: nil] show];
+                }
             }
         }];
     }
@@ -228,6 +247,11 @@ NSString* const FluxDebugDidRequestDetailLoggerSendEmail = @"FluxDebugDidRequest
             }
         }];
     }
+}
+
+-(void)mailComposeController:(MFMailComposeViewController*)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError*)error
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)disableDetailLoggerButton:(UILongPressGestureRecognizer *)recognizer

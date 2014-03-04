@@ -827,6 +827,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     [super viewDidLoad];
     self.screenName = @"Scan View";
+    
+    self.fluxLoggerService = [FluxLoggerService sharedLoggerService];
+    
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
     [self setupCameraView];

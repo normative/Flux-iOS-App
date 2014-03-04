@@ -12,6 +12,7 @@
 #import "FluxImageCaptureButton.h"
 
 #import "FluxCompassButton.h"
+#import "FluxLoggerService.h"
 #import "FluxMapViewController.h"
 #import "FluxOpenGLViewController.h"
 #import "FluxImageAnnotationViewController.h"
@@ -29,7 +30,6 @@
 
 #import "FluxDebugViewController.h"
 #import "CustomBadge.h"
-
 
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
@@ -92,6 +92,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;
 
 @property (nonatomic, strong) FluxDebugViewController *debugViewController;
+@property (nonatomic, strong) FluxLoggerService *fluxLoggerService;
 @property (nonatomic, strong) FluxDataFilter *currentDataFilter;
 
 - (void)hideDebugMenu;

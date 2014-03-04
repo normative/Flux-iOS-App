@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
 extern NSString* const FluxDebugDidChangeMatchDebugImageOutput;
 extern NSString* const FluxDebugMatchDebugImageOutputKey;
@@ -20,9 +21,8 @@ extern NSString* const FluxDebugDidChangeHeadingCorrectedMotion;
 extern NSString* const FluxDebugHeadingCorrectedMotionKey;
 extern NSString* const FluxDebugDidChangeDetailLoggerEnabled;
 extern NSString* const FluxDebugDetailLoggerEnabledKey;
-extern NSString* const FluxDebugDidRequestDetailLoggerSendEmail;
 
-@interface FluxDebugViewController : UIViewController
+@interface FluxDebugViewController : UIViewController <MFMailComposeViewControllerDelegate>
 {
     IBOutlet UISlider *slider1;
     IBOutlet UISlider *slider2;
