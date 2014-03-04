@@ -1,4 +1,10 @@
 Release Notes:
+- add CocoaLumberjack framework for logging
+- add MessageUI framework to send email from device
+- add logging of location, Kalman resets, and pedometer events
+- add ability to email log files
+- control for logging (disabled by default) is through hidden debug menu
+
 ******************************************
 
 V0.21 B01
