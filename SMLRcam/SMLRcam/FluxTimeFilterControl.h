@@ -19,6 +19,9 @@
     UIView *circularScrollerView;
     CAShapeLayer *circleLayer;
     
+    NSTimer*animationTimer;
+    BOOL isAnimating;
+    
     float oldScrollPos;
 }
 
@@ -26,7 +29,7 @@
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
 
 
--(void)setViewForContentCount:(int)count;
+-(void)setViewForContentCount:(int)count reverseAnimated:(BOOL)reverseAnimated;
 - (void)setScrollIndicatorCenter:(CGPoint)centre;
 
 
