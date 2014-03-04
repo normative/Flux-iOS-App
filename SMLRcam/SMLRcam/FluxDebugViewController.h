@@ -18,6 +18,9 @@ extern NSString* const FluxDebugDidChangeHistoricalPhotoPicker;
 extern NSString* const FluxDebugHistoricalPhotoPickerKey;
 extern NSString* const FluxDebugDidChangeHeadingCorrectedMotion;
 extern NSString* const FluxDebugHeadingCorrectedMotionKey;
+extern NSString* const FluxDebugDidChangeDetailLoggerEnabled;
+extern NSString* const FluxDebugDetailLoggerEnabledKey;
+extern NSString* const FluxDebugDidRequestDetailLoggerSendEmail;
 
 @interface FluxDebugViewController : UIViewController
 {
@@ -30,6 +33,7 @@ extern NSString* const FluxDebugHeadingCorrectedMotionKey;
     IBOutlet UISwitch *switch2;
     IBOutlet UISwitch *switch3;
     IBOutlet UISwitch *switch4;
+    IBOutlet UIButton *detailLoggerButtonLabel;
 }
 
 - (IBAction)slider1DidSlide:(id)sender;
@@ -42,6 +46,7 @@ extern NSString* const FluxDebugHeadingCorrectedMotionKey;
 - (IBAction)switch3DidChange:(id)sender;
 - (IBAction)switch4DidChange:(id)sender;
 - (IBAction)deleteAccountButtonAction:(id)sender;
+- (IBAction)detailLoggerButtonAction:(id)sender;
 
 - (IBAction)hideMenuAction:(id)sender;
 

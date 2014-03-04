@@ -13,6 +13,7 @@
 
 #import "UICKeyChainStore.h"
 #import "UIActionSheet+Blocks.h"
+#import "UIAlertView+Blocks.h"
 
 NSString* const FluxDebugDidChangeMatchDebugImageOutput = @"FluxDebugDidChangeMatchDebugImageOutput";
 NSString* const FluxDebugMatchDebugImageOutputKey = @"FluxDebugMatchDebugImageOutputKey";
@@ -24,6 +25,9 @@ NSString* const FluxDebugDidChangeHistoricalPhotoPicker = @"FluxDebugDidChangeHi
 NSString* const FluxDebugHistoricalPhotoPickerKey = @"FluxDebugHistoricalPhotoPickerKey";
 NSString* const FluxDebugDidChangeHeadingCorrectedMotion = @"FluxDebugDidChangeHeadingCorrectedMotion";
 NSString* const FluxDebugHeadingCorrectedMotionKey = @"FluxDebugHeadingCorrectedMotionKey";
+NSString* const FluxDebugDidChangeDetailLoggerEnabled = @"FluxDebugDidChangeDetailLoggerEnabled";
+NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabledKey";
+NSString* const FluxDebugDidRequestDetailLoggerSendEmail = @"FluxDebugDidRequestDetailLoggerSendEmail";
 
 @interface FluxDebugViewController ()
 
@@ -53,6 +57,17 @@ NSString* const FluxDebugHeadingCorrectedMotionKey = @"FluxDebugHeadingCorrected
     [switch2 setOn:[[defaults objectForKey:FluxDebugPedometerCountDisplayKey] boolValue]];
     [switch3 setOn:[[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue]];
     [switch4 setOn:[[defaults objectForKey:FluxDebugHeadingCorrectedMotionKey] boolValue]];
+    
+    bool detailedLoggerEnabled = [[defaults objectForKey:FluxDebugDetailLoggerEnabledKey] boolValue];
+    if (detailedLoggerEnabled)
+    {
+        [detailLoggerButtonLabel setTitle:@"Email Log" forState:UIControlStateNormal];
+    }
+    
+    // Add long-press gesture recognizer to disable logging (add it whether or not enabled - doesn't hurt to call it if already disabled)
+    UILongPressGestureRecognizer *longPress_gr = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(disableDetailLoggerButton:)];
+    [longPress_gr setMinimumPressDuration:2]; // triggers the action after 2 seconds of press
+    [detailLoggerButtonLabel addGestureRecognizer:longPress_gr];
     
 	// Do any additional setup after loading the view.
 }
@@ -164,6 +179,72 @@ NSString* const FluxDebugHeadingCorrectedMotionKey = @"FluxDebugHeadingCorrected
                              [operation start];
                          }
                      }];
+}
+
+- (IBAction)detailLoggerButtonAction:(id)sender
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+    if ([[defaults objectForKey:FluxDebugDetailLoggerEnabledKey] boolValue])
+    {
+        // Logging enabled already. Send email.
+        
+        // Prompt user to notify them that location will be tracked and request permission
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"May We?"
+                                                            message:@"Device logs, including information which details the exact location of the device, will be uploaded for analysis."
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:@"Sure", nil];
+        
+        [alertView showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            if (buttonIndex != alertView.cancelButtonIndex)
+            {
+                [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidRequestDetailLoggerSendEmail
+                                                                    object:self userInfo:nil];
+            }
+        }];
+    }
+    else
+    {
+        // Logging not yet enabled. Start it and update UI for email.
+        
+        // Prompt user to notify them that location will be tracked and request permission
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"May We?"
+                                                            message:@"In order to enable detailed device logging, we need to store your detailed location on the device. This information will only be sent to us on your request. To disable in the future, tap and hold this button."
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Cancel"
+                                                  otherButtonTitles:@"Sure", nil];
+        
+        [alertView showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            if (buttonIndex != alertView.cancelButtonIndex)
+            {
+                [detailLoggerButtonLabel setTitle:@"Email Log" forState:UIControlStateNormal];
+                
+                [defaults setObject:@(YES) forKey:FluxDebugDetailLoggerEnabledKey];
+                [defaults synchronize];
+                
+                [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeDetailLoggerEnabled
+                                                                    object:self userInfo:nil];
+            }
+        }];
+    }
+}
+
+- (void)disableDetailLoggerButton:(UILongPressGestureRecognizer *)recognizer
+{
+    // Long press of button. Disable logging.
+    if (recognizer.state == UIGestureRecognizerStateRecognized)
+    {
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+        [detailLoggerButtonLabel setTitle:@"Detail Log" forState:UIControlStateNormal];
+        
+        [defaults setObject:@(NO) forKey:FluxDebugDetailLoggerEnabledKey];
+        [defaults synchronize];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeDetailLoggerEnabled
+                                                            object:self userInfo:nil];
+    }
 }
 
 - (IBAction)hideMenuAction:(id)sender {

@@ -200,9 +200,9 @@
                                 </connections>
                             </segmentedControl>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P7N-x3-Awn">
-                                <rect key="frame" x="20" y="452" width="117" height="30"/>
+                                <rect key="frame" x="20" y="452" width="82" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Hide This Menu">
+                                <state key="normal" title="Hide Menu">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
@@ -210,7 +210,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pPa-E7-eIn">
-                                <rect key="frame" x="196" y="452" width="105" height="30"/>
+                                <rect key="frame" x="104" y="452" width="113" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Delete Account">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -233,10 +233,21 @@
                                     <action selector="switch4DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="eb0-9O-fjk"/>
                                 </connections>
                             </switch>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZBC-PB-e3E">
+                                <rect key="frame" x="225" y="452" width="75" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Detail Log">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="detailLoggerButtonAction:" destination="V4e-hA-nqo" eventType="touchUpInside" id="Ubu-8w-CXK"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="detailLoggerButtonLabel" destination="ZBC-PB-e3E" id="9wb-R7-NSZ"/>
                         <outlet property="segmentedControl1" destination="G41-CX-NvM" id="FAv-w4-D8E"/>
                         <outlet property="segmentedControl2" destination="xNS-aq-zUu" id="Y4j-ti-C05"/>
                         <outlet property="slider1" destination="V8q-tt-89J" id="J8u-bG-PIA"/>

@@ -79,6 +79,7 @@ bool registeredForAPNS = false;
     NSNumber * pedometerCountDisplay = [defaults objectForKey:FluxDebugPedometerCountDisplayKey];
     NSNumber * historicalPhotoPicker = [defaults objectForKey:FluxDebugHistoricalPhotoPickerKey];
     NSNumber * headingCorrectedMotion = [defaults objectForKey:FluxDebugHeadingCorrectedMotionKey];
+    NSNumber * detailLoggerEnabled = [defaults objectForKey:FluxDebugDetailLoggerEnabledKey];
     
     // do not save locally by default
     if (savePic == nil) {
@@ -118,6 +119,11 @@ bool registeredForAPNS = false;
 
     if (headingCorrectedMotion == nil) {
         [defaults setObject:@(NO) forKey:FluxDebugHeadingCorrectedMotionKey];
+        [defaults synchronize];
+    }
+
+    if (detailLoggerEnabled == nil) {
+        [defaults setObject:@(NO) forKey:FluxDebugDetailLoggerEnabledKey];
         [defaults synchronize];
     }
 
