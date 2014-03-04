@@ -691,12 +691,15 @@
 - (void)loginWithUserObject:(FluxRegistrationUserObject*)user andDidJustRegister:(BOOL)new{
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setLoginUserComplete:^(FluxRegistrationUserObject*userObject, FluxDataRequest * completedDataRequest){
+        
+        [UICKeyChainStore setString:userObject.auth_token forKey:FluxTokenKey service:FluxService];
+        
         UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:FluxService];
         
         [store setString:userObject.username forKey:FluxUsernameKey];
         [store setString:userObject.password forKey:FluxPasswordKey];
         [store setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey];
-        [store setString:[NSString stringWithString:userObject.auth_token] forKey:FluxTokenKey];
+//        [store setString:[NSString stringWithString:userObject.auth_token] forKey:FluxTokenKey];
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
 

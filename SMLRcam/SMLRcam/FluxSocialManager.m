@@ -653,13 +653,14 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             pictureObject.provisionedForPost = YES;
             
             // Add the standard object properties
-            pictureObject[@"og"] = @{ @"title":status, @"type":@"fluxapp:scene", @"description":@"", @"image":image };
+            pictureObject[@"og"] = @{ @"title":@"This is a title", @"type":@"fluxapp:scene", @"description":@"description", @"image":image };
             
             
             
             NSMutableDictionary<FBGraphObject> *action = [FBGraphObject graphObject];
             action[@"scene"] = pictureObject;
             [action setObject:@"true" forKey:@"fb:explicitly_shared"];
+            [action setObject:status forKey:@"message"];
             
             [FBRequestConnection startForPostWithGraphPath:@"me/fluxapp:capture"
                                                graphObject:action
@@ -758,7 +759,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             pictureObject.provisionedForPost = YES;
 
             // Add the standard object properties
-            pictureObject[@"og"] = @{ @"title":@"", @"type":@"fluxapp:picture", @"description":@"OMG I took a snapshot guys", @"image":image };
+            pictureObject[@"og"] = @{ @"title":@"", @"type":@"fluxapp:picture", @"description":@"this is a new capture description", @"image":image };
 
 
 
