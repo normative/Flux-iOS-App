@@ -33,7 +33,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)didUpdateNearbyImageList:(NSNotification *)notification{
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.nearbyListCount] forState:UIControlStateNormal];
-    [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
+    if (firstContent && self.fluxDisplayManager.nearbyListCount > 5) {
+        NSLog(@"FIRST TIME");
+        firstContent = NO;
+        [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount reverseAnimated:YES];
+        
+//        [UIView animateWithDuration:3.0
+//                              delay:0
+//                            options:UIViewAnimationOptionCurveEaseInOut
+//                         animations:^{ [timeFilterControl.timeScrollView scrollRectToVisible:CGRectMake(0, 0, 320, 5) animated:NO]; }
+//                         completion:NULL];
+    }
+    else{
+        [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount reverseAnimated:NO];
+    }
 }
 
 #pragma mark - Location Services
@@ -878,6 +891,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [self setupDebugPedometerCountDisplay];
     [self setupHistoricalPhotoPicker];
+    
+    firstContent = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated{

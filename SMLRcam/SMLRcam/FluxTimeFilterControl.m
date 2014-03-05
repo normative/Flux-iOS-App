@@ -58,7 +58,7 @@
         
         oldScrollPos =  0;
         
-        
+        isAnimating = NO;
         //invert it
         //self.transform = CGAffineTransformMakeScale(-1, 1);
     }
@@ -69,7 +69,7 @@
     [clockContainerView setCenter:CGPointMake(centre.x, centre.y-self.frame.origin.y)];
 }
 
--(void)setViewForContentCount:(int)count{
+-(void)setViewForContentCount:(int)count reverseAnimated:(BOOL)reverseAnimated{
     
     
     float height = [[UIScreen mainScreen] bounds].size.height;
@@ -81,6 +81,13 @@
         // add buffer to count
         count += (CELLS_PER_VIEW - 1);
     }
+    
+    //shows lines where the scrollView is, used for debug
+//    for (int i = 0; i<count; i++) {
+//        UIView*line = [[UIView alloc]initWithFrame:CGRectMake(0, heightPerCell*i, 320, 1)];
+//        [line setBackgroundColor:[UIColor whiteColor]];
+//        [self.timeScrollView addSubview:line];
+//    }
 
     self.timeScrollView.contentSize = CGSizeMake(self.frame.size.width, heightPerCell * count);
     if (self.timeScrollView.contentSize.height < self.frame.size.height) {
@@ -93,7 +100,7 @@
     CGFloat circleStartAngle;
     CGFloat circleEndAngle;
     
-    if (count <= CELLS_PER_VIEW) {
+    if (count <= (CELLS_PER_VIEW + CELLS_PER_VIEW - 1)) {
         circleStartAngle = 0;
         circleEndAngle = 0;
     }
@@ -134,8 +141,51 @@
     }
     else{
         [circularScrollerView.layer replaceSublayer:[[circularScrollerView.layer sublayers]objectAtIndex:0] with:circleLayer];
-#warning when a new imageList is downloaded and the image count changes, a loading screen should appear, then the scrollView should go back to 0.
+#warning when a new imageList is downloaded and the image count changes, we should consider where the image list scroll point is, for now we are not.
         //[self.timeScrollView setContentOffset:CGPointMake(0.0, 0.0)];
+    }
+    
+    if (reverseAnimated) {
+        isAnimating = YES;
+        CGPoint bottomOffset = CGPointMake(0, self.timeScrollView.contentSize.height - self.timeScrollView.bounds.size.height);
+        [self.timeScrollView setContentOffset:bottomOffset animated:NO];
+        [self scrollScrollerToCalculatedPosition];
+        
+        
+        int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
+        if (numberOfDegrees > -180) {
+            //if it's less than halfway to 0 degrees already, just go to 0
+            [UIView animateWithDuration:1.0 animations:^{
+                circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0));
+                //circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
+                [self.timeScrollView setContentOffset:CGPointZero animated:NO];
+            }completion:^(BOOL finished){
+                isAnimating = NO;
+            }];
+        }
+        else{
+            //else, stage it at 180 degrees first, then go to 0
+            [UIView animateWithDuration:0.5
+                                  delay:0.1
+                                options:UIViewAnimationOptionCurveEaseIn
+                             animations:^{
+                                 circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(180));
+                                 //circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
+                             }
+                             completion:^(BOOL finished){
+                                 [UIView animateWithDuration:0.5
+                                                       delay:0.0
+                                                     options:UIViewAnimationOptionCurveEaseOut
+                                                  animations:^{
+                                                    circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0));
+                                                    [self.timeScrollView setContentOffset:CGPointZero animated:NO];
+                                                  }
+                                                  completion:^(BOOL finished){
+                                                    isAnimating = NO;
+                                                    circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
+                                                  }];
+                             }];
+        }
     }
 }
 
@@ -147,10 +197,11 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-    
+
+    NSLog(@" Offset = %@ ",NSStringFromCGPoint(scrollView.contentOffset));
     //if it's outside the bounds of the scrollView
 //    if ((scrollView.contentOffset.y < (scrollView.contentSize.height - scrollView.frame.size.height)) && (scrollView.contentOffset.y > 0))
-    if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y > 0))
+    if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y >= 0))
     {
         int nlc = self.fluxDisplayManager.nearbyListCount;
         if (self.fluxDisplayManager && (nlc > 1))
@@ -164,12 +215,19 @@
 
         }
     }
+    if (!isAnimating) {
+        [self scrollScrollerToCalculatedPosition];
+    }
     
-    int numberOfDegrees = -(scrollView.contentOffset.y/scrollView.contentSize.height)*320;
-    circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
-    circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
     
     oldScrollPos = scrollView.contentOffset.y;
+}
+
+- (void)scrollScrollerToCalculatedPosition{
+    int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
+    NSLog(@" Degrees = %i ",numberOfDegrees);
+    circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
+    circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{

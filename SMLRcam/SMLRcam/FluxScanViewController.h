@@ -62,6 +62,8 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     //time scrolling
     NSDateFormatter *dateFormatter;
     CGPoint _point;
+    BOOL firstContent;
+    
     //openGL
     FluxOpenGLViewController*openGLController;
     
