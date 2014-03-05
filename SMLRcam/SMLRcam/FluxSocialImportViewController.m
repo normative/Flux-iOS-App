@@ -506,6 +506,28 @@
                                  }];
         }
     }
+    else if (self.serviceType == TwitterService){
+        
+    }
+    else if (self.serviceType == FacebookService){
+        NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                         // 2. Optionally provide a 'to' param to direct the request at
+                                         contact.aliasName, @"to", // Ali
+                                         @"fbAPPID://authorize#target_url=[MYURL]", @"link",
+                                         nil];
+        
+        [FBWebDialogs
+         presentRequestsDialogModallyWithSession:nil
+         message:@"See a place like you've never seen it before."  /*shows up on web only, displayed below name, which is below app title*/
+         title:nil
+         parameters:params
+         handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {}
+         ];
+    }
+    //should never hit
+    else{
+        
+    }
 }
 
 #pragma mark - address book loading

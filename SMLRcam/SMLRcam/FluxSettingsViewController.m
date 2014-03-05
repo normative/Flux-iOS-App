@@ -360,33 +360,11 @@
     //if the action sheet was delayed, do nothing (**should** never happen)
     if (window.rootViewController) {
         
-        //close facebook session
-        if (FBSession.activeSession.isOpen) {
-            [FBSession.activeSession closeAndClearTokenInformation];
-        }
-        
-        //remove profile pic
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
-        NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        BOOL success = [fileManager removeItemAtPath:filePath error:nil];
-        NSLog((success ? @"Successfully delete profile pic" : @"Didn't Delete the profile pic"));
-  
-        //remove settings
-        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-        [defaults removeObjectForKey:@"profileImage"];
-        [defaults removeObjectForKey:@"cameraID"];
-        [defaults removeObjectForKey:@"bio"];
-        [defaults removeObjectForKey:@"snapshotImages"];
-        [defaults synchronize];
+ 
         
         [(FluxRegisterViewController*)[[(UINavigationController*)window.rootViewController viewControllers]objectAtIndex:0]userDidLogOut];
         
-        //clear keychain _after_ other elements have had a chance to close down
-        [UICKeyChainStore removeAllItemsForService:FluxService];
-        [UICKeyChainStore removeAllItemsForService:FacebookService];
-        [UICKeyChainStore removeAllItemsForService:TwitterService];
+
 
         [self.parentViewController.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
             

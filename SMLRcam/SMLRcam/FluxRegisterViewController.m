@@ -399,9 +399,8 @@
 
 - (void)loginRegistrationFailedWithString:(NSString*)description{
     [self showContainerViewAnimated:YES];
-    if (FBSession.activeSession.isOpen) {
-        [FBSession.activeSession closeAndClearTokenInformation];
-    }
+    [self userDidLogOut];
+    
     if ([description isKindOfClass:[NSString class]]) {
         [ProgressHUD showError:description];
     }
@@ -1048,6 +1047,32 @@
     if (!isInSignUp) {
         [self loginSignupToggleAction:nil];
     }
+    
+    //close facebook session
+    if (FBSession.activeSession.isOpen) {
+        [FBSession.activeSession closeAndClearTokenInformation];
+    }
+    
+    //remove profile pic
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL success = [fileManager removeItemAtPath:filePath error:nil];
+    NSLog((success ? @"Successfully delete profile pic" : @"Didn't Delete the profile pic"));
+    
+    //remove settings
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults removeObjectForKey:@"profileImage"];
+    [defaults removeObjectForKey:@"cameraID"];
+    [defaults removeObjectForKey:@"bio"];
+    [defaults removeObjectForKey:@"snapshotImages"];
+    [defaults synchronize];
+    //clear keychain _after_ other elements have had a chance to close down
+    [UICKeyChainStore removeAllItemsForService:FluxService];
+    [UICKeyChainStore removeAllItemsForService:FacebookService];
+    [UICKeyChainStore removeAllItemsForService:TwitterService];
+    
     
     // log out of the server...
     // ZZZ
