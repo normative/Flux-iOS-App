@@ -124,6 +124,7 @@
             self.importUserArray = [contacts mutableCopy];
             NSMutableIndexSet *removalSet = [[NSMutableIndexSet alloc]init];
             for (int i = 0; self.importUserArray.count; i++) {
+//                NSLog(@"index: %i, object username: %@", i, [(FluxContactObject*)[self.importUserArray objectAtIndex:i]aliasName] );
                 if ([(FluxContactObject*)[self.importUserArray objectAtIndex:i]userID]) {
                     [self.importFluxUserArray addObject:[self.importUserArray objectAtIndex:i]];
                     [removalSet addIndex:i];
@@ -280,15 +281,24 @@
     }
 
     else if (self.importFluxUserArray.count > 0){
-        if (section == 1) {
+        if (section == 0) {
+            return 1;
+        }
+        else if (section == 1) {
             return self.importFluxUserArray.count;
         }
-        else{
+        else if (section == 2) {
             return self.importUserArray.count;
         }
     }
     else{
-        return self.importUserArray.count;
+        if (section == 0) {
+            return 1;
+        }
+        else //if (section == 1)
+        {
+            return self.importUserArray.count;
+        }
     }
 }
 
@@ -781,6 +791,7 @@
         }
     }
     else if (self.serviceType == TwitterService){
+        [ProgressHUD show:@"Inviting via Twitter is not yet supported."];
         
     }
     else if (self.serviceType == FacebookService){

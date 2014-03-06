@@ -54,7 +54,8 @@
     resultsArray = [[NSMutableArray alloc]init];
     resultsImageArray = [[NSMutableArray alloc]init];
     
-    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", @"Contacts", nil];
+//    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", @"Contacts", nil];
+    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", nil];
     
     searchState = searched;
     
@@ -102,7 +103,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return 2;
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
