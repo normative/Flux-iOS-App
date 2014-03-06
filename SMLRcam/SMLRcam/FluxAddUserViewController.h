@@ -14,6 +14,7 @@
 #import "FluxPublicProfileViewController.h"
 
 #import "GAITrackedViewController.h"
+#import <Accounts/Accounts.h>
 
 typedef enum QuerySearchState : NSUInteger {
     notSearching = 0,
@@ -48,6 +49,7 @@ typedef enum QuerySearchState : NSUInteger {
     BOOL didImport;
     
     id __unsafe_unretained delegate;
+    ACAccount*TWAccount;
 }
 
 @property (unsafe_unretained) id <FluxAddUserViewControllerDelegate> delegate;

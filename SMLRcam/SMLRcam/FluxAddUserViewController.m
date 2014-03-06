@@ -95,6 +95,7 @@
     if ([segue.identifier isEqualToString:@"socialImportPush"]) {
         [(FluxSocialImportViewController*)segue.destinationViewController setServiceType:sender];
         [(FluxSocialImportViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
+        [(FluxSocialImportViewController*)segue.destinationViewController setTWAccount:TWAccount];
         didImport = YES;
     }
 }
@@ -103,7 +104,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return 1;
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -122,7 +123,7 @@
         [label setFont:[UIFont fontWithName:@"Akkurat" size:12]];
         label.text = @"Or find from...";
         label.backgroundColor = [UIColor clearColor];
-        [label setCenter:CGPointMake(label.center.x, view.center.y)];
+        [label setCenter:CGPointMake(label.center.x, view.center.y+1)];
         [view addSubview:label];
         
         return view;
@@ -415,7 +416,8 @@
 }
 
 #pragma mark - Social Manager Delegate
-- (void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
+- (void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccount:(ACAccount *)theAccount{
+    TWAccount = theAccount;
     [self performSegueWithIdentifier:@"socialImportPush" sender:TwitterService];
 }
 

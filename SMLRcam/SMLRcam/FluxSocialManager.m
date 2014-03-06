@@ -75,6 +75,21 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 [delegate SocialManager:self didLinkTwitterAccountWithUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
                 return;
             }
+            if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccount:)]) {
+                //should always be granted (previous TW account exists in the keychain)
+                [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (granted) {
+                            for (ACAccount *acct in self.TWAccounts) {
+                                if ([[username lowercaseString] isEqualToString:[acct.username lowercaseString]]) {
+                                    [delegate SocialManager:self didLinkTwitterAccount:acct];
+                                    return;
+                                }
+                            }
+                        }
+                    });
+                }];
+            }
         }
     }
     

@@ -15,6 +15,10 @@
 #import "UIActionSheet+Blocks.h"
 #import "FluxImageTools.h"
 
+#import <Twitter/Twitter.h>
+#import "TWAPIManager.h"
+#import "TWSignedRequest.h"
+
 #import <AddressBookUI/AddressBookUI.h>
 
 @interface FluxSocialImportViewController ()
@@ -203,7 +207,7 @@
         return 3;
     }
     else
-        return 1;
+        return 2;
     
 
 }
@@ -212,16 +216,25 @@
     if (isSearching) {
         return @"Search Results";
     }
-    switch (section) {
-        case 1:
-            return @"Already on Flux";
-            break;
-        case 2:
-            return @"Not using Flux yet";
-            break;
-        default:
+    else if (self.importFluxUserArray.count > 0){
+        if (section == 0) {
             return @"";
-            break;
+        }
+        else if (section == 1) {
+            return @"Already on Flux";
+        }
+        else if (section == 2) {
+            return @"Not using Flux yet";
+        }
+    }
+    else{
+        if (section == 0) {
+            return @"";
+        }
+        else
+        {
+            return @"Not using Flux yet";
+        }
     }
 }
 
@@ -237,7 +250,7 @@
     }
     
     else{
-        return 0.0;
+        return 20.0;
     }
     
 }
@@ -253,7 +266,7 @@
         return [self standardHeaderForSection:section];
     }
     else{
-        return nil;
+        return [self standardHeaderForSection:section];
     }
 }
 - (UIView*)standardHeaderForSection:(NSInteger)section{
@@ -268,7 +281,7 @@
     [label setFont:[UIFont fontWithName:@"Akkurat" size:12]];
     label.text = [self tableView:self.importUserTableView titleForHeaderInSection:section];
     label.backgroundColor = [UIColor clearColor];
-    [label setCenter:CGPointMake(label.center.x, view.center.y)];
+    [label setCenter:CGPointMake(label.center.x, view.center.y+1)];
     [view addSubview:label];
     
     return view;
@@ -295,7 +308,7 @@
         if (section == 0) {
             return 1;
         }
-        else //if (section == 1)
+        else
         {
             return self.importUserArray.count;
         }
@@ -346,13 +359,21 @@
                                          placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
                                                   success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
                                                       if (image) {
-                                                          [self.searchResultsImagesArray replaceObjectAtIndex:index withObject:image];
-                                                          
-                                                          [weakCell.profileImageView setImage:image];
-                                                          //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                                          //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                                          [weakCell setNeedsLayout];
-                                                          //}
+                                                          //if there's an image
+                                                          if (index < self.searchResultsImagesArray.count) {
+                                                              //and there is an index there
+                                                              if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] aliasName] isEqualToString:weakCell.contactObject.aliasName]) {
+                                                                  //and it's the same index as when we started, then updatw the image
+                                                                  [self.searchResultsImagesArray replaceObjectAtIndex:index withObject:image];
+                                                                  
+                                                                  [weakCell.profileImageView setImage:image];
+                                                                  //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                                  //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                                  [weakCell setNeedsLayout];
+                                                                  //}
+                                                              }
+                                                          }
+
                                                       }
                                                       
                                                   }
@@ -791,8 +812,11 @@
         }
     }
     else if (self.serviceType == TwitterService){
-        [ProgressHUD show:@"Inviting via Twitter is not yet supported."];
-        // Drop Twitter Direct Message call here...
+        [self inviteUserFromTwitter:(FluxContactObject*)contact];
+//        
+//        
+//        
+//        // Drop Twitter Direct Message call here...
 //        NSArray *socialPartners = [NSArray arrayWithObject:TwitterService];
 //        [socialManager socialPostTo:socialPartners withStatus:@"I've invited you to try Flux. See what you can discover: smlr.is" directedToUser:contact.socialID];
     }
@@ -858,6 +882,44 @@
     else{
         
     }
+}
+
+#pragma mark - SocialInvites
+#pragma mark Twitter
+- (void)inviteUserFromTwitter:(FluxContactObject*)contact{
+    
+    SLRequestHandler requestHandler =
+    ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+        if (responseData) {
+            NSInteger statusCode = urlResponse.statusCode;
+            if (statusCode >= 200 && statusCode < 300) {
+                NSDictionary *postResponseData =
+                [NSJSONSerialization JSONObjectWithData:responseData
+                                                options:NSJSONReadingMutableContainers
+                                                  error:NULL];
+                NSLog(@"[SUCCESS!] Created DirectMessage with ID: %@", postResponseData[@"id_str"]);
+            }
+            else {
+                NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
+                      [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
+            }
+        }
+        else {
+            NSLog(@"[ERROR] An error occurred while posting DM: %@", [error localizedDescription]);
+        }
+    };
+    
+    NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1.1/direct_messages/new.json"];
+//    NSDictionary *params = @{@"user_id" : contact.socialID, @"text" : @"I've invited you to try Flux. See what you can discover: smlr.is"};
+    NSDictionary *params = [[NSDictionary alloc]initWithObjectsAndKeys:contact.socialID, @"user_id", @"III've invited you to try Flux. See what you can discover: smlr.is", @"text", nil];
+    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                            requestMethod:SLRequestMethodPOST
+                                                      URL:url
+                                               parameters:params];
+    
+    
+    [request setAccount:self.TWAccount];
+    [request performRequestWithHandler:requestHandler];
 }
 
 #pragma mark - address book loading

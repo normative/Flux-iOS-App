@@ -22,6 +22,7 @@
 @optional
 - (void)SocialManager:(FluxSocialManager*)socialManager didLinkFacebookAccountWithName: (NSString*)name;
 - (void)SocialManager:(FluxSocialManager*)socialManager didLinkTwitterAccountWithUsername: (NSString*)username;
+- (void)SocialManager:(FluxSocialManager*)socialManager didLinkTwitterAccount: (ACAccount*)theAccount;
 - (void)SocialManager:(FluxSocialManager*)socialManager didFailToLinkSocialAccount:(NSString*)accountType;
 
 - (void)SocialManagerDidAddFacebookPublishPermissions:(FluxSocialManager*)socialManager;
