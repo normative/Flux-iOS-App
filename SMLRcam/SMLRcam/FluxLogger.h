@@ -13,6 +13,4 @@
 #import "DDFileLogger.h"
 #import "DDTTYLogger.h"
 
-extern int const ddLogLevel;
-
 #endif

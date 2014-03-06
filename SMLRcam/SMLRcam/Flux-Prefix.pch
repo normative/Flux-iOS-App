@@ -31,11 +31,17 @@
 #import <RestKit/RestKit.h>
 
 #import "FluxLogger.h"
+
+#ifndef DD_LOG_LEVEL
+#define DD_LOG_LEVEL
+
 #ifdef DEBUG
-int const ddLogLevel = LOG_LEVEL_VERBOSE;
+static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 #else
-int const ddLogLevel = LOG_LEVEL_VERBOSE;
+static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 #endif
+
+#endif //DD_LOG_LEVEL
 
 #endif
 
