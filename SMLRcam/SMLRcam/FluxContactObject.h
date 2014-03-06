@@ -20,5 +20,6 @@
 @property (nonatomic) int friendState;
 @property (nonatomic) BOOL isFollowing;
 @property (nonatomic) BOOL isFollower;
+@property (nonatomic) BOOL inviteSent;
 
 @end

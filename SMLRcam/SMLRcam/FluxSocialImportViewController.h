@@ -10,10 +10,15 @@
 #import "FluxImportContactCell.h"
 #import "FluxSearchCell.h"
 #import "FluxPublicProfileViewController.h"
+#import "FluxDataManager.h"
 
 @interface FluxSocialImportViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, FluxImportContactCellDelegate, PublicProfileDelegate,FluxSearchCellDelegate>{
     BOOL isSearching;
 }
+
+@property (nonatomic, strong) FluxDataManager *fluxDataManager;
+
+
 @property (strong, nonatomic) IBOutlet UITableView *importUserTableView;
 
 @property (nonatomic, strong) NSString*serviceType;

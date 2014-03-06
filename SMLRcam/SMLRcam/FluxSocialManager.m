@@ -391,6 +391,18 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 }
 
 - (void)linkFacebook{
+    NSString*username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
+    
+    //If we've already linked then return the active account info
+    if (username) {
+        if (!isRegister) {
+            if ([delegate respondsToSelector:@selector(SocialManager:didLinkFacebookAccountWithName:)]) {
+                [delegate SocialManager:self didLinkFacebookAccountWithName:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
+                return;
+            }
+        }
+    }
+    
     if (!FBSession.activeSession.isOpen) {
         if (FBSession.activeSession.state != FBSessionStateCreated) {
             // Create a new, logged out session.

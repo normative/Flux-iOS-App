@@ -259,14 +259,14 @@ bool registeredForAPNS = false;
             // get the object ID string from the deep link URL
             // we use the substringFromIndex so that we can delete the leading '/' from the targetURL
             NSString *objectId = [[[call appLinkData] targetURL].path substringFromIndex:1];
-            
+            NSLog([NSString stringWithFormat:@"Deep link to %@", objectId]);
             // now handle the deep link
             // write whatever code you need to show a view controller that displays the object, etc.
-            [[[UIAlertView alloc] initWithTitle:@"Directed from Facebook"
-                                        message:[NSString stringWithFormat:@"Deep link to %@", objectId]
-                                       delegate:self
-                              cancelButtonTitle:@"OK!"
-                              otherButtonTitles:nil] show];
+//            [[[UIAlertView alloc] initWithTitle:@"Directed from Facebook"
+//                                        message:[NSString stringWithFormat:@"Deep link to %@", objectId]
+//                                       delegate:self
+//                              cancelButtonTitle:@"OK!"
+//                              otherButtonTitles:nil] show];
         } else {
             //
             NSLog(@"Unhandled deep link: %@", [[call appLinkData] targetURL]);

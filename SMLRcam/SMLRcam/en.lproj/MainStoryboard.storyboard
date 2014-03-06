@@ -2091,7 +2091,7 @@
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 </imageView>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="6Q4-oA-ymr">
-                                                    <rect key="frame" x="68" y="20" width="194" height="30"/>
+                                                    <rect key="frame" x="68" y="17" width="194" height="30"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -2109,7 +2109,7 @@
                                                     </connections>
                                                 </button>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="5" translatesAutoresizingMaskIntoConstraints="NO" id="u8T-FJ-Ob9">
-                                                    <rect key="frame" x="68" y="45" width="200" height="10"/>
+                                                    <rect key="frame" x="68" y="42" width="200" height="10"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="10"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -3006,6 +3006,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
+                                            <outlet property="inviteButton" destination="CCW-qN-4Af" id="k8l-e7-Ofd"/>
                                             <outlet property="profileImageView" destination="jqk-0U-23F" id="a9f-Kc-qtj"/>
                                             <outlet property="titleLabel" destination="PSB-9F-BnP" id="uHC-dj-f0N"/>
                                         </connections>
@@ -3040,7 +3041,7 @@
                                                     </connections>
                                                 </button>
                                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NzJ-kC-Ro0">
-                                                    <rect key="frame" x="89" y="35" width="181" height="14"/>
+                                                    <rect key="frame" x="89" y="32" width="181" height="20"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                     <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -3054,6 +3055,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
+                                            <outlet property="inviteButton" destination="dGi-ol-S0N" id="asQ-pL-pTc"/>
                                             <outlet property="profileImageView" destination="m0T-DN-VdZ" id="3U2-vM-a2r"/>
                                             <outlet property="socialStatusLabel" destination="NzJ-kC-Ro0" id="rNI-I7-IkF"/>
                                             <outlet property="socialTypeImageView" destination="dSK-zg-CLW" id="as6-hE-hYz"/>

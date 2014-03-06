@@ -93,6 +93,7 @@
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     if ([segue.identifier isEqualToString:@"socialImportPush"]) {
         [(FluxSocialImportViewController*)segue.destinationViewController setServiceType:sender];
+        [(FluxSocialImportViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
         didImport = YES;
     }
 }
@@ -151,7 +152,7 @@
         if ([[resultsArray objectAtIndex:indexPath.row] isKindOfClass:[NSNumber class]]) {
             return 75.0;
         }
-        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] == 3)) {
+        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] > 0)) {
             return 70.0;
         }
         return 60.0;
