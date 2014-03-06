@@ -75,6 +75,21 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 [delegate SocialManager:self didLinkTwitterAccountWithUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
                 return;
             }
+            if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccount:)]) {
+                //should always be granted (previous TW account exists in the keychain)
+                [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (granted) {
+                            for (ACAccount *acct in self.TWAccounts) {
+                                if ([[username lowercaseString] isEqualToString:[acct.username lowercaseString]]) {
+                                    [delegate SocialManager:self didLinkTwitterAccount:acct];
+                                    return;
+                                }
+                            }
+                        }
+                    });
+                }];
+            }
         }
     }
     
@@ -513,9 +528,22 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         else{
             [self postToFacebookWithStatus:status andImage:image];
         }
-        
     }
 }
+
+- (void)socialPostTo:(NSArray*)socialPartners withStatus:(NSString*)status directedToUser:(NSString *)userid{
+    outstandingPosts = [socialPartners mutableCopy];
+    posts = [socialPartners mutableCopy];
+    
+    if ([socialPartners containsObject:TwitterService]) {
+        [self postDMToTwitterUser:userid withMessage:status];
+    }
+    
+    if ([socialPartners containsObject:FacebookService]) {
+        [ProgressHUD showError:@"Can not direct messages in Facebook at this time"];
+    }
+}
+
 
 - (void)completedRequestWithType:(NSString*)socialType{
     [outstandingPosts removeObject:socialType];
@@ -612,6 +640,74 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                                      options:NULL
                                                   completion:accountStoreHandler];
 }
+
+- (void)postDMToTwitterUser:(NSString *)userid withMessage:(NSString*)text{
+    
+    NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
+    
+    ACAccountType *twitterType =
+    [self.TWAccountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    self.TWAccounts = [self.TWAccountStore accountsWithAccountType:twitterType];
+    
+    SLRequestHandler requestHandler =
+    ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+        if (responseData) {
+            NSInteger statusCode = urlResponse.statusCode;
+            if (statusCode >= 200 && statusCode < 300) {
+                NSDictionary *postResponseData =
+                [NSJSONSerialization JSONObjectWithData:responseData
+                                                options:NSJSONReadingMutableContainers
+                                                  error:NULL];
+                NSLog(@"[SUCCESS!] Created DirectMessage with ID: %@", postResponseData[@"id_str"]);
+                [self completedRequestWithType:TwitterService];
+                
+                
+            }
+            else {
+                NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
+                      [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
+                [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
+            }
+        }
+        else {
+            NSLog(@"[ERROR] An error occurred while posting DM: %@", [error localizedDescription]);
+            [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
+        }
+    };
+    
+    ACAccountStoreRequestAccessCompletionHandler accountStoreHandler =
+    ^(BOOL granted, NSError *error) {
+        if (granted) {
+            NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1.1/direct_messages/new.json"];
+            NSDictionary *params = @{@"userid" : userid, @"text" : text};
+            SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                                    requestMethod:SLRequestMethodPOST
+                                                              URL:url
+                                                       parameters:params];
+            
+            ACAccount* account;
+            for (ACAccount *acct in self.TWAccounts) {
+                if ([[username lowercaseString] isEqualToString:[acct.username lowercaseString]]) {
+                    account = acct;
+                    break;
+                }
+            }
+            [request setAccount:account];
+            [request performRequestWithHandler:requestHandler];
+        }
+        else {
+            
+            NSLog(@"[ERROR] An error occurred while asking for user authorization: %@",
+                  [error localizedDescription]);
+            [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
+        }
+    };
+    
+    [self.TWAccountStore requestAccessToAccountsWithType:twitterType
+                                                 options:NULL
+                                              completion:accountStoreHandler];
+}
+
 
 #pragma mark Facebook
 

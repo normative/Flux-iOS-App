@@ -205,6 +205,7 @@
                                                   @"alias_name":   @"aliasName",
                                                   @"display_name":   @"displayName",
                                                   @"profile_pic_URL":   @"profilePicURL",
+                                                  @"social_id":      @"socialID"
                                                   }];
     
     [mapping addAttributeMappingsFromArray:@[@"username"]];

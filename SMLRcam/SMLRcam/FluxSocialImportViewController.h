@@ -11,6 +11,7 @@
 #import "FluxSearchCell.h"
 #import "FluxPublicProfileViewController.h"
 #import "FluxDataManager.h"
+#import <Accounts/Accounts.h>
 
 @interface FluxSocialImportViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, FluxImportContactCellDelegate, PublicProfileDelegate,FluxSearchCellDelegate>{
     BOOL isSearching;
@@ -22,6 +23,7 @@
 @property (strong, nonatomic) IBOutlet UITableView *importUserTableView;
 
 @property (nonatomic, strong) NSString*serviceType;
+@property (nonatomic, strong) ACAccount*TWAccount;
 @property (strong, nonatomic) NSMutableArray*importUserArray;
 @property (strong, nonatomic) NSMutableArray*importUserImagesArray;
 
