@@ -15,6 +15,7 @@
 @property (nonatomic, strong) NSString *username;
 @property (nonatomic, strong) NSString *displayName;
 @property (nonatomic, strong) NSString *profilePicURL;
+@property (nonatomic, strong) NSString *socialID;
 @property (nonatomic, strong) NSArray *emails;
 @property (nonatomic, strong) UIImage* profilePic;
 @property (nonatomic) int friendState;

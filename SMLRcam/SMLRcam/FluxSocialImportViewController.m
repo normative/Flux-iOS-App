@@ -792,7 +792,9 @@
     }
     else if (self.serviceType == TwitterService){
         [ProgressHUD show:@"Inviting via Twitter is not yet supported."];
-        
+        // Drop Twitter Direct Message call here...
+//        NSArray *socialPartners = [NSArray arrayWithObject:TwitterService];
+//        [socialManager socialPostTo:socialPartners withStatus:@"I've invited you to try Flux. See what you can discover: smlr.is" directedToUser:contact.socialID];
     }
     else if (self.serviceType == FacebookService){
         NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys:
