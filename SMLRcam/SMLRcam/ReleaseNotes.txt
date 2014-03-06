@@ -4,6 +4,7 @@ Release Notes:
 - add logging of location, Kalman resets, and pedometer events
 - add ability to email log files
 - control for logging (disabled by default) is through hidden debug menu
+- social contact import, search, invite to Flux, friend, follow from Twitter and Facebook contacts
 
 ******************************************
 
