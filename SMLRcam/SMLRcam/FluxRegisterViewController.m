@@ -81,10 +81,10 @@
     
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
     
-    [logoImageView removeFromSuperview];
-    [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
+//    [logoImageView removeFromSuperview];
+//    [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
     [logoImageView setCenter:self.view.center];
-    [self.view addSubview:logoImageView];
+//    [self.view addSubview:logoImageView];
     
     //[logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y+60, logoImageView.frame.size.width, logoImageView.frame.size.height)];
     //[logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
@@ -399,9 +399,8 @@
 
 - (void)loginRegistrationFailedWithString:(NSString*)description{
     [self showContainerViewAnimated:YES];
-    if (FBSession.activeSession.isOpen) {
-        [FBSession.activeSession closeAndClearTokenInformation];
-    }
+    [self userDidLogOut];
+    
     if ([description isKindOfClass:[NSString class]]) {
         [ProgressHUD showError:description];
     }
@@ -691,12 +690,15 @@
 - (void)loginWithUserObject:(FluxRegistrationUserObject*)user andDidJustRegister:(BOOL)new{
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setLoginUserComplete:^(FluxRegistrationUserObject*userObject, FluxDataRequest * completedDataRequest){
+        
+        [UICKeyChainStore setString:userObject.auth_token forKey:FluxTokenKey service:FluxService];
+        
         UICKeyChainStore *store = [UICKeyChainStore keyChainStoreWithService:FluxService];
         
         [store setString:userObject.username forKey:FluxUsernameKey];
         [store setString:userObject.password forKey:FluxPasswordKey];
         [store setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey];
-        [store setString:[NSString stringWithString:userObject.auth_token] forKey:FluxTokenKey];
+//        [store setString:[NSString stringWithString:userObject.auth_token] forKey:FluxTokenKey];
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
 
@@ -1046,12 +1048,38 @@
         [self loginSignupToggleAction:nil];
     }
     
+    //close facebook session
+    if (FBSession.activeSession.isOpen) {
+        [FBSession.activeSession closeAndClearTokenInformation];
+    }
+    
+    //remove profile pic
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    BOOL success = [fileManager removeItemAtPath:filePath error:nil];
+    NSLog((success ? @"Successfully delete profile pic" : @"Didn't Delete the profile pic"));
+    
+    //remove settings
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults removeObjectForKey:@"profileImage"];
+    [defaults removeObjectForKey:@"cameraID"];
+    [defaults removeObjectForKey:@"bio"];
+    [defaults removeObjectForKey:@"snapshotImages"];
+    [defaults synchronize];
+    //clear keychain _after_ other elements have had a chance to close down
+    [UICKeyChainStore removeAllItemsForService:FluxService];
+    [UICKeyChainStore removeAllItemsForService:FacebookService];
+    [UICKeyChainStore removeAllItemsForService:TwitterService];
+    
+    
     // log out of the server...
     // ZZZ
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         NSString* str = [NSString stringWithFormat:@"Logout failed with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+        NSLog(str);
     }];
     [self.fluxDataManager logoutWithDataRequest:dataRequest];
 

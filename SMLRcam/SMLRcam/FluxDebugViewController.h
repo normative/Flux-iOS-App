@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <MessageUI/MFMailComposeViewController.h>
 
 extern NSString* const FluxDebugDidChangeMatchDebugImageOutput;
 extern NSString* const FluxDebugMatchDebugImageOutputKey;
@@ -16,8 +17,12 @@ extern NSString* const FluxDebugDidChangePedometerCountDisplay;
 extern NSString* const FluxDebugPedometerCountDisplayKey;
 extern NSString* const FluxDebugDidChangeHistoricalPhotoPicker;
 extern NSString* const FluxDebugHistoricalPhotoPickerKey;
+extern NSString* const FluxDebugDidChangeHeadingCorrectedMotion;
+extern NSString* const FluxDebugHeadingCorrectedMotionKey;
+extern NSString* const FluxDebugDidChangeDetailLoggerEnabled;
+extern NSString* const FluxDebugDetailLoggerEnabledKey;
 
-@interface FluxDebugViewController : UIViewController
+@interface FluxDebugViewController : UIViewController <MFMailComposeViewControllerDelegate>
 {
     IBOutlet UISlider *slider1;
     IBOutlet UISlider *slider2;
@@ -27,6 +32,8 @@ extern NSString* const FluxDebugHistoricalPhotoPickerKey;
     IBOutlet UISwitch *switch1;
     IBOutlet UISwitch *switch2;
     IBOutlet UISwitch *switch3;
+    IBOutlet UISwitch *switch4;
+    IBOutlet UIButton *detailLoggerButtonLabel;
 }
 
 - (IBAction)slider1DidSlide:(id)sender;
@@ -37,7 +44,9 @@ extern NSString* const FluxDebugHistoricalPhotoPickerKey;
 - (IBAction)switch1DidChange:(id)sender;
 - (IBAction)switch2DidChange:(id)sender;
 - (IBAction)switch3DidChange:(id)sender;
+- (IBAction)switch4DidChange:(id)sender;
 - (IBAction)deleteAccountButtonAction:(id)sender;
+- (IBAction)detailLoggerButtonAction:(id)sender;
 
 - (IBAction)hideMenuAction:(id)sender;
 

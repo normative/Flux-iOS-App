@@ -78,6 +78,8 @@ bool registeredForAPNS = false;
     NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
     NSNumber * pedometerCountDisplay = [defaults objectForKey:FluxDebugPedometerCountDisplayKey];
     NSNumber * historicalPhotoPicker = [defaults objectForKey:FluxDebugHistoricalPhotoPickerKey];
+    NSNumber * headingCorrectedMotion = [defaults objectForKey:FluxDebugHeadingCorrectedMotionKey];
+    NSNumber * detailLoggerEnabled = [defaults objectForKey:FluxDebugDetailLoggerEnabledKey];
     
     // do not save locally by default
     if (savePic == nil) {
@@ -112,6 +114,16 @@ bool registeredForAPNS = false;
 
     if (historicalPhotoPicker == nil) {
         [defaults setObject:@(NO) forKey:FluxDebugHistoricalPhotoPickerKey];
+        [defaults synchronize];
+    }
+
+    if (headingCorrectedMotion == nil) {
+        [defaults setObject:@(NO) forKey:FluxDebugHeadingCorrectedMotionKey];
+        [defaults synchronize];
+    }
+
+    if (detailLoggerEnabled == nil) {
+        [defaults setObject:@(NO) forKey:FluxDebugDetailLoggerEnabledKey];
         [defaults synchronize];
     }
 
@@ -175,6 +187,29 @@ bool registeredForAPNS = false;
         [[UIApplication sharedApplication] cancelAllLocalNotifications];
 
 	}
+    
+    
+    // Whenever a person opens the app, check for a cached session
+    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+        
+        // If there's one, just open the session silently, without showing the user the login UI
+        [FBSession openActiveSessionWithReadPermissions:@[@"basic_info"]
+                                           allowLoginUI:NO
+                                      completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+                                          if (!error) {
+                                              NSLog(@"re-logged into facebook");
+                                          }
+                                          else{
+                                              NSLog(@"re-logging into facebook failed: Error: %@",error.localizedDescription);
+                                          }
+                                          // Handler for session state changes
+                                          // This method will be called EACH time the session state changes,
+                                          // also for intermediate states and NOT just when the session open
+//                                          [self sessionStateChanged:session state:state error:error];
+                                      }];
+    }
+    
+    
     return YES;
 }
 
@@ -224,14 +259,14 @@ bool registeredForAPNS = false;
             // get the object ID string from the deep link URL
             // we use the substringFromIndex so that we can delete the leading '/' from the targetURL
             NSString *objectId = [[[call appLinkData] targetURL].path substringFromIndex:1];
-            
+            NSLog([NSString stringWithFormat:@"Deep link to %@", objectId]);
             // now handle the deep link
             // write whatever code you need to show a view controller that displays the object, etc.
-            [[[UIAlertView alloc] initWithTitle:@"Directed from Facebook"
-                                        message:[NSString stringWithFormat:@"Deep link to %@", objectId]
-                                       delegate:self
-                              cancelButtonTitle:@"OK!"
-                              otherButtonTitles:nil] show];
+//            [[[UIAlertView alloc] initWithTitle:@"Directed from Facebook"
+//                                        message:[NSString stringWithFormat:@"Deep link to %@", objectId]
+//                                       delegate:self
+//                              cancelButtonTitle:@"OK!"
+//                              otherButtonTitles:nil] show];
         } else {
             //
             NSLog(@"Unhandled deep link: %@", [[call appLinkData] targetURL]);

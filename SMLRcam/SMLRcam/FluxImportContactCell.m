@@ -53,7 +53,7 @@
     if (contactObject.userID) {
         [self setSelectionStyle:UITableViewCellSelectionStyleBlue];
         
-        [self.socialStatusLabel setText:[NSString stringWithFormat:@"%@",contactObject.username]];
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"%@",contactObject.displayName]];
         
         
         if (contactObject.friendState == 3) {
@@ -90,24 +90,40 @@
             [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_twitter"]];
         }
         else if (serviceType == FacebookService){
-            [self.titleLabel setText:contactObject.username];
+            [self.titleLabel setText:[@"@" stringByAppendingString:contactObject.username]];
             [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_facebook"]];
         }
         else{
             [self.titleLabel setText:contactObject.username];
             [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_contact"]];
         }
-        [self.socialStatusLabel setText:[@"@" stringByAppendingString:contactObject.aliasName]];
     }
     else{
         [self.socialStatusLabel setText:@""];
         [self setSelectionStyle:UITableViewCellSelectionStyleNone];
         [self.socialTypeImageView setImage:[UIImage imageNamed:@"nothing"]];
         
-        [self.titleLabel setText:[NSString stringWithFormat:@"%@",contactObject.aliasName]];
+        if (serviceType == TwitterService) {
+            [self.titleLabel setText:[NSString stringWithFormat:@"@%@",contactObject.aliasName]];
+        }
+        else if (serviceType == FacebookService){
+            [self.titleLabel setText:[NSString stringWithFormat:@"%@",contactObject.displayName]];
+        }
+        else{
+            [self.titleLabel setText:[NSString stringWithFormat:@"%@",contactObject.aliasName]];
+        }
+        
+        
     }
     
-    
+    if (contactObject.inviteSent) {
+        [self.inviteButton setAlpha:0.4];
+        [self.inviteButton setUserInteractionEnabled:NO];
+    }
+    else{
+        [self.inviteButton setAlpha:1.0];
+        [self.inviteButton setUserInteractionEnabled:YES];
+    }
 }
 
 

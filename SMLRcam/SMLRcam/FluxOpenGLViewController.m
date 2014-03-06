@@ -11,6 +11,8 @@
 #import "ImageViewerImageUtil.h"
 #import "FluxMath.h"
 #import <Accelerate/Accelerate.h>
+#import "FluxDeviceInfoSingleton.h"
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #pragma mark - OpenGL globals and types
@@ -29,7 +31,7 @@ err = glGetError();								\
 
 const float MAX_IMAGE_RADIUS = 15.0;
 
-const int number_textures = 5;
+const int default_number_textures = 5;
 
 // Uniform index.
 enum
@@ -792,7 +794,7 @@ void init(){
 
 - (void)activateSnapshotCapture{
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-    [self.snapshotViewController.view setHidden:NO];
+    [self.snapshotViewController setHidden:NO];
     [self.snapshotViewController updateSnapshotButton];
 }
 
@@ -1148,6 +1150,16 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [super viewDidLoad];
     
     _displayListHasChanged = 0;
+    
+    // Make a call here to set the maximum number of textures
+    number_textures = [[FluxDeviceInfoSingleton sharedDeviceInfo] renderTextureCount];
+    
+    if (number_textures > (MAX_TEXTURES - 1))
+    {
+        // Need to keep a texture for the background
+        NSLog(@"Requested number of textures exceeds maximum. Setting to default value of %d.", default_number_textures);
+        number_textures = default_number_textures;
+    }
 
     self.renderList = [[NSMutableArray alloc] initWithCapacity:number_textures];
     
@@ -1245,7 +1257,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)didReceiveMemoryWarning
 {
     
-//    [super didReceiveMemoryWarning];
+    [super didReceiveMemoryWarning];
 //    
 //    if ([self isViewLoaded] && ([[self view] window] == nil)) {
 //        self.view = nil;
@@ -2117,7 +2129,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         [self fixRenderList];
     }
     
-    CMAttitude *att = motionManager.attitude;
+    CMQuaternion att = motionManager.attitude;
     
 //    _userPose.rotationMatrix.m00 = att.rotationMatrix.m11;
 //    _userPose.rotationMatrix.m01 = att.rotationMatrix.m12;
@@ -2138,7 +2150,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    _userPose.rotationMatrix.m31 = 0.0;
 //    _userPose.rotationMatrix.m32 = 0.0;
 //    _userPose.rotationMatrix.m33 = 1.0;
-    GLKQuaternion quat = GLKQuaternionMake(att.quaternion.x, att.quaternion.y, att.quaternion.z, att.quaternion.w);
+    GLKQuaternion quat = GLKQuaternionMake(att.x, att.y, att.z, att.w);
    _userPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
     _userRotationRaw = _userPose.rotationMatrix;
     //_userPose.rotationMatrix = att.rotationMatrix;

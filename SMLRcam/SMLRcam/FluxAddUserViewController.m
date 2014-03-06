@@ -37,6 +37,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.screenName = @"Add Users View";
     didImport = NO;
     [topBarColored setFrame:CGRectMake(topBarColored.frame.origin.x, topBarColored.frame.origin.y, topBarColored.frame.size.width, 64)];
     
@@ -92,6 +93,7 @@
     [self.navigationController setNavigationBarHidden:NO animated:YES];
     if ([segue.identifier isEqualToString:@"socialImportPush"]) {
         [(FluxSocialImportViewController*)segue.destinationViewController setServiceType:sender];
+        [(FluxSocialImportViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
         didImport = YES;
     }
 }
@@ -100,7 +102,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return 1;
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -150,7 +152,7 @@
         if ([[resultsArray objectAtIndex:indexPath.row] isKindOfClass:[NSNumber class]]) {
             return 75.0;
         }
-        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] == 3)) {
+        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] > 0)) {
             return 70.0;
         }
         return 60.0;
@@ -190,16 +192,13 @@
             [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                          placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
                                                   success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
-                                                      if (image)
-                                                      {
-                                                          if (resultsImageArray.count > indexPath.row) {
-                                                              if (image) {
-                                                                  [resultsImageArray replaceObjectAtIndex:indexPath.row withObject:image];
-                                                                  [weakCell.profileImageView setImage:image];
-                                                                  //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                                                  //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                                                  [weakCell setNeedsLayout];
-                                                              }
+                                                      if (resultsImageArray.count > indexPath.row) {
+                                                          if (image) {
+                                                              [resultsImageArray replaceObjectAtIndex:indexPath.row withObject:image];
+                                                              [weakCell.profileImageView setImage:image];
+                                                              //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                              //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                              [weakCell setNeedsLayout];
                                                           }
                                                       }
                                                   }

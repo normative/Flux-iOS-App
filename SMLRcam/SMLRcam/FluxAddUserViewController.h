@@ -13,6 +13,8 @@
 #import "FluxSocialManager.h"
 #import "FluxPublicProfileViewController.h"
 
+#import "GAITrackedViewController.h"
+
 typedef enum QuerySearchState : NSUInteger {
     notSearching = 0,
     searching = 1,
@@ -28,7 +30,7 @@ typedef enum QuerySearchState : NSUInteger {
 - (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfollowUser:(FluxUserObject*)userObject;
 @end
 
-@interface FluxAddUserViewController : UIViewController<UISearchBarDelegate, UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, UIScrollViewDelegate, FluxSocialManagerDelegate, PublicProfileDelegate>{
+@interface FluxAddUserViewController : GAITrackedViewController<UISearchBarDelegate, UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, UIScrollViewDelegate, FluxSocialManagerDelegate, PublicProfileDelegate>{
     QuerySearchState searchState;
     IBOutlet UISearchBar *userSearchBar;
     IBOutlet UITableView *addUsersTableView;

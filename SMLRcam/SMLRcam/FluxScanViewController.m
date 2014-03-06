@@ -33,7 +33,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)didUpdateNearbyImageList:(NSNotification *)notification{
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.nearbyListCount] forState:UIControlStateNormal];
-    [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount];
+    if (firstContent && self.fluxDisplayManager.nearbyListCount > 5) {
+        NSLog(@"FIRST TIME");
+        firstContent = NO;
+        [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount reverseAnimated:YES];
+        
+//        [UIView animateWithDuration:3.0
+//                              delay:0
+//                            options:UIViewAnimationOptionCurveEaseInOut
+//                         animations:^{ [timeFilterControl.timeScrollView scrollRectToVisible:CGRectMake(0, 0, 320, 5) animated:NO]; }
+//                         completion:NULL];
+    }
+    else{
+        [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount reverseAnimated:NO];
+    }
 }
 
 #pragma mark - Location Services
@@ -316,6 +329,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 -(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject withBGImage:(UIImage *)bgImage
 {
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                          action:@"action"  // Event action (required)
+                                                           label:@"tap image"          // Event label
+                                                           value:nil] build]];    // Event value
     if(tappedImageObject == nil)
         return;
     
@@ -821,6 +839,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    self.screenName = @"Scan View";
+    
+    self.fluxLoggerService = [FluxLoggerService sharedLoggerService];
     
     self.fluxDisplayManager = [[FluxDisplayManager alloc]init];
     
@@ -870,11 +891,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [self setupDebugPedometerCountDisplay];
     [self setupHistoricalPhotoPicker];
+    
+    firstContent = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    self.screenName = @"Scan View";
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -1030,6 +1052,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)showDebugMenu{
     [self.debugViewController.view setHidden:NO];
+    //google analytics
+    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
+                                                          action:@"action"  // Event action (required)
+                                                           label:@"show debug menu"          // Event label
+                                                           value:nil] build]];    // Event value
 }
 - (void)hideDebugMenu{
     [self.debugViewController.view setHidden:YES];

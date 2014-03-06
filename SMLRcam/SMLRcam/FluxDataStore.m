@@ -7,6 +7,7 @@
 //
 
 #import "FluxDataStore.h"
+#import "FluxDeviceInfoSingleton.h"
 
 NSString* const FluxDataStoreDidEvictImageObjectFromCache = @"FluxDataStoreDidEvictImageObjectFromCache";
 NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyImageType = @"FluxDataStoreDidEvictImageObjectFromCacheKeyImageType";
@@ -21,7 +22,8 @@ NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID = @"FluxData
         fluxImageCache = [[NSCache alloc] init];
         [fluxImageCache setDelegate:self];
         [fluxImageCache setEvictsObjectsWithDiscardedContent:NO];
-        
+        [fluxImageCache setCountLimit:[[FluxDeviceInfoSingleton sharedDeviceInfo] cacheCountLimit]];
+
         fluxMetadata = [[NSMutableDictionary alloc] init];
         imageIDMapping = [[NSMutableDictionary alloc] init];
         
@@ -316,6 +318,23 @@ NSString* const FluxDataStoreDidEvictImageObjectFromCacheKeyLocalID = @"FluxData
                     FluxCacheImageObject *cacheImageObj = cachedImageLocalIDList[imageCacheKey];
                     [cacheImageObj endContentAccess];
                 }
+            }
+        }
+    }
+}
+
+- (void)removeUnusedItemsFromImageCache
+{
+    for (FluxLocalID *localID in [fluxMetadata allKeys])
+    {
+        FluxScanImageObject *imageObject = [fluxMetadata objectForKey:localID];
+        for (NSUInteger imageType = thumb; imageType <= full_res; imageType++)
+        {
+            NSString *imageCacheKey = [imageObject generateImageCacheKeyWithImageType:imageType];
+            if (cachedImageLocalIDList[imageCacheKey])
+            {
+                FluxCacheImageObject *cacheImageObj = cachedImageLocalIDList[imageCacheKey];
+                [cacheImageObj discardContentIfPossible];
             }
         }
     }

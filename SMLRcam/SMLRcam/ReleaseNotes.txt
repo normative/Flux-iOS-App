@@ -1,7 +1,74 @@
 Release Notes:
-- updates to address at least one of the iPad issues
-- Trello Issue #432: change heading accuracy for Kalman Filter enable/disable to 30 degrees from 20 degrees
+- add CocoaLumberjack framework for logging
+- add MessageUI framework to send email from device
+- add logging of location, Kalman resets, and pedometer events
+- add ability to email log files
+- control for logging (disabled by default) is through hidden debug menu
+
+******************************************
+
+V0.21 B01
+
+Released: 2014-02-28 17:30:00
+
+Release Notes:
+- updates to address iPad mini 1G memory issues
 - release memory used by MapView when exiting view
+- social management updates
+- new map pins
+- snapshots can now be shared via Facebook + Twitter
+- new message when no profile images are available for display
+- other visual tweaks + enhancements
+- use vertical accuracy to help determine altitude range for queries
+- add fix so that empty feature file doesn't cause segfault
+- new heading scheme from V0.20B07 included here (is not in V0.20B08)
+
+******************************************
+
+V0.20 B08
+
+TEST build.  Not for general distribution
+
+Released: 2014-02-25 14:30:00
+
+Release Notes:
+- Incorporate changes to disable feature matching for iPad mini memory testing
+- Trello Issue #432: change heading accuracy for Kalman Filter enable/disable to 30 degrees from 20 degrees
+- Open up altitude range to +- 60m fro testing purposes
+
+******************************************
+
+V0.20 B07
+
+Closed Beta Release 07
+
+Released: 2014-02-21 18:30:00
+
+Release Notes:
+- set default mode to use original device heading scheme
+  - new scheme can still be reached via debugVC switch
+
+******************************************
+
+V0.20 B06
+
+Released: 2014-02-20 20:20:00
+
+Release Notes:
+- implement new device heading scheme and reworking device orientation calculations
+- bio label bug fixes
+- friend / follower updates to make the system more responsive to change
+- friend / follower assets updated
+
+******************************************
+
+V0.20 B05
+
+Released: 2014-02-20 16:10:00
+
+Release Notes:
+- updates to address at least one of the iPad issues
+- friend/follower assets updated
 
 ******************************************
 
@@ -14,6 +81,7 @@ Release Notes:
 - App now uses a single filter for both scan and map views
 - Social filters now include counts + overall image count is now more accurate
 - Other minor visual tweaks + improvements
+
 
 ******************************************
 

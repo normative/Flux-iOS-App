@@ -46,7 +46,7 @@ typedef enum LocationDataType : NSUInteger {
     location_data_from_homography = 2
 } LocationDataType;
 
-typedef enum _FluxCameraModel : NSUInteger {
+typedef enum _FluxCameraModelEnum : NSUInteger {
     unknown_cam = 0,
     iphone4  = 1,
     iphone4s = 2,
@@ -54,13 +54,13 @@ typedef enum _FluxCameraModel : NSUInteger {
     iphone5c = 4,
     iphone5s = 5,
     maxCameraModel = 6
-} FluxCameraModel;
+} FluxCameraModelEnum;
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
 // Image and User properties
 @property (nonatomic) int cameraID;
-@property (nonatomic) FluxCameraModel cameraModel;
+@property (nonatomic) FluxCameraModelEnum cameraModel;
 @property (nonatomic, strong) NSString *cameraModelStr;
 @property (nonatomic) int categoryID;
 @property (nonatomic, strong) NSString* descriptionString;
@@ -114,7 +114,7 @@ typedef enum _FluxCameraModel : NSUInteger {
 @property (nonatomic) NSUInteger numFeatureMatchFailMatchErrors;
 @property (nonatomic) NSUInteger numFeatureMatchFailHomographyErrors;
 
-+ (FluxCameraModel)cameraModelFromModelStr:(NSString *)cameraModelStr;
++ (FluxCameraModelEnum)cameraModelFromModelStr:(NSString *)cameraModelStr;
 
 - (id)initWithUserID:(int)userID
   atTimestampString:(NSString*)timestampStr

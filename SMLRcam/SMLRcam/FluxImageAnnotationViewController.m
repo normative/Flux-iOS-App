@@ -14,6 +14,7 @@
 
 #import "UICKeyChainStore.h"
 #import "UIActionSheet+Blocks.h"
+#import "ProgressHUD.h"
 
 @interface FluxImageAnnotationViewController ()
 
@@ -244,25 +245,32 @@
 }
 
 - (IBAction)facebookButtonAction:(id)sender {
-    NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
-    
-    if (facebook) {
+    if (facebookButton.selected) {
         [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
     }
     else{
-        [UIActionSheet showInView:self.view
-                        withTitle:@"Facebook"
-                cancelButtonTitle:@"Cancel"
-           destructiveButtonTitle:nil
-                otherButtonTitles:@[@"Link"]
-                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                             if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                 //link facebook
-                                 FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
-                                 [socialManager setDelegate:self];
-                                 [socialManager linkFacebook];
-                             }
-                         }];
+        NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
+        
+        if (facebook) {
+            FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+            [socialManager setDelegate:self];
+            [socialManager linkFacebookWithPublishPermissions];
+        }
+        else{
+            [UIActionSheet showInView:self.view
+                            withTitle:@"Facebook"
+                    cancelButtonTitle:@"Cancel"
+               destructiveButtonTitle:nil
+                    otherButtonTitles:@[@"Link"]
+                             tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                 if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                     //link facebook
+                                     FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
+                                     [socialManager setDelegate:self];
+                                     [socialManager linkFacebookWithPublishPermissions];
+                                 }
+                             }];
+        }
     }
 }
 
@@ -298,10 +306,18 @@
     }
 }
 
-- (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
+- (void)SocialManagerDidAddFacebookPublishPermissions:(FluxSocialManager *)socialManager{
     [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
-
 }
+
+- (void)SocialManagerDidFailToAddAddFacebookPublishPermissions:(FluxSocialManager *)socialManager andDidShowError:(BOOL)errorShownAlready{
+    [ProgressHUD showError:@"Failed to link Facebook account"];
+}
+
+//- (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
+//    [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
+//
+//}
 
 - (void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
     [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
