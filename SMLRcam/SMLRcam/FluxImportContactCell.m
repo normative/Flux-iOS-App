@@ -42,6 +42,9 @@
     
     self.profileImageView.layer.cornerRadius = self.profileImageView.frame.size.height/2;
     self.profileImageView.clipsToBounds = YES;
+    
+    [self.invitingActivityIndicator setHidesWhenStopped:YES];
+    [self.invitingActivityIndicator stopAnimating];
     //add a white stroke to the image
     //    self.profileImageView.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.7].CGColor;
     //    self.profileImageView.layer.borderWidth = 1;
@@ -53,7 +56,24 @@
     if (contactObject.userID) {
         [self setSelectionStyle:UITableViewCellSelectionStyleBlue];
         
-        [self.socialStatusLabel setText:[NSString stringWithFormat:@"%@",contactObject.displayName]];
+        
+        
+        if (serviceType == TwitterService) {
+            [self.titleLabel setText:[@"@" stringByAppendingString:contactObject.username]];
+            [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_twitter"]];
+            [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@",contactObject.aliasName]];
+        }
+        else if (serviceType == FacebookService){
+            [self.titleLabel setText:[@"@" stringByAppendingString:contactObject.username]];
+            [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_facebook"]];
+            [self.socialStatusLabel setText:[NSString stringWithFormat:@"%@",contactObject.displayName]];
+        }
+        else{
+            [self.titleLabel setText:contactObject.username];
+            [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_contact"]];
+        }
+        
+        
         
         
         if (contactObject.friendState == 3) {
@@ -83,20 +103,7 @@
         else{
             //nthing else
         }
-        
 
-        if (serviceType == TwitterService) {
-            [self.titleLabel setText:[@"@" stringByAppendingString:contactObject.username]];
-            [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_twitter"]];
-        }
-        else if (serviceType == FacebookService){
-            [self.titleLabel setText:[@"@" stringByAppendingString:contactObject.username]];
-            [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_facebook"]];
-        }
-        else{
-            [self.titleLabel setText:contactObject.username];
-            [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_contact"]];
-        }
     }
     else{
         [self.socialStatusLabel setText:@""];
@@ -116,13 +123,34 @@
         
     }
     
-    if (contactObject.inviteSent) {
-        [self.inviteButton setAlpha:0.4];
-        [self.inviteButton setUserInteractionEnabled:NO];
-    }
-    else{
+    if (!contactObject.inviteSent && !contactObject.inviteSending) {
+        [self.titleLabel setAlpha:1.0];
+        [self.profileImageView setAlpha:1.0];
+        [self.invitingActivityIndicator stopAnimating];
         [self.inviteButton setAlpha:1.0];
         [self.inviteButton setUserInteractionEnabled:YES];
+    }
+    else if (!contactObject.inviteSent && contactObject.inviteSending){
+        [self.titleLabel setAlpha:1.0];
+        [self.profileImageView setAlpha:1.0];
+        [self.invitingActivityIndicator startAnimating];
+        [self.inviteButton setAlpha:0.0];
+        [self.inviteButton setUserInteractionEnabled:NO];
+    }
+    else if (contactObject.inviteSent && !contactObject.inviteSending){
+        [self.titleLabel setAlpha:0.5];
+        [self.profileImageView setAlpha:0.5];
+        [self.invitingActivityIndicator stopAnimating];
+        [self.inviteButton setAlpha:0.5];
+        [self.inviteButton setUserInteractionEnabled:NO];
+    }
+    //**should** never hit
+    else{
+        [self.titleLabel setAlpha:1.0];
+        [self.profileImageView setAlpha:1.0];
+        [self.invitingActivityIndicator stopAnimating];
+        [self.inviteButton setAlpha:0.4];
+        [self.inviteButton setUserInteractionEnabled:NO];
     }
 }
 

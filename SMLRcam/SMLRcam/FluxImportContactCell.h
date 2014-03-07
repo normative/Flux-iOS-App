@@ -33,6 +33,7 @@
 @property (strong, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (strong, nonatomic) IBOutlet UIImageView *socialTypeImageView;
 @property (strong, nonatomic) IBOutlet UIButton *inviteButton;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *invitingActivityIndicator;
 -(void)initCellWithType:(NSString*)type;
 - (IBAction)inviteButtonAction:(id)sender;
 - (IBAction)contactButtonAction:(id)sender;

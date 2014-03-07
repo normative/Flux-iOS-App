@@ -38,6 +38,8 @@
 
 - (void)viewDidLoad
 {
+    loadDidFail = NO;
+    alreadyAppeared = NO;
     isSearching = NO;
     [super viewDidLoad];
     self.importUserArray = [[NSMutableArray alloc]init];
@@ -77,10 +79,18 @@
     }];
 }
 
+- (void)viewDidAppear:(BOOL)animated{
+    alreadyAppeared = YES;
+    
+    if (loadDidFail) {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
 - (void)loadData{
     int serviceID = 0;
     // pull Twitter/fb credentials from keychain and pass up through API for contact request
-    
+    [self.view setUserInteractionEnabled:NO];
     NSDictionary *credentials = nil;
     
     if (self.serviceType == TwitterService) {
@@ -149,15 +159,37 @@
                 [self.importFluxUserImagesArray addObject:[NSNumber numberWithBool:NO]];
             }
             [ProgressHUD dismiss];
-            [self.importUserTableView reloadData];
+            
+            
+            if (self.importFluxUserArray.count == 0 || self.importUserArray.count == 0) {
+                [self showEmptyViewForError:nil];
+            }
+            else{
+                [self.view setUserInteractionEnabled:YES];
+                [self.importUserTableView reloadData];
+            }
+
         }];
         
         
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            NSString*str;
+            if (self.serviceType == TwitterService) {
+                str = [NSString stringWithFormat:@"You've asked too much of Twitter for now, try again later."];
+            }
+            else{
+                str = [NSString stringWithFormat:@"Contact Retrieval Failed"];
+            }
             
-            NSString*str = [NSString stringWithFormat:@"Contact fetch failed with error %d", (int)[e code]];
             [ProgressHUD showError:str];
             
+            loadDidFail = YES;
+            if (alreadyAppeared) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.navigationController popViewControllerAnimated:YES];
+                });
+            }
+
         }];
         
         [[FluxDataManager theFluxDataManager] requestContactsFromService:serviceID withCredentials:credentials withDataRequest:request];
@@ -189,6 +221,52 @@
         
     }
     
+}
+
+-(void)showEmptyViewForError:(NSError*)e{
+    [emptyListLabel setFont:[UIFont fontWithName:@"Akkurat" size:emptyListLabel.font.pointSize]];
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineSpacing = 6;
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *attribs = @{
+                              NSForegroundColorAttributeName: emptyListLabel.textColor,
+                              NSFontAttributeName: emptyListLabel.font,
+                              NSParagraphStyleAttributeName : paragraphStyle
+                              };
+    
+    NSMutableAttributedString *attributedText;
+//    if (!e) {
+        if (self.serviceType == TwitterService) {
+            attributedText = [[NSMutableAttributedString alloc]
+                              initWithString:@"No follow-back relationships found on Twitter."
+                              attributes:attribs];
+        }
+        else if (self.serviceType == FacebookService){
+            attributedText = [[NSMutableAttributedString alloc]
+                              initWithString:@"Facebook didn't return any friends."
+                              attributes:attribs];
+        }
+        else{
+            attributedText = [[NSMutableAttributedString alloc]
+                              initWithString:@"Contact search from your address book came back empty"
+                              attributes:attribs];
+        }
+//    }
+//    else{
+//        attributedText = [[NSMutableAttributedString alloc]
+//                          initWithString:@"Well this is awkward, it seems something broke."
+//                          attributes:attribs];
+//    }
+
+
+    
+    [emptyListLabel setAttributedText:attributedText];
+    [emptyListLabel setNumberOfLines:3];
+    
+    [emptyListView setHidden:NO];
+    [self.importUserTableView setHidden:YES];
 }
 
 
@@ -225,6 +303,10 @@
         }
         else if (section == 2) {
             return @"Not using Flux yet";
+        }
+        //wont't hit
+        else{
+            return @"";
         }
     }
     else{
@@ -302,6 +384,10 @@
         }
         else if (section == 2) {
             return self.importUserArray.count;
+        }
+        //wont't hit
+        else{
+            return 1;
         }
     }
     else{
@@ -797,6 +883,8 @@
 
 - (void)ImportContactCell:(FluxImportContactCell *)importContactCell shouldInvite:(FluxContactObject *)contact{
     [[(FluxSearchCell*)[self.importUserTableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]] theSearchBar]resignFirstResponder];
+    int index = [self.importUserTableView indexPathForCell:(FluxImportContactCell*)importContactCell].row;
+    [self willInviteCell:importContactCell atIndex:index];
     if (contact.emails) {
         if (contact.emails.count > 1) {
                 [UIActionSheet showInView:self.view
@@ -812,13 +900,49 @@
         }
     }
     else if (self.serviceType == TwitterService){
-        [self inviteUserFromTwitter:(FluxContactObject*)contact];
-//        
-//        
-//        
-//        // Drop Twitter Direct Message call here...
-//        NSArray *socialPartners = [NSArray arrayWithObject:TwitterService];
-//        [socialManager socialPostTo:socialPartners withStatus:@"I've invited you to try Flux. See what you can discover: smlr.is" directedToUser:contact.socialID];
+        SLRequestHandler requestHandler =
+        ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
+            if (responseData) {
+                NSInteger statusCode = urlResponse.statusCode;
+                if (statusCode >= 200 && statusCode < 300) {
+                    NSDictionary *postResponseData =
+                    [NSJSONSerialization JSONObjectWithData:responseData
+                                                    options:NSJSONReadingMutableContainers
+                                                      error:NULL];
+                    NSLog(@"[SUCCESS!] Created DirectMessage with ID: %@", postResponseData[@"id_str"]);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self didInviteCell:importContactCell atIndex:index andSucceeded:YES];
+                    });
+                    
+                }
+                else {
+                    NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
+                          [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
+                    [ProgressHUD showError:[NSString stringWithFormat:@"Sending invitation to @%@ failed", contact.aliasName]];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self didInviteCell:importContactCell atIndex:index andSucceeded:NO];
+                    });
+                }
+            }
+            else {
+                NSLog(@"[ERROR] An error occurred while posting DM: %@", [error localizedDescription]);
+                [ProgressHUD showError:[NSString stringWithFormat:@"Sending invitation to @%@ failed", contact.aliasName]];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self didInviteCell:importContactCell atIndex:index andSucceeded:NO];
+                });
+            }
+        };
+        
+        NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1.1/direct_messages/new.json"];
+        //    NSDictionary *params = @{@"user_id" : contact.socialID, @"text" : @"I've invited you to try Flux. See what you can discover: smlr.is"};
+        NSDictionary *params = [[NSDictionary alloc]initWithObjectsAndKeys:contact.socialID, @"user_id", @"I've invited you to try Flux. See what you can discover: smlr.is", @"text", nil];
+        SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                                requestMethod:SLRequestMethodPOST
+                                                          URL:url
+                                                   parameters:params];
+        [request setAccount:self.TWAccount];
+        [request performRequestWithHandler:requestHandler];
+        
     }
     else if (self.serviceType == FacebookService){
         NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys:
@@ -834,47 +958,17 @@
          handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
              if (!error) {
                  if (result == FBWebDialogResultDialogCompleted) {
-                     int index = [self.importUserTableView indexPathForCell:importContactCell].row;
                      NSLog(@"sent FB invite to %@",contact.displayName);
-                     
-                     if (isSearching) {
-                         index = index-1;
-                         if (self.searchResultsUserArray.count > index) {
-                             //...and it's still the same cell
-                             if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importContactCell.titleLabel.text : [importContactCell.titleLabel.text substringFromIndex:1])]) {
-                                 //update it
-                                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setInviteSent:YES];
-                             }
-                         }
-                         
-                         for (int i = 0; i<self.importUserArray.count; i++) {
-                             if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importContactCell.titleLabel.text : [importContactCell.titleLabel.text substringFromIndex:1])]) {
-                                 [(FluxContactObject*)[self.importUserArray objectAtIndex:i] setInviteSent:YES];
-                                 break;
-                             }
-                         }
-                         
-                         
-                         
-                         [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index+1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                     }
-                     else{
-                         
-                         if (self.importUserArray.count > index) {
-                             //...and it's still the same cell
-                             if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importContactCell.titleLabel.text : [importContactCell.titleLabel.text substringFromIndex:1])]) {
-                                 //update it
-                                 [(FluxContactObject*)[self.importUserArray objectAtIndex:index] setInviteSent:YES];
-                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:(self.importFluxUserArray.count > 0) ? 2 : 1]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                 
-                             }
-                         }
-                     }
-                     
+                     [self didInviteCell:importContactCell atIndex:index andSucceeded:YES];
                  }
                  else{
                      NSLog(@"Cancelled invite");
+                     [self didInviteCell:importContactCell atIndex:index andSucceeded:NO];
                  }
+             }
+             else{
+                 [ProgressHUD showError:[NSString stringWithFormat:@"Sending invitation to @%@ failed", contact.displayName]];
+                 [self didInviteCell:importContactCell atIndex:index andSucceeded:NO];
              }
          }];
     }
@@ -884,42 +978,86 @@
     }
 }
 
+- (void)willInviteCell:(FluxImportContactCell*)importCell atIndex:(int)index{
+    if (isSearching) {
+        index--;
+        if (self.searchResultsUserArray.count > index) {
+            //...and it's still the same cell
+            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+                //update it
+                [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setInviteSending:YES];
+            }
+        }
+        
+        for (int i = 0; i<self.importUserArray.count; i++) {
+            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:i] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:i] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+                [(FluxContactObject*)[self.importUserArray objectAtIndex:i] setInviteSent:YES];
+                break;
+            }
+        }
+        
+        
+        
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index+1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    else{
+        
+        if (self.importUserArray.count > index) {
+            //...and it's still the same cell
+            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+                //update it
+                [(FluxContactObject*)[self.importUserArray objectAtIndex:index] setInviteSending:YES];
+                [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:(self.importFluxUserArray.count > 0) ? 2 : 1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                
+            }
+        }
+    }
+}
+
+- (void)didInviteCell:(FluxImportContactCell*)importCell atIndex:(int)index andSucceeded:(BOOL)succeeded{
+    if (isSearching) {
+        index--;
+        if (self.searchResultsUserArray.count > index) {
+            //...and it's still the same cell
+            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+                //update it
+                [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setInviteSending:NO];
+                [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setInviteSent:succeeded];
+            }
+        }
+        //incredibly inneficient
+        for (int i = 0; i<self.importUserArray.count; i++) {
+            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:i] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:i] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+                [(FluxContactObject*)[self.importUserArray objectAtIndex:i] setInviteSending:NO];
+                [(FluxContactObject*)[self.importUserArray objectAtIndex:i] setInviteSent:succeeded];
+                break;
+            }
+        }
+        
+        
+        
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index+1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    else{
+        if (self.importUserArray.count > index) {
+            //...and it's still the same cell
+            
+            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+                //update it
+                [(FluxContactObject*)[self.importUserArray objectAtIndex:index] setInviteSending:NO];
+                [(FluxContactObject*)[self.importUserArray objectAtIndex:index] setInviteSent:succeeded];
+                [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:(self.importFluxUserArray.count > 0) ? 2 : 1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                
+            }
+        }
+    }
+}
+
 #pragma mark - SocialInvites
 #pragma mark Twitter
 - (void)inviteUserFromTwitter:(FluxContactObject*)contact{
     
-    SLRequestHandler requestHandler =
-    ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
-        if (responseData) {
-            NSInteger statusCode = urlResponse.statusCode;
-            if (statusCode >= 200 && statusCode < 300) {
-                NSDictionary *postResponseData =
-                [NSJSONSerialization JSONObjectWithData:responseData
-                                                options:NSJSONReadingMutableContainers
-                                                  error:NULL];
-                NSLog(@"[SUCCESS!] Created DirectMessage with ID: %@", postResponseData[@"id_str"]);
-            }
-            else {
-                NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
-                      [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
-            }
-        }
-        else {
-            NSLog(@"[ERROR] An error occurred while posting DM: %@", [error localizedDescription]);
-        }
-    };
-    
-    NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1.1/direct_messages/new.json"];
-//    NSDictionary *params = @{@"user_id" : contact.socialID, @"text" : @"I've invited you to try Flux. See what you can discover: smlr.is"};
-    NSDictionary *params = [[NSDictionary alloc]initWithObjectsAndKeys:contact.socialID, @"user_id", @"III've invited you to try Flux. See what you can discover: smlr.is", @"text", nil];
-    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
-                                            requestMethod:SLRequestMethodPOST
-                                                      URL:url
-                                               parameters:params];
-    
-    
-    [request setAccount:self.TWAccount];
-    [request performRequestWithHandler:requestHandler];
+
 }
 
 #pragma mark - address book loading
@@ -1011,7 +1149,15 @@
                 }
             }
 //            self.importUserDisplayArray = [self.importUserArray mutableCopy];
-            [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+            if (self.importUserArray.count > 0) {
+                [self.view setUserInteractionEnabled:YES];
+                [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+            }
+            else{
+                NSError*e = [[NSError alloc]init];
+                [self showEmptyViewForError:e];
+            }
+
             dispatch_async(dispatch_get_main_queue(), ^{
                 [ProgressHUD dismiss];
             });

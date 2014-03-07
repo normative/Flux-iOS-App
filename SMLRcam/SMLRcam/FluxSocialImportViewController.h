@@ -15,6 +15,11 @@
 
 @interface FluxSocialImportViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, FluxImportContactCellDelegate, PublicProfileDelegate,FluxSearchCellDelegate>{
     BOOL isSearching;
+    IBOutlet UIView *emptyListView;
+    IBOutlet UILabel *emptyListLabel;
+    
+    BOOL loadDidFail;
+    BOOL alreadyAppeared;
 }
 
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;

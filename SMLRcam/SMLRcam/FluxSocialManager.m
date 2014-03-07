@@ -89,6 +89,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                         }
                     });
                 }];
+                return;
             }
         }
     }
@@ -220,6 +221,9 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                     [self createAliasWithName: [parts objectAtIndex:3] andServiceID: 2];
                     if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccountWithUsername:)]) {
                         [delegate SocialManager:self didLinkTwitterAccountWithUsername:(NSString*)[parts objectAtIndex:3]];
+                    }
+                    if ([delegate respondsToSelector:@selector(SocialManager:didLinkTwitterAccount:)]) {
+                        [delegate SocialManager:self didLinkTwitterAccount:(ACAccount*)[self.TWAccounts objectAtIndex:index]];
                     }
                 }
             }
