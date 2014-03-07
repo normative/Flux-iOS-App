@@ -5,6 +5,7 @@ Release Notes:
 - add ability to email log files
 - control for logging (disabled by default) is through hidden debug menu
 - social contact import, search, invite to Flux, friend, follow from Twitter and Facebook contacts
+- Add delay before re-enabling the camera capture button after taking an image to prevent duplicate timestamps / localIDs
 
 ******************************************
 
