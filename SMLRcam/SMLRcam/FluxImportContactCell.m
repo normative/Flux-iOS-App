@@ -75,34 +75,34 @@
         
         
         
-        
-        if (contactObject.friendState == 3) {
-            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",contactObject.username]];
-            [self layoutSubviews];
-        }
-        else if (contactObject.friendState == 2){
-            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You've sent a friend request to @%@",contactObject.username]];
-            [self layoutSubviews];
-        }
-        else if (contactObject.friendState == 1){
-            [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ has sent you a friend request",contactObject.username]];
-            [self layoutSubviews];
-        }
-        else if (contactObject.isFollower && contactObject.isFollowing){
-            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ follow each other",contactObject.username]];
-            [self layoutSubviews];
-        }
-        else if (contactObject.isFollower){
-            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",contactObject.username]];
-            [self layoutSubviews];
-        }
-        else if (contactObject.isFollower){
-            [self.socialStatusLabel setText:[NSString stringWithFormat:@"is following you"]];
-            [self layoutSubviews];
-        }
-        else{
-            //nthing else
-        }
+        //show friend / follower status. If we do this we lose reference to who that person is on the third party network.
+//        if (contactObject.friendState == 3) {
+//            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",contactObject.username]];
+//            [self layoutSubviews];
+//        }
+//        else if (contactObject.friendState == 2){
+//            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You've sent a friend request to @%@",contactObject.username]];
+//            [self layoutSubviews];
+//        }
+//        else if (contactObject.friendState == 1){
+//            [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ has sent you a friend request",contactObject.username]];
+//            [self layoutSubviews];
+//        }
+//        else if (contactObject.isFollower && contactObject.isFollowing){
+//            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ follow each other",contactObject.username]];
+//            [self layoutSubviews];
+//        }
+//        else if (contactObject.isFollower){
+//            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",contactObject.username]];
+//            [self layoutSubviews];
+//        }
+//        else if (contactObject.isFollower){
+//            [self.socialStatusLabel setText:[NSString stringWithFormat:@"is following you"]];
+//            [self layoutSubviews];
+//        }
+//        else{
+//            //nthing else
+//        }
 
     }
     else{
