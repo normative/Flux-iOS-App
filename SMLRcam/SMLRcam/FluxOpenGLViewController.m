@@ -1600,35 +1600,41 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     for (FluxTextureToImageMapElement *tel in [self.textureMap subarrayWithRange:NSMakeRange(0, [self.renderList count])])
     {
-        FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-        scanimageobject = ire.imageMetadata;
-        imagehomographyPose = scanimageobject.imageHomographyPosePnP;
-        
         int idx = tel.textureIndex;
-        
-        if(scanimageobject.location_data_type == location_data_from_homography)
+        FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
+        if (ire)
         {
-            _validMetaData[idx] = ([self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose
-                                                                          userHomographyPose:scanimageobject.userHomographyPose
-                                                                                 planeNormal:&planeNormal
-                                                                                    Distance:distance
-                                                                             currentUserPose:_userPose
-                                                                                viewParamters:&vpimage]);
-            _renderingMatchedImage = 1;
+            scanimageobject = ire.imageMetadata;
+            imagehomographyPose = scanimageobject.imageHomographyPosePnP;
+            
+            if(scanimageobject.location_data_type == location_data_from_homography)
+            {
+                _validMetaData[idx] = ([self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose
+                                                                              userHomographyPose:scanimageobject.userHomographyPose
+                                                                                     planeNormal:&planeNormal
+                                                                                        Distance:distance
+                                                                                 currentUserPose:_userPose
+                                                                                    viewParamters:&vpimage]);
+                _renderingMatchedImage = 1;
+            }
+            else
+            {
+                _validMetaData[idx] = computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage);
+            }
+            
+            tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
+                                               vpimage.at.x, vpimage.at.y, vpimage.at.z,
+                                               vpimage.up.x, vpimage.up.y, vpimage.up.z);
+            
+            icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
+            tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
+            
+            _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
         }
-        else
-        {
-            _validMetaData[idx] = computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage);
+        else {
+            // no ire
+            _validMetaData[idx] = 0;
         }
-        
-        tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
-                                           vpimage.at.x, vpimage.at.y, vpimage.at.z,
-                                           vpimage.up.x, vpimage.up.y, vpimage.up.z);
-        
-        icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
-        tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
-        
-        _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
     }
 }
 

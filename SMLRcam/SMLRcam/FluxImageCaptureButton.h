@@ -30,5 +30,6 @@ FluxImageCaptureMode: NSUInteger {
 @property (nonatomic, strong) FluxCameraButton*button;
 @property (nonatomic) FluxImageCaptureMode captureMode;
 @property (nonatomic) bool singleImageCaptureMode;
+@property (nonatomic, strong) NSTimer *buttonEnableTimer;
 
 @end
