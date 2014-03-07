@@ -1108,9 +1108,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)checkToDisplayDebugMenu{
-    if (debugPressCount == 4) {
-        [self showDebugMenu];
-    }
+//    if (debugPressCount == 4) {
+//        [self showDebugMenu];
+//    }
 }
 
 @end
