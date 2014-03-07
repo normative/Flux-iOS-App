@@ -38,6 +38,11 @@
 }
 
 - (void)dealloc{
+    if (self.buttonEnableTimer)
+    {
+        [self.buttonEnableTimer invalidate];
+        self.buttonEnableTimer = nil;
+    }
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidUndoCapture object:nil];
 }
 
@@ -55,6 +60,11 @@
     [self removeImageCapture];
 }
 
+- (void)targetMethod:(NSTimer*)theTimer {
+    [self.button setEnabled:YES];
+    [self setButtonEnableTimer:nil];
+}
+
 - (void)addImageCapture{
     self.picCount ++;
     if (boxedCountView.markCount > 0) {
@@ -70,10 +80,16 @@
     }
     else
     {
-        [self.button setEnabled:YES];
+//        [self.button setEnabled:YES];
+        self.buttonEnableTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+                                                                  target:self
+                                                                selector:@selector(targetMethod:)
+                                                                userInfo:nil
+                                                                 repeats:NO];
     }
 
 }
+
 - (void)removeImageCapture{
     self.picCount --;
     if (boxedCountView.markCount > 1) {
