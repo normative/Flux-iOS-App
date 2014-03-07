@@ -16,6 +16,8 @@
 #import "UIActionSheet+Blocks.h"
 #import "ProgressHUD.h"
 
+#define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+
 @interface FluxImageAnnotationViewController ()
 
 @end
@@ -37,7 +39,25 @@
 {
     [super viewDidLoad];
     [ImageAnnotationTextView setTheDelegate:self];
-    [ImageAnnotationTextView becomeFirstResponder];
+    if (IS_4INCHSCREEN) {
+        [ImageAnnotationTextView becomeFirstResponder];
+        CALayer *roundBorderLayer = [CALayer layer];
+        roundBorderLayer.borderWidth = 0.5;
+        roundBorderLayer.opacity = 0.4;
+        roundBorderLayer.cornerRadius = 5;
+        roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+        roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
+        [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
+    }
+    else{
+        CALayer *roundBorderLayer = [CALayer layer];
+        roundBorderLayer.borderWidth = 0.5;
+        roundBorderLayer.opacity = 0.4;
+        roundBorderLayer.cornerRadius = 5;
+        roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+        roundBorderLayer.frame = CGRectMake(0, 0, 300, 63);
+        [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
+    }
     
     [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
     [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
@@ -47,14 +67,6 @@
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
     removedImages = [[NSMutableIndexSet alloc]init];
-    
-    CALayer *roundBorderLayer = [CALayer layer];
-    roundBorderLayer.borderWidth = 0.5;
-    roundBorderLayer.opacity = 0.4;
-    roundBorderLayer.cornerRadius = 5;
-    roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
-    roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
-    [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
     
 //    [privacyButton setHidden:YES];
 //    [facebookButton setHidden:YES];

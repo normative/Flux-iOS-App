@@ -23,6 +23,7 @@
 #import "GAIDictionaryBuilder.h"
 
 #define IS_RETINA ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
+#define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 
 NSString* const FluxScanViewDidAcquireNewPicture = @"FluxScanViewDidAcquireNewPicture";
 NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAcquireNewPictureLocalIDKey";
@@ -517,7 +518,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      animations:^{
                          [imageCaptureButton setAlpha:1.0];
                          [ScanUIContainerView setAlpha:0.0];
-                         [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y-21)];
+                         if (IS_4INCHSCREEN) {
+                             [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y-21)];
+                         }
+                         else{
+                             [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y+2)];
+                         }
                          
                          [self.bottomToolbarView setAlpha:0.0];
                          self.bottomToolbarView.center = CGPointMake(self.bottomToolbarView.center.x, self.bottomToolbarView.center.y+30);
@@ -551,7 +557,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                          animations:^{
                              [imageCaptureButton setAlpha:0.0];
                              [ScanUIContainerView setAlpha:1.0];
-                             [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y+21)];
+                             if (IS_4INCHSCREEN) {
+                                 [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y+21)];
+                             }
+                             else{
+                                 [imageCaptureButton setCenter:CGPointMake(imageCaptureButton.center.x, imageCaptureButton.center.y-2)];
+                             }
                              
                              [self.bottomToolbarView setAlpha:1];
                              self.bottomToolbarView.center = CGPointMake(self.bottomToolbarView.center.x, self.bottomToolbarView.center.y-30);
