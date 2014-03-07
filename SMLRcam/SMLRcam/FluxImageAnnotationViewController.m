@@ -15,6 +15,8 @@
 #import "UICKeyChainStore.h"
 #import "UIActionSheet+Blocks.h"
 #import "ProgressHUD.h"
+#define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+
 
 @interface FluxImageAnnotationViewController ()
 
@@ -35,9 +37,33 @@
 
 - (void)viewDidLoad
 {
+    NSLog(@"DidLoad: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
     [super viewDidLoad];
     [ImageAnnotationTextView setTheDelegate:self];
-    [ImageAnnotationTextView becomeFirstResponder];
+    if (IS_4INCHSCREEN) {
+        [ImageAnnotationTextView becomeFirstResponder];
+        NSLog(@"DidutoLayout: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
+        CALayer *roundBorderLayer = [CALayer layer];
+        roundBorderLayer.borderWidth = 0.5;
+        roundBorderLayer.opacity = 0.4;
+        roundBorderLayer.cornerRadius = 5;
+        roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+        roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
+        [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
+
+    }
+    else{
+        NSLog(@"DidutoLayout: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
+        CALayer *roundBorderLayer = [CALayer layer];
+        roundBorderLayer.borderWidth = 0.5;
+        roundBorderLayer.opacity = 0.4;
+        roundBorderLayer.cornerRadius = 5;
+        roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
+        roundBorderLayer.frame = CGRectMake(0, 0, 300, 63);
+        [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
+
+    }
+
     
     [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
     [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
@@ -47,14 +73,6 @@
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
     removedImages = [[NSMutableIndexSet alloc]init];
-    
-    CALayer *roundBorderLayer = [CALayer layer];
-    roundBorderLayer.borderWidth = 0.5;
-    roundBorderLayer.opacity = 0.4;
-    roundBorderLayer.cornerRadius = 5;
-    roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
-    roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
-    [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
     
 //    [privacyButton setHidden:YES];
 //    [facebookButton setHidden:YES];
@@ -68,6 +86,7 @@
     [super viewDidAppear:animated];
     self.screenName = @"Image Capture Annotation View";
 }
+
 
 - (void)prepareViewWithBGImage:(UIImage *)image andCapturedImages:(NSMutableArray *)capturedObjects withLocation:(NSString*)location andDate:(NSDate *)capturedDate{
     FluxImageTools*tools = [[FluxImageTools alloc]init];
