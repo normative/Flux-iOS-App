@@ -196,6 +196,8 @@
                 [socialMgmtcell setIsActivated:YES];
                 [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_facebook"]];
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]];
+                [socialMgmtcell setUserInteractionEnabled:NO];
+                [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
             }
             
             break;
@@ -211,6 +213,8 @@
                 [socialMgmtcell setIsActivated:YES];
                 [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_twitter"]];
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
+                [socialMgmtcell setUserInteractionEnabled:NO];
+                [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
             }
             
             break;
