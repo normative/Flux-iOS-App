@@ -1,11 +1,32 @@
 Release Notes:
+******************************************
+
+V0.21 B03
+
+ASR Release Candidate
+
+Released: 2014-03-07 09:00:00
+
+Release Notes:
+- Add delay before re-enabling the camera capture button after taking an image to prevent duplicate timestamps / localIDs
+- disable social import
+
+******************************************
+
+V0.21 B02
+
+ASR Release Candidate
+
+Released: 2014-03-06 15:45:00
+
+Release Notes:
 - add CocoaLumberjack framework for logging
 - add MessageUI framework to send email from device
 - add logging of location, Kalman resets, and pedometer events
 - add ability to email log files
 - control for logging (disabled by default) is through hidden debug menu
-- social contact import, search, invite to Flux, friend, follow from Twitter and Facebook contacts
-- Add delay before re-enabling the camera capture button after taking an image to prevent duplicate timestamps / localIDs
+- social contact import, search, friend, follow from Twitter and Facebook contacts
+- disable debug menu in prep for app store release (negates all of the debug changes but they are there...
 
 ******************************************
 
