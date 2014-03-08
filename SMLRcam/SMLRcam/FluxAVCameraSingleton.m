@@ -28,7 +28,16 @@ static dispatch_once_t sharedFluxAVCameraSingleton_onceToken = 0;
         
         _dataPreview = 0;
         self.session = [AVCaptureSession new];
+        
+#ifdef iPhone4S
+        [self.session setSessionPreset:AVCaptureSessionPreset1280x720]; // full resolution photo...
+#else
         [self.session setSessionPreset:AVCaptureSessionPresetHigh]; // full resolution photo...
+#endif
+        
+        
+        
+        
         
         // Select a video device, make an input
         self.device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
