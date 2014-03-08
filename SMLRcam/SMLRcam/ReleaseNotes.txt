@@ -1,6 +1,19 @@
 Release Notes:
 ******************************************
 
+V0.21 B04
+
+ASR Release Candidate
+
+Released: 2014-03-08 15:30:00
+
+Release Notes:
+- minor iPad mini-specific UI fixups
+- model-specific max download resolution (thumb or quarterhd depending on model)
+- hard define for max capture resolution (test, will make generic and release pending feedback)
+
+******************************************
+
 V0.21 B03
 
 ASR Release Candidate
