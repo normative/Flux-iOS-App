@@ -15,7 +15,7 @@
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
 
-const int maxRequestCountQuart = 2;
+int maxRequestCountQuart = 2;
 const int maxRequestCountThumb = 5;
 const int maxRequestCountFeatures = 2;
 
@@ -99,6 +99,13 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
             featureMatchingSupported = NO;
         }
         
+        if ([[FluxDeviceInfoSingleton sharedDeviceInfo] highestResToQuery] > thumb) {
+            maxRequestCountQuart = 2;
+        }
+        else {
+            maxRequestCountQuart = 0;
+        }
+    
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdatePlacemark:) name:FluxLocationServicesSingletonDidUpdatePlacemark object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateHeading:) name:FluxLocationServicesSingletonDidUpdateHeading object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateLocation:) name:FluxLocationServicesSingletonDidUpdateLocation object:nil];

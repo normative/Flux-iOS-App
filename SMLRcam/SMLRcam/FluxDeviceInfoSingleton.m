@@ -133,6 +133,9 @@ const NSString *FluxDevicePlatformStrings[] = {
         //  - NSCache count limit
         _cacheCountLimit = [self getCacheCountLimitForPlatform:_devicePlatform];
         
+        // image query resolution
+        _highestResToQuery = [self getHighestResToQueryForPlatform:_devicePlatform];
+        
     }
     
     NSLog(@"DeviceInfo singleton initialized, device platform = %@", _platformStr);
@@ -340,6 +343,36 @@ const NSString *FluxDevicePlatformStrings[] = {
     }
     
     return ccl;
+}
+
+
+//  - enable/disable feature matching
+- (FluxImageType) getHighestResToQueryForPlatform:(FluxDevicePlatform)devplatform
+{
+    FluxImageType hrq = thumb;
+    
+    switch (devplatform)
+    {
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            hrq = quarterhd;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            hrq = thumb;
+            break;
+    }
+    
+    return hrq;
 }
 
 - (FluxCameraModel *) cameraModelForDeviceModelString:(NSString *)deviceModelString;
