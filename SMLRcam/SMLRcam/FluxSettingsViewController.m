@@ -217,6 +217,7 @@
                 [socialMgmtcell setUserInteractionEnabled:NO];
                 [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
+                socialMgmtcell.accessoryType = UITableViewCellAccessoryNone;
             }
             
             break;
