@@ -1092,6 +1092,7 @@
 {
     [ProgressHUD show:@"Retrieving Contacts"];
     CFErrorRef*e = NULL;
+    NSMutableArray*emails = [[NSMutableArray alloc]init];
     
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, e);
     
@@ -1104,6 +1105,9 @@
                 ABMultiValueRef emailMultiValue = ABRecordCopyValue(ref, kABPersonEmailProperty);
                 NSArray *emailAddresses = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(emailMultiValue);
                 
+                for (int i = 0; i<emailAddresses.count; i++) {
+                    [emails addObject:[emailAddresses objectAtIndex:i]];
+                }
                 
                 NSString *firstName = (__bridge NSString *)ABRecordCopyValue(ref,kABPersonFirstNameProperty);
                 NSString *lastName = (__bridge NSString *)ABRecordCopyValue(ref,kABPersonLastNameProperty);
@@ -1130,6 +1134,7 @@
                     
                     [contact setEmails:emailAddresses];
                     
+                    
                     if (img) {
                         NSData *imageData = [[NSData alloc] initWithData:UIImageJPEGRepresentation((img), 1.0)];
                         int imageSize = imageData.length;
@@ -1148,10 +1153,45 @@
                     [self.importUserArray addObject:contact];
                 }
             }
-//            self.importUserDisplayArray = [self.importUserArray mutableCopy];
             if (self.importUserArray.count > 0) {
-                [self.view setUserInteractionEnabled:YES];
-                [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+                FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                
+                [request setContactListReady:^(NSArray *contacts, FluxDataRequest *completedRequest){
+                    //do something with the contacts - an array of FluxContacts
+                    NSMutableIndexSet*indexSet = [[NSMutableIndexSet alloc]init];
+                    for (int i = 0; i<contacts.count; i++) {
+                        NSUInteger index = [self.importUserArray indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                            FluxContactObject*contactObj = (FluxContactObject*)obj;
+                            return ([(NSString*)[contactObj.emails componentsJoinedByString:@"-"]rangeOfString:[(FluxContactObject*)[contacts objectAtIndex:i]aliasName]].location != NSNotFound);
+                        }];
+                        if (index != NSNotFound) {
+                            [indexSet addIndex:index];
+                        }
+                    }
+                    
+                    
+                    if (indexSet.count > 0) {
+                        self.importFluxUserArray = [contacts mutableCopy];
+                        [self.importFluxUserImagesArray removeAllObjects];
+                        for (int i = 0; i<self.importFluxUserArray.count; i++) {
+                            [self.importFluxUserImagesArray addObject:[NSNumber numberWithBool:NO]];
+                        }
+                        [self.importUserArray removeObjectsAtIndexes:indexSet];
+                        [self.importUserImagesArray removeObjectsAtIndexes:indexSet];
+                    }
+                    
+                    [self.view setUserInteractionEnabled:YES];
+                    [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+                }];
+                
+                
+                [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                    NSString*str = [NSString stringWithFormat:@"Contact lookup failed"];
+                    [ProgressHUD showError:str];
+                }];
+                
+                [[FluxDataManager theFluxDataManager] requestContactsFromService:1 withCredentials:[NSDictionary dictionaryWithObject:[emails componentsJoinedByString:@","] forKey:@"emails"] withDataRequest:request];
+                
             }
             else{
                 NSError*e = [[NSError alloc]init];
