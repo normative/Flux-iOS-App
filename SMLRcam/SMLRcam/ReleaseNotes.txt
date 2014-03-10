@@ -1,6 +1,17 @@
 Release Notes:
 ******************************************
 
+V0.21 B05
+
+ASR Release Candidate
+
+Released: 2014-03-10 11:45:00
+
+Release Notes:
+- Remove '>' from link accounts once link is established
+
+******************************************
+
 V0.21 B04
 
 ASR Release Candidate
