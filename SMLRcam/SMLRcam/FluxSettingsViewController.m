@@ -215,6 +215,7 @@
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
                 [socialMgmtcell setUserInteractionEnabled:NO];
                 [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
+                socialMgmtcell.accessoryType = UITableViewCellAccessoryNone;
             }
             
             break;
