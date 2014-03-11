@@ -2317,7 +2317,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             FluxScanViewController *fsvc;
             fsvc = (FluxScanViewController*)self.parentViewController;
-            [fsvc didTapImageFunc:fsio withBGImage:nil];
+            UIImage*img = [self snapshot:self.view];
+            [fsvc didTapImageFunc:fsio withBGImage:img];
             //NSDictionary *userInfoDict = @{@"tappedimage" : fsio};
             //[[NSNotificationCenter defaultCenter] postNotificationName:@"FluxDidTapImage"
                 //                                                object:self userInfo:nil];

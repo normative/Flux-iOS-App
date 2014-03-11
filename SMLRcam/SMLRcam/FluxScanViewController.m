@@ -275,7 +275,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)setupTimeFilterControl{
     timeFilterControl.fluxDisplayManager = self.fluxDisplayManager;
     [timeFilterControl setScrollIndicatorCenter:CGPointMake(self.view.center.x, radarButton.center.y)];
-    [timeFilterControl.timeScrollView setTapDelegate:self];
+    [timeFilterControl setDelegate:self];
 }
 
 -(void)userIsTimeSliding{
@@ -310,10 +310,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 #pragma mark - Tapping images
-
-- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
-    
-    
+- (void)timeFilterControl:(FluxTimeFilterControl *)timeControl didTapAtPoint:(CGPoint)point{
     if (IS_RETINA) {
         [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
         _point = CGPointMake(point.x*2, point.y*2);
@@ -330,6 +327,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 -(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject withBGImage:(UIImage *)bgImage
 {
+    snapshotBGImage = bgImage;
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
     [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
                                                           action:@"action"  // Event action (required)

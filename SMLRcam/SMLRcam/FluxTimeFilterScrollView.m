@@ -49,9 +49,23 @@
 }
 
 -(BOOL)touchesShouldCancelInContentView:(UIView *)view{
+    if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:shouldEndTouchAtPoint:)]) {
+        [tapDelegate timeFilterScrollView:self shouldEndTouchAtPoint:CGPointMake(0, 0)];
+    }
     NSLog(@"Cancelled scrollView tap");
     return YES;
 }
+
+-(BOOL)touchesShouldBegin:(NSSet *)touches withEvent:(UIEvent *)event inContentView:(UIView *)view{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:nil];
+    if ([tapDelegate respondsToSelector:@selector(timeFilterScrollView:shouldBeginTouchAtPoint:)]) {
+        [tapDelegate timeFilterScrollView:self shouldBeginTouchAtPoint:location];
+    }
+    return YES;
+}
+
+
 
 - (void)setContentSize:(CGSize)contentSize{
     [super setContentSize:contentSize];

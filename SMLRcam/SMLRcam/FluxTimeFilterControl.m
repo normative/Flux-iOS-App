@@ -16,6 +16,8 @@
 
 @implementation FluxTimeFilterControl
 
+@synthesize delegate;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -235,6 +237,45 @@
     if (self.fluxDisplayManager) {
         [self.fluxDisplayManager timeBracketDidEndScrolling];
     }
+}
+#pragma mark - Tap Delegate
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
+    if (CGRectContainsPoint(clockContainerView.frame, point)) {
+        [self buttonWasPressed];
+        [self performSelector:@selector(endbuttonPress) withObject:nil afterDelay:0.05];
+    }
+    else{
+        if ([delegate respondsToSelector:@selector(timeFilterControl:didTapAtPoint:)]) {
+            [delegate timeFilterControl:self didTapAtPoint:point];
+        }
+    }
+}
+
+-(void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldBeginTouchAtPoint:(CGPoint)point{
+    if (CGRectContainsPoint(clockContainerView.frame, point)) {
+        [clockContainerView setAlpha:0.4];
+    }
+    
+}
+
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldEndTouchAtPoint:(CGPoint)point{
+    [clockContainerView setAlpha:1.0];
+}
+
+- (void)timeFilterScrollViewShouldBeginTouches:(FluxTimeFilterScrollView *)scrollView{
+
+}
+
+- (void)timeFilterScrollViewShouldEndTouches:(FluxTimeFilterScrollView *)scrollView{
+    
+}
+
+- (void)buttonWasPressed{
+    NSLog(@"BUTTON PRESS");
+}
+
+- (void)endbuttonPress{
+    [clockContainerView setAlpha:1.0];
 }
 
 

@@ -11,6 +11,11 @@
 
 #import "FluxDisplayManager.h"
 
+@class FluxTimeFilterControl;
+@protocol TimeFilterControlDelegate <NSObject>
+@optional
+- (void)timeFilterControl:(FluxTimeFilterControl *)timeControl didTapAtPoint:(CGPoint)point;
+@end
 
 @interface FluxTimeFilterControl : UIView<UIScrollViewDelegate, TimeFilterScrollViewTapDelegate>{
     UIView*clockContainerView;
@@ -22,7 +27,9 @@
     BOOL isAnimating;
     
     float oldScrollPos;
+    __weak id <TimeFilterControlDelegate> delegate;
 }
+@property (nonatomic, weak) id <TimeFilterControlDelegate> delegate;
 
 @property (nonatomic, strong)FluxTimeFilterScrollView*timeScrollView;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
