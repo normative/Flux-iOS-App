@@ -448,10 +448,12 @@
     if ([(NSString*)[userInfo objectForKey:@"partner"] isEqualToString:TwitterService]) {
         NSDictionary*twitter = [NSDictionary dictionaryWithObjectsAndKeys:(NSString*)[userInfo objectForKey:@"token"],@"access_token",(NSString*)[userInfo objectForKey:@"secret"],@"access_token_secret",  nil];
         [newUser setTwitter:twitter];
+        [UICKeyChainStore setString:@"yep" forKey:FluxDidRegisterKey service:TwitterService];
     }
     else if ([(NSString*)[userInfo objectForKey:@"partner"] isEqualToString:FacebookService]){
         NSString*facebook = (NSString*)[userInfo objectForKey:@"token"];
         [newUser setFacebook:facebook];
+        [UICKeyChainStore setString:@"yep" forKey:FluxDidRegisterKey service:FacebookService];
     }
     else{
         

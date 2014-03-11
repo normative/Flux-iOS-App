@@ -8,7 +8,6 @@
 
 #import "FluxSettingsViewController.h"
 #import "FluxRegisterViewController.h"
-#import "FluxSocialManagementCell.h"
 #import "UICKeyChainStore.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "ProgressHUD.h"
@@ -173,160 +172,146 @@
 //        
 //        [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
 //    }
-    
-    static NSString *socialCellIdentifier = @"socialManagementCell";
-    FluxSocialManagementCell * socialMgmtcell = [tableView dequeueReusableCellWithIdentifier:socialCellIdentifier];
-    if (!socialMgmtcell) {
-        socialMgmtcell = [[FluxSocialManagementCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:socialCellIdentifier];
-    }
-    [socialMgmtcell.socialPartnerLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialMgmtcell.socialPartnerLabel.font.pointSize]];
-    [socialMgmtcell.socialDescriptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:socialMgmtcell.socialDescriptionLabel.font.pointSize]];
-    
+    static NSString *socialCellIdentifier;
+    FluxSocialManagementCell * socialMgmtcell;
     switch (indexPath.row)
     {
         case 0:
-            [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
-            
+        {
             if (![UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]) {
+                socialCellIdentifier = @"socialManagementCellConnect";
+                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
+                [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
                 [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_facebook"]]];
-                [socialMgmtcell.socialDescriptionLabel setText:@""];
-                [socialMgmtcell setIsActivated:NO];
             }
             else{
+                socialCellIdentifier = @"socialManagementCellClear";
+                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
                 [socialMgmtcell setIsActivated:YES];
+                [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
                 [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_facebook"]];
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]];
-                [socialMgmtcell setUserInteractionEnabled:NO];
-                [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
-
+                
+                //if the user registered with this service, un-linking doesn't make sense.
+                if ([UICKeyChainStore stringForKey:FluxDidRegisterKey service:FacebookService]) {
+                    [socialMgmtcell.cellButton setHidden:YES];
+                }
             }
-            
+        }
             break;
         case 1:
-            [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
-            
+        {
             if (![UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]) {
+                socialCellIdentifier = @"socialManagementCellConnect";
+                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
+                [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
                 [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_twitter"]]];
                 [socialMgmtcell.socialDescriptionLabel setText:@""];
                 [socialMgmtcell setIsActivated:NO];
             }
             else{
+                socialCellIdentifier = @"socialManagementCellClear";
+                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
+                [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
                 [socialMgmtcell setIsActivated:YES];
                 [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_twitter"]];
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
-                [socialMgmtcell setUserInteractionEnabled:NO];
-                [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
-
+                
+                //if the user registered with this service, un-linking doesn't make sense.
+                if ([UICKeyChainStore stringForKey:FluxDidRegisterKey service:TwitterService]) {
+                    [socialMgmtcell.cellButton setHidden:YES];
+                }
             }
-            
+        }
             break;
-        default:
+       default:
             break;
-            
     }
+
+    return socialMgmtcell;
+}
+
+- (FluxSocialManagementCell*)socialMgmtCellForTableView :(UITableView*)tableView withIdentifier:(NSString*)identifier{
+    FluxSocialManagementCell * socialMgmtcell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    if (!socialMgmtcell) {
+        socialMgmtcell = [[FluxSocialManagementCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:identifier];
+    }
+    [socialMgmtcell initCell];
+    [socialMgmtcell setDelegate:self];
+    [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
     return socialMgmtcell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    switch (indexPath.row) {
-        case 0:
-            if ([(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath] isActivated]) {
-                
-//                [UIActionSheet showInView:self.view
-//                                withTitle:@"Facebook"
-//                        cancelButtonTitle:@"Cancel"
-//                   destructiveButtonTitle:@"Unlink"
-//                        otherButtonTitles:nil
-//                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-//                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
-//                                         //unlink facebook
-//                                         [UICKeyChainStore removeAllItemsForService:FacebookService];
-//                                         //close facebook session
-//                                         if (FBSession.activeSession.isOpen) {
-//                                             [FBSession.activeSession closeAndClearTokenInformation];
-//                                         }
-//                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-//                                     }
-//                                 }];
-                
-                
-            }
-            else{
+//    [self SocialManagementCellButtonWasTapped:(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath]];
+}
+
+- (void)SocialManagementCellButtonWasTapped:(FluxSocialManagementCell *)socialManagementCell{
+    if ([socialManagementCell.socialPartnerLabel.text isEqualToString:@"Facebook"]) {
+        if (socialManagementCell.isActivated) {
                 [UIActionSheet showInView:self.view
                                 withTitle:@"Facebook"
                         cancelButtonTitle:@"Cancel"
-                   destructiveButtonTitle:nil
-                        otherButtonTitles:@[@"Link"]
+                   destructiveButtonTitle:@"Unlink"
+                        otherButtonTitles:nil
                                  tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                      if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                         //link facebook
-                                         [self linkFacebook];
+                                         //unlink facebook
+                                         [UICKeyChainStore removeAllItemsForService:FacebookService];
+                                         //close facebook session
+                                         if (FBSession.activeSession.isOpen) {
+                                             [FBSession.activeSession closeAndClearTokenInformation];
+                                         }
+                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
                                      }
                                  }];
-            }
-            break;
-        case 1:
-            if ([(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath] isActivated]) {
-                
-//                [UIActionSheet showInView:self.view
-//                                withTitle:@"Twitter"
-//                        cancelButtonTitle:@"Cancel"
-//                   destructiveButtonTitle:@"Unlink"
-//                        otherButtonTitles:nil
-//                                 tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-//                                     if (buttonIndex != actionSheet.cancelButtonIndex) {
-//                                         //unlick twitter
-//                                         [UICKeyChainStore removeAllItemsForService:TwitterService];
-//                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-//                                     }
-//                                 }];
-                
-            }
-            else{
+        }
+        else{
+            [UIActionSheet showInView:self.view
+                            withTitle:@"Facebook"
+                    cancelButtonTitle:@"Cancel"
+               destructiveButtonTitle:nil
+                    otherButtonTitles:@[@"Link"]
+                             tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                 if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                     //link facebook
+                                     [self linkFacebook];
+                                 }
+                             }];
+        }
+    }
+    else{
+        if (socialManagementCell.isActivated) {
                 [UIActionSheet showInView:self.view
                                 withTitle:@"Twitter"
                         cancelButtonTitle:@"Cancel"
-                   destructiveButtonTitle:nil
-                        otherButtonTitles:@[@"Link"]
+                   destructiveButtonTitle:@"Unlink"
+                        otherButtonTitles:nil
                                  tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                      if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                         //link twitter
-                                         [self linkTwitterAccount];
+                                         //unlick twitter
+                                         [UICKeyChainStore removeAllItemsForService:TwitterService];
+                                         [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
                                      }
                                  }];
-            }
-            break;
-            
-        default:
-            break;
+        }
+        else{
+            [UIActionSheet showInView:self.view
+                            withTitle:@"Twitter"
+                    cancelButtonTitle:@"Cancel"
+               destructiveButtonTitle:nil
+                    otherButtonTitles:@[@"Link"]
+                             tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                                 if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                     //link twitter
+                                     [self linkTwitterAccount];
+                                 }
+                             }];
+        }
     }
 }
 
-
-//- (IBAction)changeSaveLocallySwitch:(id)sender
-//{
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    [defaults setObject:[NSNumber numberWithBool:self.saveLocallySwitch.on]
-//                 forKey:@"Save Pictures"];
-//    [defaults synchronize];
-//}
-//
-//- (IBAction)changeConnectServerSegment:(id)sender
-//{
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    [defaults setObject:[NSNumber numberWithInt:self.connectServerSegmentedControl.selectedSegmentIndex] forKey:@"Server Location"];
-//    [defaults synchronize];
-//}
-//
-//- (IBAction)maskSliderChanged:(id)sender {
-//    int discreteValue = roundl([self.maskSlider value]);
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    [defaults setObject:[NSNumber numberWithInt:discreteValue] forKey:@"Mask"];
-//    [defaults synchronize];
-//    [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
-//    [self.maskSlider setValue:(float)discreteValue];
-//}
 
 #pragma mark Twitter
 - (void)linkTwitterAccount{
@@ -418,5 +403,31 @@
     CGImageRef cgImage = [context createCGImage:result fromRect:[result extent]];
     return [UIImage imageWithCGImage:cgImage];
 }
+
+
+
+//- (IBAction)changeSaveLocallySwitch:(id)sender
+//{
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    [defaults setObject:[NSNumber numberWithBool:self.saveLocallySwitch.on]
+//                 forKey:@"Save Pictures"];
+//    [defaults synchronize];
+//}
+//
+//- (IBAction)changeConnectServerSegment:(id)sender
+//{
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    [defaults setObject:[NSNumber numberWithInt:self.connectServerSegmentedControl.selectedSegmentIndex] forKey:@"Server Location"];
+//    [defaults synchronize];
+//}
+//
+//- (IBAction)maskSliderChanged:(id)sender {
+//    int discreteValue = roundl([self.maskSlider value]);
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    [defaults setObject:[NSNumber numberWithInt:discreteValue] forKey:@"Mask"];
+//    [defaults synchronize];
+//    [self.maskLabel setText:[NSString stringWithFormat:@"%i",discreteValue]];
+//    [self.maskSlider setValue:(float)discreteValue];
+//}
 
 @end
