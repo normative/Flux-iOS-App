@@ -458,16 +458,31 @@ typedef void (^_MIMapViewChange)(void);
     
     //adds semi-custom map pin
     MKAnnotationView *pinView = nil;
-    static NSString *defaultPinID = @"com.invasivecode.pin";
+    static NSString *defaultPinID = @"redContentPin";
     pinView = (MKAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:defaultPinID];
     if ( pinView == nil )
         pinView = [[MKAnnotationView alloc]
                    initWithAnnotation:annotation reuseIdentifier:defaultPinID];
     
-    //pinView.pinColor = MKPinAnnotationColorGreen;
     pinView.canShowCallout = YES;
     //pinView.animatesDrop = YES;
-    pinView.image = [UIImage imageNamed:@"mapPin"];    //as suggested by Squatch
+    pinView.image = [UIImage imageNamed:@"mapPin"];
+    
+    //if there's more than 1 image in the pin
+    if ([annotation class]  == [MIAnnotation class]) {
+        float alpha = [(MIAnnotation*)annotation count]/20.0;
+        if (alpha > 1) {
+            alpha = 1;
+        }
+        if (alpha < 0.2) {
+            alpha = 0.2;
+        }
+        [pinView setAlpha:alpha];
+    }
+    else{
+        [pinView setAlpha:0.2];
+    }
+
     return pinView;
     
     
