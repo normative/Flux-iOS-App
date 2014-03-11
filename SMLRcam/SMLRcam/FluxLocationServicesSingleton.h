@@ -57,7 +57,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     double _lastvalue;//steppe
     
     bool _validCurrentLocationData;
-    
+    bool _didbecomeInactive;
     double _horizontalAccuracy;
     
     sensorPose _userPose;

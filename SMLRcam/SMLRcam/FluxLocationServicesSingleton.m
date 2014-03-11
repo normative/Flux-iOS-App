@@ -742,6 +742,16 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     kfAltStarted = false;
     iterations_alt = 0;
     P_alt = 5.0;
+    _didbecomeInactive = false;
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(applicationWillResign)
+     name:UIApplicationWillResignActiveNotification
+     object:NULL];
+    [[NSNotificationCenter defaultCenter]
+     addObserver:self
+     selector:@selector(applicationWillReactivate)
+     name:UIApplicationDidBecomeActiveNotification     object:NULL];
 }
 - (void) startKFilter
 {
@@ -751,8 +761,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
                                                   selector:@selector(updateKFilter)
                                                   userInfo:nil
                                                    repeats:YES];
-    
-    
 }
 - (void) setMeasurementWithLocation:(CLLocation*)location
 {
@@ -988,7 +996,12 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     self.teleportLocationIndex = [[defaults objectForKey:FluxDebugTeleportLocationIndexKey] integerValue];
 }
-
+-(void) resetAltitude
+{
+    iterations_alt = 0;
+    P_alt = 5.0;
+    kfAltStarted = false;
+}
 
 -(void) updateAltitudeWithAlt:(double)altitude andError:(double)error
 {
@@ -1016,6 +1029,21 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     P_alt = (1-K) * P_p;
     
     kfAltStarted = true;
+}
+
+-(void) applicationWillResign{
+    NSLog(@"resigning");
+    _didbecomeInactive = true;
+    
+}
+-(void) applicationWillReactivate
+{
+   if(_didbecomeInactive == true)
+   {
+       [self resetKFilter];
+       [self resetAltitude];
+        _didbecomeInactive = false;
+   }
 }
 @end
 
