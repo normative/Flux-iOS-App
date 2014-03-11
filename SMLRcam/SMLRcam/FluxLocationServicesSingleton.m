@@ -676,6 +676,14 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     double stepsize =0.73;
     
     enuHeadingRad = (90.0 + (360 - ((direction == -1) ? self.heading + 180.0 : self.heading)))/180.0 * PI;
+    if (enuHeadingRad < 0.0)
+    {
+        enuHeadingRad += 360.0;
+    }
+    else if (enuHeadingRad >= 360.0)
+    {
+        enuHeadingRad -= 360.0;
+    }
     
     DDLogVerbose(@"#Event: STEP step_size %.2f, direction %.2f, raw_heading: %.2f, lat: %.8f, long: %.8f msg: direction flag %d", stepsize, enuHeadingRad*180.0/PI, self.heading,
                  self.location.coordinate.latitude, self.location.coordinate.longitude, direction);
