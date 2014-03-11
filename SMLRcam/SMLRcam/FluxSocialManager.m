@@ -447,7 +447,6 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                                                   [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
                                                                   [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
                                                                   [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
-                                                                  [UICKeyChainStore setString:user.birthday forKey:FluxNameKey service:FacebookService];
                                                               }
                                                               
                                                               
