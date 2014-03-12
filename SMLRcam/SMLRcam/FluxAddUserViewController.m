@@ -41,11 +41,6 @@
     didImport = NO;
     [topBarColored setFrame:CGRectMake(topBarColored.frame.origin.x, topBarColored.frame.origin.y, topBarColored.frame.size.width, 64)];
     
-    UIBarButtonItem *negativeSeperator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    negativeSeperator.width = -16;
-    NSMutableArray*arr = [topToolbar.items mutableCopy];
-    [arr insertObject:negativeSeperator atIndex:0];
-    [topToolbar setItems:arr];
     
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setFont:[UIFont fontWithName:@"Akkurat" size:14.0]];
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor blackColor]];
@@ -61,6 +56,40 @@
     
     //to set the clear button's selected state image
     //[userSearchBar setImage:@"" forSearchBarIcon:UISearchBarIconClear state:UIControlStateHighlighted];
+    
+    
+    // your searchbar
+    userSearchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, 260, 44)];
+    [userSearchBar setPlaceholder:@"Find in Flux"];
+    [userSearchBar setBackgroundColor:[UIColor clearColor]];
+    [userSearchBar setBarTintColor: [UIColor clearColor]];
+    [userSearchBar setTintColor: [UIColor clearColor]];
+    [userSearchBar setBackgroundImage:[UIImage imageNamed:@"nothing"]];
+    [userSearchBar setSearchFieldBackgroundPositionAdjustment:UIOffsetMake(0, 1)];
+    [userSearchBar setSearchTextPositionAdjustment:UIOffsetMake(0, 2)];
+    [userSearchBar setSearchBarStyle:UISearchBarStyleProminent];
+    [userSearchBar setDelegate:self];
+    
+    //create a customview and make its frame equal to your searchbar
+    UIView *searchBarView = [[UIView alloc] initWithFrame:userSearchBar.frame];
+    
+    // add your searchbar to the custom view
+    [searchBarView addSubview:userSearchBar];
+    
+    //finally add it to your bar item of the toolbar
+    UIBarButtonItem *searchBarItem =
+    [[UIBarButtonItem alloc] initWithCustomView:searchBarView];
+    
+    [searchBarItem setTintColor:[UIColor clearColor]];
+    [searchBarItem setStyle:UIBarButtonItemStylePlain];
+    
+    NSMutableArray *newItems = [topToolbar.items mutableCopy];
+    [newItems insertObject:searchBarItem atIndex:0];
+ 
+    UIBarButtonItem *negativeSeperator = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    negativeSeperator.width = -16;
+    [newItems insertObject:negativeSeperator atIndex:0];
+    [topToolbar setItems:newItems];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{

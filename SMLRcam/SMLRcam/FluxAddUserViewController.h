@@ -33,8 +33,9 @@ typedef enum QuerySearchState : NSUInteger {
 
 @interface FluxAddUserViewController : GAITrackedViewController<UISearchBarDelegate, UISearchDisplayDelegate, UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, UIScrollViewDelegate, FluxSocialManagerDelegate, PublicProfileDelegate>{
     QuerySearchState searchState;
-    IBOutlet UISearchBar *userSearchBar;
+    UISearchBar *userSearchBar;
     IBOutlet UITableView *addUsersTableView;
+    IBOutlet UIBarButtonItem *searchBarBarButton;
     IBOutlet UIToolbar *topToolbar;
     IBOutlet UIToolbar *topBarColored;
     

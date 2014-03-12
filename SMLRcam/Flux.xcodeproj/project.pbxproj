@@ -49,6 +49,7 @@
 		89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */; };
 		89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A513631829AED800E25AA1 /* Accelerate.framework */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
+		AA0314AA18D1101300121AA0 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -1591,6 +1592,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0314AA18D1101300121AA0 /* FluxFiltersViewController.m in Sources */,
 				AA9F860F1868AFF600AB98A7 /* IDMCaptionView.m in Sources */,
 				AAAAD6FD18A1791800F5F3DB /* DZNPhotoPickerController.m in Sources */,
 				AA349A1917C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m in Sources */,

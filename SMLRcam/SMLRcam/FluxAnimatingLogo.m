@@ -36,7 +36,7 @@
     imageView2 = [[UIImageView alloc]initWithFrame:self.bounds];
     [imageView2 setAnimationImages:animationSet2];
     [imageView2 setAnimationDuration:imageView2.animationImages.count/30.0];
-    [imageView2 setHidden:YES];
+
     
     [imageView1 setContentMode:UIViewContentModeScaleAspectFill];
     [imageView2 setContentMode:UIViewContentModeScaleAspectFill];
@@ -45,17 +45,22 @@
     [self addSubview:imageView2];
     
     isAnimating = NO;
+    
+    //disable 2-stage animation
+    [imageView1 setHidden:YES];
+    [imageView2 setHidden:NO];
 }
 
 -(void)startAnimating{
     isAnimating = YES;
-    [imageView1 startAnimating];
-    [self performSelector:@selector(swapImageViews) withObject:nil afterDelay:0.0];
+    [imageView2 startAnimating];
+//    [self performSelector:@selector(swapImageViews) withObject:nil afterDelay:0.0];
 }
 -(void)stopAnimating{
     isAnimating = NO;
-    [imageView2 setHidden:YES];
+//    [imageView2 setHidden:YES];
     [imageView1 stopAnimating];
+    [imageView2 stopAnimating];
 }
 
 - (void)swapImageViews{

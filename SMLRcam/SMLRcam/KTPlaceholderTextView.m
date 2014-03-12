@@ -10,10 +10,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 
-static CGFloat const kDashedBorderWidth     = (2.0f);
-static CGFloat const kDashedPhase           = (0.0f);
-static CGFloat const kDashedLinesLength[]   = {4.0f, 2.0f};
-static size_t const kDashedCount            = (2.0f);
+//static CGFloat const kDashedBorderWidth     = (2.0f);
+//static CGFloat const kDashedPhase           = (0.0f);
+//static CGFloat const kDashedLinesLength[]   = {4.0f, 2.0f};
+//static size_t const kDashedCount            = (2.0f);
 
 
 @implementation KTPlaceholderTextView
