@@ -1305,7 +1305,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="xZG-ie-JbE">
+                            <imageView hidden="YES" autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" image="fluxlogo" translatesAutoresizingMaskIntoConstraints="NO" id="xZG-ie-JbE">
                                 <rect key="frame" x="114" y="230" width="93" height="108"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <constraints>
@@ -1313,6 +1313,15 @@
                                     <constraint firstAttribute="width" constant="93" placeholder="YES" id="wjv-g4-wgN"/>
                                 </constraints>
                             </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="OsJ-Md-wac" customClass="FluxAnimatingLogo">
+                                <rect key="frame" x="114" y="230" width="93" height="108"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="108" id="7X8-7a-dCW"/>
+                                    <constraint firstAttribute="width" constant="93" id="CoB-XC-iJQ"/>
+                                </constraints>
+                            </view>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RuW-dy-GsI">
                                 <rect key="frame" x="0.0" y="568" width="320" height="408"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -1441,7 +1450,9 @@
                         </subviews>
                         <color key="backgroundColor" red="0.91764705882352937" green="0.24705882352941178" blue="0.24705882352941178" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstAttribute="centerX" secondItem="OsJ-Md-wac" secondAttribute="centerX" id="0zY-rI-KSl"/>
                             <constraint firstItem="xZG-ie-JbE" firstAttribute="top" secondItem="S58-5P-rnV" secondAttribute="top" constant="230" placeholder="YES" id="DOv-yx-Fa8"/>
+                            <constraint firstItem="OsJ-Md-wac" firstAttribute="top" secondItem="S58-5P-rnV" secondAttribute="top" constant="230" id="ECD-Dv-3CG"/>
                             <constraint firstAttribute="centerX" secondItem="xZG-ie-JbE" secondAttribute="centerX" placeholder="YES" id="eHq-To-4PY"/>
                         </constraints>
                     </view>
@@ -1453,7 +1464,7 @@
                         <outlet property="loginElementsContainerView" destination="RuW-dy-GsI" id="jWI-ua-hQY"/>
                         <outlet property="loginToggleButton" destination="13a-C5-GsC" id="hMY-wA-349"/>
                         <outlet property="loginTogglePromptLabel" destination="wle-Vx-hac" id="b28-Z9-dxK"/>
-                        <outlet property="logoImageView" destination="xZG-ie-JbE" id="1eO-kM-xaW"/>
+                        <outlet property="logoImageView" destination="OsJ-Md-wac" id="Lfd-cq-Ad7"/>
                         <outlet property="signInOptionsLabel" destination="XWl-PZ-v85" id="UKj-bA-UKd"/>
                         <outlet property="tableView" destination="0Rt-aQ-rNK" id="JFd-B6-t2i"/>
                         <outlet property="topSeparator" destination="mf9-MM-b8u" id="UUT-Po-sQE"/>

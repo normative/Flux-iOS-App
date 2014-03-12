@@ -62,6 +62,21 @@
     [super viewDidLoad];
     isInSignUp = YES;
     
+    NSMutableArray*animationImages1 = [[NSMutableArray alloc]init];
+    for (int i = 1; i<33; i++) {
+        UIImage*img = [UIImage imageNamed:[NSString stringWithFormat:@"%i", i]];
+        [animationImages1 addObject:img];
+    }
+    
+    NSMutableArray*animationImages2 = [[NSMutableArray alloc]init];
+    for (int i = 33; i<62; i++) {
+        UIImage*img = [UIImage imageNamed:[NSString stringWithFormat:@"%i", i]];
+        [animationImages2 addObject:img];
+    }
+    
+    
+    [logoImageView setFirstAnimationSet:animationImages1 andSecondAnimationSet:animationImages2];
+    
     [loginTogglePromptLabel setFont:[UIFont fontWithName:@"Akkurat" size:loginTogglePromptLabel.font.pointSize]];
     [loginToggleButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:loginToggleButton.titleLabel.font.pointSize]];
     [twitterButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:twitterButton.titleLabel.font.pointSize]];
@@ -71,12 +86,6 @@
     
     self.fluxDataManager = [[FluxDataManager alloc]init];
     registrationOKArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], nil];
-    
-    loadingActivityIndicator = [[UIActivityIndicatorView alloc]initWithFrame:CGRectMake(0, 0, 37, 37)];
-    [loadingActivityIndicator setCenter:CGPointMake(self.view.center.x, self.view.center.y+100)];
-    [loadingActivityIndicator startAnimating];
-    [loadingActivityIndicator setAlpha:0.0];
-    [self.view addSubview:loadingActivityIndicator];
     
     
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
@@ -366,7 +375,7 @@
     
     if (token && userID && username) {
         [UIView animateWithDuration:0.2 animations:^{
-                [loadingActivityIndicator setAlpha:1.0];
+                [logoImageView startAnimating];
             }];
         [self didLoginSuccessfullyWithUserID:[userID intValue]];
     }
@@ -883,7 +892,7 @@
             else{
                 [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
             }
-            [loadingActivityIndicator setAlpha:1.0];
+            [logoImageView startAnimating];
         }];
     }
     else{
@@ -919,7 +928,7 @@
             else{
                 [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
             }
-            [loadingActivityIndicator setAlpha:0.0];
+            [logoImageView stopAnimating];
         }];
     }
     else{
@@ -931,7 +940,7 @@
         else{
             [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
         }
-        [loadingActivityIndicator setAlpha:0.0];
+        [logoImageView stopAnimating];
     }
 }
 
@@ -983,10 +992,7 @@
 
 - (void)changeOKArrayIndex:(int)i andChecked:(BOOL)checked{
     [registrationOKArray replaceObjectAtIndex:i withObject:[NSNumber numberWithBool:checked]];
-    
     [createLoginButton setEnabled:[self canCreateAccount]];
-    
-    
 }
 
 -(BOOL)canCreateAccount{
