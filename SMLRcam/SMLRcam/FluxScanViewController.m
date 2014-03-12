@@ -17,6 +17,7 @@
 #import "FluxTimeFilterControl.h"
 #import "ProgressHUD.h"
 #import "UICKeyChainStore.h"
+#import "FluxDeviceInfoSingleton.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -339,9 +340,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     FluxImageType actualType = none;
     
     IDMPhoto *photo = nil;
+    
+    FluxImageType ghrq = [[FluxDeviceInfoSingleton sharedDeviceInfo] highestResToQuery];
 
-    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:quarterhd returnSize:&actualType];
-    if (actualType >= quarterhd)
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:ghrq returnSize:&actualType];
+    if (actualType >= ghrq)
     {
         photo = [[IDMPhoto alloc]initWithImage:imageCacheObj.image];
         [imageCacheObj endContentAccess];
@@ -349,7 +352,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     else if (tappedImageObject.imageID > 0)
     {
         // last resort
-        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];
+        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxServerURL,tappedImageObject.imageID, fluxImageTypeStrings[ghrq]];
         photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
     }
     
