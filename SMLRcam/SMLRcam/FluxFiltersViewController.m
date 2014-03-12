@@ -362,7 +362,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (tableView == self.filterTableView) {
-        return [[rightDrawerTableViewArray objectAtIndex:section]count];
+        return [(NSArray*)[rightDrawerTableViewArray objectAtIndex:section]count];
     }
     //its the search tableView
     return 0;

@@ -89,7 +89,6 @@
 		AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA615284182418DB00B8F2C8 /* FluxSocialFilterCell.m */; };
 		AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA6152871827F80B00B8F2C8 /* FluxRegisterViewController.m */; };
 		AA650F0317FDBFD000424223 /* FluxImageAnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0217FDBFD000424223 /* FluxImageAnnotationViewController.m */; };
-		AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA650F0E1802EE1900424223 /* FluxImageCaptureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0D1802EE1900424223 /* FluxImageCaptureViewController.m */; };
 		AA69DA96182D4DF800B0BEED /* FluxTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA95182D4DF800B0BEED /* FluxTextField.m */; };
 		AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */; };
@@ -1604,7 +1603,6 @@
 				AA9D0EA5185664570004823E /* FluxRegisterEmailViewController.m in Sources */,
 				AAB2138F188DD3C900173B35 /* FluxUserLocationMapPin.m in Sources */,
 				171510191811BF7F006727EB /* FluxPedometer.m in Sources */,
-				AA650F0B17FDFF0F00424223 /* FluxFiltersViewController.m in Sources */,
 				AA9D8AD718A038160030909C /* FluxBoxedImageCountView.m in Sources */,
 				AAAAD70518A2D55C00F5F3DB /* FluxAddUserViewController.m in Sources */,
 				AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */,
@@ -1857,7 +1855,7 @@
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -1887,7 +1885,7 @@
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

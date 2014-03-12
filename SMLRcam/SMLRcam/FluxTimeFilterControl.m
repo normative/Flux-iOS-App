@@ -200,7 +200,8 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
 
-    NSLog(@" Offset = %@ ",NSStringFromCGPoint(scrollView.contentOffset));
+//    NSLog(@" Offset = %@ ",NSStringFromCGPoint(scrollView.contentOffset));
+    
     //if it's outside the bounds of the scrollView
 //    if ((scrollView.contentOffset.y < (scrollView.contentSize.height - scrollView.frame.size.height)) && (scrollView.contentOffset.y > 0))
     if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y >= 0))
@@ -227,7 +228,7 @@
 
 - (void)scrollScrollerToCalculatedPosition{
     int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
-    NSLog(@" Degrees = %i ",numberOfDegrees);
+//    NSLog(@" Degrees = %i ",numberOfDegrees);
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
     circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
 }
