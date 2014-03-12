@@ -216,18 +216,11 @@
                 [socialMgmtcell setIsActivated:YES];
                 [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_twitter"]];
                 [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
-<<<<<<< HEAD
                 
                 //if the user registered with this service, un-linking doesn't make sense.
                 if ([UICKeyChainStore stringForKey:FluxDidRegisterKey service:TwitterService]) {
                     [socialMgmtcell.cellButton setHidden:YES];
                 }
-=======
-                [socialMgmtcell setUserInteractionEnabled:NO];
-                [socialMgmtcell setSelectionStyle:UITableViewCellSelectionStyleNone];
-
-                socialMgmtcell.accessoryType = UITableViewCellAccessoryNone;
->>>>>>> FluxRelease_V0.21B05
             }
         }
             break;
