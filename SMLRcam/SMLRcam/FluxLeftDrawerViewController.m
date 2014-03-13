@@ -63,7 +63,7 @@
     [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
         //do something with the UserID
         if (self.badgeCount != requestsArr.count) {
-            self.badgeCount = requestsArr.count;
+            self.badgeCount = (int)requestsArr.count;
             [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:2 inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
         }
 
@@ -176,7 +176,7 @@
                         NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
                         [ProgressHUD showError:str];
                     }];
-                    [self.fluxDataManager requestUserProfilePicForID:userID.integerValue andSize:@"thumb" withDataRequest:picRequest];
+                    [self.fluxDataManager requestUserProfilePicForID:userID.intValue andSize:@"thumb" withDataRequest:picRequest];
                 }
             }
         }];
@@ -185,7 +185,7 @@
             [ProgressHUD showError:str];
         }];
         
-        [self.fluxDataManager requestUserProfileForID:userID.integerValue withDataRequest:request];
+        [self.fluxDataManager requestUserProfileForID:userID.intValue withDataRequest:request];
     }
 }
 
@@ -440,7 +440,7 @@
 #pragma mark UIActionSheetDelegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    int i = buttonIndex;
+    int i = (int)buttonIndex;
     switch(i)
     {
         case 0:
@@ -527,7 +527,7 @@
     if ([[segue identifier] isEqualToString:@"pushPhotosSegue"]){
         FluxProfilePhotosViewController * photosView = (FluxProfilePhotosViewController*)segue.destinationViewController;
         [photosView setFluxDataManager:self.fluxDataManager];
-        [photosView prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService].integerValue];
+        [photosView prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService].intValue];
         [photosView setDelegate:self];
     }
     if ([[segue identifier]isEqualToString:@"pushSocialList"]) {

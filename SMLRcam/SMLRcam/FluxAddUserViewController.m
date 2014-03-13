@@ -302,7 +302,7 @@
 
 #pragma mark - Social Cell Delegate
 - (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell{
-    int index = [addUsersTableView indexPathForCell:friendFollowerCell].row;
+    int index = (int)[addUsersTableView indexPathForCell:friendFollowerCell].row;
     NSMutableArray*options = [[NSMutableArray alloc]init];
     
     NSString*sendFriendRequest = @"Send Friend Request";

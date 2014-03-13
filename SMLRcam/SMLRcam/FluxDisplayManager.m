@@ -979,12 +979,12 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 
 - (int)displayListCount
 {
-    return [self.displayList count];
+    return (int)[self.displayList count];
 }
 
 - (int)nearbyListCount
 {
-    return [self.nearbyList count];
+    return (int)[self.nearbyList count];
 }
 
 - (void)lockDisplayList

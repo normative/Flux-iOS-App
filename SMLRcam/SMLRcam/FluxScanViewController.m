@@ -651,7 +651,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      completion:nil];
     
     uploadsCompleted = 0;
-    totalUploads = objectsArr.count;
+    totalUploads = (int)objectsArr.count;
     NSMutableArray*requestsArray = [[NSMutableArray alloc]init];
     __block float totalBytes = 0;
     __block float progress = 0;
@@ -680,9 +680,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         }];
         [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
             if (requestsArray.count < totalUploads) {
-                if (![requestsArray containsObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]]) {
+                if (![requestsArray containsObject:[NSNumber numberWithInt:(int)inProgressDataRequest.totalByteSize]]) {
                     totalBytes += inProgressDataRequest.totalByteSize;
-                    [requestsArray addObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]];
+                    [requestsArray addObject:[NSNumber numberWithInt:(int)inProgressDataRequest.totalByteSize]];
                 }
             }
             
@@ -727,7 +727,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
         //do something with the UserID
         if (requestsArr.count>0) {
-            [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",requestsArr.count]];
+            [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",(int)requestsArr.count]];
             [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
             if (!friendRequestsBadge.superview) {
                 [self.leftDrawerButton addSubview:friendRequestsBadge];

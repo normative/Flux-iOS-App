@@ -37,7 +37,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     if (fluxMapContentMetadata)
     {
         outstandingRequests--;
-        [filterButton setTitle:[NSString stringWithFormat:@"%i",fluxMapContentMetadata.count] forState:UIControlStateNormal];
+        [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)fluxMapContentMetadata.count] forState:UIControlStateNormal];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^
        {
            if (fluxMapContentMetadata)
@@ -98,7 +98,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     
     MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
 }
 
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay {
@@ -266,7 +266,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
     CLLocation*loc = [[CLLocation alloc]initWithCoordinate:fluxMapView.centerCoordinate altitude:self.locationManager.location.altitude horizontalAccuracy:self.locationManager.location.horizontalAccuracy verticalAccuracy:self.locationManager.location.verticalAccuracy course:self.locationManager.location.course speed:self.locationManager.location.speed timestamp:self.locationManager.location.timestamp];
     [filtersVC setLocation:loc];
-    [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
+    [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:(int)[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
     [self animationPushBackScaleDown];
     [filtersVC setRadius:lastRadius];
 }

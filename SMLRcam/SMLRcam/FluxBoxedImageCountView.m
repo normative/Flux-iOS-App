@@ -75,7 +75,7 @@
 - (void)removeImageCapture{
     self.markCount --;
     NSArray*boxes = [boxesArray copy];
-    for (int i = boxes.count-1; i>=0; i--) {
+    for (int i = (int)boxes.count-1; i>=0; i--) {
         if ([(FluxImageCaptureBoxItem*)[boxes objectAtIndex:i]isMarked]) {
             FluxImageCaptureBoxItem*box = (FluxImageCaptureBoxItem*)[boxesArray objectAtIndex:i];
             [UIView animateWithDuration:0.3 animations:^{

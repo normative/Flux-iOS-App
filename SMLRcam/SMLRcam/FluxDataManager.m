@@ -1000,7 +1000,7 @@ float const altitudeHighRange = 60.0;
     
     if ([requestArray count] != 1)
     {
-        NSLog(@"%s: Upload request array has %d receivers awaiting response.", __func__, [requestArray count]);
+        NSLog(@"%s: Upload request array has %lu receivers awaiting response.", __func__, (unsigned long)[requestArray count]);
     }
 
     // Overwrite the data that is currently in the cache

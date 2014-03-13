@@ -113,7 +113,7 @@
             if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidReturnWithinMax:)]) {
                 [theDelegate PlaceholderTextViewDidReturnWithinMax:self];
             }
-            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-self.text.length]];
+            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
             if (self.text.length > 135) {
                 [charCount setTextColor:[UIColor redColor]];
             }
@@ -144,7 +144,7 @@
             if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidReturnWithinMax:)]) {
                 [theDelegate PlaceholderTextViewDidReturnWithinMax:self];
             }
-            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-self.text.length]];
+            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
             if (self.text.length > 135) {
                 [charCount setTextColor:[UIColor redColor]];
             }

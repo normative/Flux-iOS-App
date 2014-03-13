@@ -145,7 +145,7 @@
                 }
                 //if they still exist, set it selected
                 else{
-                    int subArrayIndex = [[rightDrawerTableViewArray objectAtIndex:1] indexOfObject:tmp];
+                    int subArrayIndex = (int)[[rightDrawerTableViewArray objectAtIndex:1] indexOfObject:tmp];
                     [[[rightDrawerTableViewArray objectAtIndex:1] objectAtIndex:subArrayIndex] setIsActive:YES];
                 }
             }

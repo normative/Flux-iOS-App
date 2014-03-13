@@ -81,7 +81,7 @@
     
     if (isSelecting) {
         [cell.checkboxButton setHidden:NO];
-        if ([imagesIndexArray containsObject:[NSNumber numberWithInt:indexPath.row]]) {
+        if ([imagesIndexArray containsObject:[NSNumber numberWithInt:(int)indexPath.row]]) {
             [cell.checkboxButton setChecked:YES];
             [cell.imageView setAlpha:0.8];
         }
@@ -134,15 +134,15 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     if (isSelecting) {
-        if ([imagesIndexArray containsObject:[NSNumber numberWithInt:indexPath.row]]) {
-            [imagesIndexArray removeObject:[NSNumber numberWithInt:indexPath.row]];
+        if ([imagesIndexArray containsObject:[NSNumber numberWithInt:(int)indexPath.row]]) {
+            [imagesIndexArray removeObject:[NSNumber numberWithInt:(int)indexPath.row]];
             if (imagesIndexArray.count == 0) {
                 [shareButton setEnabled:NO];
             }
             [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
         }
         else{
-            [imagesIndexArray addObject:[NSNumber numberWithInt:indexPath.row]];
+            [imagesIndexArray addObject:[NSNumber numberWithInt:(int)indexPath.row]];
             [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
             [shareButton setEnabled:YES];
         }

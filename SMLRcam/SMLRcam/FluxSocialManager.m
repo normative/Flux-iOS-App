@@ -122,7 +122,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                          
                                          if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                             [self loginWithTwitterForAccountIndex:buttonIndex];
+                                             [self loginWithTwitterForAccountIndex:(int)buttonIndex];
                                          }
                                          else{
                                              if (isRegister) {
@@ -598,7 +598,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 
             }
             else {
-                NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
+                NSLog(@"[ERROR] Server responded: status code %ld %@", (long)statusCode,
                       [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
                 [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
             }
@@ -671,7 +671,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 
             }
             else {
-                NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
+                NSLog(@"[ERROR] Server responded: status code %ld %@", (long)statusCode,
                       [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
                 [self failedToCompleteRequestWithType:TwitterService andAlreadyShownError:NO];
             }

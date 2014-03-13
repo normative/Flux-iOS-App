@@ -130,7 +130,7 @@
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     [bioTextField resignFirstResponder];
-    int i = buttonIndex;
+    int i = (int)buttonIndex;
     switch(i)
     {
         case 0:

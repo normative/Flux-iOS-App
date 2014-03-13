@@ -416,10 +416,10 @@
         [cell setDelegate:self];
         return cell;
     }
-    int index = indexPath.row;
+    int index = (int)indexPath.row;
     
     if (isSearching) {
-        index = indexPath.row - 1;
+        index = (int)indexPath.row - 1;
         NSString*cellIdentifier;
         if ([(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index]userID]) {
             cellIdentifier = @"fluxImportCell";
@@ -607,8 +607,8 @@
         }];
         
         //add the indexes from the user pool first
-        unsigned index = [fluxUserIndexSet firstIndex];
-        while ( index != NSNotFound )
+        NSInteger index = [fluxUserIndexSet firstIndex];
+        while (index != NSNotFound )
         {
 //            if ( index < fluxUserIndexSet.count ){
                 [self.searchResultsUserArray addObject: [self.importFluxUserArray objectAtIndex:index]];
@@ -673,7 +673,7 @@
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
                              //link facebook
-                             int index = [self.importUserTableView indexPathForCell:importContactCell].row;
+                             int index = (int)[self.importUserTableView indexPathForCell:importContactCell].row;
                              if (isSearching) {
 //                                 rowIndex =
                              }
@@ -883,7 +883,7 @@
 
 - (void)ImportContactCell:(FluxImportContactCell *)importContactCell shouldInvite:(FluxContactObject *)contact{
     [[(FluxSearchCell*)[self.importUserTableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]] theSearchBar]resignFirstResponder];
-    int index = [self.importUserTableView indexPathForCell:(FluxImportContactCell*)importContactCell].row;
+    int index = (int)[self.importUserTableView indexPathForCell:(FluxImportContactCell*)importContactCell].row;
     [self willInviteCell:importContactCell atIndex:index];
     if (contact.emails) {
         if (contact.emails.count > 1) {
@@ -916,7 +916,7 @@
                     
                 }
                 else {
-                    NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
+                    NSLog(@"[ERROR] Server responded: status code %ld %@", (long)statusCode,
                           [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
                     [ProgressHUD showError:[NSString stringWithFormat:@"Sending invitation to @%@ failed", contact.aliasName]];
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1137,12 +1137,12 @@
                     
                     if (img) {
                         NSData *imageData = [[NSData alloc] initWithData:UIImageJPEGRepresentation((img), 1.0)];
-                        int imageSize = imageData.length;
+                        int imageSize = (int)imageData.length;
                         FluxImageTools *tools = [[FluxImageTools alloc]init];
 
                         UIImage * newImage =  [tools resizedImage:img toSize:CGSizeMake(80, 80) interpolationQuality:0.1];
                         imageData = [[NSData alloc] initWithData:UIImageJPEGRepresentation((newImage), 1.0)];
-                        imageSize = imageData.length;
+                        imageSize = (int)imageData.length;
                         
                         [contact setProfilePic:newImage];
                         [self.importUserImagesArray addObject:newImage];

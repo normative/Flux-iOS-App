@@ -256,7 +256,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     if ([newLocations count] > 1)
     {
-        NSLog(@"Received more than one location (%d)", [newLocations count]);
+        NSLog(@"Received more than one location (%lu)", (unsigned long)[newLocations count]);
     }
     CLLocation *newLocation = [newLocations lastObject];
 
@@ -994,7 +994,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     // 4 - Location (0,0) - special case condition
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    self.teleportLocationIndex = [[defaults objectForKey:FluxDebugTeleportLocationIndexKey] integerValue];
+    self.teleportLocationIndex = [[defaults objectForKey:FluxDebugTeleportLocationIndexKey] intValue];
 }
 -(void) resetAltitude
 {
