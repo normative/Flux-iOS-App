@@ -47,6 +47,7 @@
     isAnimating = NO;
     
     //disable 2-stage animation
+    [imageView2 setImage:(UIImage*)[animationSet1 objectAtIndex:0]];
     [imageView1 setHidden:YES];
     [imageView2 setHidden:NO];
 }
