@@ -185,8 +185,8 @@
 		F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162117E206DC0027BD1F /* FluxDataManager.m */; };
 		F245162517E23FAA0027BD1F /* FluxDataFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = F245162417E23FAA0027BD1F /* FluxDataFilter.m */; };
 		F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = F26EF319183D10EF00536C54 /* FluxFeatureMatchingQueue.m */; };
+		F29039AA18D16C6700A7E8D8 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F26EF31E183D138F00536C54 /* opencv2.framework */; };
 		F2A04431187B48A00044DDC4 /* FluxCacheImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = F2A04430187B48A00044DDC4 /* FluxCacheImageObject.m */; };
-		F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F26EF31E183D138F00536C54 /* opencv2.framework */; };
 		F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */; };
 		F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1E5183D51C100D32084 /* UIImage+OpenCV.mm */; };
 		F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1F2183E39DC00D32084 /* FluxMatcher.cpp */; };
@@ -557,11 +557,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F29039AA18D16C6700A7E8D8 /* opencv2.framework in Frameworks */,
 				F206B62918C63E9B00ABAD99 /* MessageUI.framework in Frameworks */,
 				AADFF1F118B544D9003BEE8C /* AddressBook.framework in Frameworks */,
 				17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */,
 				F2B2C1D4183D2EE400D32084 /* MobileCoreServices.framework in Frameworks */,
-				F2B2C1D2183D214300D32084 /* opencv2.framework in Frameworks */,
 				AA9D0E9C184D3AC30004823E /* Accounts.framework in Frameworks */,
 				AA9D0E9A184D3A340004823E /* Twitter.framework in Frameworks */,
 				AA255166183577D900DCA62F /* Social.framework in Frameworks */,
