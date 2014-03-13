@@ -328,7 +328,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 -(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject withBGImage:(UIImage *)bgImage
 {
-    snapshotBGImage = bgImage;
+    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+    snapshotBGImage = [imageTools blurImage:bgImage withBlurLevel:0.6];
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
     [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
                                                           action:@"action"  // Event action (required)
