@@ -1,6 +1,18 @@
 Release Notes:
 ******************************************
 
+V0.22 B01
+
+Closed Beta Release 08
+
+Released: 2014-03-13 09:00:00
+
+Release Notes:
+- re-enable debug screen
+- re-enable extended social functionality
+
+******************************************
+
 V0.21 B05
 
 ASR Release Candidate
