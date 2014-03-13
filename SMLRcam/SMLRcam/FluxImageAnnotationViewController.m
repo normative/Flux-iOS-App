@@ -18,6 +18,8 @@
 #define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 
 
+#define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
+
 @interface FluxImageAnnotationViewController ()
 
 @end

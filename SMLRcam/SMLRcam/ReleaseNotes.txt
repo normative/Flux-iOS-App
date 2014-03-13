@@ -1,11 +1,68 @@
 Release Notes:
+******************************************
+
+V0.22 B01
+
+Closed Beta Release 08
+
+Released: 2014-03-13 09:00:00
+
+Release Notes:
+- re-enable debug screen
+- re-enable extended social functionality
+
+******************************************
+
+V0.21 B05
+
+ASR Release Candidate
+
+Released: 2014-03-10 11:45:00
+
+Release Notes:
+- Remove '>' from link accounts once link is established
+
+******************************************
+
+V0.21 B04
+
+ASR Release Candidate
+
+Released: 2014-03-08 15:30:00
+
+Release Notes:
+- minor iPad mini-specific UI fixups
+- model-specific max download resolution (thumb or quarterhd depending on model)
+- hard define for max capture resolution (test, will make generic and release pending feedback)
+
+******************************************
+
+V0.21 B03
+
+ASR Release Candidate
+
+Released: 2014-03-07 09:00:00
+
+Release Notes:
+- Add delay before re-enabling the camera capture button after taking an image to prevent duplicate timestamps / localIDs
+- disable social import
+
+******************************************
+
+V0.21 B02
+
+ASR Release Candidate
+
+Released: 2014-03-06 15:45:00
+
+Release Notes:
 - add CocoaLumberjack framework for logging
 - add MessageUI framework to send email from device
 - add logging of location, Kalman resets, and pedometer events
 - add ability to email log files
 - control for logging (disabled by default) is through hidden debug menu
-- social contact import, search, invite to Flux, friend, follow from Twitter and Facebook contacts
-- Add delay before re-enabling the camera capture button after taking an image to prevent duplicate timestamps / localIDs
+- social contact import, search, friend, follow from Twitter and Facebook contacts
+- disable debug menu in prep for app store release (negates all of the debug changes but they are there...
 
 ******************************************
 
