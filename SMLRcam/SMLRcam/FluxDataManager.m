@@ -899,7 +899,7 @@ float const altitudeHighRange = 60.0;
             [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
         }
         
-        if ([[downloadQueueReceivers objectForKey:imageObj.localID] count] == 0)
+        if ([(NSArray *)[downloadQueueReceivers objectForKey:imageObj.localID] count] == 0)
         {
             [downloadQueueReceivers removeObjectForKey:imageObj.localID];
         }
@@ -971,7 +971,7 @@ float const altitudeHighRange = 60.0;
             [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
         }
         
-        if ([[downloadQueueReceivers objectForKey:imageObj.localID] count] == 0)
+        if ([(NSArray *)[downloadQueueReceivers objectForKey:imageObj.localID] count] == 0)
         {
             [downloadQueueReceivers removeObjectForKey:imageObj.localID];
         }

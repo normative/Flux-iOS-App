@@ -424,7 +424,7 @@
                 [cell setIsNotApplicable:NO];
             }
             
-            cell.countLabel.text = [NSString stringWithFormat:@"%i",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
+            cell.countLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[(NSArray *)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             [cell setTextTitle:[NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]]];
