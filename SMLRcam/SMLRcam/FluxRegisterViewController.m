@@ -238,7 +238,7 @@
     return textInputElements.count;
 }
 
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (showUernamePrompt) {
         if (indexPath.row == 0) {
             return 70;

@@ -131,7 +131,7 @@
         return @"Linked Accounts";
 }
 
-- (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     return 30.0;
 }
 

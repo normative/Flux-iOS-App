@@ -225,7 +225,7 @@
         return 1;
 }
 
-- (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     switch (section) {
         case 0:
             return 70.0f;
@@ -368,7 +368,7 @@
     return 0;
 }
 
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (tableView == self.filterTableView) {
         return 44.0;
     }
