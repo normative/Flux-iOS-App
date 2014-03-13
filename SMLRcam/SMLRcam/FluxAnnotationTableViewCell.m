@@ -66,10 +66,16 @@
             break;
     }
     
-    float textWidth = [self.categoryLabel.text sizeWithFont:self.categoryLabel.font].width;
-    float xSpacing = self.categoryLabel.frame.origin.x+textWidth+[@" " sizeWithFont:self.categoryLabel.font].width;
+    // float textWidth = [self.categoryLabel.text sizeWithFont:self.categoryLabel.font].width;
+    // float xSpacing = self.categoryLabel.frame.origin.x+textWidth+[@" " sizeWithFont:self.categoryLabel.font].width;
+    // [self.userLabel setFrame:CGRectMake(xSpacing+[self.byLabel.text sizeWithFont:self.byLabel.font].width+[@" " sizeWithFont:self.categoryLabel.font].width, self.userLabel.frame.origin.y, self.userLabel.frame.size.width, self.userLabel.frame.size.height)];
+
+    NSDictionary *cat_attribs = [[NSDictionary alloc]initWithObjectsAndKeys:self.categoryLabel.font, NSFontAttributeName, nil];
+    NSDictionary *by_attribs = [[NSDictionary alloc]initWithObjectsAndKeys:self.byLabel.font, NSFontAttributeName, nil];
+    float textWidth = [self.categoryLabel.text sizeWithAttributes:cat_attribs].width;
+    float xSpacing = self.categoryLabel.frame.origin.x+textWidth+[@" " sizeWithAttributes:cat_attribs].width;
     [self.byLabel setFrame:CGRectMake(xSpacing, self.byLabel.frame.origin.y, self.byLabel.frame.size.width, self.byLabel.frame.size.height)];
-    [self.userLabel setFrame:CGRectMake(xSpacing+[self.byLabel.text sizeWithFont:self.byLabel.font].width+[@" " sizeWithFont:self.categoryLabel.font].width, self.userLabel.frame.origin.y, self.userLabel.frame.size.width, self.userLabel.frame.size.height)];
+    [self.userLabel setFrame:CGRectMake(xSpacing+[self.byLabel.text sizeWithAttributes:by_attribs].width+[@" " sizeWithAttributes:cat_attribs].width, self.userLabel.frame.origin.y, self.userLabel.frame.size.width, self.userLabel.frame.size.height)];
 }
 
 //- (void)layoutSubviews{
