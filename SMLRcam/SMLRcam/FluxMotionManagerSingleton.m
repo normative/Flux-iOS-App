@@ -124,17 +124,16 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
     GLKVector3 los_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, los_device));
     GLKVector3 z_axis_earth = GLKVector3Make(0.0, 0.0, 1.0);
     
+    GLKVector3 los_device_earth_projected_orig = [self projectVector:los_device_earth ontoPlaneWithNormal:z_axis_earth];
+
     // Roll is calculated from the angle between x_device and z_axis in Earth frame
     // (true in Yaw-Pitch-Roll rotation, since in first two rotations, yaw-pitch, x-axis remains perpendicular to z)
     double theta_x = [self calculateAngleBetweenVector:x_device_earth andVector:z_axis_earth];
     double roll =  (y_device_earth.z >= 0.0 ? -(M_PI_2 - theta_x) : -(M_PI_2 + theta_x));
     
-    // Pitch is calculated from the angle between the LOS axis and its projection onto the Earth plane
-    // This step does not work if the LOS approaches either pole (phone looking straight up or straight down)
-    GLKVector3 los_device_earth_projected_orig = [self projectVector:los_device_earth ontoPlaneWithNormal:z_axis_earth];
-    double theta_y = [self calculateAngleBetweenVector:los_device_earth andVector:los_device_earth_projected_orig];
-    double pitch = (los_device_earth.z < 0.0 ? (M_PI_2 - theta_y) : (M_PI_2 + theta_y));
-    
+    // Pitch is calculated from the angle between the LOS axis and the -z Earth axis (straight down)
+    double pitch = [self calculateAngleBetweenVector:los_device_earth andVector:GLKVector3MultiplyScalar(z_axis_earth, -1.0)];
+
     double corrected_heading = heading.trueHeading;
     
     if (pitch > pitch_heading_flip_limit)
