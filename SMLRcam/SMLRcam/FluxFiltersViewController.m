@@ -145,7 +145,7 @@
                 }
                 //if they still exist, set it selected
                 else{
-                    int subArrayIndex = [[rightDrawerTableViewArray objectAtIndex:1] indexOfObject:tmp];
+                    int subArrayIndex = (int)[[rightDrawerTableViewArray objectAtIndex:1] indexOfObject:tmp];
                     [[[rightDrawerTableViewArray objectAtIndex:1] objectAtIndex:subArrayIndex] setIsActive:YES];
                 }
             }
@@ -225,7 +225,7 @@
         return 1;
 }
 
-- (float)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     switch (section) {
         case 0:
             return 70.0f;
@@ -362,13 +362,13 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (tableView == self.filterTableView) {
-        return [[rightDrawerTableViewArray objectAtIndex:section]count];
+        return [(NSArray*)[rightDrawerTableViewArray objectAtIndex:section]count];
     }
     //its the search tableView
     return 0;
 }
 
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (tableView == self.filterTableView) {
         return 44.0;
     }
@@ -424,7 +424,7 @@
                 [cell setIsNotApplicable:NO];
             }
             
-            cell.countLabel.text = [NSString stringWithFormat:@"%i",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
+            cell.countLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[(NSArray *)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
             [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
             [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
             [cell setTextTitle:[NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]]];

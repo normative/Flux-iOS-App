@@ -86,9 +86,9 @@
 {
 	if (_title == nil && _readAvailable)
 	{
-		_title = [[NSString alloc] initWithFormat:@"%d", _count];
+		_title = [[NSString alloc] initWithFormat:@"%i", (int)_count];
 	}
-    NSLog(@"Count: %i",_annotations.count);
+    NSLog(@"Count: %lu",(unsigned long)_annotations.count);
 
 	return _title;
 }

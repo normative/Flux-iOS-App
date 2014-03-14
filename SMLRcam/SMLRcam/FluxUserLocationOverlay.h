@@ -13,7 +13,7 @@
 @interface FluxUserLocationOverlay : MKOverlayView {
     
 }
-+ (id)overlayWithCoordinate:(CLLocationCoordinate2D)coordinate radius:(CLLocationDistance)radius;
+//+ (id)overlayWithCoordinate:(CLLocationCoordinate2D)coordinate radius:(CLLocationDistance)radius;
 - (id) init;
 
 @property (nonatomic, readwrite) CLLocationCoordinate2D coordinate;

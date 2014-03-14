@@ -23,6 +23,7 @@
 #import "OAuth+Additions.h"
 #import "TWAPIManager.h"
 #import "TWSignedRequest.h"
+#import "FluxAnimatingLogo.h"
 
 
 
@@ -54,10 +55,8 @@
     IBOutlet UIButton *facebookButton;
     IBOutlet UIButton *createLoginButton;
     IBOutlet UIView *topSeparator;
-    IBOutlet UIImageView *logoImageView;
+    IBOutlet FluxAnimatingLogo *logoImageView;
     UIMenuController *menuController;
-    
-    UIActivityIndicatorView * loadingActivityIndicator;
 }
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;

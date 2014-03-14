@@ -132,7 +132,7 @@
             [ProgressHUD showError:str];
             [self unfreezeUI];
         }];
-        int index = [(NSNumber*)[removedImages objectAtIndex:i]integerValue];
+        int index = [(NSNumber*)[removedImages objectAtIndex:i]intValue];
         int imageID = [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] imageID];
         [self.fluxDataManager deleteImageWithImageID:imageID  withDataRequest:request];
     }
@@ -185,7 +185,7 @@
     
     if (isEditing) {
         [cell.checkboxButton setHidden:NO];
-        if ([removedImages containsObject:[NSNumber numberWithInt:indexPath.row]]) {
+        if ([removedImages containsObject:[NSNumber numberWithInt:(int)indexPath.row]]) {
             [cell.checkboxButton setChecked:YES];
             [cell.imageView setAlpha:0.8];
         }
@@ -226,15 +226,15 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
     if (isEditing) {
-        if ([removedImages containsObject:[NSNumber numberWithInt:indexPath.row]]) {
-            [removedImages removeObject:[NSNumber numberWithInt:indexPath.row]];
+        if ([removedImages containsObject:[NSNumber numberWithInt:(int)indexPath.row]]) {
+            [removedImages removeObject:[NSNumber numberWithInt:(int)indexPath.row]];
             if (removedImages.count == 0) {
                 [garbageButton setEnabled:NO];
             }
             [collectionView reloadData];
         }
         else{
-            [removedImages addObject:[NSNumber numberWithInt:indexPath.row]];
+            [removedImages addObject:[NSNumber numberWithInt:(int)indexPath.row]];
             [collectionView reloadData];
             [garbageButton setEnabled:YES];
         }

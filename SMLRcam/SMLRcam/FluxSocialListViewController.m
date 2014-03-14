@@ -30,6 +30,16 @@
     
     self.screenName = @"Social List View";
     
+    //clears hairline under the navBar, but also hides the status bar color. NEeds more thinking.
+//    UINavigationBar *navigationBar = self.navigationController.navigationBar;
+//    [navigationBar setBackgroundImage:[UIImage new]
+//                       forBarPosition:UIBarPositionAny
+//                           barMetrics:UIBarMetricsDefault];
+//    [navigationBar setBackgroundColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]];
+//    
+//    [navigationBar setShadowImage:[UIImage new]];
+    
+    
     [self.view setAlpha:0.0];
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;

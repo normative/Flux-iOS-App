@@ -16,6 +16,8 @@
 
 @implementation FluxTimeFilterControl
 
+@synthesize delegate;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -198,7 +200,8 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
 
-    NSLog(@" Offset = %@ ",NSStringFromCGPoint(scrollView.contentOffset));
+//    NSLog(@" Offset = %@ ",NSStringFromCGPoint(scrollView.contentOffset));
+    
     //if it's outside the bounds of the scrollView
 //    if ((scrollView.contentOffset.y < (scrollView.contentSize.height - scrollView.frame.size.height)) && (scrollView.contentOffset.y > 0))
     if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y >= 0))
@@ -225,7 +228,7 @@
 
 - (void)scrollScrollerToCalculatedPosition{
     int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
-    NSLog(@" Degrees = %i ",numberOfDegrees);
+//    NSLog(@" Degrees = %i ",numberOfDegrees);
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
     circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
 }
@@ -235,6 +238,45 @@
     if (self.fluxDisplayManager) {
         [self.fluxDisplayManager timeBracketDidEndScrolling];
     }
+}
+#pragma mark - Tap Delegate
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
+    if (CGRectContainsPoint(clockContainerView.frame, point)) {
+        [self buttonWasPressed];
+        [self performSelector:@selector(endbuttonPress) withObject:nil afterDelay:0.05];
+    }
+    else{
+        if ([delegate respondsToSelector:@selector(timeFilterControl:didTapAtPoint:)]) {
+            [delegate timeFilterControl:self didTapAtPoint:point];
+        }
+    }
+}
+
+-(void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldBeginTouchAtPoint:(CGPoint)point{
+    if (CGRectContainsPoint(clockContainerView.frame, point)) {
+        [clockContainerView setAlpha:0.4];
+    }
+    
+}
+
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldEndTouchAtPoint:(CGPoint)point{
+    [clockContainerView setAlpha:1.0];
+}
+
+- (void)timeFilterScrollViewShouldBeginTouches:(FluxTimeFilterScrollView *)scrollView{
+
+}
+
+- (void)timeFilterScrollViewShouldEndTouches:(FluxTimeFilterScrollView *)scrollView{
+    
+}
+
+- (void)buttonWasPressed{
+    NSLog(@"BUTTON PRESS");
+}
+
+- (void)endbuttonPress{
+    [clockContainerView setAlpha:1.0];
 }
 
 

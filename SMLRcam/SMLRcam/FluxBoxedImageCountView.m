@@ -29,10 +29,10 @@
             [whiteBoxView setAlpha:0.0];
             
             UIView*fadedBoxView = [[UIView alloc]initWithFrame:CGRectMake(xSpace, 0, 5, 5)];
-            [fadedBoxView setBackgroundColor:[UIColor whiteColor]];
-            [fadedBoxView setAlpha:0.1];
+            [fadedBoxView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.2]];
+            [fadedBoxView setAlpha:1.0];
             
-            [fadedBoxView setHidden:YES];
+//            [fadedBoxView setHidden:YES];
             
 ////            whiteBoxView.layer.cornerRadius = fadedBoxView.layer.cornerRadius = 1.5;
 //            whiteBoxView.layer.masksToBounds = fadedBoxView.layer.masksToBounds = YES;
@@ -75,7 +75,7 @@
 - (void)removeImageCapture{
     self.markCount --;
     NSArray*boxes = [boxesArray copy];
-    for (int i = boxes.count-1; i>=0; i--) {
+    for (int i = (int)boxes.count-1; i>=0; i--) {
         if ([(FluxImageCaptureBoxItem*)[boxes objectAtIndex:i]isMarked]) {
             FluxImageCaptureBoxItem*box = (FluxImageCaptureBoxItem*)[boxesArray objectAtIndex:i];
             [UIView animateWithDuration:0.3 animations:^{

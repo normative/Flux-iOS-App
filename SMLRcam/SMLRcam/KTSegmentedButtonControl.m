@@ -36,7 +36,7 @@
     NSAssert(selectionArr.count == standardArr.count, @"segmented control array sizes are mismatched");
     selectionImages = [[NSArray alloc]initWithArray:selectionArr];
     standardImages = [[NSArray alloc]initWithArray:standardArr];
-    [self setupButtonsWithCount:selectionArr.count];
+    [self setupButtonsWithCount:(int)selectionArr.count];
 }
 
 - (void)setSelectedSegmentIndex:(int)index{
@@ -70,7 +70,7 @@
         NSInteger segment = touchLocation.x / (buttonFrameWidth+buttonSpacing);
         
         if (segment != self.selectedIndex) {
-            [self setSelectedSegmentIndex:segment];
+            [self setSelectedSegmentIndex:(int)segment];
             if ([delegate respondsToSelector:@selector(SegmentedControlValueDidChange:)]) {
                 [delegate SegmentedControlValueDidChange:self];
             }

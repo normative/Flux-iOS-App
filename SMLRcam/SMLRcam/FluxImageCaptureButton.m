@@ -69,7 +69,7 @@
     self.picCount ++;
     if (boxedCountView.markCount > 0) {
         [UIView animateWithDuration:0.3 animations:^{
-            [boxedCountView setFrame:CGRectMake(boxedCountView.frame.origin.x-3.5, boxedCountView.frame.origin.y, boxedCountView.frame.size.width,boxedCountView.frame.size.height)];
+            [boxedCountView setFrame:CGRectMake(boxedCountView.frame.origin.x-3.8, boxedCountView.frame.origin.y, boxedCountView.frame.size.width,boxedCountView.frame.size.height)];
         }];
     }
     [boxedCountView addImageCapture];
@@ -94,7 +94,7 @@
     self.picCount --;
     if (boxedCountView.markCount > 1) {
         [UIView animateWithDuration:0.3 animations:^{
-            [boxedCountView setFrame:CGRectMake(boxedCountView.frame.origin.x+3.5, boxedCountView.frame.origin.y, boxedCountView.frame.size.width,boxedCountView.frame.size.height)];
+            [boxedCountView setFrame:CGRectMake(boxedCountView.frame.origin.x+3.8, boxedCountView.frame.origin.y, boxedCountView.frame.size.width,boxedCountView.frame.size.height)];
         }];
     }
     if ((self.picCount == 3) || self.singleImageCaptureMode)

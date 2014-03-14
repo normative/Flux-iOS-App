@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import  "FluxCameraModel.h"
+#import "FluxCameraModel.h"
+#import "FluxScanImageObject.h"
 
 typedef enum {
     fdp_unknown,
@@ -34,6 +35,7 @@ extern const NSString *FluxDevicePlatformStrings[];
 @property (nonatomic) int  renderTextureCount;
 @property (nonatomic) bool isFeatureMatching;
 @property (nonatomic) int  cacheCountLimit;
+@property (nonatomic) FluxImageType highestResToQuery;
 
 + (id)sharedDeviceInfo;
 

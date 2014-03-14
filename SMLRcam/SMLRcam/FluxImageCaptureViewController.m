@@ -315,8 +315,8 @@ static int captureImageID = -1;
              
              NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
              
-             int userID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]integerValue];
-             int cameraID = [(NSString*)[defaults objectForKey:@"cameraID"]integerValue];
+             int userID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]intValue];
+             int cameraID = [(NSString*)[defaults objectForKey:@"cameraID"]intValue];
              int categoryID = 1;
              
              if (userID < 1 || cameraID < 1) {

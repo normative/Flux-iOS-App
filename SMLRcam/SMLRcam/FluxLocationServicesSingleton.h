@@ -57,7 +57,7 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
     double _lastvalue;//steppe
     
     bool _validCurrentLocationData;
-    
+    bool _didbecomeInactive;
     double _horizontalAccuracy;
     
     sensorPose _userPose;
@@ -87,7 +87,6 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 
 - (void)startLocating;
 - (void)endLocating;
-- (void)orientationChanged:(NSNotification *)notification;
 - (void)WGS84_to_ECEF:(sensorPose *)sp;
 - (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;

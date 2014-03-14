@@ -263,6 +263,8 @@ public:
                                      OutputArray descriptors,
                                      bool useProvidedKeypoints=false ) const = 0;
 
+    CV_WRAP void compute( const Mat& image, CV_OUT CV_IN_OUT std::vector<KeyPoint>& keypoints, CV_OUT Mat& descriptors ) const;
+
     // Create feature detector and descriptor extractor by name.
     CV_WRAP static Ptr<Feature2D> create( const string& name );
 };
@@ -403,45 +405,6 @@ protected:
 
 typedef ORB OrbFeatureDetector;
 typedef ORB OrbDescriptorExtractor;
-
-
-/*!
- KAZE features implementation.
- http://www.robesafe.com/personal/pablo.alcantarilla/papers/Alcantarilla12eccv.pdf
- */
-class CV_EXPORTS_W KAZE : public Feature2D
-{
-public:
-    
-    CV_WRAP KAZE();
-    
-    // returns the descriptor size in bytes
-    int descriptorSize() const;
-    
-    // returns the descriptor type
-    int descriptorType() const;
-    
-    // Compute the KAZE features and descriptors on an image
-    void operator()(InputArray image, InputArray mask, std::vector<KeyPoint>& keypoints) const;
-    
-    // Compute the KAZE features and descriptors on an image
-    void operator()( InputArray image, InputArray mask, std::vector<KeyPoint>& keypoints,
-                    OutputArray descriptors, bool useProvidedKeypoints=false ) const;
-    
-    AlgorithmInfo* info() const;
-    
-protected:
-    
-    void computeImpl( const Mat& image, std::vector<KeyPoint>& keypoints, Mat& descriptors ) const;
-    void detectImpl( const Mat& image, std::vector<KeyPoint>& keypoints, const Mat& mask=Mat() ) const;
-    
-    CV_PROP_RW int nfeatures;
-    
-};
-
-typedef KAZE KazeFeatureDetector;
-typedef KAZE KazeDescriptorExtractor;
-
 
 /*!
   FREAK implementation
@@ -1055,7 +1018,7 @@ struct CV_EXPORTS Hamming
 
 typedef Hamming HammingLUT;
 
-template<int cellsize> struct CV_EXPORTS HammingMultilevel
+template<int cellsize> struct HammingMultilevel
 {
     enum { normType = NORM_HAMMING + (cellsize>1) };
     typedef unsigned char ValueType;

@@ -10,10 +10,10 @@
 #import <QuartzCore/QuartzCore.h>
 
 
-static CGFloat const kDashedBorderWidth     = (2.0f);
-static CGFloat const kDashedPhase           = (0.0f);
-static CGFloat const kDashedLinesLength[]   = {4.0f, 2.0f};
-static size_t const kDashedCount            = (2.0f);
+//static CGFloat const kDashedBorderWidth     = (2.0f);
+//static CGFloat const kDashedPhase           = (0.0f);
+//static CGFloat const kDashedLinesLength[]   = {4.0f, 2.0f};
+//static size_t const kDashedCount            = (2.0f);
 
 
 @implementation KTPlaceholderTextView
@@ -113,7 +113,7 @@ static size_t const kDashedCount            = (2.0f);
             if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidReturnWithinMax:)]) {
                 [theDelegate PlaceholderTextViewDidReturnWithinMax:self];
             }
-            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-self.text.length]];
+            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
             if (self.text.length > 135) {
                 [charCount setTextColor:[UIColor redColor]];
             }
@@ -144,7 +144,7 @@ static size_t const kDashedCount            = (2.0f);
             if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidReturnWithinMax:)]) {
                 [theDelegate PlaceholderTextViewDidReturnWithinMax:self];
             }
-            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-self.text.length]];
+            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
             if (self.text.length > 135) {
                 [charCount setTextColor:[UIColor redColor]];
             }

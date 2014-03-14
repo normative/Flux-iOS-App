@@ -17,6 +17,7 @@
 #import "FluxTimeFilterControl.h"
 #import "ProgressHUD.h"
 #import "UICKeyChainStore.h"
+#import "FluxDeviceInfoSingleton.h"
 
 #import <ImageIO/ImageIO.h>
 #import "GAI.h"
@@ -189,7 +190,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     return self.fluxDisplayManager.nearbyListCount;
 }
 
-- (float)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
     FluxAnnotationTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"annotationsFeedCell"];
     return cell.frame.size.height;
 }
@@ -275,7 +276,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)setupTimeFilterControl{
     timeFilterControl.fluxDisplayManager = self.fluxDisplayManager;
     [timeFilterControl setScrollIndicatorCenter:CGPointMake(self.view.center.x, radarButton.center.y)];
-    [timeFilterControl.timeScrollView setTapDelegate:self];
+    [timeFilterControl setDelegate:self];
 }
 
 -(void)userIsTimeSliding{
@@ -310,10 +311,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 #pragma mark - Tapping images
-
-- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
-    
-    
+- (void)timeFilterControl:(FluxTimeFilterControl *)timeControl didTapAtPoint:(CGPoint)point{
     if (IS_RETINA) {
         [openGLController imageTappedAtPoint:CGPointMake(point.x*2, point.y*2)];
         _point = CGPointMake(point.x*2, point.y*2);
@@ -330,6 +328,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 -(void) didTapImageFunc:(FluxScanImageObject*)tappedImageObject withBGImage:(UIImage *)bgImage
 {
+    FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+    snapshotBGImage = [imageTools blurImage:bgImage withBlurLevel:0.6];
     id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
     [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"ui_action"     // Event category (required)
                                                           action:@"action"  // Event action (required)
@@ -341,9 +341,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     FluxImageType actualType = none;
     
     IDMPhoto *photo = nil;
+    
+    FluxImageType ghrq = [[FluxDeviceInfoSingleton sharedDeviceInfo] highestResToQuery];
 
-    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:quarterhd returnSize:&actualType];
-    if (actualType >= quarterhd)
+    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImageByImageID:tappedImageObject.imageID withSize:ghrq returnSize:&actualType];
+    if (actualType >= ghrq)
     {
         photo = [[IDMPhoto alloc]initWithImage:imageCacheObj.image];
         [imageCacheObj endContentAccess];
@@ -351,7 +353,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     else if (tappedImageObject.imageID > 0)
     {
         // last resort
-        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxServerURL,tappedImageObject.imageID, fluxImageTypeStrings[quarterhd]];
+        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxServerURL,tappedImageObject.imageID, fluxImageTypeStrings[ghrq]];
         photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
     }
     
@@ -650,7 +652,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                      completion:nil];
     
     uploadsCompleted = 0;
-    totalUploads = objectsArr.count;
+    totalUploads = (int)objectsArr.count;
     NSMutableArray*requestsArray = [[NSMutableArray alloc]init];
     __block float totalBytes = 0;
     __block float progress = 0;
@@ -679,9 +681,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         }];
         [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
             if (requestsArray.count < totalUploads) {
-                if (![requestsArray containsObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]]) {
+                if (![requestsArray containsObject:[NSNumber numberWithInt:(int)inProgressDataRequest.totalByteSize]]) {
                     totalBytes += inProgressDataRequest.totalByteSize;
-                    [requestsArray addObject:[NSNumber numberWithInt:inProgressDataRequest.totalByteSize]];
+                    [requestsArray addObject:[NSNumber numberWithInt:(int)inProgressDataRequest.totalByteSize]];
                 }
             }
             
@@ -726,7 +728,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
         //do something with the UserID
         if (requestsArr.count>0) {
-            [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",requestsArr.count]];
+            [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",(int)requestsArr.count]];
             [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
             if (!friendRequestsBadge.superview) {
                 [self.leftDrawerButton addSubview:friendRequestsBadge];

@@ -10,6 +10,7 @@
 
 #import "FluxDataManager.h"
 #import "FluxSocialManager.h"
+#import "FluxSocialManagementCell.h"
 
 #import <Accounts/Accounts.h>
 #import <Twitter/Twitter.h>
@@ -18,7 +19,7 @@
 #import "TWSignedRequest.h"
 
 
-@interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate, FluxSocialManagerDelegate>{
+@interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate, FluxSocialManagerDelegate, FluxSocialManagementCellDelegate>{
     int initialMask;
     IBOutlet UIView *fakeSeparator;
 }

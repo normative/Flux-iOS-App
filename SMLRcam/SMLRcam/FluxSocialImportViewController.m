@@ -416,10 +416,10 @@
         [cell setDelegate:self];
         return cell;
     }
-    int index = indexPath.row;
+    int index = (int)indexPath.row;
     
     if (isSearching) {
-        index = indexPath.row - 1;
+        index = (int)indexPath.row - 1;
         NSString*cellIdentifier;
         if ([(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index]userID]) {
             cellIdentifier = @"fluxImportCell";
@@ -607,8 +607,8 @@
         }];
         
         //add the indexes from the user pool first
-        unsigned index = [fluxUserIndexSet firstIndex];
-        while ( index != NSNotFound )
+        NSInteger index = [fluxUserIndexSet firstIndex];
+        while (index != NSNotFound )
         {
 //            if ( index < fluxUserIndexSet.count ){
                 [self.searchResultsUserArray addObject: [self.importFluxUserArray objectAtIndex:index]];
@@ -673,7 +673,7 @@
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
                              //link facebook
-                             int index = [self.importUserTableView indexPathForCell:importContactCell].row;
+                             int index = (int)[self.importUserTableView indexPathForCell:importContactCell].row;
                              if (isSearching) {
 //                                 rowIndex =
                              }
@@ -883,7 +883,7 @@
 
 - (void)ImportContactCell:(FluxImportContactCell *)importContactCell shouldInvite:(FluxContactObject *)contact{
     [[(FluxSearchCell*)[self.importUserTableView cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]] theSearchBar]resignFirstResponder];
-    int index = [self.importUserTableView indexPathForCell:(FluxImportContactCell*)importContactCell].row;
+    int index = (int)[self.importUserTableView indexPathForCell:(FluxImportContactCell*)importContactCell].row;
     [self willInviteCell:importContactCell atIndex:index];
     if (contact.emails) {
         if (contact.emails.count > 1) {
@@ -916,7 +916,7 @@
                     
                 }
                 else {
-                    NSLog(@"[ERROR] Server responded: status code %d %@", statusCode,
+                    NSLog(@"[ERROR] Server responded: status code %ld %@", (long)statusCode,
                           [NSHTTPURLResponse localizedStringForStatusCode:statusCode]);
                     [ProgressHUD showError:[NSString stringWithFormat:@"Sending invitation to @%@ failed", contact.aliasName]];
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1092,6 +1092,7 @@
 {
     [ProgressHUD show:@"Retrieving Contacts"];
     CFErrorRef*e = NULL;
+    NSMutableArray*emails = [[NSMutableArray alloc]init];
     
     ABAddressBookRef addressBook = ABAddressBookCreateWithOptions(NULL, e);
     
@@ -1104,6 +1105,9 @@
                 ABMultiValueRef emailMultiValue = ABRecordCopyValue(ref, kABPersonEmailProperty);
                 NSArray *emailAddresses = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(emailMultiValue);
                 
+                for (int i = 0; i<emailAddresses.count; i++) {
+                    [emails addObject:[emailAddresses objectAtIndex:i]];
+                }
                 
                 NSString *firstName = (__bridge NSString *)ABRecordCopyValue(ref,kABPersonFirstNameProperty);
                 NSString *lastName = (__bridge NSString *)ABRecordCopyValue(ref,kABPersonLastNameProperty);
@@ -1130,14 +1134,15 @@
                     
                     [contact setEmails:emailAddresses];
                     
+                    
                     if (img) {
                         NSData *imageData = [[NSData alloc] initWithData:UIImageJPEGRepresentation((img), 1.0)];
-                        int imageSize = imageData.length;
+                        int imageSize = (int)imageData.length;
                         FluxImageTools *tools = [[FluxImageTools alloc]init];
 
                         UIImage * newImage =  [tools resizedImage:img toSize:CGSizeMake(80, 80) interpolationQuality:0.1];
                         imageData = [[NSData alloc] initWithData:UIImageJPEGRepresentation((newImage), 1.0)];
-                        imageSize = imageData.length;
+                        imageSize = (int)imageData.length;
                         
                         [contact setProfilePic:newImage];
                         [self.importUserImagesArray addObject:newImage];
@@ -1148,10 +1153,45 @@
                     [self.importUserArray addObject:contact];
                 }
             }
-//            self.importUserDisplayArray = [self.importUserArray mutableCopy];
             if (self.importUserArray.count > 0) {
-                [self.view setUserInteractionEnabled:YES];
-                [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+                FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                
+                [request setContactListReady:^(NSArray *contacts, FluxDataRequest *completedRequest){
+                    //do something with the contacts - an array of FluxContacts
+                    NSMutableIndexSet*indexSet = [[NSMutableIndexSet alloc]init];
+                    for (int i = 0; i<contacts.count; i++) {
+                        NSUInteger index = [self.importUserArray indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                            FluxContactObject*contactObj = (FluxContactObject*)obj;
+                            return ([(NSString*)[contactObj.emails componentsJoinedByString:@"-"]rangeOfString:[(FluxContactObject*)[contacts objectAtIndex:i]aliasName]].location != NSNotFound);
+                        }];
+                        if (index != NSNotFound) {
+                            [indexSet addIndex:index];
+                        }
+                    }
+                    
+                    
+                    if (indexSet.count > 0) {
+                        self.importFluxUserArray = [contacts mutableCopy];
+                        [self.importFluxUserImagesArray removeAllObjects];
+                        for (int i = 0; i<self.importFluxUserArray.count; i++) {
+                            [self.importFluxUserImagesArray addObject:[NSNumber numberWithBool:NO]];
+                        }
+                        [self.importUserArray removeObjectsAtIndexes:indexSet];
+                        [self.importUserImagesArray removeObjectsAtIndexes:indexSet];
+                    }
+                    
+                    [self.view setUserInteractionEnabled:YES];
+                    [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+                }];
+                
+                
+                [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                    NSString*str = [NSString stringWithFormat:@"Contact lookup failed"];
+                    [ProgressHUD showError:str];
+                }];
+                
+                [[FluxDataManager theFluxDataManager] requestContactsFromService:1 withCredentials:[NSDictionary dictionaryWithObject:[emails componentsJoinedByString:@","] forKey:@"emails"] withDataRequest:request];
+                
             }
             else{
                 NSError*e = [[NSError alloc]init];

@@ -11,6 +11,7 @@
 #import "IDMZoomingScrollView.h"
 #import "SVProgressHUD.h"
 #import "FluxPublicProfileViewController.h"
+#import "FluxScanViewController.h"
 
 #define kUSE_CURRENT_CONTEXT_PRESENTATION_STYLE 1
 
@@ -1014,19 +1015,23 @@
 }
 
 - (void)CaptionView:(IDMCaptionView *)captionView didSelectUsername:(NSString *)username andProfileImage:(UIImage *)profPic{
-//    [self cancelControlHiding];
-//    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:[NSBundle mainBundle]];
-//
-//    // setup the opengl controller
-//    // first get an instance from storyboard
-//    FluxPublicProfileViewController*profileView = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
-//    [profileView view];
-//    FluxUserObject*userObj = [[FluxUserObject alloc]init];
-//    [userObj setUsername:[(IDMPhoto*)[_photos objectAtIndex:0] username]];
-//    [userObj setUserID:[(IDMPhoto*)[_photos objectAtIndex:0] userID]];
-//    [profileView prepareViewWithUser:userObj];
-//    [self.navigationController setNavigationBarHidden:NO animated:YES];
-//    [self.navigationController pushViewController:profileView animated:YES];
+    [self cancelControlHiding];
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:[NSBundle mainBundle]];
+
+    // setup the opengl controller
+    // first get an instance from storyboard
+    FluxPublicProfileViewController*profileView = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
+    if ([[self.presentingViewController class] isSubclassOfClass:[FluxScanViewController class]]) {
+        [profileView setFluxDataManager:[(FluxScanViewController*)self.presentingViewController fluxDisplayManager].fluxDataManager];
+    }
+
+    [profileView view];
+    FluxUserObject*userObj = [[FluxUserObject alloc]init];
+    [userObj setUsername:[(IDMPhoto*)[_photos objectAtIndex:0] username]];
+    [userObj setUserID:[(IDMPhoto*)[_photos objectAtIndex:0] userID]];
+    [profileView prepareViewWithUser:userObj];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [self.navigationController pushViewController:profileView animated:YES];
     
 }
 

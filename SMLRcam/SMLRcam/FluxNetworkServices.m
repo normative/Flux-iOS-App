@@ -258,7 +258,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"%s: Found %i Results",__func__, [result count]);
+        NSLog(@"%s: Found %lu Results",__func__, (unsigned long)[result count]);
         if ([result count]>0)
         {
             FluxScanImageObject *imageObject = [result firstObject];
@@ -350,7 +350,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"%s: Found %i Standard Images",__func__,[result count]);
+        NSLog(@"%s: Found %lu Standard Images",__func__,(unsigned long)[result count]);
         
         NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
         for (FluxScanImageObject*obj in result.array)
@@ -792,7 +792,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"Found %i Results",[result count]);
+        NSLog(@"Found %lu Results",(unsigned long)[result count]);
         if ([result count]>0)
         {
             FluxUserObject*userObj = [result firstObject];
@@ -854,7 +854,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Results",[result count]);
+         NSLog(@"Found %lu Results",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnImageListForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnImageListForUser:result.array andRequestID:requestID];
@@ -888,7 +888,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Results",[result count]);
+         NSLog(@"Found %lu Results",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFriendRequestsForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnFriendRequestsForUser:result.array andRequestID:requestID];
@@ -921,7 +921,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Results",[result count]);
+         NSLog(@"Found %lu Results",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFriendListForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnFriendListForUser:result.array andRequestID:requestID];
@@ -953,7 +953,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Results",[result count]);
+         NSLog(@"Found %lu Results",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowingListForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnFollowingListForUser:result.array andRequestID:requestID];
@@ -985,7 +985,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Results",[result count]);
+         NSLog(@"Found %lu Results",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowerListForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnFollowerListForUser:result.array andRequestID:requestID];
@@ -1017,7 +1017,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Results",[result count]);
+         NSLog(@"Found %lu Results",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnUsersListForQuery:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnUsersListForQuery:result.array andRequestID:requestID];
@@ -1279,7 +1279,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Contacts",[result count]);
+         NSLog(@"Found %lu Contacts",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnContactList:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnContactList:result.array andRequestID:requestID];
@@ -1321,7 +1321,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Tags",[result count]);
+         NSLog(@"Found %lu Tags",(unsigned long)[result count]);
          
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
          {
@@ -1375,7 +1375,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Tags",[result count]);
+         NSLog(@"Found %lu Tags",(unsigned long)[result count]);
          
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnTagList:andRequestID:)])
          {
@@ -1534,7 +1534,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %i Map Images",[result count]);         
+         NSLog(@"Found %lu Map Images",(unsigned long)[result count]);         
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnMapList:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnMapList:result.array andRequestID:requestID];

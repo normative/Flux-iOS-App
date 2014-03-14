@@ -12,6 +12,8 @@
 @protocol TimeFilterScrollViewTapDelegate <NSObject>
 @optional
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point;
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldBeginTouchAtPoint:(CGPoint)point;
+- (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldEndTouchAtPoint:(CGPoint)point;
 @end
 
 @interface FluxTimeFilterScrollView : UIScrollView{
