@@ -117,13 +117,16 @@ const float quaternion_slerp_interpolation_factor = 0.25;
     
     GLKVector3 x_device = GLKVector3Make(1.0, 0.0, 0.0);
     GLKVector3 x_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, x_device));
+    GLKVector3 y_device = GLKVector3Make(0.0, 1.0, 0.0);
+    GLKVector3 y_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, y_device));
     GLKVector3 los_device = GLKVector3Make(0.0, 0.0, -1.0); // LOS of the device is -ve z-axis
     GLKVector3 los_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, los_device));
     GLKVector3 z_axis_earth = GLKVector3Make(0.0, 0.0, 1.0);
     
     // Roll is calculated from the angle between x_device and z_axis in Earth frame
+    // (true in Yaw-Pitch-Roll rotation, since in first two rotations, yaw-pitch, x-axis remains perpendicular to z)
     double theta_x = [self calculateAngleBetweenVector:x_device_earth andVector:z_axis_earth];
-    double roll = -(M_PI_2 - theta_x);
+    double roll =  (y_device_earth.z >= 0.0 ? -(M_PI_2 - theta_x) : -(M_PI_2 + theta_x));
     
     // Pitch is calculated from the angle between the LOS axis and its projection onto the Earth plane
     // This step does not work if the LOS approaches either pole (phone looking straight up or straight down)
@@ -136,6 +139,8 @@ const float quaternion_slerp_interpolation_factor = 0.25;
     yaw_temp = yaw_temp + (yaw_temp < -180.0 ? 360.0 : (yaw_temp > 180.0 ? -360.0 : 0.0));
     double yaw = yaw_temp * M_PI/180.0;
     
+//    NSLog(@"YPR: %f, %f, %f, theta_x: %f", yaw * 180.0/M_PI, pitch * 180.0/M_PI, roll * 180.0/M_PI, theta_x * 180.0/M_PI);
+
     // Form a new reference frame corrected by the heading
     GLKQuaternion quat_angle1 = GLKQuaternionMakeWithAngleAndAxis(-yaw, 0.0, 0.0, 1.0);
     GLKQuaternion quat_angle2 = GLKQuaternionMakeWithAngleAndAxis(-pitch, 1.0, 0.0, 0.0);
