@@ -132,7 +132,7 @@ const float quaternion_slerp_interpolation_factor = 0.25;
     // This step does not work if the LOS approaches either pole (phone looking straight up or straight down)
     GLKVector3 los_device_earth_projected_orig = [self projectVector:los_device_earth ontoPlaneWithNormal:z_axis_earth];
     double theta_y = [self calculateAngleBetweenVector:los_device_earth andVector:los_device_earth_projected_orig];
-    double pitch = (M_PI_2 + (los_device_earth.z < 0.0 ? -1.0 : 1.0) * theta_y);
+    double pitch = (los_device_earth.z < 0.0 ? (M_PI_2 - theta_y) : (M_PI_2 + theta_y));
     
     // Yaw is calculated from the heading
     double yaw_temp = -(90.0 + heading.trueHeading);
