@@ -1,4 +1,6 @@
 Release Notes:
+- update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1
+
 ******************************************
 
 V0.22 B01
