@@ -15,6 +15,7 @@ typedef struct{
 } euler_angles;
 
 const float quaternion_slerp_interpolation_factor = 0.25;
+const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
 
 @implementation FluxMotionManagerSingleton
 
@@ -134,8 +135,22 @@ const float quaternion_slerp_interpolation_factor = 0.25;
     double theta_y = [self calculateAngleBetweenVector:los_device_earth andVector:los_device_earth_projected_orig];
     double pitch = (los_device_earth.z < 0.0 ? (M_PI_2 - theta_y) : (M_PI_2 + theta_y));
     
+    double corrected_heading = heading.trueHeading;
+    
+    if (pitch > pitch_heading_flip_limit)
+    {
+        if (heading.trueHeading < 180.0)
+        {
+            corrected_heading += 180.0;
+        }
+        else
+        {
+            corrected_heading -= 180.0;
+        }
+    }
+    
     // Yaw is calculated from the heading
-    double yaw_temp = -(90.0 + heading.trueHeading);
+    double yaw_temp = -(90.0 + corrected_heading);
     yaw_temp = yaw_temp + (yaw_temp < -180.0 ? 360.0 : (yaw_temp > 180.0 ? -360.0 : 0.0));
     double yaw = yaw_temp * M_PI/180.0;
     
