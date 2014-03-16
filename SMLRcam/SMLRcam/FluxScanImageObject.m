@@ -228,7 +228,7 @@ withDescriptionString:(NSString*)description
 - (NSString *)generateUniqueStringID
 {    
     NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
-    [outputDateFormat setDateFormat:@"yyyyMMddHHmmss"];
+    [outputDateFormat setDateFormat:@"yyyyMMddHHmmssSSS"];
     
     NSString *stringID = [outputDateFormat stringFromDate:self.timestamp];
     return [NSString stringWithFormat:@"%@_%d", stringID, self.userID];

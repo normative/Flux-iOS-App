@@ -1,5 +1,6 @@
 Release Notes:
 - update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1
+- update to use msec on timestamp from images to eliminate duplication when rapid-fire collecting
 
 ******************************************
 
