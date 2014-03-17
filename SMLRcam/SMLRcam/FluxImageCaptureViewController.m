@@ -309,7 +309,7 @@ static int captureImageID = -1;
              capturedImage = [UIImage imageWithData:jpeg];
              
              NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
-             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
              outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
              NSString *dateString = [outDateFormat stringFromDate:startTime];
              

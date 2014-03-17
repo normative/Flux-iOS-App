@@ -60,10 +60,10 @@
     [self removeImageCapture];
 }
 
-- (void)targetMethod:(NSTimer*)theTimer {
-    [self.button setEnabled:YES];
-    [self setButtonEnableTimer:nil];
-}
+//- (void)targetMethod:(NSTimer*)theTimer {
+//    [self.button setEnabled:YES];
+//    [self setButtonEnableTimer:nil];
+//}
 
 - (void)addImageCapture{
     self.picCount ++;
@@ -80,12 +80,12 @@
     }
     else
     {
-//        [self.button setEnabled:YES];
-        self.buttonEnableTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                                                  target:self
-                                                                selector:@selector(targetMethod:)
-                                                                userInfo:nil
-                                                                 repeats:NO];
+        [self.button setEnabled:YES];
+//        self.buttonEnableTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
+//                                                                  target:self
+//                                                                selector:@selector(targetMethod:)
+//                                                                userInfo:nil
+//                                                                 repeats:NO];
     }
 
 }
