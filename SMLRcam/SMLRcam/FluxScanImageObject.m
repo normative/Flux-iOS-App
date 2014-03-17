@@ -133,7 +133,7 @@ const NSString *fluxCameraModelStrings[] = {
     // i
     for (int i = 1; (i < (sizeof(fluxCameraModelStrings) / sizeof(NSString *))); i++)
     {
-        if ([cameraModelStr compare:fluxCameraModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
+        if ([cameraModelStr compare:(NSString *)fluxCameraModelStrings[i] options:NSCaseInsensitiveSearch] == NSOrderedSame)
         {
             stridx = i;
             break;
@@ -228,7 +228,7 @@ withDescriptionString:(NSString*)description
 - (NSString *)generateUniqueStringID
 {    
     NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
-    [outputDateFormat setDateFormat:@"yyyyMMddHHmmss"];
+    [outputDateFormat setDateFormat:@"yyyyMMddHHmmssSSS"];
     
     NSString *stringID = [outputDateFormat stringFromDate:self.timestamp];
     return [NSString stringWithFormat:@"%@_%d", stringID, self.userID];

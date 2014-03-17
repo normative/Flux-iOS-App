@@ -1086,8 +1086,7 @@
     // ZZZ
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString* str = [NSString stringWithFormat:@"Logout failed with error %d", (int)[e code]];
-        NSLog(str);
+        NSLog(@"Logout failed with error %d", (int)[e code]);
     }];
     [self.fluxDataManager logoutWithDataRequest:dataRequest];
 
