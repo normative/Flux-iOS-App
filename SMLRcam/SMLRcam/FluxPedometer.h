@@ -22,11 +22,6 @@ typedef enum _walkdir {
     FORWARDS = 1
 } walkDir;
 
-typedef enum _fftwalkstate {
-    FFT_NOT_WALKING = 0,
-    FFT_WALKING = 1
-} fftWalkState;
-
 @class FluxMotionManagerSingleton;
 @class FluxLocationServicesSingleton;
 
@@ -40,7 +35,6 @@ typedef enum _fftwalkstate {
     int stepCount;
     BOOL isWalking;
     walkDir walkingDirection;
-    walkDir fftWalkingDirection;
     
     double samples[3][MAXSAMPLES];
     int samplecount;
@@ -71,10 +65,6 @@ typedef enum _fftwalkstate {
 
     double magnitudeY[64];
     double magnitudeZ[64];
-    
-    fftWalkState fftWalking;
-    fftWalkState fftLastWalking;
-    fftWalkState fftLastKnownWalking;
     
     NSString *logStr;
     
@@ -121,11 +111,9 @@ typedef enum _fftwalkstate {
 
 @property (nonatomic, setter = setIsPaused:) bool isPaused;
 
-//- (void)pauseButtonTaped;
 - (void) startPedometer;
 - (void) stopPedometer;
 - (void) processMotion:(CMDeviceMotion *)devMotion;
 - (void) resetCount;
-//- (void) setViewController:(UIViewController *)vc;
 
 @end

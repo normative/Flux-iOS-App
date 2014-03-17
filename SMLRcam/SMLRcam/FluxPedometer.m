@@ -87,9 +87,6 @@ ViewController *viewcontroller = nil;
     stepCount = 0;
     loopcount = 0;
     samplecount = 0;
-    fftWalking = FFT_NOT_WALKING;
-    fftLastWalking = FFT_NOT_WALKING;
-    fftLastKnownWalking = FFT_NOT_WALKING;
     
     for (int x = 0; x < MAXSAMPLES; x++)
     {
@@ -142,8 +139,8 @@ ViewController *viewcontroller = nil;
 
     accel_y_step_threshold_pos = 0.05;
     accel_y_step_threshold_neg = -0.05;
-    accel_y_step_max_threshold_pos = 0.20;
-    accel_y_step_max_threshold_neg = -0.20;
+    accel_y_step_max_threshold_pos = 0.25;
+    accel_y_step_max_threshold_neg = -0.25;
     peak_valley_time_tolerance = 0.2;
     min_peak_to_valley_time = 0.3;
     max_peak_to_valley_time = 1.0;
@@ -687,16 +684,13 @@ ViewController *viewcontroller = nil;
             //do stuff with motion.
         [viewcontroller setLabelsForAccelerationWithX:stepTaken andY:samples[1][samplecount] andZ:samples[2][samplecount]];
 
-        [viewcontroller.accelGraph addX:fftWalking + stepTaken y:samples[1][samplecount]*10 z:samples[2][samplecount]*10];
+        [viewcontroller.accelGraph addX:(isWalking?1:0) + stepTaken y:samples[1][samplecount]*10 z:samples[2][samplecount]*10];
 //        [viewcontroller.accelGraph addX:y_recon[N-1]*10 y:samples[1][samplecount]*10 z:samples[2][samplecount]*10];
 //        [viewcontroller.accelGraph addX:y_recon[N-1]*10 y:lpf[1][samplecount]*10 z:samples[1][samplecount]*10];
 
 #endif
 
-        logStr = [logStr stringByAppendingFormat:@"%d,%d,%d,%d,%d\n",
-                                fftLastKnownWalking,
-                                fftLastWalking,
-                                fftWalking,
+        logStr = [logStr stringByAppendingFormat:@"%d,%d\n",
                                 (isWalking?1:0),
                                 stepTaken
                                ];
@@ -801,7 +795,6 @@ ViewController *viewcontroller = nil;
         [[NSFileManager defaultManager] createFileAtPath:motionFilename contents:nil attributes:nil];
         motionFile = [NSFileHandle fileHandleForWritingAtPath:motionFilename];
         
-//        NSString *motionFileHeader = @"Date, Time, cycle, X (lr), Y (ud), Z (fb), lpf, delta, delta vert, stepped, peakFound, isWalking, speed\n";
         NSString *motionFileHeader = @"Date, Time, cycle,X (lr),Y (ud),Z (fb),grav x,grav y,grav z,horiz mag,accel y,accel z\n";
         [motionFile writeData:[motionFileHeader dataUsingEncoding:NSUTF8StringEncoding]];
     }
@@ -817,7 +810,6 @@ ViewController *viewcontroller = nil;
                                SAMPLE_POLL_FREQUENCY, step_size, (SAMPLE_POLL_FREQUENCY / step_size), N, LOG_N ];
     [fftFile writeData:[fftFileHeader dataUsingEncoding:NSUTF8StringEncoding]];
 
-//    fftFileHeader = @"sample,raw y,raw z,lpf y,lpf z,mag y1,mag y2,mag z1,mag z2,fftLastKnownWalking,fftLastWalking,fftWalking,fft y1,fft y2,fft z1,fft z2,isWalking,stepTaken\n";
     fftFileHeader = @"sample,raw y,raw z,lpf y,lpf z,";
     for (int k = 1; k <= (N >> 2); k++)
     {
@@ -849,7 +841,7 @@ ViewController *viewcontroller = nil;
     [[NSFileManager defaultManager] createFileAtPath:walkFilename contents:nil attributes:nil];
     walkFile = [NSFileHandle fileHandleForWritingAtPath:walkFilename];
     
-    NSString *walkFileHeader = @"sample,raw y,raw z,lpf y,lpf z,sum y,sum z,fftLastKnownWalking,fftLastWalking,fftWalking,isWalking,stepTaken\n";
+    NSString *walkFileHeader = @"sample,raw y,raw z,lpf y,lpf z,sum y,sum z,isWalking,stepTaken\n";
     [walkFile writeData:[walkFileHeader dataUsingEncoding:NSUTF8StringEncoding]];
     
     
