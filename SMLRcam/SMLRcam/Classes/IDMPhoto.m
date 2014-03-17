@@ -141,7 +141,7 @@ caption = _caption;
             
             AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
                   success:^(UIImage *image) {
-#warning hack for non-suqare images
+#warning hack for non-square images
                       CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], CGRectMake(0, (image.size.height) - (image.size.width), image.size.width*2, image.size.width*2));
                       // or use the UIImage wherever you like
                       UIImage*cropppedImg = [UIImage imageWithCGImage:imageRef];

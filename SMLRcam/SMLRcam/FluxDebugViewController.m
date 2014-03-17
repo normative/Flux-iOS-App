@@ -87,7 +87,7 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    [defaults setObject:[NSString stringWithFormat:@"%li",[(UISegmentedControl*)sender selectedSegmentIndex]+1] forKey:@"Border"];
+    [defaults setObject:[NSString stringWithFormat:@"%i",[(UISegmentedControl*)sender selectedSegmentIndex]+1] forKey:@"Border"];
     [defaults synchronize];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"BorderChange"
                                                         object:self userInfo:nil];
@@ -97,7 +97,7 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    [defaults setObject:[NSString stringWithFormat:@"%li",[(UISegmentedControl*)sender selectedSegmentIndex]+1] forKey:FluxDebugTeleportLocationIndexKey];
+    [defaults setObject:[NSString stringWithFormat:@"%i",[(UISegmentedControl*)sender selectedSegmentIndex]+1] forKey:FluxDebugTeleportLocationIndexKey];
     [defaults synchronize];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeTeleportLocationIndex
                                                         object:self userInfo:nil];
