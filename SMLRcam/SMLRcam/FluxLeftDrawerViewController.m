@@ -80,7 +80,7 @@
 
 - (void)viewDidLoad
 {
-    [self.view setAlpha:0.0];
+//    [self.view setAlpha:0.0];
     [super viewDidLoad];
     
     newImageCount = -1;

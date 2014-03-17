@@ -40,7 +40,7 @@
 //    [navigationBar setShadowImage:[UIImage new]];
     
     
-    [self.view setAlpha:0.0];
+//    [self.view setAlpha:0.0];
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
@@ -85,9 +85,9 @@
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
 
-    [UIView animateWithDuration:0.2 animations:^{
-        [self.view setAlpha:0.0];
-    }];
+//    [UIView animateWithDuration:0.2 animations:^{
+//        [self.view setAlpha:0.0];
+//    }];
     [self setTitle:@"My Network"];
     [self.searchUserVC removeFromParentViewController];
     [self.searchUserVC.view removeFromSuperview];
@@ -97,10 +97,10 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [UIView animateWithDuration:0.25 animations:^{
-        [self.view setAlpha:1.0];
-        //[self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
-    }];
+//    [UIView animateWithDuration:0.25 animations:^{
+//        [self.view setAlpha:1.0];
+//        //[self.navigationController.navigationBar setTitleVerticalPositionAdjustment:1.0 forBarMetrics:UIBarMetricsDefault];
+//    }];
     [self setTitle:@""];
     
 }
@@ -206,7 +206,10 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    return 80.0;
+    if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode]  objectAtIndex:indexPath.row] isFollowing]) {
+        return 70.0;
+    }
+    return 60.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
