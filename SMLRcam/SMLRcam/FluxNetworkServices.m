@@ -185,6 +185,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
         dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         
+        [RKValueTransformer defaultValueTransformer];
         [RKObjectMapping addDefaultDateFormatter:dateFormatter];
 
         

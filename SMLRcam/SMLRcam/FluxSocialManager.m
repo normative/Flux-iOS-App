@@ -180,8 +180,8 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Ignoring alias creation for external name %@. Failed with error %d",alias_name, (int)[e code]];
-        NSLog(str);
+        //NSString*str = [NSString stringWithFormat:@"Ignoring alias creation for external name %@. Failed with error %d",alias_name, (int)[e code]];
+        NSLog(@"Ignoring alias creation for external name %@. Failed with error %d",alias_name, (int)[e code]);
         
     }];
     [[FluxDataManager theFluxDataManager] createAliasWithName: alias_name andServiceID: service_id andRequest: request];
