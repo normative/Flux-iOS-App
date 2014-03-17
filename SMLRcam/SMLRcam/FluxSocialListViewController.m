@@ -80,18 +80,22 @@
 //    [self.navigationController.navigationBar addSubview:label];
     
     [self updateListForActiveMode];
+    [self.navigationController.navigationBar setTranslucent:NO];
 }
 
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
 
-//    [UIView animateWithDuration:0.2 animations:^{
-//        [self.view setAlpha:0.0];
-//    }];
     [self setTitle:@"My Network"];
     [self.searchUserVC removeFromParentViewController];
     [self.searchUserVC.view removeFromSuperview];
     [self.navigationController.navigationBar setTitleVerticalPositionAdjustment:0.0 forBarMetrics:UIBarMetricsDefault];
+}
+
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [(UITableView*)[socialTableViews objectAtIndex:listMode]  setAlpha:1.0];
+    [segmentedControlContainerView  setAlpha:1.0];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -106,6 +110,11 @@
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    [UIView animateWithDuration:0.2 animations:^{
+        [(UITableView*)[socialTableViews objectAtIndex:listMode]  setAlpha:0.0];
+        [segmentedControlContainerView  setAlpha:0.0];
+    }];
+
     if ([[segue identifier] isEqualToString:@"pushProfileSegue"]) {
         [(FluxPublicProfileViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
         [(FluxPublicProfileViewController*)segue.destinationViewController prepareViewWithUser:(FluxUserObject*)sender];
@@ -134,6 +143,7 @@
     
     self.childNavC = [[UINavigationController alloc]initWithRootViewController:self.searchUserVC];
     self.childNavC.interactivePopGestureRecognizer.enabled = NO;
+    [self.childNavC.navigationBar setTranslucent:NO];
     
     [self.window addSubview:self.childNavC.view];
     

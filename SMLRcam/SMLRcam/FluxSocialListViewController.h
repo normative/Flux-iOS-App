@@ -23,6 +23,7 @@ typedef enum SocialListMode : NSUInteger {
 
 @interface FluxSocialListViewController : GAITrackedViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate, FluxAddUserViewControllerDelegate>{
     SocialListMode listMode;
+    IBOutlet UIView *segmentedControlContainerView;
     IBOutlet FluxSegmentedControl *segmentedControl;
     IBOutlet UITableView *followingTableView;
     IBOutlet UITableView *followersTableView;

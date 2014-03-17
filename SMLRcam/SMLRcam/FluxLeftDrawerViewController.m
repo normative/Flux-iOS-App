@@ -48,6 +48,10 @@
         [self.tableView setAlpha:0.0];
     }];
 }
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self.tableView setAlpha:1.0];
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -187,6 +191,7 @@
         
         [self.fluxDataManager requestUserProfileForID:userID.intValue withDataRequest:request];
     }
+    [self.navigationController.navigationBar setTranslucent:NO];
 }
 
 - (void)didReceiveMemoryWarning
