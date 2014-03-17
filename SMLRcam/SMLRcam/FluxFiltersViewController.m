@@ -75,16 +75,12 @@
 
     FluxFilterDrawerObject *myPicsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"My Photos" andFilterType:myPhotos_filterType];
     FluxFilterDrawerObject *followingFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"People I follow" andFilterType:followers_filterType];
-    FluxFilterDrawerObject *friendsFilterObject = [[FluxFilterDrawerObject alloc]initWithTitle:@"Friends" andFilterType:friends_filterType];
     
     if (theDataFilter.isActiveUserFiltered) {
         [myPicsFilterObject setIsActive:YES];
     }
     if (theDataFilter.isFollowingFiltered) {
         [followingFilterObject setIsActive:YES];
-    }
-    if (theDataFilter.isFriendsFiltered) {
-        [friendsFilterObject setIsActive:YES];
     }
     
     if ([theDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
@@ -93,7 +89,7 @@
     imageCount = [NSNumber numberWithInt:count];
     self.radius = 15;
     
-    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, friendsFilterObject, nil];
+    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, nil];
     topTagsArray = [[NSMutableArray alloc]init];
     if ([theDataFilter.hashTags isEqualToString:@""]) {
         selectedTags = [[NSMutableArray alloc]init];
@@ -184,9 +180,6 @@
             }
             else if (obj.filterType == followers_filterType){
                 [obj setCount:countObject.activerUserFollowingsImageCount];
-            }
-            else if (obj.filterType == friends_filterType){
-                [obj setCount:countObject.activerUserFriendsImageCount];
             }
             else{
                 
@@ -473,16 +466,6 @@
             }
             else{
                 dataFilter.isFollowingFiltered = NO;
-            }
-        }
-            break;
-        case friends_filterType:
-        {
-            if (checked) {
-                dataFilter.isFriendsFiltered = YES;
-            }
-            else{
-                dataFilter.isFriendsFiltered = NO;
             }
         }
             break;

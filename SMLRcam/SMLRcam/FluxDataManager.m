@@ -597,23 +597,15 @@ float const altitudeHighRange = 60.0;
 
 #pragma mark Social Stuff
 
-- (FluxRequestID *) requestFriendRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest{
+- (FluxRequestID *) requestFollowingRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = friendRequest_request;
+    dataRequest.requestType = followRequest_request;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
-    [networkServices getFriendRequestsForUserWithRequestID:requestID];
+    [networkServices getFollowerRequestsForUserWithRequestID:requestID];
     return requestID;
 }
 
-- (FluxRequestID *) requestFriendsListForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
-    FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = friendList_request;
-    [currentRequests setObject:dataRequest forKey:requestID];
-    // Begin upload of image to server
-    [networkServices getFriendsListForUserWithID:userID withRequestID:requestID];
-    return requestID;
-}
 - (FluxRequestID *) requestFollowingListForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = followingList_request;
@@ -653,14 +645,6 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
-- (FluxRequestID *) addFollowerWithUserID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
-    FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = follow_request;
-    [currentRequests setObject:dataRequest forKey:requestID];
-    // Begin upload of image to server
-    [networkServices followUserID:userID withRequestID:requestID];
-    return requestID;
-}
 - (FluxRequestID *) unfollowUserWIthID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = unfollow_request;
@@ -669,36 +653,28 @@ float const altitudeHighRange = 60.0;
     [networkServices unfollowUserID:userID withRequestID:requestID];
     return requestID;
 }
-- (FluxRequestID *) sendFriendRequestToUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+- (FluxRequestID *) sendFollowerRequestToUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = sendFriend_request;
+    dataRequest.requestType = sendFollow_request;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
-    [networkServices sendFriendRequestToUserWithID:userID withRequestID:requestID];
+    [networkServices sendFollowRequestToUserWithID:userID withRequestID:requestID];
     return requestID;
 }
-- (FluxRequestID *) acceptFriendRequestFromUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+- (FluxRequestID *) acceptFollowerRequestFromUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = acceptFriend_request;
+    dataRequest.requestType = acceptFollow_request;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
-    [networkServices acceptFriendRequestFromUserWithID:userID withRequestID:requestID];
+    [networkServices acceptFollowingRequestFromUserWithID:userID withRequestID:requestID];
     return requestID;
 }
-- (FluxRequestID *) ignoreFriendRequestFromUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+- (FluxRequestID *) ignoreFollowerRequestFromUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = ignoreFriend_request;
+    dataRequest.requestType = ignoreFollow_request;
     [currentRequests setObject:dataRequest forKey:requestID];
     // Begin upload of image to server
-    [networkServices ignoreFriendRequestFromUserWithID:userID withRequestID:requestID];
-    return requestID;
-}
-- (FluxRequestID *) unfriendWithUserID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
-    FluxRequestID *requestID = dataRequest.requestID;
-    dataRequest.requestType = unfriend_request;
-    [currentRequests setObject:dataRequest forKey:requestID];
-    // Begin upload of image to server
-    [networkServices unfriedUserWithID:userID withRequestID:requestID];
+    [networkServices ignoreFollowingRequestFromUserWithID:userID withRequestID:requestID];
     return requestID;
 }
 
@@ -1171,21 +1147,14 @@ float const altitudeHighRange = 60.0;
 
 #pragma mark Social
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendRequestsForUser:(NSArray *)friendRequests andRequestID:(NSUUID *)requestID{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingRequestsForUser:(NSArray *)friendRequests andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenUserFriendRequestsReady:friendRequests withDataRequest:request];
+    [request whenUserFollowingRequestsReady:friendRequests withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray *)friends andRequestID:(NSUUID *)requestID{
-    FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenUserFriendsReady:friends withDataRequest:request];
-    
-    // Clean up request (nothing else to wait for)
-    [self completeRequestWithDataRequest:request];
-}
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray *)followings andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
@@ -1211,13 +1180,6 @@ float const altitudeHighRange = 60.0;
     [self completeRequestWithDataRequest:request];
 }
 
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFollowUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
-    FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenFollowUserReady:userID withDataRequest:request];
-    
-    // Clean up request (nothing else to wait for)
-    [self completeRequestWithDataRequest:request];
-}
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfollowUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenUnfollowingUserReady:userID withDataRequest:request];
@@ -1225,30 +1187,23 @@ float const altitudeHighRange = 60.0;
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFriendRequestToUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFollowingRequestToUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenSendFriendRequestReady:userID withDataRequest:request];
+    [request whenSendFollowingRequestReady:userID withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didAcceptFriendRequestFromUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didAcceptFollowingRequestFromUserWithID:(int)userID andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenAcceptFriendRequestReady:userID withDataRequest:request];
+    [request whenAcceptFollowerRequestReady:userID withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didIgnoreFriendRequestFromUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didIgnoreFollowingRequestFromUserWithID:(int)userID andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenIgnoreFriendRequestReady:userID withDataRequest:request];
-    
-    // Clean up request (nothing else to wait for)
-    [self completeRequestWithDataRequest:request];
-}
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfriendUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
-    FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenUnFriendUserReady:userID withDataRequest:request];
+    [request whenIgnoreFollowerRequestReady:userID withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

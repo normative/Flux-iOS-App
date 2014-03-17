@@ -23,9 +23,7 @@ typedef enum ProfileViewSource : NSUInteger {
 @optional
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject*)userObject;
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject*)userObject;
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFriend:(FluxUserObject*)userObject;
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didSendFriendRequest:(FluxUserObject*)userObject;
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didRemoveFriend:(FluxUserObject*)userObject;
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didSendFollowerRequest:(FluxUserObject*)userObject;
 @end
 
 @interface FluxPublicProfileViewController : GAITrackedViewController<UITableViewDelegate, UITableViewDataSource, FluxPublicProfileCellDelegate>{

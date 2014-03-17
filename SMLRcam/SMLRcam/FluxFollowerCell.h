@@ -9,16 +9,16 @@
 #import <UIKit/UIKit.h>
 #import "FluxUserObject.h"
 
-@class FluxFriendFollowerCell;
+@class FluxFollowerCell;
 @protocol FluxFriendFollowerCellDelegate <NSObject>
 @optional
-- (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell;
-- (void)FriendFollowerCellShouldAcceptFriendRequest:(FluxFriendFollowerCell *)friendFollowerCell;
-- (void)FriendFollowerCellShouldIgnoreFriendRequest:(FluxFriendFollowerCell *)friendFollowerCell;
+- (void)FriendFollowerCellButtonWasTapped:(FluxFollowerCell *)friendFollowerCell;
+- (void)FriendFollowerCellShouldAcceptFollowingRequest:(FluxFollowerCell *)friendFollowerCell;
+- (void)FriendFollowerCellShouldIgnoreFollowingRequest:(FluxFollowerCell *)friendFollowerCell;
 @end
 
 
-@interface FluxFriendFollowerCell : UITableViewCell{
+@interface FluxFollowerCell : UITableViewCell{
     
     id __unsafe_unretained delegate;
 }

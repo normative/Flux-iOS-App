@@ -12,7 +12,6 @@
 
 @property (nonatomic) int totalImageCount;
 @property (nonatomic) int activeUserImageCount;
-@property (nonatomic) int activerUserFriendsImageCount;
 @property (nonatomic) int activerUserFollowingsImageCount;
 
 @end

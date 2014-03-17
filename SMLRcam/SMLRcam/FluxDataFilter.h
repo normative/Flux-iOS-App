@@ -13,7 +13,6 @@ typedef enum
 FluxFilterType: NSUInteger {
     myPhotos_filterType = 0,
     followers_filterType = 1,
-    friends_filterType = 2,
     tags_filterType = 3,
 } FluxFilterType;
 
@@ -31,7 +30,6 @@ FluxFilterType: NSUInteger {
 @property (nonatomic) float altMax;
 @property (nonatomic, strong) NSString *hashTags;
 @property (nonatomic, strong) NSString *users;
-@property (nonatomic)BOOL isFriendsFiltered;
 @property (nonatomic)BOOL isFollowingFiltered;
 @property (nonatomic)BOOL isActiveUserFiltered;
 

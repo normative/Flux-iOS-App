@@ -6,10 +6,10 @@
 //  Copyright (c) 2014 Normative. All rights reserved.
 //
 
-#import "FluxFriendFollowerCell.h"
+#import "FluxFollowerCell.h"
 
 
-@implementation FluxFriendFollowerCell
+@implementation FluxFollowerCell
 
 @synthesize delegate;
 
@@ -56,16 +56,18 @@
         [self.bioLabel setText:@""];
     }
     
-    if (userObject.friendState == 3) {
-        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",_userObject.username]];
+    [self.socialStatusLabel setText:@""];
+    
+    if (userObject.followingState == 3) {
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ follow each other",_userObject.username]];
         [self layoutSubviews];
     }
-    else if (userObject.friendState == 2){
-        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You've sent a friend request to @%@",_userObject.username]];
+    else if (userObject.followingState == 2){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"You've sent a follow request to @%@",_userObject.username]];
         [self layoutSubviews];
     }
-    else if (userObject.friendState == 1){
-        [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ has sent you a friend request",_userObject.username]];
+    else if (userObject.followingState == 1){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ has sent you a follow request",_userObject.username]];
         [self layoutSubviews];
     }
     else if (userObject.isFollower && userObject.isFollowing){
@@ -76,8 +78,8 @@
         [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",_userObject.username]];
         [self layoutSubviews];
     }
-    else if (userObject.isFollowing){
-        [self.socialStatusLabel setText:[NSString stringWithFormat:@"is following you"]];
+    else if (userObject.isFollower){
+        [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ is following you", _userObject.username]];
         [self layoutSubviews];
     }
     else{
@@ -86,15 +88,15 @@
 }
 
 - (IBAction)acceptFriendButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(FriendFollowerCellShouldAcceptFriendRequest:)]) {
-        [delegate FriendFollowerCellShouldAcceptFriendRequest:self];
+    if ([delegate respondsToSelector:@selector(FriendFollowerCellShouldAcceptFollowingRequest:)]) {
+        [delegate FriendFollowerCellShouldAcceptFollowingRequest:self];
     }
 }
 
 
 - (IBAction)ignoreFriendButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(FriendFollowerCellShouldIgnoreFriendRequest:)]) {
-        [delegate FriendFollowerCellShouldIgnoreFriendRequest:self];
+    if ([delegate respondsToSelector:@selector(FriendFollowerCellShouldIgnoreFollowingRequest:)]) {
+        [delegate FriendFollowerCellShouldIgnoreFollowingRequest:self];
     }
 }
 
