@@ -49,7 +49,7 @@ ViewController *viewcontroller = nil;
         [self configureFilterParameters];
         [self init_FFT];
         [self setupMotionManager];
-        [self setupLogging];
+//        [self setupLogging];
         
         flocation = [FluxLocationServicesSingleton sharedManager];
     }
@@ -1164,7 +1164,7 @@ ViewController *viewcontroller = nil;
     
     previous_walking_state = current_walking_state;
 
-//#ifdef PED_APP
+#ifdef PED_APP
     // dump out logs and data traces
     
     NSString *fftLogStr = [NSString stringWithFormat:@"%d,%f,%f,%f,%f,",
@@ -1183,12 +1183,12 @@ ViewController *viewcontroller = nil;
             fftLogStr = [fftLogStr stringByAppendingFormat:@"%f,%f,", magnitudeY[k], magnitudeZ[k]];
         }
         
-//        if ((k == HI_FREQ_HIGH) || (k == HI_FREQ_LOW))
-//        [viewcontroller.motionGraph addX:5.0 y:-3.0 z:-3.0];
-//        
-//        [viewcontroller.motionGraph addX:-3.0 y:(magnitudeY[k]) - 3.0 z:(magnitudeZ[k]) - 3.0];
+        if ((k == HI_FREQ_HIGH) || (k == HI_FREQ_LOW))
+        [viewcontroller.motionGraph addX:5.0 y:-3.0 z:-3.0];
+        
+        [viewcontroller.motionGraph addX:-3.0 y:(magnitudeY[k]) - 3.0 z:(magnitudeZ[k]) - 3.0];
     }
-//    [viewcontroller.motionGraph addX:5.0 y:-3.0 z:-3.0];
+    [viewcontroller.motionGraph addX:5.0 y:-3.0 z:-3.0];
     
     for (int k = 1; k < N/2; k++)
     {
@@ -1209,14 +1209,14 @@ ViewController *viewcontroller = nil;
             }
         }
         
-//        if ((k == HI_FREQ_HIGH) || (k == HI_FREQ_LOW))
-//            [viewcontroller.motionGraph addX:5.0 y:-3.0 z:-3.0];
-//        
-//        [viewcontroller.motionGraph addX:-3.0 y:fabs(tempSplitComplexY.realp[k]) - 3.0 z:fabs(tempSplitComplexZ.realp[k]) - 3.0];
+        if ((k == HI_FREQ_HIGH) || (k == HI_FREQ_LOW))
+            [viewcontroller.motionGraph addX:5.0 y:-3.0 z:-3.0];
+        
+        [viewcontroller.motionGraph addX:-3.0 y:fabs(tempSplitComplexY.realp[k]) - 3.0 z:fabs(tempSplitComplexZ.realp[k]) - 3.0];
     }
-    
     [self writeFftLog:fftLogStr];
 
+    
     logStr = [NSString stringWithFormat:@"%d,%f,%f,%f,%f,%f,%f,",
                 loopcount,
                 samples[1][samplecount],
@@ -1228,7 +1228,7 @@ ViewController *viewcontroller = nil;
               ];
 
     
-//#endif
+#endif
 
 }
 
