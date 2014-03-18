@@ -16,6 +16,8 @@ typedef struct{
 
 const float quaternion_slerp_interpolation_factor = 0.25;
 const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
+const float pitch_polar_region_limit_down = 5.0 * M_PI / 180.0;
+const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
 
 @implementation FluxMotionManagerSingleton
 
@@ -124,8 +126,6 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
     GLKVector3 los_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, los_device));
     GLKVector3 z_axis_earth = GLKVector3Make(0.0, 0.0, 1.0);
     
-    GLKVector3 los_device_earth_projected_orig = [self projectVector:los_device_earth ontoPlaneWithNormal:z_axis_earth];
-
     // Roll is calculated from the angle between x_device and z_axis in Earth frame
     // (true in Yaw-Pitch-Roll rotation, since in first two rotations, yaw-pitch, x-axis remains perpendicular to z)
     double theta_x = [self calculateAngleBetweenVector:x_device_earth andVector:z_axis_earth];
@@ -165,10 +165,30 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
     
     // Now calculate the angle between the LOS axis projected onto the Earth frame using the original quaternion and the corrected quaternion
     // This step does not work if the LOS approaches either pole (phone looking straight up or straight down)
-    GLKVector3 los_device_earth_from_heading = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_from_heading, los_device));
-    GLKVector3 los_device_earth_projected_from_heading = [self projectVector:los_device_earth_from_heading ontoPlaneWithNormal:z_axis_earth];
-    double theta_yaw = [self calculateSignedAngleBetween2DVector:GLKVector2Make(los_device_earth_projected_orig.x, los_device_earth_projected_orig.y)
-                                                       andVector:GLKVector2Make(los_device_earth_projected_from_heading.x, los_device_earth_projected_from_heading.y)];
+    double theta_yaw = 0.0;
+    
+    if (pitch < pitch_polar_region_limit_down || pitch > pitch_polar_region_limit_up)
+    {
+        // When we approach the poles, use the device y-axis instead of LOS for calculating yaw correction delta.
+        // This holds if the pitch angle is small.
+        GLKVector3 y_device_earth_projected_orig = [self projectVector:y_device_earth ontoPlaneWithNormal:z_axis_earth];
+
+        GLKVector3 y_device_earth_from_heading = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_from_heading, y_device));
+        GLKVector3 y_device_earth_projected_from_heading = [self projectVector:y_device_earth_from_heading ontoPlaneWithNormal:z_axis_earth];
+        theta_yaw = [self calculateSignedAngleBetween2DVector:GLKVector2Make(y_device_earth_projected_orig.x, y_device_earth_projected_orig.y)
+                                                    andVector:GLKVector2Make(y_device_earth_projected_from_heading.x, y_device_earth_projected_from_heading.y)];
+    }
+    else
+    {
+        // Otherwise use the LOS-axis for the generic case. This holds for a yaw-pitch-roll angle sequence
+        // because only the yaw rotation affects the projection of the LOS-axis on the earth plane.
+        GLKVector3 los_device_earth_projected_orig = [self projectVector:los_device_earth ontoPlaneWithNormal:z_axis_earth];
+
+        GLKVector3 los_device_earth_from_heading = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_from_heading, los_device));
+        GLKVector3 los_device_earth_projected_from_heading = [self projectVector:los_device_earth_from_heading ontoPlaneWithNormal:z_axis_earth];
+        theta_yaw = [self calculateSignedAngleBetween2DVector:GLKVector2Make(los_device_earth_projected_orig.x, los_device_earth_projected_orig.y)
+                                                    andVector:GLKVector2Make(los_device_earth_projected_from_heading.x, los_device_earth_projected_from_heading.y)];
+    }
     
     // Rotate the original quaternion by this correction factor which takes into account heading delta (this prevents choppiness from weird angle combinations)
     GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(theta_yaw, 0.0, 0.0, 1.0);
