@@ -673,7 +673,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     stepcount++;
     double enuHeadingRad;
-    double stepsize =0.73;
+    double stepsize =0.4;
     
     enuHeadingRad = (90.0 + (360 - ((direction == -1) ? self.heading + 180.0 : self.heading)))/180.0 * PI;
     if (enuHeadingRad < 0.0)
