@@ -141,8 +141,8 @@ ViewController *viewcontroller = nil;
     accel_y_step_threshold_neg = -0.05;
     accel_y_step_max_threshold_pos = 0.25;
     accel_y_step_max_threshold_neg = -0.25;
-    peak_valley_time_tolerance = 0.2;
-    min_peak_to_valley_time = 0.3;
+    peak_valley_time_tolerance = 0.15;
+    min_peak_to_valley_time = 0.2;
     max_peak_to_valley_time = 1.0;
     direction_window_width = 16;
 }

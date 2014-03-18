@@ -673,7 +673,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     stepcount++;
     double enuHeadingRad;
-    double stepsize =0.73;
+    double stepsize =0.4;
     
     enuHeadingRad = (90.0 + (360 - ((direction == -1) ? self.heading + 180.0 : self.heading)))/180.0 * PI;
     if (enuHeadingRad < 0.0)
@@ -744,7 +744,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     kfilter = [[FluxKalmanFilter alloc] init];
     stepcount = 0;
     _lastvalue =0;
-    _resetThreshold = 10.0; //in meters;
+    _resetThreshold = 15.0; //in meters;
     _validCurrentLocationData = NO;
     //[self testKalman];
     kfAltStarted = false;
@@ -865,7 +865,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         return;
     }
     
-    kfNoiseX = kfNoiseY = _horizontalAccuracy/2.0;
+    kfNoiseX = kfNoiseY = _horizontalAccuracy/4.0;
     
     [self computeKMeasureKFilter];
     
