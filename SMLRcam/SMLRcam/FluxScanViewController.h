@@ -11,6 +11,7 @@
 #import "FluxTimeFilterControl.h"
 #import "FluxImageCaptureButton.h"
 
+#import "FluxTutorialView.h"
 #import "FluxCompassButton.h"
 #import "FluxLoggerService.h"
 #import "FluxMapViewController.h"
@@ -37,13 +38,16 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //extern NSString* const FluxDidTapImage;
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : GAITrackedViewController<AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterControlDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<FluxTutorialDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterControlDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
+    
+    //tutorialView
+    FluxTutorialView *tutorialView;
     
     //headerView
     __weak IBOutlet UIView *ScanUIContainerView;
     __weak IBOutlet FluxCompassButton *radarButton;
     UIImage *snapshotBGImage;
-    
+
     UITableView*annotationsTableView;
     UIView *photoViewerPlacementView;
     

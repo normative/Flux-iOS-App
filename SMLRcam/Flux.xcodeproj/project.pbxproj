@@ -41,6 +41,8 @@
 		220FE06E17BEACAD00A7E379 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B681785CA59005CF054 /* Foundation.framework */; };
 		220FE06F17BEACAD00A7E379 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B661785CA59005CF054 /* UIKit.framework */; };
 		220FE07517BEACAD00A7E379 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 220FE07317BEACAD00A7E379 /* InfoPlist.strings */; };
+		2227FD5718D7583E005911D7 /* FluxTutorialView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2227FD5618D7583E005911D7 /* FluxTutorialView.m */; };
+		2227FD5918D75A71005911D7 /* FluxTutorialView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2227FD5818D75A71005911D7 /* FluxTutorialView.xib */; };
 		22335E42181ACC610098F205 /* FluxLeftDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22335E41181ACC610098F205 /* FluxLeftDrawerViewController.m */; };
 		22335E45181B07380098F205 /* FluxSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22335E44181B07380098F205 /* FluxSettingsViewController.m */; };
 		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
@@ -259,6 +261,9 @@
 		220FE07217BEACAD00A7E379 /* Flux Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Flux Tests-Info.plist"; sourceTree = "<group>"; };
 		220FE07417BEACAD00A7E379 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		220FE07817BEACAD00A7E379 /* Flux Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Flux Tests-Prefix.pch"; sourceTree = "<group>"; };
+		2227FD5518D7583E005911D7 /* FluxTutorialView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxTutorialView.h; sourceTree = "<group>"; };
+		2227FD5618D7583E005911D7 /* FluxTutorialView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTutorialView.m; sourceTree = "<group>"; };
+		2227FD5818D75A71005911D7 /* FluxTutorialView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxTutorialView.xib; sourceTree = "<group>"; };
 		22335E40181ACC610098F205 /* FluxLeftDrawerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLeftDrawerViewController.h; sourceTree = "<group>"; };
 		22335E41181ACC610098F205 /* FluxLeftDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLeftDrawerViewController.m; sourceTree = "<group>"; };
 		22335E43181B07380098F205 /* FluxSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSettingsViewController.h; sourceTree = "<group>"; };
@@ -733,6 +738,16 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		2227FD5418D7580A005911D7 /* TutorialView */ = {
+			isa = PBXGroup;
+			children = (
+				2227FD5518D7583E005911D7 /* FluxTutorialView.h */,
+				2227FD5618D7583E005911D7 /* FluxTutorialView.m */,
+				2227FD5818D75A71005911D7 /* FluxTutorialView.xib */,
+			);
+			name = TutorialView;
+			sourceTree = "<group>";
+		};
 		AA06FE6C181EBB2C00D87658 /* Login */ = {
 			isa = PBXGroup;
 			children = (
@@ -999,6 +1014,7 @@
 		AA85AD7117A999A9003EBC89 /* Scan View */ = {
 			isa = PBXGroup;
 			children = (
+				2227FD5418D7580A005911D7 /* TutorialView */,
 				AA082E9517EA2B8E000B53B0 /* AVCamera */,
 				AA2F9DBB189AAD300030F749 /* Debug VC */,
 				F26EF317183D109F00536C54 /* Feature Matching */,
@@ -1492,7 +1508,7 @@
 				ORGANIZATIONNAME = Normative;
 				TargetAttributes = {
 					17604B621785CA59005CF054 = {
-						DevelopmentTeam = 6C845YBPP2;
+						DevelopmentTeam = 3R58XXN523;
 					};
 					220FE06A17BEACAD00A7E379 = {
 						TestTargetID = 17604B621785CA59005CF054;
@@ -1529,6 +1545,7 @@
 				17604B791785CA59005CF054 /* Default.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
+				2227FD5918D75A71005911D7 /* FluxTutorialView.xib in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				AA2F9DD2189AEA690030F749 /* border3.png in Resources */,
 				AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */,
@@ -1697,6 +1714,7 @@
 				AA9F86101868AFF600AB98A7 /* IDMPhoto.m in Sources */,
 				AA984F0F18088923007F33B1 /* MIPointList.m in Sources */,
 				AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */,
+				2227FD5718D7583E005911D7 /* FluxTutorialView.m in Sources */,
 				AA9D0E9F1851318C0004823E /* FluxProfileImageObject.m in Sources */,
 				17891FC3181D6C840064B2F9 /* FluxImageRenderElement.m in Sources */,
 				AA61527D1822DC9300B8F2C8 /* FluxImageTools.m in Sources */,
