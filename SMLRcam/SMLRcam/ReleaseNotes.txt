@@ -5,6 +5,7 @@ Release Notes:
 - update Kalman filter noise gain to better track raw location
 - increase Kalman reset distance to 15.0 m from 10.0 m
 - bug fix to ensure images are rendered in same plane as user
+- updates to heading-corrected orientation (not fully complete/not default)
 
 ******************************************
 
