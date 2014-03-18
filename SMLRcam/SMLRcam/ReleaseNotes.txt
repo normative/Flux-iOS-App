@@ -3,6 +3,8 @@ Release Notes:
 - update to use msec on timestamp from images to eliminate duplication when rapid-fire collecting
 - update pedometer parameters for improved reliability
 - update Kalman filter noise gain to better track raw location
+- increase Kalman reset distance to 15.0 m from 10.0 m
+- bug fix to ensure images are rendered in same plane as user
 
 ******************************************
 
