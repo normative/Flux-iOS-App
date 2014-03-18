@@ -18,9 +18,8 @@
 @property (nonatomic, strong) NSString *socialID;
 @property (nonatomic, strong) NSArray *emails;
 @property (nonatomic, strong) UIImage* profilePic;
-@property (nonatomic) int followingState;
-@property (nonatomic) BOOL isFollowing;
-@property (nonatomic) BOOL isFollower;
+@property (nonatomic) int isFollowing;
+@property (nonatomic) int isFollower;
 @property (nonatomic) BOOL inviteSending;
 @property (nonatomic) BOOL inviteSent;
 

@@ -22,9 +22,8 @@
 @property (nonatomic) int friendCount;
 @property (nonatomic) int followingCount;
 @property (nonatomic) int followerCount;
-@property (nonatomic) int followingState;
-@property (nonatomic) BOOL isFollower;
-@property (nonatomic) BOOL isFollowing;
+@property (nonatomic) int isFollower;
+@property (nonatomic) int isFollowing;
 @property (nonatomic) BOOL hasProfilePic;
 
 @end

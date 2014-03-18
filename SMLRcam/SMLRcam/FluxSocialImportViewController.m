@@ -646,188 +646,188 @@
     NSString*sendFollowerRequest = @"Send Follower Request";
     NSString*acceptFollowerRequest = @"Accept Follower Request";
     NSString*cancelFollowerRequest;
-    if (!importContactCell.contactObject.followingState) {
+    
+    if (importContactCell.contactObject.isFollowing == 0) {
         [options addObject:sendFollowerRequest];
     }
-    if (importContactCell.contactObject.followingState == 2) {
-        cancelFollowerRequest = @"Cancel Friend Request";
-    }
-    
     else{
-        if (importContactCell.contactObject.followingState == 1) {
-            [options addObject:acceptFollowerRequest];
+        if (importContactCell.contactObject.isFollowing == 1) {
+            cancelFollowerRequest = @"Cancel Follow Request";
         }
     }
     
-    //shows an alert View with options depending on current social status. deals with dataModel updates + tableView updates too
-    [UIActionSheet showInView:self.view
-                    withTitle:nil
-            cancelButtonTitle:@"Cancel"
-       destructiveButtonTitle:(cancelFollowerRequest? cancelFollowerRequest : nil)
-            otherButtonTitles:options
-                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                         if (buttonIndex != actionSheet.cancelButtonIndex) {
-                             //link facebook
-                             int index = (int)[self.importUserTableView indexPathForCell:importContactCell].row;
-                             if (isSearching) {
-//                                 rowIndex =
-                             }
-                             
-
-                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:sendFollowerRequest]) {
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
-                                 [request setSendFollowerRequestReady:^(int userID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"follow request sent");
-                                     
-                                     if (isSearching) {
-                                         if (self.searchResultsUserArray.count > index) {
-                                             //...and it's still the same cell
-                                             if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 //update it
-                                                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setFollowingState:2];
-                                                 
-                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    if (options.count > 0 || cancelFollowerRequest) {
+        //shows an alert View with options depending on current social status. deals with dataModel updates + tableView updates too
+        [UIActionSheet showInView:self.view
+                        withTitle:nil
+                cancelButtonTitle:@"Cancel"
+           destructiveButtonTitle:(cancelFollowerRequest? cancelFollowerRequest : nil)
+                otherButtonTitles:options
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                 //link facebook
+                                 int index = (int)[self.importUserTableView indexPathForCell:importContactCell].row;
+                                 if (isSearching) {
+                                     //                                 rowIndex =
+                                 }
+                                 
+                                 
+                                 if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:sendFollowerRequest]) {
+                                     FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                                     [request setSendFollowerRequestReady:^(int userID, FluxDataRequest*completedRequest){
+                                         //do something with the UserID
+                                         NSLog(@"follow request sent");
+                                         
+                                         if (isSearching) {
+                                             if (self.searchResultsUserArray.count > index) {
+                                                 //...and it's still the same cell
+                                                 if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                                     //update it
+                                                     [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setIsFollowing:1];
+                                                     
+                                                     [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                 }
+                                             }
+                                             
+                                             for (int i = 0; i<self.importFluxUserArray.count; i++) {
+                                                 if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setIsFollowing:1];
+                                                     break;
+                                                 }
+                                             }
+                                         }
+                                         else{
+                                             //if it hasn;t been cleared
+                                             if (self.importFluxUserArray.count > index) {
+                                                 //...and it's still the same cell
+                                                 if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                                     //update it
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setIsFollowing:1];
+                                                     [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                 }
                                              }
                                          }
                                          
-                                         for (int i = 0; i<self.importFluxUserArray.count; i++) {
-                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setFollowingState:2];
-                                                 break;
-                                             }
-                                         }
-                                     }
-                                     else{
-                                         //if it hasn;t been cleared
-                                         if (self.importFluxUserArray.count > index) {
-                                             //...and it's still the same cell
-                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 //update it
-                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setFollowingState:2];
-                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                             }
-                                         }
-                                     }
+                                         
+                                     }];
                                      
-
-                                 }];
+                                     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                         
+                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                         [ProgressHUD showError:str];
+                                         
+                                     }];
+                                     [self.fluxDataManager sendFollowerRequestToUserWithID:importContactCell.contactObject.userID withDataRequest:request];
+                                 }
+                                 //                             else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:acceptFollowerRequest]) {
+                                 //                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                                 //                                 [request setAcceptFollowerRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
+                                 //                                     //do something with the UserID
+                                 //                                     NSLog(@"following");
+                                 //
+                                 //                                     if (isSearching) {
+                                 //                                         if (self.searchResultsUserArray.count > index) {
+                                 //                                             //...and it's still the same cell
+                                 //                                             if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                 //                                                 //update it
+                                 //                                                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setFollowingState:3];
+                                 //
+                                 //                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                 //                                             }
+                                 //                                         }
+                                 //
+                                 //                                         for (int i = 0; i<self.importFluxUserArray.count; i++) {
+                                 //                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                 //                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setFollowingState:3];
+                                 //                                                 break;
+                                 //                                             }
+                                 //                                         }
+                                 //                                     }
+                                 //                                     else{
+                                 //                                         //if it hasn;t been cleared
+                                 //                                         if (self.importFluxUserArray.count > index) {
+                                 //                                             //...and it's still the same cell
+                                 //                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                 //                                                 //update it
+                                 //                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setFollowingState:3];
+                                 //                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                 //                                             }
+                                 //                                         }
+                                 //                                     }
+                                 //
+                                 //                                 }];
+                                 //
+                                 ////                                 if ([delegate respondsToSelector:@selector(AddUserViewController:didAddFriend:)]) {
+                                 ////                                     [delegate AddUserViewController:self didAddFriend:friendFollowerCell.userObject];
+                                 ////                                 }
+                                 //
+                                 //                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                 //
+                                 //                                     NSString*str = [NSString stringWithFormat:@"Accepting follow request from %@ failed with error %d",importContactCell.contactObject.username, (int)[e code]];
+                                 //                                     [ProgressHUD showError:str];
+                                 //
+                                 //                                 }];
+                                 //                                 [self.fluxDataManager acceptFollowerRequestFromUserWithID:importContactCell.contactObject.userID withDataRequest:request];
+                                 //                             }
                                  
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                 
+                                 else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:cancelFollowerRequest]) {
+                                     FluxDataRequest*request = [[FluxDataRequest alloc]init];
                                      
-                                     NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
-                                     [ProgressHUD showError:str];
-                                     
-                                 }];
-                                 [self.fluxDataManager sendFollowerRequestToUserWithID:importContactCell.contactObject.userID withDataRequest:request];
-                             }
-                             else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:acceptFollowerRequest]) {
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
-                                 [request setAcceptFollowerRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"following");
-                                     
-                                     if (isSearching) {
-                                         if (self.searchResultsUserArray.count > index) {
-                                             //...and it's still the same cell
-                                             if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 //update it
-                                                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setFollowingState:3];
-                                                 
-                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                     [request setUnfollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+                                         //do something with the UserID
+                                         NSLog(@"follow request cancelled");
+                                         
+                                         if (isSearching) {
+                                             if (self.searchResultsUserArray.count > index) {
+                                                 //...and it's still the same cell
+                                                 if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                                     //update it
+                                                     [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setIsFollowing:0];
+                                                     
+                                                     [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                 }
+                                             }
+                                             
+                                             for (int i = 0; i<self.importFluxUserArray.count; i++) {
+                                                 if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setIsFollowing:0];
+                                                     break;
+                                                 }
+                                             }
+                                         }
+                                         else{
+                                             //if it hasn;t been cleared
+                                             if (self.importFluxUserArray.count > index) {
+                                                 //...and it's still the same cell
+                                                 if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
+                                                     //update it
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setIsFollowing:0];
+                                                     [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                                 }
                                              }
                                          }
                                          
-                                         for (int i = 0; i<self.importFluxUserArray.count; i++) {
-                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setFollowingState:3];
-                                                 break;
-                                             }
-                                         }
-                                     }
-                                     else{
-                                         //if it hasn;t been cleared
-                                         if (self.importFluxUserArray.count > index) {
-                                             //...and it's still the same cell
-                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 //update it
-                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setFollowingState:3];
-                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                             }
-                                         }
-                                     }
-
-                                 }];
-                                 
-//                                 if ([delegate respondsToSelector:@selector(AddUserViewController:didAddFriend:)]) {
-//                                     [delegate AddUserViewController:self didAddFriend:friendFollowerCell.userObject];
-//                                 }
-                                 
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-                                     
-                                     NSString*str = [NSString stringWithFormat:@"Accepting follow request from %@ failed with error %d",importContactCell.contactObject.username, (int)[e code]];
-                                     [ProgressHUD showError:str];
-                                     
-                                 }];
-                                 [self.fluxDataManager acceptFollowerRequestFromUserWithID:importContactCell.contactObject.userID withDataRequest:request];
-                             }
-                             
-                             
-                             else if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:cancelFollowerRequest]) {
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
-                                 
-                                 [request setUnfollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"follow request cancelled");
-                                     
-                                     if (isSearching) {
-                                         if (self.searchResultsUserArray.count > index) {
-                                             //...and it's still the same cell
-                                             if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 //update it
-                                                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setFollowingState:0];
-                                                 
-                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                             }
-                                         }
                                          
-                                         for (int i = 0; i<self.importFluxUserArray.count; i++) {
-                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setFollowingState:0];
-                                                 break;
-                                             }
-                                         }
-                                     }
-                                     else{
-                                         //if it hasn;t been cleared
-                                         if (self.importFluxUserArray.count > index) {
-                                             //...and it's still the same cell
-                                             if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                 //update it
-                                                 [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setFollowingState:0];
-                                                 [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                             }
-                                         }
-                                     }
+                                     }];
                                      
-
-                                 }];
-                                 
-                                 
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                                      
-                                     NSString*str = [NSString stringWithFormat:@"Cancelling follow request failed with error %d", (int)[e code]];
-                                     [ProgressHUD showError:str];
+                                     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                         
+                                         NSString*str = [NSString stringWithFormat:@"Cancelling follow request failed with error %d", (int)[e code]];
+                                         [ProgressHUD showError:str];
+                                         
+                                     }];
+                                     [self.fluxDataManager unfollowUserWIthID:importContactCell.contactObject.userID withDataRequest:request];
+                                 }
+                                 //**shouldn't** ever happen
+                                 else{
                                      
-                                 }];
-                                 [self.fluxDataManager unfollowUserWIthID:importContactCell.contactObject.userID withDataRequest:request];
+                                 }
                              }
-                             //**shouldn't** ever happen
-                             else{
-                                 
-                             }
-                         }
-                     }];
+                         }];
+    }
+    
 
 }
 

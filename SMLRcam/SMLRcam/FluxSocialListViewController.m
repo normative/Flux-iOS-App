@@ -216,7 +216,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode]  objectAtIndex:indexPath.row] isFollowing]) {
+    if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode]  objectAtIndex:indexPath.row] isFollowing] == 2) {
         return 70.0;
     }
     return 60.0;
@@ -225,7 +225,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString*cellIdentifier;
-    if (tableView == followingTableView && [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] followingState] == 1) {
+    if (tableView == followersTableView && [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] isFollowing] == 1) {
         if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] bio]) {
             cellIdentifier = @"standardSocialCellRequest";
         }
@@ -380,7 +380,7 @@
         //do something with the UserID
         NSLog(@"friended");
         if (listMode == followerMode) {
-            [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:followerMode] objectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell].row] setFollowingState:3];
+            [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:followerMode] objectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell].row] setIsFollowing:2];
             [(UITableView*)[socialTableViews objectAtIndex:followerMode] reloadRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
         }
         [friendFollowerCell setUserInteractionEnabled:YES];
@@ -454,7 +454,7 @@
             BOOL found = NO;
             for (int i = 0; i< list.count ; i++) {
                 if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] userID] == userObject.userID) {
-                    [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] setFollowingState:3];
+                    [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] setIsFollowing:2];
                     found= YES;
                     break;
                 }

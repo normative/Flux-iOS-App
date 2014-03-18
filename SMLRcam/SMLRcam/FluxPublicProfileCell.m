@@ -69,7 +69,7 @@
 }
 
 - (IBAction)followButtonAction:(id)sender {
-    switch (self.userObject.followingState) {
+    switch (self.userObject.isFollowing) {
         case 0:
         {
             [UIActionSheet showInView:self.superview
@@ -88,7 +88,7 @@
                              }];
         }
             break;
-        case 2:{
+        case 1:{
             [UIActionSheet showInView:self.superview
                             withTitle:nil
                     cancelButtonTitle:@"Cancel"
@@ -106,16 +106,16 @@
         }
             return;
             break;
-        case 1:{
-            if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldAcceptFollowRequestToUser:)]) {
-                [self.followButton setUserInteractionEnabled:NO];
-                [delegate PublicProfileCell:self shouldAcceptFollowRequestToUser:self.userObject];
-                [self.followButton setUserInteractionEnabled:YES];
-            }
-            
-        }
+//        case 1:{
+//            if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldAcceptFollowRequestToUser:)]) {
+//                [self.followButton setUserInteractionEnabled:NO];
+//                [delegate PublicProfileCell:self shouldAcceptFollowRequestToUser:self.userObject];
+//                [self.followButton setUserInteractionEnabled:YES];
+//            }
+//            
+//        }
             break;
-        case 3:{
+        case 2:{
             [UIActionSheet showInView:self.superview
                             withTitle:nil
                     cancelButtonTitle:@"Cancel"
@@ -164,36 +164,32 @@
     else{
         [self.bioLabel setText:@""];
     }
-    if (userObject.isFollowing) {
-        [self.followButton setSelected:YES];
-    }
-    else{
-        switch (userObject.followingState) {
-            case 0:
-                [self.followButton setSelected:NO];
-                [self.followButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
-                break;
-            case 2:
-                [self.followButton setSelected:NO];
-                [self.followButton setImage:[UIImage imageNamed:@"friendSent"] forState:UIControlStateNormal];
-                break;
-            case 1:
-                [self.followButton setSelected:NO];
-                [self.followButton setFrame:CGRectMake(self.followButton.frame.origin.x, self.frame.origin.y, self.frame.size.width+20, self.frame.size.height)];
-                [self.followButton setImage:[UIImage imageNamed:@"friendAccept"] forState:UIControlStateNormal];
-                
-                break;
-            case 3:
-                [self.followButton setSelected:YES];
-                break;
-                
-            default:
-                break;
-        }
+    
+    switch (userObject.isFollowing) {
+        case 0:
+            [self.followButton setSelected:NO];
+            [self.followButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
+            break;
+        case 1:
+            [self.followButton setSelected:NO];
+            [self.followButton setImage:[UIImage imageNamed:@"friendSent"] forState:UIControlStateNormal];
+            break;
+//            case 1:
+//                [self.followButton setSelected:NO];
+//                [self.followButton setFrame:CGRectMake(self.followButton.frame.origin.x, self.frame.origin.y, self.frame.size.width+20, self.frame.size.height)];
+//                [self.followButton setImage:[UIImage imageNamed:@"friendAccept"] forState:UIControlStateNormal];
+//                
+//                break;
+        case 2:
+            [self.followButton setSelected:YES];
+            break;
+            
+        default:
+            break;
     }
     
-    if (userObject.isFollower) {
-        [self.statusLabel setText:[NSString stringWithFormat:@"%@ is following you",userObject.username]];
+    if (userObject.isFollower == 2) {
+        [self.statusLabel setText:[NSString stringWithFormat:@"@%@ is following you",userObject.username]];
     }
     
 
