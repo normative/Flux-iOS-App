@@ -521,7 +521,8 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
-   
+    // Pin z-component to local plane (assumption is that unmatched images are at a relative altitude of zero)
+    positionTP.z = 0.0;
     
     P0 = positionTP;
     V = GLKVector3Normalize(v);
