@@ -849,11 +849,35 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self updateFilterIcon];
 }
 
+#pragma mark Tutorial View
+
+- (void) didPressGetStartedBtn {
+    [ScanUIContainerView setAlpha:0.0];
+    [ScanUIContainerView setHidden:NO];
+    
+    [UIView animateWithDuration: 1
+                     animations:^{
+                         tutorialView.alpha = 0;
+                         ScanUIContainerView.alpha = 1;
+                     }
+                     completion:^(BOOL finished){
+                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
+                                                                             object:self userInfo:nil];
+                         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                         [defaults setBool:YES forKey:@"showedTutorial"];
+                         
+                         [tutorialView removeFromSuperview];
+                         tutorialView.delegate = NULL;
+                     }];
+}
+
+
 #pragma mark - view lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.screenName = @"Scan View";
     
     self.fluxLoggerService = [FluxLoggerService sharedLoggerService];
@@ -908,6 +932,22 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupHistoricalPhotoPicker];
     
     firstContent = YES;
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"showedTutorial"]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
+                                                            object:self userInfo:nil];
+        
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        CGFloat screenWidth = screenRect.size.width;
+        CGFloat screenHeight = screenRect.size.height;
+        tutorialView = [[FluxTutorialView alloc] initWithFrame: CGRectMake(0, 0, screenWidth, screenHeight)];
+        tutorialView.delegate = self;
+        
+        [self.view addSubview:tutorialView];
+        
+        [ScanUIContainerView setHidden:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated{
