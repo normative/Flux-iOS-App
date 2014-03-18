@@ -126,80 +126,37 @@
     return cell;
 }
 
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFriendRequestToUser:(FluxUserObject*)userObject{
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFollowRequestToUser:(FluxUserObject *)userObject{
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
-    [request setSendFriendRequestReady:^(int userID, FluxDataRequest*completedRequest){
+    [request setSendFollowerRequestReady:^(int userID, FluxDataRequest*completedRequest){
         //do something with the UserID
-        NSLog(@"friend request sent");
-        theUser.friendState = 2;
+        NSLog(@"follower request sent");
+        theUser.amFollowerFlag = 1;
         [profileTableView reloadData];
         
         
-        if ([delegate respondsToSelector:@selector(PublicProfile:didSendFriendRequest:)]) {
-            [delegate PublicProfile:self didSendFriendRequest:theUser];
+        if ([delegate respondsToSelector:@selector(PublicProfile:didSendFollowerRequest:)]) {
+            [delegate PublicProfile:self didSendFollowerRequest:theUser];
         }
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Friend request failed with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Follow request failed with error %d", (int)[e code]];
         [ProgressHUD showError:str];
         
     }];
-    [self.fluxDataManager sendFriendRequestToUserWithID:userObject.userID withDataRequest:request];
+    [self.fluxDataManager sendFollowerRequestToUserWithID:userObject.userID withDataRequest:request];
 }
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFriendRequestToUser:(FluxUserObject*)userObject{
+
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFollowRequestToUser:(FluxUserObject *)userObject{
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
-    [request setAcceptFriendRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
+    [request setAcceptFollowerRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
         //do something with the UserID
-        NSLog(@"friended");
-        theUser.friendState = 3;
-        [profileTableView reloadData];
-        
-        if ([delegate respondsToSelector:@selector(PublicProfile:didAddFriend:)]) {
-            [delegate PublicProfile:self didAddFriend:theUser];
-        }
-    }];
-    
-    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        
-        NSString*str = [NSString stringWithFormat:@"Accepting the friend request failed with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
-        
-    }];
-    [self.fluxDataManager acceptFriendRequestFromUserWithID:userObject.userID withDataRequest:request];
-}
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfriendUser:(FluxUserObject*)userObject{
-    FluxDataRequest*request = [[FluxDataRequest alloc]init];
-    
-    [request setUnfriendUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
-        //do something with the UserID
-        NSLog(@"unfriended");
-        theUser.friendState = 0;
-        [profileTableView reloadData];
-        
-        if ([delegate respondsToSelector:@selector(PublicProfile:didRemoveFriend:)]) {
-            [delegate PublicProfile:self didRemoveFriend:theUser];
-        }
-    }];
-    
-    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        
-        NSString*str = [NSString stringWithFormat:@"Unfriending %@ failed with error %d",userObject.username, (int)[e code]];
-        [ProgressHUD showError:str];
-        
-    }];
-    [self.fluxDataManager unfriendWithUserID:userObject.userID withDataRequest:request];
-}
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldFollowUser:(FluxUserObject*)userObject{
-    FluxDataRequest*request = [[FluxDataRequest alloc]init];
-    
-    [request setFollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
-        //do something with the UserID
-        NSLog(@"Followed");
-        theUser.isFollowing = YES;
+        NSLog(@"follower accepted");
+        theUser.amFollowerFlag = 2;
         [profileTableView reloadData];
         
         if ([delegate respondsToSelector:@selector(PublicProfile:didAddFollower:)]) {
@@ -209,19 +166,21 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Following %@ failed with error %d", userObject.username, (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Accepting the follower request failed with error %d", (int)[e code]];
         [ProgressHUD showError:str];
         
     }];
-    [self.fluxDataManager addFollowerWithUserID:userObject.userID withDataRequest:request];
+    [self.fluxDataManager acceptFollowerRequestFromUserWithID:userObject.userID withDataRequest:request];
 }
+
+
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfollowUser:(FluxUserObject*)userObject{
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
     [request setUnfollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
         //do something with the UserID
         NSLog(@"unfollowed");
-        theUser.isFollowing = NO;
+        theUser.amFollowerFlag = 0;
         [profileTableView reloadData];
         
         if ([delegate respondsToSelector:@selector(PublicProfile:didremoveFollower:)]) {

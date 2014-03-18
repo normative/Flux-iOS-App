@@ -23,7 +23,7 @@ NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
@@ -93,14 +93,14 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                                                                                              keyPath:nil
                                                                                                          statusCodes:statusCodes];
         
-        RKResponseDescriptor *connectionFriendResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
-                                                                                                          method:RKRequestMethodAny
-                                                                                                     pathPattern:@"connections/addfriend"
-                                                                                                         keyPath:nil
-                                                                                                     statusCodes:statusCodes];
+//        RKResponseDescriptor *connectionFriendResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
+//                                                                                                          method:RKRequestMethodAny
+//                                                                                                     pathPattern:@"connections/addfriend"
+//                                                                                                         keyPath:nil
+//                                                                                                     statusCodes:statusCodes];
         RKResponseDescriptor *connectionAcceptFriendResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider connectionGETMapping]
                                                                                                                 method:RKRequestMethodAny
-                                                                                                           pathPattern:@"connections/respondtofriend"
+                                                                                                           pathPattern:@"connections/respondtofollowrequest"
                                                                                                                keyPath:nil
                                                                                                            statusCodes:statusCodes];
         
@@ -160,7 +160,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         [objectManager addResponseDescriptor:userLoginResponseDescriptor];
         [objectManager addResponseDescriptor:cameraCreationResponseDescriptor];
         [objectManager addResponseDescriptor:connectionFollowResponseDescriptor];
-        [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
+//        [objectManager addResponseDescriptor:connectionFriendResponseDescriptor];
         [objectManager addResponseDescriptor:connectionAcceptFriendResponseDescriptor];
         [objectManager addResponseDescriptor:aliasCreateResponseDescriptor];
         [objectManager addResponseDescriptor:contactListResponseDescriptor];
@@ -332,12 +332,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@';&userlist='%@'&maxcount=%d&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@';&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
 
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
     
@@ -874,13 +874,13 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 
 #pragma mark Social Stuff
 
-- (void)getFriendRequestsForUserWithRequestID:(NSUUID *)requestID{
+- (void)getFollowerRequestsForUserWithRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/users/friendinvites.json"
+                                                                                       pathPattern:@"/users/followerrequests.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -890,9 +890,9 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          NSLog(@"Found %lu Results",(unsigned long)[result count]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFriendRequestsForUser:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowingRequestsForUser:andRequestID:)])
          {
-             [delegate NetworkServices:self didReturnFriendRequestsForUser:result.array andRequestID:requestID];
+             [delegate NetworkServices:self didReturnFollowingRequestsForUser:result.array andRequestID:requestID];
          }
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
@@ -906,38 +906,6 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     [operation start];
 }
 
-
-- (void)getFriendsListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    
-    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
-                                                                                            method:RKRequestMethodAny
-                                                                                       pathPattern:@"/users/friends.json"
-                                                                                           keyPath:nil
-                                                                                       statusCodes:statusCodes];
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]]];
-    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
-                                                                        responseDescriptors:@[responseDescriptor]];
-    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
-     {
-         NSLog(@"Found %lu Results",(unsigned long)[result count]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFriendListForUser:andRequestID:)])
-         {
-             [delegate NetworkServices:self didReturnFriendListForUser:result.array andRequestID:requestID];
-         }
-     }
-                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
-     {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-         {
-             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-         }
-     }];
-    [operation start];
-}
 
 - (void)getFollowingListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
@@ -1036,36 +1004,6 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 }
 
 
-- (void)followUserID:(int)userID withRequestID:(NSUUID *)requestID{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
-    
-    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
-    [connObj setUserID:activeUserID];
-    [connObj setConnectionsUserID:userID];
-    
-
-    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/follow?auth_token=%@", token] parameters:nil
-                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
-     {
-         FluxConnectionObject*conObject = [result firstObject];
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFollowUserWithID:andRequestID:)])
-         {
-             [delegate NetworkServices:self didFollowUserWithID:conObject.connectionsUserID andRequestID:requestID];
-         }
-     }
-                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
-     {
-         
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-         {
-             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-         }
-     }];
-}
-
-
 - (void)unfollowUserID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
@@ -1096,7 +1034,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 }
 
 
-- (void)sendFriendRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+- (void)sendFollowRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
     
@@ -1105,13 +1043,13 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     [connObj setConnectionsUserID:userID];
     
     
-    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/addfriend?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/follow?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
-         if ([delegate respondsToSelector:@selector(NetworkServices:didSendFriendRequestToUserWithID:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didSendFollowingRequestToUserWithID:andRequestID:)])
          {
-             [delegate NetworkServices:self didSendFriendRequestToUserWithID:conObject.connectionsUserID andRequestID:requestID];
+             [delegate NetworkServices:self didSendFollowingRequestToUserWithID:conObject.connectionsUserID andRequestID:requestID];
          }
      }
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
@@ -1126,23 +1064,24 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 }
 
 
-- (void)acceptFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+- (void)acceptFollowingRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
     
     FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
     [connObj setUserID:activeUserID];
     [connObj setConnectionsUserID:userID];
-    [connObj setFriendState:FluxFriendState_accept];
+    [connObj setFollowingState:FluxFollowState_accept];
+    [connObj setAmFollowing:YES];
     
     
-    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofollowrequest?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
-         if ([delegate respondsToSelector:@selector(NetworkServices:didAcceptFriendRequestFromUserWithID:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didAcceptFollowingRequestFromUserWithID:andRequestID:)])
          {
-             [delegate NetworkServices:self didAcceptFriendRequestFromUserWithID:conObject.connectionsUserID andRequestID:requestID];
+             [delegate NetworkServices:self didAcceptFollowingRequestFromUserWithID:conObject.connectionsUserID andRequestID:requestID];
          }
      }
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
@@ -1157,54 +1096,23 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
 }
 
 
-- (void)ignoreFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
+- (void)ignoreFollowingRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
     
     FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
     [connObj setUserID:activeUserID];
     [connObj setConnectionsUserID:userID];
-    [connObj setFriendState:FluxFriendState_ignore];
+    [connObj setFollowingState:FluxFollowState_ignore];
     
     
-    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofriend?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofollowrequest?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
-         if ([delegate respondsToSelector:@selector(NetworkServices:didIgnoreFriendRequestFromUserWithID:andRequestID:)])
+         if ([delegate respondsToSelector:@selector(NetworkServices:didIgnoreFollowingRequestFromUserWithID:andRequestID:)])
          {
-             [delegate NetworkServices:self didIgnoreFriendRequestFromUserWithID:conObject.connectionsUserID andRequestID:requestID];
-         }
-     }
-                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
-     {
-         
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-         {
-             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-         }
-     }];
-}
-
-
-- (void)unfriedUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
-    
-    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
-    [connObj setUserID:activeUserID];
-    [connObj setConnectionsUserID:userID];
-    [connObj setConnetionType:FluxConnectionState_friend];
-    
-    
-    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/disconnect?auth_token=%@", token] parameters:nil
-                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
-     {
-         FluxConnectionObject*conObject = [result firstObject];
-         if ([delegate respondsToSelector:@selector(NetworkServices:didUnfriendUserWithID:andRequestID:)])
-         {
-             [delegate NetworkServices:self didUnfriendUserWithID:conObject.connectionsUserID andRequestID:requestID];
+             [delegate NetworkServices:self didIgnoreFollowingRequestFromUserWithID:conObject.connectionsUserID andRequestID:requestID];
          }
      }
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
@@ -1365,12 +1273,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1417,12 +1325,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                 objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                 location.latitude, location.longitude, radius,
                                                                                 altMin, altMax,
                                                                                 timestampMin, timestampMax,
-                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1470,12 +1378,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                 objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                 location.latitude, location.longitude, radius,
                                                                                 altMin, altMax,
                                                                                 timestampMin, timestampMax,
-                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1524,12 +1432,12 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&friendpics=%i&followingpics=%i&auth_token=%@",
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFriendsFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];

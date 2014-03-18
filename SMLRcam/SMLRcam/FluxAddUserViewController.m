@@ -183,7 +183,7 @@
         if ([[resultsArray objectAtIndex:indexPath.row] isKindOfClass:[NSNumber class]]) {
             return 75.0;
         }
-        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] > 0)) {
+        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] amFollowerFlag] > 0 || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowingFlag] > 0) {
             return 70.0;
         }
         return 60.0;
@@ -197,16 +197,16 @@
 {
     if (indexPath.section == 0) {
         NSString *cellIdentifier;
-        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] || ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] friendState] > 0)) {
+        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] amFollowerFlag] > 0 || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowingFlag] > 0) {
             cellIdentifier = @"statusSocialCell";
         }
         else{
             cellIdentifier = @"standardSocialCell";
         }
         
-        FluxFriendFollowerCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        FluxFollowerCell * cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         if (!cell) {
-            cell = [[FluxFriendFollowerCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
+            cell = [[FluxFollowerCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
         }
         [cell setDelegate:self];
         [cell initCell];
@@ -215,7 +215,7 @@
             [cell.profileImageView setImage:[resultsImageArray objectAtIndex:indexPath.row]];
         }
         else{
-            __weak FluxFriendFollowerCell *weakCell = cell;
+            __weak FluxFollowerCell *weakCell = cell;
             NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
             
             NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxServerURL,cell.userObject.userID,@"thumb", token];
@@ -257,7 +257,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
         selectedIndexPath = indexPath;
-        FluxFriendFollowerCell*cell = (FluxFriendFollowerCell*)[addUsersTableView cellForRowAtIndexPath:indexPath];
+        FluxFollowerCell*cell = (FluxFollowerCell*)[addUsersTableView cellForRowAtIndexPath:indexPath];
         self.title = @"Search";
         UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
                                                                bundle:[NSBundle mainBundle]];
@@ -301,147 +301,109 @@
 }
 
 #pragma mark - Social Cell Delegate
-- (void)FriendFollowerCellButtonWasTapped:(FluxFriendFollowerCell *)friendFollowerCell{
+- (void)FriendFollowerCellButtonWasTapped:(FluxFollowerCell *)friendFollowerCell{
     int index = (int)[addUsersTableView indexPathForCell:friendFollowerCell].row;
     NSMutableArray*options = [[NSMutableArray alloc]init];
     
-    NSString*sendFriendRequest = @"Send Friend Request";
-    NSString*addFollower = @"Follow";
-    NSString*acceptFriendRequest = @"Accept Friend Request";
-    NSString*cancelFriendRequest;
-    if (!friendFollowerCell.userObject.isFollowing) {
-        [options addObject:addFollower];
+    NSString*sendFollowerRequest = @"Send Follow Request";
+    NSString*acceptFollowerRequest = @"Accept Follow Request";
+    NSString*cancelFollowerRequest;
+
+    if (friendFollowerCell.userObject.amFollowerFlag == 0) {
+        [options addObject:sendFollowerRequest];
     }
-    if (!friendFollowerCell.userObject.friendState) {
-        [options addObject:sendFriendRequest];
-    }
-    if (friendFollowerCell.userObject.friendState == 2) {
-        cancelFriendRequest = @"Cancel Friend Request";
-    }
-    
     else{
-        if (friendFollowerCell.userObject.friendState == 1) {
-            [options addObject:acceptFriendRequest];
+        if (friendFollowerCell.userObject.amFollowerFlag == 1) {
+            cancelFollowerRequest = @"Cancel Follow Request";
         }
     }
-    
-    [UIActionSheet showInView:self.view
-                    withTitle:nil
-            cancelButtonTitle:@"Cancel"
-       destructiveButtonTitle:(cancelFriendRequest? cancelFriendRequest : nil)
-            otherButtonTitles:options
-                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                         if (buttonIndex != actionSheet.cancelButtonIndex) {
-                             //link facebook
-                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:addFollower]) {
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
-                                 
-                                 [request setFollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"Followed");
-                                     if (resultsArray.count > index) {
-                                         //...and it's still the same cell
-                                         if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
-                                             //update it
-                                             [(FluxUserObject*)[resultsArray objectAtIndex:index] setIsFollowing:YES];
-                                             [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    if (options.count > 0 || cancelFollowerRequest) {
+        [UIActionSheet showInView:self.view
+                        withTitle:nil
+                cancelButtonTitle:@"Cancel"
+           destructiveButtonTitle:(cancelFollowerRequest? cancelFollowerRequest : nil)
+                otherButtonTitles:options
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                                              }
+                                 if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:sendFollowerRequest]) {
+                                     FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                                     
+                                     [request setSendFollowerRequestReady:^(int userID, FluxDataRequest*completedRequest){
+                                         //do something with the UserID
+                                         NSLog(@"Follower request sent");
+                                         //if it hasn;t been cleared
+                                         if (resultsArray.count > index) {
+                                             //...and it's still the same cell
+                                             if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
+                                                 //update it
+                                                 [(FluxUserObject*)[resultsArray objectAtIndex:index] setAmFollowerFlag:1];
+                                                 [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                             }
                                          }
-                                     }
-                                     if ([delegate respondsToSelector:@selector(AddUserViewController:didFollowUser:)]) {
-                                         [delegate AddUserViewController:self didFollowUser:friendFollowerCell.userObject];
-                                     }
-                                 }];
-                                 
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                     }];
                                      
-                                     NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
-                                     [ProgressHUD showError:str];
-                                     
-                                 }];
-                                 [self.fluxDataManager addFollowerWithUserID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
-                             }
-                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:sendFriendRequest]) {
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
-                                 
-                                 [request setSendFriendRequestReady:^(int userID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"friend request sent");
-                                     //if it hasn;t been cleared
-                                     if (resultsArray.count > index) {
-                                         //...and it's still the same cell
-                                         if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
-                                             //update it
-                                             [(FluxUserObject*)[resultsArray objectAtIndex:index] setFriendState:2];
-                                             [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                         }
-                                     }
-                                 }];
-                                 
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-                                     
-                                     NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
-                                     [ProgressHUD showError:str];
-                                     
-                                 }];
-                                 [self.fluxDataManager sendFriendRequestToUserWithID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
-                             }
-                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:acceptFriendRequest]) {
-                                 
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
-                                 [friendFollowerCell setUserInteractionEnabled:NO];
-                                 [request setAcceptFriendRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"friended");
-                                     [(FluxUserObject*)[resultsArray objectAtIndex:index] setFriendState:3];
-                                     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
-                                     //[addUsersTableView reloadData];
-                                 }];
-                                 
-                                 if ([delegate respondsToSelector:@selector(AddUserViewController:didAddFriend:)]) {
-                                     [delegate AddUserViewController:self didAddFriend:friendFollowerCell.userObject];
+                                     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                         
+                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                         [ProgressHUD showError:str];
+                                         
+                                     }];
+                                     [self.fluxDataManager sendFollowerRequestToUserWithID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
                                  }
-                                 
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-                                     
-                                     NSString*str = [NSString stringWithFormat:@"Accepting friend request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
-                                     [ProgressHUD showError:str];
-                                     
-                                 }];
-                                 [self.fluxDataManager acceptFriendRequestFromUserWithID:friendFollowerCell.userObject.userID withDataRequest:request];
-                             }
+//                                 if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:acceptFollowerRequest]) {
+//                                     
+//                                     FluxDataRequest*request = [[FluxDataRequest alloc]init];
+//                                     [friendFollowerCell setUserInteractionEnabled:NO];
+//                                     [request setAcceptFollowerRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
+//                                         //do something with the UserID
+//                                         NSLog(@"follow accepted");
+//                                         [(FluxUserObject*)[resultsArray objectAtIndex:index] setFollowingState:3];
+//                                         [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+//                                         //[addUsersTableView reloadData];
+//                                     }];
+//                                     
+//                                     if ([delegate respondsToSelector:@selector(AddUserViewController:didAddFollower:)]) {
+//                                         [delegate AddUserViewController:self didAddFollower:friendFollowerCell.userObject];
+//                                     }
+//                                     
+//                                     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+//                                         
+//                                         NSString*str = [NSString stringWithFormat:@"Accepting follow request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+//                                         [ProgressHUD showError:str];
+//                                         
+//                                     }];
+//                                     [self.fluxDataManager acceptFollowerRequestFromUserWithID:friendFollowerCell.userObject.userID withDataRequest:request];
+//                                 }
                              
-                             
-                             if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:cancelFriendRequest]) {
-                                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
                                  
-                                 [request setUnfriendUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
-                                     //do something with the UserID
-                                     NSLog(@"friend request cancelled");
-                                     if (resultsArray.count > index) {
-                                         //...and it's still the same cell
-                                         if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
-                                             //update it
-                                             [(FluxUserObject*)[resultsArray objectAtIndex:index] setFriendState:0];
-                                             [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                 if ([[actionSheet buttonTitleAtIndex:buttonIndex] isEqualToString:cancelFollowerRequest]) {
+                                     FluxDataRequest*request = [[FluxDataRequest alloc]init];
+                                     
+                                     [request setUnfollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+                                         //do something with the UserID
+                                         NSLog(@"follow request cancelled");
+                                         if (resultsArray.count > index) {
+                                             //...and it's still the same cell
+                                             if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
+                                                 //update it
+                                                 [(FluxUserObject*)[resultsArray objectAtIndex:index] setAmFollowerFlag:0];
+                                                 [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                                             }
                                          }
-                                     }
-                                 }];
-                                 
-                                 
-                                 [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                     }];
                                      
-                                     NSString*str = [NSString stringWithFormat:@"Unfriending failed with error %d", (int)[e code]];
-                                     [ProgressHUD showError:str];
                                      
-                                 }];
-                                 [self.fluxDataManager unfriendWithUserID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
-                             }
-                             
-
-                             
-                             
-                         }
-                     }];
+                                     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                                         
+                                         NSString*str = [NSString stringWithFormat:@"Cancelling follow request failed with error %d", (int)[e code]];
+                                         [ProgressHUD showError:str];
+                                         
+                                     }];
+                                     [self.fluxDataManager unfollowUserWIthID:[(FluxUserObject*)[resultsArray objectAtIndex:index]userID] withDataRequest:request];
+                                 }
+                         }];
+    }
 }
 
 #pragma mark - Social Manager Delegate
@@ -460,16 +422,16 @@
 
 #pragma mark - Public Profile Delegate
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setIsFollowing:YES];
+    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:2];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
     if ([delegate respondsToSelector:@selector(AddUserViewController:didFollowUser:)]) {
-        [delegate AddUserViewController:self didFollowUser:userObject];
+        [delegate AddUserViewController:self didAddFollower:userObject];
     }
 }
 
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setIsFollowing:NO];
+    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:0];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
     if ([delegate respondsToSelector:@selector(AddUserViewController:didUnfollowUser:)]) {
@@ -477,28 +439,8 @@
     }
 }
 
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFriend:(FluxUserObject *)userObject{
-    
-    //go through the array and find where to insert the new guy
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setFriendState:3];
-    [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-    
-    if ([delegate respondsToSelector:@selector(AddUserViewController:didAddFriend:)]) {
-        [delegate AddUserViewController:self didAddFriend:userObject];
-    }
-}
-
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didRemoveFriend:(FluxUserObject *)userObject{
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setFriendState:0];
-    [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-    
-    if ([delegate respondsToSelector:@selector(AddUserViewController:didUnfriendUser:)]) {
-        [delegate AddUserViewController:self didUnfriendUser:userObject];
-    }
-}
-
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didSendFriendRequest:(FluxUserObject *)userObject{
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setFriendState:2];
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didSendFollowerRequest:(FluxUserObject *)userObject{
+    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:1];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 

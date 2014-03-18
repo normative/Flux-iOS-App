@@ -9,11 +9,9 @@
 #import "FluxConnectionObject.h"
 
 int const FluxConnectionState_follow = 1;
-int const FluxConnectionState_friend = 2;
-int const FluxConnectionState_followANDFriend = 3;
 
-int const FluxFriendState_ignore = 0;
-int const FluxFriendState_accept = 1;
+int const FluxFollowState_ignore = 0;
+int const FluxFollowState_accept = 1;
 
 @implementation FluxConnectionObject
 

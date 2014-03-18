@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "FluxFriendFollowerCell.h"
+#import "FluxFollowerCell.h"
 #import "FluxDataManager.h"
 #import "FluxSocialImportCell.h"
 #import "FluxSocialManager.h"
@@ -25,9 +25,7 @@ typedef enum QuerySearchState : NSUInteger {
 @class FluxAddUserViewController;
 @protocol FluxAddUserViewControllerDelegate <NSObject>
 @optional
-- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didAddFriend:(FluxUserObject*)userObject;
-- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfriendUser:(FluxUserObject*)userObject;
-- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didFollowUser:(FluxUserObject*)userObject;
+- (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didAddFollower:(FluxUserObject*)userObject;
 - (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfollowUser:(FluxUserObject*)userObject;
 @end
 

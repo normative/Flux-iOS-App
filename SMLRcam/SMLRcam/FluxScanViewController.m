@@ -722,10 +722,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 #pragma mark Friend Requests
-- (void)checkForFriendRequests{
+- (void)checkForFollowerRequests{
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
-    [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
+    [request setUserFollowerRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
         //do something with the UserID
         if (requestsArr.count>0) {
             [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",(int)requestsArr.count]];
@@ -744,7 +744,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         NSLog(@"Friend request check failed with error %d",(int)[e code]);
     }];
-    [self.fluxDisplayManager.fluxDataManager requestFriendRequestsForUserWithDataRequest:request];
+    [self.fluxDisplayManager.fluxDataManager requestFollowingRequestsForUserWithDataRequest:request];
 }
 
 #pragma mark Other Camera view methods
@@ -916,7 +916,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-        [self checkForFriendRequests];
+        [self checkForFollowerRequests];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

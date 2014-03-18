@@ -130,9 +130,7 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                     withDataRequest:(FluxDataRequest *)dataRequest;
 
 //social
-- (FluxRequestID *) requestFriendRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) requestFriendsListForID:(int)userID
-                    withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *) requestFollowingRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowingListForID:(int)userID
                     withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestFollowerListForID:(int)userID
@@ -140,17 +138,14 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 - (FluxRequestID *) requestUsersListQuery:(NSString*)query
                              withDataRequest:(FluxDataRequest *)dataRequest;
 
-- (FluxRequestID *) addFollowerWithUserID:(int)userID
-                             withDataRequest:(FluxDataRequest *)dataRequest;
+
 - (FluxRequestID *) unfollowUserWIthID:(int)userID
                              withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) sendFriendRequestToUserWithID:(int)userID
+- (FluxRequestID *) sendFollowerRequestToUserWithID:(int)userID
                              withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) acceptFriendRequestFromUserWithID:(int)userID
+- (FluxRequestID *) acceptFollowerRequestFromUserWithID:(int)userID
                              withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) ignoreFriendRequestFromUserWithID:(int)userID
-                             withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *) unfriendWithUserID:(int)userID
+- (FluxRequestID *) ignoreFollowerRequestFromUserWithID:(int)userID
                              withDataRequest:(FluxDataRequest *)dataRequest;
 -(FluxRequestID *) requestContactsFromService:(int)serviceID
                               withCredentials:(NSDictionary *)credentials

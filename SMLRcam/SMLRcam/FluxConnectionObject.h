@@ -8,12 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-extern int const FluxConnectionState_friend;
 extern int const FluxConnectionState_follow;
-extern int const FluxConnectionState_followANDFriend;
 
-extern int const FluxFriendState_ignore;
-extern int const FluxFriendState_accept;
+extern int const FluxFollowState_ignore;
+extern int const FluxFollowState_accept;
 
 @interface FluxConnectionObject : NSObject
 
@@ -23,6 +21,6 @@ extern int const FluxFriendState_accept;
 @property (nonatomic) int connetionType;
 
 
-@property (nonatomic) int friendState;
+@property (nonatomic) int followingState;
 @property (nonatomic) BOOL amFollowing;
 @end

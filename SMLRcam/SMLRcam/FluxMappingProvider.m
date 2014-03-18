@@ -67,9 +67,8 @@
                                                   @"follower_count":     @"followerCount",
                                                   @"following_count":    @"followingCount",
                                                   @"image_count":        @"imageCount",
-                                                  @"friend_state":        @"friendState",
-                                                  @"am_follower":       @"isFollowing",
-                                                  @"is_following":   @"isFollower",
+                                                  @"am_follower":       @"amFollowerFlag",
+                                                  @"is_following":   @"isFollowingFlag",
                                                   @"has_pic":            @"hasProfilePic"
                                                  }];
     
@@ -153,8 +152,7 @@
                                                   @"user_id":   @"userID",
                                                   @"connections_id":     @"connectionsUserID",
                                                    @"id":   @"connectionID",
-                                                   @"am_following":   @"amFollowing",
-                                                   @"friend_state":   @"friendState"
+                                                   @"following_state":   @"followingState"
                                                   }];
     return mapping;
 }
@@ -165,7 +163,7 @@
                                                   @"userID":            @"user_id",
                                                   @"connectionsUserID":   @"connections_id",
                                                   @"connetionType":   @"connection_type",
-                                                  @"friendState":   @"friend_state"
+                                                  @"followingState":   @"following_state"
                                                   }];
     
     return mapping;
@@ -199,9 +197,8 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"user_id":        @"userID",
-                                                  @"am_follower":    @"isFollower",
                                                   @"is_following":   @"isFollowing",
-                                                  @"friend_state":   @"friendState",
+                                                  @"am_follower":     @"amFollowerFlag",
                                                   @"alias_name":   @"aliasName",
                                                   @"display_name":   @"displayName",
                                                   @"profile_pic_URL":   @"profilePicURL",
@@ -231,7 +228,6 @@
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"totalimgcount":   @"totalImageCount",
                                                   @"myimgcount":     @"activeUserImageCount",
-                                                  @"friendimgcount":   @"activerUserFriendsImageCount",
                                                   @"followingimgcount":   @"activerUserFollowingsImageCount"
                                                   }];
     return mapping;

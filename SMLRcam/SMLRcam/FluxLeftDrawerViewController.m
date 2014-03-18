@@ -48,6 +48,10 @@
         [self.tableView setAlpha:0.0];
     }];
 }
+-(void)viewDidDisappear:(BOOL)animated{
+    [super viewDidDisappear:animated];
+    [self.tableView setAlpha:1.0];
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -60,7 +64,7 @@
     
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
-    [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
+    [request setUserFollowerRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
         //do something with the UserID
         if (self.badgeCount != requestsArr.count) {
             self.badgeCount = (int)requestsArr.count;
@@ -71,16 +75,16 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSLog(@"Friend request check failed with error %d",(int)[e code]);
+        NSLog(@"Follower request check failed with error %d",(int)[e code]);
     }];
-    [self.fluxDataManager requestFriendRequestsForUserWithDataRequest:request];
+    [self.fluxDataManager requestFollowingRequestsForUserWithDataRequest:request];
 }
 
 
 
 - (void)viewDidLoad
 {
-    [self.view setAlpha:0.0];
+//    [self.view setAlpha:0.0];
     [super viewDidLoad];
     
     newImageCount = -1;
@@ -187,6 +191,7 @@
         
         [self.fluxDataManager requestUserProfileForID:userID.intValue withDataRequest:request];
     }
+    [self.navigationController.navigationBar setTranslucent:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -202,16 +207,12 @@
     if (user) {
         NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.imageCount], @"My Photos" , nil];
         NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Network" , nil];
-//        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.followerCount], @"Followers" , nil];
-//        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.friendCount], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
         newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, /*tmp3, tmp4,*/ tmp5, nil];
     }
     else{
         NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Photos" , nil];
         NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Network" , nil];
-//        NSMutableDictionary*tmp3 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Followers" , nil];
-//        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Friends" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
         newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, /*tmp3, tmp4,*/ tmp5, nil];
     }

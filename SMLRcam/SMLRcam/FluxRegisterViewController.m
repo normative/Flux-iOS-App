@@ -578,7 +578,7 @@
         [UICKeyChainStore setString:[userInfo objectForKey:@"name"]forKey:FluxNameKey service:FacebookService];
         [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:FacebookService];
 
-        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
+        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -614,7 +614,7 @@
 //        [store setString:access_token forKey:FluxAccessTokenKey];
 //        [store setString:access_token_secret forKey:FluxAccessTokenSecretKey];
 
-        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
+        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -738,7 +738,7 @@
             [ProgressHUD showSuccess:@"Welcome To Flux!"];
         }
         else{
-            [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back %@", userObject.username]];
+            [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
         }
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];

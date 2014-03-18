@@ -50,9 +50,11 @@
     _captureMode = captureMode;
     if (captureMode == camera_mode) {
         [self.button setImage:[UIImage imageNamed:@"camButton"] forState:UIControlStateNormal];
+        [boxedCountView setHidden:NO];
     }
     else{
         [self.button setImage:[UIImage imageNamed:@"snapshotButton"] forState:UIControlStateNormal];
+        [boxedCountView setHidden:YES];
     }
 }
 

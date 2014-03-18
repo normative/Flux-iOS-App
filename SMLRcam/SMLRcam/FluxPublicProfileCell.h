@@ -13,10 +13,8 @@
 @protocol FluxPublicProfileCellDelegate <NSObject>
 @optional
 - (void)PublicProfileCellButtonWasTapped:(FluxPublicProfileCell *)publicProfileCell;
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFriendRequestToUser:(FluxUserObject*)userObject;
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFriendRequestToUser:(FluxUserObject*)userObject;
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfriendUser:(FluxUserObject*)userObject;
-- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldFollowUser:(FluxUserObject*)userObject;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFollowRequestToUser:(FluxUserObject*)userObject;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFollowRequestToUser:(FluxUserObject*)userObject;
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfollowUser:(FluxUserObject*)userObject;
 @end
 
@@ -39,12 +37,11 @@
 @property (strong, nonatomic) IBOutlet UILabel *followersCountLabel;
 @property (strong, nonatomic) IBOutlet UILabel *followingTitleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *followingCountLabel;
-@property (strong, nonatomic) IBOutlet UIButton *friendButton;
-@property (strong, nonatomic) IBOutlet UIButton *followerButton;
+@property (strong, nonatomic) IBOutlet UIButton *followButton;
+@property (strong, nonatomic) IBOutlet UILabel *statusLabel;
 
 - (void)initCell;
 - (IBAction)profilePictureButtonAction:(id)sender;
-- (IBAction)friendButtonAction:(id)sender;
 - (IBAction)followButtonAction:(id)sender;
 
 @end
