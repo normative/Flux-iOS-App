@@ -1508,7 +1508,7 @@
 				ORGANIZATIONNAME = Normative;
 				TargetAttributes = {
 					17604B621785CA59005CF054 = {
-						DevelopmentTeam = 3R58XXN523;
+						DevelopmentTeam = 6C845YBPP2;
 					};
 					220FE06A17BEACAD00A7E379 = {
 						TestTargetID = 17604B621785CA59005CF054;

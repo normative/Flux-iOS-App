@@ -82,7 +82,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     }
 
     else if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Welcome.", nil) message:@"Flux needs to know your location to place images, and find images around the world. Your location is never shared to anyone outside Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"Ok, I get It", nil) otherButtonTitles: nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Welcome.", nil) message:@"Flux needs to know your location to place images, and find images around the world. Your location is never shared to anyone outside Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"Got it!", nil) otherButtonTitles: nil];
         [alert showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
             [self beginLocatingAfterPermissions];
         }];

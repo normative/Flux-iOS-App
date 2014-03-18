@@ -855,7 +855,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [ScanUIContainerView setAlpha:0.0];
     [ScanUIContainerView setHidden:NO];
     
-    [UIView animateWithDuration: 1
+    [UIView animateWithDuration: 0.3
                      animations:^{
                          tutorialView.alpha = 0;
                          ScanUIContainerView.alpha = 1;

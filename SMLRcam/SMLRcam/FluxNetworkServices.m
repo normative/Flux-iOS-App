@@ -23,7 +23,7 @@ NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSTestServerURL;
+NSString* const FluxServerURL = _AWSProductionServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
