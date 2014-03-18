@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4510" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="3Bp-zf-jwd">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="3Bp-zf-jwd">
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <scenes>
         <!--Flux OpenGL View Controller - OpenGLView-->
@@ -849,6 +849,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Profile" id="3Mq-rN-QnL"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="568"/>
                     <connections>
                         <outlet property="fakeSeparator" destination="kU6-wo-9ey" id="yDr-5w-D6h"/>
                         <outlet property="feedbackButton" destination="oYY-Vs-Dgh" id="anK-9d-wk1"/>
@@ -1022,6 +1023,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="EJU-PO-Xig"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="568"/>
                     <connections>
                         <outlet property="fakeSeparator" destination="mLL-Vu-a9b" id="uRf-DV-inu"/>
                         <outlet property="logoutButton" destination="kbR-Lt-k4D" id="iRR-ON-pGe"/>
@@ -2228,6 +2230,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="568"/>
                     <connections>
                         <outlet property="editBarButton" destination="nd7-kF-x8E" id="NPq-aG-EGt"/>
                         <outlet property="garbageButton" destination="zvu-vU-3lN" id="pbS-0g-CAL"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="4510" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -19,26 +19,26 @@
                         <constraint firstAttribute="width" constant="70" id="lo5-IB-fa6"/>
                     </constraints>
                 </imageView>
-                <imageView userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tutorialView_timeline" translatesAutoresizingMaskIntoConstraints="NO" id="2bD-NL-Qqq">
+                <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tutorialView_timeline" translatesAutoresizingMaskIntoConstraints="NO" id="2bD-NL-Qqq">
                     <rect key="frame" x="125" y="38" width="70" height="70"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <imageView userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tutorialView_count" translatesAutoresizingMaskIntoConstraints="NO" id="bEX-Ls-k1Q">
+                <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="tutorialView_count" translatesAutoresizingMaskIntoConstraints="NO" id="bEX-Ls-k1Q">
                     <rect key="frame" x="225" y="38" width="70" height="70"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <imageView userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profileMenuButton" translatesAutoresizingMaskIntoConstraints="NO" id="myj-57-c84">
+                <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="profileMenuButton" translatesAutoresizingMaskIntoConstraints="NO" id="myj-57-c84">
                     <rect key="frame" x="25" y="486" width="70" height="70"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="70" id="irt-WM-QwV"/>
                     </constraints>
                 </imageView>
-                <imageView userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="camButton" translatesAutoresizingMaskIntoConstraints="NO" id="gIu-la-6oH">
+                <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="camButton" translatesAutoresizingMaskIntoConstraints="NO" id="gIu-la-6oH">
                     <rect key="frame" x="125" y="486" width="70" height="70"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <imageView userInteractionEnabled="NO" alpha="0.30000001192092896" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="snapshotButton" translatesAutoresizingMaskIntoConstraints="NO" id="Tht-2w-VtK">
+                <imageView userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="snapshotButton" translatesAutoresizingMaskIntoConstraints="NO" id="Tht-2w-VtK">
                     <rect key="frame" x="225" y="486" width="70" height="70"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
@@ -157,11 +157,6 @@
         <image name="camButton" width="140" height="140"/>
         <image name="profileMenuButton" width="140" height="140"/>
         <image name="snapshotButton" width="140" height="140"/>
-        <image name="tutorialView_bar" width="34" height="6"/>
-        <image name="tutorialView_bar" width="34" height="6"/>
-        <image name="tutorialView_bar" width="34" height="6"/>
-        <image name="tutorialView_bar" width="34" height="6"/>
-        <image name="tutorialView_bar" width="34" height="6"/>
         <image name="tutorialView_bar" width="34" height="6"/>
         <image name="tutorialView_count" width="136" height="136"/>
         <image name="tutorialView_gps" width="136" height="136"/>

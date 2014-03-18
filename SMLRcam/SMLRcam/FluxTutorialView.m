@@ -114,9 +114,11 @@ const int HORIZONTAL_PADDING = 35;
                                      fadeInBarItemIV.alpha = 1;
                                  } else {
                                      UIImageView *fadeOutItemIV = [_tutorialImagesArray objectAtIndex:i];
-                                     fadeOutItemIV.alpha = 0.3;
-                                     UIImageView *fadeOutBarItemIV = [_tutorialBarImagesArray objectAtIndex:i];
-                                     fadeOutBarItemIV.alpha = 0.3;
+                                     if (fadeOutItemIV.alpha > 0.0) {
+                                         fadeOutItemIV.alpha = 0.3;
+                                         UIImageView *fadeOutBarItemIV = [_tutorialBarImagesArray objectAtIndex:i];
+                                         fadeOutBarItemIV.alpha = 0.3;
+                                     }
                                  }
                              }
                          }
