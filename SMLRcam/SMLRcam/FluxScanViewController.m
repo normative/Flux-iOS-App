@@ -742,7 +742,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSLog(@"Friend request check failed with error %d",(int)[e code]);
+        NSLog(@"follower request check failed with error %d",(int)[e code]);
     }];
     [self.fluxDisplayManager.fluxDataManager requestFollowingRequestsForUserWithDataRequest:request];
 }
