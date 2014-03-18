@@ -209,8 +209,8 @@
         FluxContactObject*contact = (FluxContactObject*)sender;
         [userObj setUserID:contact.userID];
         [userObj setUsername:contact.username];
-        [userObj setIsFollower:contact.isFollower];
-        [userObj setIsFollowing:contact.isFollowing];
+        [userObj setAmFollowerFlag:contact.amFollowerFlag];
+        [userObj setIsFollowingFlag:contact.isFollowingFlag];
         
         [(FluxPublicProfileViewController*)segue.destinationViewController setFluxDataManager:[(FluxAddUserViewController*)[[(UINavigationController*)self.parentViewController viewControllers] objectAtIndex:0] fluxDataManager]];
         [(FluxPublicProfileViewController*)segue.destinationViewController prepareViewWithUser:userObj];
@@ -647,11 +647,11 @@
     NSString*acceptFollowerRequest = @"Accept Follower Request";
     NSString*cancelFollowerRequest;
     
-    if (importContactCell.contactObject.isFollowing == 0) {
+    if (importContactCell.contactObject.isFollowingFlag == 0) {
         [options addObject:sendFollowerRequest];
     }
     else{
-        if (importContactCell.contactObject.isFollowing == 1) {
+        if (importContactCell.contactObject.isFollowingFlag == 1) {
             cancelFollowerRequest = @"Cancel Follow Request";
         }
     }
@@ -683,7 +683,7 @@
                                                  //...and it's still the same cell
                                                  if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
                                                      //update it
-                                                     [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setIsFollowing:1];
+                                                     [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setIsFollowingFlag:1];
                                                      
                                                      [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                                  }
@@ -691,7 +691,7 @@
                                              
                                              for (int i = 0; i<self.importFluxUserArray.count; i++) {
                                                  if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setIsFollowing:1];
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setIsFollowingFlag:1];
                                                      break;
                                                  }
                                              }
@@ -702,7 +702,7 @@
                                                  //...and it's still the same cell
                                                  if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
                                                      //update it
-                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setIsFollowing:1];
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setIsFollowingFlag:1];
                                                      [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                                  }
                                              }
@@ -783,7 +783,7 @@
                                                  //...and it's still the same cell
                                                  if ([[(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
                                                      //update it
-                                                     [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setIsFollowing:0];
+                                                     [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setIsFollowingFlag:0];
                                                      
                                                      [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                                  }
@@ -791,7 +791,7 @@
                                              
                                              for (int i = 0; i<self.importFluxUserArray.count; i++) {
                                                  if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i]username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
-                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setIsFollowing:0];
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:i] setIsFollowingFlag:0];
                                                      break;
                                                  }
                                              }
@@ -802,7 +802,7 @@
                                                  //...and it's still the same cell
                                                  if ([[(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] username] isEqualToString:[importContactCell.titleLabel.text substringFromIndex:1]]) {
                                                      //update it
-                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setIsFollowing:0];
+                                                     [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:index] setIsFollowingFlag:0];
                                                      [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:1]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                                  }
                                              }

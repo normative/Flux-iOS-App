@@ -45,7 +45,7 @@
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;
     }
     
-    listMode = followingMode;
+    listMode = amFollowingMode;
     socialTableViews = [[NSMutableArray alloc]initWithObjects:followingTableView, followersTableView, nil];
     followersTableView.hidden = YES;
     
@@ -216,7 +216,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode]  objectAtIndex:indexPath.row] isFollowing] == 2) {
+    if (([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode]  objectAtIndex:indexPath.row] isFollowingFlag] == 2) && (listMode == amFollowingMode)) {
         return 70.0;
     }
     return 60.0;
@@ -225,7 +225,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString*cellIdentifier;
-    if (tableView == followersTableView && [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] isFollowing] == 1) {
+    if (tableView == followersTableView && [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] isFollowingFlag] == 1) {
         if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode] objectAtIndex:indexPath.row] bio]) {
             cellIdentifier = @"standardSocialCellRequest";
         }
@@ -379,9 +379,9 @@
     [request setAcceptFollowerRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
         //do something with the UserID
         NSLog(@"friended");
-        if (listMode == followerMode) {
-            [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:followerMode] objectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell].row] setIsFollowing:2];
-            [(UITableView*)[socialTableViews objectAtIndex:followerMode] reloadRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+        if (listMode == isFollowerMode) {
+            [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:isFollowerMode] objectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:isFollowerMode] indexPathForCell:friendFollowerCell].row] setIsFollowingFlag:2];
+            [(UITableView*)[socialTableViews objectAtIndex:isFollowerMode] reloadRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:isFollowerMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
         }
         [friendFollowerCell setUserInteractionEnabled:YES];
         //[addUsersTableView reloadData];
@@ -403,10 +403,10 @@
     [request setIgnoreFollowerRequestReady:^(int ignoredUserID, FluxDataRequest*completedRequest){
         //do something with the UserID
         NSLog(@"friend request ignored");
-        if (listMode == followerMode) {
-            if ([(NSMutableArray*)[socialListArray objectAtIndex:followerMode] count] > [(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell].row){
-                [(NSMutableArray*)[socialListArray objectAtIndex:followerMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell].row];
-                [(UITableView*)[socialTableViews objectAtIndex:followerMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:followerMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
+        if (listMode == isFollowerMode) {
+            if ([(NSMutableArray*)[socialListArray objectAtIndex:isFollowerMode] count] > [(UITableView*)[socialTableViews objectAtIndex:isFollowerMode] indexPathForCell:friendFollowerCell].row){
+                [(NSMutableArray*)[socialListArray objectAtIndex:isFollowerMode] removeObjectAtIndex:[(UITableView*)[socialTableViews objectAtIndex:isFollowerMode] indexPathForCell:friendFollowerCell].row];
+                [(UITableView*)[socialTableViews objectAtIndex:isFollowerMode] deleteRowsAtIndexPaths:[NSArray arrayWithObject:[(UITableView*)[socialTableViews objectAtIndex:isFollowerMode] indexPathForCell:friendFollowerCell]] withRowAnimation:UITableViewRowAnimationFade];
             }
 
         }
@@ -427,34 +427,34 @@
 
 #pragma mark - Public Profile Delegate
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
-    [self addUser:userObject toListMode:followingMode];
+    [self addUser:userObject toListMode:isFollowerMode];
 }
 
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
-    [self removeSelectedUserFromListMode:followingMode];
+    [self removeSelectedUserFromListMode:isFollowerMode];
 }
 
 #pragma mark - Add User VC Delegate
 - (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didFollowUser:(FluxUserObject*)userObject{
-    [self addUser:userObject toListMode:followingMode];
+    [self addUser:userObject toListMode:amFollowingMode];
 }
 - (void)AddUserViewController:(FluxAddUserViewController *)AddUserVC didUnfollowUser:(FluxUserObject*)userObject{
-    [self removeUser:userObject fromListMode:followingMode];
+    [self removeUser:userObject fromListMode:amFollowingMode];
 }
 
 #pragma mark shared delegate insert / delete methods
 
 - (void)addUser:(FluxUserObject*)userObject toListMode:(SocialListMode)theListMode{
     //go through the array and find where to insert the new guy
-    if (theListMode == followerMode) {
+    if (theListMode == amFollowingMode) {
         
         
-        if (listMode == followerMode) {
+        if (listMode == amFollowingMode) {
             NSArray*list = (NSMutableArray*)[socialListArray objectAtIndex:theListMode];
             BOOL found = NO;
             for (int i = 0; i< list.count ; i++) {
                 if ([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] userID] == userObject.userID) {
-                    [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] setIsFollowing:2];
+                    [(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:theListMode] objectAtIndex:i] setAmFollowerFlag:2];
                     found= YES;
                     break;
                 }
@@ -479,28 +479,10 @@
             }
         }
         else{
-            [shouldReloadArray replaceObjectAtIndex:followerMode withObject:[NSNumber numberWithBool:YES]];
+            [shouldReloadArray replaceObjectAtIndex:amFollowingMode withObject:[NSNumber numberWithBool:YES]];
         }
         return;
     }
-//    NSUInteger insPoint = [(NSMutableArray*)[socialListArray objectAtIndex:theListMode]
-//                           indexOfObject:userObject
-//                           inSortedRange:NSMakeRange(0, [(NSMutableArray*)[socialListArray objectAtIndex:theListMode] count])
-//                           options:NSBinarySearchingInsertionIndex
-//                           usingComparator:^(id lhs, id rhs) {
-//                               NSString *first = [(FluxUserObject*)lhs username];
-//                               NSString *second = [(FluxUserObject*)rhs username];
-//                               return [first compare:second];
-//                           }
-//                           ];
-//    [(NSMutableArray*)[socialListArray objectAtIndex:theListMode] insertObject:userObject atIndex:insPoint];
-//    [[(NSMutableArray*)socialListImagesArray objectAtIndex:theListMode] insertObject:[NSNumber numberWithBool:NO] atIndex:insPoint];
-//    if (listMode == theListMode) {
-//            [(UITableView*)[socialTableViews objectAtIndex:theListMode] insertRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:insPoint inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
-//    }
-//    else{
-//        [shouldReloadArray replaceObjectAtIndex:theListMode withObject:[NSNumber numberWithBool:YES]];
-//    }
 }
 
 - (void)removeSelectedUserFromListMode:(SocialListMode)theListMode{
@@ -543,7 +525,7 @@
     if (![(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:listMode] isRefreshing]) {
         [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:listMode] beginRefreshing];
     }
-    if (listMode == followingMode){
+    if (listMode == amFollowingMode){
         [self updateFollowingList];
     }
     else{
@@ -580,11 +562,11 @@
     
     [request setUserFollowingsReady:^(NSArray *followingList, FluxDataRequest*completedRequest){
         //do something with array
-        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followingMode] endRefreshing];
-        [socialListArray replaceObjectAtIndex:followingMode withObject:[followingList mutableCopy]];
-        [self addEmptyImagesToArrayForListMore:followingMode];
-        if (listMode == followingMode) {
-            [[socialTableViews objectAtIndex:followingMode] reloadData];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:amFollowingMode] endRefreshing];
+        [socialListArray replaceObjectAtIndex:amFollowingMode withObject:[followingList mutableCopy]];
+        [self addEmptyImagesToArrayForListMore:amFollowingMode];
+        if (listMode == amFollowingMode) {
+            [[socialTableViews objectAtIndex:amFollowingMode] reloadData];
         }
         
     }];
@@ -592,7 +574,7 @@
         
         NSString*str = [NSString stringWithFormat:@"Following failed to load with error %d", (int)[e code]];
         [ProgressHUD showError:str];
-        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followingMode] endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:amFollowingMode] endRefreshing];
     }];
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
     [self.fluxDataManager requestFollowingListForID:[userID intValue] withDataRequest:request];
@@ -603,11 +585,11 @@
     
     [request setUserFollowersReady:^(NSArray *followerList, FluxDataRequest*completedRequest){
         //do something with array
-        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followerMode] endRefreshing];
-        [socialListArray replaceObjectAtIndex:followerMode withObject:[followerList mutableCopy]];
-        [self addEmptyImagesToArrayForListMore:followerMode];
-        if (listMode == followerMode) {
-            [[socialTableViews objectAtIndex:followerMode] reloadData];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:isFollowerMode] endRefreshing];
+        [socialListArray replaceObjectAtIndex:isFollowerMode withObject:[followerList mutableCopy]];
+        [self addEmptyImagesToArrayForListMore:isFollowerMode];
+        if (listMode == isFollowerMode) {
+            [[socialTableViews objectAtIndex:isFollowerMode] reloadData];
         }
     }];
     
@@ -615,7 +597,7 @@
         
         NSString*str = [NSString stringWithFormat:@"Followers failed to load with error %d", (int)[e code]];
         [ProgressHUD showError:str];
-        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:followerMode] endRefreshing];
+        [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:isFollowerMode] endRefreshing];
     }];
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
     [self.fluxDataManager requestFollowerListForID:[userID intValue] withDataRequest:request];

@@ -132,7 +132,7 @@
     [request setSendFollowerRequestReady:^(int userID, FluxDataRequest*completedRequest){
         //do something with the UserID
         NSLog(@"follower request sent");
-        theUser.isFollowing = 1;
+        theUser.amFollowerFlag = 1;
         [profileTableView reloadData];
         
         
@@ -156,7 +156,7 @@
     [request setAcceptFollowerRequestReady:^(int newFriendUserID, FluxDataRequest*completedRequest){
         //do something with the UserID
         NSLog(@"follower accepted");
-        theUser.isFollowing = 2;
+        theUser.amFollowerFlag = 2;
         [profileTableView reloadData];
         
         if ([delegate respondsToSelector:@selector(PublicProfile:didAddFollower:)]) {
@@ -180,7 +180,7 @@
     [request setUnfollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
         //do something with the UserID
         NSLog(@"unfollowed");
-        theUser.isFollowing = 0;
+        theUser.amFollowerFlag = 0;
         [profileTableView reloadData];
         
         if ([delegate respondsToSelector:@selector(PublicProfile:didremoveFollower:)]) {

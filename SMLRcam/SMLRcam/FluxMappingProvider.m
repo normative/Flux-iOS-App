@@ -67,9 +67,8 @@
                                                   @"follower_count":     @"followerCount",
                                                   @"following_count":    @"followingCount",
                                                   @"image_count":        @"imageCount",
-                                                  @"following_state":        @"followingState",
-                                                  @"am_follower":       @"isFollowing",
-                                                  @"is_following":   @"isFollower",
+                                                  @"am_follower":       @"amFollowerFlag",
+                                                  @"is_following":   @"isFollowingFlag",
                                                   @"has_pic":            @"hasProfilePic"
                                                  }];
     
@@ -198,8 +197,8 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"user_id":        @"userID",
-                                                  @"following_state":    @"followingState",
                                                   @"is_following":   @"isFollowing",
+                                                  @"am_follower":     @"amFollowerFlag",
                                                   @"alias_name":   @"aliasName",
                                                   @"display_name":   @"displayName",
                                                   @"profile_pic_URL":   @"profilePicURL",

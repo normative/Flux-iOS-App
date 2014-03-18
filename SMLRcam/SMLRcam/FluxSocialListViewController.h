@@ -17,8 +17,8 @@
 #import "GAITrackedViewController.h"
 
 typedef enum SocialListMode : NSUInteger {
-    followingMode = 0,
-    followerMode = 1
+    amFollowingMode = 0,
+    isFollowerMode = 1
 } SocialListMode;
 
 @interface FluxSocialListViewController : GAITrackedViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate, FluxAddUserViewControllerDelegate>{

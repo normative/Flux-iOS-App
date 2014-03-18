@@ -69,7 +69,7 @@
 }
 
 - (IBAction)followButtonAction:(id)sender {
-    switch (self.userObject.isFollowing) {
+    switch (self.userObject.amFollowerFlag) {
         case 0:
         {
             [UIActionSheet showInView:self.superview
@@ -165,7 +165,7 @@
         [self.bioLabel setText:@""];
     }
     
-    switch (userObject.isFollowing) {
+    switch (userObject.amFollowerFlag) {
         case 0:
             [self.followButton setSelected:NO];
             [self.followButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
@@ -188,7 +188,7 @@
             break;
     }
     
-    if (userObject.isFollower == 2) {
+    if (userObject.isFollowingFlag == 2) {
         [self.statusLabel setText:[NSString stringWithFormat:@"@%@ is following you",userObject.username]];
     }
     

@@ -183,7 +183,7 @@
         if ([[resultsArray objectAtIndex:indexPath.row] isKindOfClass:[NSNumber class]]) {
             return 75.0;
         }
-        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] > 0 || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] > 0) {
+        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] amFollowerFlag] > 0 || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowingFlag] > 0) {
             return 70.0;
         }
         return 60.0;
@@ -197,7 +197,7 @@
 {
     if (indexPath.section == 0) {
         NSString *cellIdentifier;
-        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollower] > 0 || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowing] > 0) {
+        if ([(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] amFollowerFlag] > 0 || [(FluxUserObject*)[resultsArray objectAtIndex:indexPath.row] isFollowingFlag] > 0) {
             cellIdentifier = @"statusSocialCell";
         }
         else{
@@ -309,11 +309,11 @@
     NSString*acceptFollowerRequest = @"Accept Follow Request";
     NSString*cancelFollowerRequest;
 
-    if (friendFollowerCell.userObject.isFollowing == 0) {
+    if (friendFollowerCell.userObject.amFollowerFlag == 0) {
         [options addObject:sendFollowerRequest];
     }
     else{
-        if (friendFollowerCell.userObject.isFollowing == 1) {
+        if (friendFollowerCell.userObject.amFollowerFlag == 1) {
             cancelFollowerRequest = @"Cancel Follow Request";
         }
     }
@@ -337,7 +337,7 @@
                                              //...and it's still the same cell
                                              if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
                                                  //update it
-                                                 [(FluxUserObject*)[resultsArray objectAtIndex:index] setIsFollowing:1];
+                                                 [(FluxUserObject*)[resultsArray objectAtIndex:index] setAmFollowerFlag:1];
                                                  [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                              }
                                          }
@@ -387,7 +387,7 @@
                                              //...and it's still the same cell
                                              if ([[(FluxUserObject*)[resultsArray objectAtIndex:index] username] isEqualToString:[friendFollowerCell.titleLabel.text substringFromIndex:1]]) {
                                                  //update it
-                                                 [(FluxUserObject*)[resultsArray objectAtIndex:index] setIsFollowing:0];
+                                                 [(FluxUserObject*)[resultsArray objectAtIndex:index] setAmFollowerFlag:0];
                                                  [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
                                              }
                                          }
@@ -422,7 +422,7 @@
 
 #pragma mark - Public Profile Delegate
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setIsFollowing:2];
+    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:2];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
     if ([delegate respondsToSelector:@selector(AddUserViewController:didFollowUser:)]) {
@@ -431,7 +431,7 @@
 }
 
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setIsFollowing:0];
+    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:0];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
     if ([delegate respondsToSelector:@selector(AddUserViewController:didUnfollowUser:)]) {
@@ -440,7 +440,7 @@
 }
 
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didSendFollowerRequest:(FluxUserObject *)userObject{
-    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setIsFollowing:1];
+    [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:1];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 

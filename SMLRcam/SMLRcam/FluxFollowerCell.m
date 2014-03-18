@@ -58,23 +58,23 @@
     
     [self.socialStatusLabel setText:@""];
     
-    if (userObject.isFollowing == 2 && userObject.isFollower == 2) {
+    if (userObject.isFollowingFlag == 2 && userObject.amFollowerFlag == 2) {
         [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ follow each other",_userObject.username]];
         [self layoutSubviews];
     }
-    else if (userObject.isFollowing == 1){
+    else if (userObject.amFollowerFlag == 1){
         [self.socialStatusLabel setText:[NSString stringWithFormat:@"You've sent a follow request to @%@",_userObject.username]];
         [self layoutSubviews];
     }
-    else if (userObject.isFollower == 1){
+    else if (userObject.isFollowingFlag == 1){
         [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ has sent you a follow request",_userObject.username]];
         [self layoutSubviews];
     }
-    else if (userObject.isFollowing == 2){
+    else if (userObject.amFollowerFlag == 2){
         [self.socialStatusLabel setText:[NSString stringWithFormat:@"You're following @%@",_userObject.username]];
         [self layoutSubviews];
     }
-    else if (userObject.isFollower == 2){
+    else if (userObject.isFollowingFlag == 2){
         [self.socialStatusLabel setText:[NSString stringWithFormat:@"@%@ is following you", _userObject.username]];
         [self layoutSubviews];
     }
