@@ -865,7 +865,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         return;
     }
     
-    kfNoiseX = kfNoiseY = _horizontalAccuracy/2.0;
+    kfNoiseX = kfNoiseY = _horizontalAccuracy/4.0;
     
     [self computeKMeasureKFilter];
     
