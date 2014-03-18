@@ -268,7 +268,6 @@
         [publicProfileVC prepareViewWithUser:cell.userObject];
         [publicProfileVC setDelegate:self];
         
-        [self.navigationController setNavigationBarHidden:NO animated:NO];
         [self.navigationController pushViewController:publicProfileVC animated:YES];
     }
     else{

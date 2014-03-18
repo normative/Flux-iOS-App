@@ -216,9 +216,9 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode]  objectAtIndex:indexPath.row] isFollowingFlag] == 2) && (listMode == amFollowingMode)) {
-        return 70.0;
-    }
+//    if (([(FluxUserObject*)[(NSMutableArray*)[socialListArray objectAtIndex:listMode]  objectAtIndex:indexPath.row] isFollowingFlag] == 2) && (listMode == amFollowingMode)) {
+//        return 70.0;
+//    }
     return 60.0;
 }
 
