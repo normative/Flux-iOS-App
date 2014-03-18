@@ -744,7 +744,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     kfilter = [[FluxKalmanFilter alloc] init];
     stepcount = 0;
     _lastvalue =0;
-    _resetThreshold = 10.0; //in meters;
+    _resetThreshold = 15.0; //in meters;
     _validCurrentLocationData = NO;
     //[self testKalman];
     kfAltStarted = false;
