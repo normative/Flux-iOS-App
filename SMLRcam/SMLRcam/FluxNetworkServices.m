@@ -203,7 +203,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
         [objectManager.HTTPClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
             if (status == AFNetworkReachabilityStatusNotReachable) {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Uh Oh..."
-                                                                message:@"It loks like you've lost your connection to the internet. You must be connected to the internet to use Flux."
+                                                                message:@"It looks like you've lost your connection to the internet. You must be connected to the internet to use Flux."
                                                                delegate:nil
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
