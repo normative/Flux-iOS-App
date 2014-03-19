@@ -143,7 +143,7 @@
     UILabel*label = [[UILabel alloc] init];
     label.frame = CGRectMake(20, 0, 150, 30.0);
     label.textColor = [UIColor whiteColor];
-    [label setFont:[UIFont fontWithName:@"Akkurat-Bold" size:15.0]];
+    [label setFont:[UIFont fontWithName:@"Akkurat" size:15.0]];
     label.text = [self tableView:tableView titleForHeaderInSection:section];
     label.backgroundColor = [UIColor clearColor];
     //[label setCenter:CGPointMake(label.center.x, view.center.y)];

@@ -149,7 +149,7 @@
         UILabel *label = [[UILabel alloc] init];
         label.frame = CGRectMake(20, 10, 150, height);
         label.textColor = [UIColor whiteColor];
-        [label setFont:[UIFont fontWithName:@"Akkurat" size:12]];
+        [label setFont:[UIFont fontWithName:@"Akkurat" size:15]];
         label.text = @"Or find from...";
         label.backgroundColor = [UIColor clearColor];
         [label setCenter:CGPointMake(label.center.x, view.center.y+1)];
@@ -164,7 +164,7 @@
         return 0.0;
     }
     else{
-        return 20.0;
+        return 30.0;
     }
 }
 

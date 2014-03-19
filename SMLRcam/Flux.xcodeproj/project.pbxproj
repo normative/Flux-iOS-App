@@ -52,6 +52,7 @@
 		89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A513631829AED800E25AA1 /* Accelerate.framework */; };
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA0314AA18D1101300121AA0 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
+		AA06304C18DA3351005690CD /* FluxFilterCountTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */; };
 		AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -276,6 +277,8 @@
 		89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxKalmanFilter.h; sourceTree = "<group>"; };
 		89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxKalmanFilter.m; sourceTree = "<group>"; };
 		89A513631829AED800E25AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		AA06304A18DA3351005690CD /* FluxFilterCountTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterCountTableViewCell.h; sourceTree = "<group>"; };
+		AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterCountTableViewCell.m; sourceTree = "<group>"; };
 		AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfilePhotosViewController.h; sourceTree = "<group>"; };
 		AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfilePhotosViewController.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -991,6 +994,8 @@
 				AA615284182418DB00B8F2C8 /* FluxSocialFilterCell.m */,
 				AA70841217B2B93D005D4F9F /* FluxCheckboxCell.h */,
 				AA70841317B2B93D005D4F9F /* FluxCheckboxCell.m */,
+				AA06304A18DA3351005690CD /* FluxFilterCountTableViewCell.h */,
+				AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */,
 			);
 			name = Filters;
 			sourceTree = "<group>";
@@ -1687,6 +1692,7 @@
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
 				AA984F1618088923007F33B1 /* MIZoomOutTransition.m in Sources */,
+				AA06304C18DA3351005690CD /* FluxFilterCountTableViewCell.m in Sources */,
 				AAAAD6FE18A1791800F5F3DB /* DZNPhotoDisplayViewController.m in Sources */,
 				176BFA5518BC307600ABE99D /* FluxContactObject.m in Sources */,
 				AA9F86151868AFF600AB98A7 /* IDMZoomingScrollView.m in Sources */,
