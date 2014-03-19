@@ -24,6 +24,8 @@
     UIView *circularScrollerView;
     CAShapeLayer *circleLayer;
     
+    UIImageView*animatingThumbView;
+    
     BOOL isAnimating;
     
     float oldScrollPos;
@@ -37,6 +39,7 @@
 
 -(void)setViewForContentCount:(int)count reverseAnimated:(BOOL)reverseAnimated;
 - (void)setScrollIndicatorCenter:(CGPoint)centre;
+- (void)showThumbView;
 
 
 @end
