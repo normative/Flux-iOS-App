@@ -117,7 +117,7 @@
         if (text.length > 75) {
             attribs = @{
                         NSForegroundColorAttributeName: [UIColor whiteColor],
-                        NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:12.0],
+                        NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:11.0],
                         NSParagraphStyleAttributeName : style
                         };
         }

@@ -533,6 +533,7 @@
     }
     if ([[segue identifier]isEqualToString:@"pushSocialList"]) {
         [(FluxSocialListViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
+        [(FluxSocialListViewController*)segue.destinationViewController setBadgeCount:self.badgeCount];
 //        if ([(NSNumber*)sender isEqualToNumber:[NSNumber numberWithInt:followingMode]]) {
 //            //following
 //            [(FluxSocialListViewController*)segue.destinationViewController prepareViewforMode:followingMode andIDList:nil];

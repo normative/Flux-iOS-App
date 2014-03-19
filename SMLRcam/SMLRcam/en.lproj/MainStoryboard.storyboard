@@ -791,7 +791,7 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="wordWrap" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="246" translatesAutoresizingMaskIntoConstraints="NO" id="cJw-eG-xju">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" minimumFontSize="8" preferredMaxLayoutWidth="246" translatesAutoresizingMaskIntoConstraints="NO" id="cJw-eG-xju">
                                             <rect key="frame" x="37" y="189" width="246" height="40"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <attributedString key="attributedText"/>
@@ -1969,7 +1969,7 @@
                     </view>
                     <extendedEdge key="edgesForExtendedLayout" bottom="YES"/>
                     <navigationItem key="navigationItem" title="My Network" id="ppg-Y4-3bi">
-                        <barButtonItem key="rightBarButtonItem" systemItem="search" id="fGz-zB-PEK">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="fGz-zB-PEK">
                             <connections>
                                 <action selector="searchButtonAction:" destination="S59-2g-byz" id="IHA-VE-Jt1"/>
                             </connections>

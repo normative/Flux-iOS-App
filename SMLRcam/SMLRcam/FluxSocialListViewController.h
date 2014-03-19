@@ -19,6 +19,7 @@
 typedef enum SocialListMode : NSUInteger {
     amFollowingMode = 0,
     isFollowerMode = 1
+    
 } SocialListMode;
 
 @interface FluxSocialListViewController : GAITrackedViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate, FluxAddUserViewControllerDelegate>{
@@ -42,6 +43,7 @@ typedef enum SocialListMode : NSUInteger {
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxAddUserViewController*searchUserVC;
 @property (nonatomic, strong) UINavigationController*childNavC;
+@property (nonatomic) int badgeCount;
 
 @property (atomic, strong) UIWindow *window;
 

@@ -107,6 +107,13 @@
 //    }];
     [self setTitle:@""];
     
+#warning THIS DOESNT WORK.
+    if (self.badgeCount > 0) {
+        self.badgeCount = 0;
+        [segmentedControl setSelectedSegmentIndex:isFollowerMode];
+        [self segmentedControllerDidChange:nil];
+    }
+    
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
@@ -683,7 +690,8 @@
 //}
 
 - (IBAction)segmentedControllerDidChange:(id)sender {
-    if (listMode == [(UISegmentedControl*)sender selectedSegmentIndex]) {
+    [segmentedControl setUserInteractionEnabled:NO];
+    if (listMode == [segmentedControl selectedSegmentIndex]) {
         if ([(UITableView*) [socialTableViews objectAtIndex:listMode] numberOfRowsInSection:0] > 0) {
             [(UITableView*) [socialTableViews objectAtIndex:listMode] scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:YES];
             
@@ -693,13 +701,18 @@
     }
     else{
         [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:YES];
-        listMode = [(UISegmentedControl*)sender selectedSegmentIndex];
+        listMode = [segmentedControl selectedSegmentIndex];
         [(UITableView*)[socialTableViews objectAtIndex:listMode] setHidden:NO];
         
         if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0  || [(NSNumber*)[shouldReloadArray objectAtIndex:listMode]boolValue]){
             [self updateListForActiveMode];
         }
+        if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] > 0 && [[[socialTableViews objectAtIndex:listMode]visibleCells] count] == 0) {
+            [(UITableView*)[socialTableViews objectAtIndex:listMode] reloadData];
+        }
+        
     }
+    [segmentedControl setUserInteractionEnabled:YES];
 }
 
 //re-enable interaction after animation
