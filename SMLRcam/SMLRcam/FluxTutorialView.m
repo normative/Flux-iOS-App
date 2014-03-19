@@ -21,19 +21,17 @@ const int HORIZONTAL_PADDING = 35;
 
 - (id)initWithFrame:(CGRect)frame
 {
-    NSLog(@"initWithFrame is called");
-    
     self = [super initWithFrame:frame];
     if (self) {
         self = [[[NSBundle mainBundle] loadNibNamed:@"FluxTutorialView" owner:self options:nil] objectAtIndex:0];
         
         NSArray *tutorialTextArray = [[NSArray alloc] initWithObjects:
-                                      @"Find content around you consectetur adipisicing elit sed do eiusmod tempor",
-                                      @"Time travel venenatis, aliquet mauris vitae, vehicula est.",
-                                      @"Photo around you consectetur adipisicing elit sed do eiusmod tempor.",
-                                      @"Access your profile and you settings vitae, vehicula est.",
-                                      @"Take a photo lorem ispum dolorm anet dyu vegucyka est.",
-                                      @"Take a snapshot of what you see on tour screen aliquet mauris.",
+                                      @"Use the compass to find content around you. Tap it to explore the map.",
+                                      @"Swipe up and down using the whole screen to browse images through time.",
+                                      @"This shows the number of images around you. Tap it to bring up some filters.",
+                                      @"View your profile, change settings and explore your access your followers.",
+                                      @"Take a new photo and add it to Flux.",
+                                      @"See something interesting? Take a freeze-frame snapshot and share it with friends.",
                                       @"Get Started!",
                                       nil];
         
@@ -85,8 +83,6 @@ const int HORIZONTAL_PADDING = 35;
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    NSLog(@"scrollViewDidEndDecelerating is called");
-    //self.tutorialSV.scrollEnabled = NO;
     
     int currPageIndex = scrollView.contentOffset.x / scrollView.frame.size.width;
     
