@@ -588,7 +588,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         imageCaptureIsActive = NO;
     }
-
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
@@ -636,6 +635,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     else{
         [self deactivateImageCapture];
+        [self.fluxDisplayManager timeBracketDidChange:0];
     }
 }
 
@@ -915,7 +915,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-//        [self.cameraButton setAlpha:0.4];
+        [self.cameraButton setAlpha:0.4];
     }
     
     debugPressCount = 0;

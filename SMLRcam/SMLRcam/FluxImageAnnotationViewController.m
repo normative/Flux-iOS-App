@@ -113,7 +113,8 @@
     isSnapshot = YES;
     [privacyButton setHidden:YES];
     
-    //[saveButton setTitle:@"Save to Photos"];
+    
+    [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
     
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What's in flux?"]];
@@ -344,23 +345,16 @@
     [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
 }
 
+- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{
+    [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+}
+
 - (void)checkPostButton{
     if (facebookButton.isSelected || twitterButton.isSelected) {
-        self.navigationItem.rightBarButtonItem.enabled = YES;
-        [saveButton setTintColor:[UIColor whiteColor]];
         [self.navigationItem.rightBarButtonItem setTitle:@"Post"];
     }
     else{
         [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
-        
-//        if (!localSaveButton.isSelected) {
-//            self.navigationItem.rightBarButtonItem.enabled = NO;
-//            [saveButton setTintColor:[UIColor lightGrayColor]];
-//        }
-//        else{
-            self.navigationItem.rightBarButtonItem.enabled = YES;
-            [saveButton setTintColor:[UIColor whiteColor]];
-//        }
     }
 }
 

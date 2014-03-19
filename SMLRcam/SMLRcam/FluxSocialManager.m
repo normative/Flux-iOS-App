@@ -189,7 +189,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
 
 - (void)loginWithTwitterForAccountIndex:(int)index{
     [self.TWApiManager performReverseAuthForAccount:self.TWAccounts[index] withHandler:^(NSData *responseData, NSError *error) {
-        if (responseData) {
+        if (responseData && !error) {
             NSString *responseStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
             
             NSLog(@"Reverse Auth process returned: %@", responseStr);
