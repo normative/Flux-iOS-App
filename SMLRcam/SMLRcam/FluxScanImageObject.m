@@ -9,6 +9,10 @@
 #import "FluxScanImageObject.h"
 #import <sys/utsname.h>
 
+NSDateFormatter *__fluxScanImageObjectDateFormatter = nil;
+NSDateFormatter *__fluxScanImageObjectLocalIDDateFormatter = nil;
+NSDateFormatter *__fluxScanImageObjectSubTitleDateFormatter = nil;
+
 @implementation FluxScanImageObject
 
 const NSString *fluxImageTypeStrings[] = {
@@ -37,6 +41,26 @@ const NSString *fluxCameraModelStrings[] = {
     if (self)
     {
         _justCaptured = 0;      // default to pull from cloud (typical case)
+        if (!__fluxScanImageObjectDateFormatter)
+        {
+            __fluxScanImageObjectDateFormatter = [[NSDateFormatter alloc]init];
+            [__fluxScanImageObjectDateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
+//            imageObject.timestamp = [__fluxScanImageObjectDateFormatter dateFromString:imageObject.timestampString];
+        }
+        
+        if (!__fluxScanImageObjectLocalIDDateFormatter)
+        {
+            __fluxScanImageObjectLocalIDDateFormatter = [[NSDateFormatter alloc] init];
+            [__fluxScanImageObjectLocalIDDateFormatter setDateFormat:@"yyyyMMddHHmmssSSS"];
+
+        }
+        
+        if (!__fluxScanImageObjectSubTitleDateFormatter)
+        {
+            __fluxScanImageObjectSubTitleDateFormatter = [[NSDateFormatter alloc] init];
+            [__fluxScanImageObjectSubTitleDateFormatter setDateFormat:@"yyyy-MM-dd"];
+        }
+
     }
     
     return self;
@@ -61,10 +85,7 @@ const NSString *fluxCameraModelStrings[] = {
 
 - (NSString*)subtitle
 {
-    NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
-    [outputDateFormat setDateFormat:@"yyyy-MM-dd"];
-    
-    return [outputDateFormat stringFromDate:self.timestamp];
+    return [__fluxScanImageObjectSubTitleDateFormatter stringFromDate:self.timestamp];
 }
 
 - (CLLocationCoordinate2D)coordinate
@@ -164,11 +185,17 @@ const NSString *fluxCameraModelStrings[] = {
     }
 }
 
+- (void)setTimestampString:(NSString *)newTimestampString
+{
+    _timestampString = newTimestampString;
+    _timestamp = [__fluxScanImageObjectDateFormatter dateFromString:newTimestampString];
+}
 
 #pragma mark - nsobject life cycle
 
 - (id)initWithUserID:(int)userID
-   atTimestampString:(NSString *)timestampStr
+//   atTimestampString:(NSString *)timestampStr
+         atTimestamp:(NSDate *)timeStamp
          andCameraID:(int)camID
        andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
@@ -193,7 +220,9 @@ withDescriptionString:(NSString*)description
         self.cameraID = camID;
         self.cameraModelStr = [self deviceName];
         self.categoryID = catID;
-        self.timestampString = timestampStr;
+        self.timestamp = timeStamp;
+        // use the variable rather than the property to skip the setter
+        _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:timeStamp];
         self.descriptionString = description;
         self.latitude = latitude;
         self.longitude = longitude;
@@ -226,11 +255,8 @@ withDescriptionString:(NSString*)description
 }
 
 - (NSString *)generateUniqueStringID
-{    
-    NSDateFormatter *outputDateFormat = [[NSDateFormatter alloc] init];
-    [outputDateFormat setDateFormat:@"yyyyMMddHHmmssSSS"];
-    
-    NSString *stringID = [outputDateFormat stringFromDate:self.timestamp];
+{
+    NSString *stringID = [__fluxScanImageObjectLocalIDDateFormatter stringFromDate:self.timestamp];
     return [NSString stringWithFormat:@"%@_%d", stringID, self.userID];
 }
 

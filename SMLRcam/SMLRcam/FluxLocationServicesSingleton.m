@@ -283,10 +283,10 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         return;
     }
     
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    
-    //log location params
+//    //log location params
+//    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+//    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+//    
 //    NSLog(@"Adding new location  with date: %@ \nAnd Location: %0.15f, %0.15f, %f +/- %f (h), %f (v)",
 //          [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude,
 //          newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);

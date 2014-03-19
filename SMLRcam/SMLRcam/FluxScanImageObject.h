@@ -117,9 +117,10 @@ typedef enum _FluxCameraModelEnum : NSUInteger {
 + (FluxCameraModelEnum)cameraModelFromModelStr:(NSString *)cameraModelStr;
 
 - (id)initWithUserID:(int)userID
-  atTimestampString:(NSString*)timestampStr
-        andCameraID:(int)camID
-      andCategoryID:(int)catID
+//  atTimestampString:(NSString*)timestampStr
+          atTimestamp:(NSDate *)timeStamp
+          andCameraID:(int)camID
+        andCategoryID:(int)catID
 withDescriptionString:(NSString*)description
           andlatitude:(double)latitude
          andlongitude:(double)longitude

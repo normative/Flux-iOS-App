@@ -25,11 +25,12 @@ NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const AWSS3TestServerURL     = _AWSS3TestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSS3TestServerURL;
+//NSString* const FluxServerURL = _AWSProductionServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
-//NSString* const FluxServerURL = _AWSS3TestServerURL;
+NSString* const FluxServerURL = _AWSS3TestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
+static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
 @implementation FluxNetworkServices
 
@@ -64,6 +65,14 @@ NSString* const FluxServerURL = _AWSS3TestServerURL;
 //        }
         
         NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful);
+        
+        if (!__fluxNetworkServicesOutputDateFormatter)
+        {
+            __fluxNetworkServicesOutputDateFormatter = [[NSDateFormatter alloc] init];
+            [__fluxNetworkServicesOutputDateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+            __fluxNetworkServicesOutputDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+            
+        }
         
         //setup descriptors for the user-related calls
         RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
@@ -184,12 +193,12 @@ NSString* const FluxServerURL = _AWSS3TestServerURL;
         [objectManager addRequestDescriptor:imageObjectRequestDescriptor];
         [objectManager addResponseDescriptor:imageObjectResponseDescriptor];
         
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
-        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+//        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//        [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
+//        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         
         [RKValueTransformer defaultValueTransformer];
-        [RKObjectMapping addDefaultDateFormatter:dateFormatter];
+        [RKObjectMapping addDefaultDateFormatter:__fluxNetworkServicesOutputDateFormatter];
 
         
         //general init
@@ -326,12 +335,12 @@ NSString* const FluxServerURL = _AWSS3TestServerURL;
 //    timeMin = [NSDate dateWithTimeIntervalSince1970:0];   // a long time ago...
 //    NSDate *timeMax = [[NSDate alloc] init];              // now
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+//    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
@@ -1269,12 +1278,12 @@ NSString* const FluxServerURL = _AWSS3TestServerURL;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+//    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
   
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
@@ -1321,12 +1330,12 @@ NSString* const FluxServerURL = _AWSS3TestServerURL;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+//    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                 objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
@@ -1374,12 +1383,12 @@ NSString* const FluxServerURL = _AWSS3TestServerURL;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+//    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
     
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                 objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
@@ -1426,12 +1435,12 @@ NSString* const FluxServerURL = _AWSS3TestServerURL;
     
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
-    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+//    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+//    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"];
+//    dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
 
-    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMin]];
-    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [dateFormatter stringFromDate:dataFilter.timeMax]];
+    NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMin]];
+    NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
     
