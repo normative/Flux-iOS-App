@@ -28,7 +28,7 @@
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"id":            @"imageID",
                                                   @"category_id":   @"categoryID",
-                                                  @"time_stamp":    @"timestamp",
+                                                  @"time_stamp":    @"timestampString",
                                                   @"description":   @"descriptionString",
                                                   @"user_id":       @"userID",
                                                   @"camera_id":     @"cameraID",

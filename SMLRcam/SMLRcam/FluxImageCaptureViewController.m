@@ -308,11 +308,6 @@ static int captureImageID = -1;
              NSData *jpeg = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageDataSampleBuffer];
              capturedImage = [UIImage imageWithData:jpeg];
              
-             NSDateFormatter *outDateFormat = [[NSDateFormatter alloc] init];
-             [outDateFormat setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
-             outDateFormat.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-             NSString *dateString = [outDateFormat stringFromDate:startTime];
-             
              NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
              
              int userID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]intValue];
@@ -326,7 +321,8 @@ static int captureImageID = -1;
 
              
             FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
-                                                            atTimestampString:dateString
+//                                                            atTimestampString:dateString
+                                                                  atTimestamp:startTime
                                                                   andCameraID:cameraID
                                                                 andCategoryID:categoryID
                                                         withDescriptionString:@""
@@ -344,9 +340,9 @@ static int captureImageID = -1;
                                                                         andHorizAccuracy:location.horizontalAccuracy
                                                                         andVertAccuracy:location.verticalAccuracy];
              
-#warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
-             // Also set the internal timestamp variable to match the string representation
-             [capturedImageObject setTimestamp:startTime];
+//#warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
+//             // Also set the internal timestamp variable to match the string representation
+//             [capturedImageObject setTimestamp:startTime];
              
              //set estimated location
              if(self.locationManager.kflocation.valid ==1)
