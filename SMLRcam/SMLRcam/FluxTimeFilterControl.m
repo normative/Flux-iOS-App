@@ -253,7 +253,7 @@
 }
 
 -(void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldBeginTouchAtPoint:(CGPoint)point{
-    if (CGRectContainsPoint(clockContainerView.frame, point)) {
+    if (CGRectContainsPoint(clockContainerView.frame, point) && scrollView.contentSize.height != self.frame.size.height) {
         [clockContainerView setAlpha:0.4];
     }
     
