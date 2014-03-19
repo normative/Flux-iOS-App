@@ -418,7 +418,7 @@ NSString* const FluxServerURL = _AWSProductionServerURL;
                                            
     failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"Image upload failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];

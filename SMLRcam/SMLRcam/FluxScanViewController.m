@@ -691,8 +691,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             [progressView setProgress:(float)progress/totalBytes-0.10 animated:YES];
         }];
         [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]]
-                                                                message:[e localizedDescription]
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Image Upload Failed :("
+                                                                message:@"Something happened when uploading one of your images, we're really sorry about that."
                                                                delegate:nil
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
@@ -915,7 +915,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-        [self.cameraButton setAlpha:0.4];
+//        [self.cameraButton setAlpha:0.4];
     }
     
     debugPressCount = 0;
