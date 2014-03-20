@@ -9,7 +9,9 @@ Release Notes:
 - Public profile tweaks
 - Get to a public profile from tapping an image
 - Image capture tweaks
-- Assorted bug fixes + improvements
+- Cleans up the experience for those with older devices
+- Various ios 7.1-related bug fixes
+- Other assorted bug fixes + improvements
 
 
 ******************************************
