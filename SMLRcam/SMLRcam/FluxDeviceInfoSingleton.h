@@ -36,6 +36,7 @@ extern const NSString *FluxDevicePlatformStrings[];
 @property (nonatomic) bool isFeatureMatching;
 @property (nonatomic) int  cacheCountLimit;
 @property (nonatomic) FluxImageType highestResToQuery;
+@property (strong, nonatomic) NSString *captureResolution;
 
 + (id)sharedDeviceInfo;
 
