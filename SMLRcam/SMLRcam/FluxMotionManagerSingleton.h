@@ -26,6 +26,9 @@
     bool enableHeadingCorrectedMotionMode;
     
     GLKQuaternion quat_prev;
+    
+    bool calculatedInitialMagnetometer;
+    GLKVector2 m_t0;
 }
 
 @property (nonatomic) CMQuaternion attitude;
