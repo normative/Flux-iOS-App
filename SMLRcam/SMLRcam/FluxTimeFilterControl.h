@@ -27,6 +27,7 @@
     UIImageView*animatingThumbView;
     
     BOOL isAnimating;
+    float sizeRatio;
     
     float oldScrollPos;
     __weak id <TimeFilterControlDelegate> delegate;

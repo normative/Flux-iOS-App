@@ -122,6 +122,13 @@
         circleStartAngle = 340;
         circleEndAngle = circleStartAngle-(320*(self.timeScrollView.bounds.size.height / self.timeScrollView.contentSize.height));
     }
+    if (circleEndAngle > 320) {
+        sizeRatio = 320/circleEndAngle;
+        circleEndAngle = 320;
+    }
+    else{
+        sizeRatio = 1;
+    }
 
     circleStartAngle = DEGREES_TO_RADIANS(circleStartAngle);
     circleEndAngle = DEGREES_TO_RADIANS(circleEndAngle);
@@ -240,6 +247,7 @@
 
 - (void)scrollScrollerToCalculatedPosition{
     int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
+    numberOfDegrees = numberOfDegrees*sizeRatio;
 //    NSLog(@" Degrees = %i ",numberOfDegrees);
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
     circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
