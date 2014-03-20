@@ -8,6 +8,7 @@
 
 #import "FluxDeviceInfoSingleton.h"
 #import "FluxCameraModel.h"
+#import <AVFoundation/AVFoundation.h>
 #import <sys/utsname.h>
 
 const NSString *fluxDeviceModelStrings[] = {
@@ -136,6 +137,9 @@ const NSString *FluxDevicePlatformStrings[] = {
         // image query resolution
         _highestResToQuery = [self getHighestResToQueryForPlatform:_devicePlatform];
         
+        // resolution to capture imagery at
+        _captureResolution = [self getCaptureResForPlatform:_devicePlatform];
+
     }
     
     NSLog(@"DeviceInfo singleton initialized, device platform = %@", _platformStr);
@@ -369,11 +373,42 @@ const NSString *FluxDevicePlatformStrings[] = {
         case fdp_iPhone4s:
         default:
             hrq = thumb;
+//            hrq = quarterhd;
             break;
     }
     
     return hrq;
 }
+
+//  - enable/disable feature matching
+- (NSString *) getCaptureResForPlatform:(FluxDevicePlatform)devplatform
+{
+    NSString *cr = AVCaptureSessionPresetHigh;
+    
+    switch (devplatform)
+    {
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            cr = AVCaptureSessionPresetHigh;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            cr = AVCaptureSessionPreset1280x720;
+            break;
+    }
+    
+    return cr;
+}
+
 
 - (FluxCameraModel *) cameraModelForDeviceModelString:(NSString *)deviceModelString;
 {
