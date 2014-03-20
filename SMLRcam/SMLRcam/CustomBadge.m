@@ -85,8 +85,7 @@
 {
 	CGSize retValue;
 	CGFloat rectWidth, rectHeight;
-	// CGSize stringSize = [badgeString sizeWithFont:[UIFont boldSystemFontOfSize:12]];
-    NSDictionary *attribs = [[NSDictionary alloc]initWithObjectsAndKeys:[UIFont boldSystemFontOfSize:12], NSFontAttributeName, nil];
+	NSDictionary *attribs = [[NSDictionary alloc]initWithObjectsAndKeys:[UIFont boldSystemFontOfSize:12], NSFontAttributeName, nil];
 	CGSize stringSize = [badgeString sizeWithAttributes:attribs];
 	CGFloat flexSpace;
 	if ([badgeString length]>=2) {
@@ -137,7 +136,7 @@
 	CGContextAddArc(context, maxX-radius, maxY-radius, radius, 0, M_PI/2, 0);
 	CGContextAddArc(context, minX+radius, maxY-radius, radius, M_PI/2, M_PI, 0);
 	CGContextAddArc(context, minX+radius, minY+radius, radius, M_PI, M_PI+M_PI/2, 0);
-	//CGContextSetShadowWithColor(context, CGSizeMake(1.0,1.0), 3, [[UIColor blackColor] CGColor]);
+//	CGContextSetShadowWithColor(context, CGSizeMake(1.0,1.0), 3, [[UIColor blackColor] CGColor]);
     CGContextFillPath(context);
 
 	CGContextRestoreGState(context);
@@ -234,11 +233,12 @@
 			sizeOfFont += sizeOfFont*0.20;
 		}
 		UIFont *textFont = [UIFont boldSystemFontOfSize:sizeOfFont];
-        NSDictionary *attribs = [[NSDictionary alloc]initWithObjectsAndKeys:textFont, NSFontAttributeName, nil];
+        
+        NSDictionary *attribs = [[NSDictionary alloc]initWithObjectsAndKeys:textFont, NSFontAttributeName,badgeTextColor, NSForegroundColorAttributeName, nil];
 		CGSize textSize = [self.badgeText sizeWithAttributes:attribs];
 		[self.badgeText drawAtPoint:CGPointMake((rect.size.width/2-textSize.width/2), (rect.size.height/2-textSize.height/2)) withAttributes:attribs];
 	}
-
+	
 }
 
 
