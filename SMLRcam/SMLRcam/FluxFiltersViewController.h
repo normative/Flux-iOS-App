@@ -16,6 +16,7 @@
 #import "FluxDataFilter.h"
 
 #import "GAITrackedViewController.h"
+#import "FluxFilterCountTableViewCell.h"
 
 @class FluxFiltersViewController;
 @protocol FiltersTableViewDelegate <NSObject>
@@ -24,12 +25,13 @@
 @end
 
 
-@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,UISearchBarDelegate, UISearchDisplayDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
+@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,FluxFilterCountTableViewCellDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;
     NSMutableArray *topTagsArray;
     NSMutableArray *selectedTags;
+    BOOL isFetchingCount;
     
     UIImage*bgImage;
     

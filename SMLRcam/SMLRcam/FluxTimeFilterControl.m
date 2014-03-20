@@ -63,6 +63,18 @@
         isAnimating = NO;
         //invert it
         //self.transform = CGAffineTransformMakeScale(-1, 1);
+        
+        animatingThumbView = [[UIImageView alloc]initWithFrame:self.bounds];
+        [animatingThumbView setAnimationDuration:1.2];
+        NSMutableArray*images = [[NSMutableArray alloc]init];
+        for (int i = 29; i>0; i--) {
+            [images addObject:[UIImage imageNamed:[NSString stringWithFormat:@"thumbAnimation-%i", i]]];
+        }
+        [animatingThumbView setAnimationImages:images];
+        //    [animatingThumbView setAlpha:0.0];
+        animatingThumbView.animationRepeatCount = 1;
+        
+        [self addSubview:animatingThumbView];
     }
     return self;
 }
@@ -272,11 +284,27 @@
 }
 
 - (void)buttonWasPressed{
-    NSLog(@"BUTTON PRESS");
+    [self showThumbView];
 }
 
 - (void)endbuttonPress{
     [clockContainerView setAlpha:1.0];
+}
+
+- (void)showThumbView{
+
+    
+//    [animatingThumbView startAnimating];
+//    
+//    [UIView animateWithDuration:0.5 animations:^{
+//        [animatingThumbView setAlpha:1.0];
+//    }completion:^(BOOL finished){
+//        [UIView animateWithDuration:0.5 animations:^{
+//            [animatingThumbView setAlpha:0.0];
+//             }completion:^(BOOL finished){
+//                 [animatingThumbView stopAnimating];
+//        }];
+//    }];
 }
 
 
