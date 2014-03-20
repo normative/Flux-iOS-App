@@ -164,17 +164,19 @@
                     // request the image
                     FluxDataRequest*picRequest = [[FluxDataRequest alloc]init];
                     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest*completedRequest){
-                        [userObj setProfilePic:img];
-                        NSData *pngData = UIImagePNGRepresentation(img);
-                        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-                        NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
-                        NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
-                        [pngData writeToFile:filePath atomically:YES]; //Write the file
-                        
-                        [defaults setObject:filePath forKey:@"profileImage"];
-                        [defaults synchronize];
-                        
-                        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                        if (img) {
+                            [userObj setProfilePic:img];
+                            NSData *pngData = UIImagePNGRepresentation(img);
+                            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                            NSString *documentsPath = [paths objectAtIndex:0]; //Get the docs directory
+                            NSString *filePath = [documentsPath stringByAppendingPathComponent:@"image.png"]; //Add the file name
+                            [pngData writeToFile:filePath atomically:YES]; //Write the file
+                            
+                            [defaults setObject:filePath forKey:@"profileImage"];
+                            [defaults synchronize];
+                            
+                            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+                        }
                     }];
                     [picRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                         NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
