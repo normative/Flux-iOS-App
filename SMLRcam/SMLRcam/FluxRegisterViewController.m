@@ -90,13 +90,12 @@
     
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
     
-//    [logoImageView removeFromSuperview];
-//    [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [logoImageView removeFromSuperview];
+    [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
+    [self.view addSubview:logoImageView];
+
     [logoImageView setCenter:self.view.center];
-//    [self.view addSubview:logoImageView];
-    
-    //[logoImageView setFrame:CGRectMake(logoImageView.frame.origin.x, logoImageView.frame.origin.y+60, logoImageView.frame.size.width, logoImageView.frame.size.height)];
-    //[logoImageView setCenter:CGPointMake(logoImageView.center.x, logoImageView.center.y+100)];
+
     
     self.accountStore = [[ACAccountStore alloc] init];
     self.apiManager = [[TWAPIManager alloc] init];
@@ -501,8 +500,9 @@
 - (IBAction)twitterSignInAction:(id)sender {
     FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
     [socialManager setDelegate:self];
-    [socialManager registerWithTwitter];
     [self hideContainerViewAnimated:YES];
+    [socialManager registerWithTwitter];
+
 }
 
 //this doesn't need to be implemented. If we've logged in previously, check the chainStore. If not, normal twiter login. We don't need to update keys for twitter because it's baked in the OS.
@@ -518,8 +518,8 @@
 - (IBAction)facebookSignInAction:(id)sender {
     FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
     [socialManager setDelegate:self];
-    [socialManager registerWithFacebook];
     [self hideContainerViewAnimated:YES];
+    [socialManager registerWithFacebook];
 }
 
 - (void)checkFBLoginStatus{
@@ -784,7 +784,7 @@
         
         if (username.length == 0 || password.length == 0) {
             [ProgressHUD showError:@"Please fill out your username & password to sign in"];
-            [self showContainerViewAnimated:YES];
+//            [self showContainerViewAnimated:YES];
         }
         else{
             [self hideContainerViewAnimated:YES];
@@ -882,6 +882,10 @@
 #pragma mark - View Helpers
 
 - (void)hideContainerViewAnimated:(BOOL)animated{
+    //don't hide it if it's already hidden
+    if (logoImageView.frame.origin.y > 100) {
+        return;
+    }
     if (animated) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
         [UIView animateWithDuration:0.3  animations:^{
@@ -908,14 +912,15 @@
 }
 
 - (void)showContainerViewAnimated:(BOOL)animated{
+    //don't show it if it's already shown
+    if (logoImageView.frame.origin.y < 100) {
+        return;
+    }
     if (![loginElementsContainerView translatesAutoresizingMaskIntoConstraints]) {
         [loginElementsContainerView removeFromSuperview];
         [loginElementsContainerView setTranslatesAutoresizingMaskIntoConstraints:YES];
         [self.view addSubview:loginElementsContainerView];
         
-        [logoImageView removeFromSuperview];
-        [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
-        [self.view addSubview:logoImageView];
     }
 
     if (animated) {

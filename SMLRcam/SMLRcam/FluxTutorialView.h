@@ -21,7 +21,7 @@ extern const int LABEL_HORIZONTAL_PADDING;
     __weak IBOutlet UIImageView *tutorialImageCountIV;
     __weak IBOutlet UIImageView *tutorialProfileIV;
     __weak IBOutlet UIImageView *tutorialCameraIV;
-    __weak IBOutlet UIImageView *tutorialWindowIV;
+    __weak IBOutlet UIImageView *tutorialSnaphotIV;
     
     __weak IBOutlet UIImageView *tutorialRaderBarIV;
     __weak IBOutlet UIImageView *tutorialTimelineBarIV;

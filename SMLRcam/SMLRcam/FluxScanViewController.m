@@ -938,6 +938,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
                                                             object:self userInfo:nil];
         
+        
         CGRect screenRect = [[UIScreen mainScreen] bounds];
         CGFloat screenWidth = screenRect.size.width;
         CGFloat screenHeight = screenRect.size.height;

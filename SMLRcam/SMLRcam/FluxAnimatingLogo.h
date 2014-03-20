@@ -11,10 +11,8 @@
 @interface FluxAnimatingLogo : UIView{
     UIImageView*imageView1;
     UIImageView*imageView2;
-    
-    BOOL isAnimating;
 }
-
+@property (nonatomic) BOOL isAnimating;
 - (void)setFirstAnimationSet:(NSMutableArray*)animationSet1 andSecondAnimationSet:(NSMutableArray*)animationSet2;
 
 -(void)startAnimating;

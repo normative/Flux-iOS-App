@@ -97,8 +97,15 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     
     if (![TWAPIManager isLocalTwitterAccountAvailable]) {
         NSLog(@"You were not granted access to the Twitter accounts.");
-        if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-            [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+        if (isRegister) {
+            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
+                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+            }
+        }
+        else{
+            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
+                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+            }
         }
         return;
     }

@@ -8,7 +8,9 @@
 
 #import "FluxTutorialView.h"
 
+#define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 const int HORIZONTAL_PADDING = 35;
+
 
 @interface FluxTutorialView ()
 @property (nonatomic, strong) NSArray *tutorialImagesArray;
@@ -17,13 +19,22 @@ const int HORIZONTAL_PADDING = 35;
 
 @implementation FluxTutorialView
 
-@synthesize delegate = _delegate;
+@synthesize delegate;
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self = [[[NSBundle mainBundle] loadNibNamed:@"FluxTutorialView" owner:self options:nil] objectAtIndex:0];
+        
+        if (IS_4INCHSCREEN) {
+            self = [[[NSBundle mainBundle] loadNibNamed:@"FluxTutorialView" owner:self options:nil] objectAtIndex:0];
+        }
+        else{
+            self = [[[NSBundle mainBundle] loadNibNamed:@"FluxTutorialView_35" owner:self options:nil] objectAtIndex:0];
+        }
+        
+        
+
         
         NSArray *tutorialTextArray = [[NSArray alloc] initWithObjects:
                                       @"Use the compass to find content around you. Tap it to explore the map.",
@@ -35,15 +46,19 @@ const int HORIZONTAL_PADDING = 35;
                                       @"Get Started!",
                                       nil];
         
-        _tutorialImagesArray = [[NSArray alloc] initWithObjects: tutorialRadarIV, tutorialTimelineIV, tutorialImageCountIV, tutorialProfileIV, tutorialCameraIV, tutorialWindowIV, nil];
+        _tutorialImagesArray = [[NSArray alloc] initWithObjects: tutorialRadarIV, tutorialTimelineIV, tutorialImageCountIV, tutorialProfileIV, tutorialCameraIV, tutorialSnaphotIV, nil];
         _tutorialBarImagesArray = [[NSArray alloc] initWithObjects: tutorialRaderBarIV, tutorialTimelineBarIV, tutorialImageCountBarIV, tutorialProfileBarIV, tutorialCameraBarIV, tutorialWindowBarIV, nil];
+        
+        
+        
+
         
         [tutorialScrollView setPagingEnabled:YES];
         [tutorialScrollView setContentSize:CGSizeMake(frame.size.width * tutorialTextArray.count, frame.size.height)];
         
         for (int i = 0; i < tutorialTextArray.count; i++) {
             if (i == tutorialTextArray.count - 1) {
-                UIButton *tutorialButton = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width * i + 90, 269, 150, 30)];
+                UIButton *tutorialButton = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width * i + 90, (IS_4INCHSCREEN ? 269 : 230), 150, 30)];
                 tutorialButton.titleLabel.textColor = [UIColor whiteColor];
                 tutorialButton.titleLabel.font = [UIFont fontWithName:@"Akkurat-Bold" size:18];
                 [tutorialButton setTitle:[tutorialTextArray objectAtIndex:i] forState:UIControlStateNormal];
@@ -110,7 +125,7 @@ const int HORIZONTAL_PADDING = 35;
                                      fadeInBarItemIV.alpha = 1;
                                  } else {
                                      UIImageView *fadeOutItemIV = [_tutorialImagesArray objectAtIndex:i];
-                                     if (fadeOutItemIV.alpha > 0.0) {
+                                     if (fadeOutItemIV.alpha > 0.0 || i<currPageIndex) {
                                          fadeOutItemIV.alpha = 0.3;
                                          UIImageView *fadeOutBarItemIV = [_tutorialBarImagesArray objectAtIndex:i];
                                          fadeOutBarItemIV.alpha = 0.3;
@@ -126,7 +141,9 @@ const int HORIZONTAL_PADDING = 35;
 #pragma mark - IBAction
 
 - (IBAction)onGetStartedBtn:(id)sender {
-    [self.delegate didPressGetStartedBtn];
+    if ([delegate respondsToSelector:@selector(didPressGetStartedBtn)]) {
+        [delegate didPressGetStartedBtn];
+    }
 }
 
 @end

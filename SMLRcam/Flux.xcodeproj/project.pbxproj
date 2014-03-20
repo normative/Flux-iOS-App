@@ -53,6 +53,7 @@
 		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA0314AA18D1101300121AA0 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA06304C18DA3351005690CD /* FluxFilterCountTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */; };
+		AA06305218DB61E4005690CD /* FluxTutorialView_35.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */; };
 		AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
@@ -279,6 +280,7 @@
 		89A513631829AED800E25AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		AA06304A18DA3351005690CD /* FluxFilterCountTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterCountTableViewCell.h; sourceTree = "<group>"; };
 		AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterCountTableViewCell.m; sourceTree = "<group>"; };
+		AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxTutorialView_35.xib; sourceTree = "<group>"; };
 		AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfilePhotosViewController.h; sourceTree = "<group>"; };
 		AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfilePhotosViewController.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
@@ -747,6 +749,7 @@
 				2227FD5518D7583E005911D7 /* FluxTutorialView.h */,
 				2227FD5618D7583E005911D7 /* FluxTutorialView.m */,
 				2227FD5818D75A71005911D7 /* FluxTutorialView.xib */,
+				AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */,
 			);
 			name = TutorialView;
 			sourceTree = "<group>";
@@ -1543,6 +1546,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA06305218DB61E4005690CD /* FluxTutorialView_35.xib in Resources */,
 				AA2F9DCF189AEA690030F749 /* border1.png in Resources */,
 				AA9F860D1868AFF600AB98A7 /* SVProgressHUD.bundle in Resources */,
 				AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */,
