@@ -58,7 +58,14 @@ const int HORIZONTAL_PADDING = 35;
         
         for (int i = 0; i < tutorialTextArray.count; i++) {
             if (i == tutorialTextArray.count - 1) {
-                UIButton *tutorialButton = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width * i + 90, (IS_4INCHSCREEN ? 269 : 230), 150, 30)];
+                int yCoord;
+                if (IS_4INCHSCREEN) {
+                    yCoord = 269;
+                }
+                else{
+                    yCoord = 230;
+                }
+                UIButton *tutorialButton = [[UIButton alloc] initWithFrame:CGRectMake(frame.size.width * i + 90,yCoord, 150, 30)];
                 tutorialButton.titleLabel.textColor = [UIColor whiteColor];
                 tutorialButton.titleLabel.font = [UIFont fontWithName:@"Akkurat-Bold" size:18];
                 [tutorialButton setTitle:[tutorialTextArray objectAtIndex:i] forState:UIControlStateNormal];
