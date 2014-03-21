@@ -25,6 +25,8 @@
 #import "MIAnnotation+Package.h"
 #import "FluxMapImageObject.h"
 
+#define showAltitude NO
+
 @interface MIAnnotation ()
 {
 	CLLocationCoordinate2D _coordinate;
@@ -86,43 +88,48 @@
 {
 	if (_title == nil && _readAvailable)
 	{
-		_title = [[NSString alloc] initWithFormat:@"%i", (int)_count];
+        if (showAltitude) {
+            _title = [[NSString alloc] initWithFormat:@"%i", (int)_count];
+        }
+        else{
+            _title = [[NSString alloc] initWithFormat:@"%i images", (int)_count];
+        }
 	}
     NSLog(@"Count: %lu",(unsigned long)_annotations.count);
 
 	return _title;
 }
 
-
-- (NSString *)subtitle
-{
-    FluxMapImageObject*tmp = (FluxMapImageObject*)[self.allAnnotations anyObject];
-    //double smallest = tmp.latitude;
-    double largest = fabs(tmp.altitudeDiff);
-    
-    for(FluxMapImageObject* obj in self.allAnnotations) {
-//        if (obj.latitude < smallest) {
-//            smallest = obj.latitude;
+//uncomment this to show the altitude subtitle
+//- (NSString *)subtitle
+//{
+//    FluxMapImageObject*tmp = (FluxMapImageObject*)[self.allAnnotations anyObject];
+//    //double smallest = tmp.latitude;
+//    double largest = fabs(tmp.altitudeDiff);
+//    
+//    for(FluxMapImageObject* obj in self.allAnnotations) {
+////        if (obj.latitude < smallest) {
+////            smallest = obj.latitude;
+////        }
+//        if (fabs(obj.latitude) > largest) {
+//            largest = fabs(obj.altitudeDiff);
 //        }
-        if (fabs(obj.latitude) > largest) {
-            largest = fabs(obj.altitudeDiff);
-        }
-    }
-    
-	if (_subtitle == nil && _readAvailable)
-	{
-        BOOL isMetric = [[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue];
-        if (isMetric) {
-            _subtitle = [[NSString alloc] initWithFormat:@"±%.fm altitude", largest];
-        }
-        else{
-            _subtitle = [[NSString alloc] initWithFormat:@"±%.fft altitude", largest*0.3048];
-        }
-		
-	}
-
-	return _subtitle;
-}
+//    }
+//    
+//	if (_subtitle == nil && _readAvailable)
+//	{
+//        BOOL isMetric = [[[NSLocale currentLocale] objectForKey:NSLocaleUsesMetricSystem] boolValue];
+//        if (isMetric) {
+//            _subtitle = [[NSString alloc] initWithFormat:@"±%.fm altitude", largest];
+//        }
+//        else{
+//            _subtitle = [[NSString alloc] initWithFormat:@"±%.fft altitude", largest*0.3048];
+//        }
+//		
+//	}
+//
+//	return _subtitle;
+//}
 
 #pragma mark - MIAnnotation
 
