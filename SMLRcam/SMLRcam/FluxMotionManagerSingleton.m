@@ -15,7 +15,7 @@ typedef struct{
 } euler_angles;
 
 const float quaternion_slerp_interpolation_factor = 0.25;
-const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
+const float yaw_drift_correction_gain = 0.05;
 
 @implementation FluxMotionManagerSingleton
 
@@ -68,6 +68,7 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
         [pedometer startPedometer];
         
         motionEnabled = YES;
+        calculatedInitialMagnetometer = NO;
     }
 }
 
@@ -103,78 +104,54 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
     }
 }
 
+# pragma mark - Heading-Corrected Orientation
+
 - (void)calcAttitudeFromDeviceMotion:(CMDeviceMotion *)devMotion andHeading:(CLHeading *)heading intoQuaternion:(CMQuaternion *)outquat
 {
     // Phone reference frame: x right, y top, z up from screen
     // Earth reference frame: x north, y west, z up
     // Earth to phone (using attitude): Yaw (z) - Pitch (x) - Roll (y)
     
-    // Euler angle extraction from quaternions, using formula for Euler Angle Sequence
-    // "Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors"
-    // James Diebel, Stanford University, 20 October, 2006
-    
     CMQuaternion q_cmquat = devMotion.attitude.quaternion;
     GLKQuaternion quat_orig = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
     
-    GLKVector3 x_device = GLKVector3Make(1.0, 0.0, 0.0);
-    GLKVector3 x_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, x_device));
-    GLKVector3 y_device = GLKVector3Make(0.0, 1.0, 0.0);
-    GLKVector3 y_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, y_device));
-    GLKVector3 los_device = GLKVector3Make(0.0, 0.0, -1.0); // LOS of the device is -ve z-axis
-    GLKVector3 los_device_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_orig, los_device));
-    GLKVector3 z_axis_earth = GLKVector3Make(0.0, 0.0, 1.0);
+    double yaw_delta_curr = 0.0;
     
-    GLKVector3 los_device_earth_projected_orig = [self projectVector:los_device_earth ontoPlaneWithNormal:z_axis_earth];
-
-    // Roll is calculated from the angle between x_device and z_axis in Earth frame
-    // (true in Yaw-Pitch-Roll rotation, since in first two rotations, yaw-pitch, x-axis remains perpendicular to z)
-    double theta_x = [self calculateAngleBetweenVector:x_device_earth andVector:z_axis_earth];
-    double roll =  (y_device_earth.z >= 0.0 ? -(M_PI_2 - theta_x) : -(M_PI_2 + theta_x));
-    
-    // Pitch is calculated from the angle between the LOS axis and the -z Earth axis (straight down)
-    double pitch = [self calculateAngleBetweenVector:los_device_earth andVector:GLKVector3MultiplyScalar(z_axis_earth, -1.0)];
-
-    double corrected_heading = heading.trueHeading;
-    
-    if (pitch > pitch_heading_flip_limit)
+    if (!calculatedInitialMagnetometer)
     {
-        if (heading.trueHeading < 180.0)
+//        GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
+        GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
+        mag_field_t0 = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
+        
+        yaw_offset_t0 = 0.0;
+        
+        if (!isnan(mag_field_t0.x) && !isnan(mag_field_t0.y) && heading.trueHeading >= 0.0)
         {
-            corrected_heading += 180.0;
-        }
-        else
-        {
-            corrected_heading -= 180.0;
+            // Calculate original offset to use based on true-North heading
+            double trueNorthCorrection = [self angleDiffWithAngleA:(heading.magneticHeading * M_PI/180.0) andAngleB:(heading.trueHeading * M_PI/180.0)];
+            yaw_offset_t0 = [self calculateSignedAngleBetween2DVector:GLKVector2Make(0.0, 1.0) andVector:mag_field_t0] + trueNorthCorrection + M_PI_2;
+            
+            calculatedInitialMagnetometer = YES;
         }
     }
+    else
+    {
+//        GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
+        GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
+        GLKVector2 m_earth = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
+        
+        yaw_delta_curr = [self calculateSignedAngleBetween2DVector:m_earth andVector:mag_field_t0];
+        
+        // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily
+        yaw_delta = yaw_delta + yaw_drift_correction_gain * [self angleDiffWithAngleA:yaw_delta andAngleB:yaw_delta_curr];
+        yaw_delta = [self constrainAngle:yaw_delta];
+    }
     
-    // Yaw is calculated from the heading
-    double yaw_temp = -(90.0 + corrected_heading);
-    yaw_temp = yaw_temp + (yaw_temp < -180.0 ? 360.0 : (yaw_temp > 180.0 ? -360.0 : 0.0));
-    double yaw = yaw_temp * M_PI/180.0;
-    
-//    NSLog(@"YPR: %f, %f, %f, theta_x: %f", yaw * 180.0/M_PI, pitch * 180.0/M_PI, roll * 180.0/M_PI, theta_x * 180.0/M_PI);
-
-    // Form a new reference frame corrected by the heading
-    GLKQuaternion quat_angle1 = GLKQuaternionMakeWithAngleAndAxis(-yaw, 0.0, 0.0, 1.0);
-    GLKQuaternion quat_angle2 = GLKQuaternionMakeWithAngleAndAxis(-pitch, 1.0, 0.0, 0.0);
-    GLKQuaternion quat_angle3 = GLKQuaternionMakeWithAngleAndAxis(-roll, 0.0, 1.0, 0.0);
-    
-    GLKQuaternion quat_first_sequence = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle2, quat_angle1));
-    GLKQuaternion quat_from_heading = GLKQuaternionNormalize(GLKQuaternionInvert(GLKQuaternionNormalize(GLKQuaternionMultiply(quat_angle3, quat_first_sequence))));
-    
-    // Now calculate the angle between the LOS axis projected onto the Earth frame using the original quaternion and the corrected quaternion
-    // This step does not work if the LOS approaches either pole (phone looking straight up or straight down)
-    GLKVector3 los_device_earth_from_heading = GLKVector3Normalize(GLKQuaternionRotateVector3(quat_from_heading, los_device));
-    GLKVector3 los_device_earth_projected_from_heading = [self projectVector:los_device_earth_from_heading ontoPlaneWithNormal:z_axis_earth];
-    double theta_yaw = [self calculateSignedAngleBetween2DVector:GLKVector2Make(los_device_earth_projected_orig.x, los_device_earth_projected_orig.y)
-                                                       andVector:GLKVector2Make(los_device_earth_projected_from_heading.x, los_device_earth_projected_from_heading.y)];
-    
-    // Rotate the original quaternion by this correction factor which takes into account heading delta (this prevents choppiness from weird angle combinations)
-    GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(theta_yaw, 0.0, 0.0, 1.0);
+    // Rotate the original quaternion by this correction factor which corrects for heading drift
+    GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(-yaw_offset_t0 + yaw_delta, 0.0, 0.0, 1.0);
     GLKQuaternion quat_final = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, quat_orig));
     
-    // Slerp (spherical quaternion interpolation) performed to trend towards corrected attitude without introducing jitter
+    // Slerp (spherical quaternion interpolation) performed to smooth overall pose response (makes it feel heavier, which I prefer)
     if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
     {
         quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
@@ -187,6 +164,17 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
     outquat->y = quat_final.y;
     outquat->z = quat_final.z;
     outquat->w = quat_final.w;
+}
+
+# pragma mark - Math Helper Methods
+
+// Calculate 2D earth-plane projection of input vector (in device frame) in the base reference frame specified by device pose
+- (GLKVector2)calcVectorProjectionInEarthFrameWithPose:(GLKQuaternion *)quat andVector:(GLKVector3 *)v_vector
+{
+    GLKVector3 z_axis_earth = GLKVector3Make(0.0, 0.0, 1.0);
+    GLKVector3 v_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(*quat, *v_vector));
+    GLKVector3 v_projected_earth = [self projectVector:v_earth ontoPlaneWithNormal:z_axis_earth];
+    return GLKVector2Make(v_projected_earth.x, v_projected_earth.y);
 }
 
 - (GLKVector3) projectVector:(GLKVector3)v ontoPlaneWithNormal:(GLKVector3)n
@@ -217,6 +205,28 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
     return atan2(a.x*b.y - a.y*b.x, GLKVector2DotProduct(a, b));
 }
 
+// Calculates the difference (B-A) between two angles, taking into account wrap-around
+- (double)angleDiffWithAngleA:(double)a andAngleB:(double)b
+{
+    double dif = fmod(b - a + M_PI, 2.0 * M_PI);
+    if (dif < 0.0)
+        dif += 2.0 * M_PI;
+    return dif - M_PI;
+}
+
+// Constrains an input angle (in radians) to +/-180 degrees
+- (double)constrainAngle:(double)x
+{
+    x = fmod(x + M_PI, 2.0 * M_PI);
+    if (x < 0.0)
+        x += 2.0 * M_PI;
+    return x - M_PI;
+}
+
+// Euler angle extraction from quaternions, using formula for Euler Angle Sequence
+// "Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors"
+// James Diebel, Stanford University, 20 October, 2006
+
 - (euler_angles) calculateAngleSequence313FromQuaterion:(GLKQuaternion *)q
 {
     euler_angles angleSequence;
@@ -238,6 +248,8 @@ const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
     
     return angleSequence;
 }
+
+# pragma mark - Debug Utilities
 
 - (void)changeHeadingCorrectedMotionMode:(bool)enableMode
 {

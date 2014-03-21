@@ -1,4 +1,7 @@
 Release Notes:
+- completed heading-corrected orientation using new method (not yet default)
+- Public profile tweaks
+
 ******************************************
 
 V0.22 B03
