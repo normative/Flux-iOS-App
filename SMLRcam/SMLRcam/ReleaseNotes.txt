@@ -1,4 +1,6 @@
 Release Notes:
+- completed heading-corrected orientation using new method (not yet default)
+
 ******************************************
 
 V0.22 B03
