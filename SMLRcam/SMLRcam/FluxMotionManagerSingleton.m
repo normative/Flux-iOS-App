@@ -109,7 +109,8 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
 - (GLKVector2)calcMagnetometerInEarthFrameWithPose:(GLKQuaternion *)quat andMagnetometer:(GLKVector3 *)m_vector
 {
     GLKVector3 m_earth = GLKVector3Normalize(GLKQuaternionRotateVector3(*quat, *m_vector));
-    return GLKVector2Make(m_earth.x, m_earth.y);
+    GLKVector3 m_projected_earth = [self projectVector:m_earth ontoPlaneWithNormal:GLKVector3Make(0.0, 0.0, 1.0)];
+    return GLKVector2Make(m_projected_earth.x, m_projected_earth.y);
 }
 
 - (void)calcAttitudeFromDeviceMotion:(CMDeviceMotion *)devMotion andHeading:(CLHeading *)heading intoQuaternion:(CMQuaternion *)outquat
@@ -125,7 +126,7 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
     CMQuaternion q_cmquat = devMotion.attitude.quaternion;
     GLKQuaternion quat_orig = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
     
-    double delta_yaw = 0.0;
+    double delta_yaw_temp = 0.0;
     
     if (!calculatedInitialMagnetometer)
     {
@@ -143,22 +144,28 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
 //        GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
         GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
         GLKVector2 m_earth = [self calcMagnetometerInEarthFrameWithPose:&quat_orig andMagnetometer:&m_vector];
-        delta_yaw = [self calculateSignedAngleBetween2DVector:m_earth andVector:m_t0];
-        NSLog(@"delta_yaw: %f, m_earth: (%.2f, %.2f)", delta_yaw * 180.0/M_PI, m_earth.x, m_earth.y);
+        
+        delta_yaw_temp = [self calculateSignedAngleBetween2DVector:m_earth andVector:m_t0];
+        
+        // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily.
+        delta_yaw = delta_yaw + 0.05*[self angleDiffWithAngleA:delta_yaw andAngleB:delta_yaw_temp];
+        delta_yaw = [self constrainAngle:delta_yaw];
+
+        NSLog(@"delta_yaw: %f, delta_yaw_temp: %f, m_earth: (%.2f, %.2f)", delta_yaw * 180.0/M_PI, delta_yaw_temp * 180.0/M_PI, m_earth.x, m_earth.y);
     }
     
     // Rotate the original quaternion by this correction factor which takes into account heading delta (this prevents choppiness from weird angle combinations)
     GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(delta_yaw, 0.0, 0.0, 1.0);
     GLKQuaternion quat_final = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, quat_orig));
     
-    // Slerp (spherical quaternion interpolation) performed to trend towards corrected attitude without introducing jitter
-    if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
-    {
-        quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
-    }
-    
-    // Store for Slerping on next cycle
-    quat_prev = quat_final;
+//    // Slerp (spherical quaternion interpolation) performed to trend towards corrected attitude without introducing jitter
+//    if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
+//    {
+//        quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
+//    }
+//    
+//    // Store for Slerping on next cycle
+//    quat_prev = quat_final;
     
     outquat->x = quat_final.x;
     outquat->y = quat_final.y;
