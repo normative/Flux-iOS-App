@@ -49,6 +49,7 @@
 
 - (void)prepareViewWithUser:(FluxUserObject*)user{
     theUser = user;
+    [self checkIfMe];
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     [request setUserReady:^(FluxUserObject*userObject, FluxDataRequest*completedRequest){
         theUser = userObject;
@@ -59,6 +60,13 @@
     }];
     [self.fluxDataManager requestUserProfileForID:user.userID withDataRequest:request];
 //    self.title = [NSString stringWithFormat:@"@%@",user.username];
+}
+
+- (void)checkIfMe{
+    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+    if (theUser.userID == userID.intValue) {
+        [self setTitle:@"Me"];
+    }
 }
 
 #pragma mark - TableView Methods
