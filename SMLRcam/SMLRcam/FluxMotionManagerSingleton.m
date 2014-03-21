@@ -112,10 +112,6 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
     // Earth reference frame: x north, y west, z up
     // Earth to phone (using attitude): Yaw (z) - Pitch (x) - Roll (y)
     
-    // Euler angle extraction from quaternions, using formula for Euler Angle Sequence
-    // "Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors"
-    // James Diebel, Stanford University, 20 October, 2006
-    
     CMQuaternion q_cmquat = devMotion.attitude.quaternion;
     GLKQuaternion quat_orig = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
     
@@ -151,14 +147,14 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
     GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(delta_yaw, 0.0, 0.0, 1.0);
     GLKQuaternion quat_final = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, quat_orig));
     
-//    // Slerp (spherical quaternion interpolation) performed to trend towards corrected attitude without introducing jitter
-//    if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
-//    {
-//        quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
-//    }
-//    
-//    // Store for Slerping on next cycle
-//    quat_prev = quat_final;
+    // Slerp (spherical quaternion interpolation) performed to trend towards corrected attitude without introducing jitter
+    if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
+    {
+        quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
+    }
+    
+    // Store for Slerping on next cycle
+    quat_prev = quat_final;
     
     outquat->x = quat_final.x;
     outquat->y = quat_final.y;
@@ -220,6 +216,10 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
         x += 2.0 * M_PI;
     return x - M_PI;
 }
+
+// Euler angle extraction from quaternions, using formula for Euler Angle Sequence
+// "Representing Attitude: Euler Angles, Unit Quaternions, and Rotation Vectors"
+// James Diebel, Stanford University, 20 October, 2006
 
 - (euler_angles) calculateAngleSequence313FromQuaterion:(GLKQuaternion *)q
 {
