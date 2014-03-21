@@ -115,16 +115,22 @@ const float yaw_drift_correction_gain = 0.05;
     CMQuaternion q_cmquat = devMotion.attitude.quaternion;
     GLKQuaternion quat_orig = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
     
-    double delta_yaw_temp = 0.0;
+    double yaw_delta_curr = 0.0;
     
     if (!calculatedInitialMagnetometer)
     {
 //        GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
         GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
-        m_t0 = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
+        mag_field_t0 = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
         
-        if (!isnan(m_t0.x) && !isnan(m_t0.y))
+        yaw_offset_t0 = 0.0;
+        
+        if (!isnan(mag_field_t0.x) && !isnan(mag_field_t0.y) && heading.trueHeading >= 0.0)
         {
+            // Calculate original offset to use based on true-North heading
+            double trueNorthCorrection = [self angleDiffWithAngleA:(heading.magneticHeading * M_PI/180.0) andAngleB:(heading.trueHeading * M_PI/180.0)];
+            yaw_offset_t0 = [self calculateSignedAngleBetween2DVector:GLKVector2Make(0.0, 1.0) andVector:mag_field_t0] + trueNorthCorrection + M_PI_2;
+            
             calculatedInitialMagnetometer = YES;
         }
     }
@@ -134,17 +140,15 @@ const float yaw_drift_correction_gain = 0.05;
         GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
         GLKVector2 m_earth = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
         
-        delta_yaw_temp = [self calculateSignedAngleBetween2DVector:m_earth andVector:m_t0];
+        yaw_delta_curr = [self calculateSignedAngleBetween2DVector:m_earth andVector:mag_field_t0];
         
         // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily
-        delta_yaw = delta_yaw + yaw_drift_correction_gain * [self angleDiffWithAngleA:delta_yaw andAngleB:delta_yaw_temp];
-        delta_yaw = [self constrainAngle:delta_yaw];
-
-        NSLog(@"delta_yaw: %f, delta_yaw_temp: %f, m_earth: (%.2f, %.2f)", delta_yaw * 180.0/M_PI, delta_yaw_temp * 180.0/M_PI, m_earth.x, m_earth.y);
+        yaw_delta = yaw_delta + yaw_drift_correction_gain * [self angleDiffWithAngleA:yaw_delta andAngleB:yaw_delta_curr];
+        yaw_delta = [self constrainAngle:yaw_delta];
     }
     
     // Rotate the original quaternion by this correction factor which corrects for heading drift
-    GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(delta_yaw, 0.0, 0.0, 1.0);
+    GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(-yaw_offset_t0 + yaw_delta, 0.0, 0.0, 1.0);
     GLKQuaternion quat_final = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, quat_orig));
     
     // Slerp (spherical quaternion interpolation) performed to smooth overall pose response (makes it feel heavier, which I prefer)

@@ -25,11 +25,11 @@
     bool motionEnabled;
     bool enableHeadingCorrectedMotionMode;
     
-    GLKQuaternion quat_prev;
-    double delta_yaw;
-    
-    bool calculatedInitialMagnetometer;
-    GLKVector2 m_t0;
+    GLKQuaternion quat_prev;                // Previous quaternion (pose) to interpolate to smooth response
+    double yaw_delta;                       // Current state of delta to apply to correct for yaw drift
+    double yaw_offset_t0;                   // Offset to apply to align base reference frame with true-North at t=0
+    bool calculatedInitialMagnetometer;     // Flag to indicate initial reading of magnetometer is valid at t=0
+    GLKVector2 mag_field_t0;                // Vector of magnetic field projected on Earth at t=0
 }
 
 @property (nonatomic) CMQuaternion attitude;
