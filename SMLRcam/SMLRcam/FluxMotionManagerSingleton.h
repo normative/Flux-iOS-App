@@ -26,6 +26,7 @@
     bool enableHeadingCorrectedMotionMode;
     
     GLKQuaternion quat_prev;
+    double delta_yaw;
     
     bool calculatedInitialMagnetometer;
     GLKVector2 m_t0;

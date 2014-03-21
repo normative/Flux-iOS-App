@@ -113,6 +113,22 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
     return GLKVector2Make(m_projected_earth.x, m_projected_earth.y);
 }
 
+- (double)angleDiffWithAngleA:(double)a andAngleB:(double)b
+{
+    double dif = fmod(b - a + M_PI, 2.0 * M_PI);
+    if (dif < 0.0)
+        dif += 2.0 * M_PI;
+    return dif - M_PI;
+}
+
+- (double)constrainAngle:(double)x
+{
+    x = fmod(x + M_PI, 2.0 * M_PI);
+    if (x < 0.0)
+        x += 2.0 * M_PI;
+    return x - M_PI;
+}
+
 - (void)calcAttitudeFromDeviceMotion:(CMDeviceMotion *)devMotion andHeading:(CLHeading *)heading intoQuaternion:(CMQuaternion *)outquat
 {
     // Phone reference frame: x right, y top, z up from screen
