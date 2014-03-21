@@ -1,4 +1,12 @@
 Release Notes:
+******************************************
+
+V0.22 B04
+
+Released: 2014-03-21 19:30:00
+
+Release Notes:
+- update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1
 - completed heading-corrected orientation using new method (not yet default)
 - Public profile tweaks
 
@@ -6,7 +14,7 @@ Release Notes:
 
 V0.22 B03
 
-Released: 2014-03-20 11:30:00
+Released: 2014-03-21 11:30:00
 
 Release Notes:
 - update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1
