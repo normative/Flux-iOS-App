@@ -466,21 +466,34 @@ typedef void (^_MIMapViewChange)(void);
     
     pinView.canShowCallout = YES;
     //pinView.animatesDrop = YES;
-    pinView.image = [UIImage imageNamed:@"mapPin"];
     
     //if there's more than 1 image in the pin
     if ([annotation class]  == [MIAnnotation class]) {
         float alpha = [(MIAnnotation*)annotation count]/20.0;
-        if (alpha > 1) {
-            alpha = 1;
+        if (alpha > 1.0) {
+            pinView.image = [UIImage imageNamed:@"mapPin10"];
         }
-        if (alpha < 0.2) {
-            alpha = 0.2;
+        else if (alpha > 0.9){
+            pinView.image = [UIImage imageNamed:@"mapPin90"];
         }
-        [pinView setAlpha:alpha];
+        else if (alpha > 0.8){
+            pinView.image = [UIImage imageNamed:@"mapPin80"];
+        }
+        else if (alpha > 0.7){
+            pinView.image = [UIImage imageNamed:@"mapPin70"];
+        }
+        else if (alpha > 0.6){
+            pinView.image = [UIImage imageNamed:@"mapPin60"];
+        }
+        else if (alpha > 0.5){
+            pinView.image = [UIImage imageNamed:@"mapPin50"];
+        }
+        else{
+            pinView.image = [UIImage imageNamed:@"mapPin40"];
+        }
     }
     else{
-        [pinView setAlpha:0.2];
+        pinView.image = [UIImage imageNamed:@"mapPin40"];
     }
 
     return pinView;
