@@ -86,16 +86,22 @@ static const CGFloat labelPadding = 10;
     }
     [self addSubview:captionLabel];
     
-    userameButton = [[UIButton alloc]initWithFrame:CGRectMake(37, self.bounds.size.height, 145, 20)];
-    userameButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    userameButton.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+    userameButton = [[UIButton alloc]initWithFrame:CGRectMake(37, self.bounds.size.height, 145, 30)];
     [userameButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [userameButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:14]];
 
     if ([_photo respondsToSelector:@selector(username)]) {
-        [userameButton setTitle:[_photo username] ? [_photo username] : @" " forState:UIControlStateNormal];
+        [userameButton setTitle:[NSString stringWithFormat:@"@%@",[_photo username]] ? [_photo username] : @" " forState:UIControlStateNormal];
     }
     [userameButton addTarget:self action:@selector(profileTapped) forControlEvents:UIControlEventTouchUpInside];
+    
+    UILabel*logoutLabel = [[UILabel alloc]initWithFrame:userameButton.bounds];
+    [logoutLabel setTextAlignment:NSTextAlignmentLeft];
+    [logoutLabel setFont:userameButton.titleLabel.font];
+    [logoutLabel setText:userameButton.titleLabel.text];
+    [logoutLabel setTextColor:userameButton.titleLabel.textColor];
+    [userameButton setTitle:@"" forState:UIControlStateNormal];
+    [userameButton addSubview:logoutLabel];
     [self addSubview:userameButton];
     
     userProfileImageButton = [[UIButton alloc]initWithFrame:CGRectMake(10, self.bounds.size.height, 20, 20)];
