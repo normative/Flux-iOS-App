@@ -136,18 +136,18 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
         
         delta_yaw_temp = [self calculateSignedAngleBetween2DVector:m_earth andVector:m_t0];
         
-        // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily.
+        // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily
         delta_yaw = delta_yaw + 0.05*[self angleDiffWithAngleA:delta_yaw andAngleB:delta_yaw_temp];
         delta_yaw = [self constrainAngle:delta_yaw];
 
         NSLog(@"delta_yaw: %f, delta_yaw_temp: %f, m_earth: (%.2f, %.2f)", delta_yaw * 180.0/M_PI, delta_yaw_temp * 180.0/M_PI, m_earth.x, m_earth.y);
     }
     
-    // Rotate the original quaternion by this correction factor which takes into account heading delta (this prevents choppiness from weird angle combinations)
+    // Rotate the original quaternion by this correction factor which corrects for heading drift
     GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(delta_yaw, 0.0, 0.0, 1.0);
     GLKQuaternion quat_final = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, quat_orig));
     
-    // Slerp (spherical quaternion interpolation) performed to trend towards corrected attitude without introducing jitter
+    // Slerp (spherical quaternion interpolation) performed to smooth overall pose response (makes it feel heavier, which I prefer)
     if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
     {
         quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
