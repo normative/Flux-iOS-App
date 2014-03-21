@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "FluxDataManager.h"
 #import "FluxUserObject.h"
-#import "FluxFriendFollowerCell.h"
+#import "FluxFollowerCell.h"
 #import "FluxAddUserViewController.h"
 #import "FluxPublicProfileViewController.h"
 #import "FluxSegmentedControl.h"
@@ -17,15 +17,15 @@
 #import "GAITrackedViewController.h"
 
 typedef enum SocialListMode : NSUInteger {
-    friendMode = 0,
-    followingMode = 1,
-    followerMode = 2
+    amFollowingMode = 0,
+    isFollowerMode = 1
+    
 } SocialListMode;
 
 @interface FluxSocialListViewController : GAITrackedViewController <UITableViewDataSource, UITableViewDelegate, FluxFriendFollowerCellDelegate, PublicProfileDelegate, FluxAddUserViewControllerDelegate>{
     SocialListMode listMode;
+    IBOutlet UIView *segmentedControlContainerView;
     IBOutlet FluxSegmentedControl *segmentedControl;
-    IBOutlet UITableView *friendsTableView;
     IBOutlet UITableView *followingTableView;
     IBOutlet UITableView *followersTableView;
     
@@ -43,6 +43,7 @@ typedef enum SocialListMode : NSUInteger {
 @property (nonatomic, strong) FluxDataManager *fluxDataManager;
 @property (nonatomic, strong) FluxAddUserViewController*searchUserVC;
 @property (nonatomic, strong) UINavigationController*childNavC;
+@property (nonatomic) int badgeCount;
 
 @property (atomic, strong) UIWindow *window;
 

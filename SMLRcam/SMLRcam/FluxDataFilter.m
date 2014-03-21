@@ -21,7 +21,6 @@
         _hashTags = @"";
         _users = @"";
         _isActiveUserFiltered = NO;
-        _isFriendsFiltered = NO;
         _isFollowingFiltered = NO;
     }
     return self;
@@ -38,7 +37,6 @@
         _hashTags = filter.hashTags;
         _users = filter.users;
         _isActiveUserFiltered = filter.isActiveUserFiltered;
-        _isFriendsFiltered = filter.isFriendsFiltered;
         _isFollowingFiltered = filter.isFollowingFiltered;
     }
     return self;
@@ -56,7 +54,6 @@
     copy.users = [self.users copyWithZone:zone];
     copy.isActiveUserFiltered = self.isActiveUserFiltered;
     copy.isFollowingFiltered = self.isFollowingFiltered;
-    copy.isFriendsFiltered = self.isFriendsFiltered;
     return copy;
 }
 
@@ -69,8 +66,7 @@
         [_hashTags isEqualToString:filter.hashTags] &&
         [_users isEqualToString:filter.users] &&
         _isActiveUserFiltered == filter.isActiveUserFiltered &&
-        _isFollowingFiltered == filter.isFollowingFiltered &&
-        _isFriendsFiltered == filter.isFriendsFiltered
+        _isFollowingFiltered == filter.isFollowingFiltered
         ) {
         return YES;
     }
@@ -110,16 +106,10 @@
     if (type == followers_filterType) {
         self.isFollowingFiltered = YES;
     }
-    else{
-        self.isFriendsFiltered = YES;
-    }
 }
 - (void)removeUsersFromFilter:(NSArray*)filteredUsers andType:(FluxFilterType)type{
     if (type == followers_filterType) {
         self.isFollowingFiltered = NO;
-    }
-    else{
-        self.isFriendsFiltered = NO;
     }
 }
 

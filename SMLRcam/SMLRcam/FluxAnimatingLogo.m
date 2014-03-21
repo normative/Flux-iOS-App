@@ -44,33 +44,44 @@
     [self addSubview:imageView1];
     [self addSubview:imageView2];
     
-    isAnimating = NO;
+    self.isAnimating = NO;
     
     //disable 2-stage animation
     [imageView2 setImage:(UIImage*)[animationSet1 objectAtIndex:0]];
     [imageView1 setHidden:YES];
     [imageView2 setHidden:NO];
+    
+    [imageView1 setContentMode:UIViewContentModeScaleAspectFit];
+    [imageView2 setContentMode:UIViewContentModeScaleAspectFit];
+    
+    [self setContentMode:UIViewContentModeScaleAspectFit];
 }
 
 -(void)startAnimating{
-    isAnimating = YES;
+    self.isAnimating = YES;
     [imageView2 startAnimating];
 //    [self performSelector:@selector(swapImageViews) withObject:nil afterDelay:0.0];
 }
 -(void)stopAnimating{
-    isAnimating = NO;
+    self.isAnimating = NO;
 //    [imageView2 setHidden:YES];
     [imageView1 stopAnimating];
     [imageView2 stopAnimating];
 }
 
 - (void)swapImageViews{
-    if (isAnimating) {
+    if (self.isAnimating) {
         [imageView2 setHidden:NO];
         [imageView1 setHidden:YES];
         [imageView1 stopAnimating];
         [imageView2 startAnimating];
     }
+}
+
+- (void)setFrame:(CGRect)frame{
+    [super setFrame:frame];
+    [imageView1 setFrame:self.bounds];
+    [imageView2 setFrame:self.bounds];
 }
 
 /*

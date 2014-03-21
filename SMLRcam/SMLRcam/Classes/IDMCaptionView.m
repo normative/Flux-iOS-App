@@ -106,8 +106,9 @@ static const CGFloat labelPadding = 10;
     // request the image
     FluxDataRequest *picRequest = [[FluxDataRequest alloc]init];
     [picRequest setUserPicReady:^(UIImage*img, int userID, FluxDataRequest *completedRequest){
-        [userProfileImageButton setBackgroundImage:img forState:UIControlStateNormal];
-
+        if (img) {
+            [userProfileImageButton setBackgroundImage:img forState:UIControlStateNormal];
+        }
     }];
     [picRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
 //        NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];

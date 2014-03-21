@@ -63,6 +63,18 @@
         isAnimating = NO;
         //invert it
         //self.transform = CGAffineTransformMakeScale(-1, 1);
+        
+        animatingThumbView = [[UIImageView alloc]initWithFrame:self.bounds];
+        [animatingThumbView setAnimationDuration:1.2];
+        NSMutableArray*images = [[NSMutableArray alloc]init];
+        for (int i = 29; i>0; i--) {
+            [images addObject:[UIImage imageNamed:[NSString stringWithFormat:@"thumbAnimation-%i", i]]];
+        }
+        [animatingThumbView setAnimationImages:images];
+        //    [animatingThumbView setAlpha:0.0];
+        animatingThumbView.animationRepeatCount = 1;
+        
+        [self addSubview:animatingThumbView];
     }
     return self;
 }
@@ -109,6 +121,13 @@
     else{
         circleStartAngle = 340;
         circleEndAngle = circleStartAngle-(320*(self.timeScrollView.bounds.size.height / self.timeScrollView.contentSize.height));
+    }
+    if (circleEndAngle > 320) {
+        sizeRatio = 320/circleEndAngle;
+        circleEndAngle = 320;
+    }
+    else{
+        sizeRatio = 1;
     }
 
     circleStartAngle = DEGREES_TO_RADIANS(circleStartAngle);
@@ -228,6 +247,7 @@
 
 - (void)scrollScrollerToCalculatedPosition{
     int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
+    numberOfDegrees = numberOfDegrees*sizeRatio;
 //    NSLog(@" Degrees = %i ",numberOfDegrees);
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
     circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
@@ -253,7 +273,7 @@
 }
 
 -(void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldBeginTouchAtPoint:(CGPoint)point{
-    if (CGRectContainsPoint(clockContainerView.frame, point)) {
+    if (CGRectContainsPoint(clockContainerView.frame, point) && scrollView.contentSize.height != self.frame.size.height) {
         [clockContainerView setAlpha:0.4];
     }
     
@@ -272,11 +292,27 @@
 }
 
 - (void)buttonWasPressed{
-    NSLog(@"BUTTON PRESS");
+    [self showThumbView];
 }
 
 - (void)endbuttonPress{
     [clockContainerView setAlpha:1.0];
+}
+
+- (void)showThumbView{
+
+    
+//    [animatingThumbView startAnimating];
+//    
+//    [UIView animateWithDuration:0.5 animations:^{
+//        [animatingThumbView setAlpha:1.0];
+//    }completion:^(BOOL finished){
+//        [UIView animateWithDuration:0.5 animations:^{
+//            [animatingThumbView setAlpha:0.0];
+//             }completion:^(BOOL finished){
+//                 [animatingThumbView stopAnimating];
+//        }];
+//    }];
 }
 
 

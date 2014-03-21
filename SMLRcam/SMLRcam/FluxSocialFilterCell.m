@@ -21,9 +21,6 @@
     else if (filterType == followers_filterType){
         [self.descriptorLabel setText:@"People I follow"];
     }
-    else if (filterType == friends_filterType){
-        [self.descriptorLabel setText:@"Friends"];
-    }
     else{
         
     }

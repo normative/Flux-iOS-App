@@ -24,7 +24,10 @@
     UIView *circularScrollerView;
     CAShapeLayer *circleLayer;
     
+    UIImageView*animatingThumbView;
+    
     BOOL isAnimating;
+    float sizeRatio;
     
     float oldScrollPos;
     __weak id <TimeFilterControlDelegate> delegate;
@@ -37,6 +40,7 @@
 
 -(void)setViewForContentCount:(int)count reverseAnimated:(BOOL)reverseAnimated;
 - (void)setScrollIndicatorCenter:(CGPoint)centre;
+- (void)showThumbView;
 
 
 @end

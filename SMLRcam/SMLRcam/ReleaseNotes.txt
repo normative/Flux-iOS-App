@@ -1,4 +1,26 @@
 Release Notes:
+
+-Social structure updated:
+  1) Interested in someone's pictures? Send a follower request and filter by just their stuff
+  2) Manage your own followers and thise you're following under the profile menu
+  
+- Walkthrough added
+- Filters has been tweaked
+- Public profile tweaks
+- Get to a public profile from tapping an image
+- Image capture tweaks
+- Cleans up the experience for those with older devices
+- Various ios 7.1-related bug fixes
+- Other assorted bug fixes + improvements
+
+
+******************************************
+
+V0.22 B02
+
+Released: 2014-03-19 17:30:00
+
+Release Notes:
 - update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1
 - update to use msec on timestamp from images to eliminate duplication when rapid-fire collecting
 - update pedometer parameters for improved reliability
@@ -6,6 +28,7 @@ Release Notes:
 - increase Kalman reset distance to 15.0 m from 10.0 m
 - bug fix to ensure images are rendered in same plane as user
 - updates to heading-corrected orientation (not fully complete/not default)
+- fixes to reduce creation of NSDateFormatters
 
 ******************************************
 

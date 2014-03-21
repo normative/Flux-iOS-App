@@ -588,7 +588,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         imageCaptureIsActive = NO;
     }
-
 }
 
 - (void)imageCaptureDidPop:(NSNotification *)notification{
@@ -636,6 +635,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     else{
         [self deactivateImageCapture];
+        [self.fluxDisplayManager timeBracketDidChange:0];
     }
 }
 
@@ -691,8 +691,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             [progressView setProgress:(float)progress/totalBytes-0.10 animated:YES];
         }];
         [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Image Upload Failed with error %d", (int)[e code]]
-                                                                message:[e localizedDescription]
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Image Upload Failed :("
+                                                                message:@"Something happened when uploading one of your images, we're really sorry about that."
                                                                delegate:nil
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
@@ -722,10 +722,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 #pragma mark Friend Requests
-- (void)checkForFriendRequests{
+- (void)checkForFollowerRequests{
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
-    [request setUserFriendRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
+    [request setUserFollowerRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
         //do something with the UserID
         if (requestsArr.count>0) {
             [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",(int)requestsArr.count]];
@@ -742,9 +742,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSLog(@"Friend request check failed with error %d",(int)[e code]);
+        NSLog(@"follower request check failed with error %d",(int)[e code]);
     }];
-    [self.fluxDisplayManager.fluxDataManager requestFriendRequestsForUserWithDataRequest:request];
+    [self.fluxDisplayManager.fluxDataManager requestFollowingRequestsForUserWithDataRequest:request];
 }
 
 #pragma mark Other Camera view methods
@@ -849,11 +849,35 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self updateFilterIcon];
 }
 
+#pragma mark Tutorial View
+
+- (void) didPressGetStartedBtn {
+    [ScanUIContainerView setAlpha:0.0];
+    [ScanUIContainerView setHidden:NO];
+    
+    [UIView animateWithDuration: 0.3
+                     animations:^{
+                         tutorialView.alpha = 0;
+                         ScanUIContainerView.alpha = 1;
+                     }
+                     completion:^(BOOL finished){
+                         [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
+                                                                             object:self userInfo:nil];
+                         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                         [defaults setBool:YES forKey:@"showedTutorial"];
+                         
+                         [tutorialView removeFromSuperview];
+                         tutorialView.delegate = NULL;
+                     }];
+}
+
+
 #pragma mark - view lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
     self.screenName = @"Scan View";
     
     self.fluxLoggerService = [FluxLoggerService sharedLoggerService];
@@ -908,6 +932,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [self setupHistoricalPhotoPicker];
     
     firstContent = YES;
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"showedTutorial"]) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
+                                                            object:self userInfo:nil];
+        
+        
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        CGFloat screenWidth = screenRect.size.width;
+        CGFloat screenHeight = screenRect.size.height;
+        tutorialView = [[FluxTutorialView alloc] initWithFrame: CGRectMake(0, 0, screenWidth, screenHeight)];
+        tutorialView.delegate = self;
+        
+        [self.view addSubview:tutorialView];
+        
+        [ScanUIContainerView setHidden:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -916,7 +957,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-        [self checkForFriendRequests];
+        [self checkForFollowerRequests];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

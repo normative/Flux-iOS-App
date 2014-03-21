@@ -113,11 +113,23 @@
         paragraphStyle.lineSpacing = 17;
         paragraphStyle.alignment = NSTextAlignmentCenter;
         
-        NSDictionary *attribs = @{
-                                  NSForegroundColorAttributeName: [UIColor whiteColor],
-                                  NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:14.0],
-                                  NSParagraphStyleAttributeName : style
-                                  };
+        NSDictionary *attribs;
+        if (text.length > 75) {
+            attribs = @{
+                        NSForegroundColorAttributeName: [UIColor whiteColor],
+                        NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:11.0],
+                        NSParagraphStyleAttributeName : style
+                        };
+        }
+        else{
+            attribs = @{
+                        NSForegroundColorAttributeName: [UIColor whiteColor],
+                        NSFontAttributeName: [UIFont fontWithName:@"Akkurat" size:14.0],
+                        NSParagraphStyleAttributeName : style
+                        };
+        }
+        
+        
         NSMutableAttributedString *attributedText =
         [[NSMutableAttributedString alloc] initWithString:text
                                                attributes:attribs];

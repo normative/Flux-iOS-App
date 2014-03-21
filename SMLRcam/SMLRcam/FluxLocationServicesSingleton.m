@@ -82,7 +82,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     }
 
     else if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Welcome.", nil) message:@"Flux needs to know your location to place images, and find images around the world. Your location is never shared to anyone outside Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"Ok, I get It", nil) otherButtonTitles: nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Welcome.", nil) message:@"Flux needs to know your location to place images, and find images around the world. Your location is never shared to anyone outside Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"Got it!", nil) otherButtonTitles: nil];
         [alert showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
             [self beginLocatingAfterPermissions];
         }];
@@ -283,10 +283,10 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         return;
     }
     
-    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    
-    //log location params
+//    //log location params
+//    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+//    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+//    
 //    NSLog(@"Adding new location  with date: %@ \nAnd Location: %0.15f, %0.15f, %f +/- %f (h), %f (v)",
 //          [dateFormat stringFromDate:newLocation.timestamp], newLocation.coordinate.latitude, newLocation.coordinate.longitude,
 //          newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);

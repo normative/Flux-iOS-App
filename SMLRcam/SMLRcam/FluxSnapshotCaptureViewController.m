@@ -280,12 +280,12 @@
 
 - (IBAction)shareButtonAction:(id)sender {
     //default share
-    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:[NSArray arrayWithObject:newSnapshot] applicationActivities:nil];
-    activityVC.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll]; //or whichever you don't need
-    [self presentViewController:activityVC animated:YES completion:nil];
-    
+//    UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:[NSArray arrayWithObject:newSnapshot] applicationActivities:nil];
+//    activityVC.excludedActivityTypes = @[UIActivityTypeSaveToCameraRoll]; //or whichever you don't need
+//    [self presentViewController:activityVC animated:YES completion:nil];
+//    
     //flux-based share
-//    [self performSegueWithIdentifier:@"annotationSegue" sender:self];
+    [self performSegueWithIdentifier:@"annotationSegue" sender:self];
     
 }
 @end

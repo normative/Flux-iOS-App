@@ -38,15 +38,13 @@
     [self.followersTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.followersTitleLabel.font.pointSize]];
     [self.followersCountLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.followersCountLabel.font.pointSize]];
     [self.followingTitleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.followingTitleLabel.font.pointSize]];
+    [self.statusLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.statusLabel.font.pointSize]];
+
     
-    [self.friendButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.friendButton.titleLabel.font.pointSize]];
-    [self.followerButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.followerButton.titleLabel.font.pointSize]];
+    [self.followButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.followButton.titleLabel.font.pointSize]];
     
-    [self.followerButton setImage:[UIImage imageNamed:@"follow"] forState:UIControlStateNormal];
-    [self.followerButton setImage:[UIImage imageNamed:@"following"] forState:UIControlStateSelected];
-    
-    [self.friendButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
-    [self.friendButton setImage:[UIImage imageNamed:@"friends"] forState:UIControlStateSelected];
+    [self.followButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
+    [self.followButton setImage:[UIImage imageNamed:@"friends"] forState:UIControlStateSelected];
     
     UIView *bgColorView = [[UIView alloc] init];
     bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
@@ -70,65 +68,65 @@
     }
 }
 
-- (IBAction)friendButtonAction:(id)sender {
-    switch (self.userObject.friendState) {
+- (IBAction)followButtonAction:(id)sender {
+    switch (self.userObject.amFollowerFlag) {
         case 0:
         {
             [UIActionSheet showInView:self.superview
                             withTitle:nil
                     cancelButtonTitle:@"Cancel"
                destructiveButtonTitle:nil
-                    otherButtonTitles:@[@"Send Friend Request"]
+                    otherButtonTitles:@[@"Send Follow Request"]
                              tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                  if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldSendFriendRequestToUser:)]) {
-                                         [self.friendButton setUserInteractionEnabled:NO];
-                                         [delegate PublicProfileCell:self shouldSendFriendRequestToUser:self.userObject];
-                                         [self.friendButton setUserInteractionEnabled:YES];
+                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldSendFollowRequestToUser:)]) {
+                                         [self.followButton setUserInteractionEnabled:NO];
+                                         [delegate PublicProfileCell:self shouldSendFollowRequestToUser:self.userObject];
+                                         [self.followButton setUserInteractionEnabled:YES];
                                      }
                                  }
                              }];
         }
             break;
-        case 2:{
+        case 1:{
             [UIActionSheet showInView:self.superview
                             withTitle:nil
                     cancelButtonTitle:@"Cancel"
-               destructiveButtonTitle:@"Cancel Friend Request"
+               destructiveButtonTitle:@"Cancel Follow Request"
                     otherButtonTitles:nil
                              tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                  if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldUnfriendUser:)]) {
-                                         [self.friendButton setUserInteractionEnabled:NO];
-                                         [delegate PublicProfileCell:self shouldUnfriendUser:self.userObject];
-                                         [self.friendButton setUserInteractionEnabled:YES];
+                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldUnfollowUser:)]) {
+                                         [self.followButton setUserInteractionEnabled:NO];
+                                         [delegate PublicProfileCell:self shouldUnfollowUser:self.userObject];
+                                         [self.followButton setUserInteractionEnabled:YES];
                                      }
                                  }
                              }];
         }
             return;
             break;
-        case 1:{
-            if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldAcceptFriendRequestToUser:)]) {
-                [self.friendButton setUserInteractionEnabled:NO];
-                [delegate PublicProfileCell:self shouldAcceptFriendRequestToUser:self.userObject];
-                [self.friendButton setUserInteractionEnabled:YES];
-            }
-            
-        }
+//        case 1:{
+//            if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldAcceptFollowRequestToUser:)]) {
+//                [self.followButton setUserInteractionEnabled:NO];
+//                [delegate PublicProfileCell:self shouldAcceptFollowRequestToUser:self.userObject];
+//                [self.followButton setUserInteractionEnabled:YES];
+//            }
+//            
+//        }
             break;
-        case 3:{
+        case 2:{
             [UIActionSheet showInView:self.superview
                             withTitle:nil
                     cancelButtonTitle:@"Cancel"
-               destructiveButtonTitle:@"Unfriend"
+               destructiveButtonTitle:@"Unfollow"
                     otherButtonTitles:nil
                              tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                  if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldUnfriendUser:)]) {
-                                         [self.friendButton setUserInteractionEnabled:NO];
-                                         [delegate PublicProfileCell:self shouldUnfriendUser:self.userObject];
-                                         [self.friendButton setUserInteractionEnabled:YES];
+                                     if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldUnfollowUser:)]) {
+                                         [self.followButton setUserInteractionEnabled:NO];
+                                         [delegate PublicProfileCell:self shouldUnfollowUser:self.userObject];
+                                         [self.followButton setUserInteractionEnabled:YES];
                                      }
                                  }
                              }];
@@ -136,32 +134,6 @@
             break;
         default:
             break;
-    }
-}
-
-- (IBAction)followButtonAction:(id)sender {
-    if (self.userObject.isFollowing) {
-        [UIActionSheet showInView:self.superview
-                        withTitle:nil
-                cancelButtonTitle:@"Cancel"
-           destructiveButtonTitle:@"Unfollow"
-                otherButtonTitles:nil
-                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                             if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                 if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldUnfollowUser:)]) {
-                                     [self.followerButton setUserInteractionEnabled:NO];
-                                     [delegate PublicProfileCell:self shouldUnfollowUser:self.userObject];
-                                     [self.followerButton setUserInteractionEnabled:YES];
-                                 }
-                             }
-                         }];
-    }
-    else{
-        if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldFollowUser:)]) {
-            [self.followerButton setUserInteractionEnabled:NO];
-            [delegate PublicProfileCell:self shouldFollowUser:self.userObject];
-            [self.followerButton setUserInteractionEnabled:YES];
-        }
     }
 }
 
@@ -192,35 +164,35 @@
     else{
         [self.bioLabel setText:@""];
     }
-    if (userObject.isFollowing) {
-        [self.followerButton setSelected:YES];
-    }
-    else{
-        [self.followerButton setSelected:NO];
-    }
     
-    switch (userObject.friendState) {
+    switch (userObject.amFollowerFlag) {
         case 0:
-            [self.friendButton setSelected:NO];
-            [self.friendButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
-            break;
-        case 2:
-            [self.friendButton setSelected:NO];
-            [self.friendButton setImage:[UIImage imageNamed:@"friendSent"] forState:UIControlStateNormal];
+            [self.followButton setSelected:NO];
+            [self.followButton setImage:[UIImage imageNamed:@"friend"] forState:UIControlStateNormal];
             break;
         case 1:
-            [self.friendButton setSelected:NO];
-                        [self.friendButton setFrame:CGRectMake(self.friendButton.frame.origin.x, self.frame.origin.y, self.frame.size.width+20, self.frame.size.height)];
-            [self.friendButton setImage:[UIImage imageNamed:@"friendAccept"] forState:UIControlStateNormal];
-
+            [self.followButton setSelected:NO];
+            [self.followButton setImage:[UIImage imageNamed:@"friendSent"] forState:UIControlStateNormal];
             break;
-        case 3:
-            [self.friendButton setSelected:YES];
+//            case 1:
+//                [self.followButton setSelected:NO];
+//                [self.followButton setFrame:CGRectMake(self.followButton.frame.origin.x, self.frame.origin.y, self.frame.size.width+20, self.frame.size.height)];
+//                [self.followButton setImage:[UIImage imageNamed:@"friendAccept"] forState:UIControlStateNormal];
+//                
+//                break;
+        case 2:
+            [self.followButton setSelected:YES];
             break;
             
         default:
             break;
     }
+    
+    if (userObject.isFollowingFlag == 2) {
+        [self.statusLabel setText:[NSString stringWithFormat:@"@%@ is following you",userObject.username]];
+    }
+    
+
     
     
     [self.photosCountLabel setText:[NSString stringWithFormat:@"%i",userObject.imageCount]];

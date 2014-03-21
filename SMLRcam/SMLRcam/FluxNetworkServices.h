@@ -20,6 +20,7 @@ typedef NSUUID FluxRequestID;
 
 extern NSString* const AWSProductionServerURL;
 extern NSString* const AWSTestServerURL;
+extern NSString* const AWSS3TestServerURL;
 extern NSString* const DSDLocalTestServerURL;
 
 extern NSString* const FluxServerURL;
@@ -74,9 +75,7 @@ extern NSString* const FluxServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didLogoutWithRequestID:(FluxRequestID *)requestID;
 
 //social stuff
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendRequestsForUser:(NSArray*)friendRequests
-           andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFriendListForUser:(NSArray*)friends
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingRequestsForUser:(NSArray*)friendRequests
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnFollowingListForUser:(NSArray*)followings
            andRequestID:(FluxRequestID *)requestID;
@@ -84,17 +83,13 @@ extern NSString* const FluxServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUsersListForQuery:(NSArray*)users
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFollowUserWithID:(int)userID
-           andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfollowUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFriendRequestToUserWithID:(int)userID
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFollowingRequestToUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didAcceptFriendRequestFromUserWithID:(int)userID
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didAcceptFollowingRequestFromUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didIgnoreFriendRequestFromUserWithID:(int)userID
-           andRequestID:(FluxRequestID *)requestID;
-- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfriendUserWithID:(int)userID
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didIgnoreFollowingRequestFromUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnContactList:(NSArray *)contacts
            andRequestID:(FluxRequestID *)requestID;
@@ -238,12 +233,7 @@ return's a profile image for a given userID and size
 /**
  return's a user's active friend requests
  **/
-- (void)getFriendRequestsForUserWithRequestID:(NSUUID *)requestID;
-
-/**
- return's a user's friend list for a given userID
- **/
-- (void)getFriendsListForUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+- (void)getFollowerRequestsForUserWithRequestID:(NSUUID *)requestID;
 
 /**
  return's a user's following list for a given userID
@@ -261,11 +251,6 @@ return's a profile image for a given userID and size
 - (void)getUsersListForQuery:(NSString*)query withRequestID:(NSUUID *)requestID;
 
 /**
- Adds the supplied userID as a follower of the activeUser
- **/
-- (void)followUserID:(int)userID withRequestID:(NSUUID *)requestID;
-
-/**
  removes the supplied userID as a follower of the activeUser
  **/
 - (void)unfollowUserID:(int)userID withRequestID:(NSUUID *)requestID;
@@ -273,22 +258,17 @@ return's a profile image for a given userID and size
 /**
  sends the supplied userID as a friend request from the activeUser
  **/
-- (void)sendFriendRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+- (void)sendFollowRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 /**
  accepts the friend request from the supplied userID from the activeUser
  **/
-- (void)acceptFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+- (void)acceptFollowingRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 /**
  ignores the friend request from the supplied userID from the activeUser
  **/
-- (void)ignoreFriendRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
-
-/**
- removes the supplied userID from the ativeUser's friend list
- **/
-- (void)unfriedUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
+- (void)ignoreFollowingRequestFromUserWithID:(int)userID withRequestID:(NSUUID *)requestID;
 
 //aliases
 /**
