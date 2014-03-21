@@ -91,7 +91,7 @@ static const CGFloat labelPadding = 10;
     [userameButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:14]];
 
     if ([_photo respondsToSelector:@selector(username)]) {
-        [userameButton setTitle:[NSString stringWithFormat:@"@%@",[_photo username]] ? [_photo username] : @" " forState:UIControlStateNormal];
+        [userameButton setTitle:[_photo username] ? [NSString stringWithFormat:@"@%@",[_photo username]] : @" " forState:UIControlStateNormal];
     }
     [userameButton addTarget:self action:@selector(profileTapped) forControlEvents:UIControlEventTouchUpInside];
     
