@@ -1,5 +1,6 @@
 Release Notes:
 - completed heading-corrected orientation using new method (not yet default)
+- Public profile tweaks
 
 ******************************************
 

@@ -8,7 +8,7 @@
 
 #import "FluxPublicProfileCell.h"
 #import "UIActionSheet+Blocks.h"
-
+#import "UICKeyChainStore.h"
 
 @implementation FluxPublicProfileCell
 
@@ -198,6 +198,14 @@
     [self.photosCountLabel setText:[NSString stringWithFormat:@"%i",userObject.imageCount]];
     [self.followersCountLabel setText:[NSString stringWithFormat:@"%i",userObject.followerCount]];
     [self.followingCountLabel setText:[NSString stringWithFormat:@"%i",userObject.followingCount]];
+    
+    
+    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+    if (_userObject.userID == userID.intValue) {
+        [self.followButton setHidden:YES];
+        [self.statusLabel setHidden:YES];
+    }
+    
 }
 
 @end
