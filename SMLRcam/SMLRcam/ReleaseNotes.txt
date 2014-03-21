@@ -1,4 +1,7 @@
 Release Notes:
+
+- Public profile tweaks
+
 ******************************************
 
 V0.22 B03
