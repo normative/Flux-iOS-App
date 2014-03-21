@@ -52,7 +52,7 @@ bool registeredForAPNS = false;
     }
 #else
     NSLog(@"startup: debug=0, server=%@", FluxServerURL);
-    if (FluxServerURL == AWSProductionServerURL)
+    if ((FluxServerURL == AWSProductionServerURL) || (FluxServerURL == AWSS3TestServerURL))
     {
         // Let the device know we want to receive push notifications - will hook into APNs production server.
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:

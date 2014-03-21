@@ -1,8 +1,16 @@
 Release Notes:
+******************************************
+
+V0.22 B03
+
+Released: 2014-03-20 11:30:00
+
+Release Notes:
+- update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1
 
 -Social structure updated:
   1) Interested in someone's pictures? Send a follower request and filter by just their stuff
-  2) Manage your own followers and thise you're following under the profile menu
+  2) Manage your own followers and those you're following under the profile menu
   
 - Walkthrough added
 - Filters has been tweaked
@@ -12,7 +20,7 @@ Release Notes:
 - Cleans up the experience for those with older devices
 - Various ios 7.1-related bug fixes
 - Other assorted bug fixes + improvements
-
+- APNs follower notifications are working again
 
 ******************************************
 
