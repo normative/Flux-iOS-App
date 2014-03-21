@@ -15,9 +15,7 @@ typedef struct{
 } euler_angles;
 
 const float quaternion_slerp_interpolation_factor = 0.25;
-const float pitch_heading_flip_limit = 135.0 * M_PI / 180.0;
-const float pitch_polar_region_limit_down = 5.0 * M_PI / 180.0;
-const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
+const float yaw_drift_correction_gain = 0.05;
 
 @implementation FluxMotionManagerSingleton
 
@@ -106,6 +104,8 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
     }
 }
 
+# pragma mark - Heading-Corrected Orientation
+
 - (void)calcAttitudeFromDeviceMotion:(CMDeviceMotion *)devMotion andHeading:(CLHeading *)heading intoQuaternion:(CMQuaternion *)outquat
 {
     // Phone reference frame: x right, y top, z up from screen
@@ -137,7 +137,7 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
         delta_yaw_temp = [self calculateSignedAngleBetween2DVector:m_earth andVector:m_t0];
         
         // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily
-        delta_yaw = delta_yaw + 0.05*[self angleDiffWithAngleA:delta_yaw andAngleB:delta_yaw_temp];
+        delta_yaw = delta_yaw + yaw_drift_correction_gain * [self angleDiffWithAngleA:delta_yaw andAngleB:delta_yaw_temp];
         delta_yaw = [self constrainAngle:delta_yaw];
 
         NSLog(@"delta_yaw: %f, delta_yaw_temp: %f, m_earth: (%.2f, %.2f)", delta_yaw * 180.0/M_PI, delta_yaw_temp * 180.0/M_PI, m_earth.x, m_earth.y);
@@ -161,6 +161,8 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
     outquat->z = quat_final.z;
     outquat->w = quat_final.w;
 }
+
+# pragma mark - Math Helper Methods
 
 // Calculate 2D earth-plane projection of input vector (in device frame) in the base reference frame specified by device pose
 - (GLKVector2)calcVectorProjectionInEarthFrameWithPose:(GLKQuaternion *)quat andVector:(GLKVector3 *)v_vector
@@ -242,6 +244,8 @@ const float pitch_polar_region_limit_up = (180.0 - 5.0) * M_PI / 180.0;
     
     return angleSequence;
 }
+
+# pragma mark - Debug Utilities
 
 - (void)changeHeadingCorrectedMotionMode:(bool)enableMode
 {
