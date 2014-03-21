@@ -63,6 +63,7 @@
 		AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2D17E79938007F6764 /* libz.dylib */; };
 		AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA17D18118494178004B0095 /* FluxEditProfileViewController.m */; };
 		AA18852E18DB76BB0070B061 /* CustomBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = AA18852C18DB76BB0070B061 /* CustomBadge.m */; };
+		AA18853018DCE1BD0070B061 /* AKKURATL.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA18852F18DCE1BD0070B061 /* AKKURATL.ttf */; };
 		AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */; };
 		AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA25515E18355A6400DCA62F /* FluxSocialManager.m */; };
 		AA255166183577D900DCA62F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA255165183577D900DCA62F /* Social.framework */; };
@@ -293,6 +294,7 @@
 		AA17D18118494178004B0095 /* FluxEditProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxEditProfileViewController.m; sourceTree = "<group>"; };
 		AA18852C18DB76BB0070B061 /* CustomBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomBadge.m; sourceTree = "<group>"; };
 		AA18852D18DB76BB0070B061 /* CustomBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomBadge.h; sourceTree = "<group>"; };
+		AA18852F18DCE1BD0070B061 /* AKKURATL.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AKKURATL.ttf; sourceTree = "<group>"; };
 		AA1BCE3D17D0CBA300136EFF /* FluxAVCameraSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxAVCameraSingleton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxAVCameraSingleton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA25515D18355A6400DCA62F /* FluxSocialManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialManager.h; sourceTree = "<group>"; };
@@ -888,6 +890,7 @@
 		AA47BEC517CBDA5100ED9B39 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				AA18852F18DCE1BD0070B061 /* AKKURATL.ttf */,
 				AA47BECB17CBE84300ED9B39 /* AKKURATB.ttf */,
 				AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */,
 			);
@@ -1553,6 +1556,7 @@
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
+				AA18853018DCE1BD0070B061 /* AKKURATL.ttf in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				2227FD5918D75A71005911D7 /* FluxTutorialView.xib in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,

@@ -197,8 +197,8 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"user_id":        @"userID",
-                                                  @"is_following":   @"isFollowing",
-                                                  @"am_follower":     @"amFollowerFlag",
+                                                  @"am_follower":       @"amFollowerFlag",
+                                                  @"is_following":   @"isFollowingFlag",
                                                   @"alias_name":   @"aliasName",
                                                   @"display_name":   @"displayName",
                                                   @"profile_pic_URL":   @"profilePicURL",

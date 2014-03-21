@@ -8,6 +8,7 @@
 
 #import "FluxSettingsViewController.h"
 #import "FluxRegisterViewController.h"
+#import "FluxScanViewController.h"
 #import "UICKeyChainStore.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "ProgressHUD.h"
@@ -120,36 +121,46 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 1;
+    return sections_count-1;
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-//    if (section == 0) {
-//        return @"General";
-//    }
-//    else
-        return @"Linked Accounts";
+    switch (section) {
+        case socialAccounts_section:
+            return @"SOCIAL ACCOUNTS";
+            break;
+        case walkthroughReset_section:
+            return @"OTHER";
+            break;
+            //should never happen
+        default:
+            return @"";
+            break;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     return 30.0;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    UIView*view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, 30.0)];
-    [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    float height = [self tableView:tableView heightForHeaderInSection:section];
+    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, height)];
+    [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.0]];
     
     // Create label with section title
-    UILabel*label = [[UILabel alloc] init];
-    label.frame = CGRectMake(20, 0, 150, 30.0);
+    UILabel *label = [[UILabel alloc] init];
+    label.frame = CGRectMake(8, 12, 150, height);
     label.textColor = [UIColor whiteColor];
-    [label setFont:[UIFont fontWithName:@"Akkurat" size:15.0]];
+    [label setFont:[UIFont fontWithName:@"Akkurat-Light" size:14]];
     label.text = [self tableView:tableView titleForHeaderInSection:section];
     label.backgroundColor = [UIColor clearColor];
-    //[label setCenter:CGPointMake(label.center.x, view.center.y)];
+    [label setCenter:CGPointMake(label.center.x, view.center.y+1)];
     [view addSubview:label];
+    
     return view;
 }
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -157,7 +168,21 @@
 //        return 0;
 //    }
 //    else
-        return 2;
+    switch (section) {
+        case socialAccounts_section:
+            return 2;
+            break;
+        case walkthroughReset_section:
+            return 2;
+            break;
+        case logout_section:
+            return 1;
+            break;
+            //should never happen
+        default:
+            return 1;
+            break;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -172,64 +197,116 @@
 //        
 //        [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.textLabel.font.pointSize]];
 //    }
-    static NSString *socialCellIdentifier;
-    FluxSocialManagementCell * socialMgmtcell;
-    switch (indexPath.row)
-    {
-        case 0:
+    switch (indexPath.section) {
+        case socialAccounts_section:
         {
-            if (![UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]) {
-                socialCellIdentifier = @"socialManagementCellConnect";
-                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
-                [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
-                [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_facebook"]]];
-            }
-            else{
-                socialCellIdentifier = @"socialManagementCellClear";
-                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
-                [socialMgmtcell setIsActivated:YES];
-                [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
-                [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_facebook"]];
-                [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]];
-                
-                //if the user registered with this service, un-linking doesn't make sense.
-                if ([UICKeyChainStore stringForKey:FluxDidRegisterKey service:FacebookService]) {
-                    [socialMgmtcell.cellButton setHidden:YES];
+            static NSString *socialCellIdentifier;
+            FluxSocialManagementCell * socialMgmtcell;
+            switch (indexPath.row)
+            {
+                case 0:
+                {
+                    if (![UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]) {
+                        socialCellIdentifier = @"socialManagementCellConnect";
+                        socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
+                        [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
+                        [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_facebook"]]];
+                    }
+                    else{
+                        socialCellIdentifier = @"socialManagementCellClear";
+                        socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
+                        [socialMgmtcell setIsActivated:YES];
+                        [socialMgmtcell.socialPartnerLabel setText:@"Facebook"];
+                        [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_facebook"]];
+                        [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxNameKey service:FacebookService]];
+                        
+                        //if the user registered with this service, un-linking doesn't make sense.
+                        if ([UICKeyChainStore stringForKey:FluxDidRegisterKey service:FacebookService]) {
+                            [socialMgmtcell.cellButton setHidden:YES];
+                        }
+                    }
                 }
+                    break;
+                case 1:
+                {
+                    if (![UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]) {
+                        socialCellIdentifier = @"socialManagementCellConnect";
+                        socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
+                        [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
+                        [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_twitter"]]];
+                        [socialMgmtcell.socialDescriptionLabel setText:@""];
+                        [socialMgmtcell setIsActivated:NO];
+                    }
+                    else{
+                        socialCellIdentifier = @"socialManagementCellClear";
+                        socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
+                        [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
+                        [socialMgmtcell setIsActivated:YES];
+                        [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_twitter"]];
+                        [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
+                        
+                        //if the user registered with this service, un-linking doesn't make sense.
+                        if ([UICKeyChainStore stringForKey:FluxDidRegisterKey service:TwitterService]) {
+                            [socialMgmtcell.cellButton setHidden:YES];
+                        }
+                    }
+                }
+                    break;
+                default:
+                    break;
             }
+            
+            return socialMgmtcell;
+        }
+        break;
+        case walkthroughReset_section:
+        {
+            static NSString *simpleTableIdentifier = @"simpleCell";
+            
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
+            
+            if (cell == nil) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
+            }
+            [cell setBackgroundColor:[UIColor clearColor]];
+            [cell.textLabel setText: (indexPath.row == 0 ? @"Show Opening Tutorial" : @"Logout")];
+            [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
+            [cell.textLabel setTextColor:[UIColor whiteColor]];
+            
+            UIView *bgColorView = [[UIView alloc] init];
+            bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
+            [cell setSelectedBackgroundView:bgColorView];
+            return cell;
         }
             break;
-        case 1:
+        case logout_section:
         {
-            if (![UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]) {
-                socialCellIdentifier = @"socialManagementCellConnect";
-                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
-                [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
-                [socialMgmtcell.socialIconImageView setImage:[self imageDesaturated:[UIImage imageNamed:@"import_twitter"]]];
-                [socialMgmtcell.socialDescriptionLabel setText:@""];
-                [socialMgmtcell setIsActivated:NO];
-            }
-            else{
-                socialCellIdentifier = @"socialManagementCellClear";
-                socialMgmtcell = [self socialMgmtCellForTableView:tableView withIdentifier:socialCellIdentifier];
-                [socialMgmtcell.socialPartnerLabel setText:@"Twitter"];
-                [socialMgmtcell setIsActivated:YES];
-                [socialMgmtcell.socialIconImageView setImage:[UIImage imageNamed:@"import_twitter"]];
-                [socialMgmtcell.socialDescriptionLabel setText:[UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService]];
-                
-                //if the user registered with this service, un-linking doesn't make sense.
-                if ([UICKeyChainStore stringForKey:FluxDidRegisterKey service:TwitterService]) {
-                    [socialMgmtcell.cellButton setHidden:YES];
-                }
-            }
+//            static NSString *simpleTableIdentifier = @"simpleCell";
+//            
+//            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
+//            
+//            if (cell == nil) {
+//                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
+//            }
+//            [cell setBackgroundColor:[UIColor clearColor]];
+//            [cell.textLabel setText: @"Logout"];
+//            [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
+//            [cell.textLabel setTextColor:[UIColor whiteColor]];
+//            
+//            UIView *bgColorView = [[UIView alloc] init];
+//            bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
+//            [cell setSelectedBackgroundView:bgColorView];
+//            return cell;
+            return nil;
         }
             break;
-       default:
+        default:
+            //shouldn't happen
+            return nil;
             break;
     }
-
-    return socialMgmtcell;
 }
+
 
 - (FluxSocialManagementCell*)socialMgmtCellForTableView :(UITableView*)tableView withIdentifier:(NSString*)identifier{
     FluxSocialManagementCell * socialMgmtcell = [tableView dequeueReusableCellWithIdentifier:identifier];
@@ -243,6 +320,31 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    switch (indexPath.section) {
+        case socialAccounts_section:
+        {
+            return;
+        }
+            break;
+        case walkthroughReset_section:
+        {
+            if (indexPath.row == 0) {
+                [self resetWalkthrough];
+            }
+            else{
+                [self logoutButtonAction:nil];
+            }
+        }
+            break;
+        case logout_section:
+        {
+           
+        }
+            break;
+            
+        default:
+            break;
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 //    [self SocialManagementCellButtonWasTapped:(FluxSocialManagementCell*)[tableView cellForRowAtIndexPath:indexPath]];
 }
@@ -253,7 +355,7 @@
                 [UIActionSheet showInView:self.view
                                 withTitle:@"Facebook"
                         cancelButtonTitle:@"Cancel"
-                   destructiveButtonTitle:@"Unlink"
+                   destructiveButtonTitle:@"Disconnect"
                         otherButtonTitles:nil
                                  tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                      if (buttonIndex != actionSheet.cancelButtonIndex) {
@@ -272,7 +374,7 @@
                             withTitle:@"Facebook"
                     cancelButtonTitle:@"Cancel"
                destructiveButtonTitle:nil
-                    otherButtonTitles:@[@"Link"]
+                    otherButtonTitles:@[@"Connect"]
                              tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                  if (buttonIndex != actionSheet.cancelButtonIndex) {
                                      //link facebook
@@ -286,7 +388,7 @@
                 [UIActionSheet showInView:self.view
                                 withTitle:@"Twitter"
                         cancelButtonTitle:@"Cancel"
-                   destructiveButtonTitle:@"Unlink"
+                   destructiveButtonTitle:@"Disconnect"
                         otherButtonTitles:nil
                                  tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                      if (buttonIndex != actionSheet.cancelButtonIndex) {
@@ -301,7 +403,7 @@
                             withTitle:@"Twitter"
                     cancelButtonTitle:@"Cancel"
                destructiveButtonTitle:nil
-                    otherButtonTitles:@[@"Link"]
+                    otherButtonTitles:@[@"Connect"]
                              tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                  if (buttonIndex != actionSheet.cancelButtonIndex) {
                                      //link twitter
@@ -344,7 +446,7 @@
 }
 
 
-#pragma mark - Logout
+#pragma mark - Cell Actions
 
 - (void)logout{
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
@@ -361,6 +463,25 @@
             
         }];
     }
+}
+
+- (void)resetWalkthrough{
+    [UIActionSheet showInView:self.view
+                    withTitle:@"Are you sure you want to see the walkthrough again?"
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:nil
+            otherButtonTitles:@[@"Sure"]
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             //oush to scan and show walkthrough
+                             NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+                             [defaults removeObjectForKey:@"showedTutorial"];
+                             [(FluxScanViewController*)self.parentViewController.presentingViewController showTutorial];
+                             [self.parentViewController.presentingViewController dismissViewControllerAnimated:YES completion:^{
+                                 
+                             }];
+                         }
+                     }];
 }
 
 - (IBAction)logoutButtonAction:(id)sender {

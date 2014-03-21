@@ -935,19 +935,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"showedTutorial"]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
-                                                            object:self userInfo:nil];
-        
-        
-        CGRect screenRect = [[UIScreen mainScreen] bounds];
-        CGFloat screenWidth = screenRect.size.width;
-        CGFloat screenHeight = screenRect.size.height;
-        tutorialView = [[FluxTutorialView alloc] initWithFrame: CGRectMake(0, 0, screenWidth, screenHeight)];
-        tutorialView.delegate = self;
-        
-        [self.view addSubview:tutorialView];
-        
-        [ScanUIContainerView setHidden:YES];
+        [self showTutorial];
     }
 }
 
@@ -1013,6 +1001,22 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangePedometerCountDisplay object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
+}
+
+- (void)showTutorial{
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
+                                                        object:self userInfo:nil];
+    
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    CGFloat screenHeight = screenRect.size.height;
+    tutorialView = [[FluxTutorialView alloc] initWithFrame: CGRectMake(0, 0, screenWidth, screenHeight)];
+    tutorialView.delegate = self;
+    
+    [self.view addSubview:tutorialView];
+    
+    [ScanUIContainerView setHidden:YES];
 }
 
 #pragma mark - View Transition Animations

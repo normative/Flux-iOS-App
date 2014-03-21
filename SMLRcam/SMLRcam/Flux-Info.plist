@@ -51,6 +51,7 @@
 	<array>
 		<string>AKKURAT.ttf</string>
 		<string>AKKURATB.ttf</string>
+		<string>AKKURATL.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array/>
