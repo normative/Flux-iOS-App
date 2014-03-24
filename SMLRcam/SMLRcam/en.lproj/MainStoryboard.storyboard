@@ -1297,6 +1297,7 @@
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="crossDissolve" id="AGI-r8-OnT"/>
                         <segue destination="T8N-fK-BYa" kind="modal" identifier="pushSettingsView" modalTransitionStyle="coverVertical" id="jXG-Xo-8un"/>
                         <segue destination="OPi-Zk-6ZT" kind="modal" identifier="pushFiltersView" modalTransitionStyle="coverVertical" id="cDh-QJ-kAL"/>
+                        <segue destination="lUE-uh-2ot" kind="modal" identifier="pushFlickrImageSelectView" id="4SZ-Lr-PGS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -2841,6 +2842,76 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vAP-KB-oHp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4182" y="2061"/>
+        </scene>
+        <!--Flux Flickr Image Select View Controller - Flickr Select-->
+        <scene sceneID="wca-Bf-gIN">
+            <objects>
+                <tableViewController id="y7d-Bt-Rci" customClass="FluxFlickrImageSelectViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="gf4-rp-yoh">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="4L3-da-6E0">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4L3-da-6E0" id="Zqo-ML-3Nu">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="y7d-Bt-Rci" id="vH0-HE-9FH"/>
+                            <outlet property="delegate" destination="y7d-Bt-Rci" id="5t6-1Y-euy"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Flickr Select" id="Vto-NM-jNL">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="cBT-d9-xpv">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Rhg-kQ-vOY">
+                                <rect key="frame" x="16" y="7" width="48" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelButtonAction:" destination="y7d-Bt-Rci" eventType="touchUpInside" id="ygu-Xk-Dh5"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="xMe-ST-6CM">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="80H-Mf-y11">
+                                <rect key="frame" x="233" y="5" width="71" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" title="Select">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="selectButtonAction:" destination="y7d-Bt-Rci" eventType="touchUpInside" id="ZZg-Ym-KvE"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="37q-aF-uWF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3419" y="1740"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="hph-bm-QFH">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="lUE-uh-2ot" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JzX-1J-ocj">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="y7d-Bt-Rci" kind="relationship" relationship="rootViewController" id="4UP-7Y-in3"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ROv-yl-vz1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2918" y="1740"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="hwp-JT-Ovc">

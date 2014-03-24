@@ -93,7 +93,6 @@ typedef enum {
     
     IBOutlet UILabel *pedometerLabel;
     
-    bool historicalPhotoPickerEnabled;
     historicalPhotoModeTypes historicalPhotoPickerMode;
 }
 

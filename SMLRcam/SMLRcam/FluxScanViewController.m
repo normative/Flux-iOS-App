@@ -10,6 +10,7 @@
 
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxDebugViewController.h"
+#import "FluxFlickrImageSelectViewController.h"
 #import "FluxImageRenderElement.h"
 #import "FluxImageTools.h"
 #import "FluxLeftDrawerViewController.h"
@@ -442,12 +443,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         }
         else if (historicalPhotoPickerMode == historicalPhotoModeTypeFlickr)
         {
-            UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-            picker.delegate = self;
-            picker.allowsEditing = YES;
-            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            
-            [self presentViewController:picker animated:YES completion:NULL];            
+            [self performSegueWithIdentifier:@"pushFlickrImageSelectView" sender:self];
         }
         else
         {
@@ -975,7 +971,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
         [mapViewController setCurrentDataFilter:self.currentDataFilter];
     }
-    else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
+    else if ([[segue identifier] isEqualToString:@"pushFiltersView"])
+    {
         //set the delegate of the navControllers top view (our filters View)
         FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [filtersVC setDelegate:self];
@@ -986,8 +983,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         //[self animationPushBackScaleDown];
     }
-    else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
-        
+    else if ([[segue identifier] isEqualToString:@"pushSettingsView"])
+    {
         UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
         [bgView setImage:snapshotBGImage];
         [bgView setBackgroundColor:[UIColor darkGrayColor]];
@@ -997,6 +994,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [settingsVC setBadgeCount:friendRequestsBadge.badgeText.intValue];
         [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         
+    }
+    else if ([[segue identifier] isEqualToString:@"pushFlickrImageSelectView"])
+    {
+        FluxFlickrImageSelectViewController *flickrVC = (FluxFlickrImageSelectViewController *)segue.destinationViewController;
     }
 }
 
