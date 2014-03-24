@@ -37,14 +37,14 @@ const int HORIZONTAL_PADDING = 35;
 
         
         NSArray *tutorialTextArray = [[NSArray alloc] initWithObjects:
-                                      @"Use the compass to find content around you. You can also tap it to explore the map.",
-                                      @"Swipe up and down using the whole screen to browse images through time.",
-                                      @"This shows the number of images around you. You can tap it to bring up some filters.",
-                                      @"View your profile, change settings and manage your followers.",
-                                      @"Take a new photo and add it to Flux.",
-                                      @"See something interesting? Take a freeze-frame snapshot and share it with friends.",
-                                      @"Get Started!",
-                                      nil];
+              @"Use the compass to find content around you. You can also tap it to explore the map.",
+              @"Swipe up and down using the whole screen to browse images through time.",
+              @"See how many images are around you. You can tap the number to filter what you see.",
+              @"View or edit your profile, change settings and manage followers.",
+              @"Take a new photo and\nadd it to Flux.",
+              @"See something interesting? Take a freeze-frame snapshot and share it with friends.",
+              @"Get Started!",
+              nil];
         
         _tutorialImagesArray = [[NSArray alloc] initWithObjects: tutorialRadarIV, tutorialTimelineIV, tutorialImageCountIV, tutorialProfileIV, tutorialCameraIV, tutorialSnaphotIV, nil];
         _tutorialBarImagesArray = [[NSArray alloc] initWithObjects: tutorialRaderBarIV, tutorialTimelineBarIV, tutorialImageCountBarIV, tutorialProfileBarIV, tutorialCameraBarIV, tutorialWindowBarIV, nil];

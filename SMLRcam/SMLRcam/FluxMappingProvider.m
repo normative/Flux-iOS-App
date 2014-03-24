@@ -103,10 +103,10 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxProfileImageObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":  @"imageID"
+                                                  @"id":  @"imageID",
                                                   }];
     
-    [mapping addAttributeMappingsFromArray:@[@"description"]];
+    [mapping addAttributeMappingsFromArray:@[@"description", @"privacy"]];
     
     return mapping;
 }

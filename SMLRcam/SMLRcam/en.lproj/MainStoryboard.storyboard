@@ -2138,7 +2138,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
-                                        <imageView hidden="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" tag="200" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="lockClosed" translatesAutoresizingMaskIntoConstraints="NO" id="9yr-Jv-ewM">
+                                        <imageView userInteractionEnabled="NO" alpha="0.69999999999999996" tag="200" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="lockClosed" translatesAutoresizingMaskIntoConstraints="NO" id="9yr-Jv-ewM">
                                             <rect key="frame" x="74" y="71" width="13" height="18"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>

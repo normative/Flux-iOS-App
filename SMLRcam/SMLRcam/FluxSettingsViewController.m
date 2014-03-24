@@ -127,10 +127,10 @@
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     switch (section) {
         case socialAccounts_section:
-            return @"SOCIAL ACCOUNTS";
+            return @"Social Accounts";
             break;
         case walkthroughReset_section:
-            return @"OTHER";
+            return @"Other";
             break;
             //should never happen
         default:
@@ -144,20 +144,27 @@
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    // Create header view and add label as a subview
     float height = [self tableView:tableView heightForHeaderInSection:section];
-    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, height)];
-    [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.0]];
-    
-    // Create label with section title
-    UILabel *label = [[UILabel alloc] init];
-    label.frame = CGRectMake(8, 12, 150, height);
-    label.textColor = [UIColor whiteColor];
-    [label setFont:[UIFont fontWithName:@"Akkurat-Light" size:14]];
-    label.text = [self tableView:tableView titleForHeaderInSection:section];
-    label.backgroundColor = [UIColor clearColor];
-    [label setCenter:CGPointMake(label.center.x, view.center.y+1)];
-    [view addSubview:label];
-    
+    UIView*view;
+    if (height>0) {
+        view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, height)];
+        [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
+        
+        // Create label with section title
+        UILabel *label = [[UILabel alloc] init];
+        label.frame = CGRectMake(10, 10, 150, height);
+        label.textColor = [UIColor whiteColor];
+        [label setFont:[UIFont fontWithName:@"Akkurat" size:15]];
+        label.text = [self tableView:tableView titleForHeaderInSection:section];
+        label.backgroundColor = [UIColor clearColor];
+        [label setCenter:CGPointMake(label.center.x, view.center.y)];
+        [view addSubview:label];
+    }
+    else
+    {
+        view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
+    }
     return view;
 }
 
