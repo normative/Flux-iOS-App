@@ -18,6 +18,8 @@
 
 @property (nonatomic, strong) NSMutableArray *photoDownloadTasks;
 @property (nonatomic, strong) NSMutableArray *photoNames;
+@property (nonatomic, strong) NSMutableArray *photoSetIDs;
+@property (nonatomic, strong) NSMutableArray *photoSets;
 @property (nonatomic, strong) NSMutableArray *photoURLs;
 
 @property (nonatomic, weak) NSCache *photoCache;
@@ -26,6 +28,8 @@
 @property (nonatomic) NSURLSession *urlSession;
 @property (nonatomic) NSURLSessionDownloadTask *imageDownloadTask;
 @property (weak, nonatomic) NSTimer *fetchTimer;
+
+@property (nonatomic) bool selectedPhotoset;
 
 @end
 
@@ -50,10 +54,14 @@
     
     self.photoDownloadTasks = [[NSMutableArray alloc] init];
     self.photoNames = [[NSMutableArray alloc] init];
+    self.photoSetIDs = [[NSMutableArray alloc] init];
+    self.photoSets = [[NSMutableArray alloc] init];
     self.photoURLs = [[NSMutableArray alloc] init];
     
     self.flickrContext = [[OFFlickrAPIContext alloc] initWithAPIKey:OFSampleAppAPIKey sharedSecret:OFSampleAppAPISharedSecret];
     self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
+    
+    self.selectedPhotoset = NO;
     
     [self loadFlickrPhotos];
 }
@@ -71,26 +79,56 @@
 
 - (IBAction)selectButtonAction:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (!self.selectedPhotoset)
+    {
+        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+        NSString *photoset_id = [self.photoSetIDs objectAtIndex:selectedIndexPath.row];
+        
+        [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photoset_id, @"per_page": @"5"}];
+        
+        self.selectedPhotoset = YES;
+        [self.tableView reloadData];
+    }
+    else
+    {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 # pragma mark - Table View Controller delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.photoNames.count;
+    if (self.selectedPhotoset)
+    {
+        return self.photoNames.count;
+    }
+    else
+    {
+        return self.photoSets.count;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
-    cell.textLabel.text = [self.photoNames objectAtIndex:indexPath.row];
-    
-    // Currently downloading images directly just to show something (even though already downloaded separately)
-    NSData *imageData = [NSData dataWithContentsOfURL:[self.photoURLs objectAtIndex:indexPath.row]];
-    cell.imageView.image = [UIImage imageWithData:imageData];
-    
-    return cell;
+    if (self.selectedPhotoset)
+    {
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
+        cell.textLabel.text = [self.photoNames objectAtIndex:indexPath.row];
+        
+        // Currently downloading images directly just to show something (even though already downloaded separately)
+        NSData *imageData = [NSData dataWithContentsOfURL:[self.photoURLs objectAtIndex:indexPath.row]];
+        cell.imageView.image = [UIImage imageWithData:imageData];
+        
+        return cell;
+    }
+    else
+    {
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
+        cell.textLabel.text = [self.photoSets objectAtIndex:indexPath.row];
+        
+        return cell;
+    }
 }
 
 # pragma mark - Flickr management
@@ -99,35 +137,60 @@
 {
     self.flickrRequest = [[OFFlickrAPIRequest alloc] initWithAPIContext:self.flickrContext];
     self.flickrRequest.delegate = self;
-    [self.flickrRequest callAPIMethodWithGET:@"flickr.photos.getRecent" arguments:@{@"per_page": @"5"}];
+    [self.flickrRequest callAPIMethodWithGET:@"flickr.people.findByUsername" arguments:@{@"username": @"Yale University"}];
 }
 
 - (void)flickrAPIRequest:(OFFlickrAPIRequest *)request didCompleteWithResponse:(NSDictionary *)response
 {
     NSLog(@"%@", response);
     
-    NSDictionary *photos = [response valueForKeyPath:@"photos.photo"];
-    
-    for (NSDictionary *photoDict in photos)
+    if ([response valueForKeyPath:@"user.nsid"])
     {
-        // Extract title and URL of photo
+        NSString *nsid = [response valueForKeyPath:@"user.nsid"];
         
-        NSString *title = [photoDict objectForKey:@"title"];
-        [self.photoNames addObject:(title.length > 0 ? title : @"Untitled")];
-        
-        NSURL *photoURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrLargeSize];
-        [self.photoURLs addObject:photoURL];
-
-        // Create a download task to manage image download
-        
-        NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoURL];
-        [self.photoDownloadTasks addObject:downloadTask];
-        [downloadTask resume];
+        [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getList" arguments:@{@"user_id": nsid, @"per_page": @"100"}];
     }
-    
-    self.flickrRequest = nil;
+    else if ([response valueForKeyPath:@"photosets.photoset"])
+    {
+        NSDictionary *photosets = [response valueForKeyPath:@"photosets.photoset"];
+        
+        for (NSDictionary *photosetDict in photosets)
+        {
+            // Extract title of each photoset
+            
+            NSString *photoset_id = [photosetDict valueForKeyPath:@"id"];
+            NSString *title = [photosetDict valueForKeyPath:@"title._text"];
+            [self.photoSets addObject:(title.length > 0 ? title : @"Untitled")];
+            [self.photoSetIDs addObject:photoset_id];
+            
+            [self.tableView reloadData];
+        }
+    }
+    else if ([response valueForKeyPath:@"photoset.photo"])
+    {
+        NSDictionary *photos = [response valueForKeyPath:@"photoset.photo"];
+        
+        for (NSDictionary *photoDict in photos)
+        {
+            // Extract title and URL of photo
+            
+            NSString *title = [photoDict objectForKey:@"title"];
+            [self.photoNames addObject:(title.length > 0 ? title : @"Untitled")];
+            
+            NSURL *photoURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrLargeSize];
+            [self.photoURLs addObject:photoURL];
 
-    [self.tableView reloadData];
+            // Create a download task to manage image download
+            
+            NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoURL];
+            [self.photoDownloadTasks addObject:downloadTask];
+            [downloadTask resume];
+        }
+        
+        self.flickrRequest = nil;
+
+        [self.tableView reloadData];
+    }
 }
 
 - (void)flickrAPIRequest:(OFFlickrAPIRequest *)request didFailWithError:(NSError *)error
@@ -138,6 +201,7 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
     // If image is large, consider creating the image off the main queue
+    
     UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:location]];
     NSLog(@"Finished downloading image from location %@", location);
     
