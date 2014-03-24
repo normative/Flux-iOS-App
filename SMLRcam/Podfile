@@ -7,3 +7,5 @@ pod 'TestFlightSDK'
 pod 'TestFlightFeedback'
 pod 'GoogleAnalytics-iOS-SDK'
 pod 'CocoaLumberjack'
+pod 'objectiveflickr'
+
