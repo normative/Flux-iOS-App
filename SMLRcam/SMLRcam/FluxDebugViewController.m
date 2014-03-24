@@ -51,10 +51,10 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
     
     [segmentedControl1 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:@"Border"]intValue]-1];
     [segmentedControl2 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:FluxDebugTeleportLocationIndexKey] intValue] - 1];
+    [segmentedControl3 setSelectedSegmentIndex:[(NSString*)[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] intValue] - 1];
     
     [switch1 setOn:[[defaults objectForKey:FluxDebugMatchDebugImageOutputKey] boolValue]];
     [switch2 setOn:[[defaults objectForKey:FluxDebugPedometerCountDisplayKey] boolValue]];
-    [switch3 setOn:[[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue]];
     [switch4 setOn:[[defaults objectForKey:FluxDebugHeadingCorrectedMotionKey] boolValue]];
     
     bool detailedLoggerEnabled = [[defaults objectForKey:FluxDebugDetailLoggerEnabledKey] boolValue];
@@ -80,9 +80,6 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
 - (IBAction)slider1DidSlide:(id)sender {
 }
 
-- (IBAction)slider2DidSlide:(id)sender {
-}
-
 - (IBAction)segmentedControl1DidChange:(id)sender
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
@@ -100,6 +97,16 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
     [defaults setObject:[NSString stringWithFormat:@"%i",[(UISegmentedControl*)sender selectedSegmentIndex]+1] forKey:FluxDebugTeleportLocationIndexKey];
     [defaults synchronize];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeTeleportLocationIndex
+                                                        object:self userInfo:nil];
+}
+
+- (IBAction)segmentedControl3DidChange:(id)sender
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    [defaults setObject:@([(UISegmentedControl*)sender selectedSegmentIndex]+1) forKey:FluxDebugHistoricalPhotoPickerKey];
+    [defaults synchronize];
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeHistoricalPhotoPicker
                                                         object:self userInfo:nil];
 }
 
@@ -125,12 +132,7 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
 
 - (IBAction)switch3DidChange:(id)sender
 {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    [defaults setObject:@([(UISwitch*)sender isOn]) forKey:FluxDebugHistoricalPhotoPickerKey];
-    [defaults synchronize];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDebugDidChangeHistoricalPhotoPicker
-                                                        object:self userInfo:nil];
 }
 
 - (IBAction)switch4DidChange:(id)sender

@@ -113,7 +113,7 @@ bool registeredForAPNS = false;
     }
 
     if (historicalPhotoPicker == nil) {
-        [defaults setObject:@(NO) forKey:FluxDebugHistoricalPhotoPickerKey];
+        [defaults setObject:@(1) forKey:FluxDebugHistoricalPhotoPickerKey];
         [defaults synchronize];
     }
 

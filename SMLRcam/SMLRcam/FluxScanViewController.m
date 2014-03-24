@@ -431,7 +431,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     else
     {
-        if (historicalPhotoPickerEnabled)
+        if (historicalPhotoPickerMode == historicalPhotoModeTypePhotoRoll)
         {
             UIImagePickerController *picker = [[UIImagePickerController alloc] init];
             picker.delegate = self;
@@ -439,6 +439,15 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             
             [self presentViewController:picker animated:YES completion:NULL];
+        }
+        else if (historicalPhotoPickerMode == historicalPhotoModeTypeFlickr)
+        {
+            UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+            picker.delegate = self;
+            picker.allowsEditing = YES;
+            picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            
+            [self presentViewController:picker animated:YES completion:NULL];            
         }
         else
         {
@@ -515,7 +524,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)activateImageCaptureForMode:(FluxImageCaptureMode)captureMode{
     [imageCaptureButton setHidden:NO];
     [imageCaptureButton setCaptureMode:captureMode];
-    [imageCaptureButton setSingleImageCaptureMode:historicalPhotoPickerEnabled];
+    [imageCaptureButton setSingleImageCaptureMode:(historicalPhotoPickerMode != historicalPhotoModeTypeDefault)];
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [imageCaptureButton setAlpha:1.0];
@@ -769,9 +778,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)setupHistoricalPhotoPicker
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    historicalPhotoPickerEnabled = [[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue];
-    
-    //    [pedometerLabel setHidden:(!enablePedometerDisplay)];
+    historicalPhotoPickerMode = (historicalPhotoModeTypes)[[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] integerValue];
 }
 
 #pragma mark Image Capture Helper Methods

@@ -36,6 +36,13 @@
 extern NSString* const FluxScanViewDidAcquireNewPicture;
 extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //extern NSString* const FluxDidTapImage;
+
+typedef enum {
+    historicalPhotoModeTypeDefault = 1,
+    historicalPhotoModeTypePhotoRoll,
+    historicalPhotoModeTypeFlickr
+} historicalPhotoModeTypes;
+
 @class FluxRotatingCompassButton;
 
 @interface FluxScanViewController : GAITrackedViewController<FluxTutorialDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterControlDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
@@ -87,6 +94,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     IBOutlet UILabel *pedometerLabel;
     
     bool historicalPhotoPickerEnabled;
+    historicalPhotoModeTypes historicalPhotoPickerMode;
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
