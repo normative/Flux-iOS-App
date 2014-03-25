@@ -618,7 +618,7 @@
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bl2-6N-0xZ">
-                                                <rect key="frame" x="0.0" y="0.0" width="170" height="40"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="180" height="40"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                                 <state key="normal" image="shareEveryone_on">
@@ -2134,20 +2134,29 @@
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         </imageView>
                                         <view tag="200" contentMode="scaleAspectFit" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="309-un-MG3" customClass="KTCheckboxButton">
-                                            <rect key="frame" x="65" y="10" width="25" height="25"/>
+                                            <rect key="frame" x="61" y="5" width="25" height="25"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
-                                        <imageView userInteractionEnabled="NO" alpha="0.69999999999999996" tag="200" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="lockClosed" translatesAutoresizingMaskIntoConstraints="NO" id="9yr-Jv-ewM">
-                                            <rect key="frame" x="74" y="71" width="13" height="18"/>
+                                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cQs-Xb-d9Z">
+                                            <rect key="frame" x="59" y="62" width="30" height="30"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        </imageView>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" alpha="0.69999999999999996" tag="200" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="lockClosed" translatesAutoresizingMaskIntoConstraints="NO" id="9yr-Jv-ewM">
+                                                    <rect key="frame" x="8" y="6" width="16" height="16"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 </view>
                                 <connections>
                                     <outlet property="checkboxButton" destination="309-un-MG3" id="Odr-YZ-wFE"/>
                                     <outlet property="imageView" destination="TUA-ZW-K7W" id="azN-Qw-5rm"/>
+                                    <outlet property="lockContainerView" destination="cQs-Xb-d9Z" id="yqb-Iz-H2Y"/>
+                                    <outlet property="lockImageView" destination="9yr-Jv-ewM" id="sS2-HA-lRC"/>
                                 </connections>
                             </collectionViewCell>
                         </cells>
@@ -2157,6 +2166,11 @@
                         </connections>
                     </collectionView>
                     <toolbarItems>
+                        <barButtonItem title="Make Private" id="5bm-su-GXz">
+                            <connections>
+                                <action selector="editPrivacyButtonAction:" destination="Hk4-y1-dJH" id="BYK-0T-1m2"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="LQQ-SN-NYo"/>
                         <barButtonItem systemItem="trash" id="zvu-vU-3lN">
                             <connections>
@@ -2176,6 +2190,7 @@
                     <size key="freeformSize" width="320" height="568"/>
                     <connections>
                         <outlet property="editBarButton" destination="nd7-kF-x8E" id="NPq-aG-EGt"/>
+                        <outlet property="editPrivacyButton" destination="5bm-su-GXz" id="FBf-ck-5MD"/>
                         <outlet property="garbageButton" destination="zvu-vU-3lN" id="pbS-0g-CAL"/>
                         <outlet property="theCollectionView" destination="BSi-15-rkx" id="ABi-6O-DPw"/>
                     </connections>
@@ -3099,6 +3114,23 @@
             </objects>
             <point key="canvasLocation" x="4626" y="1373"/>
         </scene>
+        <!--View Controller-->
+        <scene sceneID="cfQ-oE-4hR">
+            <objects>
+                <viewController id="CCt-IS-NwA" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="qzD-wj-nG6"/>
+                        <viewControllerLayoutGuide type="bottom" id="cgg-ZK-OdO"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="beJ-pH-3Z5">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yhe-lp-0PF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
     </scenes>
     <resources>
         <image name="MapBackToggle" width="140" height="140"/>
@@ -3116,10 +3148,10 @@
         <image name="friend_accept" width="80" height="80"/>
         <image name="friend_dismiss" width="80" height="80"/>
         <image name="inactiveTimeSlider" width="140" height="140"/>
-        <image name="lockClosed" width="87" height="112"/>
+        <image name="lockClosed" width="16" height="16"/>
         <image name="noFriends" width="512" height="512"/>
         <image name="profileMenuButton" width="140" height="140"/>
-        <image name="shareEveryone_on" width="340" height="80"/>
+        <image name="shareEveryone_on" width="359" height="80"/>
         <image name="shareFacebook_off" width="80" height="80"/>
         <image name="shareTwitter_off" width="80" height="80"/>
         <image name="snapshotButton" width="140" height="140"/>

@@ -95,12 +95,14 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
                                     withRadius:(float)radius
                                withDataRequest:(FluxDataRequest *)dataRequest;
 
+//Other Images
 - (NSArray *) checkForImagesByLocalID:(FluxLocalID *)localID;
 
 - (FluxCacheImageObject *)fetchImagesByLocalID:(FluxLocalID *)curLocalID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
 - (FluxCacheImageObject *)fetchImageByImageID:(FluxImageID)imageID withSize:(FluxImageType)imageType returnSize:(FluxImageType *)returnType;
 
 - (FluxRequestID *)deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *)editPrivacyOfImageWithImageID:(NSArray*)imageIDs to:(BOOL)newPrivacy withDataRequest:(FluxDataRequest *)dataRequest;
 
 - (FluxRequestID *) requestImageFeaturesByLocalID:(FluxDataRequest *)dataRequest;
 

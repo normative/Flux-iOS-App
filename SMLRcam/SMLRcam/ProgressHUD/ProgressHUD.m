@@ -48,6 +48,7 @@
 + (void)show:(NSString *)status
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
+    [self shared].currentStatus = HUD_PROGRESS_STATUS;
     [[self shared] hudMake:status imgage:nil spin:YES hide:NO];
 }
 
@@ -55,6 +56,7 @@
 + (void)showSuccess:(NSString *)status
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
+    [self shared].currentStatus = HUD_SUCCESS_STATUS;
     [[self shared] hudMake:status imgage:HUD_IMAGE_SUCCESS spin:NO hide:YES];
 }
 
@@ -62,7 +64,12 @@
 + (void)showError:(NSString *)status
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 {
+    [self shared].currentStatus = HUD_ERROR_STATUS;
     [[self shared] hudMake:status imgage:HUD_IMAGE_ERROR spin:NO hide:YES];
+}
+
++ (NSString*)currentStatus{
+    return [self shared].currentStatus;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -255,6 +262,7 @@
 {
 	if (self.alpha == 1)
 	{
+        self.currentStatus = HUD_HIDDEN_STATUS;
 		NSUInteger options = UIViewAnimationOptionAllowUserInteraction | UIViewAnimationCurveEaseIn;
 
 		[UIView animateWithDuration:0.15 delay:0 options:options animations:^{

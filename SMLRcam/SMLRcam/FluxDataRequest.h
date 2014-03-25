@@ -44,7 +44,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     imageCounts_request = 25,
     totalImageCount_request = 26,
     createalias_request = 27,
-    contactFromService_request = 28
+    contactFromService_request = 28,
+    imagePrivacyUpdate_request = 29
     
 } FluxDataRequestType;
 
@@ -60,6 +61,7 @@ typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
 typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSData *, FluxDataRequest *);
+typedef void (^UpdateImagesPrivacyCompleteBlock)(FluxDataRequest *);
 
 //USERS
 
@@ -152,6 +154,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 @property (strong) DeleteImageCompleteBlock deleteImageCompleteBlock;
 
+@property (strong) UpdateImagesPrivacyCompleteBlock updateImagesPrivacyCompleteBlock;
+
 // Callback for successful upload of user + image metadata
 @property (strong) UploadUserCompleteBlock uploadUserComplete;
 
@@ -223,6 +227,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUpdateImagesPrivacyCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 //USERS

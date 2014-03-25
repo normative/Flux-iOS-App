@@ -93,6 +93,13 @@
     }
 }
 
+-(void)whenUpdateImagesPrivacyCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.updateImagesPrivacyCompleteBlock)
+    {
+        self.updateImagesPrivacyCompleteBlock(completeDataRequest);
+    }
+}
+
 #pragma mark - Users
 
 

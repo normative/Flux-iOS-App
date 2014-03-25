@@ -27,7 +27,7 @@ NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
 //NSString* const FluxServerURL = _AWSProductionServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
-NSString* const FluxServerURL = _AWSS3TestServerURL;
+NSString* const FluxServerURL = _AWSProductionServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
@@ -197,8 +197,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 //        [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
 //        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         
-        [RKValueTransformer defaultValueTransformer];
-        [RKObjectMapping addDefaultDateFormatter:__fluxNetworkServicesOutputDateFormatter];
+        [[RKValueTransformer defaultValueTransformer] addValueTransformer:__fluxNetworkServicesOutputDateFormatter];
 
         
         //general init
@@ -208,6 +207,9 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         
         //show network activity indicator
         [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+        
+        //add boolean value transformer (restkit bug fix)
+//        [[RKValueTransformer defaultValueTransformer] insertValueTransformer:[RKCustomBOOLTransformer defaultTransformer] atIndex:0];
         
         
         
@@ -476,6 +478,70 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         }
     }];
     [operation start];
+}
+
+- (void)updateImagePrivacyForImages:(NSArray *)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PUT"
+                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",objectManager.baseURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
+                                                      parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImagePrivacysWithRequestID:)])
+        {
+            [delegate NetworkServices:self didUpdateImagePrivacysWithRequestID:requestID];
+        }
+    }
+     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+         NSLog(@"Privacy update failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+                                     }];
+    [operation start];
+//    
+//    
+//    
+//    
+//    
+//    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+//    
+//    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+//    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
+//                                                                                            method:RKRequestMethodDELETE
+//                                                                                       pathPattern:@"/images/setprivacy.json"
+//                                                                                           keyPath:nil
+//                                                                                       statusCodes:statusCodes];
+//    
+//    NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
+//                                                            path:[NSString stringWithFormat:@"%@users/sign_out?auth_token=%@",objectManager.baseURL, token]
+//                                                      parameters:nil];
+//
+//    
+//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?privacy=%i&image_ids=%@&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]]];
+//    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+//                                                                        responseDescriptors:@[responseDescriptor]];
+//    
+//    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+//     {
+//         if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImagePrivacysWithRequestID:)])
+//         {
+//             [delegate NetworkServices:self didUpdateImagePrivacysWithRequestID:requestID];
+//         }
+//     }
+//            failure:^(RKObjectRequestOperation *operation, NSError *error)
+//     {
+//         NSLog(@"Privacy update failed with error: %@", [error localizedDescription]);
+//         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+//         {
+//             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+//         }
+//     }];
+//    [operation start];
 }
 
 #pragma mark Features

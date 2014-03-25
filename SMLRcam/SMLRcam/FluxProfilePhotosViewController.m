@@ -11,8 +11,11 @@
 #import "FluxProfileImageObject.h"
 #import "FluxNetworkServices.h"
 #import "UICKeyChainStore.h"
-#import "FluxPhotoCollectionCell.h"
 #import "ProgressHUD.h"
+#import "UIActionSheet+Blocks.h"
+
+#define enabledColor [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]
+#define disabledColor [UIColor colorWithWhite:0.5 alpha:0.5]
 
 @interface FluxProfilePhotosViewController ()
 
@@ -21,6 +24,8 @@
 @implementation FluxProfilePhotosViewController
 
 @synthesize delegate;
+
+
 
 #pragma mark - View Init
 
@@ -39,10 +44,19 @@
     removedImages = [[NSMutableArray alloc]init];
     
     picturesArray = [[NSMutableArray alloc]init];
+    editedPrivacyImages = [[NSMutableArray alloc]init];
+    
+    
+    [editPrivacyButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: disabledColor, NSForegroundColorAttributeName,NSFontAttributeName, [UIFont fontWithName:@"Akkurat" size:17.0], nil] forState:UIControlStateNormal];
+    
     
     [garbageButton setEnabled:NO];
+    [editPrivacyButton setEnabled:NO];
     [editBarButton setEnabled:NO];
     [editBarButton setTintColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
+    
+    isRetrieving = NO;
+    newPrivacyIsPrivate = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -65,6 +79,12 @@
     theUserID = userID;
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     [request setUserImagesReady:^(NSArray * imageList, FluxDataRequest*completedDataRequest){
+        isRetrieving = NO;
+        
+        if ([[ProgressHUD currentStatus]  isEqualToString: HUD_PROGRESS_STATUS]) {
+            [ProgressHUD dismiss];
+        }
+
         picturesArray = [imageList mutableCopy];
         if (picturesArray.count > 0) {
             [theCollectionView reloadData];
@@ -112,6 +132,14 @@
         [ProgressHUD showError:str];
     }];
     [self.fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
+    isRetrieving = YES;
+    [self performSelector:@selector(showProgressHUD) withObject:nil afterDelay:1.0];
+}
+
+- (void)showProgressHUD{
+    if (isRetrieving) {
+        [ProgressHUD show:@"Retrieving images..."];
+    }
 }
 
 - (void)deleteImages{
@@ -136,6 +164,40 @@
         int imageID = [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] imageID];
         [self.fluxDataManager deleteImageWithImageID:imageID  withDataRequest:request];
     }
+}
+
+- (void)editImagePrivacy{
+    [ProgressHUD show:@"Changing Privacy..."];
+    
+    NSMutableArray*imageIDs = [[NSMutableArray alloc]init];
+    for (int i = 0; i<removedImages.count; i++) {
+        int index= [(NSNumber*)[removedImages objectAtIndex:i]intValue];
+        [imageIDs addObject:[NSString stringWithFormat:@"%i",[(FluxProfileImageObject*)[picturesArray objectAtIndex:index]imageID]]];
+    }
+    
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [request setUpdateImagesPrivacyCompleteBlock:^(FluxDataRequest*completedRequest){
+        [ProgressHUD showSuccess:@"Privacy Changed"];
+        for (int i = 0; i<removedImages.count; i++) {
+            int index= [(NSNumber*)[removedImages objectAtIndex:i]intValue];
+            [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] setPrivacy:newPrivacyIsPrivate];
+        }
+        [removedImages removeAllObjects];
+        [theCollectionView reloadData];
+        [self unfreezeUI];
+        [self swapEditModes];
+        
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        [self swapEditModes];
+        [self prepareViewWithImagesUserID:theUserID];
+        NSString*str = [NSString stringWithFormat:@"Privacy update failed. Try again later."];
+        [ProgressHUD showError:str];
+        [self unfreezeUI];
+    }];
+
+    [self.fluxDataManager editPrivacyOfImageWithImageID:imageIDs to:newPrivacyIsPrivate withDataRequest:request];
 }
 
 - (void)addToDeleteQueue{
@@ -182,7 +244,7 @@
     static NSString *identifier = @"myCell";
     
     FluxPhotoCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:indexPath];
-    
+    [cell setDelegate:self];
     if (isEditing) {
         [cell.checkboxButton setHidden:NO];
         if ([removedImages containsObject:[NSNumber numberWithInt:(int)indexPath.row]]) {
@@ -219,6 +281,15 @@
              }];
     }
     cell.imageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
+    
+    BOOL locked = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]privacy];
+    if (locked) {
+        [cell.lockImageView setImage:[UIImage imageNamed:@"lockClosed"]];
+    }
+    else{
+        [cell.lockImageView setImage:[UIImage imageNamed:@"lockOpen"]];
+    }
+    
     [cell.imageView setAlpha:1.0];
     
     return cell;
@@ -230,15 +301,21 @@
             [removedImages removeObject:[NSNumber numberWithInt:(int)indexPath.row]];
             if (removedImages.count == 0) {
                 [garbageButton setEnabled:NO];
+                [editPrivacyButton setEnabled:NO];
+                
+                [editPrivacyButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: disabledColor, NSForegroundColorAttributeName,NSFontAttributeName, [UIFont fontWithName:@"Akkurat" size:17.0], nil] forState:UIControlStateNormal];
             }
-            [collectionView reloadData];
+            [theCollectionView reloadData];
         }
         else{
             [removedImages addObject:[NSNumber numberWithInt:(int)indexPath.row]];
-            [collectionView reloadData];
+            [theCollectionView reloadData];
             [garbageButton setEnabled:YES];
+            [editPrivacyButton setEnabled:YES];
+            [editPrivacyButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: enabledColor, NSForegroundColorAttributeName,NSFontAttributeName, [UIFont fontWithName:@"Akkurat" size:17.0], nil] forState:UIControlStateNormal];
         }
-
+        [self calculateNewPrivacy];
+        
     }
     //else present a photo viewer
     else{
@@ -248,14 +325,19 @@
             NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
             [photoURLs addObject:urlString];
         }
-        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:[collectionView cellForItemAtIndexPath:indexPath].contentView];
+        FluxPhotoCollectionCell*cell = (FluxPhotoCollectionCell*)[collectionView cellForItemAtIndexPath:indexPath];
+        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:cell.contentView];
         //[browser setDisplaysProfileInfo:NO];
         [browser setDisplayToolbar:NO];
         [browser setDisplayDoneButtonBackgroundImage:NO];
         [browser setInitialPageIndex:indexPath.row];
         [browser setDelegate:self];
+        
+        [cell.lockImageView setHidden:YES];
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-        [self presentViewController:browser animated:YES completion:nil];
+        [self presentViewController:browser animated:YES completion:^{
+            [cell.lockImageView setHidden:NO];
+        }];
     }
 }
 
@@ -263,18 +345,60 @@
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
 }
 
+- (void)calculateNewPrivacy{
+
+    newPrivacyIsPrivate = NO;
+    
+    for (int i = 0; i<removedImages.count; i++) {
+        int index= [(NSNumber*)[removedImages objectAtIndex:i]intValue];
+        if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:index] privacy]) {
+            newPrivacyIsPrivate = YES;
+            break;
+        }
+    }
+
+    if (newPrivacyIsPrivate) {
+        [editPrivacyButton setTitle:@"Make Private"];
+    }
+    else{
+
+        [editPrivacyButton setTitle:@"Make Public"];
+    }
+}
+
 #pragma mark - IB Actions
 
 - (IBAction)garbageButtonAction:(id)sender {
-    UIActionSheet *areYouSureSheet = [[UIActionSheet alloc]initWithTitle:(removedImages.count > 1 ? @"Are you sure you want to delete these images from Flux? This action cannot be undone." : @"Are you sure you'd like to delete this image? This action cannot be undone.") delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Delete" otherButtonTitles: nil];
-    [areYouSureSheet showInView:self.view];
+    [UIActionSheet showInView:self.view
+                    withTitle:(removedImages.count > 1 ? @"Are you sure you want to delete these images from Flux? This action cannot be undone." : @"Are you sure you'd like to delete this image? This action cannot be undone.")
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:@"Delete"
+            otherButtonTitles:nil
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             [self deleteImages];
+                         }
+                     }];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 0) {
-        [self deleteImages];
+- (IBAction)editPrivacyButtonAction:(id)sender {
+    NSString*buttonTitle;
+    if (newPrivacyIsPrivate) {
+        buttonTitle = (removedImages.count > 1 ? @"Make Selected Images Private" : @"Make This Image Private");
     }
+    else{
+        buttonTitle =(removedImages.count > 1 ? @"Make Selected Images Public" : @"Make This Image Public");
+    }
+    [UIActionSheet showInView:self.view
+                        withTitle:nil
+                cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:nil
+                otherButtonTitles:@[buttonTitle]
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                 [self editImagePrivacy];
+                             }
+                         }];
 }
 
 - (IBAction)editButtonAction:(id)sender {
@@ -286,6 +410,7 @@
     if (isEditing) {
         [editBarButton setTitle:@"Cancel"];
         [self.navigationController setToolbarHidden:NO animated:YES];
+        [removedImages removeAllObjects];
     }
     else{
         [editBarButton setTitle:@"Edit"];

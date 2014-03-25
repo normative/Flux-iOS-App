@@ -31,6 +31,7 @@
 + (RKObjectMapping *)contactGETMapping;
 
 + (RKObjectMapping *)userImagesGetMapping;
++ (RKObjectMapping *)userImagesPUTMapping;
 
 + (RKObjectMapping *)tagGetMapping;
 

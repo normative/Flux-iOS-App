@@ -19,6 +19,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#define HUD_ERROR_STATUS @"error"
+#define HUD_PROGRESS_STATUS @"progress"
+#define HUD_SUCCESS_STATUS @"success"
+#define HUD_HIDDEN_STATUS @"hidden"
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 #define sheme_white
 //#define sheme_black
@@ -54,11 +59,13 @@
 + (void)show:(NSString *)status;
 + (void)showSuccess:(NSString *)status;
 + (void)showError:(NSString *)status;
++ (NSString*)currentStatus;
 
 @property (atomic, strong) UIWindow *window;
 @property (atomic, strong) UIToolbar *hud;
 @property (atomic, strong) UIActivityIndicatorView *spinner;
 @property (atomic, strong) UIImageView *image;
 @property (atomic, strong) UILabel *label;
+@property (atomic, strong) NSString *currentStatus;
 
 @end

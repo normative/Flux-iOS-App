@@ -45,6 +45,7 @@ extern NSString* const FluxServerURL;
            andRequestID:(FluxRequestID *)requestID andImageID:(FluxImageID)imageID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSData *)features forImageID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 
@@ -164,6 +165,11 @@ extern NSString* const FluxServerURL;
  Removes an image from the Flux DB given an imageID.
  **/
 - (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID;
+
+/**
+ Updates an images privacy with the supplied boolean.
+ **/
+- (void)updateImagePrivacyForImages:(NSArray*)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID;
 
 #pragma mark  Features
 

@@ -111,6 +111,15 @@
     return mapping;
 }
 
++ (RKObjectMapping *)userImagesPUTMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"imageID": @"id"}];
+    
+    [mapping addAttributeMappingsFromArray:@[@"description", @"privacy"]];
+    
+    return mapping;
+}
+
 + (RKObjectMapping *)userPATCHMapping{
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     [mapping addAttributeMappingsFromDictionary:@{@"password": @"current_password"}];
