@@ -25,9 +25,9 @@ NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const AWSS3TestServerURL     = _AWSS3TestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
+//NSString* const FluxServerURL = _AWSProductionServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
-//NSString* const FluxServerURL = _AWSS3TestServerURL;
+NSString* const FluxServerURL = _AWSS3TestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
