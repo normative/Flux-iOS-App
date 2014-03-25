@@ -1,4 +1,8 @@
 Release Notes:
+
+- Adds the ability to change an images privacy from the profile menu
+- Adds the ability to remove a user from your followers
+
 ******************************************
 
 V0.23 B01
