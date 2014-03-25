@@ -469,7 +469,7 @@ typedef void (^_MIMapViewChange)(void);
     
     //if there's more than 1 image in the pin
     if ([annotation class]  == [MIAnnotation class]) {
-        float alpha = [(MIAnnotation*)annotation count]/20.0;
+        float alpha = [(MIAnnotation*)annotation count]/15.0;
         if (alpha > 1.0) {
             pinView.image = [UIImage imageNamed:@"mapPin10"];
         }
