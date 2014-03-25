@@ -143,6 +143,8 @@ extern NSString* const FluxDataManagerKeyNewImageLocalID;
 
 - (FluxRequestID *) unfollowUserWIthID:(int)userID
                              withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *)forceUnfollowUserWIthID:(int)userID
+                       withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) sendFollowerRequestToUserWithID:(int)userID
                              withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) acceptFollowerRequestFromUserWithID:(int)userID

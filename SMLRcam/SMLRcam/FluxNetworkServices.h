@@ -86,6 +86,8 @@ extern NSString* const FluxServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfollowUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didForceUnfollowUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFollowingRequestToUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didAcceptFollowingRequestFromUserWithID:(int)userID
@@ -260,6 +262,11 @@ return's a profile image for a given userID and size
  removes the supplied userID as a follower of the activeUser
  **/
 - (void)unfollowUserID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ removes the supplied userID as a follower of the activeUser
+ **/
+- (void)forceUnfollowUserID:(int)userID withRequestID:(NSUUID *)requestID;
 
 /**
  sends the supplied userID as a friend request from the activeUser

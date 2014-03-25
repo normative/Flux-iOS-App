@@ -45,7 +45,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     totalImageCount_request = 26,
     createalias_request = 27,
     contactFromService_request = 28,
-    imagePrivacyUpdate_request = 29
+    imagePrivacyUpdate_request = 29,
+    forceUnfollow_request = 30
     
 } FluxDataRequestType;
 
@@ -84,6 +85,7 @@ typedef void (^UserFollowersReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^UserSearchReadyBlock)(NSArray *, FluxDataRequest *);
 
 typedef void (^UnfollowUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^ForceUnfollowUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^SendFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^AcceptFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^IgnoreFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
@@ -197,6 +199,10 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 // Callback for successful friends list returned
 @property (strong) UnfollowUserReadyBlock unfollowUserReady;
+
+// Callback for successful friends list returned
+@property (strong) ForceUnfollowUserReadyBlock forceUnfollowUserReady;
+
 // Callback for successful friends list returned
 @property (strong) SendFollowerRequestUserReadyBlock sendFollowerRequestReady;
 // Callback for successful friends list returned
@@ -251,6 +257,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUserSearchReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 - (void) whenUnfollowingUserReady:(int)unfollowedUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenForceUnfollowingUserReady:(int)removedUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenSendFollowingRequestReady:(int)userIdForFriendRequest withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenAcceptFollowerRequestReady:(int)newFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenIgnoreFollowerRequestReady:(int)ignoreUserID withDataRequest:(FluxDataRequest *)completeDataRequest;

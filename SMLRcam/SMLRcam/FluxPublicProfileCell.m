@@ -191,6 +191,9 @@
     if (userObject.isFollowingFlag == 2) {
         [self.statusLabel setText:[NSString stringWithFormat:@"@%@ is following you",userObject.username]];
     }
+    else{
+        [self.statusLabel setText:@""];
+    }
     
 
     
@@ -206,6 +209,28 @@
         [self.statusLabel setHidden:YES];
     }
     
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+    UITouch *touch = [[event allTouches] anyObject];
+    CGPoint touchLocation = [touch locationInView:socialStatusContainerView];
+    
+    if (CGRectContainsPoint(self.statusLabel.frame, touchLocation)) {
+        [UIActionSheet showInView:self.superview
+                        withTitle:[NSString stringWithFormat:@"Really remove @%@ from your followers? They will be able to send you a follow request in the future.",self.userObject.username]
+                cancelButtonTitle:@"Cancel"
+           destructiveButtonTitle:@"Remove From Followers"
+                otherButtonTitles:nil
+                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                             if (buttonIndex != actionSheet.cancelButtonIndex) {
+                                 if ([delegate respondsToSelector:@selector(PublicProfileCell:shouldForceUnfollow:)]) {
+                                     [self.followButton setUserInteractionEnabled:NO];
+                                     [delegate PublicProfileCell:self shouldForceUnfollow:self.userObject];
+                                     [self.followButton setUserInteractionEnabled:YES];
+                                 }
+                             }
+                         }];
+    }
 }
 
 @end

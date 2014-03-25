@@ -429,7 +429,7 @@
     }
 }
 
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveAmFollower:(FluxUserObject *)userObject{
     [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:0];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     

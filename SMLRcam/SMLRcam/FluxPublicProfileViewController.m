@@ -103,7 +103,7 @@
     [cell initCell];
 
     //disable the profile button for now
-    [cell.profielImageButton setUserInteractionEnabled:NO];
+//    [cell.profielImageButton setUserInteractionEnabled:NO];
     [cell setUserObject:theUser];
     
     if (theUser.hasProfilePic) {
@@ -192,8 +192,8 @@
         theUser.amFollowerFlag = 0;
         [profileTableView reloadData];
         
-        if ([delegate respondsToSelector:@selector(PublicProfile:didremoveFollower:)]) {
-            [delegate PublicProfile:self didremoveFollower:theUser];
+        if ([delegate respondsToSelector:@selector(PublicProfile:didremoveAmFollower:)]) {
+            [delegate PublicProfile:self didremoveAmFollower:theUser];
         }
     }];
     
@@ -204,6 +204,29 @@
         
     }];
     [self.fluxDataManager unfollowUserWIthID:userObject.userID withDataRequest:request];
+}
+
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldForceUnfollow:(FluxUserObject *)userObject{
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    
+    [request setForceUnfollowUserReady:^(int followingUserID, FluxDataRequest*completedRequest){
+        //do something with the UserID
+        NSLog(@"force unfollowed");
+        theUser.isFollowingFlag = 0;
+        [profileTableView reloadData];
+        
+        if ([delegate respondsToSelector:@selector(PublicProfile:didremoveIsFollower:)]) {
+            [delegate PublicProfile:self didremoveIsFollower:theUser];
+        }
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+        NSString*str = [NSString stringWithFormat:@"Removing %@ from followers failed. Sorry about that.",userObject.username];
+        [ProgressHUD showError:str];
+        
+    }];
+    [self.fluxDataManager forceUnfollowUserWIthID:userObject.userID withDataRequest:request];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{

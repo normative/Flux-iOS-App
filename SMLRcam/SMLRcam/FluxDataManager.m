@@ -662,6 +662,16 @@ float const altitudeHighRange = 60.0;
     [networkServices unfollowUserID:userID withRequestID:requestID];
     return requestID;
 }
+
+- (FluxRequestID *) forceUnfollowUserWIthID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = unfollow_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices forceUnfollowUserID:userID withRequestID:requestID];
+    return requestID;
+}
+
 - (FluxRequestID *) sendFollowerRequestToUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = sendFollow_request;
@@ -1204,6 +1214,15 @@ float const altitudeHighRange = 60.0;
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didForceUnfollowUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenForceUnfollowingUserReady:userID withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFollowingRequestToUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenSendFollowingRequestReady:userID withDataRequest:request];

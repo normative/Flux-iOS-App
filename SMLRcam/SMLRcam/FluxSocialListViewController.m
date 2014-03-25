@@ -434,10 +434,14 @@
 
 #pragma mark - Public Profile Delegate
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
-    [self addUser:userObject toListMode:isFollowerMode];
+    [self addUser:userObject toListMode:amFollowingMode];
 }
 
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveAmFollower:(FluxUserObject *)userObject{
+    [self removeSelectedUserFromListMode:amFollowingMode];
+}
+
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveIsFollower:(FluxUserObject *)userObject{
     [self removeSelectedUserFromListMode:isFollowerMode];
 }
 

@@ -1111,6 +1111,34 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }];
 }
 
+- (void)forceUnfollowUserID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:userID];
+    [connObj setConnectionsUserID:activeUserID];
+    [connObj setConnetionType:FluxConnectionState_follow];
+    
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/disconnect?auth_token=%@", token] parameters:nil
+                                       success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         if ([delegate respondsToSelector:@selector(NetworkServices:didForceUnfollowUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didForceUnfollowUserWithID:userID andRequestID:requestID];
+         }
+     }
+                                       failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
 
 - (void)sendFollowRequestToUserWithID:(int)userID withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];

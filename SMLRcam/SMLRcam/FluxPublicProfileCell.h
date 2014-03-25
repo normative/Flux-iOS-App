@@ -16,6 +16,7 @@
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldSendFollowRequestToUser:(FluxUserObject*)userObject;
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldAcceptFollowRequestToUser:(FluxUserObject*)userObject;
 - (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldUnfollowUser:(FluxUserObject*)userObject;
+- (void)PublicProfileCell:(FluxPublicProfileCell *)publicProfileCell shouldForceUnfollow:(FluxUserObject*)userObject;
 @end
 
 @interface FluxPublicProfileCell : UITableViewCell{
