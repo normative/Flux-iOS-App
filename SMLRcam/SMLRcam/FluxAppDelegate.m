@@ -52,7 +52,7 @@ bool registeredForAPNS = false;
     }
 #else
     NSLog(@"startup: debug=0, server=%@", FluxServerURL);
-    if ((FluxServerURL == AWSProductionServerURL) || (FluxServerURL == AWSS3TestServerURL))
+    if ((FluxServerURL == AWSProductionServerURL) /*|| (FluxServerURL == AWSS3TestServerURL)*/)
     {
         // Let the device know we want to receive push notifications - will hook into APNs production server.
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
@@ -78,7 +78,7 @@ bool registeredForAPNS = false;
     NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
     NSNumber * pedometerCountDisplay = [defaults objectForKey:FluxDebugPedometerCountDisplayKey];
     NSNumber * historicalPhotoPicker = [defaults objectForKey:FluxDebugHistoricalPhotoPickerKey];
-    NSNumber * headingCorrectedMotion = [defaults objectForKey:FluxDebugHeadingCorrectedMotionKey];
+//    NSNumber * headingCorrectedMotion = [defaults objectForKey:FluxDebugHeadingCorrectedMotionKey];
     NSNumber * detailLoggerEnabled = [defaults objectForKey:FluxDebugDetailLoggerEnabledKey];
     
     // do not save locally by default
@@ -117,10 +117,11 @@ bool registeredForAPNS = false;
         [defaults synchronize];
     }
 
-    if (headingCorrectedMotion == nil) {
-        [defaults setObject:@(NO) forKey:FluxDebugHeadingCorrectedMotionKey];
+    // always enable new heading mode, but can change it during execution - just won't stick
+//    if (headingCorrectedMotion == nil) {
+        [defaults setObject:@(YES) forKey:FluxDebugHeadingCorrectedMotionKey];
         [defaults synchronize];
-    }
+//    }
 
     if (detailLoggerEnabled == nil) {
         [defaults setObject:@(NO) forKey:FluxDebugDetailLoggerEnabledKey];
