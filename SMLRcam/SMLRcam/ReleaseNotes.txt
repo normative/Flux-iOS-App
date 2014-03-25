@@ -3,7 +3,7 @@ Release Notes:
 
 V0.23 B01
 
-Released: 2014-03-24 21:15:00
+Released: not
 
 Release Notes:
 - Repoint to Production server IP (54.221.254.230)
