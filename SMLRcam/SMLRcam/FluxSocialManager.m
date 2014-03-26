@@ -98,22 +98,22 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
         }
     }
     
-    
-    if (![TWAPIManager isLocalTwitterAccountAvailable]) {
-        NSLog(@"You were not granted access to the Twitter accounts.");
-        if (isRegister) {
-            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
-                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
-            }
-        }
-        else{
-            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
-                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter" withMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
-
-            }
-        }
-        return;
-    }
+    //quick call to see if there is an account IF we've been granted access.
+//    if (![TWAPIManager isLocalTwitterAccountAvailable]) {
+//        NSLog(@"You were not granted access to the Twitter accounts.");
+//        if (isRegister) {
+//            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+//                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
+//            }
+//        }
+//        else{
+//            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
+//                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter" withMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
+//
+//            }
+//        }
+//        return;
+//    }
     
     
     [self obtainAccessToAccountsWithBlock:^(BOOL granted) {
