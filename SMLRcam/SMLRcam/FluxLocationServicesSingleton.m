@@ -459,7 +459,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
             }
         }
     }
-    //if any of the checks fail (and scan is not visible) dont show it.
+    //if any of the checks fail (scan is not visible) dont show it.
     return NO;
 }
 

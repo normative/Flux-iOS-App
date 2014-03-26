@@ -114,14 +114,14 @@
     CGFloat circleStartAngle;
     CGFloat circleEndAngle;
     
-    if (count <= (CELLS_PER_VIEW + CELLS_PER_VIEW - 1)) {
-        circleStartAngle = 0;
-        circleEndAngle = 0;
-    }
-    else{
+//    if (count <= (CELLS_PER_VIEW + CELLS_PER_VIEW - 1)) {
+//        circleStartAngle = 0;
+//        circleEndAngle = 0;
+//    }
+//    else{
         circleStartAngle = 340;
         circleEndAngle = circleStartAngle-(320*(self.timeScrollView.bounds.size.height / self.timeScrollView.contentSize.height));
-    }
+//    }
     if (circleEndAngle > 320) {
         sizeRatio = 320/circleEndAngle;
         circleEndAngle = 320;

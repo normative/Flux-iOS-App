@@ -8,6 +8,7 @@
 
 #import "FluxImportContactCell.h"
 #import "UICKeyChainStore.h"
+#import "UIActionSheet+Blocks.h"
 
 @implementation FluxImportContactCell
 
@@ -156,14 +157,32 @@
 
 
 - (IBAction)inviteButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(ImportContactCell:shouldInvite:)]) {
-        [delegate ImportContactCell:self shouldInvite:self.contactObject];
-    }
+    [UIActionSheet showInView:self.superview
+                    withTitle:nil
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:nil
+            otherButtonTitles:@[@"Send Invitation"]
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             if ([delegate respondsToSelector:@selector(ImportContactCell:shouldInvite:)]) {
+                                 [delegate ImportContactCell:self shouldInvite:self.contactObject];
+                             }
+                         }
+                     }];
 }
 
 - (IBAction)contactButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(ImportContactCellFriendFollowButtonWasTapped:)]) {
-        [delegate ImportContactCellFriendFollowButtonWasTapped:self];
-    }
+    [UIActionSheet showInView:self.superview
+                    withTitle:nil
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:nil
+            otherButtonTitles:@[@"Send Invitation"]
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             if ([delegate respondsToSelector:@selector(ImportContactCellFriendFollowButtonWasTapped:)]) {
+                                 [delegate ImportContactCellFriendFollowButtonWasTapped:self];
+                             }
+                         }
+                     }];
 }
 @end

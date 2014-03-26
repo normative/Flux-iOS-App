@@ -85,6 +85,10 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                     [delegate SocialManager:self didLinkTwitterAccount:acct];
                                     return;
                                 }
+                                //should have returned. If it didn't then it didn't find the username in the registered accounts. Should probably log out and ask them to pick an account again.
+                                [UICKeyChainStore removeAllItemsForService:TwitterService];
+                                [self linkTwitter];
+                                return;
                             }
                         }
                     });
@@ -98,13 +102,14 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
     if (![TWAPIManager isLocalTwitterAccountAvailable]) {
         NSLog(@"You were not granted access to the Twitter accounts.");
         if (isRegister) {
-            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
             }
         }
         else{
-            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
+                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter" withMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
+
             }
         }
         return;
@@ -133,8 +138,8 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                          }
                                          else{
                                              if (isRegister) {
-                                                 if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                                                     [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                                                 if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                                                     [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:nil];
                                                  }
                                              }
                                              
@@ -147,13 +152,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                     }
                     else{
                         if (isRegister) {
-                            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                            if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                                [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:@"You have no Twitter accounts set up in the Settings app. Add one to register with Twitter."];
                             }
                         }
                         else{
-                            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                            if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
+                                [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter" withMessage:@"You have no Twitter accounts set up in the Settings app. Add one to connect Flux to Twitter."];
                             }
                         }
                         
@@ -165,13 +170,14 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             }
             else {
                 if (isRegister) {
-                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                        [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                        [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
                     }
                 }
                 else{
-                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                        [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
+                        [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter" withMessage:@"We weren't granted access to your Twitter Accounts. Go to the Settings app and allow Flux access to Twitter accounts to proceed."];
+                        
                     }
                 }
                 
@@ -246,13 +252,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 }
                 //call delegate
                 if (isRegister) {
-                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                        [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                        [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:nil];
                     }
                 }
                 else{
-                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                        [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                    if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
+                        [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter" withMessage:nil];
                     }
                 }
                 
@@ -264,13 +270,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             NSLog(@"Reverse Auth process failed. Error returned was: %@\n", [error localizedDescription]);
             //call delegate
             if (isRegister) {
-                if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                    [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter"];
+                if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                    [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:nil];
                 }
             }
             else{
-                if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                    [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter"];
+                if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
+                    [delegate SocialManager:self didFailToLinkSocialAccount:@"Twitter" withMessage:nil];
                 }
             }
         }
@@ -482,13 +488,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                                               dispatch_async(dispatch_get_main_queue(), ^{
                                                                   NSLog(@"Facebook Link Error: %@",error.localizedDescription);
                                                                   if (isRegister) {
-                                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                                                                          [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
+                                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                                                                          [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook" andMessage:nil];
                                                                       }
                                                                   }
                                                                   else{
-                                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                                                                          [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:andMessage:)]) {
+                                                                          [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook" withMessage:nil];
                                                                       }
                                                                   }
                                                                   
@@ -503,13 +509,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                               dispatch_async(dispatch_get_main_queue(), ^{
                                                   NSLog(@"Facebook Link Error: %@",error.localizedDescription);
                                                   if (isRegister) {
-                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:)]) {
-                                                          [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook"];
+                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
+                                                          [delegate SocialManager:self didFailToRegisterSocialAccount:@"Facebook" andMessage:nil];
                                                       }
                                                   }
                                                   else{
-                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:)]) {
-                                                          [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook"];
+                                                      if ([delegate respondsToSelector:@selector(SocialManager:didFailToLinkSocialAccount:withMessage:)]) {
+                                                          [delegate SocialManager:self didFailToLinkSocialAccount:@"Facebook" withMessage:nil];
                                                       }
                                                   }
                                                   

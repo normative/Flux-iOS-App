@@ -623,8 +623,14 @@
     }];
     [self.fluxDataManager loginUser:newUser withDataRequest:dataRequest];
 }
-- (void)SocialManager:(FluxSocialManager*)socialManager didFailToRegisterSocialAccount:(NSString*)accountType{
-    NSString*str = [NSString stringWithFormat:@"Registration with %@ failed",accountType];
+- (void)SocialManager:(FluxSocialManager*)socialManager didFailToRegisterSocialAccount:(NSString*)accountType andMessage:(NSString *)message{
+    NSString*str;
+    if (message) {
+        str = message;
+    }
+    else{
+        str = [NSString stringWithFormat:@"Registration with %@ failed",accountType];
+    }
     [self loginRegistrationFailedWithString:str];
 }
 

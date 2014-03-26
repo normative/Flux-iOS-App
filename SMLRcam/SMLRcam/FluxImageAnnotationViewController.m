@@ -345,8 +345,13 @@
     [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
 }
 
-- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{
-    [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType withMessage:(NSString *)message{
+    if (message) {
+        [ProgressHUD showError:message];
+    }
+    else{
+        [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+    }
 }
 
 - (void)checkPostButton{
