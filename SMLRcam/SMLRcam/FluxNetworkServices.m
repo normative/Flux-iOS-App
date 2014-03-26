@@ -15,6 +15,9 @@
 #import "FluxAliasObject.h"
 #import "UICKeyChainStore.h"
 
+#define defaultTimout 5.0
+#define defaultImageTimout 5.0
+
 #define _AWSProductionServerURL  @"http://54.221.254.230/"
 #define _AWSTestServerURL        @"http://54.221.222.71/"
 #define _AWSS3TestServerURL      @"http://54.83.61.163/"
@@ -1250,6 +1253,8 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
 
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullurl]];
+    
+//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullurl] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:15.0];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
