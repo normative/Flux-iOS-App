@@ -477,7 +477,7 @@
                     withTitle:@"Are you sure you want to see the walkthrough again?"
             cancelButtonTitle:@"Cancel"
        destructiveButtonTitle:nil
-            otherButtonTitles:@[@"Sure"]
+            otherButtonTitles:@[@"Yep"]
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
                              //oush to scan and show walkthrough
