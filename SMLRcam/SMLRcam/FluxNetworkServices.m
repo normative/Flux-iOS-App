@@ -248,7 +248,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
                                                                                            failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
     {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"image for ID Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailImageDownloadWithError:andNaturalString:andRequestID:andImageID:)])
         {
             [delegate NetworkServices:self didFailImageDownloadWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID andImageID:imageID];
@@ -286,7 +286,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"image metadata for ID Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -380,7 +380,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"images for Location Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -527,7 +527,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         }
         failure:^(AFHTTPRequestOperation *operation, NSError *error)
         {
-            NSLog(@"Failed with error: %@", [error localizedDescription]);
+            NSLog(@"image features for ID Failed with error: %@", [error localizedDescription]);
             if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
             {
                 [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -584,7 +584,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                            }
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
                                            {
-                                               NSLog(@"Failed with error: %@", [error localizedDescription]);
+                                               NSLog(@"create user Failed with error: %@", [error localizedDescription]);
                                                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                                                {
                                                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -645,7 +645,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
            }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
            {
-               NSLog(@"Failed with error: %@", [error localizedDescription]);
+               NSLog(@"update user Failed with error: %@", [error localizedDescription]);
                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                {
                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -672,7 +672,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"login user Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -732,7 +732,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                         }
                                                                                         failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                                                                                             
-                                                                                            NSLog(@"Request Failed with Error: %@, %@", error, error.userInfo);
+                                                                                            NSLog(@"username uniqueness Failed with Error: %@, %@", error, error.userInfo);
                                                                                             if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                                                                                             {
                                                                                                 [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -756,7 +756,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"post camera Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -802,7 +802,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                            }
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
                                            {
-                                               NSLog(@"Failed with error: %@", [error localizedDescription]);
+                                               NSLog(@"update apn device token Failed with error: %@", [error localizedDescription]);
                                                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                                                {
                                                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -845,7 +845,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"get user for ID Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -871,7 +871,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
       }
        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
       {
-          NSLog(@"Failed with error: %@", [error localizedDescription]);
+          NSLog(@"user profile pic Failed with error: %@", [error localizedDescription]);
           if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
           {
               [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -903,7 +903,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"images list for user Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -937,7 +937,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get flllower requests for user Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -970,7 +970,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get following list Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1002,7 +1002,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get follower list Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1034,7 +1034,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get user list for query failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1065,7 +1065,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"unfollow user failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1093,7 +1093,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"force unfollow failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1123,7 +1123,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"send follow request failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1155,7 +1155,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"accept Follow request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1186,7 +1186,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"ignoring follow request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1213,7 +1213,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"create alias Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1264,7 +1264,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"Contact request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1307,7 +1307,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"tags for location failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1361,7 +1361,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"Tags for location Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1414,7 +1414,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"image counts Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1466,7 +1466,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"image count Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1519,7 +1519,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"map images Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
