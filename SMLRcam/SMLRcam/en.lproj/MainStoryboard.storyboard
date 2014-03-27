@@ -613,7 +613,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" keyboardType="twitter"/>
                                     </textView>
-                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j2M-HY-wij" userLabel="Label Container">
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j2M-HY-wij" userLabel="Label Container">
                                         <rect key="frame" x="10" y="228" width="300" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
@@ -652,6 +652,10 @@
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="300" id="DW5-la-Vvx"/>
+                                            <constraint firstAttribute="height" constant="40" id="v8U-eD-tkW"/>
+                                        </constraints>
                                     </view>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I50-pt-ooA">
                                         <rect key="frame" x="0.0" y="288" width="320" height="216"/>
@@ -667,8 +671,10 @@
                                 <constraints>
                                     <constraint firstItem="PY6-5W-SRh" firstAttribute="top" secondItem="Cit-Ms-vJp" secondAttribute="bottom" id="7xB-f9-PFS"/>
                                     <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="PY6-5W-SRh" secondAttribute="bottom" constant="220" id="D63-C2-f7i"/>
+                                    <constraint firstItem="j2M-HY-wij" firstAttribute="top" secondItem="PY6-5W-SRh" secondAttribute="bottom" constant="10" id="Fae-r8-AgV"/>
                                     <constraint firstAttribute="centerX" secondItem="PY6-5W-SRh" secondAttribute="centerX" id="FjP-Vn-tBn"/>
                                     <constraint firstItem="Cit-Ms-vJp" firstAttribute="leading" secondItem="Hpz-QJ-bJr" secondAttribute="leading" id="Qpc-9c-OKH"/>
+                                    <constraint firstAttribute="centerX" secondItem="j2M-HY-wij" secondAttribute="centerX" id="Tz1-FQ-PD4"/>
                                     <constraint firstAttribute="bottom" secondItem="I50-pt-ooA" secondAttribute="bottom" id="mmF-qP-Psk"/>
                                     <constraint firstItem="Cit-Ms-vJp" firstAttribute="top" secondItem="Hpz-QJ-bJr" secondAttribute="top" id="nbV-NE-6Gc"/>
                                     <constraint firstItem="I50-pt-ooA" firstAttribute="leading" secondItem="Hpz-QJ-bJr" secondAttribute="leading" id="qkL-Wn-gi2"/>

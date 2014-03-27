@@ -161,7 +161,7 @@
             [ProgressHUD dismiss];
             
             
-            if (self.importFluxUserArray.count == 0 || self.importUserArray.count == 0) {
+            if (self.importFluxUserArray.count == 0 && self.importUserArray.count == 0) {
                 [self showEmptyViewForError:nil];
             }
             else{
