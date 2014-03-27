@@ -20,7 +20,7 @@ typedef NSUUID FluxRequestID;
 
 extern NSString* const AWSProductionServerURL;
 extern NSString* const AWSTestServerURL;
-extern NSString* const AWSS3TestServerURL;
+extern NSString* const AWSStagingServerURL;
 extern NSString* const DSDLocalTestServerURL;
 
 extern NSString* const FluxServerURL;

@@ -19,18 +19,18 @@
 #define defaultImageTimout 5.0
 
 #define _AWSProductionServerURL  @"http://54.221.254.230/"
+#define _AWSStagingServerURL     @"http://54.83.61.163/"
 #define _AWSTestServerURL        @"http://54.221.222.71/"
-#define _AWSS3TestServerURL      @"http://54.83.61.163/"
 #define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
 
 NSString* const AWSProductionServerURL = _AWSProductionServerURL;
+NSString* const AWSStagingServerURL    = _AWSStagingServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
-NSString* const AWSS3TestServerURL     = _AWSS3TestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
 NSString* const FluxServerURL = _AWSProductionServerURL;
+//NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
-//NSString* const FluxServerURL = _AWSS3TestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
