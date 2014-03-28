@@ -1,4 +1,7 @@
 Release Notes:
+
+- improved error reporting
+- various bug fixes
 ******************************************
 
 V0.23 B03
