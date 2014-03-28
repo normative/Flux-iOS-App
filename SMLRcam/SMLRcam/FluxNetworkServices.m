@@ -15,6 +15,8 @@
 #import "FluxAliasObject.h"
 #import "UICKeyChainStore.h"
 
+#import "ProgressHUD.h"
+
 #define defaultTimout 5.0
 #define defaultImageTimout 5.0
 
@@ -396,10 +398,22 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
 
     NSLog(@"Uploading image with positional accuracy: %f, %f", theImageObject.horiz_accuracy, theImageObject.vert_accuracy);
-    
-//    if (!theImageObject.timestampString)
-        
     NSLog(@"Upload image timestamp: %@, timestampstr: %@", theImageObject.timestamp, theImageObject.timestampString);
+    NSLog(@"Upload image timestamp is type: %@", [theImageObject.timestamp class]);
+    
+    NSDate *b = [NSDate date];
+    if ([theImageObject.timestamp class] != [b class] )
+    {
+//        [ProgressHUD showError:@"Timestamp is a date"];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Hey There?"
+                                                            message:[NSString stringWithFormat:@"timestamp isn't __NSDate, it's %@.", theImageObject.timestamp.class]
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Whatever"
+                                                  otherButtonTitles:@"OK", nil];
+        
+        [alertView show];
+    }
+    
     
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject
