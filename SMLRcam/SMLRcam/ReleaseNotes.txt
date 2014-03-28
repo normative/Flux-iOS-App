@@ -1,7 +1,25 @@
 Release Notes:
+******************************************
 
-- Adds the ability to change an images privacy from the profile menu
+V0.23 B03
+
+Released: 2014-03-28 12:05:00
+
+Release Notes:
+- Adds the ability to change an image's privacy from the profile menu
 - Adds the ability to remove a user from your followers
+- FB contact import lag fix
+
+******************************************
+
+V0.23 B02
+
+NOTE: Limited Dev release only.  Points to Staging server
+
+Released: 2014-03-27 15:30:00
+
+Release Notes:
+- fixes FB contact import lag issue
 
 ******************************************
 
