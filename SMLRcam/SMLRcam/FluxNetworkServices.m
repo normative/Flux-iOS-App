@@ -396,6 +396,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
 
     NSLog(@"Uploading image with positional accuracy: %f, %f", theImageObject.horiz_accuracy, theImageObject.vert_accuracy);
+    NSLog(@"Upload image timestamp: %@, timestampstr: %@", theImageObject.timestamp, theImageObject.timestampString);
     
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject

@@ -44,8 +44,13 @@ const NSString *fluxCameraModelStrings[] = {
         if (!__fluxScanImageObjectDateFormatter)
         {
             __fluxScanImageObjectDateFormatter = [[NSDateFormatter alloc]init];
-            [__fluxScanImageObjectDateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
-//            imageObject.timestamp = [__fluxScanImageObjectDateFormatter dateFromString:imageObject.timestampString];
+            NSTimeZone *tz = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+            [__fluxScanImageObjectDateFormatter setTimeZone:tz];
+            [__fluxScanImageObjectDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+
+//            _timestamp = [NSDate date];
+//            _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:_timestamp];
+//            NSLog(@"timestamp: %@, timestampstr: %@", self.timestamp, self.timestampString);
         }
         
         if (!__fluxScanImageObjectLocalIDDateFormatter)
@@ -249,6 +254,8 @@ withDescriptionString:(NSString*)description
         self.features = nil;
         self.featureFetchFailed = NO;
         self.justCaptured = 1;      // assume this method is called only when newly captured image record needs to be created
+        
+        NSLog(@"timestamp: %@, timestampstr: %@", self.timestamp, self.timestampString);
     }
     
     return self;

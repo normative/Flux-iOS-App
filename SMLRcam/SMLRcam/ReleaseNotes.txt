@@ -1,4 +1,7 @@
 Release Notes:
+
+- Clean up formatting and set correct time zone for timestamps of uploaded imagery
+
 ******************************************
 
 V0.23 B03
