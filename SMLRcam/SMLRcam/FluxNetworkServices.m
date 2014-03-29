@@ -402,9 +402,20 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSLog(@"Upload image timestamp is type: %@", [theImageObject.timestamp class]);
     
     NSDate *b = [NSDate date];
+    
+    if (!theImageObject.timestampString)
+    {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Hey There!"
+                                                            message:[NSString stringWithFormat:@"timestampStr is null: timestamp: %@, timestampStr: %@", theImageObject.timestamp, theImageObject.timestampString]
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"Whatever"
+                                                  otherButtonTitles:@"OK", nil];
+        
+        [alertView show];
+    }
+    
     if ([theImageObject.timestamp class] != [b class] )
     {
-//        [ProgressHUD showError:@"Timestamp is a date"];
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Hey There?"
                                                             message:[NSString stringWithFormat:@"timestamp isn't __NSDate, it's %@.", theImageObject.timestamp.class]
                                                            delegate:nil
