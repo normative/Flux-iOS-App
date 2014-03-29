@@ -265,7 +265,6 @@ static int captureImageID = -1;
                                                            label:@"take picture"          // Event label
                                                            value:nil] build]];    // Event value
     
-    NSDate *picTime = [NSDate date];
     __block NSDate *startTime = [NSDate date];
     
     
@@ -319,10 +318,11 @@ static int captureImageID = -1;
                  userID = cameraID = 1;
              }
              
-             NSDate *clickTime = [NSDate dateWithTimeInterval:0 sinceDate:startTime];
+
 
              FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
-                                                                  atTimestamp:clickTime
+//                                                            atTimestampString:dateString
+                                                                  atTimestamp:startTime
                                                                   andCameraID:cameraID
                                                                 andCategoryID:categoryID
                                                         withDescriptionString:@""
