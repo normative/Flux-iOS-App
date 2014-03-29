@@ -47,11 +47,11 @@ const NSString *fluxCameraModelStrings[] = {
             __fluxScanImageObjectDateFormatter = [[NSDateFormatter alloc]init];
             NSTimeZone *tz = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
             [__fluxScanImageObjectDateFormatter setTimeZone:tz];
-            [__fluxScanImageObjectDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+            [__fluxScanImageObjectDateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'"];
 
-//            _timestamp = [NSDate date];
-//            _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:_timestamp];
-//            NSLog(@"timestamp: %@, timestampstr: %@", self.timestamp, self.timestampString);
+            _timestamp = [NSDate date];
+            _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:_timestamp];
+            NSLog(@"timestamp: %@, timestampstr: %@", self.timestamp, self.timestampString);
         }
         
         if (!__fluxScanImageObjectLocalIDDateFormatter)
@@ -231,7 +231,7 @@ withDescriptionString:(NSString*)description
     andHorizAccuracy:(double)horiz_accuracy
      andVertAccuracy:(double)vert_accuracy;
 {
-    self = [super init];
+    self = [self init];
     if (self)
     {
         self.userID = userID;
