@@ -40,6 +40,7 @@ const NSString *fluxCameraModelStrings[] = {
     self = [super init];
     if (self)
     {
+        _timestampString = nil;
         _justCaptured = 0;      // default to pull from cloud (typical case)
         if (!__fluxScanImageObjectDateFormatter)
         {
@@ -65,7 +66,6 @@ const NSString *fluxCameraModelStrings[] = {
             __fluxScanImageObjectSubTitleDateFormatter = [[NSDateFormatter alloc] init];
             [__fluxScanImageObjectSubTitleDateFormatter setDateFormat:@"yyyy-MM-dd"];
         }
-
     }
     
     return self;
@@ -91,6 +91,19 @@ const NSString *fluxCameraModelStrings[] = {
 - (NSString*)subtitle
 {
     return [__fluxScanImageObjectSubTitleDateFormatter stringFromDate:self.timestamp];
+}
+
+- (NSString *)timestampString
+{
+    if (!_timestampString)
+    {
+        if (_timestamp)
+        {
+            NSLog(@"_timestampString null, timestamp not");
+            _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:self.timestamp];
+        }
+    }
+    return _timestampString;
 }
 
 - (CLLocationCoordinate2D)coordinate
@@ -227,8 +240,7 @@ withDescriptionString:(NSString*)description
         self.categoryID = catID;
         self.timestamp = timeStamp;
         // use the variable rather than the property to skip the setter
-//        _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:timeStamp];
-        self.timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:timeStamp];
+        _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:timeStamp];
         self.descriptionString = description;
         self.latitude = latitude;
         self.longitude = longitude;

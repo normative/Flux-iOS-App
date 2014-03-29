@@ -57,6 +57,9 @@ typedef enum _FluxCameraModelEnum : NSUInteger {
 } FluxCameraModelEnum;
 
 @interface FluxScanImageObject : NSObject <MKAnnotation>
+{
+    NSString *_timestampString;
+}
 
 // Image and User properties
 @property (nonatomic) int cameraID;
