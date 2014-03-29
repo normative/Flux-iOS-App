@@ -321,8 +321,8 @@ static int captureImageID = -1;
              }
              
 
-             
-            FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
+
+             FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
 //                                                            atTimestampString:dateString
                                                                   atTimestamp:startTime
                                                                   andCameraID:cameraID

@@ -2,6 +2,9 @@ Release Notes:
 
 - improved error reporting
 - various bug fixes
+- Clean up formatting and set correct time zone for timestamps of uploaded imagery
+- properly initialize ImageScanObject to that date formatters are properly initialized
+
 ******************************************
 
 V0.23 B03
