@@ -227,7 +227,8 @@ withDescriptionString:(NSString*)description
         self.categoryID = catID;
         self.timestamp = timeStamp;
         // use the variable rather than the property to skip the setter
-        _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:timeStamp];
+//        _timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:timeStamp];
+        self.timestampString = [__fluxScanImageObjectDateFormatter stringFromDate:timeStamp];
         self.descriptionString = description;
         self.latitude = latitude;
         self.longitude = longitude;
