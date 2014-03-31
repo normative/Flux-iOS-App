@@ -794,7 +794,7 @@
         NSString*password = cell.textField.text;
         
         if (username.length == 0 || password.length == 0) {
-            [ProgressHUD showError:@"Please fill out the fields to sign in"];
+            [ProgressHUD showError:@"Please fill out the\n fields to sign in"];
 //            [self showContainerViewAnimated:YES];
         }
         else{
