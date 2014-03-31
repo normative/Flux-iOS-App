@@ -152,7 +152,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Follow request failed with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Sending follow request failed, sorry about that"];
         [ProgressHUD showError:str];
         
     }];
@@ -175,7 +175,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Accepting the follower request failed with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Accepting follower request failed, sorry about that"];
         [ProgressHUD showError:str];
         
     }];
@@ -199,7 +199,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Unfollowing %@ failed with error %d",userObject.username, (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Unfollowing %@ failed",userObject.username];
         [ProgressHUD showError:str];
         
     }];
@@ -222,7 +222,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Removing %@ from followers failed. Sorry about that.",userObject.username];
+        NSString*str = [NSString stringWithFormat:@"Removing %@ from followers failed.",userObject.username];
         [ProgressHUD showError:str];
         
     }];

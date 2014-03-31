@@ -178,7 +178,7 @@
                 str = [NSString stringWithFormat:@"You've asked too much of Twitter for now, try again later."];
             }
             else{
-                str = [NSString stringWithFormat:@"Contact Retrieval Failed"];
+                str = [NSString stringWithFormat:@"Contact retrieval failed"];
             }
             
             [ProgressHUD showError:str];
@@ -713,7 +713,7 @@
                                      
                                      [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                                          
-                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed"];
                                          [ProgressHUD showError:str];
                                          
                                      }];
@@ -814,7 +814,7 @@
                                      
                                      [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                                          
-                                         NSString*str = [NSString stringWithFormat:@"Cancelling follow request failed with error %d", (int)[e code]];
+                                         NSString*str = [NSString stringWithFormat:@"Cancelling follow request failed, sorry about that."];
                                          [ProgressHUD showError:str];
                                          
                                      }];
@@ -1154,7 +1154,7 @@
             
         }
         else{
-            [ProgressHUD showError:@"You didn't give Flux permission. Please goto the Settings app and enable this permission to import from Contacts"];
+            [ProgressHUD showError:@"You didn't give Flux permission. Please go to the Settings app and enable this permission to import from Contacts"];
         }
 
     });

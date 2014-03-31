@@ -381,7 +381,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                   // See https://developers.facebook.com/docs/ios/errors/
                                   NSLog(@"Facebook Link Error: %@",error.localizedDescription);
                                   NSLog(@"%@",[FBErrorUtility userMessageForError:error]);
-                                  [ProgressHUD showError:[FBErrorUtility userMessageForError:error]];
+                                  if ([FBErrorUtility shouldNotifyUserForError:error]) {
+                                      [ProgressHUD showError:[FBErrorUtility userMessageForError:error]];
+                                  }
+                                  else{
+                                      [ProgressHUD showError:@"Unknown Facebook error occured"];
+                                  }
+                                  
                                   if ([delegate respondsToSelector:@selector(SocialManagerDidFailToAddAddFacebookPublishPermissions: andDidShowError:)]) {
                                       [delegate SocialManagerDidFailToAddAddFacebookPublishPermissions:self andDidShowError:YES];
                                   }

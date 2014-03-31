@@ -396,7 +396,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Accepting request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Accepting request from %@ failed",friendFollowerCell.userObject.username];
         [ProgressHUD showError:str];
         [friendFollowerCell setUserInteractionEnabled:YES];
         
@@ -424,7 +424,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Ignoring request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Ignoring request from %@ failed",friendFollowerCell.userObject.username];
         [ProgressHUD showError:str];
         [friendFollowerCell setUserInteractionEnabled:YES];
         
@@ -583,7 +583,7 @@
     }];
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Following failed to load with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Updating the list failed, sorry about that"];
         [ProgressHUD showError:str];
         [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:amFollowingMode] endRefreshing];
     }];
@@ -606,7 +606,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Followers failed to load with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Updating your followers list failed"];
         [ProgressHUD showError:str];
         [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:isFollowerMode] endRefreshing];
     }];

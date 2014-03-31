@@ -344,7 +344,7 @@
                                      
                                      [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                                          
-                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed, sorry about that."];
                                          [ProgressHUD showError:str];
                                          
                                      }];
@@ -395,7 +395,7 @@
                                      
                                      [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                                          
-                                         NSString*str = [NSString stringWithFormat:@"Cancelling follow request failed with error %d", (int)[e code]];
+                                         NSString*str = [NSString stringWithFormat:@"Cancelling the follow request failed, sorry about that."];
                                          [ProgressHUD showError:str];
                                          
                                      }];
@@ -498,7 +498,7 @@
         
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
             searchState = notSearching;
-            NSString*str = [NSString stringWithFormat:@"Search failed to load with error %d", (int)[e code]];
+            NSString*str = [NSString stringWithFormat:@"Search failed to load, sorry about that"];
             [ProgressHUD showError:str];
             
         }];

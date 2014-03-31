@@ -12,7 +12,8 @@
 #import "FluxCameraObject.h"
 #import "FluxTextFieldCell.h"
 #import "UICKeyChainStore.h"
-
+#import "UIAlertView+Blocks.h"
+//#import "DTAlertView.h"
 
 
 #import <FacebookSDK/FacebookSDK.h>
@@ -74,6 +75,9 @@
         [animationImages2 addObject:img];
     }
     
+    [forgotPasswordButton setHidden:YES];
+    [forgotPasswordButton setAlpha:0.0];
+    [forgotPasswordButton removeFromSuperview];
     
     [logoImageView setFirstAnimationSet:animationImages1 andSecondAnimationSet:animationImages2];
     
@@ -83,6 +87,7 @@
     [facebookButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:facebookButton.titleLabel.font.pointSize]];
     [createLoginButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:createLoginButton.titleLabel.font.pointSize]];
     [signInOptionsLabel setFont:[UIFont fontWithName:@"Akkurat" size:signInOptionsLabel.font.pointSize]];
+    [forgotPasswordButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:forgotPasswordButton.titleLabel.font.pointSize]];
     
     self.fluxDataManager = [[FluxDataManager alloc]init];
     registrationOKArray = [[NSMutableArray alloc]initWithObjects:[NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], [NSNumber numberWithBool:NO], nil];
@@ -399,7 +404,7 @@
         [self fadeOutLogin];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*str = [NSString stringWithFormat:@"Login failed with error C-%d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Login failed, maybe give it another shot in a few minutes."];
         [self loginRegistrationFailedWithString:str];
     }];
     [self.fluxDataManager postCamera:camObj withDataRequest:dataRequest];
@@ -578,7 +583,7 @@
         [UICKeyChainStore setString:[userInfo objectForKey:@"name"]forKey:FluxNameKey service:FacebookService];
         [UICKeyChainStore setString:[userInfo objectForKey:@"username"] forKey:FluxUsernameKey service:FacebookService];
 
-        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
+//        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -614,7 +619,7 @@
 //        [store setString:access_token forKey:FluxAccessTokenKey];
 //        [store setString:access_token_secret forKey:FluxAccessTokenSecretKey];
 
-        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
+//        [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -692,7 +697,7 @@
 
         }];
         [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            NSString*str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
+            NSString*str = [NSString stringWithFormat:@"Registration failed"];
         [self loginRegistrationFailedWithString:str];
         }];
         [self hideKeyboard];
@@ -744,14 +749,14 @@
             [ProgressHUD showSuccess:@"Welcome To Flux!"];
         }
         else{
-            [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
+//            [ProgressHUD showSuccess:[NSString stringWithFormat: @"Welcome back @%@", userObject.username]];
         }
         [self didLoginSuccessfullyWithUserID:userObject.userID];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         NSString*str;
         if (new) {
-            str = [NSString stringWithFormat:@"Registration failed with error %d", (int)[e code]];
+            str = [NSString stringWithFormat:@"Login failed"];
         }
         else{
             str = [description stringByReplacingCharactersInRange:NSMakeRange(0,1) withString:[[description substringToIndex:1] capitalizedString]];
@@ -789,7 +794,7 @@
         NSString*password = cell.textField.text;
         
         if (username.length == 0 || password.length == 0) {
-            [ProgressHUD showError:@"Please fill out your username & password to sign in"];
+            [ProgressHUD showError:@"Please fill out the fields to sign in"];
 //            [self showContainerViewAnimated:YES];
         }
         else{
@@ -822,13 +827,14 @@
         [UIView setAnimationsEnabled:YES];
         [createLoginButton setEnabled:NO];
         
-        
+        [forgotPasswordButton setHidden:NO];
         [UIView animateWithDuration:0.3 animations:^{
             [twitterButton setAlpha:0.0];
             [facebookButton setAlpha:0.0];
             [topSeparator setAlpha:0.0];
             [signInOptionsLabel setAlpha:0.0];
-            [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y-40)];
+            [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y-50)];
+            [forgotPasswordButton setAlpha:0.8];
         } completion:^(BOOL finished){
             [loginToggleButton setEnabled:YES];
             [createLoginButton setEnabled:YES];
@@ -854,10 +860,12 @@
             [facebookButton setAlpha:1.0];
             [topSeparator setAlpha:1.0];
             [signInOptionsLabel setAlpha:1.0];
-            [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y+40)];
+            [createLoginButton setCenter:CGPointMake(createLoginButton.center.x, createLoginButton.center.y+50)];
+            [forgotPasswordButton setAlpha:0.0];
         } completion:^(BOOL finished){
             [loginToggleButton setEnabled:YES];
             [createLoginButton setEnabled:YES];
+            [forgotPasswordButton setHidden:YES];
         }];
     }
 }
@@ -871,6 +879,35 @@
 //    [self hideKeyboard];
 //    [self hideContainerViewAnimated:YES];
 //    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
+}
+
+- (IBAction)forgetPasswordButtonAction:(id)sender {
+    
+    
+    
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We've all done it."
+                                                        message:@"To which email do you want us to send a password reset?"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles:@"Send", nil];
+    
+    [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
+    [(UITextField*)[alertView textFieldAtIndex:0] setKeyboardType:UIKeyboardTypeEmailAddress];
+    
+    [alertView showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
+        if (buttonIndex != alertView.cancelButtonIndex) {
+            UITextField *emailTextField = [alertView textFieldAtIndex:0];
+            if ([self NSStringIsValidEmail:emailTextField.text]) {
+                NSLog(@"We should send an email to %@",emailTextField.text);
+                [ProgressHUD showSuccess:[NSString stringWithFormat:@"We sent a password reset email to %@",emailTextField.text]];
+            }
+            //not a valid email
+            else{
+                [ProgressHUD showError:@"Sorry, but that's not a valid email address."];
+            }
+            
+        }
+    }];
 }
 
 //#pragma mark - UIActionSheetDelegate

@@ -128,7 +128,7 @@
         
     }];
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*str = [NSString stringWithFormat:@"Images failed to load failed with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Images failed to load"];
         [ProgressHUD showError:str];
     }];
     [self.fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
@@ -192,7 +192,7 @@
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         [self swapEditModes];
         [self prepareViewWithImagesUserID:theUserID];
-        NSString*str = [NSString stringWithFormat:@"Privacy update failed. Try again later."];
+        NSString*str = [NSString stringWithFormat:@"Privacy update failed"];
         [ProgressHUD showError:str];
         [self unfreezeUI];
     }];

@@ -1399,6 +1399,18 @@
                                         <color key="textColor" red="0.41960784309999999" green="0.1137254902" blue="0.1137254902" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" alpha="0.69999999999999996" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="fill" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="apV-l1-kvR">
+                                        <rect key="frame" x="263" y="112" width="50" height="30"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <state key="normal" title="Forget?">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="forgetPasswordButtonAction:" destination="ODM-aT-N2z" eventType="touchUpInside" id="3g6-fl-ykh"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </view>
@@ -1420,6 +1432,7 @@
                     <connections>
                         <outlet property="createLoginButton" destination="gmj-NV-NCp" id="SeB-4D-4Xy"/>
                         <outlet property="facebookButton" destination="giK-n0-WlU" id="7kO-r7-QEt"/>
+                        <outlet property="forgotPasswordButton" destination="apV-l1-kvR" id="fyJ-7u-rZo"/>
                         <outlet property="loginElementsContainerView" destination="RuW-dy-GsI" id="jWI-ua-hQY"/>
                         <outlet property="loginToggleButton" destination="13a-C5-GsC" id="hMY-wA-349"/>
                         <outlet property="loginTogglePromptLabel" destination="wle-Vx-hac" id="b28-Z9-dxK"/>
