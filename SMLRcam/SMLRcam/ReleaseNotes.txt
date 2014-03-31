@@ -1,6 +1,20 @@
 Release Notes:
 ******************************************
 
+V0.23 B04
+
+Released: 2014-03-29 13:45:00
+
+Release Notes:
+- Adds the ability to change an image's privacy from the profile menu
+- improved error reporting
+- various bug fixes
+- Clean up formatting and set correct time zone for timestamps of uploaded imagery
+- properly initialize ImageScanObject to that date formatters are properly initialized
+   - allows upload of imagery in areas where there isn't imagery already
+
+******************************************
+
 V0.23 B03
 
 Released: 2014-03-28 12:05:00
