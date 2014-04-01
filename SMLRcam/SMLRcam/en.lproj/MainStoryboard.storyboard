@@ -3182,8 +3182,8 @@
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="TKb-mp-b48"/>
         <segue reference="cDh-QJ-kAL"/>
-        <segue reference="Rax-cR-yIy"/>
+        <segue reference="TKb-mp-b48"/>
+        <segue reference="sbm-gJ-83e"/>
     </inferredMetricsTieBreakers>
 </document>
