@@ -9,6 +9,7 @@ PODS:
   - ISO8601DateFormatterValueTransformer (0.5.0):
     - RKValueTransformers (~> 1.0.0)
   - objectiveflickr (2.0.4)
+  - PEPhotoCropEditor (1.3.1)
   - RestKit (0.21.0):
     - RestKit/Core
   - RestKit/Core (0.21.0):
@@ -42,6 +43,7 @@ DEPENDENCIES:
   - CocoaLumberjack
   - GoogleAnalytics-iOS-SDK
   - objectiveflickr
+  - PEPhotoCropEditor
   - RestKit (~> 0.21.0)
   - TestFlightFeedback
   - TestFlightSDK
@@ -53,6 +55,7 @@ SPEC CHECKSUMS:
   GoogleAnalytics-iOS-SDK: 7b0e55cfe5e70d60478a7b105f15ac71e8bc373e
   ISO8601DateFormatterValueTransformer: d0af1f50a9df42db72d7418db31938b8473e0af8
   objectiveflickr: a0fc71147e128f8bca92ac4d13da004873bd7e6b
+  PEPhotoCropEditor: 1d3bee0304010d1b6ff148bbcfc634793223744d
   RestKit: c11a30e7bc73513d9d2c2695672aba7697d24181
   RKValueTransformers: 1562d458b9c9d59ce777bfc5982f2e1aef2e9182
   SOCKit: 2f3bc4d07910de12dcc202815e07db68a3802581

@@ -41,6 +41,7 @@ install_resource()
       ;;
   esac
 }
+install_resource "PEPhotoCropEditor/Resources/PEPhotoCropEditor.bundle"
 install_resource "TestFlightFeedback/Core/Resources/TFFeedbackController_iPad.xib"
 install_resource "TestFlightFeedback/Core/Resources/TFFeedbackController_iPhone.xib"
 install_resource "TestFlightFeedback/Core/Resources/Base.lproj"

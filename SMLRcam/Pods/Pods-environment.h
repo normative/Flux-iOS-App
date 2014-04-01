@@ -42,6 +42,12 @@
 #define COCOAPODS_VERSION_MINOR_ISO8601DateFormatterValueTransformer 5
 #define COCOAPODS_VERSION_PATCH_ISO8601DateFormatterValueTransformer 0
 
+// PEPhotoCropEditor
+#define COCOAPODS_POD_AVAILABLE_PEPhotoCropEditor
+#define COCOAPODS_VERSION_MAJOR_PEPhotoCropEditor 1
+#define COCOAPODS_VERSION_MINOR_PEPhotoCropEditor 3
+#define COCOAPODS_VERSION_PATCH_PEPhotoCropEditor 1
+
 // RKValueTransformers
 #define COCOAPODS_POD_AVAILABLE_RKValueTransformers
 #define COCOAPODS_VERSION_MAJOR_RKValueTransformers 1
