@@ -20,7 +20,8 @@
 @property (nonatomic, strong) NSMutableArray *photoNames;
 @property (nonatomic, strong) NSMutableArray *photoSetIDs;
 @property (nonatomic, strong) NSMutableArray *photoSets;
-@property (nonatomic, strong) NSMutableArray *photoURLs;
+@property (nonatomic, strong) NSMutableArray *photoThumbURLs;
+@property (nonatomic, strong) NSMutableArray *photoLargeURLs;
 
 @property (nonatomic, weak) NSCache *photoCache;
 
@@ -56,7 +57,8 @@
     self.photoNames = [[NSMutableArray alloc] init];
     self.photoSetIDs = [[NSMutableArray alloc] init];
     self.photoSets = [[NSMutableArray alloc] init];
-    self.photoURLs = [[NSMutableArray alloc] init];
+    self.photoThumbURLs = [[NSMutableArray alloc] init];
+    self.photoLargeURLs = [[NSMutableArray alloc] init];
     
     self.flickrContext = [[OFFlickrAPIContext alloc] initWithAPIKey:OFSampleAppAPIKey sharedSecret:OFSampleAppAPISharedSecret];
     self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
@@ -91,7 +93,17 @@
     }
     else
     {
-        [self dismissViewControllerAnimated:YES completion:nil];
+        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+        NSString *photo_name = [self.photoNames objectAtIndex:selectedIndexPath.row];
+        NSString *photoURL = [self.photoLargeURLs objectAtIndex:selectedIndexPath.row];
+        
+        // Create a download task to manage image download
+        
+        NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoURL];
+        [self.photoDownloadTasks addObject:downloadTask];
+        [downloadTask resume];
+
+//        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -117,7 +129,7 @@
         cell.textLabel.text = [self.photoNames objectAtIndex:indexPath.row];
         
         // Currently downloading images directly just to show something (even though already downloaded separately)
-        NSData *imageData = [NSData dataWithContentsOfURL:[self.photoURLs objectAtIndex:indexPath.row]];
+        NSData *imageData = [NSData dataWithContentsOfURL:[self.photoThumbURLs objectAtIndex:indexPath.row]];
         cell.imageView.image = [UIImage imageWithData:imageData];
         
         return cell;
@@ -177,14 +189,17 @@
             NSString *title = [photoDict objectForKey:@"title"];
             [self.photoNames addObject:(title.length > 0 ? title : @"Untitled")];
             
-            NSURL *photoURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrLargeSize];
-            [self.photoURLs addObject:photoURL];
+            NSURL *photoThumbURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrThumbnailSize];
+            [self.photoThumbURLs addObject:photoThumbURL];
 
-            // Create a download task to manage image download
-            
-            NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoURL];
-            [self.photoDownloadTasks addObject:downloadTask];
-            [downloadTask resume];
+            NSURL *photoLargeURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrLargeSize];
+            [self.photoLargeURLs addObject:photoLargeURL];
+
+//            // Create a download task to manage thumbnail image download
+//            
+//            NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoThumbURL];
+//            [self.photoDownloadTasks addObject:downloadTask];
+//            [downloadTask resume];
         }
         
         self.flickrRequest = nil;
@@ -205,9 +220,14 @@
     UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:location]];
     NSLog(@"Finished downloading image from location %@", location);
     
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+    imageView.image = image;
+    [self.view addSubview:imageView];
+    
     NSError *error;
     BOOL result = [[NSFileManager defaultManager] removeItemAtURL:location error:&error];
-    if (!result) {
+    if (!result)
+    {
         NSLog(@"Error removing temp file at: %@, error: %@", location, error);
     }
 }
