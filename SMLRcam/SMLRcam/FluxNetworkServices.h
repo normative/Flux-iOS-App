@@ -20,7 +20,7 @@ typedef NSUUID FluxRequestID;
 
 extern NSString* const AWSProductionServerURL;
 extern NSString* const AWSTestServerURL;
-extern NSString* const AWSS3TestServerURL;
+extern NSString* const AWSStagingServerURL;
 extern NSString* const DSDLocalTestServerURL;
 
 extern NSString* const FluxServerURL;
@@ -45,6 +45,7 @@ extern NSString* const FluxServerURL;
            andRequestID:(FluxRequestID *)requestID andImageID:(FluxImageID)imageID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSData *)features forImageID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 
@@ -84,6 +85,8 @@ extern NSString* const FluxServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnUsersListForQuery:(NSArray*)users
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUnfollowUserWithID:(int)userID
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didForceUnfollowUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFollowingRequestToUserWithID:(int)userID
            andRequestID:(FluxRequestID *)requestID;
@@ -164,6 +167,11 @@ extern NSString* const FluxServerURL;
  Removes an image from the Flux DB given an imageID.
  **/
 - (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID;
+
+/**
+ Updates an images privacy with the supplied boolean.
+ **/
+- (void)updateImagePrivacyForImages:(NSArray*)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID;
 
 #pragma mark  Features
 
@@ -254,6 +262,11 @@ return's a profile image for a given userID and size
  removes the supplied userID as a follower of the activeUser
  **/
 - (void)unfollowUserID:(int)userID withRequestID:(NSUUID *)requestID;
+
+/**
+ removes the supplied userID as a follower of the activeUser
+ **/
+- (void)forceUnfollowUserID:(int)userID withRequestID:(NSUUID *)requestID;
 
 /**
  sends the supplied userID as a friend request from the activeUser

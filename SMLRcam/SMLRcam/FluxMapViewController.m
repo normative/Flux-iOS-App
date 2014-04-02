@@ -187,6 +187,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     [self setupLocationManager];
     
+    [self setupMapView];
+    
     transitionFadeView = [[UIView alloc]initWithFrame:self.view.bounds];
     [transitionFadeView setBackgroundColor:[UIColor blackColor]];
     [transitionFadeView setAlpha:0.0];
@@ -198,7 +200,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 {
     [super viewWillAppear:animated];
 
-    [self setupMapView];
 }
 
 - (void)viewDidAppear:(BOOL)animated

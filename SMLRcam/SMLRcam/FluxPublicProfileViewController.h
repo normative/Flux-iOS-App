@@ -22,7 +22,8 @@ typedef enum ProfileViewSource : NSUInteger {
 @protocol PublicProfileDelegate <NSObject>
 @optional
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject*)userObject;
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject*)userObject;
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveAmFollower:(FluxUserObject*)userObject;
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveIsFollower:(FluxUserObject*)userObject;
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didSendFollowerRequest:(FluxUserObject*)userObject;
 @end
 

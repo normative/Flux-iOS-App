@@ -153,8 +153,8 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Tags failed to load with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+//        NSString*str = [NSString stringWithFormat:@"Tags failed to load, sorry about that with error %d", (int)[e code]];
+//        [ProgressHUD showError:str];
     }];
     
     if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
@@ -195,8 +195,8 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Image counts failed to load with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+//        NSString*str = [NSString stringWithFormat:@"Image counts failed to load with error %d", (int)[e code]];
+//        [ProgressHUD showError:str];
     }];
     
     if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {
@@ -468,8 +468,8 @@
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*str = [NSString stringWithFormat:@"Image count failed to load with error %d", (int)[e code]];
-        [ProgressHUD showError:str];
+//        NSString*str = [NSString stringWithFormat:@"Image count failed to load with error %d", (int)[e code]];
+//        [ProgressHUD showError:str];
     }];
     
     if ([self.presentingViewController isKindOfClass:[FluxMapViewController class]]) {

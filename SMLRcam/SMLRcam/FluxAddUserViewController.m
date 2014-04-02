@@ -344,7 +344,7 @@
                                      
                                      [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                                          
-                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed with error %d", (int)[e code]];
+                                         NSString*str = [NSString stringWithFormat:@"Adding a follower failed, sorry about that."];
                                          [ProgressHUD showError:str];
                                          
                                      }];
@@ -395,7 +395,7 @@
                                      
                                      [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
                                          
-                                         NSString*str = [NSString stringWithFormat:@"Cancelling follow request failed with error %d", (int)[e code]];
+                                         NSString*str = [NSString stringWithFormat:@"Cancelling the follow request failed, sorry about that."];
                                          [ProgressHUD showError:str];
                                          
                                      }];
@@ -415,8 +415,14 @@
     [self performSegueWithIdentifier:@"socialImportPush" sender:FacebookService];
 }
 
-- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{
-    [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType withMessage:(NSString *)message{
+    if (message) {
+        [ProgressHUD showError:message];
+    }
+    else{
+        [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+    }
+    
 }
 
 #pragma mark - Public Profile Delegate
@@ -429,7 +435,7 @@
     }
 }
 
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveAmFollower:(FluxUserObject *)userObject{
     [(FluxUserObject*)[resultsArray objectAtIndex:selectedIndexPath.row] setAmFollowerFlag:0];
     [addUsersTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     
@@ -492,7 +498,7 @@
         
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
             searchState = notSearching;
-            NSString*str = [NSString stringWithFormat:@"Search failed to load with error %d", (int)[e code]];
+            NSString*str = [NSString stringWithFormat:@"Search failed to load, sorry about that"];
             [ProgressHUD showError:str];
             
         }];

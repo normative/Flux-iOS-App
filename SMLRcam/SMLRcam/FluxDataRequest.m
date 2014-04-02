@@ -93,6 +93,13 @@
     }
 }
 
+-(void)whenUpdateImagesPrivacyCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.updateImagesPrivacyCompleteBlock)
+    {
+        self.updateImagesPrivacyCompleteBlock(completeDataRequest);
+    }
+}
+
 #pragma mark - Users
 
 
@@ -189,6 +196,12 @@
         self.unfollowUserReady(unfollowedUserID, completeDataRequest);
     }
 }
+- (void) whenForceUnfollowingUserReady:(int)removedUserID withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.forceUnfollowUserReady) {
+        self.forceUnfollowUserReady(removedUserID, completeDataRequest);
+    }
+}
+
 - (void) whenSendFollowingRequestReady:(int)userIdForFriendRequest withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.sendFollowerRequestReady) {
         self.sendFollowerRequestReady(userIdForFriendRequest, completeDataRequest);

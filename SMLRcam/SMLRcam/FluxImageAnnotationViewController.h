@@ -24,7 +24,7 @@
 @end
 
 
-@interface FluxImageAnnotationViewController : GAITrackedViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, UICollectionViewDataSource, UICollectionViewDelegate, FluxSocialManagerDelegate>{
+@interface FluxImageAnnotationViewController : GAITrackedViewController<KTPlaceholderTextViewDelegate,KTCheckboxButtonDelegate, UICollectionViewDataSource, UICollectionViewDelegate, FluxSocialManagerDelegate,UIGestureRecognizerDelegate>{
     __weak IBOutlet KTPlaceholderTextView *ImageAnnotationTextView;
     __weak IBOutlet UIView *photoAnnotationContainerView;
     

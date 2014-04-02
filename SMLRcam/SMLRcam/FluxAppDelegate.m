@@ -52,7 +52,7 @@ bool registeredForAPNS = false;
     }
 #else
     NSLog(@"startup: debug=0, server=%@", FluxServerURL);
-    if ((FluxServerURL == AWSProductionServerURL) /*|| (FluxServerURL == AWSS3TestServerURL)*/)
+    if ((FluxServerURL == AWSProductionServerURL) /*|| (FluxServerURL == AWSStagingServerURL)*/)
     {
         // Let the device know we want to receive push notifications - will hook into APNs production server.
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
@@ -117,9 +117,9 @@ bool registeredForAPNS = false;
         [defaults synchronize];
     }
 
-    // always enable new heading mode, but can change it during execution - just won't stick
+    // always disable new heading mode, but can change it during execution - just won't stick
 //    if (headingCorrectedMotion == nil) {
-        [defaults setObject:@(YES) forKey:FluxDebugHeadingCorrectedMotionKey];
+        [defaults setObject:@(NO) forKey:FluxDebugHeadingCorrectedMotionKey];
         [defaults synchronize];
 //    }
 

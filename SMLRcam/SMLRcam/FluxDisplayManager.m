@@ -945,7 +945,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                                                             object:self userInfo:userInfo];
     }];
     [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        NSString*errorString = @"Unknown network error occured";
+        NSString*errorString = @"Map pins failed to load, sorry about that.";
         NSDictionary *userInfoDict = [[NSDictionary alloc]
                                       initWithObjectsAndKeys:errorString, @"errorString" , nil];
         [[NSNotificationCenter defaultCenter] postNotificationName:FluxDisplayManagerDidFailToUpdateMapPinList

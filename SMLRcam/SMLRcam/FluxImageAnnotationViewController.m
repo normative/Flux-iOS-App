@@ -44,7 +44,6 @@
     [ImageAnnotationTextView setTheDelegate:self];
     if (IS_4INCHSCREEN) {
         [ImageAnnotationTextView becomeFirstResponder];
-        NSLog(@"DidutoLayout: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
         CALayer *roundBorderLayer = [CALayer layer];
         roundBorderLayer.borderWidth = 0.5;
         roundBorderLayer.opacity = 0.4;
@@ -55,7 +54,6 @@
 
     }
     else{
-        NSLog(@"DidutoLayout: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
         CALayer *roundBorderLayer = [CALayer layer];
         roundBorderLayer.borderWidth = 0.5;
         roundBorderLayer.opacity = 0.4;
@@ -124,6 +122,28 @@
     
     images = [NSArray arrayWithObject:image];
     
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
+    gestureRecognizer.cancelsTouchesInView = NO;
+    gestureRecognizer.delegate = self;
+    [self.view addGestureRecognizer:gestureRecognizer];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    
+    if ([touch.view isKindOfClass:[UIButton class]] || [touch.view isKindOfClass:[KTPlaceholderTextView class]]){
+        return NO;
+    }
+    CGPoint touchLocation = [touch locationInView:self.view];
+    if (CGRectContainsPoint(imageCollectionView.frame, touchLocation)) {
+        if (isSnapshot) {
+            [ImageAnnotationTextView resignFirstResponder];
+        }
+        NSLog(@"Touched in collectionView");
+    }
+    else {
+        [ImageAnnotationTextView resignFirstResponder];
+    }
+    return YES;
 }
 
 #pragma mark - CollectionView Delegate
@@ -345,8 +365,13 @@
     [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
 }
 
-- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{
-    [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType withMessage:(NSString *)message{
+    if (message) {
+        [ProgressHUD showError:message];
+    }
+    else{
+        [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+    }
 }
 
 - (void)checkPostButton{

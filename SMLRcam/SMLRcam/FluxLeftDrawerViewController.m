@@ -179,15 +179,15 @@
                         }
                     }];
                     [picRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-                        NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
-                        [ProgressHUD showError:str];
+//                        NSString*str = [NSString stringWithFormat:@"Profile picture failed with error %d", (int)[e code]];
+//                        [ProgressHUD showError:str];
                     }];
                     [self.fluxDataManager requestUserProfilePicForID:userID.intValue andSize:@"thumb" withDataRequest:picRequest];
                 }
             }
         }];
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            NSString*str = [NSString stringWithFormat:@"Profile load failed with error %d", (int)[e code]];
+            NSString*str = [NSString stringWithFormat:@"Looks like we couldn't load this profile, sorry about that."];
             [ProgressHUD showError:str];
         }];
         

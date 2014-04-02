@@ -595,6 +595,15 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+- (FluxRequestID *)editPrivacyOfImageWithImageID:(NSArray*)imageIDs to:(BOOL)newPrivacy withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = imagePrivacyUpdate_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices updateImagePrivacyForImages:imageIDs andPrvacy:newPrivacy andRequestID:requestID];
+    return requestID;
+}
+
 #pragma mark Social Stuff
 
 - (FluxRequestID *) requestFollowingRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest{
@@ -653,6 +662,16 @@ float const altitudeHighRange = 60.0;
     [networkServices unfollowUserID:userID withRequestID:requestID];
     return requestID;
 }
+
+- (FluxRequestID *) forceUnfollowUserWIthID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = unfollow_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices forceUnfollowUserID:userID withRequestID:requestID];
+    return requestID;
+}
+
 - (FluxRequestID *) sendFollowerRequestToUserWithID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = sendFollow_request;
@@ -1010,6 +1029,14 @@ float const altitudeHighRange = 60.0;
     [self completeRequestWithDataRequest:request];
 }
 
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUpdateImagesPrivacyCompleteWithDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
 #pragma mark Map
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray *)imageList andRequestID:(NSUUID *)requestID
@@ -1187,6 +1214,15 @@ float const altitudeHighRange = 60.0;
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
 }
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didForceUnfollowUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenForceUnfollowingUserReady:userID withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendFollowingRequestToUserWithID:(int)userID andRequestID:(FluxRequestID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenSendFollowingRequestReady:userID withDataRequest:request];
