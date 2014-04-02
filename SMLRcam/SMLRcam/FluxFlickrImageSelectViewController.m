@@ -10,8 +10,9 @@
 
 #import <objectiveflickr/ObjectiveFlickr.h>
 #import "OFAPIKey.h"
+#import "PECropViewController.h"
 
-@interface FluxFlickrImageSelectViewController () <OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface FluxFlickrImageSelectViewController () <OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, PECropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic) OFFlickrAPIContext *flickrContext;
 @property (nonatomic) OFFlickrAPIRequest *flickrRequest;
@@ -213,6 +214,23 @@
     self.flickrRequest = nil;
 }
 
+- (void)cropViewController:(PECropViewController *)controller didFinishCroppingImage:(UIImage *)croppedImage
+{
+    // Dismiss the crop selector overlay
+    [controller dismissViewControllerAnimated:YES completion:^{
+
+        // We now have the cropped image. This can be passed up the chain for use as an overlay.
+        // TODO - package and send cropped information
+
+        // Dismiss the view controller of the FlickrImageSelect VC
+        [self dismissViewControllerAnimated:YES completion:nil];
+        
+    }];    
+    
+    // Dismiss the view controller of the FlickrImageSelect VC
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
     // If image is large, consider creating the image off the main queue
@@ -220,10 +238,26 @@
     UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:location]];
     NSLog(@"Finished downloading image from location %@", location);
     
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:self.view.frame];
-    imageView.image = image;
-    [self.view addSubview:imageView];
+    // Add PECropViewController for overlaying functionality for cropping image
+    PECropViewController *controller = [[PECropViewController alloc] init];
+    controller.delegate = self;
+    controller.image = image;
     
+    controller.keepingCropAspectRatio = YES;
+    
+    CGFloat width = image.size.width;
+    CGFloat height = image.size.height;
+    CGFloat length = MIN(width, height);
+    controller.imageCropRect = CGRectMake((width - length) / 2,
+                                          (height - length) / 2,
+                                          length,
+                                          length);
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    
+    [self presentViewController:navigationController animated:YES completion:nil];
+
+    // Delete the temporary image as it is no longer needed (we keep the UIImage in memory for now)
     NSError *error;
     BOOL result = [[NSFileManager defaultManager] removeItemAtURL:location error:&error];
     if (!result)
