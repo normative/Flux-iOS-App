@@ -225,12 +225,19 @@
         // Dismiss the view controller of the FlickrImageSelect VC
         [self dismissViewControllerAnimated:YES completion:nil];
         
-    }];    
-    
-    // Dismiss the view controller of the FlickrImageSelect VC
-    [self dismissViewControllerAnimated:YES completion:nil];
+    }];
 }
 
+- (void)cropViewControllerDidCancel:(PECropViewController *)controller
+{
+    // Dismiss the crop selector overlay
+    [controller dismissViewControllerAnimated:YES completion:^{
+        
+        // Dismiss the view controller of the FlickrImageSelect VC
+        [self dismissViewControllerAnimated:YES completion:nil];
+        
+    }];
+}
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
     // If image is large, consider creating the image off the main queue
