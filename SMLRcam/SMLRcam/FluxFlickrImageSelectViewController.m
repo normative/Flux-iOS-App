@@ -8,6 +8,8 @@
 
 #import "FluxFlickrImageSelectViewController.h"
 
+#import "FluxFlickrPhotoDataElement.h"
+#import "FluxFlickrPhotosetDataElement.h"
 #import <objectiveflickr/ObjectiveFlickr.h>
 #import "OFAPIKey.h"
 #import "PECropViewController.h"
@@ -19,25 +21,19 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 @property (nonatomic) OFFlickrAPIContext *flickrContext;
 @property (nonatomic) OFFlickrAPIRequest *flickrRequest;
 
-@property (nonatomic, strong) NSMutableArray *photoDownloadTasks;
-@property (nonatomic, strong) NSMutableArray *photoIDs;
-@property (nonatomic, strong) NSMutableArray *photoNames;
-@property (nonatomic, strong) NSMutableArray *photoSetIDs;
-@property (nonatomic, strong) NSMutableArray *photoSets;
-@property (nonatomic, strong) NSMutableArray *photoThumbURLs;
-@property (nonatomic, strong) NSMutableArray *photoLargeURLs;
+// Collections for storing photos and photosets displayed in UITableView
+@property (nonatomic, strong) NSMutableArray *photoList;
+@property (nonatomic, strong) NSMutableArray *photosetList;
 
-@property (nonatomic, weak) NSCache *photoCache;
-
-@property (nonatomic) NSString *nextPhotoTitle;
+// Configuration for NSURLSession
 @property (nonatomic) NSURLSession *urlSession;
-@property (nonatomic) NSURLSessionDownloadTask *imageDownloadTask;
-@property (weak, nonatomic) NSTimer *fetchTimer;
 
+// Lock and condition for photo description
 @property (nonatomic, strong) NSCondition *timeoutLock;
 @property (nonatomic) bool didRetrieveDescription;
 @property (nonatomic, strong) NSString *photoDescription;
 
+// Flag to indicate whether we have selected a photoset yet in the workflow
 @property (nonatomic) bool selectedPhotoset;
 
 @end
@@ -65,13 +61,8 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
     
     self.tableView.rowHeight = 95;
     
-    self.photoDownloadTasks = [[NSMutableArray alloc] init];
-    self.photoIDs = [[NSMutableArray alloc] init];
-    self.photoNames = [[NSMutableArray alloc] init];
-    self.photoSetIDs = [[NSMutableArray alloc] init];
-    self.photoSets = [[NSMutableArray alloc] init];
-    self.photoThumbURLs = [[NSMutableArray alloc] init];
-    self.photoLargeURLs = [[NSMutableArray alloc] init];
+    self.photoList = [[NSMutableArray alloc] init];
+    self.photosetList = [[NSMutableArray alloc] init];
     
     self.flickrContext = [[OFFlickrAPIContext alloc] initWithAPIKey:OFSampleAppAPIKey sharedSecret:OFSampleAppAPISharedSecret];
     self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
@@ -97,9 +88,9 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
     if (!self.selectedPhotoset)
     {
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        NSString *photoset_id = [self.photoSetIDs objectAtIndex:selectedIndexPath.row];
-        
-        [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photoset_id, @"per_page": @"5"}];
+        FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:selectedIndexPath.row];
+
+        [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"5"}];
         
         self.selectedPhotoset = YES;
         [self.tableView reloadData];
@@ -107,20 +98,17 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
     else
     {
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        NSString *photo_name = [self.photoNames objectAtIndex:selectedIndexPath.row];
-        NSURL *photoURL = [self.photoLargeURLs objectAtIndex:selectedIndexPath.row];
-        NSString *photo_id = [self.photoIDs objectAtIndex:selectedIndexPath.row];
+        FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:selectedIndexPath.row];
         
         // Create a download task to manage image download
         
-        NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoURL];
-        [self.photoDownloadTasks addObject:downloadTask];
+        NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoElement.largeImageURL];
+        photoElement.downloadTask = downloadTask;
         [downloadTask resume];
 
         // Get the description of the image for use as an annotation
         self.didRetrieveDescription = NO;
-        [self.flickrRequest callAPIMethodWithGET:@"flickr.photos.getInfo" arguments:@{@"photo_id": photo_id}];
-        
+        [self.flickrRequest callAPIMethodWithGET:@"flickr.photos.getInfo" arguments:@{@"photo_id": photoElement.photo_id}];
     }
 }
 
@@ -130,11 +118,11 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 {
     if (self.selectedPhotoset)
     {
-        return self.photoNames.count;
+        return self.photoList.count;
     }
     else
     {
-        return self.photoSets.count;
+        return self.photosetList.count;
     }
 }
 
@@ -142,19 +130,23 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 {
     if (self.selectedPhotoset)
     {
+        FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:indexPath.row];
+        
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
-        cell.textLabel.text = [self.photoNames objectAtIndex:indexPath.row];
+        cell.textLabel.text = photoElement.title;
         
         // Download and display thumbnail image
-        NSData *imageData = [NSData dataWithContentsOfURL:[self.photoThumbURLs objectAtIndex:indexPath.row]];
+        NSData *imageData = [NSData dataWithContentsOfURL:photoElement.thumbImageURL];
         cell.imageView.image = [UIImage imageWithData:imageData];
         
         return cell;
     }
     else
     {
+        FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:indexPath.row];
+
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
-        cell.textLabel.text = [self.photoSets objectAtIndex:indexPath.row];
+        cell.textLabel.text = photosetElement.title;
         
         return cell;
     }
@@ -185,12 +177,16 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
         
         for (NSDictionary *photosetDict in photosets)
         {
-            // Extract title of each photoset
+            // Extract title and id for each photoset
             
-            NSString *photoset_id = [photosetDict valueForKeyPath:@"id"];
+            FluxFlickrPhotosetDataElement *photosetElement = [[FluxFlickrPhotosetDataElement alloc] init];
+            
+            photosetElement.photoset_id = [photosetDict valueForKeyPath:@"id"];
+
             NSString *title = [photosetDict valueForKeyPath:@"title._text"];
-            [self.photoSets addObject:(title.length > 0 ? title : @"Untitled")];
-            [self.photoSetIDs addObject:photoset_id];
+            photosetElement.title = (title.length > 0 ? title : @"Untitled");
+            
+            [self.photosetList addObject:photosetElement];
             
             [self.tableView reloadData];
         }
@@ -203,23 +199,16 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
         {
             // Extract title and URL of photo
             
-            NSString *title = [photoDict objectForKey:@"title"];
-            [self.photoNames addObject:(title.length > 0 ? title : @"Untitled")];
-
-            NSString *photo_id = [photoDict objectForKey:@"id"];
-            [self.photoIDs addObject:photo_id];
-
-            NSURL *photoThumbURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrThumbnailSize];
-            [self.photoThumbURLs addObject:photoThumbURL];
-
-            NSURL *photoLargeURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrLargeSize];
-            [self.photoLargeURLs addObject:photoLargeURL];
+            FluxFlickrPhotoDataElement *photoElement = [[FluxFlickrPhotoDataElement alloc] init];
             
-//            // Create a download task to manage thumbnail image download
-//            
-//            NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoThumbURL];
-//            [self.photoDownloadTasks addObject:downloadTask];
-//            [downloadTask resume];
+            NSString *title = [photoDict objectForKey:@"title"];
+            photoElement.title = (title.length > 0 ? title : @"Untitled");
+
+            photoElement.photo_id = [photoDict objectForKey:@"id"];
+            photoElement.thumbImageURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrThumbnailSize];
+            photoElement.largeImageURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrLargeSize];
+            
+            [self.photoList addObject:photoElement];
         }
         
         [self.tableView reloadData];
@@ -276,6 +265,7 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
         
     }];
 }
+
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
     // If image is large, consider creating the image off the main queue
@@ -327,8 +317,6 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
     {
         
     }
-    
-    self.imageDownloadTask = nil;
 }
 
 @end
