@@ -198,8 +198,8 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         
         RKResponseDescriptor *imageMatchObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageMatchGETMapping]
                                                                                                                 method:RKRequestMethodAny
-//                                                                                                           pathPattern:@"images/:image_id/matches"
-                                                                                                           pathPattern:@"image_matches"
+                                                                                                           pathPattern:@"images/:image_id/matches"
+//                                                                                                           pathPattern:@"image_matches"
                                                                                                                keyPath:nil
                                                                                                            statusCodes:statusCodes];
         
@@ -527,16 +527,12 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 - (void)getImageMatchesForID:(int)imageID andRequestID:(FluxRequestID *)requestID
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-//    NSString*url = [NSString stringWithFormat:@"%@images/%i/matches.json?auth_token=%@",objectManager.baseURL,imageID,token];
-//    NSString*url = [NSString stringWithFormat:@"%@image_matches/%i/matches.json?auth_token=%@",objectManager.baseURL,imageID,token];
-    
-//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
-    
     
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageMatchGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/image_matches/%d/matches.json", imageID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"/images/%d/matches.json", imageID]
+//                                                                                       pathPattern:[NSString stringWithFormat:@"/image_matches/%d/matches.json", imageID]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
