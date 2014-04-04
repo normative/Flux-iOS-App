@@ -14,6 +14,7 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxAliasObject.h"
 #import "UICKeyChainStore.h"
+#import "FluxAppDelegate.h"
 
 #define defaultTimout 7.0
 #define defaultImageTimout 15.0
@@ -76,6 +77,8 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
             __fluxNetworkServicesOutputDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
             
         }
+        
+        outstandingRequestLocalURLs = [[NSMutableDictionary alloc]init];
         
         //setup descriptors for the user-related calls
         RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
@@ -397,62 +400,294 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
     NSLog(@"Uploading image with positional accuracy: %f, %f", theImageObject.horiz_accuracy, theImageObject.vert_accuracy);
     
-    // Serialize the Article attributes then attach a file
-    NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject
-                                                                                            method:RKRequestMethodPOST
-                                                                                              path:[NSString stringWithFormat:@"/images?auth_token=%@", token]
-                                                                                        parameters:nil
-                                                                         constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
-    {
-        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
-                                    name:@"image[image]"
-                                fileName:@"photo.jpeg"
-                                mimeType:@"image/jpeg"];
-        
-        if (theHistoricalImg)
-        {
-            [formData appendPartWithFileData:UIImageJPEGRepresentation(theHistoricalImg, 0.7)
-                                        name:@"image[historical]"
-                                    fileName:@"photo.jpeg"
-                                    mimeType:@"image/jpeg"];
-        }
-    }];
-    [request setTimeoutInterval:defaultImageTimout];
     
-    RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
-                                                                                                     success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
-    {
-        if ([result count]>0)
-        {
-            FluxScanImageObject *imageObject = [result firstObject];
-            [imageObject setLocalID:[imageObject generateUniqueStringID]];
+    // Build the request body
+    NSString *boundary = @"thisIsBoundary";
 
-            if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
-            {
-                [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
+    NSData*imageData = [self getDataForImage:theImage];
+    //builds the entire body (imageData + the rest)
+    NSMutableData *body = [self buildDataBodyForObject:theImageObject andImageData:imageData andBoudary:boundary];
+    
+    //creates a file path to save the data packet
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString*folderDirectory = [NSString stringWithFormat:@"%@%@",[paths objectAtIndex:0],@"/imageUploadCache"];
+    
+    //ensures the correct folder exists
+    if (![[NSFileManager defaultManager] fileExistsAtPath:folderDirectory]) {
+        // Directory does not exist so create it
+        [[NSFileManager defaultManager] createDirectoryAtPath:folderDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    //add filename to the path
+    NSString *srcImagePath = [NSString stringWithFormat:@"%@/%@", folderDirectory, [NSString stringWithFormat:@"Photo-%@",boundary]];
+    NSString *dataSrcImagePath = [srcImagePath stringByAppendingString:@".tmp"];
+    
+    //sace data to local folder
+    if (!([body writeToFile:dataSrcImagePath atomically:YES])) {
+        NSLog(@"Failed to save uploaded file");
+    }
+
+    
+    // sets the URL and request type. Cannot add the body as uploadTaskWithRequest ignores the body
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images?auth_token=%@",objectManager.baseURL, token]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
+    request.HTTPMethod = @"POST";
+
+    //use the backgroundSession signle instance (per WWDC session), and upload the file generated and saved above
+    NSString*fileURL = [NSString stringWithFormat:@"file://%@", dataSrcImagePath];
+    NSURLSessionUploadTask*uploadTask = [[self backgroundSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString:fileURL]];
+
+    //set the request ID in the task itself.
+    [uploadTask setTaskDescription:requestID.UUIDString];
+    
+    //hold on ot the searchPAth locally so we can delete it later
+    [outstandingRequestLocalURLs setObject:dataSrcImagePath forKey:[NSString stringWithFormat:@"%lu",(unsigned long)uploadTask.taskIdentifier]];
+
+    //actually send it
+    [uploadTask resume];
+    
+    
+//    [request setHTTPBody:body];
+//    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+//    
+//    //        sessionConfiguration.HTTPMaximumConnectionsPerHost = 1;
+//    sessionConfiguration.HTTPAdditionalHeaders = @{
+//                                                   @"Accept"        : @"application/json",
+//                                                   @"Content-Type"  : [NSString stringWithFormat:@"multipart/form-data; boundary=%@", @"thisIsBoundary"]
+//                                                   };
+//    
+//    // Initialize Session
+//    NSURLSession  *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+//    NSURLSessionDataTask*dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData*data, NSURLResponse*response, NSError*error){
+//        NSLog(@"got something backl");
+//        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+//        int responseStatusCode = (int)[httpResponse statusCode];
+//        NSLog(@"got something backl");
+//    }];
+//    [dataTask resume];
+}
+
+- (NSData*)getDataForImage:(UIImage*)img{
+    NSData *imageData = UIImageJPEGRepresentation(img, 0.7);
+    return imageData;
+}
+
+//big nasty method for building our own request body instead of relying on restKit to do it for us.
+- (NSMutableData*)buildDataBodyForObject:(FluxScanImageObject*)imgObject andImageData:(NSData*)imageData andBoudary:(NSString*)boundary{
+    
+    NSMutableData *body = [NSMutableData data];
+    if (imageData) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"photo.jpeg\"\r\n", @"image[image]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:imageData];
+        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[altitude]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.altitude] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[camera_id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.cameraID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[category_id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.categoryID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[description]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", imgObject.descriptionString] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[heading]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.heading] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.imageID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[latitude]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.latitude] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[longitude]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.longitude] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[pitch]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.pitch] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[privacy]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.privacy] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qw]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qw] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qx]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qx] dataUsingEncoding:NSUTF8StringEncoding]];
+
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qy]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qy] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qz]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qz] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[roll]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.roll] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[time_stamp]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", imgObject.timestamp] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[user_id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.userID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[vert_accuracy]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.vert_accuracy] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[yaw]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.yaw] dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    return body;
+}
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+   didSendBodyData:(int64_t)bytesSent
+    totalBytesSent:(int64_t)totalBytesSent
+totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+{
+    NSLog(@"Progress!");
+    NSString*hello = task.taskDescription;
+    FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:hello];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
+        {
+            [delegate NetworkServices:self uploadProgress:(long long)totalBytesSent ofExpectedPacketSize:(long long)totalBytesExpectedToSend andRequestID:requestID];
+        }
+    });
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler{
+    NSLog(@"Received Response!");
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data{
+    NSLog(@"Did receive Data");
+    NSError *e = nil;
+    
+    NSDictionary * jsonArray = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableLeaves error: &e];
+    
+    if (!jsonArray) {
+        NSLog(@"Error parsing JSON: %@", e);
+    } else {
+        
+        NSLog(@"imageID: %@",[jsonArray objectForKey:@"id"]);
+        NSLog(@"Dictionary count: %lu", jsonArray.count);
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error{
+    NSLog(@"didCompleteWithError");
+    NSURLResponse*response = task.response;
+    NSString*hello = task.taskDescription;
+    FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:hello];
+        if (!error) {
+            NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+            int responseStatusCode = (int)[httpResponse statusCode];
+            //if the status code is in the 200s
+            if ([RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) containsIndex:responseStatusCode]) {
+                NSLog(@"Things seemed to have worked");
+                
+                //delete the local file
+                NSString*pathToFile = [outstandingRequestLocalURLs objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                [[NSFileManager defaultManager] removeItemAtPath: pathToFile error: &error];
+                if (error) {
+                    NSLog(@"Uploaded file failed to delete");
+                }
+                
+                
+//                FluxScanImageObject *imageObject = [result firstObject];
+//                [imageObject setLocalID:[imageObject generateUniqueStringID]];
+//                
+//                if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
+//                {
+//                    [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
+//                }
+                
+                
+            }
+            else{
+                NSLog(@"Image upload failed with response code: %i", responseStatusCode);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                    {
+                        [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                    }
+                });
+
             }
         }
-    }
-                                           
-    failure:^(RKObjectRequestOperation *operation, NSError *error)
-    {
-        NSLog(@"Image upload failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-        {
-            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-        }    }];
-    [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
+        else{
+            NSLog(@"Image upload failed with error: %@", [error localizedDescription]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                {
+                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                }
+            });
+        }
     
-    // monitor upload progress
-    if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
-    {
-        [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {            
-            if (totalBytesExpectedToWrite > 0 && totalBytesExpectedToWrite < NSUIntegerMax) {
-                [delegate NetworkServices:self uploadProgress:(long long)bytesWritten
-                     ofExpectedPacketSize:(long long)totalBytesExpectedToWrite andRequestID:requestID];
-            }
-        }];
+}
+
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session{
+    NSLog(@"URLSessionDidFinishEventsForBackgroundURLSession");
+    
+    FluxAppDelegate *appDelegate = (FluxAppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (appDelegate.backgroundSessionCompletionHandler) {
+        void (^completionHandler)() = appDelegate.backgroundSessionCompletionHandler;
+        appDelegate.backgroundSessionCompletionHandler = nil;
+        completionHandler();
     }
+    NSLog(@"All tasks are finished");
+    
+}
+
+- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error{
+    NSLog(@"ERROR!");
+}
+
+- (NSURLSession *)backgroundSession {
+    static NSURLSession *session = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Session Configuration
+        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"uniqueSessionID"];
+        
+//        sessionConfiguration.HTTPMaximumConnectionsPerHost = 1;
+        sessionConfiguration.HTTPAdditionalHeaders = @{
+                                                       @"Accept"        : @"application/json",
+                                                       @"Content-Type"  : [NSString stringWithFormat:@"multipart/form-data; boundary=%@", @"thisIsBoundary"]
+                                                       };
+        
+        // Initialize Session
+        session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+    });
+    
+    return session;
 }
 
 - (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID
