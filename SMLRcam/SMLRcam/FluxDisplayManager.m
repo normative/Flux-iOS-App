@@ -408,7 +408,8 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     // store new R & t into current image
     [FluxTransformUtilities deepCopyDoubleTo:matchImageMeta.matchTransform.rotation fromDoubleArray:rotation1 withSize:9];
     [FluxTransformUtilities deepCopyDoubleTo:matchImageMeta.matchTransform.translation fromDoubleArray:translation1 withSize:3];
-    
+
+#define IMAGE2IMAGE_MATCH
 #ifdef IMAGE2IMAGE_MATCH
 
     // now the heavy lifting...
@@ -416,7 +417,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
 //    self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
 //    sensorPose imagePosePnP = self.matchRecord.ire.imageMetadata.imageHomographyPosePnP;
     
-    matchImageMeta.userHomographyPose = nil; //self.matchRecord.cfe.cameraPose;
+    matchImageMeta.userHomographyPose = baseImageMeta.userHomographyPose   ; //self.matchRecord.cfe.cameraPose;
     sensorPose imagePosePnP = matchImageMeta.imageHomographyPosePnP;
     
     [FluxTransformUtilities computeImagePoseInECEF: &imagePosePnP
@@ -431,11 +432,13 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     matchImageMeta.imageHomographyPosePnP = imagePosePnP;
     
     // Flag to use homography for rendering of image
-    matchImageMetadata.location_data_type = location_data_from_homography;
+    matchImageMeta.location_data_type = location_data_from_homography;
     
     // Update match information
-    matchImageMetadata.matched = YES;   // This one goes in the FluxDataStore cache
+    matchImageMeta.matched = YES;   // This one goes in the FluxDataStore cache
     // self.matchRecord.matched = YES;                     // This one is just quick access for the record
+    
+    NSLog(@"Image2Image Matched %d to %d", matchImageMeta.imageID, baseImageMeta.imageID);
     
 #endif
     
