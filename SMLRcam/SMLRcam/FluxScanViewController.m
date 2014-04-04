@@ -997,7 +997,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     else if ([[segue identifier] isEqualToString:@"pushFlickrImageSelectView"])
     {
-        FluxFlickrImageSelectViewController *flickrVC = (FluxFlickrImageSelectViewController *)segue.destinationViewController;
+        FluxFlickrImageSelectViewController *flickrVC = (FluxFlickrImageSelectViewController *)[(UINavigationController*)segue.destinationViewController topViewController];
+        flickrVC.delegate = self;
     }
 }
 
@@ -1080,7 +1081,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
     
-    [picker dismissViewControllerAnimated:YES completion:NULL];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
     [self configureNewCameraCaptureWithImage:chosenImage];
 }
@@ -1088,7 +1089,23 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 //Tells the delegate that the user cancelled the pick operation.
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [picker dismissViewControllerAnimated:YES completion:NULL];
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - FluxFlickrImageSelectProtocol delegate methods
+
+- (void)FluxFlickrImageSelectViewController:(FluxFlickrImageSelectViewController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *chosenImage = info[FluxFlickrImageSelectCroppedImageKey];
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    [self configureNewCameraCaptureWithImage:chosenImage];
+}
+
+- (void)FluxFlickrImageSelectViewControllerDidCancel:(FluxFlickrImageSelectViewController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Debug Menu

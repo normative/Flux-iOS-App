@@ -870,7 +870,6 @@
 			children = (
 				AA2F9DBC189AAD450030F749 /* FluxDebugViewController.h */,
 				AA2F9DBD189AAD450030F749 /* FluxDebugViewController.m */,
-				F2CC5A5F18EF1674005AE05D /* Flickr */,
 				AA2F9DCB189AEA690030F749 /* border1.png */,
 				AA2F9DCC189AEA690030F749 /* border2.png */,
 				AA2F9DCD189AEA690030F749 /* border4.png */,
@@ -1039,6 +1038,7 @@
 				AA082E9517EA2B8E000B53B0 /* AVCamera */,
 				AA2F9DBB189AAD300030F749 /* Debug VC */,
 				F26EF317183D109F00536C54 /* Feature Matching */,
+				F2CC5A5F18EF1674005AE05D /* Flickr */,
 				AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */,
 				AA4CE16A17B921A3008D04BE /* TopView */,
 				17604B811785CA59005CF054 /* FluxScanViewController.h */,

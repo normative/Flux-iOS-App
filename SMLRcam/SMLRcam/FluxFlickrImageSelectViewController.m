@@ -16,6 +16,9 @@
 
 const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 
+NSString* const FluxFlickrImageSelectCroppedImageKey = @"FluxFlickrImageSelectCroppedImageKey";
+NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDescriptionKey";
+
 @interface FluxFlickrImageSelectViewController () <OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, PECropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic) OFFlickrAPIContext *flickrContext;
@@ -80,7 +83,10 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 
 - (IBAction)cancelButtonAction:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewControllerDidCancel:)])
+    {
+        [self.delegate FluxFlickrImageSelectViewControllerDidCancel:self];
+    }
 }
 
 - (IBAction)selectButtonAction:(id)sender
@@ -237,7 +243,6 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 {
     // Dismiss the crop selector overlay
     [controller dismissViewControllerAnimated:YES completion:^{
-
         // Make sure that we have the description, otherwise timeout and use default
         [self.timeoutLock lock];
         while (!self.didRetrieveDescription)
@@ -247,11 +252,11 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
         [self.timeoutLock unlock];
 
         // We now have the cropped image. This can be passed up the chain for use as an overlay.
-        // TODO - package and send cropped image + description
-        
-        // Dismiss the view controller of the FlickrImageSelect VC
-        [self dismissViewControllerAnimated:YES completion:nil];
-        
+        if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewController:didFinishPickingMediaWithInfo:)])
+        {
+            NSDictionary *imageDict = @{FluxFlickrImageSelectCroppedImageKey : croppedImage, FluxFlickrImageSelectDescriptionKey : self.photoDescription};
+            [self.delegate FluxFlickrImageSelectViewController:self didFinishPickingMediaWithInfo:imageDict];
+        }
     }];
 }
 
@@ -259,10 +264,10 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 {
     // Dismiss the crop selector overlay
     [controller dismissViewControllerAnimated:YES completion:^{
-        
-        // Dismiss the view controller of the FlickrImageSelect VC
-        [self dismissViewControllerAnimated:YES completion:nil];
-        
+        if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewControllerDidCancel:)])
+        {
+            [self.delegate FluxFlickrImageSelectViewControllerDidCancel:self];
+        }
     }];
 }
 

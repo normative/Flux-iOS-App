@@ -30,6 +30,7 @@
 #import "GAITrackedViewController.h"
 
 #import "FluxDebugViewController.h"
+#import "FluxFlickrImageSelectViewController.h"
 #import "CustomBadge.h"
 
 
@@ -45,7 +46,7 @@ typedef enum {
 
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : GAITrackedViewController<FluxTutorialDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterControlDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<FluxTutorialDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterControlDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, FluxFlickrImageSelectProtocol>{
     
     //tutorialView
     FluxTutorialView *tutorialView;
