@@ -864,10 +864,7 @@
 			children = (
 				AA2F9DBC189AAD450030F749 /* FluxDebugViewController.h */,
 				AA2F9DBD189AAD450030F749 /* FluxDebugViewController.m */,
-				F2CC5A5918E08CDC005AE05D /* FluxFlickrImageSelectViewController.h */,
-				F2CC5A5A18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m */,
-				F2CC5A5C18E0A036005AE05D /* OFAPIKey.h */,
-				F2CC5A5D18E0A036005AE05D /* OFAPIKey.m */,
+				F2CC5A5F18EF1674005AE05D /* Flickr */,
 				AA2F9DCB189AEA690030F749 /* border1.png */,
 				AA2F9DCC189AEA690030F749 /* border2.png */,
 				AA2F9DCD189AEA690030F749 /* border4.png */,
@@ -1473,6 +1470,17 @@
 				F2B2C1FB183E819B00D32084 /* PendingOperations.m */,
 			);
 			name = OperationQueue;
+			sourceTree = "<group>";
+		};
+		F2CC5A5F18EF1674005AE05D /* Flickr */ = {
+			isa = PBXGroup;
+			children = (
+				F2CC5A5918E08CDC005AE05D /* FluxFlickrImageSelectViewController.h */,
+				F2CC5A5A18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m */,
+				F2CC5A5C18E0A036005AE05D /* OFAPIKey.h */,
+				F2CC5A5D18E0A036005AE05D /* OFAPIKey.m */,
+			);
+			name = Flickr;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
