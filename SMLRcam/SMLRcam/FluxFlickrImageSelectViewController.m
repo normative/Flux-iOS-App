@@ -12,12 +12,15 @@
 #import "OFAPIKey.h"
 #import "PECropViewController.h"
 
+const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
+
 @interface FluxFlickrImageSelectViewController () <OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, PECropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic) OFFlickrAPIContext *flickrContext;
 @property (nonatomic) OFFlickrAPIRequest *flickrRequest;
 
 @property (nonatomic, strong) NSMutableArray *photoDownloadTasks;
+@property (nonatomic, strong) NSMutableArray *photoIDs;
 @property (nonatomic, strong) NSMutableArray *photoNames;
 @property (nonatomic, strong) NSMutableArray *photoSetIDs;
 @property (nonatomic, strong) NSMutableArray *photoSets;
@@ -30,6 +33,10 @@
 @property (nonatomic) NSURLSession *urlSession;
 @property (nonatomic) NSURLSessionDownloadTask *imageDownloadTask;
 @property (weak, nonatomic) NSTimer *fetchTimer;
+
+@property (nonatomic, strong) NSCondition *timeoutLock;
+@property (nonatomic) bool didRetrieveDescription;
+@property (nonatomic, strong) NSString *photoDescription;
 
 @property (nonatomic) bool selectedPhotoset;
 
@@ -52,9 +59,14 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.timeoutLock = [[NSCondition alloc] init];
+    self.didRetrieveDescription = NO;
+    self.photoDescription = @"No description available";
+    
     self.tableView.rowHeight = 95;
     
     self.photoDownloadTasks = [[NSMutableArray alloc] init];
+    self.photoIDs = [[NSMutableArray alloc] init];
     self.photoNames = [[NSMutableArray alloc] init];
     self.photoSetIDs = [[NSMutableArray alloc] init];
     self.photoSets = [[NSMutableArray alloc] init];
@@ -96,7 +108,8 @@
     {
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         NSString *photo_name = [self.photoNames objectAtIndex:selectedIndexPath.row];
-        NSString *photoURL = [self.photoLargeURLs objectAtIndex:selectedIndexPath.row];
+        NSURL *photoURL = [self.photoLargeURLs objectAtIndex:selectedIndexPath.row];
+        NSString *photo_id = [self.photoIDs objectAtIndex:selectedIndexPath.row];
         
         // Create a download task to manage image download
         
@@ -104,7 +117,10 @@
         [self.photoDownloadTasks addObject:downloadTask];
         [downloadTask resume];
 
-//        [self dismissViewControllerAnimated:YES completion:nil];
+        // Get the description of the image for use as an annotation
+        self.didRetrieveDescription = NO;
+        [self.flickrRequest callAPIMethodWithGET:@"flickr.photos.getInfo" arguments:@{@"photo_id": photo_id}];
+        
     }
 }
 
@@ -129,7 +145,7 @@
         UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
         cell.textLabel.text = [self.photoNames objectAtIndex:indexPath.row];
         
-        // Currently downloading images directly just to show something (even though already downloaded separately)
+        // Download and display thumbnail image
         NSData *imageData = [NSData dataWithContentsOfURL:[self.photoThumbURLs objectAtIndex:indexPath.row]];
         cell.imageView.image = [UIImage imageWithData:imageData];
         
@@ -189,13 +205,16 @@
             
             NSString *title = [photoDict objectForKey:@"title"];
             [self.photoNames addObject:(title.length > 0 ? title : @"Untitled")];
-            
+
+            NSString *photo_id = [photoDict objectForKey:@"id"];
+            [self.photoIDs addObject:photo_id];
+
             NSURL *photoThumbURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrThumbnailSize];
             [self.photoThumbURLs addObject:photoThumbURL];
 
             NSURL *photoLargeURL = [self.flickrContext photoSourceURLFromDictionary:photoDict size:OFFlickrLargeSize];
             [self.photoLargeURLs addObject:photoLargeURL];
-
+            
 //            // Create a download task to manage thumbnail image download
 //            
 //            NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoThumbURL];
@@ -203,9 +222,20 @@
 //            [downloadTask resume];
         }
         
-        self.flickrRequest = nil;
-
         [self.tableView reloadData];
+    }
+    else if ([response valueForKeyPath:@"photo"])
+    {
+        NSDictionary *photoDict = [response valueForKeyPath:@"photo"];
+        
+        // Extract description of photo
+        self.photoDescription = [photoDict valueForKeyPath:@"description._text"];
+        
+        // Send signal that description is available
+        [self.timeoutLock lock];
+        self.didRetrieveDescription = YES;
+        [self.timeoutLock signal];
+        [self.timeoutLock unlock];
     }
 }
 
@@ -219,9 +249,17 @@
     // Dismiss the crop selector overlay
     [controller dismissViewControllerAnimated:YES completion:^{
 
-        // We now have the cropped image. This can be passed up the chain for use as an overlay.
-        // TODO - package and send cropped information
+        // Make sure that we have the description, otherwise timeout and use default
+        [self.timeoutLock lock];
+        while (!self.didRetrieveDescription)
+        {
+            [self.timeoutLock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:descriptionDownloadTimeoutInterval]];
+        }
+        [self.timeoutLock unlock];
 
+        // We now have the cropped image. This can be passed up the chain for use as an overlay.
+        // TODO - package and send cropped image + description
+        
         // Dismiss the view controller of the FlickrImageSelect VC
         [self dismissViewControllerAnimated:YES completion:nil];
         
