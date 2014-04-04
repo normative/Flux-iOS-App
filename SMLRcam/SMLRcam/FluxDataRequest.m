@@ -39,6 +39,14 @@
     }
 }
 
+- (void) whenImageMatchesReady:(FluxLocalID *)localID withMatches:(NSArray *)matches withDataRequest:(FluxDataRequest *)completeDataRequest
+{
+    if (self.imageMatchesReady)
+    {
+        self.imageMatchesReady(localID, matches, completeDataRequest);
+    }
+}
+
 - (void) whenMetadataReady:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest
 {
     if (self.metadataReady)

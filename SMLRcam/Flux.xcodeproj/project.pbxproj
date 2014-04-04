@@ -30,6 +30,7 @@
 		17604B9C1785F4F0005CF054 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B961785F4B5005CF054 /* AssetsLibrary.framework */; };
 		17604B9E1785F522005CF054 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9D1785F522005CF054 /* CoreMedia.framework */; };
 		17604B9F1785FF78005CF054 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17604B9A1785F4DA005CF054 /* QuartzCore.framework */; };
+		176A693A18EE00540032E575 /* FluxImageMatchObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 176A693918EE00540032E575 /* FluxImageMatchObject.m */; };
 		176BFA5218BBA23A00ABE99D /* FluxDeviceInfoSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 176BFA5118BBA23A00ABE99D /* FluxDeviceInfoSingleton.m */; };
 		176BFA5518BC307600ABE99D /* FluxContactObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 176BFA5418BC307600ABE99D /* FluxContactObject.m */; };
 		17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */; };
@@ -246,6 +247,8 @@
 		17604B981785F4CA005CF054 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		17604B9A1785F4DA005CF054 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		17604B9D1785F522005CF054 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		176A693818EE00540032E575 /* FluxImageMatchObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxImageMatchObject.h; sourceTree = "<group>"; };
+		176A693918EE00540032E575 /* FluxImageMatchObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxImageMatchObject.m; sourceTree = "<group>"; };
 		176BFA5018BBA23A00ABE99D /* FluxDeviceInfoSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDeviceInfoSingleton.h; sourceTree = "<group>"; };
 		176BFA5118BBA23A00ABE99D /* FluxDeviceInfoSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDeviceInfoSingleton.m; sourceTree = "<group>"; };
 		176BFA5318BC307600ABE99D /* FluxContactObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxContactObject.h; sourceTree = "<group>"; };
@@ -988,6 +991,8 @@
 				AADFF1E918B3E8A1003BEE8C /* FluxFilterImageCountObject.h */,
 				AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */,
 				AAAAD70D18A5264D00F5F3DB /* Social */,
+				176A693818EE00540032E575 /* FluxImageMatchObject.h */,
+				176A693918EE00540032E575 /* FluxImageMatchObject.m */,
 			);
 			name = "Data Objects";
 			sourceTree = "<group>";
@@ -1747,6 +1752,7 @@
 				AA61527D1822DC9300B8F2C8 /* FluxImageTools.m in Sources */,
 				AA615285182418DB00B8F2C8 /* FluxSocialFilterCell.m in Sources */,
 				AA9CC94A17D80858006AF61F /* FluxCameraButton.m in Sources */,
+				176A693A18EE00540032E575 /* FluxImageMatchObject.m in Sources */,
 				F2ED424D183F8A19007A825A /* FluxCameraFrameElement.m in Sources */,
 				AA2CBAB8188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m in Sources */,
 				AAB066F81889978B002914B2 /* FluxFollowerCell.m in Sources */,

@@ -435,6 +435,27 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+- (FluxRequestID *) requestImageMatchesByLocalID:(FluxDataRequest *)dataRequest
+{
+    // TODO: rejig this to process the image match request - shouldn't need the extra queue checking on imagetype, etc.
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = image_matches_request;
+    
+    [currentRequests setObject:dataRequest forKey:requestID];
+    
+    FluxLocalID *curLocalID = dataRequest.requestedIDs[0];
+    
+    // Begin download of image
+    FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
+    if (curImageObj.imageID > 0)
+    {
+//        [networkServices getImageMatchesForID:curImageObj.imageID andRequestID:requestID];
+        [networkServices getImageMatchesForID:1152 andRequestID:requestID]; // should return 4
+    }
+    
+    return requestID;
+}
+
 #pragma mark - Filters
 
 - (FluxRequestID *) requestTagListAtLocation:(CLLocation *)location
@@ -972,6 +993,81 @@ float const altitudeHighRange = 60.0;
         }
     }
 }
+
+
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
+  didreturnImageMatches:(NSArray *)matches
+             forImageID:(int)imageID
+           andRequestID:(FluxRequestID *)requestID
+{
+    // This is the request matching the call to download. Note that others may also be waiting.
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    
+    // Make sure that imageID matches requested ID
+    FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
+    
+    if (![request.requestedIDs containsObject:imageObj.localID])
+    {
+        // This ID was not requested
+        NSLog(@"%s: Request ID returned not expecting imageID %d", __func__, imageID);
+    }
+    else
+    {
+        // We are currently assuming the size in the request is the size returned. Should check this.
+
+        // Do something with the match list...
+//        imageObj.features = features;
+        
+        // Notify and clean up.
+        // Note that a single image download may not necessarily complete a request.
+        // Also note that multiple requests may be open for each image received.
+        // Clean up:
+        // - each request in currentRequests dictionary (update received items, check if complete)
+        // - requests are identified by downloadQueueReceivers list for current localID
+        
+        NSMutableArray *completedRequestIDs = [[NSMutableArray alloc] init];
+        
+        // make a shallow copy of [downloadQueueReceivers objectForKey:imageObj.localID] to iterate through,
+        // or go through the pain of setting up locking
+        NSMutableArray *enumray = [NSMutableArray arrayWithArray:[downloadQueueReceivers objectForKey:imageObj.localID]];
+        
+        for (id curRequestID in enumray)
+        {
+            FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+            if (([curRequest.requestedIDs containsObject:imageObj.localID]) &&
+                (![curRequest.completedIDs containsObject:imageObj.localID]) &&
+                (curRequest.imageType == request.imageType))
+            {
+                // Mark as complete prior to callback
+                [curRequest.completedIDs addObject:imageObj.localID];
+                
+                // Notify and execute callback
+                [curRequest whenImageMatchesReady:imageObj.localID withMatches:matches withDataRequest:request];
+                
+                // Used to clean up in next step
+                if ([curRequest.completedIDs count] == [curRequest.requestedIDs count])
+                {
+                    // Request is complete
+                    [completedRequestIDs addObject:curRequestID];
+                }
+            }
+        }
+        
+        for (id curRequestID in completedRequestIDs)
+        {
+            FluxDataRequest *curRequest = [currentRequests objectForKey:curRequestID];
+            [self completeRequestWithDataRequest:curRequest];
+            [[downloadQueueReceivers objectForKey:imageObj.localID] removeObject:curRequestID];
+        }
+        
+        if ([(NSArray *)[downloadQueueReceivers objectForKey:imageObj.localID] count] == 0)
+        {
+            [downloadQueueReceivers removeObjectForKey:imageObj.localID];
+        }
+    }
+}
+
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
                     ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID

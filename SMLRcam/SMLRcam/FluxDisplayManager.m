@@ -282,6 +282,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [self requestMissingFeaturesWithNearbyItems:nearbyItems withDisplayItems:displayItems];
 }
 
+
 - (void)requestMissingFeaturesWithNearbyItems:(NSArray *)nearbyItems withDisplayItems:(NSArray *)displayItems
 {
     // This routine prioritizes features to download.
@@ -367,8 +368,36 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
 }
 
+
+
+- (void)requestMatchesForImageID:(FluxLocalID *)localID
+{
+    // TODO: need to finish this up to work properly and to be hooked into/called by something
+
+    FluxDataRequest *matchesRequest = [[FluxDataRequest alloc] init];
+    [matchesRequest setRequestedIDs:[NSMutableArray arrayWithObject:localID]];
+    matchesRequest.imageMatchesReady=^(FluxLocalID *localID, NSArray *matches, FluxDataRequest *completedDataRequest){
+        // TODO: something here to process the matches list...
+        NSLog(@"Match request complete, returning %lu matches.", (unsigned long)matches.count);
+
+        
+    };
+    matchesRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+        // TODO: something here to indicate an error...
+        NSLog(@"Match request failed (%@)", errDescription);
+    };
+    
+    [self.fluxDataManager requestImageMatchesByLocalID:matchesRequest];
+}
+
+
 - (void)didMatchImage:(NSNotification *)notification
 {
+    // userinfodict: @"matchedLocalID" : record.ire.localID, @"matchedImageObject" : record.ire.imageMetadata
+    
+    FluxLocalID *localID = [notification.userInfo objectForKey:@"matchedLocalID"];
+    [self requestMatchesForImageID:localID];
+
     [self calculateTimeAdjustedImageList];
 }
 
