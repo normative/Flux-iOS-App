@@ -429,7 +429,14 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
                                           hNormal2: normal1];
     
     matchImageMeta.imageHomographyPosePnP = imagePosePnP;
-
+    
+    // Flag to use homography for rendering of image
+    matchImageMetadata.location_data_type = location_data_from_homography;
+    
+    // Update match information
+    matchImageMetadata.matched = YES;   // This one goes in the FluxDataStore cache
+    // self.matchRecord.matched = YES;                     // This one is just quick access for the record
+    
 #endif
     
 }
