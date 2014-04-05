@@ -136,18 +136,22 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 {
     if (!self.didSelectPhotoset)
     {
+        static NSString *CellIdentifier = @"FlickrCell";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+
         FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:indexPath.row];
         
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
         cell.textLabel.text = photosetElement.title;
         
         return cell;
     }
     else
     {
+        static NSString *CellIdentifier = @"FlickrCell";
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+
         FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:indexPath.row];
         
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
         cell.textLabel.text = photoElement.title;
         
         // Download and display thumbnail image
