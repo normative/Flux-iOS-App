@@ -91,30 +91,33 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
 - (IBAction)selectButtonAction:(id)sender
 {
-    if (!self.didSelectPhotoset)
-    {
-        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:selectedIndexPath.row];
+    NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
 
-        [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"5"}];
-        
-        self.didSelectPhotoset = YES;
-        [self.tableView reloadData];
-    }
-    else
+    if (selectedIndexPath)
     {
-        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:selectedIndexPath.row];
-        
-        // Create a download task to manage image download
-        
-        NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoElement.largeImageURL];
-        photoElement.downloadTask = downloadTask;
-        [downloadTask resume];
+        if (!self.didSelectPhotoset)
+        {
+            FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:selectedIndexPath.row];
 
-        // Get the description of the image for use as an annotation
-        self.didRetrieveDescription = NO;
-        [self.flickrRequest callAPIMethodWithGET:@"flickr.photos.getInfo" arguments:@{@"photo_id": photoElement.photo_id}];
+            [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"100"}];
+            
+            self.didSelectPhotoset = YES;
+            [self.tableView reloadData];
+        }
+        else
+        {
+            FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:selectedIndexPath.row];
+            
+            // Create a download task to manage image download
+            
+            NSURLSessionDownloadTask *downloadTask = [self.urlSession downloadTaskWithURL:photoElement.largeImageURL];
+            photoElement.downloadTask = downloadTask;
+            [downloadTask resume];
+
+            // Get the description of the image for use as an annotation
+            self.didRetrieveDescription = NO;
+            [self.flickrRequest callAPIMethodWithGET:@"flickr.photos.getInfo" arguments:@{@"photo_id": photoElement.photo_id}];
+        }
     }
 }
 
