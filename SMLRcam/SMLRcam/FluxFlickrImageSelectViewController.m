@@ -144,6 +144,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     {
         FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:indexPath.row];
         
+        cell.textLabel.font = [UIFont systemFontOfSize:14.0];
         cell.textLabel.text = photosetElement.title;
     }
     else
@@ -169,6 +170,9 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
                                                                         UITableViewCell *updateCellRequired = [tableView cellForRowAtIndexPath:indexPath];
                                                                         if (updateCellRequired)
                                                                         {
+                                                                            cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+                                                                            cell.textLabel.numberOfLines = 0;
+                                                                            cell.textLabel.font = [UIFont systemFontOfSize:10.0];
                                                                             cell.textLabel.text = photoElement.title;
                                                                             cell.imageView.image = photoElement.thumbImage;
                                                                             
@@ -181,6 +185,9 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             [dataTask resume];
         }
         
+        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.font = [UIFont systemFontOfSize:10.0];
         cell.textLabel.text = photoElement.title;
         cell.imageView.image = photoElement.thumbImage;
     }
