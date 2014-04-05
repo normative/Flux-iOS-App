@@ -137,32 +137,55 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    static NSString *CellIdentifier = @"FlickrCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+
     if (!self.didSelectPhotoset)
     {
-        static NSString *CellIdentifier = @"FlickrCell";
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-
         FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:indexPath.row];
         
         cell.textLabel.text = photosetElement.title;
-        
-        return cell;
     }
     else
     {
-        static NSString *CellIdentifier = @"FlickrCell";
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-
         FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:indexPath.row];
+
+        // Clear out image so we don't see imagery from another row when a cell is re-used
+        cell.imageView.image = nil;
+        
+        if (!photoElement.thumbImage)
+        {
+            // Download and display thumbnail image
+            NSURLSessionDataTask *dataTask = [self.urlSession dataTaskWithURL:photoElement.thumbImageURL
+                                                            completionHandler:^(NSData *data, NSURLResponse *response,
+                                                                                NSError *error) {
+                                                                if (!error)
+                                                                {
+                                                                    UIImage *image = [[UIImage alloc] initWithData:data];
+                                                                    photoElement.thumbImage = image;
+                                                                    
+                                                                    dispatch_async(dispatch_get_main_queue(), ^{
+                                                                        // Only update the cell if it is still in view
+                                                                        UITableViewCell *updateCellRequired = [tableView cellForRowAtIndexPath:indexPath];
+                                                                        if (updateCellRequired)
+                                                                        {
+                                                                            cell.textLabel.text = photoElement.title;
+                                                                            cell.imageView.image = photoElement.thumbImage;
+                                                                            
+                                                                            // Force the cell to be re-drawn
+                                                                            [cell setNeedsLayout];
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }];
+            [dataTask resume];
+        }
         
         cell.textLabel.text = photoElement.title;
-        
-        // Download and display thumbnail image
-        NSData *imageData = [NSData dataWithContentsOfURL:photoElement.thumbImageURL];
-        cell.imageView.image = [UIImage imageWithData:imageData];
-        
-        return cell;
+        cell.imageView.image = photoElement.thumbImage;
     }
+    
+    return cell;
 }
 
 # pragma mark - Flickr management

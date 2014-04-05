@@ -15,7 +15,8 @@
 @property (nonatomic, strong) NSString *description;
 @property (nonatomic, strong) NSURL *largeImageURL;
 @property (nonatomic, strong) NSURL *thumbImageURL;
-@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) UIImage *largeImage;
+@property (nonatomic, strong) UIImage *thumbImage;
 @property (nonatomic, strong) NSURLSessionDownloadTask *downloadTask;
 
 @end
