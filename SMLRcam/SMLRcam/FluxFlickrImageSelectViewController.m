@@ -37,7 +37,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 @property (nonatomic, strong) NSString *photoDescription;
 
 // Flag to indicate whether we have selected a photoset yet in the workflow
-@property (nonatomic) bool selectedPhotoset;
+@property (nonatomic) bool didSelectPhotoset;
 
 @end
 
@@ -70,7 +70,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     self.flickrContext = [[OFFlickrAPIContext alloc] initWithAPIKey:OFSampleAppAPIKey sharedSecret:OFSampleAppAPISharedSecret];
     self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     
-    self.selectedPhotoset = NO;
+    self.didSelectPhotoset = NO;
     
     [self loadFlickrPhotos];
 }
@@ -91,14 +91,14 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
 - (IBAction)selectButtonAction:(id)sender
 {
-    if (!self.selectedPhotoset)
+    if (!self.didSelectPhotoset)
     {
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
         FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:selectedIndexPath.row];
 
         [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"5"}];
         
-        self.selectedPhotoset = YES;
+        self.didSelectPhotoset = YES;
         [self.tableView reloadData];
     }
     else
@@ -122,19 +122,28 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (self.selectedPhotoset)
+    if (!self.didSelectPhotoset)
     {
-        return self.photoList.count;
+        return self.photosetList.count;
     }
     else
     {
-        return self.photosetList.count;
+        return self.photoList.count;
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.selectedPhotoset)
+    if (!self.didSelectPhotoset)
+    {
+        FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:indexPath.row];
+        
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
+        cell.textLabel.text = photosetElement.title;
+        
+        return cell;
+    }
+    else
     {
         FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:indexPath.row];
         
@@ -144,15 +153,6 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
         // Download and display thumbnail image
         NSData *imageData = [NSData dataWithContentsOfURL:photoElement.thumbImageURL];
         cell.imageView.image = [UIImage imageWithData:imageData];
-        
-        return cell;
-    }
-    else
-    {
-        FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:indexPath.row];
-
-        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell Identifier"];
-        cell.textLabel.text = photosetElement.title;
         
         return cell;
     }
