@@ -247,6 +247,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     self.flickrRequest = nil;
 }
 
+#pragma mark - PECropViewControllerDelegate methods
+
 - (void)cropViewController:(PECropViewController *)controller didFinishCroppingImage:(UIImage *)croppedImage
 {
     // Dismiss the crop selector overlay
@@ -278,6 +280,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
         }
     }];
 }
+
+#pragma mark - NSURLSessionTaskDelegate methods
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
