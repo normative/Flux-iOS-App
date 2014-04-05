@@ -228,7 +228,11 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
         NSDictionary *photoDict = [response valueForKeyPath:@"photo"];
         
         // Extract description of photo
-        self.photoDescription = [photoDict valueForKeyPath:@"description._text"];
+        NSString *descriptionText = [photoDict valueForKeyPath:@"description._text"];
+        if (descriptionText)
+        {
+            self.photoDescription = descriptionText;
+        }
         
         // Send signal that description is available
         [self.timeoutLock lock];
