@@ -452,15 +452,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
 }
 
+- (void)configureNewCameraCaptureWithImage:(UIImage *)image andAnnotation:(NSString *)annotation
+{
+    [openGLController activateNewImageCaptureWithImage:image andAnnotation:annotation];
+    [self activateImageCaptureForMode:camera_mode];
+}
+
 - (void)configureNewCameraCaptureWithImage:(UIImage *)image
 {
-    [openGLController activateNewImageCaptureWithImage:image];
-    [self activateImageCaptureForMode:camera_mode];
+    [self configureNewCameraCaptureWithImage:image andAnnotation:nil];
 }
 
 - (void)configureNewCameraCapture
 {
-    [self configureNewCameraCaptureWithImage:nil];
+    [self configureNewCameraCaptureWithImage:nil andAnnotation:nil];
 }
 
 - (IBAction)imageCaptureButtonAction:(id)sender {
@@ -1097,10 +1102,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)FluxFlickrImageSelectViewController:(FluxFlickrImageSelectViewController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     UIImage *chosenImage = info[FluxFlickrImageSelectCroppedImageKey];
+    NSString *annotation = info[FluxFlickrImageSelectDescriptionKey];
     
     [picker dismissViewControllerAnimated:YES completion:nil];
     
-    [self configureNewCameraCaptureWithImage:chosenImage];
+    [self configureNewCameraCaptureWithImage:chosenImage andAnnotation:annotation];
 }
 
 - (void)FluxFlickrImageSelectViewControllerDidCancel:(FluxFlickrImageSelectViewController *)picker

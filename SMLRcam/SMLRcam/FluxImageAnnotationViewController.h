@@ -43,15 +43,15 @@
     NSMutableIndexSet*removedImages;
 }
 
-
 @property (nonatomic, weak) id <ImageAnnotationDelegate> delegate;
+
 - (IBAction)privacyButtonAction:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)saveButtonAction:(id)sender;
 - (IBAction)facebookButtonAction:(id)sender;
 - (IBAction)twitterButtonAction:(id)sender;
 
-- (void)prepareViewWithBGImage:(UIImage*)image andCapturedImages:(NSMutableArray*)capturedObjects withLocation:(NSString*)location andDate:(NSDate*)capturedDate;
+- (void)prepareViewWithBGImage:(UIImage*)image andCapturedImages:(NSMutableArray*)capturedObjects withLocation:(NSString*)location andDate:(NSDate*)capturedDate andDefaultAnnotationText:(NSString *)defaultAnnotation;
 - (void)prepareSnapShotViewWithImage:(UIImage*)image withLocation:(NSString*)location andDate:(NSDate*)capturedDate;
 
 
