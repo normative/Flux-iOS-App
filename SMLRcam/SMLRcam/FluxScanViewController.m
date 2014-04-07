@@ -920,7 +920,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-//        [self.cameraButton setAlpha:0.4];
+        [self.cameraButton setAlpha:0.4];
     }
     
     debugPressCount = 0;
