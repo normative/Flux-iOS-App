@@ -111,7 +111,9 @@ extern NSString* const FluxServerURL;
 @interface FluxNetworkServices : NSObject <NSURLSessionDelegate, NSURLSessionTaskDelegate, NSURLSessionDataDelegate>{
     RKObjectManager *objectManager;
     __weak id <NetworkServicesDelegate> delegate;
+    
     NSMutableDictionary*outstandingRequestLocalURLs;
+    NSMutableDictionary*uploadedImageObjects;
 }
 @property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
 //@property (nonatomic, getter = get_token) NSString *token;

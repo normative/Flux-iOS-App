@@ -17,7 +17,7 @@
 #import "FluxAppDelegate.h"
 
 #define defaultTimout 7.0
-#define defaultImageTimout 15.0
+#define defaultImageTimout 60.0
 
 #define _AWSProductionServerURL  @"http://54.221.254.230/"
 #define _AWSStagingServerURL     @"http://54.83.61.163/"
@@ -79,6 +79,8 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         }
         
         outstandingRequestLocalURLs = [[NSMutableDictionary alloc]init];
+        uploadedImageObjects = [[NSMutableDictionary alloc]init];
+        
         
         //setup descriptors for the user-related calls
         RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
@@ -394,6 +396,63 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     [operation start];
 }
 
+- (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID
+{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
+                                                            path:[NSString stringWithFormat:@"%@images/%i?auth_token=%@",objectManager.baseURL,imageID, token]
+                                                      parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        // No success for DELETE
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        if ([operation.response statusCode] == 404) {
+            if ([delegate respondsToSelector:@selector(NetworkServices:didDeleteImageWithID:andRequestID:)])
+            {
+                [delegate NetworkServices:self didDeleteImageWithID:imageID andRequestID:requestID];
+            }
+        }
+        else{
+            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+            {
+                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+            }
+        }
+    }];
+    [operation start];
+}
+
+- (void)updateImagePrivacyForImages:(NSArray *)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PUT"
+                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",objectManager.baseURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
+                                                      parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImagePrivacysWithRequestID:)])
+        {
+            [delegate NetworkServices:self didUpdateImagePrivacysWithRequestID:requestID];
+        }
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                         NSLog(@"Privacy update failed with error: %@", [error localizedDescription]);
+                                         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                                         {
+                                             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                                         }
+                                     }];
+    [operation start];
+    
+}
+
+#pragma mark Upload New Image
+
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
@@ -419,7 +478,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
     
     //add filename to the path
-    NSString *srcImagePath = [NSString stringWithFormat:@"%@/%@", folderDirectory, [NSString stringWithFormat:@"Photo-%@",boundary]];
+    NSString *srcImagePath = [NSString stringWithFormat:@"%@/%@", folderDirectory, [NSString stringWithFormat:@"Photo-%@",requestID.UUIDString]];
     NSString *dataSrcImagePath = [srcImagePath stringByAppendingString:@".tmp"];
     
     //sace data to local folder
@@ -429,7 +488,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
     
     // sets the URL and request type. Cannot add the body as uploadTaskWithRequest ignores the body
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images?auth_token=%@",objectManager.baseURL, token]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",objectManager.baseURL, token]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
@@ -443,6 +502,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
     //hold on ot the searchPAth locally so we can delete it later
     [outstandingRequestLocalURLs setObject:dataSrcImagePath forKey:[NSString stringWithFormat:@"%lu",(unsigned long)uploadTask.taskIdentifier]];
+    [uploadedImageObjects setObject:theImageObject forKey:[NSString stringWithFormat:@"%lu",(unsigned long)uploadTask.taskIdentifier]];
 
     //actually send it
     [uploadTask resume];
@@ -546,7 +606,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         
         [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[time_stamp]"] dataUsingEncoding:NSUTF8StringEncoding]];
-        [body appendData:[[NSString stringWithFormat:@"%@\r\n", imgObject.timestamp] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", imgObject.timestampString] dataUsingEncoding:NSUTF8StringEncoding]];
         
         [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[user_id]"] dataUsingEncoding:NSUTF8StringEncoding]];
@@ -564,15 +624,16 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     return body;
 }
 
+#pragma mark URLSession Delegate
+
 - (void)URLSession:(NSURLSession *)session
               task:(NSURLSessionTask *)task
    didSendBodyData:(int64_t)bytesSent
     totalBytesSent:(int64_t)totalBytesSent
 totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
-    NSLog(@"Progress!");
-    NSString*hello = task.taskDescription;
-    FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:hello];
+    NSString*requestIDString = task.taskDescription;
+    FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:requestIDString];
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
         {
@@ -581,27 +642,21 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     });
 }
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler{
-    NSLog(@"Received Response!");
-}
-
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data{
-    NSLog(@"Did receive Data");
     NSError *e = nil;
+    
     
     NSDictionary * jsonArray = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableLeaves error: &e];
     
     if (!jsonArray) {
         NSLog(@"Error parsing JSON: %@", e);
     } else {
-        
-        NSLog(@"imageID: %@",[jsonArray objectForKey:@"id"]);
-        NSLog(@"Dictionary count: %lu", jsonArray.count);
+        FluxScanImageObject*uploadedImg = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)dataTask.taskIdentifier]];
+        [uploadedImg setImageID:[(NSString*)[jsonArray objectForKey:@"id"]intValue]];
     }
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error{
-    NSLog(@"didCompleteWithError");
     NSURLResponse*response = task.response;
     NSString*hello = task.taskDescription;
     FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:hello];
@@ -610,25 +665,42 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             int responseStatusCode = (int)[httpResponse statusCode];
             //if the status code is in the 200s
             if ([RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) containsIndex:responseStatusCode]) {
-                NSLog(@"Things seemed to have worked");
-                
                 //delete the local file
                 NSString*pathToFile = [outstandingRequestLocalURLs objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
                 [[NSFileManager defaultManager] removeItemAtPath: pathToFile error: &error];
                 if (error) {
                     NSLog(@"Uploaded file failed to delete");
                 }
+                else{
+                    [outstandingRequestLocalURLs removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                }
                 
+                FluxScanImageObject*imageObject = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                [imageObject setLocalID:[imageObject generateUniqueStringID]];
                 
-//                FluxScanImageObject *imageObject = [result firstObject];
-//                [imageObject setLocalID:[imageObject generateUniqueStringID]];
-//                
-//                if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
-//                {
-//                    [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
-//                }
+                //I did this in case a random bug occured where this method was called before any progress was made. Random. Could ususally clear it by doing a clean build.
+                if (imageObject) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
+                        {
+                            [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
+                        }
+                        [uploadedImageObjects removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                    });
+                }
+                else{
+                    NSLog(@"Image upload failed with response code: %i, nothing was uploaded from the looks of it.", responseStatusCode);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                        {
+                            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                        }
+                    });
+                }
                 
-                
+
+
+
             }
             else{
                 NSLog(@"Image upload failed with response code: %i", responseStatusCode);
@@ -666,10 +738,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
 }
 
-- (void)URLSession:(NSURLSession *)session didBecomeInvalidWithError:(NSError *)error{
-    NSLog(@"ERROR!");
-}
-
 - (NSURLSession *)backgroundSession {
     static NSURLSession *session = nil;
     static dispatch_once_t onceToken;
@@ -677,72 +745,18 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
         // Session Configuration
         NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"uniqueSessionID"];
         
-//        sessionConfiguration.HTTPMaximumConnectionsPerHost = 1;
+        sessionConfiguration.HTTPMaximumConnectionsPerHost = 1;
         sessionConfiguration.HTTPAdditionalHeaders = @{
                                                        @"Accept"        : @"application/json",
                                                        @"Content-Type"  : [NSString stringWithFormat:@"multipart/form-data; boundary=%@", @"thisIsBoundary"]
                                                        };
+        [sessionConfiguration setTimeoutIntervalForResource:defaultImageTimout];
         
         // Initialize Session
         session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
     });
     
     return session;
-}
-
-- (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID
-{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-
-    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
-    NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
-                                                            path:[NSString stringWithFormat:@"%@images/%i?auth_token=%@",objectManager.baseURL,imageID, token]
-                                                      parameters:nil];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        // No success for DELETE
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        if ([operation.response statusCode] == 404) {
-            if ([delegate respondsToSelector:@selector(NetworkServices:didDeleteImageWithID:andRequestID:)])
-            {
-                [delegate NetworkServices:self didDeleteImageWithID:imageID andRequestID:requestID];
-            }
-        }
-        else{
-            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-            {
-                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-            }
-        }
-    }];
-    [operation start];
-}
-
-- (void)updateImagePrivacyForImages:(NSArray *)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    
-    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
-    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PUT"
-                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",objectManager.baseURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
-                                                      parameters:nil];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImagePrivacysWithRequestID:)])
-        {
-            [delegate NetworkServices:self didUpdateImagePrivacysWithRequestID:requestID];
-        }
-    }
-     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-         NSLog(@"Privacy update failed with error: %@", [error localizedDescription]);
-         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-         {
-             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-         }
-                                     }];
-    [operation start];
-
 }
 
 #pragma mark Features
