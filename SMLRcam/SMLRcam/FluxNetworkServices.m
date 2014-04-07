@@ -665,21 +665,22 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             int responseStatusCode = (int)[httpResponse statusCode];
             //if the status code is in the 200s
             if ([RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) containsIndex:responseStatusCode]) {
-                //delete the local file
-                NSString*pathToFile = [outstandingRequestLocalURLs objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
-                [[NSFileManager defaultManager] removeItemAtPath: pathToFile error: &error];
-                if (error) {
-                    NSLog(@"Uploaded file failed to delete");
-                }
-                else{
-                    [outstandingRequestLocalURLs removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
-                }
                 
                 FluxScanImageObject*imageObject = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
                 [imageObject setLocalID:[imageObject generateUniqueStringID]];
                 
                 //I did this in case a random bug occured where this method was called before any progress was made. Random. Could ususally clear it by doing a clean build.
                 if (imageObject) {
+                    //delete the local file
+                    NSString*pathToFile = [outstandingRequestLocalURLs objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                    [[NSFileManager defaultManager] removeItemAtPath: pathToFile error: &error];
+                    if (error) {
+                        NSLog(@"Uploaded file failed to delete");
+                    }
+                    else{
+                        [outstandingRequestLocalURLs removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                    }
+                    
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
                         {

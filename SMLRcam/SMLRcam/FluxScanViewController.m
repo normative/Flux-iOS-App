@@ -690,10 +690,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             //takes the current segment percentage, and adds any completed segments
             float visibleProgress = currentSegmentProgress+(uploadsCompleted/(float)totalUploads);
             [progressView setProgress:visibleProgress-0.07 animated:YES];
-            
-            NSLog(@"currentProgress: %f",currentProgress);
-            NSLog(@"currentSegmentProgress: %f",currentSegmentProgress);
-            NSLog(@"Calculated Visible Progress: %f",visibleProgress);
         }];
         [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Image Upload Failed"
