@@ -8,6 +8,7 @@
 
 #import "FluxFlickrImageSelectViewController.h"
 
+#import "FluxFlickrEditDescriptionViewController.h"
 #import "FluxFlickrPhotoDataElement.h"
 #import "FluxFlickrPhotosetDataElement.h"
 #import <objectiveflickr/ObjectiveFlickr.h>
@@ -19,7 +20,7 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 NSString* const FluxFlickrImageSelectCroppedImageKey = @"FluxFlickrImageSelectCroppedImageKey";
 NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDescriptionKey";
 
-@interface FluxFlickrImageSelectViewController () <OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, PECropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface FluxFlickrImageSelectViewController () <FluxFlickrEditDescriptionProtocol, OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, PECropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic) OFFlickrAPIContext *flickrContext;
 @property (nonatomic) OFFlickrAPIRequest *flickrRequest;
@@ -38,6 +39,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
 // Flag to indicate whether we have selected a photoset yet in the workflow
 @property (nonatomic) bool didSelectPhotoset;
+
+@property (nonatomic, strong) UIImage *croppedImage;
 
 @end
 
@@ -81,12 +84,17 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)cancelButtonAction:(id)sender
+- (void)cancelFlickerImageSelect
 {
     if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewControllerDidCancel:)])
     {
         [self.delegate FluxFlickrImageSelectViewControllerDidCancel:self];
     }
+}
+
+- (IBAction)cancelButtonAction:(id)sender
+{
+    [self cancelFlickerImageSelect];
 }
 
 - (IBAction)selectButtonAction:(id)sender
@@ -97,6 +105,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     {
         if (!self.didSelectPhotoset)
         {
+            // Photoset selected
+            
             FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:selectedIndexPath.row];
 
             [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"100"}];
@@ -106,6 +116,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
         }
         else
         {
+            // Photo selected
+
             FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:selectedIndexPath.row];
             
             // Create a download task to manage image download
@@ -119,6 +131,22 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             [self.flickrRequest callAPIMethodWithGET:@"flickr.photos.getInfo" arguments:@{@"photo_id": photoElement.photo_id}];
         }
     }
+}
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"pushFlickrEditDescriptionView"])
+    {
+        FluxFlickrEditDescriptionViewController *flickrEditVC = (FluxFlickrEditDescriptionViewController *)segue.destinationViewController;
+
+        flickrEditVC.delegate = self;
+        flickrEditVC.annotationText = self.photoDescription;
+    }
+}
+
+- (void)launchAnnotationView
+{
+    [self performSegueWithIdentifier:@"pushFlickrEditDescriptionView" sender:self];
 }
 
 # pragma mark - Table View Controller delegate methods
@@ -294,12 +322,9 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
         }
         [self.timeoutLock unlock];
 
-        // We now have the cropped image. This can be passed up the chain for use as an overlay.
-        if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewController:didFinishPickingMediaWithInfo:)])
-        {
-            NSDictionary *imageDict = @{FluxFlickrImageSelectCroppedImageKey : croppedImage, FluxFlickrImageSelectDescriptionKey : self.photoDescription};
-            [self.delegate FluxFlickrImageSelectViewController:self didFinishPickingMediaWithInfo:imageDict];
-        }
+        self.croppedImage = croppedImage;
+        
+        [self launchAnnotationView];
     }];
 }
 
@@ -307,10 +332,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 {
     // Dismiss the crop selector overlay
     [controller dismissViewControllerAnimated:YES completion:^{
-        if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewControllerDidCancel:)])
-        {
-            [self.delegate FluxFlickrImageSelectViewControllerDidCancel:self];
-        }
+        [self cancelFlickerImageSelect];
     }];
 }
 
@@ -367,6 +389,30 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     {
         
     }
+}
+
+# pragma mark - FluxFlickrEditDescriptionProtocol methods
+
+- (void)FluxFlickrEditDescriptionViewController:(FluxFlickrEditDescriptionViewController *)picker didFinishEditingDescriptionWithInfo:(NSDictionary *)info
+{
+    // Description edit complete
+    NSString *annotation = info[FluxFlickrEditDescriptionAnnotationKey];
+    
+    [picker dismissViewControllerAnimated:YES completion:^{
+        // We now have the cropped image and edited description. These can be passed up the chain for use as an overlay.
+        if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewController:didFinishPickingMediaWithInfo:)])
+        {
+            NSDictionary *imageDict = @{FluxFlickrImageSelectCroppedImageKey : self.croppedImage, FluxFlickrImageSelectDescriptionKey : annotation};
+            [self.delegate FluxFlickrImageSelectViewController:self didFinishPickingMediaWithInfo:imageDict];
+        }
+    }];
+}
+
+- (void)FluxFlickrEditDescriptionViewControllerDidCancel:(FluxFlickrEditDescriptionViewController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:^{
+        [self cancelFlickerImageSelect];
+    }];
 }
 
 @end

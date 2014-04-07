@@ -201,6 +201,7 @@
 		F2CC5A5E18E0A036005AE05D /* OFAPIKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A5D18E0A036005AE05D /* OFAPIKey.m */; };
 		F2CC5A6218EF16EA005AE05D /* FluxFlickrPhotoDataElement.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A6118EF16EA005AE05D /* FluxFlickrPhotoDataElement.m */; };
 		F2CC5A6518EF1705005AE05D /* FluxFlickrPhotosetDataElement.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A6418EF1704005AE05D /* FluxFlickrPhotosetDataElement.m */; };
+		F2CC5A6818F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A6718F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m */; };
 		F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */ = {isa = PBXBuildFile; fileRef = F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */; };
 		F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */; };
 		F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */; };
@@ -566,6 +567,8 @@
 		F2CC5A6118EF16EA005AE05D /* FluxFlickrPhotoDataElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFlickrPhotoDataElement.m; sourceTree = "<group>"; };
 		F2CC5A6318EF1704005AE05D /* FluxFlickrPhotosetDataElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFlickrPhotosetDataElement.h; sourceTree = "<group>"; };
 		F2CC5A6418EF1704005AE05D /* FluxFlickrPhotosetDataElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFlickrPhotosetDataElement.m; sourceTree = "<group>"; };
+		F2CC5A6618F2E367005AE05D /* FluxFlickrEditDescriptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFlickrEditDescriptionViewController.h; sourceTree = "<group>"; };
+		F2CC5A6718F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFlickrEditDescriptionViewController.m; sourceTree = "<group>"; };
 		F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraFrameGrabTask.h; sourceTree = "<group>"; };
 		F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraFrameGrabTask.m; sourceTree = "<group>"; };
 		F2ED4248183EFE1A007A825A /* FluxFeatureMatchingRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingRecord.h; sourceTree = "<group>"; };
@@ -1481,6 +1484,8 @@
 		F2CC5A5F18EF1674005AE05D /* Flickr */ = {
 			isa = PBXGroup;
 			children = (
+				F2CC5A6618F2E367005AE05D /* FluxFlickrEditDescriptionViewController.h */,
+				F2CC5A6718F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m */,
 				F2CC5A5918E08CDC005AE05D /* FluxFlickrImageSelectViewController.h */,
 				F2CC5A5A18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m */,
 				F2CC5A6018EF16EA005AE05D /* FluxFlickrPhotoDataElement.h */,
@@ -1749,6 +1754,7 @@
 				AA9D0E97184D39510004823E /* OAuthCore.m in Sources */,
 				AAAAD6E918A0588D00F5F3DB /* FluxImageCaptureBoxItem.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
+				F2CC5A6818F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m in Sources */,
 				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA3BAF2C18468083009D4FAC /* FluxProfileCell.m in Sources */,
 				AA9F86101868AFF600AB98A7 /* IDMPhoto.m in Sources */,
