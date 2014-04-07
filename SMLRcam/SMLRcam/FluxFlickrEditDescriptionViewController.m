@@ -30,7 +30,19 @@ NSString* const FluxFlickrEditDescriptionAnnotationKey = @"FluxFlickrEditDescrip
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    self.textEditor.text = self.annotationText;
+    [self.view setBackgroundColor:[UIColor grayColor]];
+    
+    [self.editAnnotationTextView setTheDelegate:self];
+    [self.editAnnotationTextView becomeFirstResponder];
+    CALayer *roundBorderLayer = [CALayer layer];
+    roundBorderLayer.borderWidth = 0.5;
+    roundBorderLayer.opacity = 0.4;
+    roundBorderLayer.cornerRadius = 5;
+    roundBorderLayer.borderColor = [UIColor blackColor].CGColor;
+    roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(self.editAnnotationTextView.frame), CGRectGetHeight(self.editAnnotationTextView.frame));
+    [self.editAnnotationTextView.layer addSublayer:roundBorderLayer];
+
+    self.editAnnotationTextView.text = self.annotationText;
 }
 
 - (void)didReceiveMemoryWarning
@@ -51,7 +63,7 @@ NSString* const FluxFlickrEditDescriptionAnnotationKey = @"FluxFlickrEditDescrip
 {
     if ([self.delegate respondsToSelector:@selector(FluxFlickrEditDescriptionViewController:didFinishEditingDescriptionWithInfo:)])
     {
-        NSDictionary *annotationDict = @{FluxFlickrEditDescriptionAnnotationKey : self.textEditor.text};
+        NSDictionary *annotationDict = @{FluxFlickrEditDescriptionAnnotationKey : self.editAnnotationTextView.text};
         [self.delegate FluxFlickrEditDescriptionViewController:self didFinishEditingDescriptionWithInfo:annotationDict];
     }
 }

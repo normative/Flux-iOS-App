@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "KTPlaceholderTextView.h"
 
 extern NSString* const FluxFlickrEditDescriptionAnnotationKey;
 
@@ -19,12 +20,12 @@ extern NSString* const FluxFlickrEditDescriptionAnnotationKey;
 
 @end
 
-@interface FluxFlickrEditDescriptionViewController : UIViewController <UITextViewDelegate>
+@interface FluxFlickrEditDescriptionViewController : UIViewController <KTPlaceholderTextViewDelegate>
 
 @property (nonatomic, strong) NSString *annotationText;
 @property (nonatomic, weak) id<FluxFlickrEditDescriptionProtocol> delegate;
 
-@property (strong, nonatomic) IBOutlet UITextView *textEditor;
+@property (strong, nonatomic) IBOutlet KTPlaceholderTextView *editAnnotationTextView;
 @property (strong, nonatomic) IBOutlet UILabel *wordCount;
 
 - (IBAction)cancelButtonAction:(id)sender;
