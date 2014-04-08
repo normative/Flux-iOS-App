@@ -95,6 +95,8 @@ typedef enum {
     IBOutlet UILabel *pedometerLabel;
     
     historicalPhotoModeTypes historicalPhotoPickerMode;
+    
+    NSMutableDictionary *flickrIDToLocalIDMap;
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;

@@ -779,11 +779,11 @@ void init(){
 
 
 
-- (void)activateNewImageCaptureWithImage:(UIImage *)image andAnnotation:(NSString *)annotation
+- (void)activateNewImageCaptureWithImage:(UIImage *)image andAnnotation:(NSString *)annotation andFlickrID:(NSString *)flickrID
 {
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self.imageCaptureViewController setHidden:NO];
-    [self.imageCaptureViewController setHistoricalTransparentImage:image andDefaultAnnotation:annotation];
+    [self.imageCaptureViewController setHistoricalTransparentImage:image andDefaultAnnotation:annotation andFlickrID:flickrID];
     
     camIsOn = YES;
 

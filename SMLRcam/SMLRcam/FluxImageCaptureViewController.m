@@ -464,10 +464,14 @@ static int captureImageID = -1;
     // add to cache and notify for local rendering using the cropped image
     [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:croppedImg];
 
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
+    NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc]
                                   initWithObjectsAndKeys:localID, @"localID", croppedImg, @"image", newImageObject, @"imageObject", nil];
+    if (capturedFlickrID)
+    {
+        userInfoDict[@"flickrID"] = capturedFlickrID;
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidCaptureImage
-                                                        object:self userInfo:userInfoDict];
+                                                        object:self userInfo:[userInfoDict copy]];
 
 }
 
@@ -491,10 +495,11 @@ static int captureImageID = -1;
 	return result;
 }
 
-- (void) setHistoricalTransparentImage:(UIImage *)image andDefaultAnnotation:(NSString *)annotation
+- (void) setHistoricalTransparentImage:(UIImage *)image andDefaultAnnotation:(NSString *)annotation andFlickrID:(NSString *)flickrID
 {
     historicalImageView.image = image;
     defaultAnnotationText = annotation;
+    capturedFlickrID = flickrID;
 }
 
 @end

@@ -8,21 +8,18 @@
 
 #import "FluxFlickrImageSelectViewController.h"
 
-#import "FluxDataManager.h"
 #import "FluxFlickrEditDescriptionViewController.h"
 #import "FluxFlickrPhotoDataElement.h"
 #import "FluxFlickrPhotosetDataElement.h"
-#import "FluxProfileImageObject.h"
-#import "FluxScanImageObject.h"
 #import <objectiveflickr/ObjectiveFlickr.h>
 #import "OFAPIKey.h"
 #import "PECropViewController.h"
-#import "UICKeyChainStore.h"
 
 const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 
 NSString* const FluxFlickrImageSelectCroppedImageKey = @"FluxFlickrImageSelectCroppedImageKey";
 NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDescriptionKey";
+NSString* const FluxFlickrImageSelectFlickrIDKey = @"FluxFlickrImageSelectFlickrIDKey";
 
 @interface FluxFlickrImageSelectViewController () <FluxFlickrEditDescriptionProtocol, OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, PECropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -46,8 +43,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 @property (nonatomic, strong) NSString *selectedPhotosetName;
 
 @property (nonatomic, strong) UIImage *croppedImage;
-
-@property (nonatomic, strong) NSMutableDictionary *flickrIDToLocalIDMap;
+@property (nonatomic, strong) NSString *selectedFlickrID;
 
 @end
 
@@ -81,8 +77,6 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     
     self.didSelectPhotoset = NO;
-    
-    [self createMappingBetweenLocalIDAndFlickrID];
     
     [self loadFlickrPhotos];
 }
@@ -130,6 +124,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             // Photo selected
 
             FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:selectedIndexPath.row];
+            
+            self.selectedFlickrID = photoElement.photo_id;
             
             // Create a download task to manage image download
             
@@ -236,7 +232,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     cell.textLabel.text = photoElement.title;
     cell.imageView.image = photoElement.thumbImage;
 
-    if (photoElement.title.length > 50)
+    if (self.flickrIDToLocalIDMap[photoElement.photo_id])
     {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }
@@ -421,7 +417,9 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
         // We now have the cropped image and edited description. These can be passed up the chain for use as an overlay.
         if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewController:didFinishPickingMediaWithInfo:)])
         {
-            NSDictionary *imageDict = @{FluxFlickrImageSelectCroppedImageKey : self.croppedImage, FluxFlickrImageSelectDescriptionKey : annotation};
+            NSDictionary *imageDict = @{FluxFlickrImageSelectCroppedImageKey : self.croppedImage,
+                                        FluxFlickrImageSelectDescriptionKey : annotation,
+                                        FluxFlickrImageSelectFlickrIDKey: self.selectedFlickrID};
             [self.delegate FluxFlickrImageSelectViewController:self didFinishPickingMediaWithInfo:imageDict];
         }
     }];
@@ -432,102 +430,6 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     [picker dismissViewControllerAnimated:YES completion:^{
         [self cancelFlickerImageSelect];
     }];
-}
-
-# pragma mark - Flux photo record keeping
-
-- (NSArray *)getPhotoListForCurrentUser
-{
-    NSMutableArray *localIDList = [[NSMutableArray alloc] init];
-    
-    NSString *userIDStr = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
-
-    if (userIDStr)
-    {
-        int userID = [userIDStr intValue];
-        
-        FluxDataManager *fluxDataManager = [FluxDataManager theFluxDataManager];
-
-        FluxDataRequest*request = [[FluxDataRequest alloc]init];
-        [request setUserImagesReady:^(NSArray * userImageList, FluxDataRequest*completedDataRequest){
-            for (FluxProfileImageObject *curImage in userImageList)
-            {
-                FluxImageID imageID = curImage.imageID;
-                FluxLocalID *localID = [fluxDataManager getMetadataObjectFromCacheWithImageID:imageID].localID;
-                [localIDList addObject:localID];
-            }
-        }];
-        [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            NSString *str = [NSString stringWithFormat:@"Failed to load image list for current user."];
-            NSLog(@"%@", str);
-        }];
-        [fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
-    }
-    
-    return [localIDList copy];
-}
-
-- (void)createMappingBetweenLocalIDAndFlickrID
-{
-    NSMutableDictionary *flickrIDToLocalID = [[NSMutableDictionary alloc] init];
-    
-    // Load previous mapping from file, if it exists, as the previous map
-    NSDictionary *oldMappingFromFile = [self readPreviousMapFromFile];
-    
-    if (oldMappingFromFile)
-    {
-        // If list exists, get list of photos for current user
-        NSArray *userLocalIDList = [self getPhotoListForCurrentUser];
-        
-        // For each stored map entry with a localID that exists for this user, add to the current map
-        // Only requires a single iteration over the dictionary
-        for (NSString *flickrID in [oldMappingFromFile allKeys])
-        {
-            FluxLocalID *localID = oldMappingFromFile[flickrID];
-            if ([userLocalIDList containsObject:localID])
-            {
-                flickrIDToLocalID[flickrID] = localID;
-            }
-        }
-    }
-    
-    // We now have a dictionary with index of Flickr ID's that stores the corresponding localID
-    // Be sure to add a new entry when a picture is uploaded and write it to disk for next use
-    
-    self.flickrIDToLocalIDMap = flickrIDToLocalID;
-}
-
-- (void)updateMapWithNewImageForFlickrID:(NSString *)flickrID andLocalID:(FluxLocalID *)localID
-{
-    self.flickrIDToLocalIDMap[flickrID] = localID;
-    
-    [self writeMapToFile:self.flickrIDToLocalIDMap];
-}
-
-- (NSDictionary *)readPreviousMapFromFile
-{
-    NSURL *url = [self getPersistentMapFileURL];
-    
-    return [NSDictionary dictionaryWithContentsOfURL:url];
-}
-
-- (void)writeMapToFile:(NSDictionary *)map
-{
-    NSURL *url = [self getPersistentMapFileURL];
-
-    if (![map writeToURL:url atomically:YES])
-    {
-        NSLog(@"Failed to write Flickr ID map dictionary to URL:'%@'", url);
-    }
-}
-
-- (NSURL *)getPersistentMapFileURL
-{
-    // get the document directory URL
-    NSURL *documentDirectoryURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-    NSURL *url = [documentDirectoryURL URLByAppendingPathComponent:@"FluxFlickrIDMapping.data" isDirectory:NO];
-
-    return url;
 }
 
 @end
