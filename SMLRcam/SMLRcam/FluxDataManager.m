@@ -191,6 +191,11 @@ float const altitudeHighRange = 60.0;
     return [fluxDataStore getMetadataWithLocalID:localID];
 }
 
+- (FluxScanImageObject *) getMetadataObjectFromCacheWithImageID:(FluxImageID)imageID
+{
+    return [fluxDataStore getMetadataWithImageID:imageID];
+}
+
 - (void)resetAllFeatureMatches
 {
     [fluxDataStore resetAllFeatureMatches];
@@ -430,6 +435,27 @@ float const altitudeHighRange = 60.0;
     if (completedRequest)
     {
         [self completeRequestWithDataRequest:dataRequest];
+    }
+    
+    return requestID;
+}
+
+- (FluxRequestID *) requestImageMatchesByLocalID:(FluxDataRequest *)dataRequest
+{
+    // TODO: rejig this to process the image match request - shouldn't need the extra queue checking on imagetype, etc.
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = image_matches_request;
+    
+    [currentRequests setObject:dataRequest forKey:requestID];
+    
+    FluxLocalID *curLocalID = dataRequest.requestedIDs[0];
+    
+    // Begin download of image
+    FluxScanImageObject *curImageObj = [fluxDataStore getMetadataWithLocalID:curLocalID];
+    if (curImageObj.imageID > 0)
+    {
+        [networkServices getImageMatchesForID:curImageObj.imageID andRequestID:requestID];
+//        [networkServices getImageMatchesForID:1152 andRequestID:requestID]; // should return 4 elements
     }
     
     return requestID;
@@ -974,6 +1000,25 @@ float const altitudeHighRange = 60.0;
         }
     }
 }
+
+
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices
+  didreturnImageMatches:(NSArray *)matches
+             forImageID:(int)imageID
+           andRequestID:(FluxRequestID *)requestID
+{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    FluxScanImageObject *imageObj = [fluxDataStore getMetadataWithImageID:imageID];
+    
+    // Notify and execute callback
+    [request whenImageMatchesReady:imageObj.localID withMatches:matches withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+
+}
+
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
                     ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID

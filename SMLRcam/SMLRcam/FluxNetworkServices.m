@@ -29,8 +29,8 @@ NSString* const AWSStagingServerURL    = _AWSStagingServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
-//NSString* const FluxServerURL = _AWSStagingServerURL;
+//NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
@@ -168,6 +168,8 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                                        rootKeyPath:@"alias"
                                                                                                             method:RKRequestMethodPOST];
         
+        
+        
         [objectManager addRequestDescriptor:userRequestDescriptor];
         [objectManager addRequestDescriptor:userUpdateDescriptor];
         [objectManager addRequestDescriptor:cameraRequestDescriptor];
@@ -198,8 +200,18 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                                   objectClass:[FluxScanImageObject class]
                                                                                                   rootKeyPath:@"image"
                                                                                                        method:RKRequestMethodPOST];
+        
+        RKResponseDescriptor *imageMatchObjectResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageMatchGETMapping]
+                                                                                                                method:RKRequestMethodAny
+                                                                                                           pathPattern:@"images/:image_id/matches"
+//                                                                                                           pathPattern:@"image_matches"
+                                                                                                               keyPath:nil
+                                                                                                           statusCodes:statusCodes];
+        
+        
         [objectManager addRequestDescriptor:imageObjectRequestDescriptor];
         [objectManager addResponseDescriptor:imageObjectResponseDescriptor];
+        [objectManager addResponseDescriptor:imageMatchObjectResponseDescriptor];
         
 //        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 //        [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
@@ -773,13 +785,53 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     return session;
 }
 
+
+//returns the cloud-extracted image match records given an image ID
+- (void)getImageMatchesForID:(int)imageID andRequestID:(FluxRequestID *)requestID
+{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageMatchGETMapping]
+                                                                                            method:RKRequestMethodAny
+                                                                                       pathPattern:[NSString stringWithFormat:@"/images/%d/matches.json", imageID]
+//                                                                                       pathPattern:[NSString stringWithFormat:@"/image_matches/%d/matches.json", imageID]
+                                                                                           keyPath:nil
+                                                                                       statusCodes:statusCodes];
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+
+    RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
+                                                                        responseDescriptors:@[responseDescriptor]];
+    
+    [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+      {
+         if ([delegate respondsToSelector:@selector(NetworkServices:didreturnImageMatches:forImageID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didreturnImageMatches:result.array forImageID:imageID andRequestID:requestID];
+         }
+      }
+                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+      {
+         NSLog(@"image matches for ID Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+      }
+    ];
+    
+    [operation start];
+}
+
+
 #pragma mark Features
 
 //returns the cloud-extracted features given an image ID
 - (void)getImageFeaturesForID:(int)imageID andRequestID:(FluxRequestID *)requestID
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/image?auth_token=%@&size=%@",objectManager.baseURL,imageID,token, fluxImageTypeStrings[features]];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/features?auth_token=%@",objectManager.baseURL,imageID,token];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     

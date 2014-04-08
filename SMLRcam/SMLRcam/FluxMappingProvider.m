@@ -17,6 +17,7 @@
 #import "FluxFilterImageCountObject.h"
 #import "FluxAliasObject.h"
 #import "FluxContactObject.h"
+#import "FluxImageMatchObject.h"
 
 @implementation FluxMappingProvider
 
@@ -56,6 +57,17 @@
     
     return mapping;
 }
+
+
++ (RKObjectMapping *)imageMatchGETMapping {
+    RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxImageMatchObject class]];
+    
+    [mapping addAttributeMappingsFromArray:@[@"image_id",@"matching_id", @"qw", @"qx", @"qy", @"qz", @"t1", @"t2", @"t3"]];
+    
+    return mapping;
+}
+
+
 
 #pragma mark - User Mapping
 

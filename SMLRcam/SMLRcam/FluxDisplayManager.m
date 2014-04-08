@@ -11,6 +11,8 @@
 #import "FluxScanImageObject.h"
 #import "FluxOpenGLViewController.h"
 #import "FluxDeviceInfoSingleton.h"
+#import "FluxImageMatchObject.h"
+#import "FluxTransformUtilities.h"
 
 const int number_OpenGL_Textures = 5;
 const int maxDisplayListCount   = 10;
@@ -282,6 +284,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [self requestMissingFeaturesWithNearbyItems:nearbyItems withDisplayItems:displayItems];
 }
 
+
 - (void)requestMissingFeaturesWithNearbyItems:(NSArray *)nearbyItems withDisplayItems:(NSArray *)displayItems
 {
     // This routine prioritizes features to download.
@@ -367,8 +370,122 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     [self.fluxDataManager requestImageFeaturesByLocalID:featuresRequest];
 }
 
+-(void)applyRelativeMatchTransformToImage:(FluxScanImageObject *)matchImageMeta fromImage:(FluxScanImageObject *)baseImageMeta withTranforms:(FluxImageMatchObject *)match
+{
+    // here is where the magic lies...
+
+    // first, make the rotation matrix and translation from the match quaternion and translations
+    GLKQuaternion quat = GLKQuaternionMake(match.qx, match.qy, match.qz, match.qw);
+    GLKMatrix3 R_newmatch_originalmatch = GLKMatrix3MakeWithQuaternion(quat);
+    
+    GLKVector3 t_newmatch_originalmatch = GLKVector3Make(match.t1, match.t2, match.t3);
+    
+    // extract "old" R & t from somewhere in baseImageMeta where we have previously stored it...
+    // TODO: figure out where to put this stuff and what format it is in...
+    GLKMatrix3 R_originalmatch_user;
+    [FluxTransformUtilities convertDoubleArray:baseImageMeta.matchTransform.rotation toMatrix3:&R_originalmatch_user];
+    GLKVector3 t_originalmatch_user;
+    [FluxTransformUtilities convertDoubleArray:baseImageMeta.matchTransform.translation toVector3:&t_originalmatch_user];
+    
+    // then refactor R, & t
+
+    //R_newmatch_user = R_newmatch_originalmatch * R_originalmatch_user
+    GLKMatrix3 R_newmatch_user = GLKMatrix3Multiply(R_newmatch_originalmatch, R_originalmatch_user);
+    
+    //t_newmatch_user = t_originalmatch_user + R_originalmatch_user.transpose * t_newmatch_originalmatch
+    GLKVector3 t_newmatch_user = GLKVector3Add(t_originalmatch_user, GLKMatrix3MultiplyVector3(R_originalmatch_user, t_newmatch_originalmatch));
+    
+    
+    // and create the arrays
+    double rotation1[9];
+    double translation1[3];
+    double normal1[3] = {0.0, 0.0, 1.0};
+
+    [FluxTransformUtilities convertMatrix3:R_newmatch_user toDoubleArray:rotation1];
+    [FluxTransformUtilities convertVector3:t_newmatch_user toDoubleArray:translation1];
+
+    
+    // store new R & t into current image
+    [FluxTransformUtilities deepCopyDoubleTo:matchImageMeta.matchTransform.rotation fromDoubleArray:rotation1 withSize:9];
+    [FluxTransformUtilities deepCopyDoubleTo:matchImageMeta.matchTransform.translation fromDoubleArray:translation1 withSize:3];
+
+#define IMAGE2IMAGE_MATCH
+#ifdef IMAGE2IMAGE_MATCH
+
+    // now the heavy lifting...
+
+//    self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
+//    sensorPose imagePosePnP = self.matchRecord.ire.imageMetadata.imageHomographyPosePnP;
+    
+    matchImageMeta.userHomographyPose = baseImageMeta.userHomographyPose   ; //self.matchRecord.cfe.cameraPose;
+    sensorPose imagePosePnP = matchImageMeta.imageHomographyPosePnP;
+    
+    [FluxTransformUtilities computeImagePoseInECEF: &imagePosePnP
+                                          userPose: matchImageMeta.userHomographyPose
+                                     hTranslation1: translation1
+                                        hRotation1: rotation1
+                                          hNormal1: normal1
+                                     hTranslation2: translation1
+                                        hRotation2: rotation1
+                                          hNormal2: normal1];
+    
+    matchImageMeta.imageHomographyPosePnP = imagePosePnP;
+    
+    // Flag to use homography for rendering of image
+    matchImageMeta.location_data_type = location_data_from_homography;
+    
+    // Update match information
+    matchImageMeta.matched = YES;   // This one goes in the FluxDataStore cache
+    // self.matchRecord.matched = YES;                     // This one is just quick access for the record
+    
+    NSLog(@"Image2Image Matched %d to %d", matchImageMeta.imageID, baseImageMeta.imageID);
+    
+#endif
+    
+}
+
+
+- (void)requestMatchesForImageID:(FluxLocalID *)localID
+{
+    // TODO: need to finish this up to work properly and to be hooked into/called by something
+
+    FluxDataRequest *matchesRequest = [[FluxDataRequest alloc] init];
+    [matchesRequest setRequestedIDs:[NSMutableArray arrayWithObject:localID]];
+    
+    matchesRequest.imageMatchesReady=^(FluxLocalID *localID, NSArray *matches, FluxDataRequest *completedDataRequest){
+            NSLog(@"Match request complete, returned %lu matches.", (unsigned long)matches.count);
+            
+            FluxScanImageObject *baseimage = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:localID];
+            for (FluxImageMatchObject *match in matches)
+            {
+                // check to see if the image is in the nearby list
+                FluxScanImageObject *matchimage = [self.fluxDataManager getMetadataObjectFromCacheWithImageID:match.matching_id];
+                
+                // check if it is already matched
+                if ((matchimage) && (!matchimage.matched))
+                {
+                    // update the match transform
+                    [self applyRelativeMatchTransformToImage:matchimage fromImage:baseimage withTranforms:match];
+                }
+            }
+        };
+    
+    matchesRequest.errorOccurred=^(NSError *error,NSString *errDescription, FluxDataRequest *failedDataRequest){
+            // TODO: something here to indicate an error...
+            NSLog(@"Match request failed (%@)", errDescription);
+        };
+    
+    [self.fluxDataManager requestImageMatchesByLocalID:matchesRequest];
+}
+
+
 - (void)didMatchImage:(NSNotification *)notification
 {
+    // userinfodict: @"matchedLocalID" : record.ire.localID, @"matchedImageObject" : record.ire.imageMetadata
+    
+    FluxLocalID *localID = [notification.userInfo objectForKey:@"matchedLocalID"];
+    [self requestMatchesForImageID:localID];
+
     [self calculateTimeAdjustedImageList];
 }
 
