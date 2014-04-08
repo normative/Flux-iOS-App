@@ -39,6 +39,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
 // Flag to indicate whether we have selected a photoset yet in the workflow
 @property (nonatomic) bool didSelectPhotoset;
+@property (nonatomic, strong) NSString *selectedPhotosetName;
 
 @property (nonatomic, strong) UIImage *croppedImage;
 
@@ -108,6 +109,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             // Photoset selected
             
             FluxFlickrPhotosetDataElement *photosetElement = [self.photosetList objectAtIndex:selectedIndexPath.row];
+            
+            self.selectedPhotosetName = photosetElement.title;
 
             [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"100"}];
             
@@ -139,8 +142,10 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     {
         FluxFlickrEditDescriptionViewController *flickrEditVC = (FluxFlickrEditDescriptionViewController *)segue.destinationViewController;
 
+        NSString *annotation = [NSString stringWithFormat:@"#yale '%@' %@", self.selectedPhotosetName, self.photoDescription];
+
         flickrEditVC.delegate = self;
-        flickrEditVC.annotationText = self.photoDescription;
+        flickrEditVC.annotationText = annotation;
     }
 }
 
