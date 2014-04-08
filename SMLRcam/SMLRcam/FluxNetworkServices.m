@@ -463,9 +463,14 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     // Build the request body
     NSString *boundary = @"thisIsBoundary";
 
-    NSData*imageData = [self getDataForImage:theImage];
+    NSData*imageData = [self getDataForImage:theImage];;
+    NSData*historicalImageData;
+    if (theHistoricalImg) {
+        historicalImageData = [self getDataForImage:theHistoricalImg];
+    }
+    
     //builds the entire body (imageData + the rest)
-    NSMutableData *body = [self buildDataBodyForObject:theImageObject andImageData:imageData andBoudary:boundary];
+    NSMutableData *body = [self buildDataBodyForObject:theImageObject andImageData:imageData andHistoricalImageData:historicalImageData andBoudary:boundary];
     
     //creates a file path to save the data packet
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -534,7 +539,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 }
 
 //big nasty method for building our own request body instead of relying on restKit to do it for us.
-- (NSMutableData*)buildDataBodyForObject:(FluxScanImageObject*)imgObject andImageData:(NSData*)imageData andBoudary:(NSString*)boundary{
+- (NSMutableData*)buildDataBodyForObject:(FluxScanImageObject*)imgObject andImageData:(NSData*)imageData andHistoricalImageData:(NSData*)historicalImageData andBoudary:(NSString*)boundary{
     
     NSMutableData *body = [NSMutableData data];
     if (imageData) {
@@ -543,6 +548,14 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:imageData];
         [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        if (historicalImageData) {
+            [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"photo.jpeg\"\r\n", @"image[historical]"] dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+            [body appendData:historicalImageData];
+            [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        }
         
         [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
         [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[altitude]"] dataUsingEncoding:NSUTF8StringEncoding]];
