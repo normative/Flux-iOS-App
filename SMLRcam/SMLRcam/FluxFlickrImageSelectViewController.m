@@ -47,6 +47,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
 @property (nonatomic, strong) UIImage *croppedImage;
 
+@property (nonatomic, strong) NSMutableDictionary *flickrIDToLocalIDMap;
+
 @end
 
 @implementation FluxFlickrImageSelectViewController
@@ -451,7 +453,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             for (FluxProfileImageObject *curImage in userImageList)
             {
                 FluxImageID imageID = curImage.imageID;
-                FluxLocalID *localID;
+                FluxLocalID *localID = [fluxDataManager getMetadataObjectFromCacheWithImageID:imageID].localID;
                 [localIDList addObject:localID];
             }
         }];
@@ -465,26 +467,44 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     return [localIDList copy];
 }
 
-- (NSDictionary *)createMappingBetweenLocalIDAndFlickrID
+- (void)createMappingBetweenLocalIDAndFlickrID
 {
-    NSMutableDictionary *flickrIDToLocalID;
+    NSMutableDictionary *flickrIDToLocalID = [[NSMutableDictionary alloc] init];
     
     // Load previous mapping from file, if it exists, as the previous map
+    NSDictionary *oldMappingFromFile = [self readPreviousMapFromFile];
     
-    // If list exists, get list of photos for current user
-    NSArray *userLocalIDList = [self getPhotoListForCurrentUser];
-    
-    // For each stored map entry with a localID that exists for this user, add to the current map
-    // Only requires a single iteration over the dictionary
+    if (oldMappingFromFile)
+    {
+        // If list exists, get list of photos for current user
+        NSArray *userLocalIDList = [self getPhotoListForCurrentUser];
+        
+        // For each stored map entry with a localID that exists for this user, add to the current map
+        // Only requires a single iteration over the dictionary
+        for (NSString *flickrID in [oldMappingFromFile allKeys])
+        {
+            FluxLocalID *localID = oldMappingFromFile[flickrID];
+            if ([userLocalIDList containsObject:localID])
+            {
+                flickrIDToLocalID[flickrID] = localID;
+            }
+        }
+    }
     
     // We now have a dictionary with index of Flickr ID's that stores the corresponding localID
-    
     // Be sure to add a new entry when a picture is uploaded and write it to disk for next use
     
-    return [flickrIDToLocalID copy];
+    self.flickrIDToLocalIDMap = flickrIDToLocalID;
 }
 
-- (NSDictionary *)loadPreviousMapFromFile
+- (void)updateMapWithNewImageForFlickrID:(NSString *)flickrID andLocalID:(FluxLocalID *)localID
+{
+    self.flickrIDToLocalIDMap[flickrID] = localID;
+    
+    [self writeMapToFile:self.flickrIDToLocalIDMap];
+}
+
+- (NSDictionary *)readPreviousMapFromFile
 {
     NSURL *url = [self getPersistentMapFileURL];
     
