@@ -779,11 +779,11 @@ void init(){
 
 
 
-- (void)activateNewImageCaptureWithImage:(UIImage *)image
+- (void)activateNewImageCaptureWithImage:(UIImage *)image andAnnotation:(NSString *)annotation
 {
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self.imageCaptureViewController setHidden:NO];
-    [self.imageCaptureViewController setHistoricalTransparentImage:image];
+    [self.imageCaptureViewController setHistoricalTransparentImage:image andDefaultAnnotation:annotation];
     
     camIsOn = YES;
 

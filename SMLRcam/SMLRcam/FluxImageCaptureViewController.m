@@ -241,7 +241,7 @@ static int captureImageID = -1;
     }
     else
     {
-        [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:self.locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp]];
+        [annotationsVC prepareViewWithBGImage:bgImage andCapturedImages:capturedImages withLocation:self.locationManager.subadministativearea andDate:[(FluxScanImageObject*)[capturedImageObjects objectAtIndex:0]timestamp] andDefaultAnnotationText:defaultAnnotationText];
     }
     [annotationsVC setDelegate:self];
 }
@@ -491,9 +491,10 @@ static int captureImageID = -1;
 	return result;
 }
 
-- (void) setHistoricalTransparentImage:(UIImage *)image
+- (void) setHistoricalTransparentImage:(UIImage *)image andDefaultAnnotation:(NSString *)annotation
 {
     historicalImageView.image = image;
+    defaultAnnotationText = annotation;
 }
 
 @end

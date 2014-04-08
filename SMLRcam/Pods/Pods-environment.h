@@ -42,6 +42,12 @@
 #define COCOAPODS_VERSION_MINOR_ISO8601DateFormatterValueTransformer 5
 #define COCOAPODS_VERSION_PATCH_ISO8601DateFormatterValueTransformer 0
 
+// PEPhotoCropEditor
+#define COCOAPODS_POD_AVAILABLE_PEPhotoCropEditor
+#define COCOAPODS_VERSION_MAJOR_PEPhotoCropEditor 1
+#define COCOAPODS_VERSION_MINOR_PEPhotoCropEditor 3
+#define COCOAPODS_VERSION_PATCH_PEPhotoCropEditor 1
+
 // RKValueTransformers
 #define COCOAPODS_POD_AVAILABLE_RKValueTransformers
 #define COCOAPODS_VERSION_MAJOR_RKValueTransformers 1
@@ -119,4 +125,10 @@
 #define COCOAPODS_VERSION_MAJOR_UICKeyChainStore 1
 #define COCOAPODS_VERSION_MINOR_UICKeyChainStore 0
 #define COCOAPODS_VERSION_PATCH_UICKeyChainStore 4
+
+// objectiveflickr
+#define COCOAPODS_POD_AVAILABLE_objectiveflickr
+#define COCOAPODS_VERSION_MAJOR_objectiveflickr 2
+#define COCOAPODS_VERSION_MINOR_objectiveflickr 0
+#define COCOAPODS_VERSION_PATCH_objectiveflickr 4
 

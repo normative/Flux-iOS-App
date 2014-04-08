@@ -25,16 +25,18 @@
     UILabel *placeholderLabel;
     UILabel*charCount;
     int maxCount;
+    int warnCount;
     id __unsafe_unretained delegate;
 }
 
 @property (unsafe_unretained) id <KTPlaceholderTextViewDelegate> theDelegate;
+@property (nonatomic) bool countCharactersToZero;
 
 - (void)setPlaceholderColor:(UIColor*)color;
 - (void)setPlaceholderText:(NSString*)thePlaceholder;
 - (void)resetView;
 - (void)setCharCountVisible:(BOOL)visible;
 - (void)setMaxCharCount:(int)count;
-
+- (void)setWarnCharCount:(int)count;
 
 @end
