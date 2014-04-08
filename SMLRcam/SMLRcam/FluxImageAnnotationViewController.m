@@ -204,16 +204,12 @@
     if ([removedImages containsIndex:indexPath.row]) {
         [removedImages removeIndex:indexPath.row];
         [collectionView reloadData];
+        [self checkSaveButton];
     }
     else{
         [removedImages addIndex:indexPath.row];
         [collectionView reloadData];
-        if (removedImages.count == images.count) {
-            [saveButton setEnabled:NO];
-        }
-        else{
-           [saveButton setEnabled:YES];
-        }
+        [self checkSaveButton];
     }
 }
 
@@ -225,6 +221,17 @@
         if (checkButton == checkbox) {
             [self collectionView:imageCollectionView didSelectItemAtIndexPath:[imageCollectionView indexPathForCell:cell]];
         }
+    }
+}
+
+- (void)checkSaveButton{
+    if (removedImages.count == images.count) {
+        [saveButton setEnabled:NO];
+        saveButton.tintColor = [UIColor colorWithWhite:1.0 alpha:0.8];
+    }
+    else{
+        [saveButton setEnabled:YES];
+        saveButton.tintColor = [UIColor colorWithWhite:1.0 alpha:1.0];
     }
 }
 

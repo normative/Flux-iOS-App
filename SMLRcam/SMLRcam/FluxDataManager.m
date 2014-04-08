@@ -768,10 +768,12 @@ float const altitudeHighRange = 60.0;
 {
     // Call callback of requestor
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
-    [request whenErrorOccurred:e withDescription:string withDataRequest:request];
-    
-    // Clean up request
-    [self completeRequestWithDataRequest:request];
+    if (request) {
+        [request whenErrorOccurred:e withDescription:string withDataRequest:request];
+        
+        // Clean up request
+        [self completeRequestWithDataRequest:request];
+    }
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailImageDownloadWithError:(NSError *)e andNaturalString:(NSString *)string andRequestID:(NSUUID *)requestID andImageID:(FluxImageID)imageID
