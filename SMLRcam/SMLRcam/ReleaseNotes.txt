@@ -4,12 +4,13 @@ Release Notes:
 
 V0.24 B01
 
-Released: 2014-04-07 16:00:00
+Released: 2014-04-08 10:30:00
 
 Release Notes:
 - making use of server-side image-to-image feature matching to "lock" images that are matched to each other once one of the group
   is matched to the background
-- preliminary implementation of Flickr import functionality for historical upload
+- preliminary implementation of Flickr import functionality for historical upload (hidden on debug menu, option 3)
+- change image upload to support background uploading and local storage until loaded
 
 ******************************************
 
