@@ -102,6 +102,13 @@ const NSString *FluxDevicePlatformStrings[] = {
     return sharedFluxDeviceInfoSingleton;
 }
 
++ (NSString *)currentAppVersionString
+{
+    NSString * version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString * build = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *)kCFBundleVersionKey];
+    return [NSString stringWithFormat:@"%@(%@)",version, build];
+}
+
 - (id)init
 {
     if (self = [super init])
