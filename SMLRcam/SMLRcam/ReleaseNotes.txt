@@ -8,6 +8,7 @@ Released: 2014-04-07 16:00:00
 Release Notes:
 - making use of server-side image-to-image feature matching to "lock" images that are matched to each other once one of the group
   is matched to the background
+- preliminary implementation of Flickr import functionality for historical upload
 
 ******************************************
 
