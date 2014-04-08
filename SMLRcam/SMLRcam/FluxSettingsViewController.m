@@ -27,6 +27,14 @@
 
 @implementation FluxSettingsViewController
 
+typedef enum
+FluxSettingsSection: NSUInteger {
+    socialAccounts_section,
+    walkthroughReset_section,
+    logout_section,
+    sections_count,
+} FluxSettingsSection;
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -121,52 +129,52 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return sections_count-1;
+    return sections_count;
 }
 
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    switch (section) {
-        case socialAccounts_section:
-            return @"Social Accounts";
-            break;
-        case walkthroughReset_section:
-            return @"Other";
-            break;
-            //should never happen
-        default:
-            return @"";
-            break;
-    }
-}
-
+//- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+//    switch (section) {
+//        case socialAccounts_section:
+//            return @"Social Accounts";
+//            break;
+//        case walkthroughReset_section:
+//            return @"Other";
+//            break;
+//            //should never happen
+//        default:
+//            return @"";
+//            break;
+//    }
+//}
+//
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
     return 30.0;
 }
-
-- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
-    // Create header view and add label as a subview
-    float height = [self tableView:tableView heightForHeaderInSection:section];
-    UIView*view;
-    if (height>0) {
-        view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, height)];
-        [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
-        
-        // Create label with section title
-        UILabel *label = [[UILabel alloc] init];
-        label.frame = CGRectMake(10, 10, 150, height);
-        label.textColor = [UIColor whiteColor];
-        [label setFont:[UIFont fontWithName:@"Akkurat" size:15]];
-        label.text = [self tableView:tableView titleForHeaderInSection:section];
-        label.backgroundColor = [UIColor clearColor];
-        [label setCenter:CGPointMake(label.center.x, view.center.y)];
-        [view addSubview:label];
-    }
-    else
-    {
-        view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
-    }
-    return view;
-}
+//
+//- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+//    // Create header view and add label as a subview
+//    float height = [self tableView:tableView heightForHeaderInSection:section];
+//    UIView*view;
+//    if (height>0) {
+//        view = [[UIView alloc] initWithFrame:CGRectMake(0,0, tableView.frame.size.width, height)];
+//        [view setBackgroundColor:[UIColor colorWithRed:110.0/255.0 green:116.0/255.0 blue:121.0/255.5 alpha:0.9]];
+//        
+//        // Create label with section title
+//        UILabel *label = [[UILabel alloc] init];
+//        label.frame = CGRectMake(10, 10, 150, height);
+//        label.textColor = [UIColor whiteColor];
+//        [label setFont:[UIFont fontWithName:@"Akkurat" size:15]];
+//        label.text = [self tableView:tableView titleForHeaderInSection:section];
+//        label.backgroundColor = [UIColor clearColor];
+//        [label setCenter:CGPointMake(label.center.x, view.center.y)];
+//        [view addSubview:label];
+//    }
+//    else
+//    {
+//        view = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
+//    }
+//    return view;
+//}
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -180,10 +188,10 @@
             return 2;
             break;
         case walkthroughReset_section:
-            return 2;
+            return 1;
             break;
         case logout_section:
-            return 1;
+            return 2;
             break;
             //should never happen
         default:
@@ -276,7 +284,7 @@
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
             }
             [cell setBackgroundColor:[UIColor clearColor]];
-            [cell.textLabel setText: (indexPath.row == 0 ? @"Show Opening Tutorial" : @"Logout")];
+            [cell.textLabel setText:@"Show Opening Tutorial"];
             [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
             [cell.textLabel setTextColor:[UIColor whiteColor]];
             
@@ -288,23 +296,22 @@
             break;
         case logout_section:
         {
-//            static NSString *simpleTableIdentifier = @"simpleCell";
-//            
-//            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
-//            
-//            if (cell == nil) {
-//                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
-//            }
-//            [cell setBackgroundColor:[UIColor clearColor]];
-//            [cell.textLabel setText: @"Logout"];
-//            [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
-//            [cell.textLabel setTextColor:[UIColor whiteColor]];
-//            
-//            UIView *bgColorView = [[UIView alloc] init];
-//            bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
-//            [cell setSelectedBackgroundView:bgColorView];
-//            return cell;
-            return nil;
+            static NSString *simpleTableIdentifier = @"simpleCell";
+            
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:simpleTableIdentifier];
+            
+            if (cell == nil) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
+            }
+            [cell setBackgroundColor:[UIColor clearColor]];
+            [cell.textLabel setText: (indexPath.row == 0 ? @"About" : @"Logout")];
+            [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
+            [cell.textLabel setTextColor:[UIColor whiteColor]];
+            
+            UIView *bgColorView = [[UIView alloc] init];
+            bgColorView.backgroundColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
+            [cell setSelectedBackgroundView:bgColorView];
+            return cell;
         }
             break;
         default:
@@ -335,17 +342,18 @@
             break;
         case walkthroughReset_section:
         {
-            if (indexPath.row == 0) {
-                [self resetWalkthrough];
-            }
-            else{
-                [self logoutButtonAction:nil];
-            }
+            [self resetWalkthrough];
         }
             break;
         case logout_section:
         {
-           
+            if (indexPath.row == 0){
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tapped Something" message:@"You tapped about" delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
+                [alert show];
+            }
+            else{
+                [self logoutButtonAction:nil];
+            }
         }
             break;
             
