@@ -203,11 +203,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
                                                                         UITableViewCell *updateCellRequired = [tableView cellForRowAtIndexPath:indexPath];
                                                                         if (updateCellRequired)
                                                                         {
-                                                                            cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-                                                                            cell.textLabel.numberOfLines = 0;
-                                                                            cell.textLabel.font = [UIFont systemFontOfSize:10.0];
-                                                                            cell.textLabel.text = photoElement.title;
-                                                                            cell.imageView.image = photoElement.thumbImage;
+                                                                            [self populateFlickrImageCell:cell withPhotoElement:photoElement];
                                                                             
                                                                             // Force the cell to be re-drawn
                                                                             [cell setNeedsLayout];
@@ -218,14 +214,24 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             [dataTask resume];
         }
         
-        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        cell.textLabel.numberOfLines = 0;
-        cell.textLabel.font = [UIFont systemFontOfSize:10.0];
-        cell.textLabel.text = photoElement.title;
-        cell.imageView.image = photoElement.thumbImage;
+        [self populateFlickrImageCell:cell withPhotoElement:photoElement];
     }
     
     return cell;
+}
+
+- (void)populateFlickrImageCell:(UITableViewCell *)cell withPhotoElement:(FluxFlickrPhotoDataElement *)photoElement
+{
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    cell.textLabel.numberOfLines = 0;
+    cell.textLabel.font = [UIFont systemFontOfSize:10.0];
+    cell.textLabel.text = photoElement.title;
+    cell.imageView.image = photoElement.thumbImage;
+
+    if (photoElement.title.length > 50)
+    {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
 }
 
 # pragma mark - Flickr management
