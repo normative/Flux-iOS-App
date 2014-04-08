@@ -10,6 +10,7 @@
 
 #import "FluxAnnotationTableViewCell.h"
 #import "FluxDebugViewController.h"
+#import "FluxFlickrImageSelectViewController.h"
 #import "FluxImageRenderElement.h"
 #import "FluxImageTools.h"
 #import "FluxLeftDrawerViewController.h"
@@ -431,7 +432,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     else
     {
-        if (historicalPhotoPickerEnabled)
+        if (historicalPhotoPickerMode == historicalPhotoModeTypePhotoRoll)
         {
             UIImagePickerController *picker = [[UIImagePickerController alloc] init];
             picker.delegate = self;
@@ -440,6 +441,10 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
             
             [self presentViewController:picker animated:YES completion:NULL];
         }
+        else if (historicalPhotoPickerMode == historicalPhotoModeTypeFlickr)
+        {
+            [self performSegueWithIdentifier:@"pushFlickrImageSelectView" sender:self];
+        }
         else
         {
             [self configureNewCameraCapture];
@@ -447,15 +452,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
 }
 
+- (void)configureNewCameraCaptureWithImage:(UIImage *)image andAnnotation:(NSString *)annotation
+{
+    [openGLController activateNewImageCaptureWithImage:image andAnnotation:annotation];
+    [self activateImageCaptureForMode:camera_mode];
+}
+
 - (void)configureNewCameraCaptureWithImage:(UIImage *)image
 {
-    [openGLController activateNewImageCaptureWithImage:image];
-    [self activateImageCaptureForMode:camera_mode];
+    [self configureNewCameraCaptureWithImage:image andAnnotation:nil];
 }
 
 - (void)configureNewCameraCapture
 {
-    [self configureNewCameraCaptureWithImage:nil];
+    [self configureNewCameraCaptureWithImage:nil andAnnotation:nil];
 }
 
 - (IBAction)imageCaptureButtonAction:(id)sender {
@@ -515,7 +525,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)activateImageCaptureForMode:(FluxImageCaptureMode)captureMode{
     [imageCaptureButton setHidden:NO];
     [imageCaptureButton setCaptureMode:captureMode];
-    [imageCaptureButton setSingleImageCaptureMode:historicalPhotoPickerEnabled];
+    [imageCaptureButton setSingleImageCaptureMode:(historicalPhotoPickerMode != historicalPhotoModeTypeDefault)];
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [imageCaptureButton setAlpha:1.0];
@@ -770,9 +780,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)setupHistoricalPhotoPicker
 {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    historicalPhotoPickerEnabled = [[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] boolValue];
-    
-    //    [pedometerLabel setHidden:(!enablePedometerDisplay)];
+    historicalPhotoPickerMode = (historicalPhotoModeTypes)[[defaults objectForKey:FluxDebugHistoricalPhotoPickerKey] integerValue];
 }
 
 #pragma mark Image Capture Helper Methods
@@ -957,7 +965,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         mapViewController.fluxDisplayManager = self.fluxDisplayManager;
         [mapViewController setCurrentDataFilter:self.currentDataFilter];
     }
-    else if ([[segue identifier] isEqualToString:@"pushFiltersView"]){
+    else if ([[segue identifier] isEqualToString:@"pushFiltersView"])
+    {
         //set the delegate of the navControllers top view (our filters View)
         FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)[(UINavigationController*)segue.destinationViewController topViewController];
         [filtersVC setDelegate:self];
@@ -968,8 +977,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         //[self animationPushBackScaleDown];
     }
-    else if ([[segue identifier] isEqualToString:@"pushSettingsView"]){
-        
+    else if ([[segue identifier] isEqualToString:@"pushSettingsView"])
+    {
         UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
         [bgView setImage:snapshotBGImage];
         [bgView setBackgroundColor:[UIColor darkGrayColor]];
@@ -979,6 +988,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [settingsVC setBadgeCount:friendRequestsBadge.badgeText.intValue];
         [settingsVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
         
+    }
+    else if ([[segue identifier] isEqualToString:@"pushFlickrImageSelectView"])
+    {
+        FluxFlickrImageSelectViewController *flickrVC = (FluxFlickrImageSelectViewController *)[(UINavigationController*)segue.destinationViewController topViewController];
+        flickrVC.delegate = self;
     }
 }
 
@@ -1077,7 +1091,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 {
     UIImage *chosenImage = info[UIImagePickerControllerEditedImage];
     
-    [picker dismissViewControllerAnimated:YES completion:NULL];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
     [self configureNewCameraCaptureWithImage:chosenImage];
 }
@@ -1085,7 +1099,24 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 //Tells the delegate that the user cancelled the pick operation.
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [picker dismissViewControllerAnimated:YES completion:NULL];
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - FluxFlickrImageSelectProtocol delegate methods
+
+- (void)FluxFlickrImageSelectViewController:(FluxFlickrImageSelectViewController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage *chosenImage = info[FluxFlickrImageSelectCroppedImageKey];
+    NSString *annotation = info[FluxFlickrImageSelectDescriptionKey];
+    
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    [self configureNewCameraCaptureWithImage:chosenImage andAnnotation:annotation];
+}
+
+- (void)FluxFlickrImageSelectViewControllerDidCancel:(FluxFlickrImageSelectViewController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Debug Menu

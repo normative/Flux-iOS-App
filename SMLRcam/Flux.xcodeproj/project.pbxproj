@@ -199,6 +199,11 @@
 		F2B2C1F7183E41CE00D32084 /* FluxMatcherWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1F6183E41CE00D32084 /* FluxMatcherWrapper.mm */; };
 		F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1FB183E819B00D32084 /* PendingOperations.m */; };
 		F2B2C200183E819B00D32084 /* FluxFeatureMatchingTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */; };
+		F2CC5A5B18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A5A18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m */; };
+		F2CC5A5E18E0A036005AE05D /* OFAPIKey.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A5D18E0A036005AE05D /* OFAPIKey.m */; };
+		F2CC5A6218EF16EA005AE05D /* FluxFlickrPhotoDataElement.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A6118EF16EA005AE05D /* FluxFlickrPhotoDataElement.m */; };
+		F2CC5A6518EF1705005AE05D /* FluxFlickrPhotosetDataElement.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A6418EF1704005AE05D /* FluxFlickrPhotosetDataElement.m */; };
+		F2CC5A6818F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F2CC5A6718F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m */; };
 		F2ED4245183EF436007A825A /* FluxCameraFrameGrabTask.h in Resources */ = {isa = PBXBuildFile; fileRef = F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */; };
 		F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */; };
 		F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */; };
@@ -559,6 +564,16 @@
 		F2B2C1FB183E819B00D32084 /* PendingOperations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PendingOperations.m; sourceTree = "<group>"; };
 		F2B2C1FC183E819B00D32084 /* FluxFeatureMatchingTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingTask.h; sourceTree = "<group>"; };
 		F2B2C1FD183E819B00D32084 /* FluxFeatureMatchingTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingTask.m; sourceTree = "<group>"; };
+		F2CC5A5918E08CDC005AE05D /* FluxFlickrImageSelectViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFlickrImageSelectViewController.h; sourceTree = "<group>"; };
+		F2CC5A5A18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFlickrImageSelectViewController.m; sourceTree = "<group>"; };
+		F2CC5A5C18E0A036005AE05D /* OFAPIKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OFAPIKey.h; sourceTree = "<group>"; };
+		F2CC5A5D18E0A036005AE05D /* OFAPIKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OFAPIKey.m; sourceTree = "<group>"; };
+		F2CC5A6018EF16EA005AE05D /* FluxFlickrPhotoDataElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFlickrPhotoDataElement.h; sourceTree = "<group>"; };
+		F2CC5A6118EF16EA005AE05D /* FluxFlickrPhotoDataElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFlickrPhotoDataElement.m; sourceTree = "<group>"; };
+		F2CC5A6318EF1704005AE05D /* FluxFlickrPhotosetDataElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFlickrPhotosetDataElement.h; sourceTree = "<group>"; };
+		F2CC5A6418EF1704005AE05D /* FluxFlickrPhotosetDataElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFlickrPhotosetDataElement.m; sourceTree = "<group>"; };
+		F2CC5A6618F2E367005AE05D /* FluxFlickrEditDescriptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFlickrEditDescriptionViewController.h; sourceTree = "<group>"; };
+		F2CC5A6718F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFlickrEditDescriptionViewController.m; sourceTree = "<group>"; };
 		F2ED4244183EF436007A825A /* FluxCameraFrameGrabTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraFrameGrabTask.h; sourceTree = "<group>"; };
 		F2ED4246183EF455007A825A /* FluxCameraFrameGrabTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraFrameGrabTask.m; sourceTree = "<group>"; };
 		F2ED4248183EFE1A007A825A /* FluxFeatureMatchingRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFeatureMatchingRecord.h; sourceTree = "<group>"; };
@@ -1033,6 +1048,7 @@
 				AA082E9517EA2B8E000B53B0 /* AVCamera */,
 				AA2F9DBB189AAD300030F749 /* Debug VC */,
 				F26EF317183D109F00536C54 /* Feature Matching */,
+				F2CC5A5F18EF1674005AE05D /* Flickr */,
 				AA349A1A17C3BB1A00C72E24 /* OpenGL ImageViewer */,
 				AA4CE16A17B921A3008D04BE /* TopView */,
 				17604B811785CA59005CF054 /* FluxScanViewController.h */,
@@ -1481,6 +1497,23 @@
 			name = OperationQueue;
 			sourceTree = "<group>";
 		};
+		F2CC5A5F18EF1674005AE05D /* Flickr */ = {
+			isa = PBXGroup;
+			children = (
+				F2CC5A6618F2E367005AE05D /* FluxFlickrEditDescriptionViewController.h */,
+				F2CC5A6718F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m */,
+				F2CC5A5918E08CDC005AE05D /* FluxFlickrImageSelectViewController.h */,
+				F2CC5A5A18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m */,
+				F2CC5A6018EF16EA005AE05D /* FluxFlickrPhotoDataElement.h */,
+				F2CC5A6118EF16EA005AE05D /* FluxFlickrPhotoDataElement.m */,
+				F2CC5A6318EF1704005AE05D /* FluxFlickrPhotosetDataElement.h */,
+				F2CC5A6418EF1704005AE05D /* FluxFlickrPhotosetDataElement.m */,
+				F2CC5A5C18E0A036005AE05D /* OFAPIKey.h */,
+				F2CC5A5D18E0A036005AE05D /* OFAPIKey.m */,
+			);
+			name = Flickr;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1712,6 +1745,7 @@
 				AA69DA96182D4DF800B0BEED /* FluxTextField.m in Sources */,
 				AA984F1118088923007F33B1 /* MIMapIndex.m in Sources */,
 				AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */,
+				F2CC5A5B18E08CDC005AE05D /* FluxFlickrImageSelectViewController.m in Sources */,
 				AA4CE18217B9581E008D04BE /* FluxAnnotationTableViewCell.m in Sources */,
 				AA984F1618088923007F33B1 /* MIZoomOutTransition.m in Sources */,
 				AA06304C18DA3351005690CD /* FluxFilterCountTableViewCell.m in Sources */,
@@ -1722,6 +1756,7 @@
 				AAAD9A46187EF89F003BC1FF /* FluxSocialManagementCell.m in Sources */,
 				89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */,
 				AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */,
+				F2CC5A6518EF1705005AE05D /* FluxFlickrPhotosetDataElement.m in Sources */,
 				F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */,
 				AAB066F01886F6E6002914B2 /* UIActionSheet+Blocks.m in Sources */,
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
@@ -1736,6 +1771,7 @@
 				AA9D0E97184D39510004823E /* OAuthCore.m in Sources */,
 				AAAAD6E918A0588D00F5F3DB /* FluxImageCaptureBoxItem.m in Sources */,
 				17604B831785CA59005CF054 /* FluxScanViewController.m in Sources */,
+				F2CC5A6818F2E367005AE05D /* FluxFlickrEditDescriptionViewController.m in Sources */,
 				F245162217E206DC0027BD1F /* FluxDataManager.m in Sources */,
 				AA3BAF2C18468083009D4FAC /* FluxProfileCell.m in Sources */,
 				AA9F86101868AFF600AB98A7 /* IDMPhoto.m in Sources */,
@@ -1758,6 +1794,7 @@
 				AAAC6C0C17C553AF00B7EAD1 /* FluxTimeFilterControl.m in Sources */,
 				AA6152881827F80B00B8F2C8 /* FluxRegisterViewController.m in Sources */,
 				AADFF1EF18B54109003BEE8C /* FluxSocialImportCell.m in Sources */,
+				F2CC5A5E18E0A036005AE05D /* OFAPIKey.m in Sources */,
 				F26EF31A183D10EF00536C54 /* FluxFeatureMatchingQueue.m in Sources */,
 				F2B2C1E7183D51C100D32084 /* UIImage+OpenCV.mm in Sources */,
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,
@@ -1769,6 +1806,7 @@
 				AAAAD71318A912CE00F5F3DB /* FluxPublicProfileCell.m in Sources */,
 				AA984F1218088923007F33B1 /* MIMapView.m in Sources */,
 				AA9D0EA2185646DB0004823E /* FluxCameraObject.m in Sources */,
+				F2CC5A6218EF16EA005AE05D /* FluxFlickrPhotoDataElement.m in Sources */,
 				F2A04431187B48A00044DDC4 /* FluxCacheImageObject.m in Sources */,
 				AAB066F5188994BC002914B2 /* FluxSocialListViewController.m in Sources */,
 			);

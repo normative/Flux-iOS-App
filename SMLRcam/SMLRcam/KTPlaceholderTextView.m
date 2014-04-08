@@ -50,7 +50,11 @@
     [charCount setHidden:YES];
     
     maxCount = 141;
+    warnCount = 135;
+    
     [self addSubview:charCount];
+    
+    self.countCharactersToZero = YES;
     
     [self setDelegate:self];
 }
@@ -70,6 +74,11 @@
 
 - (void)setMaxCharCount:(int)count{
     maxCount = count;
+}
+
+- (void)setWarnCharCount:(int)count
+{
+    warnCount = count;
 }
 
 #pragma mark - setters
@@ -113,8 +122,15 @@
             if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidReturnWithinMax:)]) {
                 [theDelegate PlaceholderTextViewDidReturnWithinMax:self];
             }
-            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
-            if (self.text.length > 135) {
+            if (self.countCharactersToZero)
+            {
+                [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
+            }
+            else
+            {
+                [charCount setText:[NSString stringWithFormat:@"%i",(int)self.text.length]];
+            }
+            if (self.text.length > warnCount) {
                 [charCount setTextColor:[UIColor redColor]];
             }
             else{
@@ -144,8 +160,15 @@
             if ([theDelegate respondsToSelector:@selector(PlaceholderTextViewDidReturnWithinMax:)]) {
                 [theDelegate PlaceholderTextViewDidReturnWithinMax:self];
             }
-            [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
-            if (self.text.length > 135) {
+            if (self.countCharactersToZero)
+            {
+                [charCount setText:[NSString stringWithFormat:@"%i",maxCount-(int)self.text.length]];
+            }
+            else
+            {
+                [charCount setText:[NSString stringWithFormat:@"%i",(int)self.text.length]];
+            }
+            if (self.text.length > warnCount) {
                 [charCount setTextColor:[UIColor redColor]];
             }
             else{

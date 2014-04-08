@@ -119,7 +119,7 @@
 //AVCam Methods
 - (void)setupAVCapture;
 //image capture methods
-- (void)activateNewImageCaptureWithImage:(UIImage *)image;
+- (void)activateNewImageCaptureWithImage:(UIImage *)image andAnnotation:(NSString *)annotation;
 - (void)activateSnapshotCapture;
 - (void)setSnapShotFlag;
 - (void)setBackgroundSnapFlag;

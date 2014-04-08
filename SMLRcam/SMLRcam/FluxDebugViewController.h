@@ -25,9 +25,9 @@ extern NSString* const FluxDebugDetailLoggerEnabledKey;
 @interface FluxDebugViewController : UIViewController <MFMailComposeViewControllerDelegate>
 {
     IBOutlet UISlider *slider1;
-    IBOutlet UISlider *slider2;
     IBOutlet UISegmentedControl *segmentedControl1;
     IBOutlet UISegmentedControl *segmentedControl2;
+    IBOutlet UISegmentedControl *segmentedControl3;
     
     IBOutlet UISwitch *switch1;
     IBOutlet UISwitch *switch2;
@@ -37,9 +37,9 @@ extern NSString* const FluxDebugDetailLoggerEnabledKey;
 }
 
 - (IBAction)slider1DidSlide:(id)sender;
-- (IBAction)slider2DidSlide:(id)sender;
 - (IBAction)segmentedControl1DidChange:(id)sender;
 - (IBAction)segmentedControl2DidChange:(id)sender;
+- (IBAction)segmentedControl3DidChange:(id)sender;
 
 - (IBAction)switch1DidChange:(id)sender;
 - (IBAction)switch2DidChange:(id)sender;

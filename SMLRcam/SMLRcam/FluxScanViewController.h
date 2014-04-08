@@ -30,15 +30,23 @@
 #import "GAITrackedViewController.h"
 
 #import "FluxDebugViewController.h"
+#import "FluxFlickrImageSelectViewController.h"
 #import "CustomBadge.h"
 
 
 extern NSString* const FluxScanViewDidAcquireNewPicture;
 extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
 //extern NSString* const FluxDidTapImage;
+
+typedef enum {
+    historicalPhotoModeTypeDefault = 1,
+    historicalPhotoModeTypePhotoRoll,
+    historicalPhotoModeTypeFlickr
+} historicalPhotoModeTypes;
+
 @class FluxRotatingCompassButton;
 
-@interface FluxScanViewController : GAITrackedViewController<FluxTutorialDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterControlDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>{
+@interface FluxScanViewController : GAITrackedViewController<FluxTutorialDelegate, AVCaptureVideoDataOutputSampleBufferDelegate, FiltersTableViewDelegate, UITableViewDataSource, UITableViewDelegate, TimeFilterControlDelegate, IDMPhotoBrowserDelegate, FluxSocialManagerDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, FluxFlickrImageSelectProtocol>{
     
     //tutorialView
     FluxTutorialView *tutorialView;
@@ -86,7 +94,7 @@ extern NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey;
     
     IBOutlet UILabel *pedometerLabel;
     
-    bool historicalPhotoPickerEnabled;
+    historicalPhotoModeTypes historicalPhotoPickerMode;
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;

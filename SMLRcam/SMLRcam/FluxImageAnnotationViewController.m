@@ -88,13 +88,18 @@
 }
 
 
-- (void)prepareViewWithBGImage:(UIImage *)image andCapturedImages:(NSMutableArray *)capturedObjects withLocation:(NSString*)location andDate:(NSDate *)capturedDate{
+- (void)prepareViewWithBGImage:(UIImage *)image andCapturedImages:(NSMutableArray *)capturedObjects withLocation:(NSString*)location andDate:(NSDate *)capturedDate andDefaultAnnotationText:(NSString *)defaultAnnotation
+{
     FluxImageTools*tools = [[FluxImageTools alloc]init];
     UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.bounds];
     [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
     [self.view insertSubview:bgView belowSubview:containerView];
     
     [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you capture?"]];
+    if (defaultAnnotation)
+    {
+        [ImageAnnotationTextView setText:defaultAnnotation];
+    }
     [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
     [facebookButton setHidden:YES];
     [twitterButton setHidden:YES];

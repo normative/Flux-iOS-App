@@ -110,22 +110,15 @@
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <slider opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="chN-Ew-RNh">
-                                <rect key="frame" x="18" y="220" width="156" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <action selector="slider2DidSlide:" destination="V4e-hA-nqo" eventType="valueChanged" id="XO1-bu-Y0A"/>
-                                </connections>
-                            </slider>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yAH-dK-88h">
-                                <rect key="frame" x="75" y="190" width="42" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Photo Source" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yAH-dK-88h">
+                                <rect key="frame" x="44" y="346" width="105" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Border Style" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZNF-JL-1uU">
-                                <rect key="frame" x="49" y="273" width="95" height="21"/>
+                                <rect key="frame" x="49" y="190" width="95" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -152,7 +145,7 @@
                                     <action selector="switch2DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="sPs-fv-md6"/>
                                 </connections>
                             </switch>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Historical" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a9g-FI-CbU">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a9g-FI-CbU">
                                 <rect key="frame" x="208" y="273" width="92" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -167,7 +160,7 @@
                                 </connections>
                             </switch>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="G41-CX-NvM">
-                                <rect key="frame" x="20" y="302" width="152" height="29"/>
+                                <rect key="frame" x="20" y="221" width="152" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="1"/>
@@ -179,15 +172,27 @@
                                     <action selector="segmentedControl1DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="FUt-r0-TDf"/>
                                 </connections>
                             </segmentedControl>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Pra-40-LzA">
+                                <rect key="frame" x="20" y="377" width="152" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title="1"/>
+                                    <segment title="2"/>
+                                    <segment title="3"/>
+                                </segments>
+                                <connections>
+                                    <action selector="segmentedControl3DidChange:" destination="V4e-hA-nqo" eventType="valueChanged" id="VuY-vK-gik"/>
+                                </connections>
+                            </segmentedControl>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Teleport" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Dxm-1P-mQT">
-                                <rect key="frame" x="65" y="346" width="62" height="21"/>
+                                <rect key="frame" x="65" y="273" width="62" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="xNS-aq-zUu">
-                                <rect key="frame" x="20" y="375" width="152" height="29"/>
+                                <rect key="frame" x="20" y="304" width="152" height="29"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <segments>
                                     <segment title="1"/>
@@ -250,8 +255,8 @@
                         <outlet property="detailLoggerButtonLabel" destination="ZBC-PB-e3E" id="9wb-R7-NSZ"/>
                         <outlet property="segmentedControl1" destination="G41-CX-NvM" id="FAv-w4-D8E"/>
                         <outlet property="segmentedControl2" destination="xNS-aq-zUu" id="Y4j-ti-C05"/>
+                        <outlet property="segmentedControl3" destination="Pra-40-LzA" id="el3-QI-nBe"/>
                         <outlet property="slider1" destination="V8q-tt-89J" id="J8u-bG-PIA"/>
-                        <outlet property="slider2" destination="chN-Ew-RNh" id="JdO-4G-EXR"/>
                         <outlet property="switch1" destination="Sdd-Mx-Y9G" id="eTa-ld-MWu"/>
                         <outlet property="switch2" destination="hPh-ep-mX4" id="rgF-TV-WaS"/>
                         <outlet property="switch3" destination="sgK-fP-eKO" id="1DG-78-FBq"/>
@@ -1259,6 +1264,7 @@
                         <segue destination="YQi-AC-BdW" kind="modal" identifier="pushMapModalView" modalTransitionStyle="crossDissolve" id="AGI-r8-OnT"/>
                         <segue destination="T8N-fK-BYa" kind="modal" identifier="pushSettingsView" modalTransitionStyle="coverVertical" id="jXG-Xo-8un"/>
                         <segue destination="OPi-Zk-6ZT" kind="modal" identifier="pushFiltersView" modalTransitionStyle="coverVertical" id="cDh-QJ-kAL"/>
+                        <segue destination="lUE-uh-2ot" kind="modal" identifier="pushFlickrImageSelectView" id="4SZ-Lr-PGS"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4" sceneMemberID="firstResponder"/>
@@ -2831,6 +2837,146 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vAP-KB-oHp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4182" y="2061"/>
+        </scene>
+        <!--Flux Flickr Image Select View Controller - Flickr Select-->
+        <scene sceneID="wca-Bf-gIN">
+            <objects>
+                <tableViewController id="y7d-Bt-Rci" customClass="FluxFlickrImageSelectViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="gf4-rp-yoh">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FlickrCell" id="4L3-da-6E0">
+                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4L3-da-6E0" id="Zqo-ML-3Nu">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="y7d-Bt-Rci" id="vH0-HE-9FH"/>
+                            <outlet property="delegate" destination="y7d-Bt-Rci" id="5t6-1Y-euy"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Flickr Select" id="Vto-NM-jNL">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="cBT-d9-xpv">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Rhg-kQ-vOY">
+                                <rect key="frame" x="16" y="7" width="48" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Cancel">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelButtonAction:" destination="y7d-Bt-Rci" eventType="touchUpInside" id="ygu-Xk-Dh5"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="xMe-ST-6CM">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="80H-Mf-y11">
+                                <rect key="frame" x="233" y="5" width="71" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" title="Select">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="selectButtonAction:" destination="y7d-Bt-Rci" eventType="touchUpInside" id="ZZg-Ym-KvE"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <segue destination="m4S-nV-Jvu" kind="modal" identifier="pushFlickrEditDescriptionView" id="hij-tg-yMo"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="37q-aF-uWF" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3419" y="2764"/>
+        </scene>
+        <!--Flux Flickr Edit Description View Controller-->
+        <scene sceneID="6lV-Xe-lbd">
+            <objects>
+                <viewController id="m4S-nV-Jvu" customClass="FluxFlickrEditDescriptionViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="xfP-H6-4tv"/>
+                        <viewControllerLayoutGuide type="bottom" id="gaF-Kc-A1a"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="3pu-qQ-rOK">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="O5G-AH-o3A">
+                                <rect key="frame" x="0.0" y="31" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <items>
+                                    <navigationItem title="Flickr Select" id="G9z-HI-V32">
+                                        <barButtonItem key="leftBarButtonItem" style="plain" id="LrX-br-nBv">
+                                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="GgA-04-v3V">
+                                                <rect key="frame" x="16" y="5" width="71" height="33"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                <state key="normal" title="Cancel">
+                                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="cancelButtonAction:" destination="m4S-nV-Jvu" eventType="touchUpInside" id="pk4-Tn-Tbd"/>
+                                                    <action selector="selectButtonAction:" destination="y7d-Bt-Rci" eventType="touchUpInside" id="0Ib-p8-pfW"/>
+                                                </connections>
+                                            </button>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" style="plain" id="d9b-Fc-qGu">
+                                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="khI-0J-cdd">
+                                                <rect key="frame" x="233" y="5" width="71" height="33"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                <state key="normal" title="Select">
+                                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="selectButtonAction:" destination="m4S-nV-Jvu" eventType="touchUpInside" id="2Mr-5e-FXT"/>
+                                                    <action selector="selectButtonAction:" destination="y7d-Bt-Rci" eventType="touchUpInside" id="7KQ-h8-nV0"/>
+                                                </connections>
+                                            </button>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xjb-jH-c6F" customClass="KTPlaceholderTextView">
+                                <rect key="frame" x="10" y="84" width="300" height="231"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" keyboardType="twitter"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="editAnnotationTextView" destination="xjb-jH-c6F" id="3mS-1O-GSh"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vSH-bT-hoH" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3938" y="2764"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="hph-bm-QFH">
+            <objects>
+                <navigationController definesPresentationContext="YES" id="lUE-uh-2ot" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="JzX-1J-ocj">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="y7d-Bt-Rci" kind="relationship" relationship="rootViewController" id="4UP-7Y-in3"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ROv-yl-vz1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2918" y="2764"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="hwp-JT-Ovc">
