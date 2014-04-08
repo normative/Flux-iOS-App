@@ -502,7 +502,14 @@
             [ProgressHUD showError:str];
             
         }];
-        [self.fluxDataManager requestUsersListQuery:searchQuery withDataRequest:request];
+        NSString*searchQueryAtSignOmitted;
+        if ([[searchQuery substringWithRange:NSMakeRange(0, 1)] isEqualToString:@"@"]) {
+            searchQueryAtSignOmitted = [searchQuery substringFromIndex:1];
+            if (searchQueryAtSignOmitted.length < 1) {
+                return;
+            }
+        }
+        [self.fluxDataManager requestUsersListQuery:(searchQueryAtSignOmitted ? searchQueryAtSignOmitted : searchQuery) withDataRequest:request];
     }
 }
 
