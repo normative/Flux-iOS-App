@@ -281,13 +281,14 @@
              }];
     }
     cell.imageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
+    [cell.lockImageView setImage:[UIImage imageNamed:@"lockClosed"]];
     
     BOOL locked = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]privacy];
     if (locked) {
-        [cell.lockImageView setImage:[UIImage imageNamed:@"lockClosed"]];
+        [cell.lockImageView setAlpha:1.0];
     }
     else{
-        [cell.lockImageView setImage:[UIImage imageNamed:@"lockOpen"]];
+        [cell.lockImageView setAlpha:0.0];
     }
     
     [cell.imageView setAlpha:1.0];
@@ -315,6 +316,18 @@
             [editPrivacyButton setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: enabledColor, NSForegroundColorAttributeName,NSFontAttributeName, [UIFont fontWithName:@"Akkurat" size:17.0], nil] forState:UIControlStateNormal];
         }
         [self calculateNewPrivacy];
+        
+        if (removedImages.count > 0) {
+            if (removedImages.count == 1) {
+                [self setTitle:@"1 Photo Selected"];
+            }
+            else{
+                [self setTitle:[NSString stringWithFormat:@"%lu Photos Selected",(unsigned long)removedImages.count]];
+            }
+        }
+        else{
+            [self setTitle:@"Select Items"];
+        }
         
     }
     //else present a photo viewer
@@ -372,7 +385,7 @@
     [UIActionSheet showInView:self.view
                     withTitle:(removedImages.count > 1 ? @"Are you sure you want to delete these images from Flux? This action cannot be undone." : @"Are you sure you'd like to delete this image? This action cannot be undone.")
             cancelButtonTitle:@"Cancel"
-       destructiveButtonTitle:@"Delete"
+       destructiveButtonTitle:(removedImages.count > 1 ? [NSString stringWithFormat:@"Delete %lu Images",(unsigned long)removedImages.count] : @"Delete Selected Image")
             otherButtonTitles:nil
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
@@ -411,10 +424,14 @@
         [editBarButton setTitle:@"Cancel"];
         [self.navigationController setToolbarHidden:NO animated:YES];
         [removedImages removeAllObjects];
+        [garbageButton setEnabled:NO];
+        [editPrivacyButton setEnabled:NO];
+        [self setTitle:@"Select Items"];
     }
     else{
         [editBarButton setTitle:@"Edit"];
         [self.navigationController setToolbarHidden:YES animated:YES];
+        [self setTitle:@"Photos"];
     }
     
     [theCollectionView reloadData];

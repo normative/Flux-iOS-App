@@ -48,6 +48,9 @@ extern NSString* const FluxServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSData *)features forImageID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMatches:(NSArray *)features forImageID:(int)imageID
+           andRequestID:(FluxRequestID *)requestID;
+
 
 //maps
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnMapList:(NSArray*)imageList
@@ -157,6 +160,12 @@ extern NSString* const FluxServerURL;
                       andMaxReturned:(int)maxCount
                            andFilter:(FluxDataFilter*)dataFilter
                         andRequestID:(FluxRequestID *)requestID;
+
+/**
+ returns an NSDictionary list of image match records based on provided imageID
+ **/
+- (void)getImageMatchesForID:(int)imageID andRequestID:(FluxRequestID *)requestID;
+
 
 // execute the request
 - (void)doRequest:(NSURLRequest *)request withResponseDesc:(RKResponseDescriptor *)responseDescriptor andRequestID:(FluxRequestID *)requestID;

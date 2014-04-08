@@ -46,7 +46,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     createalias_request = 27,
     contactFromService_request = 28,
     imagePrivacyUpdate_request = 29,
-    forceUnfollow_request = 30
+    forceUnfollow_request = 30,
+    image_matches_request = 31
     
 } FluxDataRequestType;
 
@@ -62,6 +63,7 @@ typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
 typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSData *, FluxDataRequest *);
+typedef void (^ImageMatchesReadyBlock)(FluxLocalID *, NSArray *, FluxDataRequest *);
 typedef void (^UpdateImagesPrivacyCompleteBlock)(FluxDataRequest *);
 
 //USERS
@@ -135,6 +137,9 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 // Callback for single image feature set retrieved
 @property (strong) ImageFeaturesReadyBlock imageFeaturesReady;
+
+// Callback for single image feature set retrieved
+@property (strong) ImageMatchesReadyBlock imageMatchesReady;
 
 // Callback for single metadata object retrieved (either from cache or download)
 @property (strong) MetadataReadyBlock metadataReady;
@@ -235,6 +240,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUpdateImagesPrivacyCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenImageMatchesReady:(FluxLocalID *)localID withMatches:(NSArray *)matches withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 //USERS
 //registration / logout

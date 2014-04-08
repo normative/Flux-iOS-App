@@ -1,6 +1,44 @@
 Release Notes:
 ******************************************
-- adds hidden support for import of historical content from Flickr (option 3)
+
+V0.24 B01
+
+Released: 2014-04-08 10:30:00
+
+Release Notes:
+- making use of server-side image-to-image feature matching to "lock" images that are matched to each other once one of the group
+  is matched to the background
+- preliminary implementation of Flickr import functionality for historical upload (hidden on debug menu, option 3)
+- change image upload to support background uploading and local storage until loaded
+
+******************************************
+
+V0.23 B06
+
+App Store release
+
+Released: 2014-04-04 17:00:00
+
+Release Notes:
+- Disable debug screen access
+- increase network timeouts to 60s
+
+******************************************
+
+V0.23 B05
+
+Closed Beta 10 release
+
+Released: 2014-04-01 11:45:00 (no seriously!!)
+
+Release Notes:
+- Adds the ability to change an image's privacy from the profile menu
+- Disable new heading mode by default with each session until issues are resolved.
+- fixes some bugs with social contact import
+- slight re-word of an error
+- adds (and hides) password reset UI, rewords or hides most error pop-ups app-wide
+
+******************************************
 
 V0.23 B04
 
