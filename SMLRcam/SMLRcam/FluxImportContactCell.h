@@ -15,6 +15,7 @@
 @protocol FluxImportContactCellDelegate <NSObject>
 @optional
 - (void)ImportContactCell:(FluxImportContactCell *)importContactCell shouldInvite:(FluxContactObject*)contact;
+- (void)ImportContactCell:(FluxImportContactCell *)importContactCell shouldSendFollowRequestTo:(FluxContactObject*)contact;
 - (void)ImportContactCellFriendFollowButtonWasTapped:(FluxImportContactCell *)importContactCell;
 @end
 

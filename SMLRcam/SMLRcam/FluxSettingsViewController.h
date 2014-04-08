@@ -18,6 +18,13 @@
 #import "TWAPIManager.h"
 #import "TWSignedRequest.h"
 
+typedef enum
+FluxSettingsSection: NSUInteger {
+    socialAccounts_section,
+    walkthroughReset_section,
+    logout_section,
+    sections_count,
+} FluxSettingsSection;
 
 @interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate, FluxSocialManagerDelegate, FluxSocialManagementCellDelegate>{
     int initialMask;

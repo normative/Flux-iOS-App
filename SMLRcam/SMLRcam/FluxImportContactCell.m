@@ -8,6 +8,7 @@
 
 #import "FluxImportContactCell.h"
 #import "UICKeyChainStore.h"
+#import "UIActionSheet+Blocks.h"
 
 @implementation FluxImportContactCell
 
@@ -52,7 +53,9 @@
 
 - (void)setContactObject:(FluxContactObject *)contactObject{
     _contactObject = contactObject;
-
+    [self.inviteButton setHidden:NO];
+    
+    
     if (contactObject.userID) {
         [self setSelectionStyle:UITableViewCellSelectionStyleBlue];
         
@@ -73,9 +76,13 @@
             [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_contact"]];
         }
         
+        if (contactObject.amFollowerFlag > 0) {
+            [self.inviteButton setHidden:YES];
+        }
         
         
-        //show friend / follower status. If we do this we lose reference to who that person is on the third party network.
+        
+        //show friend / follower status. If we do this we lose reference to who that person is on the third party network. (just visually as this takes the space)
 //        if (contactObject.friendState == 3) {
 //            [self.socialStatusLabel setText:[NSString stringWithFormat:@"You and @%@ are friends",contactObject.username]];
 //            [self layoutSubviews];
@@ -156,14 +163,32 @@
 
 
 - (IBAction)inviteButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(ImportContactCell:shouldInvite:)]) {
-        [delegate ImportContactCell:self shouldInvite:self.contactObject];
-    }
+    [UIActionSheet showInView:self.superview
+                    withTitle:nil
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:nil
+            otherButtonTitles:@[@"Send Invitation"]
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             if ([delegate respondsToSelector:@selector(ImportContactCellFriendFollowButtonWasTapped:)]) {
+                                 [delegate ImportContactCellFriendFollowButtonWasTapped:self];
+                             }
+                         }
+                     }];
 }
 
 - (IBAction)contactButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(ImportContactCellFriendFollowButtonWasTapped:)]) {
-        [delegate ImportContactCellFriendFollowButtonWasTapped:self];
-    }
+    [UIActionSheet showInView:self.superview
+                    withTitle:nil
+            cancelButtonTitle:@"Cancel"
+       destructiveButtonTitle:nil
+            otherButtonTitles:@[@"Send Follow Request"]
+                     tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
+                         if (buttonIndex != actionSheet.cancelButtonIndex) {
+                             if ([delegate respondsToSelector:@selector(ImportContactCell:shouldSendFollowRequestTo:)]) {
+                                 [delegate ImportContactCell:self shouldSendFollowRequestTo:self.contactObject];
+                             }
+                         }
+                     }];
 }
 @end

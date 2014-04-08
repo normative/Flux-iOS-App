@@ -13,5 +13,6 @@
 @property (nonatomic)int imageID;
 @property (nonatomic, strong)NSString* description;
 @property (nonatomic, strong)UIImage* image;
+@property (nonatomic) Boolean privacy;
 
 @end

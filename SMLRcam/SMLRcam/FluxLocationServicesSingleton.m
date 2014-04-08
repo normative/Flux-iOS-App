@@ -10,6 +10,7 @@
 #import "FluxDebugViewController.h"
 #import "UIAlertView+Blocks.h"
 #import "FluxMotionManagerSingleton.h"
+#import "FluxScanViewController.h"
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
@@ -82,7 +83,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     }
 
     else if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Welcome.", nil) message:@"Flux needs to know your location to place images, and find images around the world. Your location is never shared to anyone outside Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"Got it!", nil) otherButtonTitles: nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Welcome.", nil) message:@"Flux needs to know your location to place and find images around the world. Your location is never shared to anyone outside Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"Got it!", nil) otherButtonTitles: nil];
         [alert showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
             [self beginLocatingAfterPermissions];
         }];
@@ -438,7 +439,28 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
-    return YES;
+    UIWindow *window = [UIApplication sharedApplication].keyWindow;
+    //if the action sheet was delayed, do nothing (**should** never happen)
+    if (window.rootViewController) {
+        if ([window.rootViewController isKindOfClass:[UINavigationController class]]) {
+            //get the views root (should be a navigation controller)
+            UINavigationController*VC1 = (UINavigationController*)window.rootViewController;
+            if ([[VC1 viewControllers]count] > 0) {
+                //if theres more than 1 VC in the stack, check the root and see if it's scanView.
+                UIViewController*VC2 = [[(UINavigationController*)window.rootViewController viewControllers] objectAtIndex:0];
+                UIViewController*VC3 = [VC2 presentedViewController];
+                if ([VC3 isKindOfClass:[FluxScanViewController class]]) {
+                    //if scan is in the navigation stack (which it will be 90% of the time) check if it's visible
+                    if ([VC3 isViewLoaded] && VC3.view.window) {
+                        //if it is visible (loaded and visible), then display it.
+                        return YES;
+                    }
+                }
+            }
+        }
+    }
+    //if any of the checks fail (scan is not visible) dont show it.
+    return NO;
 }
 
 #pragma mark - Filtering

@@ -63,6 +63,7 @@
 		AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2D17E79938007F6764 /* libz.dylib */; };
 		AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA17D18118494178004B0095 /* FluxEditProfileViewController.m */; };
 		AA18852E18DB76BB0070B061 /* CustomBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = AA18852C18DB76BB0070B061 /* CustomBadge.m */; };
+		AA18853018DCE1BD0070B061 /* AKKURATL.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA18852F18DCE1BD0070B061 /* AKKURATL.ttf */; };
 		AA1BCE3F17D0CBA300136EFF /* FluxAVCameraSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */; };
 		AA25515F18355A6400DCA62F /* FluxSocialManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA25515E18355A6400DCA62F /* FluxSocialManager.m */; };
 		AA255166183577D900DCA62F /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA255165183577D900DCA62F /* Social.framework */; };
@@ -164,8 +165,6 @@
 		AAB2138F188DD3C900173B35 /* FluxUserLocationMapPin.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB2138E188DD3C900173B35 /* FluxUserLocationMapPin.m */; };
 		AAB24E4D17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */; };
 		AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */; };
-		AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */; };
-		AAC1BF0B1811AF67001D3C01 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AAC1BF091811AF67001D3C01 /* ProgressHUD.m */; };
 		AAD2DFF117BBBD0500D572A4 /* FluxNetworkServices.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF017BBBD0500D572A4 /* FluxNetworkServices.m */; };
 		AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF417BBFC8200D572A4 /* FluxUserObject.m */; };
 		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
@@ -181,6 +180,9 @@
 		AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAF1BD021843BE3D00909AFF /* FacebookSDK.framework */; };
 		AAFB4DC418159F2500EB8DBA /* FluxTimeFilterScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */; };
 		AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */; };
+		AAFD995C18E9E76600C95F18 /* DTAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD995B18E9E76600C95F18 /* DTAlertView.m */; };
+		AAFD996218E9EEB900C95F18 /* ProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AAFD995F18E9EEB900C95F18 /* ProgressHUD.bundle */; };
+		AAFD996318E9EEB900C95F18 /* ProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = AAFD996118E9EEB900C95F18 /* ProgressHUD.m */; };
 		F206B62718C630E900ABAD99 /* FluxLoggerService.m in Sources */ = {isa = PBXBuildFile; fileRef = F206B62618C630E900ABAD99 /* FluxLoggerService.m */; };
 		F206B62918C63E9B00ABAD99 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F206B62818C63E9B00ABAD99 /* MessageUI.framework */; };
 		F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F240345C17E102F50088CA2D /* FluxDataStore.m */; };
@@ -298,6 +300,7 @@
 		AA17D18118494178004B0095 /* FluxEditProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxEditProfileViewController.m; sourceTree = "<group>"; };
 		AA18852C18DB76BB0070B061 /* CustomBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomBadge.m; sourceTree = "<group>"; };
 		AA18852D18DB76BB0070B061 /* CustomBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomBadge.h; sourceTree = "<group>"; };
+		AA18852F18DCE1BD0070B061 /* AKKURATL.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AKKURATL.ttf; sourceTree = "<group>"; };
 		AA1BCE3D17D0CBA300136EFF /* FluxAVCameraSingleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = FluxAVCameraSingleton.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		AA1BCE3E17D0CBA300136EFF /* FluxAVCameraSingleton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = FluxAVCameraSingleton.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AA25515D18355A6400DCA62F /* FluxSocialManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialManager.h; sourceTree = "<group>"; };
@@ -499,9 +502,6 @@
 		AAB24E4C17AAE4BE00A9BE59 /* FluxDrawerSwitchTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDrawerSwitchTableViewCell.m; sourceTree = "<group>"; };
 		AAC1BF03181169F2001D3C01 /* FluxMapImageObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapImageObject.h; sourceTree = "<group>"; };
 		AAC1BF04181169F2001D3C01 /* FluxMapImageObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMapImageObject.m; sourceTree = "<group>"; };
-		AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ProgressHUD.bundle; sourceTree = "<group>"; };
-		AAC1BF081811AF67001D3C01 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
-		AAC1BF091811AF67001D3C01 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
 		AAD2DFEF17BBBD0500D572A4 /* FluxNetworkServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxNetworkServices.h; sourceTree = "<group>"; };
 		AAD2DFF017BBBD0500D572A4 /* FluxNetworkServices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxNetworkServices.m; sourceTree = "<group>"; };
 		AAD2DFF317BBFC8200D572A4 /* FluxUserObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxUserObject.h; sourceTree = "<group>"; };
@@ -527,6 +527,11 @@
 		AAFB4DC318159F2500EB8DBA /* FluxTimeFilterScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxTimeFilterScrollView.m; sourceTree = "<group>"; };
 		AAFD390C17DE0B4F006CBC14 /* KTSegmentedButtonControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTSegmentedButtonControl.h; sourceTree = "<group>"; };
 		AAFD390D17DE0B4F006CBC14 /* KTSegmentedButtonControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KTSegmentedButtonControl.m; sourceTree = "<group>"; };
+		AAFD995A18E9E76600C95F18 /* DTAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAlertView.h; sourceTree = "<group>"; };
+		AAFD995B18E9E76600C95F18 /* DTAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAlertView.m; sourceTree = "<group>"; };
+		AAFD995F18E9EEB900C95F18 /* ProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ProgressHUD.bundle; sourceTree = "<group>"; };
+		AAFD996018E9EEB900C95F18 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
+		AAFD996118E9EEB900C95F18 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
 		CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		DCDC5AB9480146C1BC963853 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F206B62518C630E900ABAD99 /* FluxLoggerService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLoggerService.h; sourceTree = "<group>"; };
@@ -903,6 +908,7 @@
 		AA47BEC517CBDA5100ED9B39 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				AA18852F18DCE1BD0070B061 /* AKKURATL.ttf */,
 				AA47BECB17CBE84300ED9B39 /* AKKURATB.ttf */,
 				AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */,
 			);
@@ -1026,10 +1032,11 @@
 				AA2CBAC3188F31B8001ECF86 /* UIAlert Blocks */,
 				AAB066F11886F6EA002914B2 /* UIActionSheet Blocks */,
 				AAF1BCF2183A73A900909AFF /* Animated Label */,
+				AAFD995E18E9EEB900C95F18 /* ProgressHUD */,
 				AA9F85E61868AFF600AB98A7 /* Image Browser */,
 				AA984EE718088923007F33B1 /* MapIndex */,
-				AAC1BF061811AF67001D3C01 /* ProgressHUD */,
 				F2434C1E187F42E100D08B6B /* SVPulsingAnnotationView */,
+				AAFD995D18E9E76B00C95F18 /* Custom Alert */,
 			);
 			name = "3rd Party";
 			sourceTree = "<group>";
@@ -1376,16 +1383,6 @@
 			name = "User Location Pin";
 			sourceTree = "<group>";
 		};
-		AAC1BF061811AF67001D3C01 /* ProgressHUD */ = {
-			isa = PBXGroup;
-			children = (
-				AAC1BF071811AF67001D3C01 /* ProgressHUD.bundle */,
-				AAC1BF081811AF67001D3C01 /* ProgressHUD.h */,
-				AAC1BF091811AF67001D3C01 /* ProgressHUD.m */,
-			);
-			path = ProgressHUD;
-			sourceTree = "<group>";
-		};
 		AADFF1EC18B540AF003BEE8C /* Add Users */ = {
 			isa = PBXGroup;
 			children = (
@@ -1410,6 +1407,25 @@
 				AAF1BCF0183A73A300909AFF /* BBCyclingLabel.m */,
 			);
 			name = "Animated Label";
+			sourceTree = "<group>";
+		};
+		AAFD995D18E9E76B00C95F18 /* Custom Alert */ = {
+			isa = PBXGroup;
+			children = (
+				AAFD995A18E9E76600C95F18 /* DTAlertView.h */,
+				AAFD995B18E9E76600C95F18 /* DTAlertView.m */,
+			);
+			name = "Custom Alert";
+			sourceTree = "<group>";
+		};
+		AAFD995E18E9EEB900C95F18 /* ProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				AAFD995F18E9EEB900C95F18 /* ProgressHUD.bundle */,
+				AAFD996018E9EEB900C95F18 /* ProgressHUD.h */,
+				AAFD996118E9EEB900C95F18 /* ProgressHUD.m */,
+			);
+			path = ProgressHUD;
 			sourceTree = "<group>";
 		};
 		F240346117E1037F0088CA2D /* Data Store */ = {
@@ -1579,6 +1595,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFD996218E9EEB900C95F18 /* ProgressHUD.bundle in Resources */,
 				AA06305218DB61E4005690CD /* FluxTutorialView_35.xib in Resources */,
 				AA2F9DCF189AEA690030F749 /* border1.png in Resources */,
 				AA9F860D1868AFF600AB98A7 /* SVProgressHUD.bundle in Resources */,
@@ -1586,11 +1603,11 @@
 				17604B711785CA59005CF054 /* InfoPlist.strings in Resources */,
 				17604B791785CA59005CF054 /* Default.png in Resources */,
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
+				AA18853018DCE1BD0070B061 /* AKKURATL.ttf in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				2227FD5918D75A71005911D7 /* FluxTutorialView.xib in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				AA2F9DD2189AEA690030F749 /* border3.png in Resources */,
-				AAC1BF0A1811AF67001D3C01 /* ProgressHUD.bundle in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
 				AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */,
@@ -1673,6 +1690,7 @@
 				AA2F9DBE189AAD450030F749 /* FluxDebugViewController.m in Sources */,
 				F2B2C1F7183E41CE00D32084 /* FluxMatcherWrapper.mm in Sources */,
 				AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */,
+				AAFD996318E9EEB900C95F18 /* ProgressHUD.m in Sources */,
 				F2B2C1FF183E819B00D32084 /* PendingOperations.m in Sources */,
 				AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */,
 				AA30B6D018BF93D200E60E49 /* FluxImportContactCell.m in Sources */,
@@ -1747,7 +1765,6 @@
 				AAB2138C188DD36600173B35 /* FluxUserLocationOverlay.m in Sources */,
 				AA9F86141868AFF600AB98A7 /* IDMTapDetectingView.m in Sources */,
 				22335E42181ACC610098F205 /* FluxLeftDrawerViewController.m in Sources */,
-				AAC1BF0B1811AF67001D3C01 /* ProgressHUD.m in Sources */,
 				AA9F86121868AFF600AB98A7 /* IDMPhotoBrowser.m in Sources */,
 				AAD2DFF517BBFC8200D572A4 /* FluxUserObject.m in Sources */,
 				AAC1BF05181169F2001D3C01 /* FluxMapImageObject.m in Sources */,
@@ -1769,6 +1786,7 @@
 				F2ED424D183F8A19007A825A /* FluxCameraFrameElement.m in Sources */,
 				AA2CBAB8188F00D4001ECF86 /* FluxSnapshotCaptureViewController.m in Sources */,
 				AAB066F81889978B002914B2 /* FluxFollowerCell.m in Sources */,
+				AAFD995C18E9E76600C95F18 /* DTAlertView.m in Sources */,
 				AA17D18218494178004B0095 /* FluxEditProfileViewController.m in Sources */,
 				F240346017E103140088CA2D /* FluxDataRequest.m in Sources */,
 				AA9D0E95184D39510004823E /* NSData+Base64.m in Sources */,

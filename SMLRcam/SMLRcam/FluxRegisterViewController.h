@@ -54,6 +54,7 @@
     IBOutlet UIButton *twitterButton;
     IBOutlet UIButton *facebookButton;
     IBOutlet UIButton *createLoginButton;
+    IBOutlet UIButton *forgotPasswordButton;
     IBOutlet UIView *topSeparator;
     IBOutlet FluxAnimatingLogo *logoImageView;
     UIMenuController *menuController;
@@ -73,6 +74,7 @@
 - (IBAction)facebookSignInAction:(id)sender;
 - (IBAction)loginSignupToggleAction:(id)sender;
 - (IBAction)backdoorButtonAction:(id)sender;
+- (IBAction)forgetPasswordButtonAction:(id)sender;
 
 
 @end

@@ -663,9 +663,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     uploadsCompleted = 0;
     totalUploads = (int)objectsArr.count;
-    NSMutableArray*requestsArray = [[NSMutableArray alloc]init];
-    __block float totalBytes = 0;
-    __block float progress = 0;
     
     for (int i = 0; i<objectsArr.count; i++) {
         // Add the image and metadata to the local cache
@@ -688,20 +685,24 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                 [progressView setProgress:1.0 animated:YES];
                 [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
             }
+            else{
+                [progressView setProgress:(float)uploadsCompleted/totalUploads animated:YES];
+            }
         }];
         [dataRequest setUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
-            if (requestsArray.count < totalUploads) {
-                if (![requestsArray containsObject:[NSNumber numberWithInt:(int)inProgressDataRequest.totalByteSize]]) {
-                    totalBytes += inProgressDataRequest.totalByteSize;
-                    [requestsArray addObject:[NSNumber numberWithInt:(int)inProgressDataRequest.totalByteSize]];
-                }
-            }
             
-            progress+=inProgressDataRequest.bytesUploaded;
-            [progressView setProgress:(float)progress/totalBytes-0.10 animated:YES];
+            //the progress of the current upload
+            float currentProgress = (float)((float)inProgressDataRequest.bytesUploaded/(float)inProgressDataRequest.totalByteSize);
+            
+            //the progress of the current segment. For example, when uploading 3 images, this value would be currentUpload% as a percentage of 0.33
+            float currentSegmentProgress = currentProgress*(1/(float)totalUploads);
+            
+            //takes the current segment percentage, and adds any completed segments
+            float visibleProgress = currentSegmentProgress+(uploadsCompleted/(float)totalUploads);
+            [progressView setProgress:visibleProgress-0.07 animated:YES];
         }];
         [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Image Upload Failed :("
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Image Upload Failed"
                                                                 message:@"Something happened when uploading one of your images, we're really sorry about that."
                                                                delegate:nil
                                                       cancelButtonTitle:@"OK"
@@ -943,19 +944,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if (![defaults boolForKey:@"showedTutorial"]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
-                                                            object:self userInfo:nil];
-        
-        
-        CGRect screenRect = [[UIScreen mainScreen] bounds];
-        CGFloat screenWidth = screenRect.size.width;
-        CGFloat screenHeight = screenRect.size.height;
-        tutorialView = [[FluxTutorialView alloc] initWithFrame: CGRectMake(0, 0, screenWidth, screenHeight)];
-        tutorialView.delegate = self;
-        
-        [self.view addSubview:tutorialView];
-        
-        [ScanUIContainerView setHidden:YES];
+        [self showTutorial];
     }
 }
 
@@ -1027,6 +1016,22 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxPedometerDidTakeStep object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangePedometerCountDisplay object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDebugDidChangeHistoricalPhotoPicker object:nil];
+}
+
+- (void)showTutorial{
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPush
+                                                        object:self userInfo:nil];
+    
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    CGFloat screenHeight = screenRect.size.height;
+    tutorialView = [[FluxTutorialView alloc] initWithFrame: CGRectMake(0, 0, screenWidth, screenHeight)];
+    tutorialView.delegate = self;
+    
+    [self.view addSubview:tutorialView];
+    
+    [ScanUIContainerView setHidden:YES];
 }
 
 #pragma mark - View Transition Animations

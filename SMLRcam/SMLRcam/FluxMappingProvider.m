@@ -103,10 +103,19 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxProfileImageObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":  @"imageID"
+                                                  @"id":  @"imageID",
                                                   }];
     
-    [mapping addAttributeMappingsFromArray:@[@"description"]];
+    [mapping addAttributeMappingsFromArray:@[@"description", @"privacy"]];
+    
+    return mapping;
+}
+
++ (RKObjectMapping *)userImagesPUTMapping{
+    RKObjectMapping *mapping = [RKObjectMapping requestMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"imageID": @"id"}];
+    
+    [mapping addAttributeMappingsFromArray:@[@"description", @"privacy"]];
     
     return mapping;
 }
@@ -197,8 +206,8 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"user_id":        @"userID",
-                                                  @"is_following":   @"isFollowing",
-                                                  @"am_follower":     @"amFollowerFlag",
+                                                  @"am_follower":       @"amFollowerFlag",
+                                                  @"is_following":   @"isFollowingFlag",
                                                   @"alias_name":   @"aliasName",
                                                   @"display_name":   @"displayName",
                                                   @"profile_pic_URL":   @"profilePicURL",

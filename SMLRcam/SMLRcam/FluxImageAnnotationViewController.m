@@ -44,7 +44,6 @@
     [ImageAnnotationTextView setTheDelegate:self];
     if (IS_4INCHSCREEN) {
         [ImageAnnotationTextView becomeFirstResponder];
-        NSLog(@"DidutoLayout: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
         CALayer *roundBorderLayer = [CALayer layer];
         roundBorderLayer.borderWidth = 0.5;
         roundBorderLayer.opacity = 0.4;
@@ -55,7 +54,6 @@
 
     }
     else{
-        NSLog(@"DidutoLayout: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
         CALayer *roundBorderLayer = [CALayer layer];
         roundBorderLayer.borderWidth = 0.5;
         roundBorderLayer.opacity = 0.4;
@@ -129,6 +127,28 @@
     
     images = [NSArray arrayWithObject:image];
     
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:nil];
+    gestureRecognizer.cancelsTouchesInView = NO;
+    gestureRecognizer.delegate = self;
+    [self.view addGestureRecognizer:gestureRecognizer];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    
+    if ([touch.view isKindOfClass:[UIButton class]] || [touch.view isKindOfClass:[KTPlaceholderTextView class]]){
+        return NO;
+    }
+    CGPoint touchLocation = [touch locationInView:self.view];
+    if (CGRectContainsPoint(imageCollectionView.frame, touchLocation)) {
+        if (isSnapshot) {
+            [ImageAnnotationTextView resignFirstResponder];
+        }
+        NSLog(@"Touched in collectionView");
+    }
+    else {
+        [ImageAnnotationTextView resignFirstResponder];
+    }
+    return YES;
 }
 
 #pragma mark - CollectionView Delegate
@@ -184,16 +204,12 @@
     if ([removedImages containsIndex:indexPath.row]) {
         [removedImages removeIndex:indexPath.row];
         [collectionView reloadData];
+        [self checkSaveButton];
     }
     else{
         [removedImages addIndex:indexPath.row];
         [collectionView reloadData];
-        if (removedImages.count == images.count) {
-            [saveButton setEnabled:NO];
-        }
-        else{
-           [saveButton setEnabled:YES];
-        }
+        [self checkSaveButton];
     }
 }
 
@@ -205,6 +221,17 @@
         if (checkButton == checkbox) {
             [self collectionView:imageCollectionView didSelectItemAtIndexPath:[imageCollectionView indexPathForCell:cell]];
         }
+    }
+}
+
+- (void)checkSaveButton{
+    if (removedImages.count == images.count) {
+        [saveButton setEnabled:NO];
+        saveButton.tintColor = [UIColor colorWithWhite:1.0 alpha:0.8];
+    }
+    else{
+        [saveButton setEnabled:YES];
+        saveButton.tintColor = [UIColor colorWithWhite:1.0 alpha:1.0];
     }
 }
 
@@ -350,8 +377,13 @@
     [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
 }
 
-- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType{
-    [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType withMessage:(NSString *)message{
+    if (message) {
+        [ProgressHUD showError:message];
+    }
+    else{
+        [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
+    }
 }
 
 - (void)checkPostButton{

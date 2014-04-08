@@ -44,7 +44,9 @@ typedef enum FluxDataRequestType : NSUInteger {
     imageCounts_request = 25,
     totalImageCount_request = 26,
     createalias_request = 27,
-    contactFromService_request = 28
+    contactFromService_request = 28,
+    imagePrivacyUpdate_request = 29,
+    forceUnfollow_request = 30
     
 } FluxDataRequestType;
 
@@ -60,6 +62,7 @@ typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
 typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSData *, FluxDataRequest *);
+typedef void (^UpdateImagesPrivacyCompleteBlock)(FluxDataRequest *);
 
 //USERS
 
@@ -82,6 +85,7 @@ typedef void (^UserFollowersReadyBlock)(NSArray *, FluxDataRequest *);
 typedef void (^UserSearchReadyBlock)(NSArray *, FluxDataRequest *);
 
 typedef void (^UnfollowUserReadyBlock)(int, FluxDataRequest *);
+typedef void (^ForceUnfollowUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^SendFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^AcceptFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^IgnoreFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
@@ -152,6 +156,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 @property (strong) DeleteImageCompleteBlock deleteImageCompleteBlock;
 
+@property (strong) UpdateImagesPrivacyCompleteBlock updateImagesPrivacyCompleteBlock;
+
 // Callback for successful upload of user + image metadata
 @property (strong) UploadUserCompleteBlock uploadUserComplete;
 
@@ -193,6 +199,10 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 // Callback for successful friends list returned
 @property (strong) UnfollowUserReadyBlock unfollowUserReady;
+
+// Callback for successful friends list returned
+@property (strong) ForceUnfollowUserReadyBlock forceUnfollowUserReady;
+
 // Callback for successful friends list returned
 @property (strong) SendFollowerRequestUserReadyBlock sendFollowerRequestReady;
 // Callback for successful friends list returned
@@ -223,6 +233,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUpdateImagesPrivacyCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 //USERS
@@ -246,6 +257,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenUserSearchReady:(NSArray *)socialUserObjects withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 - (void) whenUnfollowingUserReady:(int)unfollowedUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenForceUnfollowingUserReady:(int)removedUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenSendFollowingRequestReady:(int)userIdForFriendRequest withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenAcceptFollowerRequestReady:(int)newFriendUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenIgnoreFollowerRequestReady:(int)ignoreUserID withDataRequest:(FluxDataRequest *)completeDataRequest;

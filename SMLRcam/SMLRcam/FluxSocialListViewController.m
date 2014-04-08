@@ -396,7 +396,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Accepting request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Accepting request from %@ failed",friendFollowerCell.userObject.username];
         [ProgressHUD showError:str];
         [friendFollowerCell setUserInteractionEnabled:YES];
         
@@ -424,7 +424,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Ignoring request from %@ failed with error %d",friendFollowerCell.userObject.username, (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Ignoring request from %@ failed",friendFollowerCell.userObject.username];
         [ProgressHUD showError:str];
         [friendFollowerCell setUserInteractionEnabled:YES];
         
@@ -434,10 +434,14 @@
 
 #pragma mark - Public Profile Delegate
 - (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
-    [self addUser:userObject toListMode:isFollowerMode];
+    [self addUser:userObject toListMode:amFollowingMode];
 }
 
-- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveFollower:(FluxUserObject *)userObject{
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveAmFollower:(FluxUserObject *)userObject{
+    [self removeSelectedUserFromListMode:amFollowingMode];
+}
+
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveIsFollower:(FluxUserObject *)userObject{
     [self removeSelectedUserFromListMode:isFollowerMode];
 }
 
@@ -579,7 +583,7 @@
     }];
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Following failed to load with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Updating the list failed, sorry about that"];
         [ProgressHUD showError:str];
         [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:amFollowingMode] endRefreshing];
     }];
@@ -602,7 +606,7 @@
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Followers failed to load with error %d", (int)[e code]];
+        NSString*str = [NSString stringWithFormat:@"Updating your followers list failed"];
         [ProgressHUD showError:str];
         [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:isFollowerMode] endRefreshing];
     }];

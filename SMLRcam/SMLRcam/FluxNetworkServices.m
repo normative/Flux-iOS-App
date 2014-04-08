@@ -14,20 +14,24 @@
 #import "FluxLocationServicesSingleton.h"
 #import "FluxAliasObject.h"
 #import "UICKeyChainStore.h"
+#import "FluxAppDelegate.h"
+
+#define defaultTimout 7.0
+#define defaultImageTimout 60.0
 
 #define _AWSProductionServerURL  @"http://54.221.254.230/"
+#define _AWSStagingServerURL     @"http://54.83.61.163/"
 #define _AWSTestServerURL        @"http://54.221.222.71/"
-#define _AWSS3TestServerURL      @"http://54.83.61.163/"
 #define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
 
 NSString* const AWSProductionServerURL = _AWSProductionServerURL;
+NSString* const AWSStagingServerURL    = _AWSStagingServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
-NSString* const AWSS3TestServerURL     = _AWSS3TestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-//NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSProductionServerURL;
+//NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
-NSString* const FluxServerURL = _AWSS3TestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
@@ -73,6 +77,10 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
             __fluxNetworkServicesOutputDateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
             
         }
+        
+        outstandingRequestLocalURLs = [[NSMutableDictionary alloc]init];
+        uploadedImageObjects = [[NSMutableDictionary alloc]init];
+        
         
         //setup descriptors for the user-related calls
         RKResponseDescriptor *userResponseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
@@ -197,8 +205,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 //        [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss.SSS'Z'"];
 //        dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         
-        [RKValueTransformer defaultValueTransformer];
-        [RKObjectMapping addDefaultDateFormatter:__fluxNetworkServicesOutputDateFormatter];
+        [[RKValueTransformer defaultValueTransformer] addValueTransformer:__fluxNetworkServicesOutputDateFormatter];
 
         
         //general init
@@ -208,6 +215,9 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         
         //show network activity indicator
         [AFNetworkActivityIndicatorManager sharedManager].enabled = YES;
+        
+        //add boolean value transformer (restkit bug fix)
+//        [[RKValueTransformer defaultValueTransformer] insertValueTransformer:[RKCustomBOOLTransformer defaultTransformer] atIndex:0];
         
         
         
@@ -234,7 +244,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     NSString*url = [NSString stringWithFormat:@"%@images/%i/renderimage?auth_token=%@&size=%@",objectManager.baseURL,imageID,token,sizeString];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
                                                                               imageProcessingBlock:nil
                                                                                            success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
@@ -246,7 +256,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
                                                                                            failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
     {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"image for ID Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailImageDownloadWithError:andNaturalString:andRequestID:andImageID:)])
         {
             [delegate NetworkServices:self didFailImageDownloadWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID andImageID:imageID];
@@ -266,7 +276,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -284,7 +294,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"image metadata for ID Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -306,7 +316,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:
                                                           [NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&auth_token=%@",
                                                                                     objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
-                                                                                    location.latitude, location.longitude, radius, token]]];
+                                                                                    location.latitude, location.longitude, radius, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
 }
@@ -349,7 +359,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
 
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
     
@@ -378,7 +388,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"images for Location Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -386,73 +396,10 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     [operation start];
 }
 
-- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
-{
-    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-
-    NSLog(@"Uploading image with positional accuracy: %f, %f", theImageObject.horiz_accuracy, theImageObject.vert_accuracy);
-    
-    // Serialize the Article attributes then attach a file
-    NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:theImageObject
-                                                                                            method:RKRequestMethodPOST
-                                                                                              path:[NSString stringWithFormat:@"/images?auth_token=%@", token]
-                                                                                        parameters:nil
-                                                                         constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
-    {
-        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
-                                    name:@"image[image]"
-                                fileName:@"photo.jpeg"
-                                mimeType:@"image/jpeg"];
-        
-        if (theHistoricalImg)
-        {
-            [formData appendPartWithFileData:UIImageJPEGRepresentation(theHistoricalImg, 0.7)
-                                        name:@"image[historical]"
-                                    fileName:@"photo.jpeg"
-                                    mimeType:@"image/jpeg"];
-        }
-    }];
-    
-    RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
-                                                                                                     success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
-    {
-        if ([result count]>0)
-        {
-            FluxScanImageObject *imageObject = [result firstObject];
-            [imageObject setLocalID:[imageObject generateUniqueStringID]];
-
-            if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
-            {
-                [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
-            }
-        }
-    }
-                                           
-    failure:^(RKObjectRequestOperation *operation, NSError *error)
-    {
-        NSLog(@"Image upload failed with error: %@", [error localizedDescription]);
-        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-        {
-            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-        }    }];
-    [[RKObjectManager sharedManager] enqueueObjectRequestOperation:operation]; // NOTE: Must be enqueued rather than started
-    
-    // monitor upload progress
-    if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
-    {
-        [operation.HTTPRequestOperation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {            
-            if (totalBytesExpectedToWrite > 0 && totalBytesExpectedToWrite < NSUIntegerMax) {
-                [delegate NetworkServices:self uploadProgress:(long long)bytesWritten
-                     ofExpectedPacketSize:(long long)totalBytesExpectedToWrite andRequestID:requestID];
-            }
-        }];
-    }
-}
-
 - (void)deleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-
+    
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
                                                             path:[NSString stringWithFormat:@"%@images/%i?auth_token=%@",objectManager.baseURL,imageID, token]
@@ -478,6 +425,341 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     [operation start];
 }
 
+- (void)updateImagePrivacyForImages:(NSArray *)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PUT"
+                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",objectManager.baseURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
+                                                      parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImagePrivacysWithRequestID:)])
+        {
+            [delegate NetworkServices:self didUpdateImagePrivacysWithRequestID:requestID];
+        }
+    }
+                                     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                                         NSLog(@"Privacy update failed with error: %@", [error localizedDescription]);
+                                         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                                         {
+                                             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                                         }
+                                     }];
+    [operation start];
+    
+}
+
+#pragma mark Upload New Image
+
+- (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
+{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+
+    NSLog(@"Uploading image with positional accuracy: %f, %f", theImageObject.horiz_accuracy, theImageObject.vert_accuracy);
+    
+    
+    // Build the request body
+    NSString *boundary = @"thisIsBoundary";
+
+    NSData*imageData = [self getDataForImage:theImage];
+    //builds the entire body (imageData + the rest)
+    NSMutableData *body = [self buildDataBodyForObject:theImageObject andImageData:imageData andBoudary:boundary];
+    
+    //creates a file path to save the data packet
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString*folderDirectory = [NSString stringWithFormat:@"%@%@",[paths objectAtIndex:0],@"/imageUploadCache"];
+    
+    //ensures the correct folder exists
+    if (![[NSFileManager defaultManager] fileExistsAtPath:folderDirectory]) {
+        // Directory does not exist so create it
+        [[NSFileManager defaultManager] createDirectoryAtPath:folderDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    //add filename to the path
+    NSString *srcImagePath = [NSString stringWithFormat:@"%@/%@", folderDirectory, [NSString stringWithFormat:@"Photo-%@",requestID.UUIDString]];
+    NSString *dataSrcImagePath = [srcImagePath stringByAppendingString:@".tmp"];
+    
+    //sace data to local folder
+    if (!([body writeToFile:dataSrcImagePath atomically:YES])) {
+        NSLog(@"Failed to save uploaded file");
+    }
+
+    
+    // sets the URL and request type. Cannot add the body as uploadTaskWithRequest ignores the body
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",objectManager.baseURL, token]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
+    request.HTTPMethod = @"POST";
+
+    //use the backgroundSession signle instance (per WWDC session), and upload the file generated and saved above
+    NSString*fileURL = [NSString stringWithFormat:@"file://%@", dataSrcImagePath];
+    NSURLSessionUploadTask*uploadTask = [[self backgroundSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString:fileURL]];
+
+    //set the request ID in the task itself.
+    [uploadTask setTaskDescription:requestID.UUIDString];
+    
+    //hold on ot the searchPAth locally so we can delete it later
+    [outstandingRequestLocalURLs setObject:dataSrcImagePath forKey:[NSString stringWithFormat:@"%lu",(unsigned long)uploadTask.taskIdentifier]];
+    [uploadedImageObjects setObject:theImageObject forKey:[NSString stringWithFormat:@"%lu",(unsigned long)uploadTask.taskIdentifier]];
+
+    //actually send it
+    [uploadTask resume];
+    
+    
+//    [request setHTTPBody:body];
+//    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
+//    
+//    //        sessionConfiguration.HTTPMaximumConnectionsPerHost = 1;
+//    sessionConfiguration.HTTPAdditionalHeaders = @{
+//                                                   @"Accept"        : @"application/json",
+//                                                   @"Content-Type"  : [NSString stringWithFormat:@"multipart/form-data; boundary=%@", @"thisIsBoundary"]
+//                                                   };
+//    
+//    // Initialize Session
+//    NSURLSession  *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+//    NSURLSessionDataTask*dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData*data, NSURLResponse*response, NSError*error){
+//        NSLog(@"got something backl");
+//        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+//        int responseStatusCode = (int)[httpResponse statusCode];
+//        NSLog(@"got something backl");
+//    }];
+//    [dataTask resume];
+}
+
+- (NSData*)getDataForImage:(UIImage*)img{
+    NSData *imageData = UIImageJPEGRepresentation(img, 0.7);
+    return imageData;
+}
+
+//big nasty method for building our own request body instead of relying on restKit to do it for us.
+- (NSMutableData*)buildDataBodyForObject:(FluxScanImageObject*)imgObject andImageData:(NSData*)imageData andBoudary:(NSString*)boundary{
+    
+    NSMutableData *body = [NSMutableData data];
+    if (imageData) {
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"photo.jpeg\"\r\n", @"image[image]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[@"Content-Type: image/jpeg\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:imageData];
+        [body appendData:[[NSString stringWithFormat:@"\r\n"] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[altitude]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.altitude] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[camera_id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.cameraID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[category_id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.categoryID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[description]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", imgObject.descriptionString] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[heading]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.heading] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.imageID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[latitude]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.latitude] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[longitude]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.longitude] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[pitch]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.pitch] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[privacy]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.privacy] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qw]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qw] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qx]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qx] dataUsingEncoding:NSUTF8StringEncoding]];
+
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qy]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qy] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[qz]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.qz] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[roll]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.roll] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[time_stamp]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%@\r\n", imgObject.timestampString] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[user_id]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%i\r\n", imgObject.userID] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[vert_accuracy]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.vert_accuracy] dataUsingEncoding:NSUTF8StringEncoding]];
+        
+        [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", @"image[yaw]"] dataUsingEncoding:NSUTF8StringEncoding]];
+        [body appendData:[[NSString stringWithFormat:@"%f\r\n", imgObject.yaw] dataUsingEncoding:NSUTF8StringEncoding]];
+    }
+    [body appendData:[[NSString stringWithFormat:@"--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    return body;
+}
+
+#pragma mark URLSession Delegate
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+   didSendBodyData:(int64_t)bytesSent
+    totalBytesSent:(int64_t)totalBytesSent
+totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
+{
+    NSString*requestIDString = task.taskDescription;
+    FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:requestIDString];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
+        {
+            [delegate NetworkServices:self uploadProgress:(long long)totalBytesSent ofExpectedPacketSize:(long long)totalBytesExpectedToSend andRequestID:requestID];
+        }
+    });
+}
+
+- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data{
+    NSError *e = nil;
+    
+    
+    NSDictionary * jsonArray = [NSJSONSerialization JSONObjectWithData: data options: NSJSONReadingMutableLeaves error: &e];
+    
+    if (!jsonArray) {
+        NSLog(@"Error parsing JSON: %@", e);
+    } else {
+        FluxScanImageObject*uploadedImg = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)dataTask.taskIdentifier]];
+        [uploadedImg setImageID:[(NSString*)[jsonArray objectForKey:@"id"]intValue]];
+    }
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error{
+    NSURLResponse*response = task.response;
+    NSString*hello = task.taskDescription;
+    FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:hello];
+        if (!error) {
+            NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+            int responseStatusCode = (int)[httpResponse statusCode];
+            //if the status code is in the 200s
+            if ([RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful) containsIndex:responseStatusCode]) {
+                
+                FluxScanImageObject*imageObject = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                [imageObject setLocalID:[imageObject generateUniqueStringID]];
+                
+                //I did this in case a random bug occured where this method was called before any progress was made. Random. Could ususally clear it by doing a clean build.
+                if (imageObject) {
+                    //delete the local file
+                    NSString*pathToFile = [outstandingRequestLocalURLs objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                    [[NSFileManager defaultManager] removeItemAtPath: pathToFile error: &error];
+                    if (error) {
+                        NSLog(@"Uploaded file failed to delete");
+                    }
+                    else{
+                        [outstandingRequestLocalURLs removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                    }
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(NetworkServices:didUploadImage:andRequestID:)])
+                        {
+                            [delegate NetworkServices:self didUploadImage:imageObject andRequestID:requestID];
+                        }
+                        [uploadedImageObjects removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                    });
+                }
+                else{
+                    NSLog(@"Image upload failed with response code: %i, nothing was uploaded from the looks of it.", responseStatusCode);
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                        {
+                            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                        }
+                    });
+                }
+                
+
+
+
+            }
+            else{
+                NSLog(@"Image upload failed with response code: %i", responseStatusCode);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                    {
+                        [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                    }
+                });
+
+            }
+        }
+        else{
+            NSLog(@"Image upload failed with error: %@", [error localizedDescription]);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                {
+                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                }
+            });
+        }
+    
+}
+
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session{
+    NSLog(@"URLSessionDidFinishEventsForBackgroundURLSession");
+    
+    FluxAppDelegate *appDelegate = (FluxAppDelegate *)[[UIApplication sharedApplication] delegate];
+    if (appDelegate.backgroundSessionCompletionHandler) {
+        void (^completionHandler)() = appDelegate.backgroundSessionCompletionHandler;
+        appDelegate.backgroundSessionCompletionHandler = nil;
+        completionHandler();
+    }
+    NSLog(@"All tasks are finished");
+    
+}
+
+- (NSURLSession *)backgroundSession {
+    static NSURLSession *session = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Session Configuration
+        NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"uniqueSessionID"];
+        
+        sessionConfiguration.HTTPMaximumConnectionsPerHost = 1;
+        sessionConfiguration.HTTPAdditionalHeaders = @{
+                                                       @"Accept"        : @"application/json",
+                                                       @"Content-Type"  : [NSString stringWithFormat:@"multipart/form-data; boundary=%@", @"thisIsBoundary"]
+                                                       };
+        [sessionConfiguration setTimeoutIntervalForResource:defaultImageTimout];
+        
+        // Initialize Session
+        session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+    });
+    
+    return session;
+}
+
 #pragma mark Features
 
 //returns the cloud-extracted features given an image ID
@@ -486,7 +768,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     NSString*url = [NSString stringWithFormat:@"%@images/%i/image?auth_token=%@&size=%@",objectManager.baseURL,imageID,token, fluxImageTypeStrings[features]];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     
@@ -499,7 +781,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         }
         failure:^(AFHTTPRequestOperation *operation, NSError *error)
         {
-            NSLog(@"Failed with error: %@", [error localizedDescription]);
+            NSLog(@"image features for ID Failed with error: %@", [error localizedDescription]);
             if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
             {
                 [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -556,7 +838,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                            }
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
                                            {
-                                               NSLog(@"Failed with error: %@", [error localizedDescription]);
+                                               NSLog(@"create user Failed with error: %@", [error localizedDescription]);
                                                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                                                {
                                                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -617,7 +899,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
            }
         failure:^(RKObjectRequestOperation *operation, NSError *error)
            {
-               NSLog(@"Failed with error: %@", [error localizedDescription]);
+               NSLog(@"update user Failed with error: %@", [error localizedDescription]);
                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                {
                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -644,7 +926,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"login user Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -685,7 +967,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 }
 
 - (void)checkUsernameUniqueness:(NSString *)username withRequestID:(NSUUID *)requestID{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",objectManager.baseURL,username]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",objectManager.baseURL,username]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                          
@@ -704,7 +986,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                         }
                                                                                         failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                                                                                             
-                                                                                            NSLog(@"Request Failed with Error: %@, %@", error, error.userInfo);
+                                                                                            NSLog(@"username uniqueness Failed with Error: %@, %@", error, error.userInfo);
                                                                                             if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                                                                                             {
                                                                                                 [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -728,7 +1010,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"post camera Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -774,7 +1056,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                            }
                                                                                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
                                            {
-                                               NSLog(@"Failed with error: %@", [error localizedDescription]);
+                                               NSLog(@"update apn device token Failed with error: %@", [error localizedDescription]);
                                                if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
                                                {
                                                    [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -800,7 +1082,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -817,7 +1099,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
     {
-        NSLog(@"Failed with error: %@", [error localizedDescription]);
+        NSLog(@"get user for ID Failed with error: %@", [error localizedDescription]);
         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
         {
             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -831,7 +1113,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
     NSString*url = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",objectManager.baseURL,userID,sizeString, token];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
                                                                               imageProcessingBlock:nil
        success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image)
@@ -843,7 +1125,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
       }
        failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error)
       {
-          NSLog(@"Failed with error: %@", [error localizedDescription]);
+          NSLog(@"user profile pic Failed with error: %@", [error localizedDescription]);
           if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
           {
               [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -862,7 +1144,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],userID, token]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],userID, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -875,7 +1157,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"images list for user Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -896,7 +1178,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -909,7 +1191,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get flllower requests for user Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -929,7 +1211,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -942,7 +1224,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get following list Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -961,7 +1243,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -974,7 +1256,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get follower list Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -993,7 +1275,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?contact=%@&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],query, token]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?contact=%@&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],query, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1006,7 +1288,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"get user list for query failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1037,7 +1319,35 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"unfollow user failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+- (void)forceUnfollowUserID:(int)userID withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    int activeUserID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService] intValue];
+    
+    FluxConnectionObject*connObj = [[FluxConnectionObject alloc]init];
+    [connObj setUserID:userID];
+    [connObj setConnectionsUserID:activeUserID];
+    [connObj setConnetionType:FluxConnectionState_follow];
+    
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/disconnect?auth_token=%@", token] parameters:nil
+                                       success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         if ([delegate respondsToSelector:@selector(NetworkServices:didForceUnfollowUserWithID:andRequestID:)])
+         {
+             [delegate NetworkServices:self didForceUnfollowUserWithID:userID andRequestID:requestID];
+         }
+     }
+                                       failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"force unfollow failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1067,7 +1377,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"send follow request failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1099,7 +1409,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"accept Follow request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1130,7 +1440,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"ignoring follow request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1157,7 +1467,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"create alias Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1193,7 +1503,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
             break;
     }
 
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullurl]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:fullurl] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1208,7 +1518,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"Contact request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1236,7 +1546,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&maxrows=%i&auth_token=%@",
                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
-                                                                               location.latitude, location.longitude, radius, maxCount, token]]];
+                                                                               location.latitude, location.longitude, radius, maxCount, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1251,7 +1561,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
     failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"tags for location failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1290,7 +1600,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1305,7 +1615,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"Tags for location Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1342,7 +1652,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                 location.latitude, location.longitude, radius,
                                                                                 altMin, altMax,
                                                                                 timestampMin, timestampMax,
-                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1358,7 +1668,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"image counts Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1395,7 +1705,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                 location.latitude, location.longitude, radius,
                                                                                 altMin, altMax,
                                                                                 timestampMin, timestampMax,
-                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                                dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1410,7 +1720,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"image count Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1449,7 +1759,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
-                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+                                                                               dataFilter.hashTags, dataFilter.users, maxCount,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -1463,7 +1773,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
      }
                                      failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
-         NSLog(@"Failed with error: %@", [error localizedDescription]);
+         NSLog(@"map images Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
          {
              [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
@@ -1489,7 +1799,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/nuke.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
 
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:[NSOperationQueue mainQueue]

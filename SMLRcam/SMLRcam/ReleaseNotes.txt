@@ -1,4 +1,60 @@
 Release Notes:
+******************************************
+
+V0.23 B04
+
+Released: 2014-03-29 13:45:00
+
+Release Notes:
+- Adds the ability to change an image's privacy from the profile menu
+- improved error reporting
+- various bug fixes
+- Clean up formatting and set correct time zone for timestamps of uploaded imagery
+- properly initialize ImageScanObject to that date formatters are properly initialized
+   - allows upload of imagery in areas where there isn't imagery already
+
+******************************************
+
+V0.23 B03
+
+Released: 2014-03-28 12:05:00
+
+Release Notes:
+- Adds the ability to change an image's privacy from the profile menu
+- Adds the ability to remove a user from your followers
+- FB contact import lag fix
+
+******************************************
+
+V0.23 B02
+
+NOTE: Limited Dev release only.  Points to Staging server
+
+Released: 2014-03-27 15:30:00
+
+Release Notes:
+- fixes FB contact import lag issue
+
+******************************************
+
+V0.23 B01
+
+Released: 2014-03-25 11:00:00
+
+Release Notes:
+- Repoint to Production server IP (54.221.254.230)
+- Set heading mode to new calc at startup.  
+    - Can switch to old calc for current session via debug VC
+- Fixups to walk-through wording.
+
+******************************************
+
+V0.22 B04
+
+Released: 2014-03-21 19:30:00
+
+Release Notes:
+- update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1
 - completed heading-corrected orientation using new method (not yet default)
 - Public profile tweaks
 
@@ -6,7 +62,7 @@ Release Notes:
 
 V0.22 B03
 
-Released: 2014-03-20 11:30:00
+Released: 2014-03-21 11:30:00
 
 Release Notes:
 - update of OpenCV to version 2.4.8.2 with 64-bit support with Xcode 5.1

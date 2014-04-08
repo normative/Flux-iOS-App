@@ -311,6 +311,8 @@ static int captureImageID = -1;
              NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
              
              int userID = [(NSString*)[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]intValue];
+             NSString* username = (NSString*)[UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
+
              int cameraID = [(NSString*)[defaults objectForKey:@"cameraID"]intValue];
              int categoryID = 1;
              
@@ -319,8 +321,8 @@ static int captureImageID = -1;
              }
              
 
-             
-            FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
+
+             FluxScanImageObject*capturedImageObject = [[FluxScanImageObject alloc]initWithUserID:userID
 //                                                            atTimestampString:dateString
                                                                   atTimestamp:startTime
                                                                   andCameraID:cameraID
@@ -339,6 +341,8 @@ static int captureImageID = -1;
                                                                         andQZ:att.z
                                                                         andHorizAccuracy:location.horizontalAccuracy
                                                                         andVertAccuracy:location.verticalAccuracy];
+             
+             [capturedImageObject setUsername:username];
              
 //#warning We should probably consolidate all of the time variable. Probably create the object with the NSDate object.
 //             // Also set the internal timestamp variable to match the string representation

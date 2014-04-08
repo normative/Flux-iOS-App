@@ -273,7 +273,7 @@
             [self.navigationController popViewControllerAnimated:YES];
         }];
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-            NSString*str = [NSString stringWithFormat:@"Profile update failed with error %d", (int)[e code]];
+            NSString*str = [NSString stringWithFormat:@"Updating your profile sems to have failed, sorry about that."];
             [ProgressHUD showError:str];
         }];
         

@@ -10,6 +10,8 @@
 
 @implementation FluxPhotoCollectionCell
 
+@synthesize delegate;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -23,6 +25,22 @@
     self->_theImage = theImage;
     [self.imageView setImage:theImage];
 }
+
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
+//    UITouch *touch = [[event allTouches] anyObject];
+//    CGPoint touchLocation = [touch locationInView:self];
+//    
+//    if (CGRectContainsPoint(self.lockContainerView.frame, touchLocation)) {
+//        if ([delegate respondsToSelector:@selector(PhotoCollectionCellLockWasTapped:)]) {
+//            [delegate PhotoCollectionCellLockWasTapped:self];
+//        }
+//    }
+//    else{
+//        if ([delegate respondsToSelector:@selector(PhotoCollectionCellWasTapped:)]) {
+//            [delegate PhotoCollectionCellWasTapped:self];
+//        }
+//    }
+//}
 
 /*
 // Only override drawRect: if you perform custom drawing.

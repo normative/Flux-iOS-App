@@ -110,6 +110,7 @@ typedef enum {
 @property (nonatomic, strong) FluxDataFilter *currentDataFilter;
 
 - (void)hideDebugMenu;
+- (void)showTutorial;
 
 - (IBAction)showLeftDrawer:(id)sender;
 - (IBAction)cameraButtonAction:(id)sender;
