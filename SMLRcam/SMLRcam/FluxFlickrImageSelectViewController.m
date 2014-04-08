@@ -8,12 +8,16 @@
 
 #import "FluxFlickrImageSelectViewController.h"
 
+#import "FluxDataManager.h"
 #import "FluxFlickrEditDescriptionViewController.h"
 #import "FluxFlickrPhotoDataElement.h"
 #import "FluxFlickrPhotosetDataElement.h"
+#import "FluxProfileImageObject.h"
+#import "FluxScanImageObject.h"
 #import <objectiveflickr/ObjectiveFlickr.h>
 #import "OFAPIKey.h"
 #import "PECropViewController.h"
+#import "UICKeyChainStore.h"
 
 const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 
@@ -75,6 +79,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     self.urlSession = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     
     self.didSelectPhotoset = NO;
+    
+    [self getPhotoListForCurrentUser];
     
     [self loadFlickrPhotos];
 }
@@ -424,6 +430,39 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     [picker dismissViewControllerAnimated:YES completion:^{
         [self cancelFlickerImageSelect];
     }];
+}
+
+# pragma mark - Flux photo record keeping
+
+- (NSArray *)getPhotoListForCurrentUser
+{
+    NSMutableArray *localIDList = [[NSMutableArray alloc] init];
+    
+    NSString *userIDStr = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+
+    if (userIDStr)
+    {
+        int userID = [userIDStr intValue];
+        
+        FluxDataManager *fluxDataManager = [FluxDataManager theFluxDataManager];
+
+        FluxDataRequest*request = [[FluxDataRequest alloc]init];
+        [request setUserImagesReady:^(NSArray * userImageList, FluxDataRequest*completedDataRequest){
+            for (FluxProfileImageObject *curImage in userImageList)
+            {
+                FluxImageID imageID = curImage.imageID;
+                FluxLocalID *localID;
+                [localIDList addObject:localID];
+            }
+        }];
+        [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            NSString *str = [NSString stringWithFormat:@"Failed to load image list for current user."];
+            NSLog(@"%@", str);
+        }];
+        [fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
+    }
+    
+    return [localIDList copy];
 }
 
 @end
