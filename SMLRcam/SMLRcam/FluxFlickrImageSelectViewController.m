@@ -80,7 +80,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     
     self.didSelectPhotoset = NO;
     
-    [self getPhotoListForCurrentUser];
+    [self createMappingBetweenLocalIDAndFlickrID];
     
     [self loadFlickrPhotos];
 }
@@ -463,6 +463,51 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
     }
     
     return [localIDList copy];
+}
+
+- (NSDictionary *)createMappingBetweenLocalIDAndFlickrID
+{
+    NSMutableDictionary *flickrIDToLocalID;
+    
+    // Load previous mapping from file, if it exists, as the previous map
+    
+    // If list exists, get list of photos for current user
+    NSArray *userLocalIDList = [self getPhotoListForCurrentUser];
+    
+    // For each stored map entry with a localID that exists for this user, add to the current map
+    // Only requires a single iteration over the dictionary
+    
+    // We now have a dictionary with index of Flickr ID's that stores the corresponding localID
+    
+    // Be sure to add a new entry when a picture is uploaded and write it to disk for next use
+    
+    return [flickrIDToLocalID copy];
+}
+
+- (NSDictionary *)loadPreviousMapFromFile
+{
+    NSURL *url = [self getPersistentMapFileURL];
+    
+    return [NSDictionary dictionaryWithContentsOfURL:url];
+}
+
+- (void)writeMapToFile:(NSDictionary *)map
+{
+    NSURL *url = [self getPersistentMapFileURL];
+
+    if (![map writeToURL:url atomically:YES])
+    {
+        NSLog(@"Failed to write Flickr ID map dictionary to URL:'%@'", url);
+    }
+}
+
+- (NSURL *)getPersistentMapFileURL
+{
+    // get the document directory URL
+    NSURL *documentDirectoryURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+    NSURL *url = [documentDirectoryURL URLByAppendingPathComponent:@"FluxFlickrIDMapping.data" isDirectory:NO];
+
+    return url;
 }
 
 @end
