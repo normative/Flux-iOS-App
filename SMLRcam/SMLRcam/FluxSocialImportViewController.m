@@ -573,9 +573,12 @@
     [self.searchResultsImagesArray removeAllObjects];
     isSearching = YES;
     if (query.length > 0) {
-        
-//        NSPredicate *pred =[NSPredicate predicateWithFormat:@"aliasName beginswith[c] %@", query];
-//        self.searchResultsUserArray = [NSMutableArray arrayWithObjects:[self.importUserArray filteredArrayUsingPredicate:pred],[self.importFluxUserArray filteredArrayUsingPredicate:pred] ,nil];
+        if ([[query substringWithRange:NSMakeRange(0,1)] isEqualToString:@"@"]) {
+            query = [query substringFromIndex:1];
+            if (query.length < 1) {
+                return;
+            }
+        }
         
         NSIndexSet *fluxUserIndexSet = [self.importFluxUserArray indexesOfObjectsPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop){
             NSString*s;
