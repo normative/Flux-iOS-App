@@ -146,11 +146,19 @@ NSString* const FluxFlickrImageSelectFlickrIDKey = @"FluxFlickrImageSelectFlickr
     {
         FluxFlickrEditDescriptionViewController *flickrEditVC = (FluxFlickrEditDescriptionViewController *)segue.destinationViewController;
 
-        NSString *annotation = [NSString stringWithFormat:@"#yale '%@' %@", self.selectedPhotosetName, self.photoDescription];
+        NSString *annotation = [NSString stringWithFormat:@"%@ #yale #%@", self.photoDescription, [self generateHashtagFromName:self.selectedPhotosetName]];
 
         flickrEditVC.delegate = self;
         flickrEditVC.annotationText = annotation;
     }
+}
+
+- (NSString *)generateHashtagFromName:(NSString *)originalName
+{
+    NSCharacterSet *notAllowedChars = [[NSCharacterSet characterSetWithCharactersInString:@"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"] invertedSet];
+    NSString *newName = [[originalName componentsSeparatedByCharactersInSet:notAllowedChars] componentsJoinedByString:@""];
+
+    return newName;
 }
 
 - (void)launchAnnotationView

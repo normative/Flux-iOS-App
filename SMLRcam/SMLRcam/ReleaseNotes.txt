@@ -1,5 +1,6 @@
 Release Notes:
 ******************************************
+- update Flickr default annotation to use hashtag for set name
 
 V0.24 B01
 
