@@ -26,7 +26,6 @@ extern NSString* const FluxFlickrEditDescriptionAnnotationKey;
 @property (nonatomic, weak) id<FluxFlickrEditDescriptionProtocol> delegate;
 
 @property (strong, nonatomic) IBOutlet KTPlaceholderTextView *editAnnotationTextView;
-@property (strong, nonatomic) IBOutlet UILabel *wordCount;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)selectButtonAction:(id)sender;

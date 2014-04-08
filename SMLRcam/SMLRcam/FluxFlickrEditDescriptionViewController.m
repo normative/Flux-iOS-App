@@ -34,6 +34,11 @@ NSString* const FluxFlickrEditDescriptionAnnotationKey = @"FluxFlickrEditDescrip
     
     [self.editAnnotationTextView setTheDelegate:self];
     [self.editAnnotationTextView becomeFirstResponder];
+    
+    [self.editAnnotationTextView setCountCharactersToZero:NO];
+    [self.editAnnotationTextView setWarnCharCount:141];
+    [self.editAnnotationTextView setMaxCharCount:1000];
+    
     CALayer *roundBorderLayer = [CALayer layer];
     roundBorderLayer.borderWidth = 0.5;
     roundBorderLayer.opacity = 0.4;
