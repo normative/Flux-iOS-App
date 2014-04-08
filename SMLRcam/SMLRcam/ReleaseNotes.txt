@@ -1,6 +1,5 @@
 Release Notes:
 ******************************************
-- adds hidden support for import of historical content from Flickr (option 3)
 
 V0.24 B01
 
