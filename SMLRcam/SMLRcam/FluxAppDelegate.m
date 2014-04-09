@@ -12,6 +12,7 @@
 #import "FluxDebugViewController.h"
 #import "FluxNetworkServices.h"
 #import "FluxDataManager.h"
+#import "FluxDeviceInfoSingleton.h"
 
 #import "TestFlight.h"
 #import "GAI.h"
@@ -70,6 +71,22 @@ bool registeredForAPNS = false;
     
 #endif
 
+    // get current app version and compare to last app version
+    NSString *currAppVersion = [FluxDeviceInfoSingleton currentAppVersionString];
+    NSString *oldAppVersion = [defaults objectForKey:@"App Version"];
+    
+    if ([currAppVersion compare:oldAppVersion] == NSOrderedSame)
+    {
+        NSLog(@"Old app version: %@, new app version: %@ - Match.", oldAppVersion, currAppVersion);
+    }
+    else
+    {
+        // can be a great long list of things to do depending on what the old version vs new version is.
+        // for now, just update to the new version
+        NSLog(@"Old app version: %@, new app version: %@ - Updating.", oldAppVersion, currAppVersion);
+        [defaults setObject:currAppVersion forKey:@"App Version"];
+    }
+
     //set settings defaults
     NSNumber * savePic = [defaults objectForKey:@"Save Pictures"];
     NSNumber * isLocalURL = [defaults objectForKey:@"Server Location"];
@@ -80,6 +97,7 @@ bool registeredForAPNS = false;
     NSNumber * historicalPhotoPicker = [defaults objectForKey:FluxDebugHistoricalPhotoPickerKey];
 //    NSNumber * headingCorrectedMotion = [defaults objectForKey:FluxDebugHeadingCorrectedMotionKey];
     NSNumber * detailLoggerEnabled = [defaults objectForKey:FluxDebugDetailLoggerEnabledKey];
+    
     
     // do not save locally by default
     if (savePic == nil) {

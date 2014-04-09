@@ -145,9 +145,10 @@
     RKObjectMapping *mapping = [RKObjectMapping requestMapping];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"userID":            @"user_id",
-                                                  @"deviceID":   @"deviceid",
-                                                  @"model":    @"model"
+                                                  @"userID":         @"user_id",
+                                                  @"deviceID":       @"deviceid",
+                                                  @"model":          @"model",
+                                                  @"currAppVersion": @"app_version"
                                                   }];
     
     return mapping;
@@ -157,9 +158,9 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxCameraObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"user_id":            @"userID",
-                                                  @"deviceid":   @"deviceID",
-                                                  @"model":    @"model",
+                                                  @"user_id":   @"userID",
+                                                  @"deviceid":  @"deviceID",
+                                                  @"model":     @"model",
                                                   @"id":        @"cameraID"
                                                   }];
     return mapping;
@@ -170,11 +171,11 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxConnectionObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"user_id":   @"userID",
-                                                  @"connections_id":     @"connectionsUserID",
-                                                   @"id":   @"connectionID",
-                                                   @"following_state":   @"followingState"
-                                                  }];
+                                                  @"user_id":           @"userID",
+                                                  @"connections_id":    @"connectionsUserID",
+                                                  @"id":                @"connectionID",
+                                                  @"following_state":   @"followingState"
+                                                 }];
     return mapping;
 }
 + (RKObjectMapping *)connectionPOSTMapping{
@@ -182,9 +183,9 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"userID":            @"user_id",
-                                                  @"connectionsUserID":   @"connections_id",
-                                                  @"connetionType":   @"connection_type",
-                                                  @"followingState":   @"following_state"
+                                                  @"connectionsUserID": @"connections_id",
+                                                  @"connetionType":     @"connection_type",
+                                                  @"followingState":    @"following_state"
                                                   }];
     
     return mapping;
