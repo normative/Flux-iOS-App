@@ -103,6 +103,7 @@
 		AA69DA9C182D647900B0BEED /* FluxTextFieldCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA9B182D647900B0BEED /* FluxTextFieldCell.m */; };
 		AA69DA9F18313B9F00B0BEED /* FluxCountTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA69DA9E18313B9E00B0BEED /* FluxCountTableViewCell.m */; };
 		AA6D071D18BFFDE00082CBC3 /* FluxSearchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA6D071C18BFFDE00082CBC3 /* FluxSearchCell.m */; };
+		AA6D5B6E18F5E7C50033DBDE /* FluxPrivacyPolicyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA6D5B6D18F5E7C50033DBDE /* FluxPrivacyPolicyViewController.m */; };
 		AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841317B2B93D005D4F9F /* FluxCheckboxCell.m */; };
 		AA70841717B2BE06005D4F9F /* KTCheckboxButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841617B2BE06005D4F9F /* KTCheckboxButton.m */; };
 		AA70841A17B2D9FF005D4F9F /* FluxFilterDrawerObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AA70841917B2D9FF005D4F9F /* FluxFilterDrawerObject.m */; };
@@ -374,6 +375,8 @@
 		AA69DA9E18313B9E00B0BEED /* FluxCountTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCountTableViewCell.m; sourceTree = "<group>"; };
 		AA6D071B18BFFDE00082CBC3 /* FluxSearchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSearchCell.h; sourceTree = "<group>"; };
 		AA6D071C18BFFDE00082CBC3 /* FluxSearchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxSearchCell.m; sourceTree = "<group>"; };
+		AA6D5B6C18F5E7C50033DBDE /* FluxPrivacyPolicyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPrivacyPolicyViewController.h; sourceTree = "<group>"; };
+		AA6D5B6D18F5E7C50033DBDE /* FluxPrivacyPolicyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPrivacyPolicyViewController.m; sourceTree = "<group>"; };
 		AA70841217B2B93D005D4F9F /* FluxCheckboxCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCheckboxCell.h; sourceTree = "<group>"; };
 		AA70841317B2B93D005D4F9F /* FluxCheckboxCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCheckboxCell.m; sourceTree = "<group>"; };
 		AA70841517B2BE06005D4F9F /* KTCheckboxButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTCheckboxButton.h; sourceTree = "<group>"; };
@@ -1321,6 +1324,8 @@
 				AA349A1817C3A3E600C72E24 /* FluxDrawerSegmentedTableViewCell.m */,
 				AAAD9A44187EF89F003BC1FF /* FluxSocialManagementCell.h */,
 				AAAD9A45187EF89F003BC1FF /* FluxSocialManagementCell.m */,
+				AA6D5B6C18F5E7C50033DBDE /* FluxPrivacyPolicyViewController.h */,
+				AA6D5B6D18F5E7C50033DBDE /* FluxPrivacyPolicyViewController.m */,
 			);
 			name = Settings;
 			sourceTree = "<group>";
@@ -1686,6 +1691,7 @@
 				AA69DA9F18313B9F00B0BEED /* FluxCountTableViewCell.m in Sources */,
 				176A693D18EEE5380032E575 /* FluxTransformUtilities.m in Sources */,
 				2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */,
+				AA6D5B6E18F5E7C50033DBDE /* FluxPrivacyPolicyViewController.m in Sources */,
 				AA984F1018088923007F33B1 /* MIQuadTree.m in Sources */,
 				F2ED424A183EFE1A007A825A /* FluxFeatureMatchingRecord.m in Sources */,
 				F2434C21187F42E100D08B6B /* SVPulsingAnnotationView.m in Sources */,

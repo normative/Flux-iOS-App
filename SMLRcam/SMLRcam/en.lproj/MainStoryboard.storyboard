@@ -1000,10 +1000,50 @@
                     <navigationItem key="navigationItem" id="EJU-PO-Xig"/>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="568"/>
+                    <connections>
+                        <segue destination="3e9-WD-wRW" kind="push" identifier="provacyPolicySegue" id="CEZ-7m-rf6"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="S7W-FE-kCN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4440" y="719"/>
+        </scene>
+        <!--Flux Privacy Policy View Controller-->
+        <scene sceneID="iGa-eF-vDF">
+            <objects>
+                <viewController id="3e9-WD-wRW" customClass="FluxPrivacyPolicyViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="krE-az-pU8"/>
+                        <viewControllerLayoutGuide type="bottom" id="YBA-Mb-Fh9"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="vRw-eg-nVq">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hsx-VQ-eS2">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="568" id="rcT-dY-HfD"/>
+                                    <constraint firstAttribute="width" constant="320" id="ria-Lp-cTh"/>
+                                </constraints>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="Hsx-VQ-eS2" firstAttribute="leading" secondItem="vRw-eg-nVq" secondAttribute="leading" id="Kei-cR-uly"/>
+                            <constraint firstItem="Hsx-VQ-eS2" firstAttribute="top" secondItem="vRw-eg-nVq" secondAttribute="top" id="mlW-bL-j8X"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="FiU-jm-LBO"/>
+                    <connections>
+                        <outlet property="webView" destination="Hsx-VQ-eS2" id="jXV-Ky-yIB"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Jyd-LF-tSm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4920" y="719"/>
         </scene>
         <!--Scan View Controller-->
         <scene sceneID="5">
