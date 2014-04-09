@@ -19,6 +19,9 @@
     NSURL *url = [NSURL URLWithString:fullURL];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:requestObj];
+    
 }
-
+- (IBAction)doneButtonAction:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
 @end

@@ -1001,14 +1001,14 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="568"/>
                     <connections>
-                        <segue destination="3e9-WD-wRW" kind="push" identifier="provacyPolicySegue" id="CEZ-7m-rf6"/>
+                        <segue destination="3e9-WD-wRW" kind="modal" identifier="privacyPolicySegue" modalTransitionStyle="coverVertical" id="CEZ-7m-rf6"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="S7W-FE-kCN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="4440" y="719"/>
         </scene>
-        <!--Flux Privacy Policy View Controller-->
+        <!--Flux Privacy Policy View Controller - Privacy Policy-->
         <scene sceneID="iGa-eF-vDF">
             <objects>
                 <viewController id="3e9-WD-wRW" customClass="FluxPrivacyPolicyViewController" sceneMemberID="viewController">
@@ -1020,23 +1020,35 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hsx-VQ-eS2">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9kE-nR-RSq">
+                                <rect key="frame" x="0.0" y="23" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="W0f-UL-coy"/>
+                                    <barButtonItem systemItem="done" id="uSr-ri-EYx">
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <action selector="doneButtonAction:" destination="3e9-WD-wRW" id="lhf-b7-r4z"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                                <color key="barTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                            </toolbar>
+                            <webView contentMode="scaleToFill" fixedFrame="YES" scalesPageToFit="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hsx-VQ-eS2">
+                                <rect key="frame" x="0.0" y="67" width="320" height="501"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="568" id="rcT-dY-HfD"/>
-                                    <constraint firstAttribute="width" constant="320" id="ria-Lp-cTh"/>
-                                </constraints>
                             </webView>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QJw-NS-S08">
+                                <rect key="frame" x="0.0" y="-10" width="320" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="Hsx-VQ-eS2" firstAttribute="leading" secondItem="vRw-eg-nVq" secondAttribute="leading" id="Kei-cR-uly"/>
-                            <constraint firstItem="Hsx-VQ-eS2" firstAttribute="top" secondItem="vRw-eg-nVq" secondAttribute="top" id="mlW-bL-j8X"/>
-                        </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="FiU-jm-LBO"/>
+                    <navigationItem key="navigationItem" title="Privacy Policy" id="FiU-jm-LBO"/>
                     <connections>
                         <outlet property="webView" destination="Hsx-VQ-eS2" id="jXV-Ky-yIB"/>
                     </connections>

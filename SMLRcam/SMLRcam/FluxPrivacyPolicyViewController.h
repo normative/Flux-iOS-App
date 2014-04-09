@@ -11,5 +11,6 @@
 
 @interface FluxPrivacyPolicyViewController : GAITrackedViewController
 @property (strong, nonatomic) IBOutlet UIWebView *webView;
+- (IBAction)doneButtonAction:(id)sender;
 
 @end

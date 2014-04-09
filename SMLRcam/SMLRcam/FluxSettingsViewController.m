@@ -304,7 +304,7 @@ FluxSettingsSection: NSUInteger {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
             }
             [cell setBackgroundColor:[UIColor clearColor]];
-            [cell.textLabel setText: (indexPath.row == 0 ? @"About" : @"Logout")];
+            [cell.textLabel setText: (indexPath.row == 0 ? @"Privacy Policy" : @"Logout")];
             [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
             [cell.textLabel setTextColor:[UIColor whiteColor]];
             
@@ -348,8 +348,7 @@ FluxSettingsSection: NSUInteger {
         case logout_section:
         {
             if (indexPath.row == 0){
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tapped Something" message:@"You tapped about" delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
-                [alert show];
+                [self performSegueWithIdentifier:@"privacyPolicySegue" sender:nil];
             }
             else{
                 [self logoutButtonAction:nil];
