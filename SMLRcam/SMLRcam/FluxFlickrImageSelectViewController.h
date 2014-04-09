@@ -25,7 +25,7 @@ extern NSString* const FluxFlickrImageSelectFlickrIDKey;
 @interface FluxFlickrImageSelectViewController : UITableViewController
 
 @property (nonatomic, weak) id<FluxFlickrImageSelectProtocol> delegate;
-@property (nonatomic, weak) NSDictionary *flickrIDToLocalIDMap;
+@property (nonatomic, weak) NSDictionary *flickrIDToImageIDMap;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)selectButtonAction:(id)sender;

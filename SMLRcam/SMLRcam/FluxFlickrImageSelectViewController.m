@@ -240,7 +240,7 @@ NSString* const FluxFlickrImageSelectFlickrIDKey = @"FluxFlickrImageSelectFlickr
     cell.textLabel.text = photoElement.title;
     cell.imageView.image = photoElement.thumbImage;
 
-    if (self.flickrIDToLocalIDMap[photoElement.photo_id])
+    if (self.flickrIDToImageIDMap[photoElement.photo_id])
     {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;
     }

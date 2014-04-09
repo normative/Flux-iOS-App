@@ -992,13 +992,21 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     }
     else if ([[segue identifier] isEqualToString:@"pushFlickrImageSelectView"])
     {
-        [self createMappingBetweenLocalIDAndFlickrID];
+        if (!flickrIDToImageIDMap)
+        {
+            // If the mapping dictionary doesn't yet exist, attempt to create one (either new or loaded from file)
+            [self createMappingBetweenLocalIDAndFlickrID];
+            
+            outstandingLocalIDsToFlickrID = [[NSMutableDictionary alloc] init];
+            
+            // Since this is the first pass through, we can sign up for notifications for image deletion
+            // If a deletion happened before this, the creation routine would prune imageID's which no longer exist on the server
+            // We will keep this notification active for the rest of the app's lifetime (since we don't expect too many deletes)
+        }
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewFlickrImage:) name:FluxImageCaptureDidCaptureImage object:nil];
-
         FluxFlickrImageSelectViewController *flickrVC = (FluxFlickrImageSelectViewController *)[(UINavigationController*)segue.destinationViewController topViewController];
         flickrVC.delegate = self;
-        flickrVC.flickrIDToLocalIDMap = flickrIDToLocalIDMap;
+        flickrVC.flickrIDToImageIDMap = flickrIDToImageIDMap;
     }
 }
 
@@ -1118,6 +1126,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     [picker dismissViewControllerAnimated:YES completion:nil];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didCaptureNewFlickrImage:) name:FluxImageCaptureDidPop object:nil];
+
     [self configureNewCameraCaptureWithImage:chosenImage andAnnotation:annotation andFlickrID:flickrID];
 }
 
@@ -1216,7 +1226,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (NSArray *)getPhotoListForCurrentUser
 {
-    NSMutableArray *localIDList = [[NSMutableArray alloc] init];
+    NSMutableArray *imageIDList = [[NSMutableArray alloc] init];
     
     NSString *userIDStr = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
     
@@ -1226,13 +1236,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         
         FluxDataManager *fluxDataManager = [FluxDataManager theFluxDataManager];
         
-        FluxDataRequest*request = [[FluxDataRequest alloc]init];
+        FluxDataRequest*request = [[FluxDataRequest alloc] init];
         [request setUserImagesReady:^(NSArray * userImageList, FluxDataRequest*completedDataRequest){
             for (FluxProfileImageObject *curImage in userImageList)
             {
                 FluxImageID imageID = curImage.imageID;
-                FluxLocalID *localID = [fluxDataManager getMetadataObjectFromCacheWithImageID:imageID].localID;
-                [localIDList addObject:localID];
+                [imageIDList addObject:[NSString stringWithFormat:@"%d", imageID]];
             }
         }];
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -1242,12 +1251,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         [fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
     }
     
-    return [localIDList copy];
+    return [imageIDList copy];
 }
 
 - (void)createMappingBetweenLocalIDAndFlickrID
 {
-    NSMutableDictionary *flickrIDToLocalID = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary *flickrIDToImageID = [[NSMutableDictionary alloc] init];
     
     // Load previous mapping from file, if it exists, as the previous map
     NSDictionary *oldMappingFromFile = [self readPreviousMapFromFile];
@@ -1255,16 +1264,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     if (oldMappingFromFile)
     {
         // If list exists, get list of photos for current user
-        NSArray *userLocalIDList = [self getPhotoListForCurrentUser];
+        NSArray *userImageIDList = [self getPhotoListForCurrentUser];
         
-        // For each stored map entry with a localID that exists for this user, add to the current map
+        // For each stored map entry with an imageID that exists for this user, add to the current map
         // Only requires a single iteration over the dictionary
         for (NSString *flickrID in [oldMappingFromFile allKeys])
         {
-            FluxLocalID *localID = oldMappingFromFile[flickrID];
-            if ([userLocalIDList containsObject:localID])
+            NSString *imageID = oldMappingFromFile[flickrID];
+            if ([userImageIDList containsObject:imageID])
             {
-                flickrIDToLocalID[flickrID] = localID;
+                flickrIDToImageID[flickrID] = imageID;
             }
         }
     }
@@ -1272,14 +1281,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     // We now have a dictionary with index of Flickr ID's that stores the corresponding localID
     // Be sure to add a new entry when a picture is uploaded and write it to disk for next use
     
-    flickrIDToLocalIDMap = flickrIDToLocalID;
+    flickrIDToImageIDMap = flickrIDToImageID;
+    
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDeleteImage:) name:FluxDataManagerDidUploadImage object:nil];
 }
 
-- (void)updateMapWithNewImageForFlickrID:(NSString *)flickrID andLocalID:(FluxLocalID *)localID
+- (void)updateMapWithNewImageForFlickrID:(NSString *)flickrID andImageID:(NSString *)imageID
 {
-    flickrIDToLocalIDMap[flickrID] = localID;
+    flickrIDToImageIDMap[flickrID] = imageID;
     
-    [self writeMapToFile:flickrIDToLocalIDMap];
+    [self writeMapToFile:flickrIDToImageIDMap];
 }
 
 - (NSDictionary *)readPreviousMapFromFile
@@ -1310,14 +1321,63 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)didCaptureNewFlickrImage:(NSNotification *)notification
 {
-    FluxLocalID *localID = [[notification userInfo] objectForKey:@"localID"];
-    NSString *flickrID = [[notification userInfo] objectForKey:@"flickrID"];
-    
-    [self updateMapWithNewImageForFlickrID:flickrID andLocalID:localID];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidCaptureImage object:nil];
+    NSDictionary *userInfoDict = [notification userInfo];
+
+    FluxLocalID *localID;
+    NSString *flickrID;
+    NSMutableDictionary *flickrDict = [userInfoDict objectForKey:@"flickrDict"];
+    if (flickrDict)
+    {
+        localID = flickrDict[@"localID"];
+        flickrID = flickrDict[@"flickrID"];
+        
+        // Add the localID to list of outstanding items and register for upload complete notifications
+        outstandingLocalIDsToFlickrID[localID] = flickrID;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateImageIDAfterUpload:) name:FluxDataManagerDidUploadImage object:nil];
+        
+        // We can cancel this notification (will sign up again next time we launch the Flickr image select view)
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxImageCaptureDidPop object:nil];
+    }
 }
 
+- (void)didUpdateImageIDAfterUpload:(NSNotification *)notification
+{
+    NSDictionary *userInfoDict = [notification userInfo];
+    FluxScanImageObject *imageObject = userInfoDict[FluxDataManagerKeyUploadImageFluxScanImageObject];
+
+    FluxLocalID *localID = imageObject.localID;
+    NSString *imageIDStr = [NSString stringWithFormat:@"%d", imageObject.imageID];
+    
+    NSString *flickrID = outstandingLocalIDsToFlickrID[localID];
+    [outstandingLocalIDsToFlickrID removeObjectForKey:localID];
+    if ([outstandingLocalIDsToFlickrID count] == 0)
+    {
+        // Remove observer
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxDataManagerDidUploadImage object:nil];
+    }
+
+    // Update dictionary
+    [self updateMapWithNewImageForFlickrID:flickrID andImageID:imageIDStr];
+}
+
+- (void)didDeleteImage:(NSNotification *)notification
+{
+    NSDictionary *userInfoDict = [notification userInfo];
+    FluxImageID imageID = [[userInfoDict objectForKey:@"imageID"] intValue];
+    NSString *imageIDStr = [NSString stringWithFormat:@"%d", imageID];
+
+    for (NSString *flickrID in [flickrIDToImageIDMap allKeys])
+    {
+        NSString *curImageID = flickrIDToImageIDMap[flickrID];
+        if ([curImageID isEqualToString:imageIDStr])
+        {
+            [flickrIDToImageIDMap removeObjectForKey:curImageID];
+        }
+    }
+    
+    [self writeMapToFile:flickrIDToImageIDMap];
+}
 
 @end
 
