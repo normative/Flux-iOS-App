@@ -198,6 +198,7 @@ NSString* const FluxFlickrImageSelectFlickrIDKey = @"FluxFlickrImageSelectFlickr
 
         // Clear out image so we don't see imagery from another row when a cell is re-used
         cell.imageView.image = nil;
+        cell.accessoryType = UITableViewCellAccessoryNone;
         
         if (!photoElement.thumbImage)
         {
