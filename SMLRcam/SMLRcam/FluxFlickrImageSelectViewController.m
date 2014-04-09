@@ -114,7 +114,7 @@ NSString* const FluxFlickrImageSelectFlickrIDKey = @"FluxFlickrImageSelectFlickr
             
             self.selectedPhotosetName = photosetElement.title;
 
-            [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"100"}];
+            [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"500"}];
             
             self.didSelectPhotoset = YES;
             [self.tableView reloadData];
