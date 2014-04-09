@@ -15,7 +15,7 @@
     [super viewDidLoad];
     self.screenName = @"Privacy Policy";
     
-    NSString *fullURL = @"http://www.smlr.is/privacy-policy";
+    NSString *fullURL = @"http://www.smlr.is/privacy-policy-m/";
     NSURL *url = [NSURL URLWithString:fullURL];
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:requestObj];
