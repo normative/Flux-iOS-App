@@ -39,6 +39,7 @@ extern const NSString *FluxDevicePlatformStrings[];
 @property (strong, nonatomic) NSString *captureResolution;
 
 + (id)sharedDeviceInfo;
++ (NSString *)currentAppVersionString;
 
 - (FluxCameraModel *) cameraModelForDeviceModelString:(NSString *)deviceModelString;
 

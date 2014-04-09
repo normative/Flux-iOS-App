@@ -7,9 +7,10 @@
 //
 
 #import "FluxCameraObject.h"
+#import "FluxDeviceInfoSingleton.h"
+
 
 @implementation FluxCameraObject
-
 
 - (id)initWithdeviceID:(NSString*)theDeviceID model:(NSString *)theModel forUserID:(int)theUserID{
     self = [super init];
@@ -19,6 +20,11 @@
         self.userID = theUserID;
     }
     return self;
+}
+
+- (NSString *)currAppVersion
+{
+    return [FluxDeviceInfoSingleton currentAppVersionString];
 }
 
 @end

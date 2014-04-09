@@ -14,6 +14,8 @@
 @property (nonatomic, strong)NSString*model;
 @property (nonatomic)int userID;
 @property (nonatomic)int cameraID;
+@property (nonatomic, strong)NSString*appVersion;
+@property (nonatomic, strong)NSString*currAppVersion;
 
 - (id)initWithdeviceID:(NSString*)theDeviceID
    model:(NSString*)theModel
