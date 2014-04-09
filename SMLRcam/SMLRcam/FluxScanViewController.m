@@ -1259,7 +1259,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)createMappingBetweenLocalIDAndFlickrID
 {
-    NSMutableDictionary *flickrIDToImageID = [[NSMutableDictionary alloc] init];
+    flickrIDToImageIDMap = [[NSMutableDictionary alloc] init];
     
     // Load previous mapping from file, if it exists, as the previous map
     NSDictionary *oldMappingFromFile = [self readPreviousMapFromFile];
@@ -1288,16 +1288,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                 NSString *imageID = oldMappingFromFile[flickrID];
                 if ([userImageIDList containsObject:imageID])
                 {
-                    flickrIDToImageID[flickrID] = imageID;
+                    flickrIDToImageIDMap[flickrID] = imageID;
                 }
             }
+            
+            [self writeMapToFile:flickrIDToImageIDMap];
         });
     }
     
     // We will eventually have a dictionary with index of Flickr ID's that stores the corresponding localID
     // Be sure to add a new entry when a picture is uploaded and write it to disk for next use
-    
-    flickrIDToImageIDMap = flickrIDToImageID;
     
 //    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didDeleteImage:) name:FluxDataManagerDidUploadImage object:nil];
 }
