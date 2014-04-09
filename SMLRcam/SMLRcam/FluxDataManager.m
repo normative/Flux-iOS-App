@@ -16,6 +16,7 @@ NSString* const FluxDataManagerDidUploadAllImages = @"FluxDataManagerDidUploadAl
 NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidCompleteRequest";
 
 NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImageLocalID";
+NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject = @"FluxDataManagerKeyUploadImageFluxScanImageObject";
 
 float const minAltitudeRange = 6.0;
 //float const altitudeLowRange = 60.0;
@@ -1066,6 +1067,10 @@ float const altitudeHighRange = 60.0;
     }
     
     [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
+    
+    // Notify any observers
+    NSDictionary *userInfoDict = @{FluxDataManagerKeyUploadImageFluxScanImageObject : updatedImageObject};
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidUploadImage object:self userInfo:userInfoDict];
 }
 
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID{

@@ -23,6 +23,7 @@ extern NSString* const FluxDataManagerDidUploadAllImages;
 extern NSString* const FluxDataManagerDidCompleteRequest;
 
 extern NSString* const FluxDataManagerKeyNewImageLocalID;
+extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
 
 @interface FluxDataManager : NSObject <NetworkServicesDelegate>
 {
