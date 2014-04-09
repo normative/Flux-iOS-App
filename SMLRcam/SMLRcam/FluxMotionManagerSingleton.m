@@ -69,6 +69,8 @@ const float yaw_drift_correction_gain = 0.05;
         
         motionEnabled = YES;
         calculatedInitialMagnetometer = NO;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(resetHeadingCorrectedOrientation:) name:FluxLocationServicesSingletonDidCompleteHeadingCalibration object:nil];
     }
 }
 
@@ -76,12 +78,22 @@ const float yaw_drift_correction_gain = 0.05;
 {
     if (motionManager && motionEnabled)
     {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:FluxLocationServicesSingletonDidCompleteHeadingCalibration object:nil];
+
         [motionManager stopDeviceMotionUpdates];
         [motionUpdateTimer invalidate];
         
         [pedometer stopPedometer];
         
         motionEnabled = NO;
+    }
+}
+
+- (void)resetHeadingCorrectedOrientation:(NSNotification *)notification
+{
+    if (enableHeadingCorrectedMotionMode)
+    {
+        calculatedInitialMagnetometer = NO;
     }
 }
 

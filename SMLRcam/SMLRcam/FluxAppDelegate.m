@@ -135,9 +135,9 @@ bool registeredForAPNS = false;
         [defaults synchronize];
     }
 
-    // always disable new heading mode, but can change it during execution - just won't stick
+    // always enable new heading mode, but can change it during execution - just won't stick
 //    if (headingCorrectedMotion == nil) {
-        [defaults setObject:@(NO) forKey:FluxDebugHeadingCorrectedMotionKey];
+        [defaults setObject:@(YES) forKey:FluxDebugHeadingCorrectedMotionKey];
         [defaults synchronize];
 //    }
 
