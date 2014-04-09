@@ -17,12 +17,15 @@
 #import "FluxCameraObject.h"
 
 extern NSString* const FluxDataManagerDidAcquireNewImage;
+extern NSString* const FluxDataManagerDidDeleteImage;
 extern NSString* const FluxDataManagerDidDownloadImage;
 extern NSString* const FluxDataManagerDidUploadImage;
 extern NSString* const FluxDataManagerDidUploadAllImages;
 extern NSString* const FluxDataManagerDidCompleteRequest;
 
+extern NSString* const FluxDataManagerKeyDeleteImageImageID;
 extern NSString* const FluxDataManagerKeyNewImageLocalID;
+extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
 
 @interface FluxDataManager : NSObject <NetworkServicesDelegate>
 {

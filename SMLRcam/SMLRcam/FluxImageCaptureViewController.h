@@ -31,6 +31,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
     UIView *blackView;
     UIImageView *historicalImageView;
     NSString *defaultAnnotationText;
+    NSString *capturedFlickrID;
     
     UIImage*snapshotImage;
     UIImage*bgImage;
@@ -70,7 +71,7 @@ extern NSString* const FluxImageCaptureDidUndoCapture;
 
 - (IBAction)shareButtonAction:(id)sender;
 
-- (void) setHistoricalTransparentImage:(UIImage *)image andDefaultAnnotation:(NSString *)annotation;
+- (void) setHistoricalTransparentImage:(UIImage *)image andDefaultAnnotation:(NSString *)annotation andFlickrID:(NSString *)flickrID;
 
 - (void)setHidden:(BOOL)hidden;
 

@@ -95,6 +95,15 @@ typedef enum {
     IBOutlet UILabel *pedometerLabel;
     
     historicalPhotoModeTypes historicalPhotoPickerMode;
+    
+    // Dictionary containing a mapping from flickrID to imageID for indicating which flickrID's have been imported
+    NSMutableDictionary *flickrIDToImageIDMap;
+    
+    // Dictionary containing all localIDs awaiting an imageID, with the value storing the flickrID
+    NSMutableDictionary *outstandingLocalIDsToFlickrID;
+
+    NSCondition *updateUserImageIDListLock;
+    NSArray *userImageIDList;
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;

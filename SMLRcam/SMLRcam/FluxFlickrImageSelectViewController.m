@@ -19,6 +19,7 @@ const NSTimeInterval descriptionDownloadTimeoutInterval = 5.0;
 
 NSString* const FluxFlickrImageSelectCroppedImageKey = @"FluxFlickrImageSelectCroppedImageKey";
 NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDescriptionKey";
+NSString* const FluxFlickrImageSelectFlickrIDKey = @"FluxFlickrImageSelectFlickrIDKey";
 
 @interface FluxFlickrImageSelectViewController () <FluxFlickrEditDescriptionProtocol, OFFlickrAPIRequestDelegate, NSURLSessionDownloadDelegate, PECropViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -42,6 +43,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 @property (nonatomic, strong) NSString *selectedPhotosetName;
 
 @property (nonatomic, strong) UIImage *croppedImage;
+@property (nonatomic, strong) NSString *selectedFlickrID;
 
 @end
 
@@ -112,7 +114,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             
             self.selectedPhotosetName = photosetElement.title;
 
-            [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"100"}];
+            [self.flickrRequest callAPIMethodWithGET:@"flickr.photosets.getPhotos" arguments:@{@"photoset_id": photosetElement.photoset_id, @"per_page": @"500"}];
             
             self.didSelectPhotoset = YES;
             [self.tableView reloadData];
@@ -122,6 +124,8 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             // Photo selected
 
             FluxFlickrPhotoDataElement *photoElement = [self.photoList objectAtIndex:selectedIndexPath.row];
+            
+            self.selectedFlickrID = photoElement.photo_id;
             
             // Create a download task to manage image download
             
@@ -194,6 +198,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
 
         // Clear out image so we don't see imagery from another row when a cell is re-used
         cell.imageView.image = nil;
+        cell.accessoryType = UITableViewCellAccessoryNone;
         
         if (!photoElement.thumbImage)
         {
@@ -211,11 +216,7 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
                                                                         UITableViewCell *updateCellRequired = [tableView cellForRowAtIndexPath:indexPath];
                                                                         if (updateCellRequired)
                                                                         {
-                                                                            cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-                                                                            cell.textLabel.numberOfLines = 0;
-                                                                            cell.textLabel.font = [UIFont systemFontOfSize:10.0];
-                                                                            cell.textLabel.text = photoElement.title;
-                                                                            cell.imageView.image = photoElement.thumbImage;
+                                                                            [self populateFlickrImageCell:cell withPhotoElement:photoElement];
                                                                             
                                                                             // Force the cell to be re-drawn
                                                                             [cell setNeedsLayout];
@@ -226,14 +227,24 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
             [dataTask resume];
         }
         
-        cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-        cell.textLabel.numberOfLines = 0;
-        cell.textLabel.font = [UIFont systemFontOfSize:10.0];
-        cell.textLabel.text = photoElement.title;
-        cell.imageView.image = photoElement.thumbImage;
+        [self populateFlickrImageCell:cell withPhotoElement:photoElement];
     }
     
     return cell;
+}
+
+- (void)populateFlickrImageCell:(UITableViewCell *)cell withPhotoElement:(FluxFlickrPhotoDataElement *)photoElement
+{
+    cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    cell.textLabel.numberOfLines = 0;
+    cell.textLabel.font = [UIFont systemFontOfSize:10.0];
+    cell.textLabel.text = photoElement.title;
+    cell.imageView.image = photoElement.thumbImage;
+
+    if (self.flickrIDToImageIDMap[photoElement.photo_id])
+    {
+        cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
 }
 
 # pragma mark - Flickr management
@@ -415,7 +426,9 @@ NSString* const FluxFlickrImageSelectDescriptionKey = @"FluxFlickrImageSelectDes
         // We now have the cropped image and edited description. These can be passed up the chain for use as an overlay.
         if ([self.delegate respondsToSelector:@selector(FluxFlickrImageSelectViewController:didFinishPickingMediaWithInfo:)])
         {
-            NSDictionary *imageDict = @{FluxFlickrImageSelectCroppedImageKey : self.croppedImage, FluxFlickrImageSelectDescriptionKey : annotation};
+            NSDictionary *imageDict = @{FluxFlickrImageSelectCroppedImageKey : self.croppedImage,
+                                        FluxFlickrImageSelectDescriptionKey : annotation,
+                                        FluxFlickrImageSelectFlickrIDKey: self.selectedFlickrID};
             [self.delegate FluxFlickrImageSelectViewController:self didFinishPickingMediaWithInfo:imageDict];
         }
     }];

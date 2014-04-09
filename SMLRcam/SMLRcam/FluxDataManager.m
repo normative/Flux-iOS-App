@@ -10,12 +10,15 @@
 #import <sys/utsname.h>
 
 NSString* const FluxDataManagerDidAcquireNewImage = @"FluxDataManagerDidAcquireNewImage";
+NSString* const FluxDataManagerDidDeleteImage = @"FluxDataManagerDidDeleteImage";
 NSString* const FluxDataManagerDidDownloadImage = @"FluxDataManagerDidDownloadImage";
 NSString* const FluxDataManagerDidUploadImage = @"FluxDataManagerDidUploadImage";
 NSString* const FluxDataManagerDidUploadAllImages = @"FluxDataManagerDidUploadAllImages";
 NSString* const FluxDataManagerDidCompleteRequest = @"FluxDataManagerDidCompleteRequest";
 
+NSString* const FluxDataManagerKeyDeleteImageImageID = @"FluxDataManagerKeyDeleteImageImageID";
 NSString* const FluxDataManagerKeyNewImageLocalID = @"FluxDataManagerKeyNewImageLocalID";
+NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject = @"FluxDataManagerKeyUploadImageFluxScanImageObject";
 
 float const minAltitudeRange = 6.0;
 //float const altitudeLowRange = 60.0;
@@ -1066,6 +1069,10 @@ float const altitudeHighRange = 60.0;
     }
     
     [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
+    
+    // Notify any observers
+    NSDictionary *userInfoDict = @{FluxDataManagerKeyUploadImageFluxScanImageObject : updatedImageObject};
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidUploadImage object:self userInfo:userInfoDict];
 }
 
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID{
@@ -1074,6 +1081,10 @@ float const altitudeHighRange = 60.0;
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];
+    
+    // Notify any observers
+    NSDictionary *userInfoDict = @{FluxDataManagerKeyDeleteImageImageID : @(imageID)};
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidDeleteImage object:self userInfo:userInfoDict];
 }
 
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(NSUUID *)requestID{

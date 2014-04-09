@@ -184,7 +184,7 @@ static int captureImageID = -1;
         [capturedImages addObject:theSnapshotImage];
     }
     
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
+    NSMutableDictionary *userInfoDict = [[NSMutableDictionary alloc]
                                   initWithObjectsAndKeys:capturedImageObjects, @"capturedImageObjects",
                                   capturedImages, @"capturedImages",
                                   historicalImageView.image, @"historicalImage",
@@ -193,8 +193,15 @@ static int captureImageID = -1;
                                   snapshot, @"snapshot",
                                   annotation, @"annotation",
                                   nil];
+    if (capturedFlickrID)
+    {
+        FluxScanImageObject *flickrObject = [capturedImageObjects firstObject];
+        NSDictionary *flickrDict = @{@"flickrID" : [capturedFlickrID copy], @"localID" : flickrObject.localID};
+        capturedFlickrID = nil;
+        userInfoDict[@"flickrDict"] = flickrDict;
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidPop
-                                                        object:self userInfo:userInfoDict];
+                                                        object:self userInfo:[userInfoDict copy]];
     [self setHidden:YES];
     [capturedImageObjects removeAllObjects];
     [capturedImages removeAllObjects];
@@ -464,7 +471,7 @@ static int captureImageID = -1;
     // add to cache and notify for local rendering using the cropped image
     [self.fluxDisplayManager.fluxDataManager addCameraDataToStore:newImageObject withImage:croppedImg];
 
-    NSDictionary *userInfoDict = [[NSDictionary alloc]
+    NSDictionary *userInfoDict = [[NSMutableDictionary alloc]
                                   initWithObjectsAndKeys:localID, @"localID", croppedImg, @"image", newImageObject, @"imageObject", nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:FluxImageCaptureDidCaptureImage
                                                         object:self userInfo:userInfoDict];
@@ -491,10 +498,11 @@ static int captureImageID = -1;
 	return result;
 }
 
-- (void) setHistoricalTransparentImage:(UIImage *)image andDefaultAnnotation:(NSString *)annotation
+- (void) setHistoricalTransparentImage:(UIImage *)image andDefaultAnnotation:(NSString *)annotation andFlickrID:(NSString *)flickrID
 {
     historicalImageView.image = image;
     defaultAnnotationText = annotation;
+    capturedFlickrID = flickrID;
 }
 
 @end

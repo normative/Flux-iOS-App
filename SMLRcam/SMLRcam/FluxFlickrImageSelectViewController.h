@@ -10,6 +10,7 @@
 
 extern NSString* const FluxFlickrImageSelectCroppedImageKey;
 extern NSString* const FluxFlickrImageSelectDescriptionKey;
+extern NSString* const FluxFlickrImageSelectFlickrIDKey;
 
 @class FluxFlickrImageSelectViewController;
 
@@ -24,6 +25,7 @@ extern NSString* const FluxFlickrImageSelectDescriptionKey;
 @interface FluxFlickrImageSelectViewController : UITableViewController
 
 @property (nonatomic, weak) id<FluxFlickrImageSelectProtocol> delegate;
+@property (nonatomic, weak) NSDictionary *flickrIDToImageIDMap;
 
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)selectButtonAction:(id)sender;
