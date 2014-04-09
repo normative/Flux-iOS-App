@@ -1224,7 +1224,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 # pragma mark - Flux photo record keeping for Flickr support
 
-- (NSArray *)getPhotoListForCurrentUser
+- (void)getPhotoListForCurrentUser
 {
     NSMutableArray *imageIDList = [[NSMutableArray alloc] init];
     
@@ -1237,12 +1237,17 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         FluxDataManager *fluxDataManager = [FluxDataManager theFluxDataManager];
         
         FluxDataRequest*request = [[FluxDataRequest alloc] init];
-        [request setUserImagesReady:^(NSArray * userImageList, FluxDataRequest*completedDataRequest){
-            for (FluxProfileImageObject *curImage in userImageList)
+        [request setUserImagesReady:^(NSArray * userProfileImageList, FluxDataRequest*completedDataRequest){
+            for (FluxProfileImageObject *curImage in userProfileImageList)
             {
                 FluxImageID imageID = curImage.imageID;
                 [imageIDList addObject:[NSString stringWithFormat:@"%d", imageID]];
             }
+            
+            [updateUserImageIDListLock lock];
+            userImageIDList = [imageIDList copy];
+            [updateUserImageIDListLock signal];
+            [updateUserImageIDListLock unlock];
         }];
         [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
             NSString *str = [NSString stringWithFormat:@"Failed to load image list for current user."];
@@ -1250,8 +1255,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         }];
         [fluxDataManager requestImageListForUserWithID:userID withDataRequest:request];
     }
-    
-    return [imageIDList copy];
 }
 
 - (void)createMappingBetweenLocalIDAndFlickrID
@@ -1264,21 +1267,34 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     if (oldMappingFromFile)
     {
         // If list exists, get list of photos for current user
-        NSArray *userImageIDList = [self getPhotoListForCurrentUser];
+        userImageIDList = nil;
         
-        // For each stored map entry with an imageID that exists for this user, add to the current map
-        // Only requires a single iteration over the dictionary
-        for (NSString *flickrID in [oldMappingFromFile allKeys])
-        {
-            NSString *imageID = oldMappingFromFile[flickrID];
-            if ([userImageIDList containsObject:imageID])
+        [self getPhotoListForCurrentUser];
+
+        // Wait for list to be retrieved on a background thread
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            
+            [updateUserImageIDListLock lock];
+            while (!userImageIDList)
             {
-                flickrIDToImageID[flickrID] = imageID;
+                [updateUserImageIDListLock waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:10.0]];
             }
-        }
+            [updateUserImageIDListLock unlock];
+
+            // For each stored map entry with an imageID that exists for this user, add to the current map
+            // Only requires a single iteration over the dictionary
+            for (NSString *flickrID in [oldMappingFromFile allKeys])
+            {
+                NSString *imageID = oldMappingFromFile[flickrID];
+                if ([userImageIDList containsObject:imageID])
+                {
+                    flickrIDToImageID[flickrID] = imageID;
+                }
+            }
+        });
     }
     
-    // We now have a dictionary with index of Flickr ID's that stores the corresponding localID
+    // We will eventually have a dictionary with index of Flickr ID's that stores the corresponding localID
     // Be sure to add a new entry when a picture is uploaded and write it to disk for next use
     
     flickrIDToImageIDMap = flickrIDToImageID;

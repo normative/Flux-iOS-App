@@ -101,6 +101,9 @@ typedef enum {
     
     // Dictionary containing all localIDs awaiting an imageID, with the value storing the flickrID
     NSMutableDictionary *outstandingLocalIDsToFlickrID;
+
+    NSCondition *updateUserImageIDListLock;
+    NSArray *userImageIDList;
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
