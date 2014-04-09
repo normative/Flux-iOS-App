@@ -14,6 +14,7 @@
 #import "FluxScanViewController.h"
 
 #define kUSE_CURRENT_CONTEXT_PRESENTATION_STYLE 1
+#define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 
 // Private
 @interface IDMPhotoBrowser () {
@@ -1156,6 +1157,12 @@
     CGSize captionSize = [captionView sizeThatFits:CGSizeMake(pageFrame.size.width, 0)];
     CGRect captionFrame = CGRectMake(pageFrame.origin.x, pageFrame.size.height - captionSize.height - (_toolbar.superview?_toolbar.frame.size.height:0), pageFrame.size.width, captionSize.height);
     
+    if (IS_4INCHSCREEN) {
+        return CGRectMake(10, 494.19, 320, 73.79);
+    }
+    else{
+        return CGRectMake(10, 406.2, 320, 73.80);
+    }
     return captionFrame;
 }
 

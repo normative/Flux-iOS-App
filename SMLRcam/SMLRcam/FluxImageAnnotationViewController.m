@@ -73,13 +73,6 @@
     [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
     removedImages = [[NSMutableIndexSet alloc]init];
-    
-//    [privacyButton setHidden:YES];
-//    [facebookButton setHidden:YES];
-//    [twitterButton setHidden:YES];
-    
-    
-	// Do any additional setup after loading the view.
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -263,7 +256,7 @@
 }
 
 - (IBAction)saveButtonAction:(id)sender {
-    if (ImageAnnotationTextView.text.length < 141) {
+    if (ImageAnnotationTextView.text.length <= 141) {
         
         
         if (isSnapshot) {

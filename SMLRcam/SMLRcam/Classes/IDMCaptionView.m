@@ -69,6 +69,7 @@ static const CGFloat labelPadding = 10;
     captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(labelPadding, 0,
                                                              self.bounds.size.width-labelPadding*2,
                                                              self.bounds.size.height-90)];
+    
     captionLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
     captionLabel.backgroundColor = [UIColor clearColor];
     captionLabel.lineBreakMode = NSLineBreakByWordWrapping;
