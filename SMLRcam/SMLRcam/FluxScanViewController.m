@@ -994,6 +994,8 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     {
         if (!flickrIDToImageIDMap)
         {
+            updateUserImageIDListLock = [[NSCondition alloc] init];
+            
             // If the mapping dictionary doesn't yet exist, attempt to create one (either new or loaded from file)
             [self createMappingBetweenLocalIDAndFlickrID];
             
