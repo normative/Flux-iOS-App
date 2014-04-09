@@ -1,5 +1,6 @@
 Release Notes:
 ******************************************
+- completion of Flickr import functionality by adding indicator showing previously imported imagery
 
 V0.24 B02
 
