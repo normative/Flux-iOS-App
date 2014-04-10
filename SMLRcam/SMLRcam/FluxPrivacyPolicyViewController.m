@@ -20,6 +20,8 @@
     NSURLRequest *requestObj = [NSURLRequest requestWithURL:url];
     [self.webView loadRequest:requestObj];
     
+    [headerLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:headerLabel.font.pointSize]];
+    
 }
 - (IBAction)doneButtonAction:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];

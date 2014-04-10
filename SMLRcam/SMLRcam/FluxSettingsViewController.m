@@ -20,6 +20,8 @@
 #define ERROR_OK @"OK"
 
 
+#define SHOW_APPSTORE_FEEDBACK NO
+
 
 @interface FluxSettingsViewController ()
 
@@ -191,7 +193,7 @@ FluxSettingsSection: NSUInteger {
             return 1;
             break;
         case logout_section:
-            return 2;
+            return (SHOW_APPSTORE_FEEDBACK ? 3: 2);
             break;
             //should never happen
         default:
@@ -304,7 +306,25 @@ FluxSettingsSection: NSUInteger {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
             }
             [cell setBackgroundColor:[UIColor clearColor]];
-            [cell.textLabel setText: (indexPath.row == 0 ? @"Privacy Policy" : @"Logout")];
+            if (SHOW_APPSTORE_FEEDBACK) {
+                switch (indexPath.row) {
+                    case 0:
+                        [cell.textLabel setText:@"Feedback"];
+                        break;
+                    case 1:
+                        [cell.textLabel setText:@"Privacy Policy"];
+                        break;
+                    case 2:
+                        [cell.textLabel setText:@"Logout"];
+                        break;
+                        
+                    default:
+                        break;
+                }
+            }
+            else{
+                [cell.textLabel setText: (indexPath.row == 0 ? @"Privacy Policy" : @"Logout")];
+            }
             [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
             [cell.textLabel setTextColor:[UIColor whiteColor]];
             
@@ -347,11 +367,25 @@ FluxSettingsSection: NSUInteger {
             break;
         case logout_section:
         {
-            if (indexPath.row == 0){
-                [self performSegueWithIdentifier:@"privacyPolicySegue" sender:nil];
+            if (SHOW_APPSTORE_FEEDBACK) {
+                if (indexPath.row == 0){
+                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Feedback", nil) message:@"Send some app feedback" delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
+                    [alert show];
+                }
+                else if(indexPath.row == 1){
+                    [self performSegueWithIdentifier:@"privacyPolicySegue" sender:nil];
+                }
+                else{
+                    [self logoutButtonAction:nil];
+                }
             }
             else{
-                [self logoutButtonAction:nil];
+                if (indexPath.row == 0){
+                    [self performSegueWithIdentifier:@"privacyPolicySegue" sender:nil];
+                }
+                else{
+                    [self logoutButtonAction:nil];
+                }
             }
         }
             break;

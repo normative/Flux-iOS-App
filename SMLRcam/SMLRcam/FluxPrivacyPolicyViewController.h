@@ -9,7 +9,10 @@
 #import <UIKit/UIKit.h>
 #import "GAITrackedViewController.h"
 
-@interface FluxPrivacyPolicyViewController : GAITrackedViewController
+@interface FluxPrivacyPolicyViewController : GAITrackedViewController{
+    
+    IBOutlet UILabel *headerLabel;
+}
 @property (strong, nonatomic) IBOutlet UIWebView *webView;
 - (IBAction)doneButtonAction:(id)sender;
 
