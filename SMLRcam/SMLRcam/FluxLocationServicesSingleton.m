@@ -13,10 +13,13 @@
 #import "FluxScanViewController.h"
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
+NSString* const FluxLocationServicesSingletonDidCompleteHeadingCalibration = @"FluxLocationServicesSingletonDidCompleteHeadingCalibration";
 NSString* const FluxLocationServicesSingletonDidResetKalmanFilter = @"FluxLocationServicesSingletonDidResetKalmanFilter";
 NSString* const FluxLocationServicesSingletonDidUpdateLocation = @"FluxLocationServicesSingletonDidUpdateLocation";
 NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationServicesSingletonDidUpdateHeading";
 NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocationServicesSingletonDidUpdatePlacemark";
+
+NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy = @"FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy";
 
 #define PI M_PI
 #define a_WGS84 6378137.0
@@ -64,6 +67,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         if ([CLLocationManager headingAvailable]) {
             self.locationManager.headingFilter = 1.0;
         }
+        
+        self.performingHeadingCalibration = NO;
         
         [self loadTeleportLocationIndex];
     }
@@ -371,6 +376,14 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
 {
+    if (self.performingHeadingCalibration && (newHeading.headingAccuracy >= 0.0))
+    {
+        self.performingHeadingCalibration = NO;
+        
+        NSDictionary *userInfoDict = @{FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy : @(newHeading.headingAccuracy)};
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidCompleteHeadingCalibration object:self userInfo:userInfoDict];
+    }
+    
     if (newHeading.headingAccuracy < 0)
         return;
     
@@ -438,7 +451,11 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     }];
 }
 
-- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
+{
+    //if any of the checks fail (scan is not visible) dont show it.
+    bool shouldDisplayHeadingCalibration = NO;
+    
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     //if the action sheet was delayed, do nothing (**should** never happen)
     if (window.rootViewController) {
@@ -453,14 +470,17 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
                     //if scan is in the navigation stack (which it will be 90% of the time) check if it's visible
                     if ([VC3 isViewLoaded] && VC3.view.window) {
                         //if it is visible (loaded and visible), then display it.
-                        return YES;
+                        shouldDisplayHeadingCalibration = YES;
                     }
                 }
             }
         }
     }
-    //if any of the checks fail (scan is not visible) dont show it.
-    return NO;
+    
+    // If we display heading calibration, wait for a positive heading accuracy to know it is complete
+    self.performingHeadingCalibration = shouldDisplayHeadingCalibration;
+    
+    return shouldDisplayHeadingCalibration;
 }
 
 #pragma mark - Filtering

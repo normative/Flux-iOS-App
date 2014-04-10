@@ -16,10 +16,13 @@
 @class FluxMotionManagerSingleton;
 
 extern NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState;
+extern NSString* const FluxLocationServicesSingletonDidCompleteHeadingCalibration;
 extern NSString* const FluxLocationServicesSingletonDidResetKalmanFilter;
 extern NSString* const FluxLocationServicesSingletonDidUpdateLocation;
 extern NSString* const FluxLocationServicesSingletonDidUpdateHeading;
 extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
+
+extern NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy;
 
 @interface FluxLocationServicesSingleton : NSObject <CLLocationManagerDelegate>{
     //kalman filtering
@@ -74,6 +77,8 @@ extern NSString* const FluxLocationServicesSingletonDidUpdatePlacemark;
 @property (nonatomic) CLLocationDirection heading;
 @property (nonatomic, getter = orientationHeading) CLLocationDirection orientationHeading;
 @property (nonatomic) CLPlacemark* placemark;
+
+@property (nonatomic) bool performingHeadingCalibration;
 
 @property (nonatomic) NSString* sublocality;
 @property (nonatomic) NSString* subadministativearea;
