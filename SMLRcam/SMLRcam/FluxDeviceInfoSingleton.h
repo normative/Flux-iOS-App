@@ -38,7 +38,7 @@ extern const NSString *FluxDevicePlatformStrings[];
 @property (nonatomic) FluxImageType highestResToQuery;
 @property (strong, nonatomic) NSString *captureResolution;
 
-+ (id)sharedDeviceInfo;
++ (FluxDeviceInfoSingleton *)sharedDeviceInfo;
 + (NSString *)currentAppVersionString;
 
 - (FluxCameraModel *) cameraModelForDeviceModelString:(NSString *)deviceModelString;

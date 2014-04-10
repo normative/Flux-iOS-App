@@ -93,7 +93,7 @@ const NSString *FluxDevicePlatformStrings[] = {
 
 @implementation FluxDeviceInfoSingleton
 
-+ (id)sharedDeviceInfo {
++ (FluxDeviceInfoSingleton *)sharedDeviceInfo {
     static FluxDeviceInfoSingleton *sharedFluxDeviceInfoSingleton = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -249,20 +249,20 @@ const NSString *FluxDevicePlatformStrings[] = {
         case fdp_iPadAir:
         case fdp_iPadMini1:
         case fdp_iPadMini2:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00412];
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
             break;
         case fdp_iPhone4s:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00428];
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00428];
             break;
         case fdp_iPhone5s:
-            cm = [cm initWithPixelSize:0.0000015 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00412];
+            cm = [cm initWithPixelSize:0.0000015 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
             break;
         case fdp_unknown:
         case fdp_simulator:
         case fdp_iPhone5:
         case fdp_iPhone5c:
         default:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1080.0 andFocalLength:0.00412];
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
             break;
     }
     

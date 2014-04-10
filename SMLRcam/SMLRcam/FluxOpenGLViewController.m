@@ -12,6 +12,7 @@
 #import "FluxMath.h"
 #import <Accelerate/Accelerate.h>
 #import "FluxDeviceInfoSingleton.h"
+#import "FluxTransformUtilities.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -125,18 +126,6 @@ GLfloat textureCoord[12] =
 
 GLubyte indexdata[6]={0,1,2,3,4,5};
 #define SQUAREIMAGES1080P
-//iPhone5 model
-
-float iPhone5_pixelsize = 0.0000014; //1.4 microns
-int   iPhone5_ypixels = 1920.0;
-int   iPhone5_xpixels = 1080.0;
-float iPhone5_focalLength = 0.0041; //4.10 mm
-
-
-
-//square images
-int iPhone5_topcrop;
-int iPhone5_bottomcrop;
 
 GLuint texture[3];
 GLKMatrix4 camera_perspective;
@@ -178,80 +167,20 @@ GLfloat g_vertex_buffer_data[18];
 GLKVector4 result[4];
 
 #pragma mark - OpenGL Utility Routines
+// called once based on current device model
 void init_camera_model()
 {
-	float _fov = 2 * atan2(iPhone5_pixelsize*1920.0/2.0, iPhone5_focalLength); //radians
-    fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
-    float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
-    camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
+    FluxCameraModel *cm = [FluxDeviceInfoSingleton sharedDeviceInfo].cameraModel;
     
-    
-    //Assume symmetric cropping for now
-    iPhone5_bottomcrop = (iPhone5_ypixels - iPhone5_xpixels)/2;
-    iPhone5_topcrop = iPhone5_bottomcrop;
+	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
+    fprintf(stderr,"FOV = %.4f degrees\n", _fov * 180.0 / M_PI);
+    float aspect = cm.xPixels / cm.yPixels;
+    camera_perspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
 }
-
-#define PI M_PI
-#define a_WGS84 6378137.0
-#define b_WGS84 6356752.3142
 
 GLKMatrix4 rotation_teM_proj;
 GLKMatrix4 rotation_teM_tan;
 
-
-void WGS84_to_ECEF(sensorPose *sp){
-    double normal;
-    double eccentricity;
-    double flatness;
-    
-    GLKVector3 lla_rad; //latitude, longitude, altitude
-    
-    lla_rad.x = sp->position.x*PI/180.0;
-    lla_rad.y = sp->position.y*PI/180.0;
-    lla_rad.z = sp->position.z;
-    
-    flatness = (a_WGS84 - b_WGS84) / a_WGS84;
-    
-    eccentricity = sqrt(flatness * (2 - flatness));
-    normal = a_WGS84 / sqrt(1 - (eccentricity * eccentricity * sin(lla_rad.x) *sin(lla_rad.x)));
-    
-    sp->ecef.x = (lla_rad.z + normal)* cos(lla_rad.x) * cos(lla_rad.y);
-    sp->ecef.y = (lla_rad.z + normal)* cos(lla_rad.x) * sin(lla_rad.y);
-    sp->ecef.z = (lla_rad.z + (1- eccentricity* eccentricity)*normal)* sin(lla_rad.x);
-    
-    
-}
-
-void tangentplaneRotation(sensorPose *sp, GLKMatrix4 *rot_M){
-    
-    float rotation_te[16];
-    
-    GLKVector3 lla_rad; //latitude, longitude, altitude
-    
-    lla_rad.x = sp->position.x*PI/180.0;
-    lla_rad.y = sp->position.y*PI/180.0;
-    lla_rad.z = sp->position.z;
-    
-    rotation_te[0] = -1.0 * sin(lla_rad.y);
-    rotation_te[1] = cos(lla_rad.y);
-    rotation_te[2] = 0.0;
-    rotation_te[3]= 0.0;
-    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
-    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[6] = cos(lla_rad.x);
-    rotation_te[7]= 0.0;
-    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
-    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[10] = sin(lla_rad.x);
-    rotation_te[11]= 0.0;
-    rotation_te[12]= 0.0;
-    rotation_te[13]= 0.0;
-    rotation_te[14]= 0.0;
-    rotation_te[15]= 1.0;
-    
-    *rot_M = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
-    
-}
 
 void setParametersTP(GLKVector3 location)
 {
@@ -299,9 +228,10 @@ int computeProjectionParametersUser(sensorPose *usp, GLKVector3 *planeNormal, fl
     
     setParametersTP(usp->position);
     
-    WGS84_to_ECEF(usp);
+    [FluxTransformUtilities WGS84toECEFWithPose:usp];
     
-    tangentplaneRotation(usp, &rotation_teM_proj);
+    [FluxTransformUtilities tangentplaneRotation:&rotation_teM_proj fromPose:usp];
+
     // rotationMat = rotationMat_t;
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -355,11 +285,9 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
 	GLKVector3 positionTP;
     positionTP = GLKVector3Make(0.0, 0.0, 0.0);
 
-//    setParametersTP(usp->position);
+    [FluxTransformUtilities WGS84toECEFWithPose:usp];
     
-    WGS84_to_ECEF(usp);
-    
-    tangentplaneRotation(usp, &rotation_teM_tan);
+    [FluxTransformUtilities tangentplaneRotation:&rotation_teM_tan fromPose:usp];
 
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -402,7 +330,7 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
         
         if (sp->validECEFEstimate != 1)
         {
-            WGS84_to_ECEF(sp);
+            [FluxTransformUtilities WGS84toECEFWithPose:sp];
         }
     }
     
@@ -490,43 +418,20 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     if(sp->validECEFEstimate !=1)
     {
-        WGS84_to_ECEF(sp);
+        [FluxTransformUtilities WGS84toECEFWithPose:sp];
     }
     
     positionTP.x = sp->ecef.x - userPose.ecef.x;
     positionTP.y = sp->ecef.y - userPose.ecef.y;
     positionTP.z = sp->ecef.z - userPose.ecef.z;
-    /*
-     positionTP.x = 0;
-     positionTP.y = 0;
-     positionTP.z = 0;
-     */
-    
-    //    positionTP.z = sp->ecef.z -userPose.ecef.z;
-    //    NSLog(@"Position delta [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
     
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM_proj, positionTP);
-    //  NSLog(@"Position rotated [%f %f %f]",positionTP.x, positionTP.y, positionTP.z);
-    
-   // viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
-   // viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
-    //    viewP.up = GLKVector3Normalize(viewP.up);
-    
-    
-   // (*vp).origin = GLKVector3Add(positionTP, P0);
-    //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
-    
-   // (*vp).at =GLKVector3Add(positionTP, viewP.at);
-    //(*vp).up = viewP.up;
-    
-    //    setupRenderingPlane(positionTP, sp->rotationMatrix, distance);
     
     // Pin z-component to local plane (assumption is that unmatched images are at a relative altitude of zero)
     positionTP.z = 0.0;
     
     P0 = positionTP;
     V = GLKVector3Normalize(v);
-  //  V = v;
     
     float vd = GLKVector3DotProduct(N,V);
     float v0 = -1.0 * (GLKVector3DotProduct(N,P0) + distance);
@@ -534,18 +439,16 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     if(vd==0)
     {
-   //    NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
+        // NSLog(@"ImagePose: Optical axis is parallel to viewing plane. This should never happen, unless plane is being set through user pose.");
         return 0;
     }
     if(t < 0)
     {
         
-     // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
+        // NSLog(@"ImagePose: Optical axis intersects viewing plane behind principal point. This should never happen, unless plane is being set through user pose.");
         return 0;
     }
     
-    
-//    if(distancetoPlane > (distance + 3))
     float _distanceToUser = GLKVector3Length(P0);
     
     if(_distanceToUser > MAX_IMAGE_RADIUS)
@@ -558,10 +461,8 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     viewP.at = GLKVector3Add(P0,GLKVector3Make(t*V.x , t*V.y ,t*V.z));
     viewP.up = GLKMatrix4MultiplyVector3(sp->rotationMatrix, GLKVector3Make(0.0, 1.0, 0.0));
-    //    viewP.up = GLKVector3Normalize(viewP.up);
     
     (*vp).origin =  P0;
-    //    (*vp).at = GLKVector3Add(positionTP, viewP.at);
     
     (*vp).at =viewP.at;
     (*vp).up = viewP.up;
@@ -2161,7 +2062,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
    _userPose.rotationMatrix =  GLKMatrix4MakeWithQuaternion(quat);
     _userRotationRaw = _userPose.rotationMatrix;
     //_userPose.rotationMatrix = att.rotationMatrix;
-  GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(PI/2, 0.0,0.0, 1.0);
+  GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
     _userPose.rotationMatrix =  GLKMatrix4Multiply(matrixTP, _userPose.rotationMatrix);
     
    
@@ -2214,7 +2115,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     [self updateImageMetaData];
     
-    //    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(PI, 0.0, 1.0, 0.0);
+    //    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(M_PI, 0.0, 1.0, 0.0);
     //    GLKMatrix4 textranslate = GLKMatrix4MakeTranslation(1.0f, 0.0f, 0.0f);
     
 //    _imagePose[7].position.x =0.0;
@@ -2223,7 +2124,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     tViewMatrix = viewMatrix;
     
-    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(-1.0*PI/2.0, 0.0, 0.0, 1.0);
+    GLKMatrix4 texrotate = GLKMatrix4MakeRotation(-M_PI_2, 0.0, 0.0, 1.0);
     tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
     _tBiasMVP[6] = texrotate;
     _tBiasMVP[7] = GLKMatrix4Multiply(biasMatrix,tMVP);
