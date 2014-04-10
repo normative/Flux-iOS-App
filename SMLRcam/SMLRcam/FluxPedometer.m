@@ -222,14 +222,14 @@ ViewController *viewcontroller = nil;
         
         double dot_prod_g = devM.gravity.x * outaccels->x + devM.gravity.y * outaccels->y + devM.gravity.z * outaccels->z;
         // use dot product divided by magnitude of g to get component of a in direction of g
-        double magnitude_g = sqrt(devM.gravity.x * devM.gravity.x + devM.gravity.y * devM.gravity.y + devM.gravity.z * devM.gravity.z);
+        double magnitude_g = (double)sqrtf((float)(devM.gravity.x * devM.gravity.x + devM.gravity.y * devM.gravity.y + devM.gravity.z * devM.gravity.z));
         double y_component_g = dot_prod_g / magnitude_g;
         
         double f[3];
         f[0] = 0.0;
         f[1] = 1.0;
         f[2] = -devM.gravity.y / devM.gravity.z;
-        double magnitude_f = sqrt(f[0] * f[0] + f[1] * f[1] + f[2] * f[2]);
+        double magnitude_f = (double)sqrtf((float)(f[0] * f[0] + f[1] * f[1] + f[2] * f[2]));
         f[0] = f[0] / magnitude_f;
         f[1] = f[1] / magnitude_f;
         f[2] = f[2] / magnitude_f;
@@ -241,20 +241,23 @@ ViewController *viewcontroller = nil;
         outaccels->z = -dot_prod_f;
     }
     
-    NSString *logStr2 = [NSString stringWithFormat:@"%d,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
-                         loopcount,
-                         devM.userAcceleration.x,
-                         devM.userAcceleration.y,
-                         devM.userAcceleration.z,
-                         devM.gravity.x,
-                         devM.gravity.y,
-                         devM.gravity.z,
-                         outaccels->x,
-                         outaccels->y,
-                         outaccels->z
-                         ];
-    
-    [self writeMotionLog:logStr2];
+    if (motionFile)
+    {
+        NSString *logStr2 = [NSString stringWithFormat:@"%d,%f,%f,%f,%f,%f,%f,%f,%f,%f\n",
+                             loopcount,
+                             devM.userAcceleration.x,
+                             devM.userAcceleration.y,
+                             devM.userAcceleration.z,
+                             devM.gravity.x,
+                             devM.gravity.y,
+                             devM.gravity.z,
+                             outaccels->x,
+                             outaccels->y,
+                             outaccels->z
+                             ];
+        
+        [self writeMotionLog:logStr2];
+    }
     
     return outaccels;
     
