@@ -104,7 +104,7 @@ const float yaw_drift_correction_gain = 0.05;
         if (enableHeadingCorrectedMotionMode)
         {
             CMQuaternion updatedAttitude = self.attitude;
-            [self calcAttitudeFromDeviceMotion:motionManager.deviceMotion andHeading:locationManager.locationManager.heading intoQuaternion:&updatedAttitude];
+            [self calcAttitudeFromDeviceMotion:motionManager.deviceMotion andHeading:[locationManager.locationManager.heading copy] intoQuaternion:&updatedAttitude];
             self.attitude = updatedAttitude;
         }
         else
@@ -118,6 +118,24 @@ const float yaw_drift_correction_gain = 0.05;
 
 # pragma mark - Heading-Corrected Orientation
 
+//#define MAXQUAT 1024
+//double quat_history[MAXQUAT][5];
+//int quatcount = 0;
+//volatile bool dump = false;
+//
+//-(void)dump_quat_history
+//{
+//    dump = true;
+//    for (int c = 0; c < 256; c++)
+//    {
+//        int i = (c + quatcount) % MAXQUAT;
+//        NSLog(@"%d: quat:(%f, %f, %f, %f), yaw delta: %f", c, quat_history[i][0], quat_history[i][1], quat_history[i][2], quat_history[i][3], quat_history[i][4]);
+//    }
+//    dump = false;
+//}
+//
+//bool firsttime = true;
+
 - (void)calcAttitudeFromDeviceMotion:(CMDeviceMotion *)devMotion andHeading:(CLHeading *)heading intoQuaternion:(CMQuaternion *)outquat
 {
     // Phone reference frame: x right, y top, z up from screen
@@ -127,46 +145,69 @@ const float yaw_drift_correction_gain = 0.05;
     CMQuaternion q_cmquat = devMotion.attitude.quaternion;
     GLKQuaternion quat_orig = GLKQuaternionMake(q_cmquat.x, q_cmquat.y, q_cmquat.z, q_cmquat.w);
     
+    GLKQuaternion quat_final;
+    
     double yaw_delta_curr = 0.0;
     
-    if (!calculatedInitialMagnetometer)
+//    double hx = heading.x;
+//    double hy = heading.y;
+//    double hz = heading.z;
+//    GLKVector3 m_vector;
+//    GLKVector2 m_earth;
+//    double yaw_delta_1, yaw_delta_original;
+    
+    if (heading.headingAccuracy < 0.0)
     {
-//        GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
-        GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
-        mag_field_t0 = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
-        
-        yaw_offset_t0 = 0.0;
-        
-        if (!isnan(mag_field_t0.x) && !isnan(mag_field_t0.y) && heading.trueHeading >= 0.0)
-        {
-            // Calculate original offset to use based on true-North heading
-            double trueNorthCorrection = [self angleDiffWithAngleA:(heading.magneticHeading * M_PI/180.0) andAngleB:(heading.trueHeading * M_PI/180.0)];
-            yaw_offset_t0 = [self calculateSignedAngleBetween2DVector:GLKVector2Make(0.0, 1.0) andVector:mag_field_t0] + trueNorthCorrection + M_PI_2;
-            
-            calculatedInitialMagnetometer = YES;
-        }
+        quat_final = quat_orig;
     }
     else
     {
-//        GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
-        GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
-        GLKVector2 m_earth = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
+        if (!calculatedInitialMagnetometer)
+        {
+    //        GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
+            GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
+            mag_field_t0 = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
+            
+            yaw_offset_t0 = 0.0;
+            
+            if (!isnan(mag_field_t0.x) && !isnan(mag_field_t0.y) && heading.trueHeading >= 0.0)
+            {
+                // Calculate original offset to use based on true-North heading
+                double trueNorthCorrection = [self angleDiffWithAngleA:(heading.magneticHeading * M_PI/180.0) andAngleB:(heading.trueHeading * M_PI/180.0)];
+                yaw_offset_t0 = [self calculateSignedAngleBetween2DVector:GLKVector2Make(0.0, 1.0) andVector:mag_field_t0] + trueNorthCorrection + M_PI_2;
+                
+                calculatedInitialMagnetometer = YES;
+            }
+        }
+        else
+        {
+//          GLKVector3 m_vector = GLKVector3Make(devMotion.magneticField.field.x, devMotion.magneticField.field.y, devMotion.magneticField.field.z);
+            GLKVector3 m_vector = GLKVector3Make(heading.x, heading.y, heading.z);
+            GLKVector2 m_earth = [self calcVectorProjectionInEarthFrameWithPose:&quat_orig andVector:&m_vector];
+
+            yaw_delta_curr = [self calculateSignedAngleBetween2DVector:m_earth andVector:mag_field_t0];
+
+            // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily
+            yaw_delta = yaw_delta + yaw_drift_correction_gain * [self angleDiffWithAngleA:yaw_delta andAngleB:yaw_delta_curr];
+            yaw_delta = [self constrainAngle:yaw_delta];
+
+//            yaw_delta_original = yaw_delta;
+//            yaw_delta_curr = [self calculateSignedAngleBetween2DVector:m_earth andVector:mag_field_t0];
+//            
+//            // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily
+//            yaw_delta_1 = yaw_delta + yaw_drift_correction_gain * [self angleDiffWithAngleA:yaw_delta andAngleB:yaw_delta_curr];
+//            yaw_delta = [self constrainAngle:yaw_delta_1];
+        }
         
-        yaw_delta_curr = [self calculateSignedAngleBetween2DVector:m_earth andVector:mag_field_t0];
+        // Rotate the original quaternion by this correction factor which corrects for heading drift
+        GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(-yaw_offset_t0 + yaw_delta, 0.0, 0.0, 1.0);
+        quat_final = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, quat_orig));
         
-        // Filter delta_yaw to remove noise. This is just to correct drift, so it can be very slow response to filter heavily
-        yaw_delta = yaw_delta + yaw_drift_correction_gain * [self angleDiffWithAngleA:yaw_delta andAngleB:yaw_delta_curr];
-        yaw_delta = [self constrainAngle:yaw_delta];
-    }
-    
-    // Rotate the original quaternion by this correction factor which corrects for heading drift
-    GLKQuaternion quat_yaw_delta = GLKQuaternionMakeWithAngleAndAxis(-yaw_offset_t0 + yaw_delta, 0.0, 0.0, 1.0);
-    GLKQuaternion quat_final = GLKQuaternionNormalize(GLKQuaternionMultiply(quat_yaw_delta, quat_orig));
-    
-    // Slerp (spherical quaternion interpolation) performed to smooth overall pose response (makes it feel heavier, which I prefer)
-    if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
-    {
-        quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
+        // Slerp (spherical quaternion interpolation) performed to smooth overall pose response (makes it feel heavier, which I prefer)
+        if (!isnan(quat_prev.x) && !isnan(quat_prev.y) && !isnan(quat_prev.z) && !isnan(quat_prev.w))
+        {
+            quat_final = GLKQuaternionSlerp(quat_prev, quat_final, quaternion_slerp_interpolation_factor);
+        }
     }
     
     // Store for Slerping on next cycle
@@ -176,6 +217,20 @@ const float yaw_drift_correction_gain = 0.05;
     outquat->y = quat_final.y;
     outquat->z = quat_final.z;
     outquat->w = quat_final.w;
+
+//    if (isnan(quat_final.x) || isnan(quat_final.y) || isnan(quat_final.z) || isnan(quat_final.w))
+//    {
+//        if (!firsttime)
+//        {
+//            NSLog(@"hx: %f, hy: %f, hz: %f", hx, hy, hz);
+//            NSLog(@"hx: %f, hy: %f, hz: %f, accuracy: %f", heading.x, heading.y, heading.z, heading.headingAccuracy);
+//            NSLog(@"ydo: %f, ydc: %f, yd1: %f, yd: %f", yaw_delta_original, yaw_delta_curr, yaw_delta_1, yaw_delta);
+//            NSLog(@"m_vector: (%f, %f, %f)", m_vector.x, m_vector.y, m_vector.z);
+//            NSLog(@"m_earth: (%f, %f)", m_earth.x, m_earth.y);
+//        }
+//        else
+//            firsttime = false;
+//    }
 }
 
 # pragma mark - Math Helper Methods
