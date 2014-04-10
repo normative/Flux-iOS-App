@@ -1,6 +1,15 @@
 Release Notes:
 ******************************************
 
+V0.24 B05
+
+Released: 2014-04-09 21:30:00
+
+Release Notes:
+- Fix grey-screen issue after calibration screen when using new heading calculation
+
+******************************************
+
 V0.24 B04
 
 Released: 2014-04-09 21:15:00
