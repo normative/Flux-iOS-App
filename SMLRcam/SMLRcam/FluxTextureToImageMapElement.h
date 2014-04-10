@@ -21,6 +21,7 @@
 @property (nonatomic)           NSUInteger renderOrder;
 @property (nonatomic, readonly) int textureIndex;
 @property (nonatomic)           bool used;
+@property (nonatomic)           bool texturedLoaded;
 
 - (id)initWithSlotIndex:(int)index;
 

@@ -1671,6 +1671,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     [EAGLContext setCurrentContext:self.context];
     
+    self.asyncTextureLoader = [[GLKTextureLoader alloc] initWithSharegroup:self.context.sharegroup];
+
     [self loadShaders];
     
     [self checkShaderLimitations];
@@ -1900,12 +1902,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 #pragma mark - render image texture and metadata selection and loading methods 
 
-- (NSError *)loadTexture:(int)tIndex withImage:(UIImage *)image
+- (void)loadTexture:(int)tIndex withImage:(UIImage *)image withTextureObject:(FluxTextureToImageMapElement *)tel
 {
-    
-    // load the actual texture
-    NSError *error;
-    
     [self deleteImageTextureIdx:tIndex];
 
     // Load the new texture
@@ -1913,15 +1911,43 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
     NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
-    _texture[tIndex] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
     
-    if (error)
+    if (tel.imageType == thumb)
     {
-        _texture[tIndex] = nil;
-        NSLog(@"Error loading Image texture (error: %@)", error);
-    }
+        NSError *error;
 
-    return error;
+        _texture[tIndex] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
+        
+        if (error)
+        {
+            _texture[tIndex] = nil;
+            NSLog(@"Error loading Image texture (error: %@)", error);
+        }
+    }
+    else
+    {
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        [self.asyncTextureLoader textureWithContentsOfData:imgData options:options queue:queue completionHandler:^(GLKTextureInfo *textureInfo, NSError *error) {
+            
+//        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (error)
+            {
+                [tel.imageCacheObject endContentAccess];
+                
+                tel.used = NO;
+                tel.texturedLoaded = NO;
+                tel.renderOrder = NSUIntegerMax;
+                
+                NSLog(@"Error loading Image texture (error: %@)", error);
+            }
+            else
+            {
+                _texture[tIndex] = textureInfo;
+                tel.texturedLoaded = YES;
+            }
+//        });
+        }];
+    }
 }
 
 - (int)pickSlotToReplace:(NSMutableArray *)unusedSlots withRemaining:(NSMutableArray *)remainingLocalIDs
@@ -1984,6 +2010,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // If we are replacing with a different localID or image size, then clean up reference counts for the old cached image
     if (![localID isEqualToString:tel.localID] || imageType != tel.imageType)
     {
+        tel.texturedLoaded = NO;
+        
         // End access for existing texture element/image cache object
         [tel.imageCacheObject endContentAccess];
         tel.imageCacheObject = nil;
@@ -1997,21 +2025,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     if (imageCacheObj.image != nil)
     {
-        // Load texture into slot
-        NSError *error = [self loadTexture:tel.textureIndex withImage:imageCacheObj.image];
+        tel.texturedLoaded = NO;
+        tel.imageType = rtype;
         
-        if (error)
-        {
-            [imageCacheObj endContentAccess];
-            success = NO;
-        }
-        else
-        {
-            tel.imageType = rtype;
-            tel.imageCacheObject = imageCacheObj;
-            tel.used = true;
-            tel.localID = ire.localID;
-        }
+        // Load texture into slot
+        [self loadTexture:tel.textureIndex withImage:imageCacheObj.image withTextureObject:tel];
+
+        tel.imageCacheObject = imageCacheObj;
+        tel.used = YES;
+        tel.localID = ire.localID;
     }
     else
     {
@@ -2061,6 +2083,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         else
         {
             tel.used = NO;
+            tel.texturedLoaded = NO;
             tel.renderOrder = NSUIntegerMax;
             [unusedTextureMapSlots addObject:@(i)];
         }
@@ -2275,7 +2298,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         int i = tel.textureIndex;
 
-        if ((tel.used) && (_texture[i] != nil) && (_validMetaData[i]==1))
+        if ((tel.used) && (tel.texturedLoaded) && (_texture[i] != nil) && (_validMetaData[i]==1))
         {
             sio = ((FluxImageRenderElement *)[self.fluxDisplayManager getRenderElementForKey:tel.localID]).imageMetadata;
             sepia = (sio.location_data_type == location_data_from_homography || sio.location_data_type == location_data_valid_ecef) ? 0.0 : 1.0;

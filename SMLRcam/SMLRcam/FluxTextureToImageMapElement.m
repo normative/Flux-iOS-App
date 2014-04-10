@@ -19,7 +19,8 @@
         _imageType = none;
         _renderOrder = NSUIntegerMax;
         _textureIndex = index;
-        _used = false;
+        _used = NO;
+        _texturedLoaded = NO;
     }
     
     return self;
