@@ -95,7 +95,7 @@ bool registeredForAPNS = false;
     NSNumber * featureMatchDebugImageOutput = [defaults objectForKey:FluxDebugMatchDebugImageOutputKey];
     NSNumber * pedometerCountDisplay = [defaults objectForKey:FluxDebugPedometerCountDisplayKey];
     NSNumber * historicalPhotoPicker = [defaults objectForKey:FluxDebugHistoricalPhotoPickerKey];
-//    NSNumber * headingCorrectedMotion = [defaults objectForKey:FluxDebugHeadingCorrectedMotionKey];
+    NSNumber * headingCorrectedMotion = [defaults objectForKey:FluxDebugHeadingCorrectedMotionKey];
     NSNumber * detailLoggerEnabled = [defaults objectForKey:FluxDebugDetailLoggerEnabledKey];
     
     
@@ -136,10 +136,10 @@ bool registeredForAPNS = false;
     }
 
     // always disable new heading mode, but can change it during execution - just won't stick
-//    if (headingCorrectedMotion == nil) {
-        [defaults setObject:@(NO) forKey:FluxDebugHeadingCorrectedMotionKey];
+    if (headingCorrectedMotion == nil) {
+        [defaults setObject:@(YES) forKey:FluxDebugHeadingCorrectedMotionKey];
         [defaults synchronize];
-//    }
+    }
 
     if (detailLoggerEnabled == nil) {
         [defaults setObject:@(NO) forKey:FluxDebugDetailLoggerEnabledKey];
