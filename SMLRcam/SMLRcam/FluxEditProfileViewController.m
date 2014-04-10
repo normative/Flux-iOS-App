@@ -224,6 +224,11 @@
     picker.editingMode = DZNPhotoEditViewControllerCropModeCircular;
     picker.delegate = self;
     
+    if (sourceType == UIImagePickerControllerSourceTypeCamera) {
+        picker.cameraDevice=UIImagePickerControllerCameraDeviceFront;
+    }
+    
+    
     [self presentViewController:picker animated:YES completion:^{
         //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     }];
