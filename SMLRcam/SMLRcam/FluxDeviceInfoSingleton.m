@@ -109,6 +109,187 @@ const NSString *FluxDevicePlatformStrings[] = {
     return [NSString stringWithFormat:@"%@(%@)",version, build];
 }
 
++ (FluxCameraModel *) cameraModelForPlatform:(FluxDevicePlatform)devplatform
+{
+    
+    FluxCameraModel *cm = [FluxCameraModel alloc];
+    
+    switch (devplatform)
+    {
+            // TODO: iPad camera models need to be defined
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadAir:
+        case fdp_iPadMini1:
+        case fdp_iPadMini2:
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
+            break;
+        case fdp_iPhone4s:
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00428];
+            break;
+        case fdp_iPhone5s:
+            cm = [cm initWithPixelSize:0.0000015 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
+            break;
+        case fdp_unknown:
+        case fdp_simulator:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+        default:
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
+            break;
+    }
+    
+    return cm;
+}
+
+//- (int) calcRenderTextureCountForPlatform:(FluxDevicePlatform)devplatform
++ (int) renderTextureCountForPlatform:(FluxDevicePlatform)devplatform
+{
+    int tc = 0;
+    
+    switch (devplatform)
+    {
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            tc = 5;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            tc = 3;
+            break;
+    }
+    
+    return tc;
+}
+
+//  - enable/disable feature matching
++ (bool) featureMatchingEnabledForPlatform:(FluxDevicePlatform)devplatform
+{
+    bool fm = true;
+    
+    switch (devplatform)
+    {
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            fm = true;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            fm = false;
+            break;
+    }
+    
+    return fm;
+}
+
++ (int) cacheCountLimitForPlatform:(FluxDevicePlatform)devplatform
+{
+    
+    int ccl = 100;
+    
+    switch (devplatform)
+    {
+            // TODO: iPad camera models need to be defined
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            ccl = 100;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            ccl = 10;
+            break;
+    }
+    
+    return ccl;
+}
+
+
++ (FluxImageType) highestResToQueryForPlatform:(FluxDevicePlatform)devplatform
+{
+    FluxImageType hrq = thumb;
+    
+    switch (devplatform)
+    {
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            hrq = quarterhd;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            hrq = thumb;
+            //            hrq = quarterhd;
+            break;
+    }
+    
+    return hrq;
+}
+
++ (NSString *) captureResForPlatform:(FluxDevicePlatform)devplatform
+{
+    NSString *cr = AVCaptureSessionPresetHigh;
+    
+    switch (devplatform)
+    {
+        case fdp_simulator:
+        case fdp_iPadAir:
+        case fdp_iPadMini2:
+        case fdp_iPhone5s:
+        case fdp_iPhone5:
+        case fdp_iPhone5c:
+            cr = AVCaptureSessionPresetHigh;
+            break;
+        case fdp_unknown:
+        case fdp_iPad2:
+        case fdp_iPad3:
+        case fdp_iPad4:
+        case fdp_iPadMini1:
+        case fdp_iPhone4s:
+        default:
+            cr = AVCaptureSessionPreset1280x720;
+            break;
+    }
+    
+    return cr;
+}
+
+
 - (id)init
 {
     if (self = [super init])
@@ -128,24 +309,24 @@ const NSString *FluxDevicePlatformStrings[] = {
         
         // camera model
         // should be able to index off of _devPlatform
-        _cameraModel = [self getCameraModelForPlatform:_devicePlatform];
+        _cameraModel = [FluxDeviceInfoSingleton cameraModelForPlatform:_devicePlatform];
 
         // memory limits & functional restrictions
         
         //  - number of textures to render
-        _renderTextureCount = [self calcRenderTextureCountForPlatform:_devicePlatform];
+        _renderTextureCount = [FluxDeviceInfoSingleton renderTextureCountForPlatform:_devicePlatform];
 
         //  - enable/disable feature matching
-        _isFeatureMatching = [self getFeatureMatchingForPlatform:_devicePlatform];
+        _isFeatureMatching = [FluxDeviceInfoSingleton featureMatchingEnabledForPlatform:_devicePlatform];
         
         //  - NSCache count limit
-        _cacheCountLimit = [self getCacheCountLimitForPlatform:_devicePlatform];
+        _cacheCountLimit = [FluxDeviceInfoSingleton cacheCountLimitForPlatform:_devicePlatform];
         
         // image query resolution
-        _highestResToQuery = [self getHighestResToQueryForPlatform:_devicePlatform];
+        _highestResToQuery = [FluxDeviceInfoSingleton highestResToQueryForPlatform:_devicePlatform];
         
         // resolution to capture imagery at
-        _captureResolution = [self getCaptureResForPlatform:_devicePlatform];
+        _captureResolution = [FluxDeviceInfoSingleton captureResForPlatform:_devicePlatform];
 
     }
     
@@ -235,191 +416,10 @@ const NSString *FluxDevicePlatformStrings[] = {
     return devicePlatform;
 }
 
-- (FluxCameraModel *) getCameraModelForPlatform:(FluxDevicePlatform)devplatform
-{
- 
-    FluxCameraModel *cm = [FluxCameraModel alloc];
-  
-    switch (devplatform)
-    {
-        // TODO: iPad camera models need to be defined
-        case fdp_iPad2:
-        case fdp_iPad3:
-        case fdp_iPad4:
-        case fdp_iPadAir:
-        case fdp_iPadMini1:
-        case fdp_iPadMini2:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
-            break;
-        case fdp_iPhone4s:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00428];
-            break;
-        case fdp_iPhone5s:
-            cm = [cm initWithPixelSize:0.0000015 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
-            break;
-        case fdp_unknown:
-        case fdp_simulator:
-        case fdp_iPhone5:
-        case fdp_iPhone5c:
-        default:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
-            break;
-    }
-    
-    return cm;
-}
-
-- (int) calcRenderTextureCountForPlatform:(FluxDevicePlatform)devplatform
-{
-    int tc = 0;
-    
-    switch (devplatform)
-    {
-        case fdp_simulator:
-        case fdp_iPadAir:
-        case fdp_iPadMini2:
-        case fdp_iPhone5s:
-        case fdp_iPhone5:
-        case fdp_iPhone5c:
-            tc = 5;
-            break;
-        case fdp_unknown:
-        case fdp_iPad2:
-        case fdp_iPad3:
-        case fdp_iPad4:
-        case fdp_iPadMini1:
-        case fdp_iPhone4s:
-        default:
-            tc = 3;
-            break;
-    }
-
-    return tc;
-}
-
-//  - enable/disable feature matching
-- (bool) getFeatureMatchingForPlatform:(FluxDevicePlatform)devplatform
-{
-    bool fm = true;
-    
-    switch (devplatform)
-    {
-        case fdp_simulator:
-        case fdp_iPadAir:
-        case fdp_iPadMini2:
-        case fdp_iPhone5s:
-        case fdp_iPhone5:
-        case fdp_iPhone5c:
-            fm = true;
-            break;
-        case fdp_unknown:
-        case fdp_iPad2:
-        case fdp_iPad3:
-        case fdp_iPad4:
-        case fdp_iPadMini1:
-        case fdp_iPhone4s:
-        default:
-            fm = false;
-            break;
-    }
-    
-    return fm;
-}
-
-- (int) getCacheCountLimitForPlatform:(FluxDevicePlatform)devplatform
-{
-    
-    int ccl = 100;
-    
-    switch (devplatform)
-    {
-            // TODO: iPad camera models need to be defined
-        case fdp_simulator:
-        case fdp_iPadAir:
-        case fdp_iPadMini2:
-        case fdp_iPhone5s:
-        case fdp_iPhone5:
-        case fdp_iPhone5c:
-            ccl = 100;
-            break;
-        case fdp_unknown:
-        case fdp_iPad2:
-        case fdp_iPad3:
-        case fdp_iPad4:
-        case fdp_iPadMini1:
-        case fdp_iPhone4s:
-        default:
-            ccl = 10;
-            break;
-    }
-    
-    return ccl;
-}
-
-
-//  - enable/disable feature matching
-- (FluxImageType) getHighestResToQueryForPlatform:(FluxDevicePlatform)devplatform
-{
-    FluxImageType hrq = thumb;
-    
-    switch (devplatform)
-    {
-        case fdp_simulator:
-        case fdp_iPadAir:
-        case fdp_iPadMini2:
-        case fdp_iPhone5s:
-        case fdp_iPhone5:
-        case fdp_iPhone5c:
-            hrq = quarterhd;
-            break;
-        case fdp_unknown:
-        case fdp_iPad2:
-        case fdp_iPad3:
-        case fdp_iPad4:
-        case fdp_iPadMini1:
-        case fdp_iPhone4s:
-        default:
-            hrq = thumb;
-//            hrq = quarterhd;
-            break;
-    }
-    
-    return hrq;
-}
-
-//  - enable/disable feature matching
-- (NSString *) getCaptureResForPlatform:(FluxDevicePlatform)devplatform
-{
-    NSString *cr = AVCaptureSessionPresetHigh;
-    
-    switch (devplatform)
-    {
-        case fdp_simulator:
-        case fdp_iPadAir:
-        case fdp_iPadMini2:
-        case fdp_iPhone5s:
-        case fdp_iPhone5:
-        case fdp_iPhone5c:
-            cr = AVCaptureSessionPresetHigh;
-            break;
-        case fdp_unknown:
-        case fdp_iPad2:
-        case fdp_iPad3:
-        case fdp_iPad4:
-        case fdp_iPadMini1:
-        case fdp_iPhone4s:
-        default:
-            cr = AVCaptureSessionPreset1280x720;
-            break;
-    }
-    
-    return cr;
-}
-
 
 - (FluxCameraModel *) cameraModelForDeviceModelString:(NSString *)deviceModelString;
 {
-    return [self getCameraModelForPlatform:[self devicePlatformForModelStr:(NSString *)deviceModelString]];
+    return [FluxDeviceInfoSingleton cameraModelForPlatform:[self devicePlatformForModelStr:(NSString *)deviceModelString]];
 }
 
 

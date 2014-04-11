@@ -79,7 +79,7 @@ enum
 };
 
 GLint uniforms[NUM_UNIFORMS];
-int models[maxCameraModel];
+//int models[maxCameraModel];
 // Attribute index.
 enum
 {
@@ -166,13 +166,17 @@ demoImage *image2;
 GLfloat g_vertex_buffer_data[18];
 GLKVector4 result[4];
 
+// this should really be captured in FluxDeviceInfoSingleton and factored into a (different?) property
+#define HD_TO_RAW   1.454
+
 #pragma mark - OpenGL Utility Routines
 // called once based on current device model
 void init_camera_model()
 {
     FluxCameraModel *cm = [FluxDeviceInfoSingleton sharedDeviceInfo].cameraModel;
-    
-	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
+
+//	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
+	float _fov = 2.0 * atan2(cm.pixelSize * (cm.yPixels * HD_TO_RAW) / 2.0, cm.focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov * 180.0 / M_PI);
     float aspect = cm.xPixels / cm.yPixels;
     camera_perspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
@@ -1479,14 +1483,26 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 }
 
--(GLKMatrix4) computeImageCameraPerspectivewithCameraModel:(int) model
+//-(GLKMatrix4) computeImageCameraPerspectivewithCameraModel:(int) model
+-(GLKMatrix4) computeImageCameraPerspectivewithDevicePlatform:(FluxDevicePlatform) platform
 {
     GLKMatrix4 icameraPerspective;
-    float _fov = 2 * atan2(cameraParameters[model].pixelSize* cameraParameters[model].yPixels/2.0, cameraParameters[model].focalLength   ); //radians
-    float aspect = cameraParameters[model].xPixels / cameraParameters[model].yPixels;
+//    float _fov = 2 * atan2(cameraParameters[model].pixelSize* cameraParameters[model].yPixels/2.0, cameraParameters[model].focalLength   ); //radians
+//    float aspect = cameraParameters[model].xPixels / cameraParameters[model].yPixels;
+
+    FluxCameraModel *cam = [FluxDeviceInfoSingleton cameraModelForPlatform:platform];
+    // this is the direct conversion:
+    // use xPixels rather than yPixels because originally cameraParameters.yPixels = cameraParameters.xPixels = 1080
+    // where FluxCameraModel.xPixels != FluxCameraModel.yPixels
+    // float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength); //radians
+    
+    // thinking this is more what it should be given the relative capture areas of the raw cam vs HD video
+    float _fov = 2 * atan2(cam.pixelSize * (cam.xPixels * HD_TO_RAW) / 2.0, cam.focalLength   ); //radians
+    float aspect = cam.xPixels / cam.xPixels;
     icameraPerspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     return icameraPerspective;
 }
+
 -(void)updateImageMetaData
 {
     viewParameters vpimage;
@@ -1528,7 +1544,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                                vpimage.up.x, vpimage.up.y, vpimage.up.z);
             
-            icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
+//            icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
+            icameraPerspective = [self computeImageCameraPerspectivewithDevicePlatform:scanimageobject.devicePlatform];
             tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
             
             _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
@@ -1596,7 +1613,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     */
-    [self initCameraModels];
+//    [self initCameraModels];
     [self setupBuffers];
     [self loadAlphaTexture];
     [self loadBorderTexture];
@@ -1679,53 +1696,53 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
 }
 
--(void) initCameraModels
-{
-    
-    cameraParameters = (fluxCameraParameters*)malloc(maxCameraModel * sizeof(fluxCameraParameters));
-    
-    //unknown treated as iPhone5
-    cameraParameters[0].pixelSize = 0.0000014;
-    cameraParameters[0].focalLength = 0.0041;
-    cameraParameters[0].yPixels = 3264.0;
-    cameraParameters[0].xPixels = 2448.0;
-    //iphone4  = 1,
-    cameraParameters[1].pixelSize = 0.00000175;
-    cameraParameters[1].focalLength = 0.00385;
-    cameraParameters[1].yPixels = 3264.0;
-    cameraParameters[1].xPixels = 2448.0;
-    //iphone4s = 2,
-    cameraParameters[2].pixelSize = 0.0000014;
-    cameraParameters[2].focalLength = 0.00428;
-    cameraParameters[2].yPixels = 3264.0;
-    cameraParameters[2].xPixels = 2448.0;
-    //iphone5  = 3,
-    cameraParameters[3].pixelSize = 0.0000014;
-    cameraParameters[3].focalLength = 0.0041;
-    cameraParameters[3].yPixels = 3264.0;
-    cameraParameters[3].xPixels = 2448.0;
-    //iphone5c = 4,
-    cameraParameters[4].pixelSize = 0.0000014;
-    cameraParameters[4].focalLength = 0.0041;
-    cameraParameters[4].yPixels = 3264.0;
-    cameraParameters[4].xPixels = 2448.0;
-    //iphone5s = 5,
-    cameraParameters[5].pixelSize = 0.0000015;
-    cameraParameters[5].focalLength = 0.00412;
-    cameraParameters[5].yPixels = 3264.0;
-    cameraParameters[5].xPixels = 2448.0;
-
-#ifdef SQUAREIMAGES1080P
-    int i;
-
-    for(i = 0;i <maxCameraModel; i++)
-    {
-        cameraParameters[i].xPixels = 1080.0;
-        cameraParameters[i].yPixels = 1080.0;
-    }
-    
-#endif
-}
+//-(void) initCameraModels
+//{
+//    
+//    cameraParameters = (fluxCameraParameters*)malloc(maxCameraModel * sizeof(fluxCameraParameters));
+//    
+//    //unknown treated as iPhone5
+//    cameraParameters[0].pixelSize = 0.0000014;
+//    cameraParameters[0].focalLength = 0.0041;
+//    cameraParameters[0].yPixels = 3264.0;
+//    cameraParameters[0].xPixels = 2448.0;
+//    //iphone4  = 1,
+//    cameraParameters[1].pixelSize = 0.00000175;
+//    cameraParameters[1].focalLength = 0.00385;
+//    cameraParameters[1].yPixels = 3264.0;
+//    cameraParameters[1].xPixels = 2448.0;
+//    //iphone4s = 2,
+//    cameraParameters[2].pixelSize = 0.0000014;
+//    cameraParameters[2].focalLength = 0.00428;
+//    cameraParameters[2].yPixels = 3264.0;
+//    cameraParameters[2].xPixels = 2448.0;
+//    //iphone5  = 3,
+//    cameraParameters[3].pixelSize = 0.0000014;
+//    cameraParameters[3].focalLength = 0.0041;
+//    cameraParameters[3].yPixels = 3264.0;
+//    cameraParameters[3].xPixels = 2448.0;
+//    //iphone5c = 4,
+//    cameraParameters[4].pixelSize = 0.0000014;
+//    cameraParameters[4].focalLength = 0.0041;
+//    cameraParameters[4].yPixels = 3264.0;
+//    cameraParameters[4].xPixels = 2448.0;
+//    //iphone5s = 5,
+//    cameraParameters[5].pixelSize = 0.0000015;
+//    cameraParameters[5].focalLength = 0.00412;
+//    cameraParameters[5].yPixels = 3264.0;
+//    cameraParameters[5].xPixels = 2448.0;
+//
+//#ifdef SQUAREIMAGES1080P
+//    int i;
+//
+//    for(i = 0;i <maxCameraModel; i++)
+//    {
+//        cameraParameters[i].xPixels = 1080.0;
+//        cameraParameters[i].yPixels = 1080.0;
+//    }
+//    
+//#endif
+//}
 
 // IMPORTANT: Call this method after you draw and before -presentRenderbuffer:.
 - (UIImage*)snapshot:(UIView*)eaglview
