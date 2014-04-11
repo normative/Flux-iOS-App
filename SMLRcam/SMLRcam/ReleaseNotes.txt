@@ -1,4 +1,6 @@
 Release Notes:
+- camera model now managed centrally
+
 ******************************************
 
 V0.24 B05

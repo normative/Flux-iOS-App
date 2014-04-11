@@ -92,7 +92,6 @@ extern NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibratio
 
 - (void)startLocating;
 - (void)endLocating;
-- (void)WGS84_to_ECEF:(sensorPose *)sp;
 - (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 - (bool)isKalmanSolutionValid;

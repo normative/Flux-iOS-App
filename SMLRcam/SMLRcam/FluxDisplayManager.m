@@ -56,7 +56,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         lastMotionPose.position.z = 0.0;
         lastMotionTime = [NSDate date];
         
-        [_locationManager WGS84_to_ECEF:&lastMotionPose];
+        [FluxTransformUtilities WGS84toECEFWithPose:&lastMotionPose];
         
         [self.locationManager startLocating];
         

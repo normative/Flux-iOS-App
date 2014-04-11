@@ -11,6 +11,8 @@
 #import "UIAlertView+Blocks.h"
 #import "FluxMotionManagerSingleton.h"
 #import "FluxScanViewController.h"
+#import "FluxTransformUtilities.h"
+
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidCompleteHeadingCalibration = @"FluxLocationServicesSingletonDidCompleteHeadingCalibration";
@@ -20,10 +22,6 @@ NSString* const FluxLocationServicesSingletonDidUpdateHeading = @"FluxLocationSe
 NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocationServicesSingletonDidUpdatePlacemark";
 
 NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy = @"FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy";
-
-#define PI M_PI
-#define a_WGS84 6378137.0
-#define b_WGS84 6356752.3142
 
 const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notification
 
@@ -158,8 +156,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     localUserPose.position.y =self.location.coordinate.longitude;
     localUserPose.position.z =self.location.altitude;
     
-    [self WGS84_to_ECEF:&localUserPose];
-    
+    [FluxTransformUtilities WGS84toECEFWithPose:&localUserPose];
     _userPose = localUserPose;
     
 }
@@ -485,30 +482,6 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 
 #pragma mark - Filtering
 
--(void) WGS84_to_ECEF:(sensorPose *)sp{
-    double normal;
-    double eccentricity;
-    double flatness;
-    
-    GLKVector3 lla_rad; //latitude, longitude, altitude
-    
-    lla_rad.x = sp->position.x*PI/180.0;
-    lla_rad.y = sp->position.y*PI/180.0;
-    lla_rad.z = sp->position.z;
-    
-    flatness = (a_WGS84 - b_WGS84) / a_WGS84;
-    
-    eccentricity = sqrt(flatness * (2 - flatness));
-    normal = a_WGS84 / sqrt(1 - (eccentricity * eccentricity * sin(lla_rad.x) *sin(lla_rad.x)));
-    
-    sp->ecef.x = (lla_rad.z + normal)* cos(lla_rad.x) * cos(lla_rad.y);
-    sp->ecef.y = (lla_rad.z + normal)* cos(lla_rad.x) * sin(lla_rad.y);
-    sp->ecef.z = (lla_rad.z + (1- eccentricity* eccentricity)*normal)* sin(lla_rad.x);
-    
-    
-}
-
-
 //Maximum 4 iterations;
 
 -(void) ComputeGeodecticFromkfECEF:(Geolocation *) kfgeolocation
@@ -544,8 +517,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         phi = phi_next;
     }
     
-    kfgeolocation->latitude  =  phi/PI * 180.0;
-    kfgeolocation->longitude = lambda/PI * 180.0;
+    kfgeolocation->latitude  =  phi / M_PI * 180.0;
+    kfgeolocation->longitude = lambda / M_PI * 180.0;
     kfgeolocation->altitude  = X_alt;
     
 }
@@ -558,9 +531,9 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     double p, theta, N;
     double eSq, e_pSq, diff;
     double X, Y, sin3theta, cos3theta;
-    diff = (a_WGS84 *a_WGS84) - (b_WGS84 *b_WGS84);
-    eSq = diff/(a_WGS84*a_WGS84);
-    e_pSq = diff/(b_WGS84*b_WGS84);
+    diff = (a_WGS84 * a_WGS84) - (b_WGS84 * b_WGS84);
+    eSq = diff / (a_WGS84 * a_WGS84);
+    e_pSq = diff / (b_WGS84 * b_WGS84);
     
     //test
     
@@ -575,22 +548,22 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     X =_kfPose.ecef.x;
     Y = _kfPose.ecef.y;
     p = sqrt(X*X + Y*Y);
-    theta = atan2(_kfPose.ecef.z*a_WGS84, p*b_WGS84);
+    theta = atan2(_kfPose.ecef.z * a_WGS84, p * b_WGS84);
     sin3theta = sin(theta);
-    sin3theta = sin3theta*sin3theta *sin3theta;
+    sin3theta = sin3theta * sin3theta * sin3theta;
     cos3theta = cos(theta);
-    cos3theta = cos3theta*cos3theta *cos3theta;
-    phi = atan2((_kfPose.ecef.z+(e_pSq*b_WGS84*sin3theta)), (p-(eSq*a_WGS84*cos3theta)));
+    cos3theta = cos3theta * cos3theta * cos3theta;
+    phi = atan2((_kfPose.ecef.z + (e_pSq * b_WGS84 * sin3theta)), (p - (eSq * a_WGS84 * cos3theta)));
     
-    N= a_WGS84/(sqrt(1-(eSq * sin(phi)*sin(phi))));
+    N = a_WGS84/(sqrt(1 - (eSq * sin(phi) * sin(phi))));
     
-    h = (p/cos(phi))-N;
+    h = (p / cos(phi)) - N;
     
     _kfPose.position.x = phi;
     _kfPose.position.y = lambda;
     _kfPose.position.z = h;
     
-    NSLog(@"lla[%f, %f, %f]", phi*180/PI, lambda*180/PI,h);
+    NSLog(@"lla[%f, %f, %f]", phi * 180.0 / M_PI, lambda * 180.0 / M_PI, h);
     
 }
 
@@ -600,63 +573,20 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 {
     
     float rotation_te[16];
+
+    [FluxTransformUtilities setupRotationMatrix:rotation_te fromPose:sp];
     
-    GLKVector3 lla_rad; //latitude, longitude, altitude
-    
-    lla_rad.x = sp->position.x*PI/180.0;
-    lla_rad.y = sp->position.y*PI/180.0;
-    lla_rad.z = sp->position.z;
-    
-    rotation_te[0] = -1.0 * sin(lla_rad.y);
-    rotation_te[1] = cos(lla_rad.y);
-    rotation_te[2] = 0.0;
-    rotation_te[3]= 0.0;
-    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
-    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[6] = cos(lla_rad.x);
-    rotation_te[7]= 0.0;
-    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
-    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[10] = sin(lla_rad.x);
-    rotation_te[11]= 0.0;
-    rotation_te[12]= 0.0;
-    rotation_te[13]= 0.0;
-    rotation_te[14]= 0.0;
-    rotation_te[15]= 1.0;
-    
-    kfrotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
-    
+    kfrotation_teM = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));    
 }
+
 -(void) tPInverseRotationKFilterWithPose:(sensorPose*) sp
 {
     
     float rotation_te[16];
     
-    GLKVector3 lla_rad; //latitude, longitude, altitude
-    
-    lla_rad.x = sp->position.x*PI/180.0;
-    lla_rad.y = sp->position.y*PI/180.0;
-    lla_rad.z = sp->position.z;
-    
-    rotation_te[0] = -1.0 * sin(lla_rad.y);
-    rotation_te[1] = cos(lla_rad.y);
-    rotation_te[2] = 0.0;
-    rotation_te[3]= 0.0;
-    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
-    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[6] = cos(lla_rad.x);
-    rotation_te[7]= 0.0;
-    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
-    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[10] = sin(lla_rad.x);
-    rotation_te[11]= 0.0;
-    rotation_te[12]= 0.0;
-    rotation_te[13]= 0.0;
-    rotation_te[14]= 0.0;
-    rotation_te[15]= 1.0;
+    [FluxTransformUtilities setupRotationMatrix:rotation_te fromPose:sp];
     
     kfInverseRotation_teM = GLKMatrix4MakeWithArray(rotation_te);
-    
 }
 
 
@@ -666,7 +596,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
 	GLKVector3 positionTP;
     positionTP = GLKVector3Make(0.0, 0.0, 0.0);
-    [self WGS84_to_ECEF:&_kfInit];
+    [FluxTransformUtilities WGS84toECEFWithPose:&_kfInit];
     [self tPlaneRotationKFilterWithPose:&_kfInit];
     [self tPInverseRotationKFilterWithPose:&_kfInit];
     
@@ -680,14 +610,11 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     //planar
     _kfMeasure.position.z = _kfInit.position.z;
     
-    
-    [self WGS84_to_ECEF:&_kfMeasure];
-    
+    [FluxTransformUtilities WGS84toECEFWithPose:&_kfMeasure];
     
     positionTP.x = _kfMeasure.ecef.x - _kfInit.ecef.x;
     positionTP.y = _kfMeasure.ecef.y - _kfInit.ecef.y;
     positionTP.z = _kfMeasure.ecef.z - _kfInit.ecef.z;
-    
     
     positionTP = GLKMatrix4MultiplyVector3(kfrotation_teM, positionTP);
     
@@ -717,7 +644,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     double enuHeadingRad;
     double stepsize =0.4;
     
-    enuHeadingRad = (90.0 + (360 - ((direction == -1) ? self.heading + 180.0 : self.heading)))/180.0 * PI;
+    enuHeadingRad = (90.0 + (360 - ((direction == -1) ? self.heading + 180.0 : self.heading))) / M_PI * 180.0;
     if (enuHeadingRad < 0.0)
     {
         enuHeadingRad += 360.0;
@@ -727,7 +654,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         enuHeadingRad -= 360.0;
     }
     
-    DDLogVerbose(@"#Event: STEP step_size %.2f, direction %.2f, raw_heading: %.2f, lat: %.8f, long: %.8f msg: direction flag %d", stepsize, enuHeadingRad*180.0/PI, self.heading,
+    DDLogVerbose(@"#Event: STEP step_size %.2f, direction %.2f, raw_heading: %.2f, lat: %.8f, long: %.8f msg: direction flag %d", stepsize, enuHeadingRad * 180.0 / M_PI, self.heading,
                  self.location.coordinate.latitude, self.location.coordinate.longitude, direction);
 
     kfXDisp = stepsize * cos(enuHeadingRad);
@@ -930,11 +857,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
 	GLKVector3 positionTP;
     positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
-//    setParametersTP(usp->position);   // empty function
-    
-    [self WGS84_to_ECEF:usp];
-    
-//    tangentplaneRotation(usp);        // teM result not used here
+    [FluxTransformUtilities WGS84toECEFWithPose:usp];
     
     GLKVector3 zRay = GLKVector3Make(0.0, 0.0, -1.0);
     zRay = GLKVector3Normalize(zRay);
@@ -974,7 +897,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         s.position.y = lon[i];
         s.position.z = alt[i];
         
-        [self WGS84_to_ECEF:&s];
+        [FluxTransformUtilities WGS84toECEFWithPose:&s];
         _kflocation.x = s.ecef.x;
         _kflocation.y = s.ecef.y;
         _kflocation.z = s.ecef.z;
@@ -982,10 +905,7 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
         [self ComputeGeodecticFromkfECEF:&kfgeo];
         
         NSLog(@"[bef]aft lat:[ %f ] %f | lon:[ %f ] %f | alt:[ %f ] %f",lat[i], kfgeo.latitude, lon[i], kfgeo.longitude, alt[i], kfgeo.altitude);
-      
     }
-    
-    
 }
 
 -(void) printDebugInfo
