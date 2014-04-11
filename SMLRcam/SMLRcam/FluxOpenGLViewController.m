@@ -1910,44 +1910,34 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 //    NSLog(@"Loading texture of size (%f, %f) with scale %f", image.size.width, image.size.height, image.scale);
     
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
     
-    if (tel.imageType == thumb)
-    {
-        NSError *error;
-
-        _texture[tIndex] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        if (error)
-        {
-            _texture[tIndex] = nil;
-            NSLog(@"Error loading Image texture (error: %@)", error);
-        }
-    }
-    else
-    {
-        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        [self.asyncTextureLoader textureWithContentsOfData:imgData options:options queue:queue completionHandler:^(GLKTextureInfo *textureInfo, NSError *error) {
-            
-//        dispatch_sync(dispatch_get_main_queue(), ^{
-            if (error)
-            {
-                [tel.imageCacheObject endContentAccess];
+        NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+
+            dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+            [self.asyncTextureLoader textureWithContentsOfData:imgData options:options queue:queue completionHandler:^(GLKTextureInfo *textureInfo, NSError *error) {
                 
-                tel.used = NO;
-                tel.texturedLoaded = NO;
-                tel.renderOrder = NSUIntegerMax;
-                
-                NSLog(@"Error loading Image texture (error: %@)", error);
-            }
-            else
-            {
-                _texture[tIndex] = textureInfo;
-                tel.texturedLoaded = YES;
-            }
-//        });
-        }];
-    }
+                if (error)
+                {
+                    [tel.imageCacheObject endContentAccess];
+                    
+                    tel.used = NO;
+                    tel.texturedLoaded = NO;
+                    tel.renderOrder = NSUIntegerMax;
+                    
+                    NSLog(@"Error loading Image texture (error: %@)", error);
+                }
+                else
+                {
+                    _texture[tIndex] = textureInfo;
+                    tel.texturedLoaded = YES;
+                }
+            }];
+        });
+    });
 }
 
 - (int)pickSlotToReplace:(NSMutableArray *)unusedSlots withRemaining:(NSMutableArray *)remainingLocalIDs
