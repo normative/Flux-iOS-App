@@ -90,6 +90,8 @@ const NSString *FluxDevicePlatformStrings[] = {
     @"iPhone 5s"
 };
 
+// this should really be captured in FluxDeviceInfoSingleton and factored into a (different?) property
+#define HD_TO_RAW   1.454
 
 @implementation FluxDeviceInfoSingleton
 
@@ -123,20 +125,20 @@ const NSString *FluxDevicePlatformStrings[] = {
         case fdp_iPadAir:
         case fdp_iPadMini1:
         case fdp_iPadMini2:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412 andHdToRawScale:1.454];   // same as iPhone 5, 5c for now.  this may need to change
             break;
         case fdp_iPhone4s:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00428];
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00428 andHdToRawScale:1.454];
             break;
         case fdp_iPhone5s:
-            cm = [cm initWithPixelSize:0.0000015 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
+            cm = [cm initWithPixelSize:0.0000015 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412 andHdToRawScale:1.454];
             break;
         case fdp_unknown:
         case fdp_simulator:
         case fdp_iPhone5:
         case fdp_iPhone5c:
         default:
-            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412];
+            cm = [cm initWithPixelSize:0.0000014 andXPixels:1080.0 andYPixels:1920.0 andFocalLength:0.00412 andHdToRawScale:1.454];
             break;
     }
     
