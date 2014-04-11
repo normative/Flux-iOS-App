@@ -571,7 +571,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     
 //    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
     [self calculateTimeAdjustedImageList];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
 }
 
 - (void)timeBracketWillBeginScrolling
