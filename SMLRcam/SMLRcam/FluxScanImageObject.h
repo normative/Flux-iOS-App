@@ -46,21 +46,11 @@ typedef enum LocationDataType : NSUInteger {
     location_data_from_homography = 2
 } LocationDataType;
 
-typedef enum _FluxCameraModelEnum : NSUInteger {
-    unknown_cam = 0,
-    iphone4  = 1,
-    iphone4s = 2,
-    iphone5  = 3,
-    iphone5c = 4,
-    iphone5s = 5,
-    maxCameraModel = 6
-} FluxCameraModelEnum;
-
 @interface FluxScanImageObject : NSObject <MKAnnotation>
 
 // Image and User properties
+@property (nonatomic) int devicePlatform;   // leave as int or will have issues with circular dependencies.  Is actually a FluxDevicePlatform.
 @property (nonatomic) int cameraID;
-@property (nonatomic) FluxCameraModelEnum cameraModel;
 @property (nonatomic, strong) NSString *cameraModelStr;
 @property (nonatomic) int categoryID;
 @property (nonatomic, strong) NSString* descriptionString;
@@ -116,10 +106,7 @@ typedef enum _FluxCameraModelEnum : NSUInteger {
 @property (nonatomic) NSUInteger numFeatureMatchFailMatchErrors;
 @property (nonatomic) NSUInteger numFeatureMatchFailHomographyErrors;
 
-+ (FluxCameraModelEnum)cameraModelFromModelStr:(NSString *)cameraModelStr;
-
 - (id)initWithUserID:(int)userID
-//  atTimestampString:(NSString*)timestampStr
           atTimestamp:(NSDate *)timeStamp
           andCameraID:(int)camID
         andCategoryID:(int)catID

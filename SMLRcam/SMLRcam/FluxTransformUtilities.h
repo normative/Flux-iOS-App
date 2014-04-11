@@ -9,6 +9,11 @@
 #import "FluxOpenGLCommon.h"
 #import <Foundation/Foundation.h>
 
+#define M_PI_180    (double)(M_PI / 180.0)
+
+#define a_WGS84 6378137.0
+#define b_WGS84 6356752.3142
+
 typedef struct
 {
     GLKVector3 normal;
@@ -17,8 +22,11 @@ typedef struct
 } rntTransforms;
 
 
-
 @interface FluxTransformUtilities : NSObject
+
++(void)WGS84toECEFWithPose:(sensorPose *)sp;
++(void)setupRotationMatrix:(float *)rotation fromPose:(sensorPose *)sp;
++(void)tangentplaneRotation:(GLKMatrix4 *)rot_M fromPose:(sensorPose *)sp;
 
 + (void) computeImagePoseInECEF:(sensorPose*)iPose
                        userPose:(sensorPose)upose
