@@ -79,7 +79,6 @@ enum
 };
 
 GLint uniforms[NUM_UNIFORMS];
-//int models[maxCameraModel];
 // Attribute index.
 enum
 {
@@ -1481,13 +1480,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 }
 
-//-(GLKMatrix4) computeImageCameraPerspectivewithCameraModel:(int) model
 -(GLKMatrix4) computeImageCameraPerspectivewithDevicePlatform:(FluxDevicePlatform) platform
 {
     GLKMatrix4 icameraPerspective;
-//    float _fov = 2 * atan2(cameraParameters[model].pixelSize* cameraParameters[model].yPixels/2.0, cameraParameters[model].focalLength   ); //radians
-//    float aspect = cameraParameters[model].xPixels / cameraParameters[model].yPixels;
-
     FluxCameraModel *cam = [FluxDeviceInfoSingleton cameraModelForPlatform:platform];
     // this is the direct conversion:
     // use xPixels rather than yPixels because originally cameraParameters.yPixels = cameraParameters.xPixels = 1080
@@ -1542,7 +1537,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                                vpimage.up.x, vpimage.up.y, vpimage.up.z);
             
-//            icameraPerspective = [self computeImageCameraPerspectivewithCameraModel:(int)scanimageobject.cameraModel];
             icameraPerspective = [self computeImageCameraPerspectivewithDevicePlatform:scanimageobject.devicePlatform];
             tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
             
@@ -1611,7 +1605,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     */
-//    [self initCameraModels];
+
     [self setupBuffers];
     [self loadAlphaTexture];
     [self loadBorderTexture];
@@ -1694,53 +1688,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 2*sizeof(GLfloat), 0);
 }
 
-//-(void) initCameraModels
-//{
-//    
-//    cameraParameters = (fluxCameraParameters*)malloc(maxCameraModel * sizeof(fluxCameraParameters));
-//    
-//    //unknown treated as iPhone5
-//    cameraParameters[0].pixelSize = 0.0000014;
-//    cameraParameters[0].focalLength = 0.0041;
-//    cameraParameters[0].yPixels = 3264.0;
-//    cameraParameters[0].xPixels = 2448.0;
-//    //iphone4  = 1,
-//    cameraParameters[1].pixelSize = 0.00000175;
-//    cameraParameters[1].focalLength = 0.00385;
-//    cameraParameters[1].yPixels = 3264.0;
-//    cameraParameters[1].xPixels = 2448.0;
-//    //iphone4s = 2,
-//    cameraParameters[2].pixelSize = 0.0000014;
-//    cameraParameters[2].focalLength = 0.00428;
-//    cameraParameters[2].yPixels = 3264.0;
-//    cameraParameters[2].xPixels = 2448.0;
-//    //iphone5  = 3,
-//    cameraParameters[3].pixelSize = 0.0000014;
-//    cameraParameters[3].focalLength = 0.0041;
-//    cameraParameters[3].yPixels = 3264.0;
-//    cameraParameters[3].xPixels = 2448.0;
-//    //iphone5c = 4,
-//    cameraParameters[4].pixelSize = 0.0000014;
-//    cameraParameters[4].focalLength = 0.0041;
-//    cameraParameters[4].yPixels = 3264.0;
-//    cameraParameters[4].xPixels = 2448.0;
-//    //iphone5s = 5,
-//    cameraParameters[5].pixelSize = 0.0000015;
-//    cameraParameters[5].focalLength = 0.00412;
-//    cameraParameters[5].yPixels = 3264.0;
-//    cameraParameters[5].xPixels = 2448.0;
-//
-//#ifdef SQUAREIMAGES1080P
-//    int i;
-//
-//    for(i = 0;i <maxCameraModel; i++)
-//    {
-//        cameraParameters[i].xPixels = 1080.0;
-//        cameraParameters[i].yPixels = 1080.0;
-//    }
-//    
-//#endif
-//}
 
 // IMPORTANT: Call this method after you draw and before -presentRenderbuffer:.
 - (UIImage*)snapshot:(UIView*)eaglview
