@@ -704,7 +704,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         }];
         [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Image Upload Failed"
-                                                                message:@"Something happened when uploading one of your images, we're really sorry about that."
+                                                                message:@"Something happened when uploading one of your images. We'll schedule it to upload a bit later."
                                                                delegate:nil
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil];
@@ -719,6 +719,65 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                              }];
         }];
         [self.fluxDisplayManager.fluxDataManager uploadImageryData:[objectsArr objectAtIndex:i] withImage:[imagesArr objectAtIndex:i] withDataRequest:dataRequest withHistoricalImage:historicalImg];
+    }
+}
+
+- (void)checkForFailedUploads{
+    NSArray*failedUploadsArr = [self.fluxDisplayManager.fluxDataManager failedUploads];
+    if (failedUploadsArr) {
+        //failed uploads exist, upload them
+        [UIView animateWithDuration:0.1f
+                         animations:^{
+                             [progressView setAlpha:1.0];
+                             [progressView setProgress:0.0];
+                         }
+                         completion:nil];
+        
+        uploadsCompleted = 0;
+        totalUploads = (int)failedUploadsArr.count;
+        
+        for (int i = 0; i<failedUploadsArr.count; i++) {
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString*folderDirectory = [NSString stringWithFormat:@"%@%@",[paths objectAtIndex:0],@"/imageUploadCache"];
+            NSString *srcImagePath = [NSString stringWithFormat:@"%@/%@", folderDirectory, [failedUploadsArr objectAtIndex:i]];
+            
+            FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+            [dataRequest setRetryUploadInProgress:^(FluxScanImageObject *imageObject, FluxDataRequest *inProgressDataRequest){
+                //the progress of the current upload
+                float currentProgress = (float)((float)inProgressDataRequest.bytesUploaded/(float)inProgressDataRequest.totalByteSize);
+                
+                //the progress of the current segment. For example, when uploading 3 images, this value would be currentUpload% as a percentage of 0.33
+                float currentSegmentProgress = currentProgress*(1/(float)totalUploads);
+                
+                //takes the current segment percentage, and adds any completed segments
+                float visibleProgress = currentSegmentProgress+(uploadsCompleted/(float)totalUploads);
+                [progressView setProgress:visibleProgress-0.07 animated:YES];
+            }];
+            
+            [dataRequest setRetryUploadComplete:^(FluxScanImageObject *updatedImageObject, FluxDataRequest *completedDataRequest){
+                uploadsCompleted++;
+                float doneTest = uploadsCompleted/totalUploads;
+                
+                if (doneTest == 1) {
+                    [progressView setProgress:1.0 animated:YES];
+                    [self performSelector:@selector(hideProgressView) withObject:nil afterDelay:0.5];
+                }
+                else{
+                    [progressView setProgress:(float)uploadsCompleted/totalUploads animated:YES];
+                }
+            }];
+            
+            [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                [UIView animateWithDuration:0.2f
+                                 animations:^{
+                                     [progressView setAlpha:0.0];
+                                 }
+                                 completion:^(BOOL finished){
+                                     progressView.progress = 0;
+                                 }];
+            }];
+            [self.fluxDisplayManager.fluxDataManager retryFailedUploadWithFileURL:srcImagePath andDataRequest:dataRequest];
+        }
     }
 }
 
@@ -925,7 +984,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     
     if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
     {
-        [self.cameraButton setAlpha:0.4];
+//        [self.cameraButton setAlpha:0.4];
     }
     
     debugPressCount = 0;
@@ -947,6 +1006,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     if (![defaults boolForKey:@"showedTutorial"]) {
         [self showTutorial];
     }
+    [self checkForFailedUploads];
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -955,7 +1015,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
-        [self checkForFollowerRequests];
+    [self checkForFollowerRequests];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

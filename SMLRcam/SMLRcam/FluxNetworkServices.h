@@ -39,6 +39,10 @@ extern NSString* const FluxServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices uploadProgress:(long long)bytesSent
             ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReUploadImage:(FluxScanImageObject *)updatedImageObject
+           andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices retryUploadProgress:(long long)bytesSent
+   ofExpectedPacketSize:(long long)size andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailWithError:(NSError*)e andNaturalString:(NSString*)string
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didFailImageDownloadWithError:(NSError*)e andNaturalString:(NSString*)string
@@ -117,6 +121,9 @@ extern NSString* const FluxServerURL;
     
     NSMutableDictionary*outstandingRequestLocalURLs;
     NSMutableDictionary*uploadedImageObjects;
+    
+    __block NSTimer*networkStatusAlertTimer;
+    __block AFNetworkReachabilityStatus previousStatus;
 }
 @property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
 //@property (nonatomic, getter = get_token) NSString *token;
@@ -174,6 +181,11 @@ extern NSString* const FluxServerURL;
  uploads an image. All account info is stored within the FluxScanImageObject
  **/
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;
+
+/**
+ re-uploads a failed image located at the supplied URL.
+ **/
+- (void)retryFailedUploadFromFile:(NSString*)fileURL andRequestID:(FluxRequestID *)requestID;
 
 /**
  Removes an image from the Flux DB given an imageID.
