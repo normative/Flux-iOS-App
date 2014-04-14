@@ -1,5 +1,6 @@
 Release Notes:
 - camera model now managed centrally
+- asynchronous loading of textures reduces jitter in camera frame rendering and reduces loading on main thread
 
 ******************************************
 
