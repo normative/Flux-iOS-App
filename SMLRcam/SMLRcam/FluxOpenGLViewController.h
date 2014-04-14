@@ -89,6 +89,7 @@
    
 }
 
+@property (strong) GLKTextureLoader *asyncTextureLoader;
 @property (strong, nonatomic) EAGLContext *context;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
 

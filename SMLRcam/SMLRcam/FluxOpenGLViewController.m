@@ -173,7 +173,7 @@ void init_camera_model()
     FluxCameraModel *cm = [FluxDeviceInfoSingleton sharedDeviceInfo].cameraModel;
 
 //	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
-	float _fov = 2.0 * atan2(cm.pixelSize * cm.yPixelsScaleToRaw / 2.0, cm.focalLength); //radians
+	float _fov = 2.0 * atan2(cm.pixelSize * cm.xPixels / 2.0, cm.focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov * 180.0 / M_PI);
     float aspect = cm.xPixels / cm.yPixels;
     camera_perspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
@@ -1490,7 +1490,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength); //radians
     
     // thinking this is more what it should be given the relative capture areas of the raw cam vs HD video
-    float _fov = 2 * atan2(cam.pixelSize * cam.xPixelsScaleToRaw / 2.0, cam.focalLength   ); //radians
+    float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength   ); //radians
     float aspect = cam.xPixels / cam.xPixels;
     icameraPerspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     return icameraPerspective;
@@ -1581,6 +1581,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     [EAGLContext setCurrentContext:self.context];
     
+    self.asyncTextureLoader = [[GLKTextureLoader alloc] initWithSharegroup:self.context.sharegroup];
+
     [self loadShaders];
     
     [self checkShaderLimitations];
@@ -1763,28 +1765,45 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 #pragma mark - render image texture and metadata selection and loading methods 
 
-- (NSError *)loadTexture:(int)tIndex withImage:(UIImage *)image
+- (void)loadTexture:(int)tIndex withImage:(UIImage *)image withTextureObject:(FluxTextureToImageMapElement *)tel
 {
-    
-    // load the actual texture
-    NSError *error;
-    
     [self deleteImageTextureIdx:tIndex];
 
+    // Store copies of properties of the texture for verification before replacing texture
+    FluxLocalID *localID = [tel.localID copy];
+    FluxImageType imageTypeToLoad = tel.requestedImageType;
+    
     // Load the new texture
 //    NSLog(@"Loading texture of size (%f, %f) with scale %f", image.size.width, image.size.height, image.scale);
     
     NSDictionary *options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:GLKTextureLoaderOriginBottomLeft];
-    NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
-    _texture[tIndex] = [GLKTextureLoader textureWithContentsOfData:imgData options:options error:&error];
     
-    if (error)
-    {
-        _texture[tIndex] = nil;
-        NSLog(@"Error loading Image texture (error: %@)", error);
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        NSData *imgData = UIImageJPEGRepresentation(image, 1); // 1 is compression quality
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
 
-    return error;
+            dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+            [self.asyncTextureLoader textureWithContentsOfData:imgData options:options queue:queue completionHandler:^(GLKTextureInfo *textureInfo, NSError *error) {
+                
+                if (error)
+                {
+                    NSLog(@"Error loading Image texture (error: %@)", error);
+                }
+                else if ((tel.storedImageType < imageTypeToLoad) && [tel.localID isEqualToString:localID])
+                {
+                    _texture[tIndex] = textureInfo;
+                    tel.texturedLoaded = YES;
+                    tel.storedImageType = imageTypeToLoad;
+                }
+                else
+                {
+                    NSLog(@"Texture slot changed since load requested. Doing nothing.");
+                }
+            }];
+        });
+    });
 }
 
 - (int)pickSlotToReplace:(NSMutableArray *)unusedSlots withRemaining:(NSMutableArray *)remainingLocalIDs
@@ -1844,40 +1863,42 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
     
-    // If we are replacing with a different localID or image size, then clean up reference counts for the old cached image
-    if (![localID isEqualToString:tel.localID] || imageType != tel.imageType)
+    // Check if we are replacing the stored texture
+    // Need to check if storedImageType is none, since lowest_res is equivalent to none, and we request lowest_res in some cases
+    if (![localID isEqualToString:tel.localID] || (imageType != tel.storedImageType) || (tel.storedImageType == none))
     {
+        tel.texturedLoaded = NO;
+        tel.storedImageType = none;
+        
+        // If we are replacing with a different localID or image size, then clean up reference counts for the old cached image
         // End access for existing texture element/image cache object
         [tel.imageCacheObject endContentAccess];
         tel.imageCacheObject = nil;
-    }
-    
-    // Populate with new image data
-    FluxImageType rtype = none;
-    
-    // Fetch new image cache object to replace the old one
-    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
-    
-    if (imageCacheObj.image != nil)
-    {
-        // Load texture into slot
-        NSError *error = [self loadTexture:tel.textureIndex withImage:imageCacheObj.image];
         
-        if (error)
+        // Populate with new image data
+        FluxImageType rtype = none;
+        
+        // Fetch new image cache object to replace the old one
+        FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
+        
+        if (imageCacheObj.image != nil)
         {
-            [imageCacheObj endContentAccess];
-            success = NO;
+            tel.texturedLoaded = NO;
+            tel.requestedImageType = rtype;
+            tel.imageCacheObject = imageCacheObj;
+            tel.localID = ire.localID;
+            
+            // Load texture into slot
+            [self loadTexture:tel.textureIndex withImage:imageCacheObj.image withTextureObject:tel];
         }
         else
         {
-            tel.imageType = rtype;
-            tel.imageCacheObject = imageCacheObj;
-            tel.used = true;
-            tel.localID = ire.localID;
+            success = NO;
         }
     }
     else
     {
+        // Case where we already have stored exactly what we are looking for. Return NO since we didn't replace anything.
         success = NO;
     }
     
@@ -1909,11 +1930,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             tel.used = YES;
             tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
+            
+            // If already loaded, set accordingly (happens when we toggle used off then on)
+            if (tel.storedImageType == tel.requestedImageType)
+            {
+                tel.texturedLoaded = YES;
+            }
+            
             [remainingLocalIDs removeObject:tel.localID];
             
             // Pick a higher resolution texture to load (only select from textures already in the correct slot)
             FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-            if (!highResAddedThisCycle && (tel.imageType < ire.imageRenderType))
+            if (!highResAddedThisCycle && (tel.requestedImageType < ire.imageRenderType))
             {
                 if ([self replaceDataInTexture:tel forLocalID:ire.localID withImageType:ire.imageRenderType])
                 {
@@ -1924,6 +1952,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         else
         {
             tel.used = NO;
+            tel.texturedLoaded = NO;
             tel.renderOrder = NSUIntegerMax;
             [unusedTextureMapSlots addObject:@(i)];
         }
@@ -1936,13 +1965,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if (slotToUse >= 0)
         {
             FluxTextureToImageMapElement *tel = self.textureMap[slotToUse];
-            
+
+            tel.used = YES;
+            tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
+
             // Load information into the new texture
-            if ([self replaceDataInTexture:tel forLocalID:localID withImageType:lowest_res])
-            {
-                tel.used = YES;
-                tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
-            }
+            [self replaceDataInTexture:tel forLocalID:localID withImageType:lowest_res];
         }
     }
     
@@ -2138,7 +2166,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     {
         int i = tel.textureIndex;
 
-        if ((tel.used) && (_texture[i] != nil) && (_validMetaData[i]==1))
+        if ((tel.used) && (tel.texturedLoaded) && (_texture[i] != nil) && (_validMetaData[i]==1))
         {
             sio = ((FluxImageRenderElement *)[self.fluxDisplayManager getRenderElementForKey:tel.localID]).imageMetadata;
             sepia = (sio.location_data_type == location_data_from_homography || sio.location_data_type == location_data_valid_ecef) ? 0.0 : 1.0;
