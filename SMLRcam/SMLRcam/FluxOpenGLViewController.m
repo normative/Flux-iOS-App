@@ -180,7 +180,8 @@ GLKVector4 result[4];
 #pragma mark - OpenGL Utility Routines
 void init_camera_model()
 {
-	float _fov = 2 * atan2(iPhone5_pixelsize*1920.0/2.0, iPhone5_focalLength); //radians
+	float _fov = 2 * atan2(iPhone5_pixelsize*1080.0/2.0, iPhone5_focalLength); //radians
+    
     fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
     float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
     camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
