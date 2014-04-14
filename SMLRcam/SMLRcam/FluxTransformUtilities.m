@@ -10,8 +10,65 @@
 
 enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 
-
 @implementation FluxTransformUtilities
+
++(void)WGS84toECEFWithPose:(sensorPose *)sp
+{
+    double normal;
+    double eccentricity;
+    double flatness;
+    
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x * M_PI_180;
+    lla_rad.y = sp->position.y * M_PI_180;
+    lla_rad.z = sp->position.z;
+    
+    flatness = (a_WGS84 - b_WGS84) / a_WGS84;
+    
+    eccentricity = sqrt(flatness * (2 - flatness));
+    normal = a_WGS84 / sqrt(1 - (eccentricity * eccentricity * sin(lla_rad.x) * sin(lla_rad.x)));
+    
+    sp->ecef.x = (lla_rad.z + normal) * cos(lla_rad.x) * cos(lla_rad.y);
+    sp->ecef.y = (lla_rad.z + normal) * cos(lla_rad.x) * sin(lla_rad.y);
+    sp->ecef.z = (lla_rad.z + (1 - eccentricity * eccentricity) * normal) * sin(lla_rad.x);
+}
+
++(void)setupRotationMatrix:(float *)rotation fromPose:(sensorPose *)sp
+{
+    GLKVector3 lla_rad; //latitude, longitude, altitude
+    
+    lla_rad.x = sp->position.x * M_PI_180;
+    lla_rad.y = sp->position.y * M_PI_180;
+    lla_rad.z = sp->position.z;
+    
+    rotation[0]  = -1.0 * sin(lla_rad.y);
+    rotation[1]  = cos(lla_rad.y);
+    rotation[2]  = 0.0;
+    rotation[3]  = 0.0;
+    rotation[4]  = -1.0 * cos(lla_rad.y) * sin(lla_rad.x);
+    rotation[5]  = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
+    rotation[6]  = cos(lla_rad.x);
+    rotation[7]  = 0.0;
+    rotation[8]  = cos(lla_rad.x) * cos(lla_rad.y);
+    rotation[9]  = cos(lla_rad.x) * sin(lla_rad.y);
+    rotation[10] = sin(lla_rad.x);
+    rotation[11] = 0.0;
+    rotation[12] = 0.0;
+    rotation[13] = 0.0;
+    rotation[14] = 0.0;
+    rotation[15] = 1.0;
+}
+
++(void)tangentplaneRotation:(GLKMatrix4 *)rot_M fromPose:(sensorPose *)sp
+{
+    float rotation_te[16];
+
+    [FluxTransformUtilities setupRotationMatrix:rotation_te fromPose:sp];
+
+    *rot_M = GLKMatrix4Transpose(GLKMatrix4MakeWithArray(rotation_te));
+}
+
 
 #pragma -- WGS84 tranforms
 
@@ -20,29 +77,8 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     
     float rotation_te[16];
     
-    GLKVector3 lla_rad; //latitude, longitude, altitude
-    
-    lla_rad.x = sp->position.x*M_PI/180.0;
-    lla_rad.y = sp->position.y*M_PI/180.0;
-    lla_rad.z = sp->position.z;
-    
-    rotation_te[0] = -1.0 * sin(lla_rad.y);
-    rotation_te[1] = cos(lla_rad.y);
-    rotation_te[2] = 0.0;
-    rotation_te[3]= 0.0;
-    rotation_te[4] = -1.0 * cos(lla_rad.y)* sin(lla_rad.x);
-    rotation_te[5] = -1.0 * sin(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[6] = cos(lla_rad.x);
-    rotation_te[7]= 0.0;
-    rotation_te[8] = cos(lla_rad.x) * cos(lla_rad.y);
-    rotation_te[9] = cos(lla_rad.x) * sin(lla_rad.y);
-    rotation_te[10] = sin(lla_rad.x);
-    rotation_te[11]= 0.0;
-    rotation_te[12]= 0.0;
-    rotation_te[13]= 0.0;
-    rotation_te[14]= 0.0;
-    rotation_te[15]= 1.0;
-    
+    [FluxTransformUtilities setupRotationMatrix:rotation_te fromPose:sp];
+
     return GLKMatrix4MakeWithArray(rotation_te);
     
 }
@@ -57,24 +93,7 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     normal1V    = GLKVector3Normalize(normal1V);
     normal2V    = GLKVector3Normalize(normal2V);
     planeNormal = GLKVector3Normalize(planeNormal);
-    
-    // double dotProduct1 = planeNormal.x * normal1[0] + planeNormal.y * normal1[1] + planeNormal.z * normal1[2];
-    // double dotProduct2 = planeNormal.x * normal2[0] + planeNormal.y * normal2[1] + planeNormal.z * normal2[2];
-    
-    //Positive depth constraint to get 2 of the 4 possible solutions;
-    /*
-     if(dotProduct1 < 0.0)
-     {
-     dotProduct1= planeNormal.x * -1.0* normal1[0] + planeNormal.y * -1.0 * normal1[1] + planeNormal.z * -1.0 *normal1[2];
-     solution1 = SOLUTION1Neg;
-     }
-     
-     if(dotProduct2 < 0.0)
-     {
-     dotProduct2 = planeNormal.x * -1.0 * normal2[0] + planeNormal.y * -1.0 * normal2[1] + planeNormal.z * -1.0 * normal2[2];
-     solution2 = SOLUTION2Neg;
-     }
-     */
+
     double dotProduct1 = GLKVector3DotProduct(normal1V, planeNormal);
     double dotProduct2 = GLKVector3DotProduct(normal2V, planeNormal);
     if(dotProduct1 <0)
@@ -112,55 +131,54 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     double rotation[9];
     double translation[3];
     double normal[3];
-    int i;
     GLKVector3 cameraNormal = GLKVector3Make(0.0, 0.0, 1.0);
     
     GLKMatrix4 transformMat = GLKMatrix4MakeRotation(M_PI, 1.0, 0.0, 0.0);
     
     
-    //DEBUG code
-    rntTransforms transforms[4];
-    
-    transforms[0].translation.x = translation1[0];
-    transforms[0].translation.y = translation1[1];
-    transforms[0].translation.z = translation1[2];
-    
-    transforms[1].translation.x = translation2[0];
-    transforms[1].translation.y = translation2[1];
-    transforms[1].translation.z = translation2[2];
-    
-    transforms[2].translation.x = -1.0*translation1[0];
-    transforms[2].translation.y = -1.0*translation1[1];
-    transforms[2].translation.z = -1.0*translation1[2];
-    
-    transforms[3].translation.x = -1.0*translation2[0];
-    transforms[3].translation.y = -1.0*translation2[1];
-    transforms[3].translation.z = -1.0*translation2[2];
-    
-    
-    transforms[0].normal.x =  normal1[0];
-    transforms[0].normal.y =  normal1[1];
-    transforms[0].normal.z =  normal1[2];
-    
-    transforms[1].normal.x =  normal2[0];
-    transforms[1].normal.y =  normal2[1];
-    transforms[1].normal.z =  normal2[2];
-    
-    transforms[2].normal.x =  -1.0 * normal1[0];
-    transforms[2].normal.y =  -1.0 * normal1[1];
-    transforms[2].normal.z =  -1.0 * normal1[2];
-    
-    transforms[3].normal.x =  -1.0 * normal2[0];
-    transforms[3].normal.y =  -1.0 * normal2[1];
-    transforms[3].normal.z =  -1.0 * normal2[2];
-    
-    for(i=0;i<4;i++)
-    {
-        transforms[i].translation =GLKMatrix4MultiplyVector3(transformMat, transforms[i].translation);
-        transforms[i].normal =GLKMatrix4MultiplyVector3(transformMat, transforms[i].normal);
-    }
-    
-    //DEBUG ends
+//    //DEBUG code
+//    rntTransforms transforms[4];
+//
+//    transforms[0].translation.x = translation1[0];
+//    transforms[0].translation.y = translation1[1];
+//    transforms[0].translation.z = translation1[2];
+//    
+//    transforms[1].translation.x = translation2[0];
+//    transforms[1].translation.y = translation2[1];
+//    transforms[1].translation.z = translation2[2];
+//    
+//    transforms[2].translation.x = -1.0*translation1[0];
+//    transforms[2].translation.y = -1.0*translation1[1];
+//    transforms[2].translation.z = -1.0*translation1[2];
+//    
+//    transforms[3].translation.x = -1.0*translation2[0];
+//    transforms[3].translation.y = -1.0*translation2[1];
+//    transforms[3].translation.z = -1.0*translation2[2];
+//    
+//    
+//    transforms[0].normal.x =  normal1[0];
+//    transforms[0].normal.y =  normal1[1];
+//    transforms[0].normal.z =  normal1[2];
+//    
+//    transforms[1].normal.x =  normal2[0];
+//    transforms[1].normal.y =  normal2[1];
+//    transforms[1].normal.z =  normal2[2];
+//    
+//    transforms[2].normal.x =  -1.0 * normal1[0];
+//    transforms[2].normal.y =  -1.0 * normal1[1];
+//    transforms[2].normal.z =  -1.0 * normal1[2];
+//    
+//    transforms[3].normal.x =  -1.0 * normal2[0];
+//    transforms[3].normal.y =  -1.0 * normal2[1];
+//    transforms[3].normal.z =  -1.0 * normal2[2];
+//    
+//    for(int i=0;i<4;i++)
+//    {
+//        transforms[i].translation =GLKMatrix4MultiplyVector3(transformMat, transforms[i].translation);
+//        transforms[i].normal =GLKMatrix4MultiplyVector3(transformMat, transforms[i].normal);
+//    }
+//    
+//    //DEBUG ends
     
     int solution = 0;
     
@@ -213,12 +231,6 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     
     
     GLKMatrix4 rotationMatrix = GLKMatrix4MakeWithArray(rotation44);
-    // rotationMatrix =GLKMatrix4Invert(rotationMatrix, &invertible);
-    
-    
-    //GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
-    //GLKMatrix4 tpuRotationMatrix =  GLKMatrix4Multiply(matrixTP, tmprotMatrix);
-    //iPose->rotationMatrix = GLKMatrix4Multiply(rotationMatrixT, tpuRotationMatrix);
     
     GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
     
@@ -229,21 +241,10 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     positionTP = GLKMatrix4MultiplyVector3(transformMat, positionTP);
     
     iPose->position = positionTP;
-    //iPose->ecef.x = normal[0];
-    //iPose->ecef.y = normal[1];
-    //iPose->ecef.z = normal[2];
     
-    // normalR = GLKMatrix4Invert(normalR, &invertible);
     GLKMatrix4 rotationMatrixT = GLKMatrix4Multiply(transformMat, rotationMatrix);
     
     iPose->rotationMatrix = rotationMatrixT;
-    //normal changed to 0, 0, 1.
-    //GLKMatrix4 normalR = [self computeNormalTransformMatrix:normal];
-    
-    //normalR = GLKMatrix4Identity;
-    //iPose->position = GLKMatrix4MultiplyVector3(normalR, positionTP);
-    //iPose->rotationMatrix = GLKMatrix4Multiply(normalR, iPose->rotationMatrix);
-    
     
     //User pose matrix in tangent plane
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
@@ -252,34 +253,11 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     
     iPose->rotationMatrix =GLKMatrix4Multiply(planeRMatrix, rotationMatrixT);
     
-    //matrixTP = GLKMatrix4Identity;
-    
-    //iPose->position =GLKMatrix4MultiplyVector3(matrixTP, iPose->position);
     iPose->position = GLKMatrix4MultiplyVector3(planeRMatrix, iPose->position);
-    //ecef
-    
-//    [self computeInverseRotationMatrixFromPose:&upose];
-//    iPose->position = GLKMatrix4MultiplyVector3(inverseRotation_teM, iPose->position);
 
+    //ecef
     iPose->position = GLKMatrix4MultiplyVector3([self computeInverseRotationMatrixFromPose:&upose], iPose->position);
     iPose->ecef = GLKVector3Add(upose.ecef, iPose->position);
-    
-    //iPose->ecef = GLKMatrix4MultiplyVector3(transformMat, iPose->ecef);
-    
-    //positionTP = GLKMatrix4MultiplyVector3(matrixTP, positionTP);
-    
-    //positionTP = GLKMatrix4MultiplyVector3(inverseRotation_teM, positionTP);
-    
-    //iPose->ecef.x = upose.ecef.x + positionTP.x;
-    //iPose->ecef.y = upose.ecef.y + positionTP.y;
-    //iPose->ecef.z = upose.ecef.z + positionTP.z;
-    
-    //hacking iPose->position to store normal .. this is baaaad for readability but..
-    //iPose->position.x = normal[0];
-    //iPose->position.y = normal[0];
-    //iPose->position.z = normal[0];
-    
-    //iPose->position = GLKMatrix4MultiplyVector3(transformMat, iPose->position);
     
 }
 

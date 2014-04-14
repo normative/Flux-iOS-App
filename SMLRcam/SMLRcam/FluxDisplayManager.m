@@ -56,7 +56,7 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
         lastMotionPose.position.z = 0.0;
         lastMotionTime = [NSDate date];
         
-        [_locationManager WGS84_to_ECEF:&lastMotionPose];
+        [FluxTransformUtilities WGS84toECEFWithPose:&lastMotionPose];
         
         [self.locationManager startLocating];
         
@@ -571,7 +571,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     
 //    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
     [self calculateTimeAdjustedImageList];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
 }
 
 - (void)timeBracketWillBeginScrolling

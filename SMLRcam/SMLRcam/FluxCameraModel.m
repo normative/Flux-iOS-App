@@ -10,7 +10,8 @@
 
 @implementation FluxCameraModel
 
-- (id) initWithPixelSize:(double) pixSize andXPixels:(double)xPix andYPixels:(double)yPix andFocalLength:(double)focLen
+//- (id) initWithPixelSize:(double) pixSize andXPixels:(double)xPix andYPixels:(double)yPix andFocalLength:(double)focLen
+- (id) initWithPixelSize:(double) pixSize andXPixels:(double)xPix andYPixels:(double)yPix andFocalLength:(double)focLen andHdToRawScale:(double)hdScale
 {
     if (self = [super init])
     {
@@ -18,10 +19,20 @@
         _xPixels = xPix;
         _yPixels = yPix;
         _focalLength = focLen;
+        _HDScaleToRaw = hdScale;
     }
     
     return self;
 }
 
+- (double) xPixelsScaleToRaw
+{
+    return _HDScaleToRaw * _xPixels;
+}
+
+- (double) yPixelsScaleToRaw
+{
+    return _HDScaleToRaw * _yPixels;
+}
 
 @end
