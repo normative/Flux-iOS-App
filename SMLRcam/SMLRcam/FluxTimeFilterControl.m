@@ -248,6 +248,7 @@
     
     
     oldScrollPos = scrollView.contentOffset.y;
+    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
 }
 
 - (void)scrollScrollerToCalculatedPosition{

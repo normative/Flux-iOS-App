@@ -38,9 +38,16 @@ extern const NSString *FluxDevicePlatformStrings[];
 @property (nonatomic) FluxImageType highestResToQuery;
 @property (strong, nonatomic) NSString *captureResolution;
 
-+ (id)sharedDeviceInfo;
++ (FluxDeviceInfoSingleton *)sharedDeviceInfo;
 + (NSString *)currentAppVersionString;
++ (FluxCameraModel *) cameraModelForPlatform:(FluxDevicePlatform)devplatform;
++ (int) renderTextureCountForPlatform:(FluxDevicePlatform)devplatform;
++ (bool) featureMatchingEnabledForPlatform:(FluxDevicePlatform)devplatform;
++ (int) cacheCountLimitForPlatform:(FluxDevicePlatform)devplatform;
++ (FluxImageType) highestResToQueryForPlatform:(FluxDevicePlatform)devplatform;
++ (NSString *) captureResForPlatform:(FluxDevicePlatform)devplatform;
 
 - (FluxCameraModel *) cameraModelForDeviceModelString:(NSString *)deviceModelString;
+- (FluxDevicePlatform)devicePlatformForModelStr:(NSString *)deviceModelStr;
 
 @end
