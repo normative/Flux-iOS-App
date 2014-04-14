@@ -170,20 +170,10 @@ GLKVector4 result[4];
 // called once based on current device model
 void init_camera_model()
 {
-	float _fov = 2 * atan2(iPhone5_pixelsize*1080.0/2.0, iPhone5_focalLength); //radians
-    
-    fprintf(stderr,"FOV = %.4f degrees\n", _fov *180.0/3.14);
-    float aspect = (float)iPhone5_xpixels/(float)iPhone5_ypixels;
-    camera_perspective = 	GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
-    
-    
-    //Assume symmetric cropping for now
-    iPhone5_bottomcrop = (iPhone5_ypixels - iPhone5_xpixels)/2;
-    iPhone5_topcrop = iPhone5_bottomcrop;
-}
+    FluxCameraModel *cm = [FluxDeviceInfoSingleton sharedDeviceInfo].cameraModel;
 
 //	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
-	float _fov = 2.0 * atan2(cm.pixelSize * cm.yPixelsScaleToRaw / 2.0, cm.focalLength); //radians
+	float _fov = 2.0 * atan2(cm.pixelSize * cm.xPixels / 2.0, cm.focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov * 180.0 / M_PI);
     float aspect = cm.xPixels / cm.yPixels;
     camera_perspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
