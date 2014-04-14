@@ -1490,7 +1490,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength); //radians
     
     // thinking this is more what it should be given the relative capture areas of the raw cam vs HD video
-    float _fov = 2 * atan2(cam.pixelSize * cam.xPixelsScaleToRaw / 2.0, cam.focalLength   ); //radians
+    float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength   ); //radians
     float aspect = cam.xPixels / cam.xPixels;
     icameraPerspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     return icameraPerspective;
