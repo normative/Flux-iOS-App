@@ -173,7 +173,7 @@ void init_camera_model()
     FluxCameraModel *cm = [FluxDeviceInfoSingleton sharedDeviceInfo].cameraModel;
 
 //	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
-	float _fov = 2.0 * atan2(cm.pixelSize * cm.xPixels / 2.0, cm.focalLength); //radians
+	float _fov = 2.0 * atan2(cm.pixelSize * cm.yPixels / 2.0, cm.focalLength); //radians
     fprintf(stderr,"FOV = %.4f degrees\n", _fov * 180.0 / M_PI);
     float aspect = cm.xPixels / cm.yPixels;
     camera_perspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
@@ -1490,8 +1490,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength); //radians
     
     // thinking this is more what it should be given the relative capture areas of the raw cam vs HD video
-    float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength   ); //radians
-    float aspect = cam.xPixels / cam.xPixels;
+    float _fov = 2 * atan2(cam.pixelSize * cam.xPixels /2.0, cam.focalLength   ); //radians
+    
+   // float _fov = globalFOV;
+    float aspect = 1.0; //square image
     icameraPerspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
     return icameraPerspective;
 }
@@ -1533,10 +1535,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 _validMetaData[idx] = computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage);
             }
             
+            GLKMatrix4 scaleMatrix = GLKMatrix4Identity;
+            scaleMatrix = GLKMatrix4Scale(scaleMatrix, 0.5, 0.5, 1.0);
+            
             tViewMatrix = GLKMatrix4MakeLookAt(vpimage.origin.x, vpimage.origin.y, vpimage.origin.z,
                                                vpimage.at.x, vpimage.at.y, vpimage.at.z,
                                                vpimage.up.x, vpimage.up.y, vpimage.up.z);
             
+          // tViewMatrix = GLKMatrix4Multiply( tViewMatrix, scaleMatrix);
             icameraPerspective = [self computeImageCameraPerspectivewithDevicePlatform:scanimageobject.devicePlatform];
             tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
             
@@ -2089,7 +2095,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKMatrix4 texrotate = GLKMatrix4MakeRotation(-M_PI_2, 0.0, 0.0, 1.0);
     tMVP = GLKMatrix4Multiply(camera_perspective,tViewMatrix);
     _tBiasMVP[6] = texrotate;
-    _tBiasMVP[7] = GLKMatrix4Multiply(biasMatrix,tMVP);
+    _tBiasMVP[7] = GLKMatrix4Multiply(biasMatrix, tMVP);
     
     [self updateBuffers];
 }
