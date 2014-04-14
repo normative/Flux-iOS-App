@@ -1906,6 +1906,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 {
     [self deleteImageTextureIdx:tIndex];
 
+    // Store copies of properties of the texture for verification before replacing texture
+    FluxLocalID *localID = [tel.localID copy];
+    FluxImageType imageTypeToLoad = tel.requestedImageType;
+    
     // Load the new texture
 //    NSLog(@"Loading texture of size (%f, %f) with scale %f", image.size.width, image.size.height, image.scale);
     
@@ -1922,18 +1926,17 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 
                 if (error)
                 {
-                    [tel.imageCacheObject endContentAccess];
-                    
-                    tel.used = NO;
-                    tel.texturedLoaded = NO;
-                    tel.renderOrder = NSUIntegerMax;
-                    
                     NSLog(@"Error loading Image texture (error: %@)", error);
                 }
-                else
+                else if ((tel.storedImageType < imageTypeToLoad) && [tel.localID isEqualToString:localID])
                 {
                     _texture[tIndex] = textureInfo;
                     tel.texturedLoaded = YES;
+                    tel.storedImageType = imageTypeToLoad;
+                }
+                else
+                {
+                    NSLog(@"Texture slot changed since load requested. Doing nothing.");
                 }
             }];
         });
@@ -1997,36 +2000,42 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:localID];
     
-    // If we are replacing with a different localID or image size, then clean up reference counts for the old cached image
-    if (![localID isEqualToString:tel.localID] || imageType != tel.imageType)
+    // Check if we are replacing the stored texture
+    // Need to check if storedImageType is none, since lowest_res is equivalent to none, and we request lowest_res in some cases
+    if (![localID isEqualToString:tel.localID] || (imageType != tel.storedImageType) || (tel.storedImageType == none))
     {
         tel.texturedLoaded = NO;
+        tel.storedImageType = none;
         
+        // If we are replacing with a different localID or image size, then clean up reference counts for the old cached image
         // End access for existing texture element/image cache object
         [tel.imageCacheObject endContentAccess];
         tel.imageCacheObject = nil;
-    }
-    
-    // Populate with new image data
-    FluxImageType rtype = none;
-    
-    // Fetch new image cache object to replace the old one
-    FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
-    
-    if (imageCacheObj.image != nil)
-    {
-        tel.texturedLoaded = NO;
-        tel.imageType = rtype;
         
-        // Load texture into slot
-        [self loadTexture:tel.textureIndex withImage:imageCacheObj.image withTextureObject:tel];
-
-        tel.imageCacheObject = imageCacheObj;
-        tel.used = YES;
-        tel.localID = ire.localID;
+        // Populate with new image data
+        FluxImageType rtype = none;
+        
+        // Fetch new image cache object to replace the old one
+        FluxCacheImageObject *imageCacheObj = [self.fluxDisplayManager.fluxDataManager fetchImagesByLocalID:ire.localID withSize:imageType returnSize:&rtype];
+        
+        if (imageCacheObj.image != nil)
+        {
+            tel.texturedLoaded = NO;
+            tel.requestedImageType = rtype;
+            tel.imageCacheObject = imageCacheObj;
+            tel.localID = ire.localID;
+            
+            // Load texture into slot
+            [self loadTexture:tel.textureIndex withImage:imageCacheObj.image withTextureObject:tel];
+        }
+        else
+        {
+            success = NO;
+        }
     }
     else
     {
+        // Case where we already have stored exactly what we are looking for. Return NO since we didn't replace anything.
         success = NO;
     }
     
@@ -2058,11 +2067,18 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             tel.used = YES;
             tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
+            
+            // If already loaded, set accordingly (happens when we toggle used off then on)
+            if (tel.storedImageType == tel.requestedImageType)
+            {
+                tel.texturedLoaded = YES;
+            }
+            
             [remainingLocalIDs removeObject:tel.localID];
             
             // Pick a higher resolution texture to load (only select from textures already in the correct slot)
             FluxImageRenderElement *ire = [self.fluxDisplayManager getRenderElementForKey:tel.localID];
-            if (!highResAddedThisCycle && (tel.imageType < ire.imageRenderType))
+            if (!highResAddedThisCycle && (tel.requestedImageType < ire.imageRenderType))
             {
                 if ([self replaceDataInTexture:tel forLocalID:ire.localID withImageType:ire.imageRenderType])
                 {
@@ -2086,13 +2102,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if (slotToUse >= 0)
         {
             FluxTextureToImageMapElement *tel = self.textureMap[slotToUse];
-            
+
+            tel.used = YES;
+            tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
+
             // Load information into the new texture
-            if ([self replaceDataInTexture:tel forLocalID:localID withImageType:lowest_res])
-            {
-                tel.used = YES;
-                tel.renderOrder = [renderedLocalIDs indexOfObject:tel.localID];
-            }
+            [self replaceDataInTexture:tel forLocalID:localID withImageType:lowest_res];
         }
     }
     
