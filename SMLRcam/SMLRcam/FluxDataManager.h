@@ -53,6 +53,8 @@ extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
                       withDataRequest:(FluxDataRequest *)dataRequest
                   withHistoricalImage:(UIImage *)historicalImg;
 
+- (FluxRequestID *) retryFailedUploadWithFileURL:(NSString*)fileURL andDataRequest:(FluxDataRequest *)dataRequest;
+
 //used for image capture
 - (void) addCameraDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image;
 
@@ -165,6 +167,8 @@ extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
 - (FluxRequestID *) createAliasWithName:(NSString *)name
                            andServiceID:(int) service_id
                              andRequest:(FluxDataRequest *)dataRequest;
+
+- (NSArray*)failedUploads;
 
 
 

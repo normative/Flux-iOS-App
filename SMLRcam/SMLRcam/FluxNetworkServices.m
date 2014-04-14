@@ -231,21 +231,36 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         //add boolean value transformer (restkit bug fix)
 //        [[RKValueTransformer defaultValueTransformer] insertValueTransformer:[RKCustomBOOLTransformer defaultTransformer] atIndex:0];
         
+        __weak __typeof(&*self)weakSelf = self;
+        previousStatus = objectManager.HTTPClient.networkReachabilityStatus;
         
-        
-        //show alert if there is no network connectivity
+        //show alert if there is no network connectivity, make sure it doesn't show duplicates or wrong messages
         [objectManager.HTTPClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            if (status == AFNetworkReachabilityStatusNotReachable) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Uh Oh..."
-                                                                message:@"It looks like you've lost your connection to the internet. You must be connected to the internet to use Flux."
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-                [alert show];
+            
+            //this is suposed to check if they are the same. some issue here.
+            if (status == AFNetworkReachabilityStatusNotReachable && previousStatus != AFNetworkReachabilityStatusNotReachable) {
+                networkStatusAlertTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:weakSelf selector:@selector(showNetworkAlert) userInfo:nil repeats:NO];
             }
+            else{
+                [networkStatusAlertTimer invalidate];
+                networkStatusAlertTimer = nil;
+            }
+            previousStatus = objectManager.HTTPClient.networkReachabilityStatus;
+            NSLog(@"Status: %@", @(previousStatus));
         }];
     }
     return self;
+}
+
+- (void)showNetworkAlert{
+    dispatch_async(dispatch_get_main_queue(), ^{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Uh Oh..."
+                                                    message:@"It looks like you've lost your connection to the internet. You must be connected to the internet to use Flux."
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK"
+                                          otherButtonTitles:nil];
+    [alert show];
+    });
 }
 
 #pragma mark - Images
@@ -523,26 +538,6 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
     //actually send it
     [uploadTask resume];
-    
-    
-//    [request setHTTPBody:body];
-//    NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration defaultSessionConfiguration];
-//    
-//    //        sessionConfiguration.HTTPMaximumConnectionsPerHost = 1;
-//    sessionConfiguration.HTTPAdditionalHeaders = @{
-//                                                   @"Accept"        : @"application/json",
-//                                                   @"Content-Type"  : [NSString stringWithFormat:@"multipart/form-data; boundary=%@", @"thisIsBoundary"]
-//                                                   };
-//    
-//    // Initialize Session
-//    NSURLSession  *session = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
-//    NSURLSessionDataTask*dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData*data, NSURLResponse*response, NSError*error){
-//        NSLog(@"got something backl");
-//        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-//        int responseStatusCode = (int)[httpResponse statusCode];
-//        NSLog(@"got something backl");
-//    }];
-//    [dataTask resume];
 }
 
 - (NSData*)getDataForImage:(UIImage*)img{
@@ -649,6 +644,31 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     return body;
 }
 
+#pragma mark Retry Old Images
+- (void)retryFailedUploadFromFile:(NSString*)fileURL andRequestID:(FluxRequestID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    NSString *boundary = @"thisIsBoundary";
+    
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",objectManager.baseURL, token]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
+    request.HTTPMethod = @"POST";
+    
+    //use the backgroundSession signle instance (per WWDC session), and upload the file generated and saved above
+    NSString*theFileURL = [NSString stringWithFormat:@"file://%@", fileURL];
+    NSURLSessionUploadTask*uploadTask = [[self backgroundSession] uploadTaskWithRequest:request fromFile:[NSURL URLWithString:theFileURL]];
+    
+    //set the request ID in the task itself.
+    [uploadTask setTaskDescription:requestID.UUIDString];
+    
+    //hold on ot the searchPAth locally so we can delete it later
+    [outstandingRequestLocalURLs setObject:fileURL forKey:[NSString stringWithFormat:@"%lu",(unsigned long)uploadTask.taskIdentifier]];
+    
+    //actually send it
+    [uploadTask resume];
+}
+
 #pragma mark URLSession Delegate
 
 - (void)URLSession:(NSURLSession *)session
@@ -659,14 +679,27 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
     NSString*requestIDString = task.taskDescription;
     FluxRequestID*requestID = [[NSUUID alloc]initWithUUIDString:requestIDString];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
-        {
-            [delegate NetworkServices:self uploadProgress:(long long)totalBytesSent ofExpectedPacketSize:(long long)totalBytesExpectedToSend andRequestID:requestID];
-        }
-    });
+    if (uploadedImageObjects.count > 0) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([delegate respondsToSelector:@selector(NetworkServices:uploadProgress:ofExpectedPacketSize:andRequestID:)])
+            {
+                [delegate NetworkServices:self uploadProgress:(long long)totalBytesSent ofExpectedPacketSize:(long long)totalBytesExpectedToSend andRequestID:requestID];
+            }
+        });
+    }
+    else{
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([delegate respondsToSelector:@selector(NetworkServices:retryUploadProgress:ofExpectedPacketSize:andRequestID:)])
+            {
+                [delegate NetworkServices:self retryUploadProgress:(long long)totalBytesSent ofExpectedPacketSize:(long long)totalBytesExpectedToSend andRequestID:requestID];
+            }
+        });
+    }
+
 }
 
+//called when we get a response from the remote server. In our case we are returned with a full imageObject, with only the imageID changed (it's been created).
+//this new imageID is set onour local copy of the image object
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data{
     NSError *e = nil;
     
@@ -676,11 +709,14 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     if (!jsonArray) {
         NSLog(@"Error parsing JSON: %@", e);
     } else {
-        FluxScanImageObject*uploadedImg = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)dataTask.taskIdentifier]];
-        [uploadedImg setImageID:[(NSString*)[jsonArray objectForKey:@"id"]intValue]];
+        if (uploadedImageObjects.count > 0) {
+            FluxScanImageObject*uploadedImg = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)dataTask.taskIdentifier]];
+            [uploadedImg setImageID:[(NSString*)[jsonArray objectForKey:@"id"]intValue]];
+        }
     }
 }
 
+//called when the process is complete (background or foreground)
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error{
     NSURLResponse*response = task.response;
     NSString*hello = task.taskDescription;
@@ -694,7 +730,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                 FluxScanImageObject*imageObject = (FluxScanImageObject*)[uploadedImageObjects objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
                 [imageObject setLocalID:[imageObject generateUniqueStringID]];
                 
-                //I did this in case a random bug occured where this method was called before any progress was made. Random. Could ususally clear it by doing a clean build.
+                //I did this check in case a random bug occured where this method was called before any progress was made. Random. Could ususally clear it by doing a clean build.
                 if (imageObject) {
                     //delete the local file
                     NSString*pathToFile = [outstandingRequestLocalURLs objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
@@ -715,18 +751,34 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                     });
                 }
                 else{
-                    NSLog(@"Image upload failed with response code: %i, nothing was uploaded from the looks of it.", responseStatusCode);
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
-                        {
-                            [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
-                        }
-                    });
+                    if (uploadedImageObjects.count > 0) {
+                        NSLog(@"Image upload failed with response code: %i, nothing was uploaded from the looks of it.", responseStatusCode);
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+                            {
+                                [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+                            }
+                        });
+                    }
+                    //in the event that Flux is retrying old uploads (there is no local image object, nor is there any stored in the dictionary)
+                    else{
+                        NSLog(@"Previously failed image successfully uploaded");
+                        NSString*pathToFile = [outstandingRequestLocalURLs objectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                        [[NSFileManager defaultManager] removeItemAtPath: pathToFile error: &error];
+                        if (error) {
+                            NSLog(@"Uploaded file failed to delete");
+                        }                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if ([delegate respondsToSelector:@selector(NetworkServices:didReUploadImage:andRequestID:)])
+                            {
+                                [delegate NetworkServices:self didReUploadImage:nil andRequestID:requestID];
+                            }
+                        });
+                    }
+
+                    [outstandingRequestLocalURLs removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                    [uploadedImageObjects removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
                 }
-                
-
-
-
             }
             else{
                 NSLog(@"Image upload failed with response code: %i", responseStatusCode);
@@ -736,6 +788,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                         [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
                     }
                 });
+                [outstandingRequestLocalURLs removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+                [uploadedImageObjects removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
 
             }
         }
@@ -747,6 +801,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                     [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
                 }
             });
+            [outstandingRequestLocalURLs removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
+            [uploadedImageObjects removeObjectForKey:[NSString stringWithFormat:@"%lu",(unsigned long)task.taskIdentifier]];
         }
     
 }
@@ -1890,6 +1946,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                 return [string capitalizedString];
             }
             else{
+                if (objectManager.HTTPClient.networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
+                    return @"You aren't connected to the internet.";
+                }
                 return @"An unknown error occured";
             }
         }
@@ -1902,6 +1961,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             NSString*error = [json objectForKey:@"error"];
             return [error lowercaseString];
         }
+    }
+    if (objectManager.HTTPClient.networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
+        return @"You aren't connected to the internet.";
     }
     return @"An unknown error occured";
 }

@@ -94,6 +94,21 @@
     }
 }
 
+- (void)whenRetryUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.retryUploadComplete)
+    {
+        self.retryUploadComplete(imageObject, completeDataRequest);
+    }
+}
+
+- (void) whenRetryUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest
+{
+    if (self.retryUploadInProgress)
+    {
+        self.retryUploadInProgress(imageObject, inprogressDataRequest);
+    }
+}
+
 - (void)whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest{
     if (self.deleteImageCompleteBlock)
     {
