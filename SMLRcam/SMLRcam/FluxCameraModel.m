@@ -25,14 +25,9 @@
     return self;
 }
 
-- (double) xPixelsScaleToRaw
+- (double) pixelSizeScaleToRaw
 {
-    return _HDScaleToRaw * _xPixels;
-}
-
-- (double) yPixelsScaleToRaw
-{
-    return _HDScaleToRaw * _yPixels;
+    return _HDScaleToRaw * _pixelSize;
 }
 
 @end
