@@ -1,4 +1,7 @@
 Release Notes:
+
+- Various visual tweaks and enhancements
+
 ******************************************
 
 V0.24 B06
