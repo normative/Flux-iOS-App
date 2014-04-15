@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="3Bp-zf-jwd">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="3Bp-zf-jwd">
     <dependencies>
         <deployment defaultVersion="1792" identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
@@ -1116,6 +1116,9 @@
                                         </subviews>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="tintColor" red="0.0" green="0.71372549019999998" blue="0.92156862750000001" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="320" id="KKV-zc-Edw"/>
+                                        </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QTA-2K-tgO" customClass="FluxCompassButton">
                                         <rect key="frame" x="25" y="38" width="70" height="70"/>
@@ -1266,10 +1269,12 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="VeE-ti-EHD" secondAttribute="trailing" id="1QI-9m-4Vr"/>
+                                    <constraint firstAttribute="centerX" secondItem="sxZ-KT-aF5" secondAttribute="centerX" id="4Xv-t9-Z89"/>
                                     <constraint firstItem="Jav-fJ-sQd" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="4oR-Ld-br5"/>
                                     <constraint firstItem="UQ2-gX-PYO" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="6Aw-m5-sfw"/>
                                     <constraint firstItem="VeE-ti-EHD" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="7AQ-yI-2pD"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" constant="25" id="9bm-pI-i65"/>
+                                    <constraint firstAttribute="bottom" secondItem="sxZ-KT-aF5" secondAttribute="bottom" id="9iN-BE-hee"/>
                                     <constraint firstAttribute="trailing" secondItem="sxZ-KT-aF5" secondAttribute="trailing" id="BWH-59-UAz"/>
                                     <constraint firstAttribute="bottom" secondItem="RP7-i5-SqD" secondAttribute="bottom" id="Dek-4Y-rPh"/>
                                     <constraint firstAttribute="bottom" secondItem="VeE-ti-EHD" secondAttribute="bottom" constant="-4" id="PLj-fF-Kay"/>
@@ -1279,6 +1284,7 @@
                                     <constraint firstAttribute="width" constant="320" id="fhw-AM-un3"/>
                                     <constraint firstAttribute="trailing" secondItem="bo9-BI-7cK" secondAttribute="trailing" constant="25" id="gsC-4Y-XOv"/>
                                     <constraint firstAttribute="bottom" secondItem="sxZ-KT-aF5" secondAttribute="bottom" id="mDS-Cv-WkW"/>
+                                    <constraint firstItem="sxZ-KT-aF5" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" id="qLD-6u-JaU"/>
                                     <constraint firstItem="UQ2-gX-PYO" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="svp-0t-M9t"/>
                                     <constraint firstItem="QTA-2K-tgO" firstAttribute="top" secondItem="jDD-EI-IPQ" secondAttribute="top" constant="38" id="tQm-EJ-5kf"/>
                                     <constraint firstItem="RP7-i5-SqD" firstAttribute="leading" secondItem="jDD-EI-IPQ" secondAttribute="leading" id="uP2-MJ-Xxw"/>

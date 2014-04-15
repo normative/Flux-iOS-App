@@ -61,12 +61,15 @@
         oldScrollPos =  0;
         
         isAnimating = NO;
-        //invert it
-        //self.transform = CGAffineTransformMakeScale(-1, 1);
-        
         [self setupTimeScrubHelper];
     }
     return self;
+}
+
+- (void)layoutSubviews{
+    [super layoutSubviews];
+    [thumbView setCenter:CGPointMake(self.center.x, self.frame.size.height-170)];
+    [timeScrubInfoLabel setCenter:CGPointMake(self.center.x, self.frame.size.height-100)];
 }
 
 - (void)setupTimeScrubHelper{

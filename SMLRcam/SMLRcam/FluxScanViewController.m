@@ -273,7 +273,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     openGLController.fluxDisplayManager = self.fluxDisplayManager;
 }
 
-//this section commented out as the circular time slider was removed from the designs (perhaps temporarily)
 #pragma mark - Time Filtering
 - (void)setupTimeFilterControl{
     timeFilterControl.fluxDisplayManager = self.fluxDisplayManager;
