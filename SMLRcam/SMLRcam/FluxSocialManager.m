@@ -787,7 +787,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
             pictureObject.provisionedForPost = YES;
             
             // Add the standard object properties
-            pictureObject[@"og"] = @{ @"title":@"This is a title", @"type":@"fluxapp:scene", @"description":@"description", @"image":image };
+            pictureObject[@"og"] = @{ @"title":status, @"type":@"fluxapp:scene", @"description":@"description", @"image":image };
             
             
             

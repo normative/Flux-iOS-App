@@ -47,7 +47,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     contactFromService_request = 28,
     imagePrivacyUpdate_request = 29,
     forceUnfollow_request = 30,
-    image_matches_request = 31
+    image_matches_request = 31,
+    retry_image_uploads_request = 32
     
 } FluxDataRequestType;
 
@@ -61,6 +62,8 @@ typedef void (^WideAreaListReadyBlock)(NSArray *);
 typedef void (^RequestCompleteBlock)(FluxDataRequest *);
 typedef void (^UploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^UploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
+typedef void (^RetryUploadInProgressBlock)(FluxScanImageObject *, FluxDataRequest *);
+typedef void (^RetryUploadCompleteBlock)(FluxScanImageObject *, FluxDataRequest *);
 typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
 typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSData *, FluxDataRequest *);
 typedef void (^ImageMatchesReadyBlock)(FluxLocalID *, NSArray *, FluxDataRequest *);
@@ -159,6 +162,12 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for periodic updates of upload progress
 @property (strong) UploadInProgressBlock uploadInProgress;
 
+// Callback for successful upload of previously failed images + metadata
+@property (strong) RetryUploadCompleteBlock retryUploadComplete;
+
+// Callback for periodic updates of previously failed uploads progress
+@property (strong) RetryUploadInProgressBlock retryUploadInProgress;
+
 @property (strong) DeleteImageCompleteBlock deleteImageCompleteBlock;
 
 @property (strong) UpdateImagesPrivacyCompleteBlock updateImagesPrivacyCompleteBlock;
@@ -237,6 +246,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenRequestComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
+- (void) whenRetryUploadComplete:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenRetryUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUpdateImagesPrivacyCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest;

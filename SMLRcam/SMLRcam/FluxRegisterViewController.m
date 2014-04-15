@@ -1100,8 +1100,13 @@
 
 #pragma mark - Logout
 - (void)userDidLogOut{
+    //force the view to show registration (not signup) if they're logging out (view is not visible)
     if (!isInSignUp) {
-        [self loginSignupToggleAction:nil];
+        //if we're in sign in, test if view is visible
+        if(!self.view.window){
+            //we're in sign-in, and the view isn;t visible
+           [self loginSignupToggleAction:nil];
+        }
     }
     
     //close facebook session
@@ -1145,6 +1150,16 @@
     }
     
     [self showContainerViewAnimated:YES];
+    
+    //delete all failed imagery
+    NSString*failedImagesFolderDirectory = [NSString stringWithFormat:@"%@%@",[paths objectAtIndex:0],@"/imageUploadCache/"];
+    NSError *error = nil;
+    for (NSString *file in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:failedImagesFolderDirectory error:&error]) {
+        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", failedImagesFolderDirectory, file] error:&error];
+        if (!success || error) {
+            // it failed.
+        }
+    }
     
     
 }

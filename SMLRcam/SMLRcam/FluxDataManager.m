@@ -105,6 +105,15 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+- (FluxRequestID *) retryFailedUploadWithFileURL:(NSString*)fileURL andDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = retry_image_uploads_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices retryFailedUploadFromFile:fileURL andRequestID:requestID];
+    return requestID;
+}
+
 - (void) addCameraDataToStore:(FluxScanImageObject *)metadata withImage:(UIImage *)image{
     [fluxDataStore addMetadataObject:metadata];
     [fluxDataStore addImageToStore:image withLocalID:metadata.localID withSize:full_res];
@@ -1044,7 +1053,9 @@ float const altitudeHighRange = 60.0;
     }
 
     // Overwrite the data that is currently in the cache
-    [fluxDataStore addMetadataObject:updatedImageObject];
+    if (updatedImageObject) {
+        [fluxDataStore addMetadataObject:updatedImageObject];
+    }
     
     // If callbacks exist, call them for each receiver
     for (id curRequestID in requestArray)
@@ -1063,11 +1074,28 @@ float const altitudeHighRange = 60.0;
         [self completeRequestWithDataRequest:curRequest];
     }
     
-    [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
+    if (updatedImageObject) {
+        [uploadQueueReceivers removeObjectForKey:updatedImageObject.localID];
+        
+        // Notify any observers
+        NSDictionary *userInfoDict = @{FluxDataManagerKeyUploadImageFluxScanImageObject : updatedImageObject};
+        [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidUploadImage object:self userInfo:userInfoDict];
+    }
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices retryUploadProgress:(long long)bytesSent ofExpectedPacketSize:(long long)size andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request setBytesUploaded:bytesSent];
+    [request setTotalByteSize:size];
+    [request whenRetryUploadInProgress:[fluxDataStore getMetadataWithLocalID:request.uploadLocalID] withDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReUploadImage:(FluxScanImageObject *)updatedImageObject andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenRetryUploadComplete:updatedImageObject withDataRequest:request];
     
-    // Notify any observers
-    NSDictionary *userInfoDict = @{FluxDataManagerKeyUploadImageFluxScanImageObject : updatedImageObject};
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxDataManagerDidUploadImage object:self userInfo:userInfoDict];
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
 }
 
 -(void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID andRequestID:(NSUUID *)requestID{
@@ -1308,6 +1336,30 @@ float const altitudeHighRange = 60.0;
 
 
 #pragma mark Other
+
+-(NSArray*)failedUploads{
+    //creates a file path to save the data packet
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString*folderDirectory = [NSString stringWithFormat:@"%@%@",[paths objectAtIndex:0],@"/imageUploadCache"];
+    
+    //ensures the correct folder exists
+    if (![[NSFileManager defaultManager] fileExistsAtPath:folderDirectory]) {
+        // Directory does not exist
+        return nil;
+    }
+    else{
+        NSError * error;
+        NSArray * directoryContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:folderDirectory error:&error];
+        if (!error) {
+            if (directoryContents) {
+                if (directoryContents.count > 0) {
+                    return directoryContents;
+                }
+            }
+        }
+        return nil;
+    }
+}
 
 - (void)deleteLocations
 {

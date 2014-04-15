@@ -571,7 +571,6 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     
 //    NSLog(@"timeRange: count: %d, value: %f, maxIndex: %d", [self.nearbyList count], value, _timeRangeMinIndex);
     [self calculateTimeAdjustedImageList];
-    [[NSNotificationCenter defaultCenter] postNotificationName:FluxOpenGLShouldRender object:self userInfo:nil];
 }
 
 - (void)timeBracketWillBeginScrolling
@@ -868,157 +867,159 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     // make request
     if (_isScanMode)
     {
-        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-        
-        dataRequest.maxReturnItems = 100;
-        dataRequest.searchFilter = dataFilter;
-        dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
-        
-        [dataRequest setNearbyListReady:^(NSArray *imageList)
+        CLLocation *loc = self.locationManager.location;
+        if ((loc.coordinate.latitude != 0.0) || (loc.coordinate.longitude != 0.0))
         {
-            // ignore the request response if we are in camera capture mode
-            if (!_isScanMode)
-                return;
+            FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
             
-            // process request using nearbyList:
-            //  copy local-only objects (justCaptured > 0) into localList
-            NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];
+            dataRequest.maxReturnItems = 100;
+            dataRequest.searchFilter = dataFilter;
+            dataRequest.sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO];
             
-            NSMutableArray *nearbyLocalIDs = [[NSMutableArray alloc] init];
-            
-            [_nearbyListLock lock];
+            [dataRequest setNearbyListReady:^(NSArray *imageList)
             {
-                // Iterate over the current nearbylist and clear out anything that is not local-only, or that has been local too long
-                for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
-                {
-                    if (ire.imageMetadata.justCaptured > 0)
-                    {
-                        if (ire.imageMetadata.justCaptured++ < 10)
-                        {
-                            [localOnlyObjects setObject:ire forKey:ire.localID];
-                        }
-                        
-                    }
-                }
+                // ignore the request response if we are in camera capture mode
+                if (!_isScanMode)
+                    return;
                 
-                //  clean nearbyList (empty)
-                [self.nearbyUnPrunedList removeAllObjects];
+                // process request using nearbyList:
+                //  copy local-only objects (justCaptured > 0) into localList
+                NSMutableDictionary *localOnlyObjects = [[NSMutableDictionary alloc] init];
                 
-                //  for each item in response
-                for (FluxScanImageObject *curImgObj in imageList)
+                NSMutableArray *nearbyLocalIDs = [[NSMutableArray alloc] init];
+                
+                [_nearbyListLock lock];
                 {
-                    // check the local list first
-                    FluxImageRenderElement *localImgRenderObj = [localOnlyObjects objectForKey:curImgObj.localID];
-                    FluxImageRenderElement *curImgRenderObj = [_fluxNearbyMetadata objectForKey:curImgObj.localID];
-                    if (localImgRenderObj == nil)
+                    // Iterate over the current nearbylist and clear out anything that is not local-only, or that has been local too long
+                    for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
                     {
-                        // then check in nearbyMeta
-                        if (curImgRenderObj == nil)
+                        if (ire.imageMetadata.justCaptured > 0)
                         {
-                            // still not found so add new entry
-                            FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
-                            curImgRenderObj = [[FluxImageRenderElement alloc]initWithImageObject:cachedMetadata];
-                            [_fluxNearbyMetadata setObject:curImgRenderObj forKey:curImgObj.localID];
+                            if (ire.imageMetadata.justCaptured++ < 10)
+                            {
+                                [localOnlyObjects setObject:ire forKey:ire.localID];
+                            }
+                            
                         }
                     }
-                    else
+                    
+                    //  clean nearbyList (empty)
+                    [self.nearbyUnPrunedList removeAllObjects];
+                    
+                    //  for each item in response
+                    for (FluxScanImageObject *curImgObj in imageList)
                     {
-                        // check against nearbyMeta entry (if exists)
-                        if (curImgRenderObj != nil)
+                        // check the local list first
+                        FluxImageRenderElement *localImgRenderObj = [localOnlyObjects objectForKey:curImgObj.localID];
+                        FluxImageRenderElement *curImgRenderObj = [_fluxNearbyMetadata objectForKey:curImgObj.localID];
+                        if (localImgRenderObj == nil)
                         {
-                            // in both lists - make sure things are transferred properly
-                            curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
-                            curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
-                            curImgRenderObj.imageMetadata.justCaptured = 0;
-                            localImgRenderObj.imageMetadata.justCaptured = 0;
+                            // then check in nearbyMeta
+                            if (curImgRenderObj == nil)
+                            {
+                                // still not found so add new entry
+                                FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
+                                curImgRenderObj = [[FluxImageRenderElement alloc]initWithImageObject:cachedMetadata];
+                                [_fluxNearbyMetadata setObject:curImgRenderObj forKey:curImgObj.localID];
+                            }
                         }
                         else
                         {
-                            curImgRenderObj = localImgRenderObj;
+                            // check against nearbyMeta entry (if exists)
+                            if (curImgRenderObj != nil)
+                            {
+                                // in both lists - make sure things are transferred properly
+                                curImgRenderObj.localCaptureTime = localImgRenderObj.localCaptureTime;
+                                curImgRenderObj.imageRenderType = localImgRenderObj.imageRenderType;
+                                curImgRenderObj.imageMetadata.justCaptured = 0;
+                                localImgRenderObj.imageMetadata.justCaptured = 0;
+                            }
+                            else
+                            {
+                                curImgRenderObj = localImgRenderObj;
+                            }
+                            
+                            // remove from localobjectsonly list so isn't processed again below
+                            [localOnlyObjects removeObjectForKey:curImgObj.localID];
+                            localImgRenderObj = nil;
                         }
                         
-                        // remove from localobjectsonly list so isn't processed again below
-                        [localOnlyObjects removeObjectForKey:curImgObj.localID];
-                        localImgRenderObj = nil;
-                    }
-                    
-                    if (curImgRenderObj != nil)
-                    {
-                        // update lastrefd time, metadata
-                        curImgRenderObj.lastReferenced = [[NSDate alloc]init];
-                        FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
-                        curImgRenderObj.imageMetadata = cachedMetadata;
-                    }
-                    
-                    // copy to nearbyList
-                    [self.nearbyUnPrunedList addObject:curImgRenderObj];
-                    [nearbyLocalIDs addObject:curImgRenderObj.localID];
-                }
-                
-                //  for each remaining item in localOnlyObjects list
-                for (FluxImageRenderElement *localRender in [localOnlyObjects allValues])
-                {
-                    // find in nearbyList
-                    FluxImageRenderElement *curImgRenderObj = [_fluxNearbyMetadata objectForKey:localRender.localID];
-                    if (curImgRenderObj == nil)
-                    {
-                        // if not found then an error - local images should always be in the metadata list
-                        NSLog(@"FluxDisplayManager requestNearbyItems local image not found in metadata list");
-                    }
-                    else
-                    {
+                        if (curImgRenderObj != nil)
+                        {
+                            // update lastrefd time, metadata
+                            curImgRenderObj.lastReferenced = [[NSDate alloc]init];
+                            FluxScanImageObject *cachedMetadata = [self.fluxDataManager getMetadataObjectFromCacheWithLocalID:curImgObj.localID];
+                            curImgRenderObj.imageMetadata = cachedMetadata;
+                        }
+                        
                         // copy to nearbyList
                         [self.nearbyUnPrunedList addObject:curImgRenderObj];
                         [nearbyLocalIDs addObject:curImgRenderObj.localID];
-
-                        // update anything else that needs to be here...
-                        curImgRenderObj.lastReferenced = [[NSDate alloc]init];
                     }
-                }
-            
-                //  sort nearbyList by localCaptureTime then by timestamp desc (localCaptureTime bubbles recently taken local imagery to the top
-                NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: [NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],
-                                                                            [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
-                                                                            nil];
-                
-                [self.nearbyUnPrunedList sortUsingDescriptors:sortDescriptors];
-                
-                // spin through list and remove duplicates - shouldn't be any but given the fits the GL rendering sub-system throws if they are present, better safe than sorry...
-                // NOTE: elements should be right next to each other (same timestamp) - this allows us to do neighbour comparisons rather than full-list checks.
-                NSMutableArray *duplist = [[NSMutableArray alloc]init];
-                FluxImageRenderElement *prevIre = nil;
-                int c = 0;
-                for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
-                {
-                    if (prevIre != nil)
+                    
+                    //  for each remaining item in localOnlyObjects list
+                    for (FluxImageRenderElement *localRender in [localOnlyObjects allValues])
                     {
-                        if (prevIre.imageMetadata.imageID == ire.imageMetadata.imageID)
+                        // find in nearbyList
+                        FluxImageRenderElement *curImgRenderObj = [_fluxNearbyMetadata objectForKey:localRender.localID];
+                        if (curImgRenderObj == nil)
                         {
-                            // have a duplicate - kill the first one
-                            [duplist addObject:[NSNumber numberWithInteger:c]];
+                            // if not found then an error - local images should always be in the metadata list
+                            NSLog(@"FluxDisplayManager requestNearbyItems local image not found in metadata list");
+                        }
+                        else
+                        {
+                            // copy to nearbyList
+                            [self.nearbyUnPrunedList addObject:curImgRenderObj];
+                            [nearbyLocalIDs addObject:curImgRenderObj.localID];
+
+                            // update anything else that needs to be here...
+                            curImgRenderObj.lastReferenced = [[NSDate alloc]init];
                         }
                     }
-                    c++;
-                    prevIre = ire;
-                }
                 
-                // remove in reverse order (bottom up) so indexes aren't messed up
-                for (NSNumber *idx in [duplist reverseObjectEnumerator])
-                {
-                    [self.nearbyUnPrunedList removeObjectAtIndex:[idx intValue]];
+                    //  sort nearbyList by localCaptureTime then by timestamp desc (localCaptureTime bubbles recently taken local imagery to the top
+                    NSArray *sortDescriptors = [[NSArray alloc]initWithObjects: [NSSortDescriptor sortDescriptorWithKey:@"localCaptureTime" ascending:NO],
+                                                                                [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:NO],
+                                                                                nil];
+                    
+                    [self.nearbyUnPrunedList sortUsingDescriptors:sortDescriptors];
+                    
+                    // spin through list and remove duplicates - shouldn't be any but given the fits the GL rendering sub-system throws if they are present, better safe than sorry...
+                    // NOTE: elements should be right next to each other (same timestamp) - this allows us to do neighbour comparisons rather than full-list checks.
+                    NSMutableArray *duplist = [[NSMutableArray alloc]init];
+                    FluxImageRenderElement *prevIre = nil;
+                    int c = 0;
+                    for (FluxImageRenderElement *ire in self.nearbyUnPrunedList)
+                    {
+                        if (prevIre != nil)
+                        {
+                            if (prevIre.imageMetadata.imageID == ire.imageMetadata.imageID)
+                            {
+                                // have a duplicate - kill the first one
+                                [duplist addObject:[NSNumber numberWithInteger:c]];
+                            }
+                        }
+                        c++;
+                        prevIre = ire;
+                    }
+                    
+                    // remove in reverse order (bottom up) so indexes aren't messed up
+                    for (NSNumber *idx in [duplist reverseObjectEnumerator])
+                    {
+                        [self.nearbyUnPrunedList removeObjectAtIndex:[idx intValue]];
+                    }
+
+                    [self calculateTimeAdjustedImageList];
+                    
+                    [self.fluxDataManager cleanupNonLocalContentWithLocalIDArray:nearbyLocalIDs];
                 }
+                [_nearbyListLock unlock];
 
-                [self calculateTimeAdjustedImageList];
-                
-                [self.fluxDataManager cleanupNonLocalContentWithLocalIDArray:nearbyLocalIDs];
-            }
-            [_nearbyListLock unlock];
-
-        }];
+            }];
         
-        CLLocation *loc = self.locationManager.location;
-        [self.fluxDataManager requestImageListAtLocation:loc withRadius:scanImageRequestRadius withDataRequest:dataRequest];
-
+            [self.fluxDataManager requestImageListAtLocation:loc withRadius:scanImageRequestRadius withDataRequest:dataRequest];
+        }
     }
     else
     {

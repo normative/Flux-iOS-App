@@ -16,10 +16,12 @@
     if (self)
     {
         _localID = @"";
-        _imageType = none;
+        _requestedImageType = none;
+        _storedImageType = none;
         _renderOrder = NSUIntegerMax;
         _textureIndex = index;
-        _used = false;
+        _used = NO;
+        _texturedLoaded = NO;
     }
     
     return self;
