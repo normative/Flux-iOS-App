@@ -64,19 +64,52 @@
         //invert it
         //self.transform = CGAffineTransformMakeScale(-1, 1);
         
-        animatingThumbView = [[UIImageView alloc]initWithFrame:self.bounds];
-        [animatingThumbView setAnimationDuration:1.2];
-        NSMutableArray*images = [[NSMutableArray alloc]init];
-        for (int i = 29; i>0; i--) {
-            [images addObject:[UIImage imageNamed:[NSString stringWithFormat:@"thumbAnimation-%i", i]]];
-        }
-        [animatingThumbView setAnimationImages:images];
-        //    [animatingThumbView setAlpha:0.0];
-        animatingThumbView.animationRepeatCount = 1;
-        
-        [self addSubview:animatingThumbView];
+        [self setupTimeScrubHelper];
     }
     return self;
+}
+
+- (void)setupTimeScrubHelper{
+    //circle
+    thumbView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 70, 70)];
+    [thumbView setCenter:CGPointMake(self.center.x, self.frame.size.height-170)];
+    thumbView.transform = CGAffineTransformMakeScale(1.4, 1.4);
+//    thumbView.layer.borderColor = [UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0].CGColor;
+    thumbView.layer.borderColor = [UIColor whiteColor].CGColor;
+    thumbView.layer.borderWidth = 1;
+    thumbView.layer.cornerRadius = thumbView.frame.size.height/2;
+    thumbView.clipsToBounds = YES;
+    [thumbView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.25]];
+    [thumbView setAlpha:0.0];
+    [self addSubview:thumbView];
+    
+    //text (and nice soacing for the custom font)
+    timeScrubInfoLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 60)];
+    [timeScrubInfoLabel setCenter:CGPointMake(self.center.x, self.frame.size.height-100)];
+    [timeScrubInfoLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
+    [timeScrubInfoLabel setTextColor:[UIColor whiteColor]];
+    [timeScrubInfoLabel setNumberOfLines:2];
+    [timeScrubInfoLabel setAlpha:0.0];
+    
+    NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+    style.lineSpacing = 5;
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineSpacing = 17;
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *attribs = @{
+                              NSForegroundColorAttributeName: timeScrubInfoLabel.textColor,
+                              NSFontAttributeName: timeScrubInfoLabel.font,
+                              NSParagraphStyleAttributeName : style
+                              };
+    NSMutableAttributedString *attributedText =
+    [[NSMutableAttributedString alloc] initWithString:@"Swipe up and down\nto scan through time"
+                                           attributes:attribs];
+    [timeScrubInfoLabel setAttributedText:attributedText];
+    [timeScrubInfoLabel setTextAlignment:NSTextAlignmentCenter];
+    
+    [self addSubview:timeScrubInfoLabel];
+    
+    helperAnimationFinished = YES;
 }
 
 - (void)setScrollIndicatorCenter:(CGPoint)centre{
@@ -269,7 +302,6 @@
 - (void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView didTapAtPoint:(CGPoint)point{
     if (CGRectContainsPoint(clockContainerView.frame, point)) {
         [self buttonWasPressed];
-        [self performSelector:@selector(endbuttonPress) withObject:nil afterDelay:0.05];
     }
     else{
         if ([delegate respondsToSelector:@selector(timeFilterControl:didTapAtPoint:)]) {
@@ -280,7 +312,10 @@
 
 -(void)timeFilterScrollView:(FluxTimeFilterScrollView *)scrollView shouldBeginTouchAtPoint:(CGPoint)point{
     if (CGRectContainsPoint(clockContainerView.frame, point) && scrollView.contentSize.height != self.frame.size.height) {
-        [clockContainerView setAlpha:0.4];
+        if (helperAnimationFinished) {
+            [clockContainerView setAlpha:0.4];
+
+        }
     }
     
 }
@@ -298,7 +333,9 @@
 }
 
 - (void)buttonWasPressed{
-    [self showThumbView];
+    if (helperAnimationFinished) {
+        [self showThumbView];
+    }
 }
 
 - (void)endbuttonPress{
@@ -306,19 +343,29 @@
 }
 
 - (void)showThumbView{
-
-    
-//    [animatingThumbView startAnimating];
-//    
-//    [UIView animateWithDuration:0.5 animations:^{
-//        [animatingThumbView setAlpha:1.0];
-//    }completion:^(BOOL finished){
-//        [UIView animateWithDuration:0.5 animations:^{
-//            [animatingThumbView setAlpha:0.0];
-//             }completion:^(BOOL finished){
-//                 [animatingThumbView stopAnimating];
-//        }];
-//    }];
+    helperAnimationFinished = NO;
+    [UIView animateWithDuration:0.2 animations:^{
+        thumbView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        thumbView.layer.cornerRadius = thumbView.frame.size.height/2;
+        [thumbView setAlpha:1.0];
+        [timeScrubInfoLabel setAlpha:1.0];
+    }completion:^(BOOL finished){
+        [UIView animateWithDuration:0.8 delay:0.7 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            [thumbView setAlpha:0.0];
+            [thumbView setCenter:CGPointMake(self.center.x, self.center.y-100)];
+            [self endbuttonPress];
+             }completion:^(BOOL finished){
+                 thumbView.transform = CGAffineTransformMakeScale(1.4, 1.4);
+                 thumbView.layer.cornerRadius = thumbView.frame.size.height/2;
+                 [thumbView setCenter:CGPointMake(self.center.x, self.frame.size.height-170)];
+                 helperAnimationFinished = YES;
+        }];
+        [UIView animateWithDuration:1.4 delay:0.7 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            [timeScrubInfoLabel setAlpha:0.0];
+        }completion:^(BOOL finished){
+            
+        }];
+    }];
 }
 
 

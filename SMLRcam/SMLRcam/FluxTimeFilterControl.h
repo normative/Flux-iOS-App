@@ -24,7 +24,9 @@
     UIView *circularScrollerView;
     CAShapeLayer *circleLayer;
     
-    UIImageView*animatingThumbView;
+    UILabel*timeScrubInfoLabel;
+    UIImageView*thumbView;
+    BOOL helperAnimationFinished;
     
     BOOL isAnimating;
     float sizeRatio;
