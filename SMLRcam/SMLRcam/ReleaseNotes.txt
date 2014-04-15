@@ -1,6 +1,16 @@
 Release Notes:
+******************************************
+
+V0.24 B06
+
+Released: 2014-04-15 10:30:00
+
+Release Notes:
 - camera model now managed centrally
 - asynchronous loading of textures reduces jitter in camera frame rendering and reduces loading on main thread
+- camera freeze when time scrubbing into future (beyond "now") fixed
+- upload images that have previously failed to upload
+- filter image requests at (0,0)
 
 ******************************************
 

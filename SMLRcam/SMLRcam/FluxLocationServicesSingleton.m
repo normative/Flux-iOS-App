@@ -343,15 +343,18 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     
     [self updateAltitudeWithAlt:newLocation.altitude andError:newLocation.verticalAccuracy];
     
-    
-    [self setMeasurementWithLocation:newLocation];
-    [self ComputeGeodecticFromkfECEF:&kfgeolocation];
-    
-    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
-      newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
-                                          horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
-                                          course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
-    
+    if ((newLocation.coordinate.longitude != 0.0) || (newLocation.coordinate.latitude != 0.0))
+    {
+        
+        [self setMeasurementWithLocation:newLocation];
+        [self ComputeGeodecticFromkfECEF:&kfgeolocation];
+        
+        CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(kfgeolocation.latitude, kfgeolocation.longitude);
+          newLocation = [[CLLocation alloc] initWithCoordinate:coord altitude:kfgeolocation.altitude
+                                              horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
+                                              course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
+    }
+
     DDLogVerbose(@"loc: %.8f, %.8f, alt: %.6f, h_acc: %.2f, v_acc: %.2f, head: %.2f, loc_kal: %.8f, %.8f, alt_kal: %.6f",
                  self.rawlocation.coordinate.latitude, self.rawlocation.coordinate.longitude, self.rawlocation.altitude,
                  self.rawlocation.horizontalAccuracy, self.rawlocation.verticalAccuracy, self.heading,
