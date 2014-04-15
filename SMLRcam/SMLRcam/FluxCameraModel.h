@@ -14,8 +14,7 @@
 @property (nonatomic) double yPixels;
 @property (nonatomic) double xPixels;
 @property (nonatomic) double focalLength;
-@property (readonly, nonatomic) double xPixelsScaleToRaw;
-@property (readonly, nonatomic) double yPixelsScaleToRaw;
+@property (readonly, nonatomic) double pixelSizeScaleToRaw;
 @property (readonly, nonatomic) double HDScaleToRaw;
 
 - (id) initWithPixelSize:(double) pixSize andXPixels:(double)xPix andYPixels:(double)yPix andFocalLength:(double)focLen andHdToRawScale:(double)hdScale;
