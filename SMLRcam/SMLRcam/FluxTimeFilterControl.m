@@ -363,7 +363,7 @@
                  [thumbView setCenter:CGPointMake(self.center.x, self.frame.size.height-170)];
                  helperAnimationFinished = YES;
         }];
-        [UIView animateWithDuration:1.4 delay:0.7 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:0.4 delay:1.2 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             [timeScrubInfoLabel setAlpha:0.0];
         }completion:^(BOOL finished){
             
