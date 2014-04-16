@@ -77,7 +77,7 @@
     
     [forgotPasswordButton setHidden:YES];
     [forgotPasswordButton setAlpha:0.0];
-    [forgotPasswordButton removeFromSuperview];
+//    [forgotPasswordButton removeFromSuperview];
     
     [logoImageView setFirstAnimationSet:animationImages1 andSecondAnimationSet:animationImages2];
     
@@ -746,6 +746,11 @@
         
         
         if (new) {
+            //be sure the tutorial is shown
+            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+            [defaults removeObjectForKey:@"showedTutorial"];
+            [defaults synchronize];
+            
             [ProgressHUD showSuccess:@"Welcome To Flux!"];
         }
         else{
@@ -881,10 +886,9 @@
 //    [self performSelector:@selector(fadeOutLogin) withObject:Nil afterDelay:0.5];
 }
 
+//shows an alert with email keyboard and waits for a valid email before it sends a password reset email request.
 - (IBAction)forgetPasswordButtonAction:(id)sender {
-    
-    
-    
+
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"We've all done it."
                                                         message:@"To which email do you want us to send a password reset?"
                                                        delegate:nil
@@ -893,19 +897,27 @@
     
     [alertView setAlertViewStyle:UIAlertViewStylePlainTextInput];
     [(UITextField*)[alertView textFieldAtIndex:0] setKeyboardType:UIKeyboardTypeEmailAddress];
+    [(UITextField*)[alertView textFieldAtIndex:0] setTintColor:[UIColor blackColor]];
     
     [alertView showWithCompletion:^(UIAlertView *alertView, NSInteger buttonIndex) {
         if (buttonIndex != alertView.cancelButtonIndex) {
             UITextField *emailTextField = [alertView textFieldAtIndex:0];
             if ([self NSStringIsValidEmail:emailTextField.text]) {
-                NSLog(@"We should send an email to %@",emailTextField.text);
-                [ProgressHUD showSuccess:[NSString stringWithFormat:@"We sent a password reset email to %@",emailTextField.text]];
+                
+                FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+                [dataRequest setSendPasswordResetComplete:^(FluxDataRequest*completedRequest){
+                    [ProgressHUD showSuccess:[NSString stringWithFormat:@"We sent an email to %@",emailTextField.text]];
+                    [self hideKeyboard];
+                }];
+                [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+                    [ProgressHUD showError:@"The email failed to send."];
+                }];
+                [self.fluxDataManager sendPasswordResetTo:emailTextField.text withRequest:dataRequest];
             }
             //not a valid email
             else{
                 [ProgressHUD showError:@"Sorry, but that's not a valid email address."];
             }
-            
         }
     }];
 }

@@ -170,6 +170,12 @@
     }
 }
 
+- (void)whenResetPasswordCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.sendPasswordResetComplete) {
+        self.sendPasswordResetComplete(completeDataRequest);
+    }
+}
+
 #pragma mark Profile Stuff
 
 -(void)whenUserReady:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest{

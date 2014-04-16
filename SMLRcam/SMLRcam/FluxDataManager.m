@@ -590,6 +590,15 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+- (FluxRequestID*)sendPasswordResetTo:(NSString*)email withRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = send_password_reset_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices sendPasswordResetTo:email andRequestID:requestID];
+    return requestID;
+}
+
 #pragma mark Profile Stuff
 
 - (FluxRequestID *) requestUserProfileForID:(int)userID withDataRequest:(FluxDataRequest *)dataRequest{
@@ -1222,10 +1231,15 @@ float const altitudeHighRange = 60.0;
     // register/update the APNS device token
     FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
     [self updateAPNsDeviceTokenWithRequest:dataRequest];
-    
 }
 
-
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendPasswordResetEmailWithRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenResetPasswordCompleteWithDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
 
 #pragma mark Profile Stuff
 

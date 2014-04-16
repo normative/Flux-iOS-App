@@ -70,6 +70,7 @@ extern NSString* const FluxServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didCheckUsernameUniqueness:(BOOL)unique andSuggestion:(NSString*)suggestion
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didPostCameraWithID:(int)camID andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didSendPasswordResetEmailWithRequestID:(FluxRequestID *)requestID;
 
 //profile stuff
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateUser:(FluxUserObject*)userObject
@@ -237,6 +238,11 @@ extern NSString* const FluxServerURL;
  creates a user with the given object
  **/
 - (void)createUser:(FluxRegistrationUserObject*)userObject withImage:(UIImage*)theImage andRequestID:(FluxRequestID *)requestID;
+
+/**
+ Sends a password reset email to the supplied valid email address
+ **/
+- (void)sendPasswordResetTo:(NSString*)email andRequestID:(FluxRequestID *)requestID;
 
 #pragma mark Profiles
 

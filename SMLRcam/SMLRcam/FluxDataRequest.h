@@ -48,7 +48,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     imagePrivacyUpdate_request = 29,
     forceUnfollow_request = 30,
     image_matches_request = 31,
-    retry_image_uploads_request = 32
+    retry_image_uploads_request = 32,
+    send_password_reset_request = 33
     
 } FluxDataRequestType;
 
@@ -77,6 +78,7 @@ typedef void (^LoginUserCompleteBlock)(FluxRegistrationUserObject*, FluxDataRequ
 typedef void (^LogoutCompleteBlock)(FluxDataRequest *);
 typedef void (^UsernameUniquenessCompleteBlock)(BOOL, NSString*, FluxDataRequest *);
 typedef void (^PostCameraCompleteBlock)(int, FluxDataRequest *);
+typedef void (^SendPasswordResetCompleteBlock)(FluxDataRequest *);
 
 typedef void (^UpdateUserCompleteBlock)(FluxUserObject *, FluxDataRequest *);
 typedef void (^UserReadyBlock)(FluxUserObject*, FluxDataRequest *);
@@ -184,6 +186,9 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 // Callback for successful user logout
 @property (strong) LogoutCompleteBlock logoutComplete;
 
+// Callback for successful reset password email send
+@property (strong) SendPasswordResetCompleteBlock sendPasswordResetComplete;
+
 // Callback for successful usernameUniqueness check
 @property (strong) UsernameUniquenessCompleteBlock usernameUniquenessComplete;
 
@@ -260,6 +265,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenLogoutComplete:(FluxDataRequest *)completeDataRequest;
 - (void) whenUsernameCheckComplete:(BOOL)unique andSuggestion:(NSString*)suggestion withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenCameraPostCompleteWithID:(int)cameraID andDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenResetPasswordCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
 
 //profile stuff
 - (void) whenUpdateUserComplete:(FluxUserObject *)userObject withDataRequest:(FluxDataRequest *)completeDataRequest;

@@ -1188,6 +1188,29 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
 }
 
+- (void)sendPasswordResetTo:(NSString*)email andRequestID:(FluxRequestID *)requestID{
+    
+    FluxUserObject*user = [[FluxUserObject alloc]init];
+    [user setEmail:email];
+    [[RKObjectManager sharedManager] postObject:user path:[NSString stringWithFormat:@"/users/password.json"] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         FluxUserObject*returnedUser = [result firstObject];
+         if ([delegate respondsToSelector:@selector(NetworkServices:didSendPasswordResetEmailWithRequestID:)])
+         {
+             [delegate NetworkServices:self didSendPasswordResetEmailWithRequestID:requestID];
+         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         NSLog(@"sending password reset email failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
 
 
 #pragma mark User Profiles

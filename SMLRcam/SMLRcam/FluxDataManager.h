@@ -130,6 +130,7 @@ extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
 - (FluxRequestID *) updateAPNsDeviceTokenWithRequest:(FluxDataRequest *)dataRequest;
 
 - (FluxRequestID*)logoutWithDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID*)sendPasswordResetTo:(NSString*)email withRequest:(FluxDataRequest *)dataRequest;
 
 //profiles
 - (FluxRequestID *) requestUserProfileForID:(int)userID
