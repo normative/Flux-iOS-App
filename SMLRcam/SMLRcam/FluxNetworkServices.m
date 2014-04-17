@@ -19,13 +19,13 @@
 #define defaultTimout 7.0
 #define defaultImageTimout 60.0
 
-#define _AWSProductionServerURL  @"http://54.221.254.230/"
-#define _AWSStagingServerURL     @"http://54.83.61.163/"
+#define _AWSProductionServerURL  @"http://production.flux.smlr.is/"
+#define _AWSStagingServerURL     @"http://staging.flux.smlr.is/"
 #define _AWSTestServerURL        @"http://54.221.222.71/"
 #define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
 
-#define _AWSSecureProductionServerURL  @"http://54.221.254.230/"
-#define _AWSSecureStagingServerURL     @"https://54.83.61.163/"
+#define _AWSSecureProductionServerURL  @"http://production.flux.smlr.is/"
+#define _AWSSecureStagingServerURL     @"https://staging.flux.smlr.is/"
 
 NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSStagingServerURL    = _AWSStagingServerURL;
@@ -37,14 +37,14 @@ NSString* const AWSSecureStagingServerURL    = _AWSSecureStagingServerURL;
 NSString* const AWSSecureTestServerURL       = _AWSTestServerURL;
 NSString* const DSDSecureLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
-//NSString* const FluxServerURL = _AWSStagingServerURL;
+//NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 
-NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
-//NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
+//NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
+NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
 //NSString* const FluxSecureServerURL = _AWSTestServerURL;
 //NSString* const FluxSecureServerURL = _DSDLocalTestServerURL;
 
