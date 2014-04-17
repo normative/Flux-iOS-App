@@ -90,8 +90,8 @@ const NSString *FluxDevicePlatformStrings[] = {
     @"iPhone 5s"
 };
 
-// #define HD_TO_RAW   1.0
-#define HD_TO_RAW   1.454
+#define HD_TO_RAW   1.0
+//#define HD_TO_RAW   1.454
 
 @implementation FluxDeviceInfoSingleton
 
