@@ -336,7 +336,7 @@
 }
 
 - (void)buttonWasPressed{
-    if (helperAnimationFinished) {
+    if (helperAnimationFinished && self.timeScrollView.contentSize.height > self.frame.size.height) {
         [self showThumbView];
     }
 }
