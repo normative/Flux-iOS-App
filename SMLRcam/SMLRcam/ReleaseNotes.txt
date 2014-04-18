@@ -1,6 +1,17 @@
 Release Notes:
+******************************************
 
+V0.24 B08
+
+Released: 2014-04-18 08:45:00
+
+Release Notes:
 - Various visual tweaks and enhancements
+- forgotten password reset functionality (via email)
+- seems to be working on iPhone 4S
+- uploading of previously failed images
+- new generic email address for debug log file sending
+- support / use of https / ssl for all data exchanges except imagery and features
 
 ******************************************
 
