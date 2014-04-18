@@ -19,20 +19,34 @@
 #define defaultTimout 7.0
 #define defaultImageTimout 60.0
 
-#define _AWSProductionServerURL  @"http://54.221.254.230/"
-#define _AWSStagingServerURL     @"http://54.83.61.163/"
+#define _AWSProductionServerURL  @"http://production.flux.smlr.is/"
+#define _AWSStagingServerURL     @"http://staging.flux.smlr.is/"
 #define _AWSTestServerURL        @"http://54.221.222.71/"
 #define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
+
+#define _AWSSecureProductionServerURL  @"http://production.flux.smlr.is/"
+#define _AWSSecureStagingServerURL     @"https://staging.flux.smlr.is/"
 
 NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSStagingServerURL    = _AWSStagingServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
-//NSString* const FluxServerURL = _AWSStagingServerURL;
+NSString* const AWSSecureProductionServerURL = _AWSSecureProductionServerURL;
+NSString* const AWSSecureStagingServerURL    = _AWSSecureStagingServerURL;
+NSString* const AWSSecureTestServerURL       = _AWSTestServerURL;
+NSString* const DSDSecureLocalTestServerURL  = _DSDLocalTestServerURL;
+
+//NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
+
+
+//NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
+NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
+//NSString* const FluxSecureServerURL = _AWSTestServerURL;
+//NSString* const FluxSecureServerURL = _DSDLocalTestServerURL;
 
 static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
@@ -57,6 +71,9 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 {
     if (self = [super init])
     {
+        self.secureServerURL = FluxSecureServerURL;
+        self.serverURL = FluxServerURL;
+        
 //        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 //        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
 //        if (isremote)
@@ -269,7 +286,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 - (void)getImageForID:(int)imageID withStringSize:(NSString *)sizeString andRequestID:(FluxRequestID *)requestID
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/renderimage?auth_token=%@&size=%@",objectManager.baseURL,imageID,token,sizeString];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/renderimage?auth_token=%@&size=%@",self.serverURL,imageID,token,sizeString];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
@@ -303,7 +320,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1]]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1]]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -342,7 +359,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:
                                                           [NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&auth_token=%@",
-                                                                                    objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                                    self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                     location.latitude, location.longitude, radius, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     [self doRequest:request withResponseDesc:responseDescriptor andRequestID:requestID];
@@ -382,7 +399,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@';&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
-                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
@@ -427,9 +444,9 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
-    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:self.secureServerURL];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
-                                                            path:[NSString stringWithFormat:@"%@images/%i?auth_token=%@",objectManager.baseURL,imageID, token]
+                                                            path:[NSString stringWithFormat:@"%@images/%i?auth_token=%@",self.secureServerURL,imageID, token]
                                                       parameters:nil];
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
@@ -455,9 +472,9 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 - (void)updateImagePrivacyForImages:(NSArray *)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
-    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:self.secureServerURL];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"PUT"
-                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",objectManager.baseURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
+                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",self.secureServerURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
                                                       parameters:nil];
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
@@ -520,7 +537,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
     
     // sets the URL and request type. Cannot add the body as uploadTaskWithRequest ignores the body
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",objectManager.baseURL, token]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",self.secureServerURL, token]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
@@ -650,7 +667,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
     NSString *boundary = @"thisIsBoundary";
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",objectManager.baseURL, token]];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",self.secureServerURL, token]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
@@ -855,7 +872,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
 
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
@@ -887,7 +904,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 - (void)getImageFeaturesForID:(int)imageID andRequestID:(FluxRequestID *)requestID
 {
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    NSString*url = [NSString stringWithFormat:@"%@images/%i/features?auth_token=%@",objectManager.baseURL,imageID,token];
+    NSString*url = [NSString stringWithFormat:@"%@images/%i/features?auth_token=%@",self.serverURL,imageID,token];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
@@ -1058,9 +1075,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 -(void)logoutWithRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
-    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:objectManager.baseURL];
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:self.secureServerURL];
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
-                                                            path:[NSString stringWithFormat:@"%@users/sign_out?auth_token=%@",objectManager.baseURL, token]
+                                                            path:[NSString stringWithFormat:@"%@users/sign_out?auth_token=%@",self.secureServerURL, token]
                                                       parameters:nil];
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
@@ -1088,7 +1105,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 - (void)checkUsernameUniqueness:(NSString *)username withRequestID:(NSUUID *)requestID{
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",objectManager.baseURL,username]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@users/suggestuniqueuname?username=%@",self.secureServerURL,username]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                          
@@ -1226,7 +1243,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1255,7 +1272,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 - (void)getUserProfilePicForID:(int)userID withStringSize:(NSString *)sizeString withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
-    NSString*url = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",objectManager.baseURL,userID,sizeString, token];
+    NSString*url = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",self.serverURL,userID,sizeString, token];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     AFImageRequestOperation *operation = [AFImageRequestOperation imageRequestOperationWithRequest:request
@@ -1288,7 +1305,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],userID, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?userid=%i&auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],userID, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1322,7 +1339,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1355,7 +1372,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1387,7 +1404,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1419,7 +1436,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?contact=%@&auth_token=%@",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],query, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?contact=%@&auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],query, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1631,7 +1648,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSMutableString *fullurl = [NSMutableString stringWithFormat:@"%@%@?auth_token=%@&serviceid=%d", objectManager.baseURL, [responseDescriptor.pathPattern substringFromIndex:1], token, serviceID];
+    NSMutableString *fullurl = [NSMutableString stringWithFormat:@"%@%@?auth_token=%@&serviceid=%d", self.secureServerURL, [responseDescriptor.pathPattern substringFromIndex:1], token, serviceID];
     
     switch (serviceID)
     {
@@ -1689,7 +1706,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                        statusCodes:statusCodes];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&maxrows=%i&auth_token=%@",
-                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius, maxCount, token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
@@ -1740,7 +1757,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
-                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
@@ -1792,7 +1809,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&followingpics=%i&auth_token=%@",
-                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                                self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                 location.latitude, location.longitude, radius,
                                                                                 altMin, altMax,
                                                                                 timestampMin, timestampMax,
@@ -1845,7 +1862,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&mypics=%i&followingpics=%i&auth_token=%@",
-                                                                                objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                                self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                 location.latitude, location.longitude, radius,
                                                                                 altMin, altMax,
                                                                                 timestampMin, timestampMax,
@@ -1899,7 +1916,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
-                                                                               objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],
+                                                                               self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],
                                                                                location.latitude, location.longitude, radius,
                                                                                altMin, altMax,
                                                                                timestampMin, timestampMax,
@@ -1943,7 +1960,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping] method:RKRequestMethodAny pathPattern:@"/images/nuke.json" keyPath:nil statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",objectManager.baseURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],location.latitude, location.longitude, radius]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
 
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:[NSOperationQueue mainQueue]

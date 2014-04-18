@@ -24,6 +24,7 @@ extern NSString* const AWSStagingServerURL;
 extern NSString* const DSDLocalTestServerURL;
 
 extern NSString* const FluxServerURL;
+extern NSString* const FluxSecureServerURL;
 
 @class FluxNetworkServices;
 @protocol NetworkServicesDelegate <NSObject>
@@ -128,7 +129,8 @@ extern NSString* const FluxServerURL;
 }
 @property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
 //@property (nonatomic, getter = get_token) NSString *token;
-
+@property (nonatomic, strong) NSString *serverURL;
+@property (nonatomic, strong) NSString *secureServerURL;
 
 #pragma mark - image methods
 
