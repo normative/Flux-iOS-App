@@ -24,7 +24,7 @@
 #define _AWSTestServerURL        @"http://54.221.222.71/"
 #define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
 
-#define _AWSSecureProductionServerURL  @"http://production.flux.smlr.is/"
+#define _AWSSecureProductionServerURL  @"https://production.flux.smlr.is/"
 #define _AWSSecureStagingServerURL     @"https://staging.flux.smlr.is/"
 
 NSString* const AWSProductionServerURL = _AWSProductionServerURL;
