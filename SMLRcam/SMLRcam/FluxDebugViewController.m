@@ -157,7 +157,7 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
                              NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
                              NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
                              
-                             AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@"http://54.221.222.71/"]];
+                             AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:FluxSecureServerURL]];
                              NSMutableURLRequest *request = [httpClient requestWithMethod:@"DELETE"
                                                                                      path:[NSString stringWithFormat:@"%@users/%@.json?auth_token=%@",httpClient.baseURL,userID, token]
                                                                                parameters:nil];
