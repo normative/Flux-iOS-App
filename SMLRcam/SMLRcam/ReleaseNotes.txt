@@ -4,6 +4,15 @@ Release Notes:
 
 ******************************************
 
+V0.24 B07
+
+Released: 2014-04-17 14:00:00
+
+Release Notes:
+- change HD_TO_RAW scale to 1.0 to generate same FOV calculations as original versions
+
+******************************************
+
 V0.24 B06
 
 Released: 2014-04-15 10:30:00
