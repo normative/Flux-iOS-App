@@ -1,6 +1,16 @@
 Release Notes:
+******************************************
+
+V0.24 B09
+
+ASR RC 01
+
+Released: 2014-04-21 17:30:00
+
+Release Notes:
 - fixes to 3rd party login
 - fixes to new user registration avatar upload
+- fixes to base URL storage
 
 ******************************************
 
