@@ -1,4 +1,7 @@
 Release Notes:
+- fixes to 3rd party login
+- fixes to new user registration avatar upload
+
 ******************************************
 
 V0.24 B08
