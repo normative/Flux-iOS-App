@@ -129,8 +129,8 @@ extern NSString* const FluxSecureServerURL;
 }
 @property (nonatomic, weak) id <NetworkServicesDelegate> delegate;
 //@property (nonatomic, getter = get_token) NSString *token;
-@property (nonatomic, strong) NSString *serverURL;
-@property (nonatomic, strong) NSString *secureServerURL;
+@property (nonatomic, strong) NSURL *serverURL;
+@property (nonatomic, strong) NSURL *secureServerURL;
 
 #pragma mark - image methods
 

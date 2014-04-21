@@ -71,8 +71,8 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 {
     if (self = [super init])
     {
-        self.secureServerURL = FluxSecureServerURL;
-        self.serverURL = FluxServerURL;
+        self.secureServerURL = [NSURL URLWithString:FluxSecureServerURL];
+        self.serverURL = [NSURL URLWithString: FluxServerURL];
         
 //        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 //        BOOL isremote = true;   //[[defaults objectForKey:@"Server Location"]intValue];
