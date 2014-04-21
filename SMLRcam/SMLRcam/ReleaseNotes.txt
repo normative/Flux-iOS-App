@@ -10,6 +10,7 @@ Released: 2014-04-21 17:30:00
 Release Notes:
 - fixes to 3rd party login
 - fixes to new user registration avatar upload
+- fixes to base URL storage
 
 ******************************************
 
