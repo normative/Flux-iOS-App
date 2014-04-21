@@ -944,10 +944,13 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                         parameters:nil
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData)
                                     {
-                                        [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
-                                                                    name:@"image[image]"
-                                                                fileName:@"photo.jpeg"
-                                                                mimeType:@"image/jpeg"];
+                                        if (theImage) {
+                                            [formData appendPartWithFileData:UIImageJPEGRepresentation(theImage, 0.7)
+                                                                        name:@"user[avatar]"
+                                                                    fileName:@"photo.jpeg"
+                                                                    mimeType:@"image/jpeg"];
+                                        }
+                                        
                                     }];
     
     RKObjectRequestOperation *operation = [[RKObjectManager sharedManager] objectRequestOperationWithRequest:request
@@ -1207,7 +1210,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 - (void)sendPasswordResetTo:(NSString*)email andRequestID:(FluxRequestID *)requestID{
     
-    FluxUserObject*user = [[FluxUserObject alloc]init];
+    FluxRegistrationUserObject*user = [[FluxRegistrationUserObject alloc]init];
     [user setEmail:email];
     [[RKObjectManager sharedManager] postObject:user path:[NSString stringWithFormat:@"/users/password.json"] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)

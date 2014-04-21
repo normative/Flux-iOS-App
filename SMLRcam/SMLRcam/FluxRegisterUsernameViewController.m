@@ -211,6 +211,7 @@
             profileImageView.layer.cornerRadius = profileImageView.frame.size.width/2;
             profileImageView.clipsToBounds = YES;
             profileImageView.image = image;
+            [self.userInfo setObject:image forKey:@"profilePic"];
         });
     });
 }
@@ -251,6 +252,7 @@
                      profileImageView.layer.cornerRadius = profileImageView.frame.size.width/2;
                      profileImageView.clipsToBounds = YES;
                      profileImageView.image = image;
+                     [self.userInfo setObject:image forKey:@"profilePic"];
                  });
              });
          }

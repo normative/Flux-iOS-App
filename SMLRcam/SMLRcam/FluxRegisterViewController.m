@@ -453,6 +453,9 @@
     NSString*username = (NSString*)[userInfo objectForKey:@"username"];
     NSString*email = (NSString*)[userInfo objectForKey:@"email"];
     NSString*socialName = (NSString*)[userInfo objectForKey:@"socialName"];
+    if ([userInfo objectForKey:@"profilePic"]) {
+        [newUser setProfilePic:(UIImage*)[userInfo objectForKey:@"profilePic"]];
+    }
     
     [newUser setUsername:username];
     [newUser setEmail:email];
@@ -705,7 +708,7 @@
         [self.fluxDataManager uploadNewUser:user withImage:user.profilePic withDataRequest:dataRequest];
     }
     else{
-        [self.fluxDataManager uploadNewUser:user withImage:[UIImage imageNamed:@"emptyProfileImage_big"] withDataRequest:dataRequest];
+        [self.fluxDataManager uploadNewUser:user withImage:nil withDataRequest:dataRequest];
     }
 }
 
