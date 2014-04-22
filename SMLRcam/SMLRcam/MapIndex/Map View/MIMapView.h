@@ -66,4 +66,6 @@
 
 - (NSArray *)annotations;
 
+- (NSUInteger)zoomLevel;
+
 @end

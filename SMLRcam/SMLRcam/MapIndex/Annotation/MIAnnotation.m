@@ -95,7 +95,7 @@
             _title = [[NSString alloc] initWithFormat:@"%i images", (int)_count];
         }
 	}
-    NSLog(@"Count: %lu",(unsigned long)_annotations.count);
+//    NSLog(@"Count: %lu",(unsigned long)_annotations.count);
 
 	return _title;
 }

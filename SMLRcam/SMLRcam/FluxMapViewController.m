@@ -76,6 +76,16 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 
 -(void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated{
     
+    //limits zooming out
+    if ([fluxMapView zoomLevel] <= 18) {
+        MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(fluxMapView.centerCoordinate, 500, 500);
+        MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
+        [fluxMapView setRegion:adjustedRegion animated:YES];
+        return;
+    }
+    
+    
+    
     MKCoordinateRegion region = mapView.region;
     CLLocationCoordinate2D centerCoordinate = mapView.centerCoordinate;
     CLLocation * newLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.latitude+region.span.latitudeDelta longitude:centerCoordinate.longitude];
@@ -90,13 +100,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     
     if (distanceFlag || radiusFlag) {
         [self.fluxDisplayManager requestMapPinsForLocation:fluxMapView.centerCoordinate withRadius:screenDistance/2 andFilter:self.currentDataFilter];
+        
+        lastSynchedLocation = fluxMapView.centerCoordinate;
+        lastRadius = screenDistance/2;
         outstandingRequests++;
     }
 
-    lastSynchedLocation = fluxMapView.centerCoordinate;
-    lastRadius = screenDistance/2;
-    
-    
     MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
     [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
 }
@@ -113,10 +122,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (MKMapRect)shrunkenMapRect:(MKMapRect)mapRect{
     MKOverlayRenderer*tmpRenderer = [[MKOverlayRenderer alloc]init];
     CGRect narowedRect = [tmpRenderer rectForMapRect:mapRect];
-    NSLog(@"Norm: %@",NSStringFromCGRect(narowedRect));
-    narowedRect = CGRectInset(narowedRect, narowedRect.size.width*.15, narowedRect.size.width*.15);
+//    NSLog(@"Norm: %@",NSStringFromCGRect(narowedRect));
+    narowedRect = CGRectInset(narowedRect, narowedRect.size.width*.05, narowedRect.size.width*.05);
     mapRect = [tmpRenderer mapRectForRect:narowedRect];
-    NSLog(@"Small: %@",NSStringFromCGRect(narowedRect));
+//    NSLog(@"Small: %@",NSStringFromCGRect(narowedRect));
     return mapRect;
 }
 
