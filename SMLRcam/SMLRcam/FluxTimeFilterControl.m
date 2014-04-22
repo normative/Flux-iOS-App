@@ -94,6 +94,11 @@
     [timeScrubInfoLabel setNumberOfLines:2];
     [timeScrubInfoLabel setAlpha:0.0];
     
+    timeScrubInfoLabel.layer.shadowOpacity = 0.7;
+    timeScrubInfoLabel.layer.shadowRadius = 3.0;
+    timeScrubInfoLabel.layer.shadowColor = [UIColor blackColor].CGColor;
+    timeScrubInfoLabel.layer.shadowOffset = CGSizeMake(0.0, 1.0);
+    
     NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
     style.lineSpacing = 5;
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
