@@ -31,7 +31,6 @@
         IBOutlet UIView *usernameContainerView;
         CALayer*usernameBorderLayer;
         FluxTextField*theTextField;
-        UILabel *warningLabel;
         IBOutlet UIImageView *checkMarkImageView;
         IBOutlet UIActivityIndicatorView *activityView;
         

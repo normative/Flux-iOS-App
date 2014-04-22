@@ -9,6 +9,7 @@
 #import "FluxRegisterUsernameViewController.h"
 #import "FluxTextFieldCell.h"
 #import "UICKeyChainStore.h"
+#import "ProgressHUD.h"
 
 
 
@@ -36,6 +37,18 @@
     [createAccountButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:createAccountButton.titleLabel.font.pointSize]];
     
     [self setupContainerView];
+    
+    CGFloat ratio = 1.0;
+    NSLayoutConstraint *constraint = [NSLayoutConstraint
+                                      constraintWithItem:profileImageView
+                                      attribute:NSLayoutAttributeWidth
+                                      relatedBy:NSLayoutRelationEqual
+                                      toItem:profileImageView
+                                      attribute:NSLayoutAttributeHeight
+                                      multiplier:ratio
+                                      constant:0];
+    constraint.priority = 1000;
+    [profileImageView.superview addConstraint:constraint];
 	// Do any additional setup after loading the view.
 }
 
@@ -97,7 +110,7 @@
     [theTextField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [theTextField setKeyboardType:UIKeyboardTypeDefault];
     [theTextField setSecureTextEntry:NO];
-    
+    [theTextField setReturnKeyType:UIReturnKeyGo];
     
     [theTextField setDelegate:self];
     theTextField.textAlignment = NSTextAlignmentCenter;
@@ -138,60 +151,43 @@
     return YES;
 }
 
-- (void)checkUsernameUniqueness{
-//    FluxTextFieldCell*cell = (FluxTextFieldCell*)[usernameTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
-    [activityView setHidden:NO];
-    
-    FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
-    [dataRequest setUsernameUniquenessComplete:^(BOOL unique, NSString*suggestion, FluxDataRequest*completedRequest){
-        if (unique) {
-            if (showUernamePrompt) {
-                showUernamePrompt = NO;
-                
-                [warningLabel removeFromSuperview];
-                [usernameContainerView setFrame:CGRectMake(usernameContainerView.frame.origin.x, usernameContainerView.frame.origin.y-30, usernameContainerView.frame.size.width, usernameContainerView.frame.size.height-30)];
-                [CATransaction begin];
-                [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-                [CATransaction setAnimationDuration:0.25];
-                usernameBorderLayer.frame = usernameContainerView.bounds;
-                [CATransaction commit];
-            }
-            [checkMarkImageView setHidden:NO];
-            [self performSelector:@selector(proceed) withObject:nil afterDelay:0.2];
-        }
-        
-        else{
-            showUernamePrompt = YES;
-            [checkMarkImageView setHidden:YES];
+- (BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [self createAccountButtonAction:nil];
+    return NO;
+}
 
-            if (!warningLabel) {
-                warningLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 40, usernameContainerView.frame.size.width, 25)];
-                [warningLabel setFont:[UIFont fontWithName:@"Akkurat" size:14.0]];
-                [warningLabel setTextColor:[UIColor colorWithRed:107/255.0 green:29/255.0 blue:29/255.0 alpha:1.0]];
-                [warningLabel setTextAlignment:NSTextAlignmentCenter];
-                [warningLabel setText:@"this username has already been taken"];
+- (void)checkUsernameUniqueness{
+    if (theTextField.text.length > 3) {
+        [activityView setHidden:NO];
+        
+        FluxDataRequest *dataRequest = [[FluxDataRequest alloc] init];
+        [dataRequest setUsernameUniquenessComplete:^(BOOL unique, NSString*suggestion, FluxDataRequest*completedRequest){
+            if (unique) {
+                if (showUernamePrompt) {
+                    showUernamePrompt = NO;
+                }
+                [checkMarkImageView setHidden:NO];
+                [self performSelector:@selector(proceed) withObject:nil afterDelay:0.2];
             }
             
-            if (![warningLabel superview]) {
-                [usernameContainerView addSubview:warningLabel];
-                [usernameContainerView setFrame:CGRectMake(usernameContainerView.frame.origin.x, usernameContainerView.frame.origin.y+30, usernameContainerView.frame.size.width, usernameContainerView.frame.size.height+30)];
-            
-                
-                [CATransaction begin];
-                [CATransaction setAnimationTimingFunction:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]];
-                [CATransaction setAnimationDuration:0.25];
-                usernameBorderLayer.frame = usernameContainerView.bounds;
-                [CATransaction commit];
+            else{
+                showUernamePrompt = YES;
+                [checkMarkImageView setHidden:YES];
+                [ProgressHUD showError:@"This username has already been taken"];
             }
-        }
-        [activityView setHidden:YES];
-    }];
-    [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        [activityView setHidden:YES];
-        [checkMarkImageView setHidden:YES];
-        NSLog(@"Unique lookup failed with error %d", (int)[e code]);
-    }];
-    [self.fluxDataManager checkUsernameUniqueness:username withDataRequest:dataRequest];
+            [activityView setHidden:YES];
+        }];
+        [dataRequest setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+            [activityView setHidden:YES];
+            [checkMarkImageView setHidden:YES];
+            NSLog(@"Unique lookup failed with error %d", (int)[e code]);
+            [ProgressHUD showError:@"Something happened when checking for usernames, try again in a few minutes."];
+        }];
+        [self.fluxDataManager checkUsernameUniqueness:username withDataRequest:dataRequest];
+    }
+    else{
+        [ProgressHUD showError:@"Usernames must be at least 4 characters"];
+    }
 }
 
 #pragma mark - Profile Picture Methods

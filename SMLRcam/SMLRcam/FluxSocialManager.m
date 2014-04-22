@@ -139,7 +139,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                          else{
                                              if (isRegister) {
                                                  if ([delegate respondsToSelector:@selector(SocialManager:didFailToRegisterSocialAccount:andMessage:)]) {
-                                                     [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:nil];
+                                                     [delegate SocialManager:self didFailToRegisterSocialAccount:@"Twitter" andMessage:@"Registration cancelled"];
                                                  }
                                              }
                                              

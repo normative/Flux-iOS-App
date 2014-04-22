@@ -3076,9 +3076,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" fixedFrame="YES" image="emptyProfileImage_big" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-Ya-IaC">
+                            <imageView autoresizesSubviews="NO" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1" verticalCompressionResistancePriority="1" image="emptyProfileImage_big" translatesAutoresizingMaskIntoConstraints="NO" id="cj9-Ya-IaC">
                                 <rect key="frame" x="120" y="101" width="80" height="80"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="lessThanOrEqual" constant="80" id="3D1-SN-eNy"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="80" id="vgF-M6-0T6"/>
+                                </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="fill" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zi3-ho-Y1t">
                                 <rect key="frame" x="96" y="314" width="129" height="30"/>
@@ -3096,7 +3100,7 @@
                                     <action selector="createAccountButtonAction:" destination="eN4-z8-AgL" eventType="touchUpInside" id="oGw-7A-WM1"/>
                                 </connections>
                             </button>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Bxf-cu-29e">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Bxf-cu-29e">
                                 <rect key="frame" x="10" y="246" width="300" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
@@ -3110,20 +3114,37 @@
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="300" id="hJx-pn-cnS"/>
+                                    <constraint firstAttribute="height" constant="50" id="hyQ-Bn-BTB"/>
+                                </constraints>
                             </view>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="C1W-7L-yrd">
+                            <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="C1W-7L-yrd">
                                 <rect key="frame" x="0.0" y="352" width="320" height="216"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="216" id="I0x-el-bbb"/>
+                                    <constraint firstAttribute="width" constant="320" id="aEG-Xf-FSY"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstAttribute="centerX" secondItem="zi3-ho-Y1t" secondAttribute="centerX" id="6aH-yK-XYm"/>
+                            <constraint firstAttribute="bottom" secondItem="C1W-7L-yrd" secondAttribute="bottom" id="CSV-4Q-g6a"/>
+                            <constraint firstAttribute="bottom" secondItem="Bxf-cu-29e" secondAttribute="bottom" constant="272" id="OfY-Lj-nTt"/>
+                            <constraint firstItem="cj9-Ya-IaC" firstAttribute="top" relation="greaterThanOrEqual" secondItem="bka-Lp-Lwk" secondAttribute="bottom" constant="10" id="Pdr-OO-DpO"/>
+                            <constraint firstAttribute="centerX" secondItem="C1W-7L-yrd" secondAttribute="centerX" id="VJm-FW-vko"/>
+                            <constraint firstAttribute="centerX" secondItem="cj9-Ya-IaC" secondAttribute="centerX" id="anb-8k-AhZ"/>
                             <constraint firstAttribute="bottom" secondItem="zi3-ho-Y1t" secondAttribute="bottom" constant="224" id="kjk-2H-mZN"/>
+                            <constraint firstItem="cj9-Ya-IaC" firstAttribute="top" relation="lessThanOrEqual" secondItem="bka-Lp-Lwk" secondAttribute="bottom" constant="37" id="lyS-kT-klq"/>
+                            <constraint firstItem="Bxf-cu-29e" firstAttribute="top" relation="greaterThanOrEqual" secondItem="cj9-Ya-IaC" secondAttribute="bottom" constant="10" id="uLo-dY-adf"/>
+                            <constraint firstAttribute="centerX" secondItem="Bxf-cu-29e" secondAttribute="centerX" id="uVv-4P-Ffl"/>
+                            <constraint firstItem="Bxf-cu-29e" firstAttribute="top" relation="lessThanOrEqual" secondItem="cj9-Ya-IaC" secondAttribute="bottom" constant="65" id="ubq-mb-bfW"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Pick a Name" id="7Ze-F9-0m1">
+                    <navigationItem key="navigationItem" title="Pick a Username" id="7Ze-F9-0m1">
                         <barButtonItem key="backBarButtonItem" title="Cancel" id="Ywp-aG-Wni"/>
                     </navigationItem>
                     <connections>

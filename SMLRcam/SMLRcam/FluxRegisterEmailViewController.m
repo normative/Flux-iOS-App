@@ -128,7 +128,7 @@
     [cell.textField setAutocorrectionType:UITextAutocorrectionTypeNo];
     [cell.textField setAutocapitalizationType:UITextAutocapitalizationTypeNone];
     [cell.textField setKeyboardType:UIKeyboardTypeEmailAddress];
-    [cell.textField setReturnKeyType:UIReturnKeyDefault];
+    [cell.textField setReturnKeyType:UIReturnKeyNext];
 
     
     [cell.textField setDelegate:self];
@@ -177,7 +177,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField{
     if ([self NSStringIsValidEmail:textField.text]) {
-        [self createAccountButtonAction:nil];
+        [self nextAction];
     }
     return YES;
 }
