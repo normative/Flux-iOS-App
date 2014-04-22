@@ -6,6 +6,17 @@ V0.24 B09
 ASR RC 01
 
 Released: 2014-04-21 17:30:00
+- adds drop shadow to time scrub helper label
+- limits zooming, fixes (one of?) the count bugs
+- fixes some large holes in third party registration, assorted UI fixes
+
+******************************************
+
+V0.24 B10
+
+ASR RC 02
+
+Released: 2014-04-22 19:30:00
 
 Release Notes:
 - fixes to 3rd party login
