@@ -170,8 +170,8 @@
             otherButtonTitles:@[@"Send Invitation"]
                      tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                          if (buttonIndex != actionSheet.cancelButtonIndex) {
-                             if ([delegate respondsToSelector:@selector(ImportContactCellFriendFollowButtonWasTapped:)]) {
-                                 [delegate ImportContactCellFriendFollowButtonWasTapped:self];
+                             if ([delegate respondsToSelector:@selector(ImportContactCell:shouldInvite:)]) {
+                                 [delegate ImportContactCell:self shouldInvite:self.contactObject];
                              }
                          }
                      }];

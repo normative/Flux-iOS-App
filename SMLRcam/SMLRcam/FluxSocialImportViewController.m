@@ -77,6 +77,10 @@
     [UIView animateWithDuration:0.25 animations:^{
         [self.view setAlpha:1.0];
     }];
+    
+    if ([self.importUserTableView indexPathForSelectedRow]) {
+        [self.importUserTableView deselectRowAtIndexPath:[self.importUserTableView indexPathForSelectedRow] animated:YES];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -554,17 +558,37 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (self.importFluxUserArray.count > 0 && indexPath.section == 1) {
-        FluxImportContactCell*cell = (FluxImportContactCell*)[self.importUserTableView cellForRowAtIndexPath:indexPath];
-        if ([[self.importFluxUserImagesArray objectAtIndex:indexPath.row] isKindOfClass:[UIImage class]]) {
-            [cell.contactObject setProfilePic:(UIImage*)[self.importFluxUserImagesArray objectAtIndex:indexPath.row]];
+    if (isSearching) {
+        if (self.searchResultsUserArray.count > 0) {
+            int index = (int)indexPath.row-1;
+            FluxImportContactCell*cell = (FluxImportContactCell*)[self.importUserTableView cellForRowAtIndexPath:indexPath];
+            if (cell.contactObject.userID) {
+                if ([[self.importFluxUserImagesArray objectAtIndex:index] isKindOfClass:[UIImage class]]) {
+                    [cell.contactObject setProfilePic:(UIImage*)[self.importFluxUserImagesArray objectAtIndex:index]];
+                }
+                [self performSegueWithIdentifier:@"pushProfileSegue" sender:cell.contactObject];
+            }
+            else{
+                [tableView deselectRowAtIndexPath:indexPath animated:NO];
+            }
         }
-        [self performSegueWithIdentifier:@"pushProfileSegue" sender:cell.contactObject];
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        else{
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        }
     }
     else{
-        [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        if (self.importFluxUserArray.count > 0 && indexPath.section == 1) {
+            FluxImportContactCell*cell = (FluxImportContactCell*)[self.importUserTableView cellForRowAtIndexPath:indexPath];
+            if ([[self.importFluxUserImagesArray objectAtIndex:indexPath.row] isKindOfClass:[UIImage class]]) {
+                [cell.contactObject setProfilePic:(UIImage*)[self.importFluxUserImagesArray objectAtIndex:indexPath.row]];
+            }
+            [self performSegueWithIdentifier:@"pushProfileSegue" sender:cell.contactObject];
+        }
+        else{
+            [tableView deselectRowAtIndexPath:indexPath animated:NO];
+        }
     }
+
 }
 
 #pragma mark - Search Cell Delegate
@@ -1050,6 +1074,47 @@
                 
             }
         }
+    }
+}
+
+#pragma mark - Public Profile Delegate
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didSendFollowerRequest:(FluxUserObject *)userObject{
+    
+    if (isSearching) {
+        NSIndexPath*selectedCellPath = [self.importUserTableView indexPathForSelectedRow];
+        [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:(int)selectedCellPath.row-1] setAmFollowerFlag:1];
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedCellPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    else{
+        NSIndexPath*selectedCellPath = [self.importUserTableView indexPathForSelectedRow];
+        [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:(int)selectedCellPath.row] setAmFollowerFlag:1];
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedCellPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+}
+
+- (void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didremoveAmFollower:(FluxUserObject *)userObject{
+    if (isSearching) {
+        NSIndexPath*selectedCellPath = [self.importUserTableView indexPathForSelectedRow];
+        [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:(int)selectedCellPath.row-1] setAmFollowerFlag:0];
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedCellPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    else{
+        NSIndexPath*selectedCellPath = [self.importUserTableView indexPathForSelectedRow];
+        [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:(int)selectedCellPath.row] setAmFollowerFlag:0];
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedCellPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+}
+
+-(void)PublicProfile:(FluxPublicProfileViewController *)publicProfile didAddFollower:(FluxUserObject *)userObject{
+    if (isSearching) {
+        NSIndexPath*selectedCellPath = [self.importUserTableView indexPathForSelectedRow];
+        [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:(int)selectedCellPath.row-1] setAmFollowerFlag:2];
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedCellPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    else{
+        NSIndexPath*selectedCellPath = [self.importUserTableView indexPathForSelectedRow];
+        [(FluxContactObject*)[self.importFluxUserArray objectAtIndex:(int)selectedCellPath.row] setAmFollowerFlag:2];
+        [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:selectedCellPath] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
 }
 
