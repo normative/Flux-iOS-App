@@ -1,4 +1,6 @@
 Release Notes:
+
+- Fixes some bugs in social contact import
 ******************************************
 
 V0.24 B09
