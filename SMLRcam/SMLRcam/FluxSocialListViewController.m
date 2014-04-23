@@ -583,7 +583,7 @@
     }];
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
-        NSString*str = [NSString stringWithFormat:@"Updating the list failed, sorry about that"];
+        NSString*str = [NSString stringWithFormat:@"Updating your following list failed"];
         [ProgressHUD showError:str];
         [(UIRefreshControl*)[socialListsRefreshControls objectAtIndex:amFollowingMode] endRefreshing];
     }];
