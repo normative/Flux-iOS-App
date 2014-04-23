@@ -222,7 +222,7 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                 [store setString:[parts objectAtIndex:1] forKey:FluxAccessTokenSecretKey];
                 [store synchronize];
 
-                
+
                 //call delegate
                 if (isRegister) {
                     if ([delegate respondsToSelector:@selector(SocialManager:didRegisterTwitterAccountWithUserInfo:)]) {
@@ -462,12 +462,13 @@ typedef enum FluxSocialManagerReturnType : NSUInteger {
                                                   if (FBSession.activeSession.isOpen) {
                                                       [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
                                                           if (!error) {
-                                                              if (!isRegister) {
+//                                                              if (!isRegister)
+                                                              {
                                                                   [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
                                                                   [UICKeyChainStore setString:user.username forKey:FluxUsernameKey service:FacebookService];
                                                                   [UICKeyChainStore setString:user.name forKey:FluxNameKey service:FacebookService];
                                                               }
-                                                              
+
                                                               
                                                               
                                                               
