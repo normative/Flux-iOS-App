@@ -358,7 +358,7 @@
             [thumbView setCenter:CGPointMake(self.center.x, self.center.y-100)];
             
              }completion:^(BOOL finished){
-                 [UIView animateWithDuration:0.6 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+                 [UIView animateWithDuration:0.6 delay:0.2 options:UIViewAnimationOptionCurveEaseInOut animations:^{
                      [thumbView setCenter:CGPointMake(self.center.x, self.center.y+100)];
                  }completion:^(BOOL finished){
                      [UIView animateWithDuration:0.3 animations:^{
@@ -366,16 +366,16 @@
                          thumbView.transform = CGAffineTransformMakeScale(1.4, 1.4);
                      } completion:^(BOOL finished){
                          [thumbView setCenter:CGPointMake(self.center.x, self.frame.size.height-170)];
-                         helperAnimationFinished = YES;
+                         
                      }];
                  }];
 
         }];
-        [UIView animateWithDuration:0.4 delay:1.9 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:0.4 delay:2.1 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             [timeScrubInfoLabel setAlpha:0.0];
             [clockContainerView setAlpha:1.0];
         }completion:^(BOOL finished){
-            
+            helperAnimationFinished = YES;
         }];
     }];
 }
