@@ -325,7 +325,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"%s: Found %lu Results",__func__, (unsigned long)[result count]);
+        NSLog(@"%s: Found The image metadata",__func__);
         if ([result count]>0)
         {
             FluxScanImageObject *imageObject = [result firstObject];
@@ -1251,7 +1251,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
     {
-        NSLog(@"Found %lu Results",(unsigned long)[result count]);
+        NSLog(@"Found user");
         if ([result count]>0)
         {
             FluxUserObject*userObj = [result firstObject];
@@ -1313,7 +1313,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %lu Results",(unsigned long)[result count]);
+         NSLog(@"Found image list containing %lu Results",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnImageListForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnImageListForUser:result.array andRequestID:requestID];
@@ -1347,7 +1347,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %lu Results",(unsigned long)[result count]);
+         NSLog(@"Found %lu outstanding follower requests",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowingRequestsForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnFollowingRequestsForUser:result.array andRequestID:requestID];
@@ -1380,7 +1380,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %lu Results",(unsigned long)[result count]);
+         NSLog(@"Found %lu users being followed by me",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowingListForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnFollowingListForUser:result.array andRequestID:requestID];
@@ -1412,7 +1412,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %lu Results",(unsigned long)[result count]);
+         NSLog(@"Found %lu followers",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnFollowerListForUser:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnFollowerListForUser:result.array andRequestID:requestID];
@@ -1444,7 +1444,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
-         NSLog(@"Found %lu Results",(unsigned long)[result count]);
+         NSLog(@"Found %lu users for query",(unsigned long)[result count]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnUsersListForQuery:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnUsersListForQuery:result.array andRequestID:requestID];

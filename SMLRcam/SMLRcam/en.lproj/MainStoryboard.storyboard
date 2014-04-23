@@ -795,7 +795,7 @@
                                                 <action selector="editProfleImageAction:" destination="iEx-Eu-CFI" eventType="touchUpInside" id="jM0-77-lGH"/>
                                             </connections>
                                         </button>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgw-RX-FNB">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dgw-RX-FNB">
                                             <rect key="frame" x="54" y="160" width="213" height="26"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
@@ -3417,7 +3417,7 @@
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
         <segue reference="cDh-QJ-kAL"/>
+        <segue reference="Rax-cR-yIy"/>
         <segue reference="TKb-mp-b48"/>
-        <segue reference="sbm-gJ-83e"/>
     </inferredMetricsTieBreakers>
 </document>

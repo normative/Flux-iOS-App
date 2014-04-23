@@ -49,6 +49,9 @@
     socialTableViews = [[NSMutableArray alloc]initWithObjects:followingTableView, followersTableView, nil];
     followersTableView.hidden = YES;
     
+    followingTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    followersTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
     
     socialListArray = [[NSMutableArray alloc]init];
     socialListImagesArray = [[NSMutableArray alloc]initWithObjects:[[NSMutableArray alloc]init],[[NSMutableArray alloc]init], nil];
@@ -77,6 +80,8 @@
     [label setTextColor:[UIColor whiteColor]];
     [label setCenter:CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y)];
     [self.navigationItem setTitleView:label];
+    
+    [self createLonelyViews];
 //    [self.navigationController.navigationBar addSubview:label];
     
     [self updateListForActiveMode];
@@ -139,6 +144,84 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)createLonelyViews{
+    
+    //following
+    UIView*lonelyView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 300, 300)];
+    UILabel*noImagesLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 265, 100)];
+    
+    [lonelyView setCenter:followingTableView.center];
+    [noImagesLabel setCenter:CGPointMake(lonelyView.frame.size.width/2, lonelyView.frame.size.height/2-100)];
+    
+    NSLog(@"%@",NSStringFromCGRect(lonelyView.frame));
+    
+    NSLog(@"%@",NSStringFromCGRect(noImagesLabel.frame));
+    
+    [noImagesLabel setFont:[UIFont fontWithName:@"Akkurat" size:15.0]];
+    [noImagesLabel setTextColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineSpacing = 6;
+    paragraphStyle.alignment = NSTextAlignmentCenter;
+    
+    NSDictionary *attribs = @{
+                              NSForegroundColorAttributeName: noImagesLabel.textColor,
+                              NSFontAttributeName: noImagesLabel.font,
+                              NSParagraphStyleAttributeName : paragraphStyle
+                              };
+    NSMutableAttributedString *attributedText =
+    [[NSMutableAttributedString alloc] initWithString:@"You haven't followed anyone yet. Following interesting peope is a great way to focus on the type of stuff you like to see."
+                                           attributes:attribs];
+    
+    [noImagesLabel setAttributedText:attributedText];
+    
+    
+    [noImagesLabel setNumberOfLines:4];
+    [lonelyView addSubview:noImagesLabel];
+    
+    UIButton*findFriendsButton = [[UIButton alloc]initWithFrame:CGRectMake(0, 0, 200, 25)];
+    [findFriendsButton setCenter:CGPointMake(lonelyView.frame.size.width/2, lonelyView.frame.size.height/2)];
+    [findFriendsButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:findFriendsButton.titleLabel.font.pointSize]];
+    [findFriendsButton setTitle:@"Find People To Follow" forState:UIControlStateNormal];
+    [findFriendsButton setTitleColor:[UIColor colorWithWhite:1.0 alpha:0.9] forState:UIControlStateNormal];
+    [findFriendsButton addTarget:self action:@selector(searchButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+    [lonelyView addSubview:findFriendsButton];
+    
+    
+    
+//    UIImageView*imgView = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, 200, 200)];
+//    [imgView setCenter:CGPointMake(lonelyView.center.x, imgView.frame.size.width/2)];
+//    [imgView setImage:[UIImage imageNamed:@"empytPics"]];
+//    [imgView setContentMode:UIViewContentModeScaleAspectFit];
+//    [lonelyView addSubview:imgView];
+    
+    [lonelyView setHidden:YES];
+    [self.view addSubview:lonelyView];
+    
+    
+    //followers
+    UILabel*noImagesLabel2 = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 265, 100)];
+    [noImagesLabel2 setCenter:self.view.center];
+    [noImagesLabel2 setFont:[UIFont fontWithName:@"Akkurat" size:15.0]];
+    [noImagesLabel2 setTextColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
+    
+
+    NSMutableAttributedString *attributedText2 =
+    [[NSMutableAttributedString alloc] initWithString:@"No followers to date, but never fear they'll arrive soon!"
+                                           attributes:attribs];
+    
+    [noImagesLabel2 setAttributedText:attributedText2];
+    
+    
+    [noImagesLabel2 setNumberOfLines:3];
+    
+    [noImagesLabel2 setHidden:YES];
+    //disable no followers message
+//    [self.view addSubview:noImagesLabel2];
+    
+    
+    lonelyViewsArray = [NSArray arrayWithObjects:lonelyView, noImagesLabel2, nil];
+}
 
 - (IBAction)searchButtonAction:(id)sender {
     
@@ -458,7 +541,7 @@
 - (void)addUser:(FluxUserObject*)userObject toListMode:(SocialListMode)theListMode{
     //go through the array and find where to insert the new guy
     if (theListMode == amFollowingMode) {
-        
+        [self checkLoneliness];
         
         if (listMode == amFollowingMode) {
             NSArray*list = (NSMutableArray*)[socialListArray objectAtIndex:theListMode];
@@ -508,6 +591,7 @@
             }
         }
     }
+    [self checkLoneliness];
 }
 
 - (void)removeUser:(FluxUserObject*)theUserObject fromListMode:(SocialListMode)theListMode{
@@ -579,7 +663,7 @@
         if (listMode == amFollowingMode) {
             [[socialTableViews objectAtIndex:amFollowingMode] reloadData];
         }
-        
+        [self checkLoneliness];
     }];
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
         
@@ -602,6 +686,7 @@
         if (listMode == isFollowerMode) {
             [[socialTableViews objectAtIndex:isFollowerMode] reloadData];
         }
+        [self checkLoneliness];
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -717,6 +802,42 @@
         
     }
     [segmentedControl setUserInteractionEnabled:YES];
+    
+    [self checkLoneliness];
+}
+
+- (void)checkLoneliness{
+    if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0) {
+        [(UIView*)[lonelyViewsArray objectAtIndex:listMode] setHidden:NO];
+    }
+    else{
+        [(UIView*)[lonelyViewsArray objectAtIndex:listMode] setHidden:YES];
+    }
+    
+    [(UIView*)[lonelyViewsArray objectAtIndex:lonelyViewsArray.count-1-listMode] setHidden:YES];
+    
+//    
+//    
+//    if (listMode == amFollowingMode) {
+//        if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0) {
+//            [(UIView*)[lonelyViewsArray objectAtIndex:listMode] setHidden:NO];
+//            [followingTableView setUserInteractionEnabled:NO];
+//        }
+//        else{
+//            [(UIView*)[lonelyViewsArray objectAtIndex:listMode] setHidden:YES];
+//            [followingTableView setUserInteractionEnabled:YES];
+//        }
+//    }
+//    else{
+//        if ([(NSMutableArray*)[socialListArray objectAtIndex:listMode] count] == 0) {
+//            [(UIView*)[lonelyViewsArray objectAtIndex:listMode] setHidden:NO];
+//            [followingTableView setUserInteractionEnabled:NO];
+//        }
+//        else{
+//            [(UIView*)[lonelyViewsArray objectAtIndex:listMode] setHidden:YES];
+//            [followingTableView setUserInteractionEnabled:YES];
+//        }
+//    }
 }
 
 //re-enable interaction after animation

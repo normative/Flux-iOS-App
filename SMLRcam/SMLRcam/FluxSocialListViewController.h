@@ -28,6 +28,7 @@ typedef enum SocialListMode : NSUInteger {
     IBOutlet FluxSegmentedControl *segmentedControl;
     IBOutlet UITableView *followingTableView;
     IBOutlet UITableView *followersTableView;
+    NSArray*lonelyViewsArray;
     
 
     NSArray*socialListTableViewVCs;

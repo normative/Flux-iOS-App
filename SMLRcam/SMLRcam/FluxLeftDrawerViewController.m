@@ -137,7 +137,7 @@
     [self.versionLbl setFont:[UIFont fontWithName:@"Akkurat" size:self.versionLbl.font.pointSize]];
     [self.feedbackButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.feedbackButton.titleLabel.font.pointSize]];
     
-	    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
+    NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
 
     //**should** always pass
     if (userID) {
@@ -192,6 +192,9 @@
         }];
         
         [self.fluxDataManager requestUserProfileForID:userID.intValue withDataRequest:request];
+    }
+    else{
+        NSLog(@"THE KEYCHAIN STORE IS EMPTY");
     }
     [self.navigationController.navigationBar setTranslucent:NO];
 }

@@ -46,6 +46,8 @@
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTextColor:[UIColor blackColor]];
     [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setTintColor:[UIColor blackColor]];
     
+    addUsersTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
     resultsArray = [[NSMutableArray alloc]init];
     resultsImageArray = [[NSMutableArray alloc]init];
     
