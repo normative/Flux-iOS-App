@@ -355,10 +355,10 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
                                               course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
     }
 
-    DDLogVerbose(@"loc: %.8f, %.8f, alt: %.6f, h_acc: %.2f, v_acc: %.2f, head: %.2f, loc_kal: %.8f, %.8f, alt_kal: %.6f",
-                 self.rawlocation.coordinate.latitude, self.rawlocation.coordinate.longitude, self.rawlocation.altitude,
-                 self.rawlocation.horizontalAccuracy, self.rawlocation.verticalAccuracy, self.heading,
-                 newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
+//    DDLogVerbose(@"loc: %.8f, %.8f, alt: %.6f, h_acc: %.2f, v_acc: %.2f, head: %.2f, loc_kal: %.8f, %.8f, alt_kal: %.6f",
+//                 self.rawlocation.coordinate.latitude, self.rawlocation.coordinate.longitude, self.rawlocation.altitude,
+//                 self.rawlocation.horizontalAccuracy, self.rawlocation.verticalAccuracy, self.heading,
+//                 newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.altitude);
     
     if (isnan(newLocation.coordinate.latitude) || isnan(newLocation.coordinate.longitude))
     {

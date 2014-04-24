@@ -47,6 +47,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
                               {
                                   [fluxMapView removeAnnotations:fluxMapView.annotations];
                                   [fluxMapView addAnnotations:fluxMapContentMetadata];
+                                  //this sets the label to 0
+//                                  [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]] forState:UIControlStateNormal];
                               });
            }
        });
@@ -120,12 +122,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 }
 
 - (MKMapRect)shrunkenMapRect:(MKMapRect)mapRect{
-    MKOverlayRenderer*tmpRenderer = [[MKOverlayRenderer alloc]init];
-    CGRect narowedRect = [tmpRenderer rectForMapRect:mapRect];
-//    NSLog(@"Norm: %@",NSStringFromCGRect(narowedRect));
-    narowedRect = CGRectInset(narowedRect, narowedRect.size.width*.05, narowedRect.size.width*.05);
-    mapRect = [tmpRenderer mapRectForRect:narowedRect];
-//    NSLog(@"Small: %@",NSStringFromCGRect(narowedRect));
+//    MKOverlayRenderer*tmpRenderer = [[MKOverlayRenderer alloc]init];
+//    CGRect narowedRect = [tmpRenderer rectForMapRect:mapRect];
+////    NSLog(@"Norm: %@",NSStringFromCGRect(narowedRect));
+//    narowedRect = CGRectInset(narowedRect, narowedRect.size.width*.05, narowedRect.size.width*.05);
+//    mapRect = [tmpRenderer mapRectForRect:narowedRect];
+////    NSLog(@"Small: %@",NSStringFromCGRect(narowedRect));
     return mapRect;
 }
 
@@ -225,8 +227,17 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(self.locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
+    
+    //set the last radius (in this case, it's initial radius)
+    MKCoordinateRegion region = fluxMapView.region;
+    CLLocationCoordinate2D centerCoordinate = fluxMapView.centerCoordinate;
+    CLLocation * newLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.latitude+region.span.latitudeDelta longitude:centerCoordinate.longitude];
+    CLLocation * centerLocation = [[CLLocation alloc] initWithLatitude:centerCoordinate.latitude longitude:centerCoordinate.longitude];
+    CLLocationDistance screenDistance = [centerLocation distanceFromLocation:newLocation]; // in meters
+    lastRadius = screenDistance/2;
+    
+    
     lastSynchedLocation = self.locationManager.location.coordinate;
-    lastRadius = 75.0;
     outstandingRequests = 0;
     
     userLocationPin = [[FluxUserLocationMapPin alloc]init];
@@ -276,6 +287,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
     CLLocation*loc = [[CLLocation alloc]initWithCoordinate:fluxMapView.centerCoordinate altitude:self.locationManager.location.altitude horizontalAccuracy:self.locationManager.location.horizontalAccuracy verticalAccuracy:self.locationManager.location.verticalAccuracy course:self.locationManager.location.course speed:self.locationManager.location.speed timestamp:self.locationManager.location.timestamp];
     [filtersVC setLocation:loc];
+    
     [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:(int)[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
     [self animationPushBackScaleDown];
     [filtersVC setRadius:lastRadius];

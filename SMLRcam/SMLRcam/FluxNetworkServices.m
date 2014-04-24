@@ -1824,7 +1824,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxFilterImageCountObject *countsObject = [result firstObject];
-         
+         NSLog(@"Filters returned %i total images",countsObject.totalImageCount);
          if ([delegate respondsToSelector:@selector(NetworkServices:didReturnImageCounts:andRequestID:)])
          {
              [delegate NetworkServices:self didReturnImageCounts:countsObject andRequestID:requestID];
@@ -1870,6 +1870,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                                                                                 altMin, altMax,
                                                                                 timestampMin, timestampMax,
                                                                                 dataFilter.hashTags, dataFilter.users,[[NSNumber numberWithBool:dataFilter.isActiveUserFiltered]intValue], [[NSNumber numberWithBool:dataFilter.isFollowingFiltered]intValue], token] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    
     
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
