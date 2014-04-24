@@ -170,7 +170,7 @@
                               NSParagraphStyleAttributeName : paragraphStyle
                               };
     NSMutableAttributedString *attributedText =
-    [[NSMutableAttributedString alloc] initWithString:@"You haven't followed anyone yet. Following interesting peope is a great way to focus on the type of stuff you like to see."
+    [[NSMutableAttributedString alloc] initWithString:@"You haven't followed anyone yet. Following interesting people is a great way to focus on the type of stuff you like to see."
                                            attributes:attribs];
     
     [noImagesLabel setAttributedText:attributedText];
