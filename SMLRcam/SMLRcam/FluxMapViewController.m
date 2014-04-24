@@ -77,8 +77,8 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 -(void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated{
     
     //limits zooming out
-    if ([fluxMapView zoomLevel] <= 18) {
-        MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(fluxMapView.centerCoordinate, 500, 500);
+    if ([fluxMapView zoomLevel] <= 14) {
+        MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(fluxMapView.centerCoordinate, 7000, 7000);
         MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
         [fluxMapView setRegion:adjustedRegion animated:YES];
         return;
