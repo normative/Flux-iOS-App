@@ -52,6 +52,10 @@
     
     self.profielImageButton.layer.cornerRadius = self.profielImageButton.frame.size.height/2;
     self.profielImageButton.clipsToBounds = YES;
+    
+    //disable profile image button tap
+    [self.profielImageButton setUserInteractionEnabled:NO];
+    
     //add a white stroke to the image
 //    self.profielImageButton.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.7].CGColor;
 //    self.profielImageButton.layer.borderWidth = 1;
