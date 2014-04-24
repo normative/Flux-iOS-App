@@ -18,11 +18,11 @@
 #import "TWAPIManager.h"
 #import "TWSignedRequest.h"
 
-
-
 @interface FluxSettingsViewController : UITableViewController<UIAlertViewDelegate, FluxSocialManagerDelegate, FluxSocialManagementCellDelegate>{
     int initialMask;
     IBOutlet UIView *fakeSeparator;
+    IBOutlet UILabel *torontoLabel;
+    IBOutlet UILabel *versionLabel;
 }
 @property (strong, nonatomic) IBOutlet UIButton *logoutButton;
 

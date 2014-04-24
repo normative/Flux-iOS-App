@@ -79,9 +79,6 @@ FluxSettingsSection: NSUInteger {
     [label setCenter:CGPointMake(self.navigationController.navigationBar.center.x, self.navigationController.navigationBar.center.y)];
     [self.navigationItem setTitleView:label];
     
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    initialMask = [[defaults objectForKey:@"Mask"] integerValue];
-    
     [self.logoutButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.logoutButton.titleLabel.font.pointSize]];
     UILabel*logoutLabel = [[UILabel alloc]initWithFrame:self.logoutButton.bounds];
     [logoutLabel setTextAlignment:NSTextAlignmentCenter];
@@ -94,19 +91,15 @@ FluxSettingsSection: NSUInteger {
     
     self.accountStore = [[ACAccountStore alloc] init];
     self.apiManager = [[TWAPIManager alloc] init];
+
     
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    NSString * version = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleShortVersionString"];
+    NSString * build = [[NSBundle mainBundle] objectForInfoDictionaryKey: (NSString *)kCFBundleVersionKey];
     
-    UIView*view = fakeSeparator.superview;
-    [fakeSeparator removeFromSuperview];
-    [fakeSeparator setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [view addSubview:fakeSeparator];
-    //fixes what looks to be an Xcode bug where if you put a frame height as less than 1 it makes it 1 (2 pixels)
-    [fakeSeparator setFrame:CGRectMake(fakeSeparator.frame.origin.x, fakeSeparator.frame.origin.y, fakeSeparator.frame.size.width, 1/[[UIScreen mainScreen] scale])];
+    
+    [versionLabel setText:[NSString stringWithFormat:@"Version %@",version]];
+    [versionLabel setFont:[UIFont fontWithName:@"Akkurat" size:versionLabel.font.pointSize]];
+    [torontoLabel setFont:[UIFont fontWithName:@"Akkurat" size:torontoLabel.font.pointSize]];
 }
 
 -(void)viewDidDisappear:(BOOL)animated{
