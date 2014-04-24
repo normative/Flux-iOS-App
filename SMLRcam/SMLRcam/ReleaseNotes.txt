@@ -13,6 +13,7 @@ Release Notes:
 - UI Enhancements
 - fix filter counts
 - adjust map max zoom to city level
+- disable debug menu for App Store Release
 
 ******************************************
 
