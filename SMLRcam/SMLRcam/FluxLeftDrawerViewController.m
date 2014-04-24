@@ -88,12 +88,14 @@
     [super viewDidLoad];
     
     newImageCount = -1;
-    UIView*view = fakeSeparator.superview;
-    [fakeSeparator removeFromSuperview];
-    [fakeSeparator setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [view addSubview:fakeSeparator];
-    //fixes what looks to be an Xcode bug where if you put a frame height as less than 1 it makes it 1 (2 pixels)
-    [fakeSeparator setFrame:CGRectMake(fakeSeparator.frame.origin.x, fakeSeparator.frame.origin.y, fakeSeparator.frame.size.width, 1/[[UIScreen mainScreen] scale])];
+//    UIView*view = fakeSeparator.superview;
+//    [fakeSeparator removeFromSuperview];
+//    [fakeSeparator setTranslatesAutoresizingMaskIntoConstraints:YES];
+//    [view addSubview:fakeSeparator];
+//    //fixes what looks to be an Xcode bug where if you put a frame height as less than 1 it makes it 1 (2 pixels)
+//    [fakeSeparator setFrame:CGRectMake(fakeSeparator.frame.origin.x, fakeSeparator.frame.origin.y, fakeSeparator.frame.size.width, 1/[[UIScreen mainScreen] scale])];
+    
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     if ([self.navigationController respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
         self.navigationController.interactivePopGestureRecognizer.enabled = NO;

@@ -190,7 +190,7 @@ FluxSettingsSection: NSUInteger {
             return 2;
             break;
         case walkthroughReset_section:
-            return 1;
+            return 2;
             break;
         case logout_section:
             return (SHOW_APPSTORE_FEEDBACK ? 3: 2);
@@ -286,7 +286,13 @@ FluxSettingsSection: NSUInteger {
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:simpleTableIdentifier];
             }
             [cell setBackgroundColor:[UIColor clearColor]];
-            [cell.textLabel setText:@"Show Opening Tutorial"];
+            if (indexPath.row == 0) {
+                [cell.textLabel setText:@"Show Opening Tutorial"];
+            }
+            else{
+                [cell.textLabel setText:@"Share Some Hugs"];
+            }
+            
             [cell.textLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
             [cell.textLabel setTextColor:[UIColor whiteColor]];
             
@@ -362,7 +368,12 @@ FluxSettingsSection: NSUInteger {
             break;
         case walkthroughReset_section:
         {
-            [self resetWalkthrough];
+            if (indexPath.row == 0) {
+                [self resetWalkthrough];
+            }
+            else{
+                [self fireAppReview];
+            }
         }
             break;
         case logout_section:
@@ -563,6 +574,12 @@ FluxSettingsSection: NSUInteger {
     {
         [self.fluxDataManager deleteLocations];
     }
+}
+
+- (void)fireAppReview{
+    NSString * appId = @"792748447";
+    NSString * theUrl = [NSString  stringWithFormat:@"itms-apps://itunes.apple.com/app/id%@",appId];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:theUrl]];
 }
 
 #pragma mark - Helper Methods

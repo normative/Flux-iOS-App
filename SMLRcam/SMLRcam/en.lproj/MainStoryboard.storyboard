@@ -729,53 +729,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                         <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
-                        <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <view key="tableFooterView" contentMode="scaleToFill" id="pCz-38-tt7">
-                            <rect key="frame" x="0.0" y="380" width="320" height="119"/>
-                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oYY-Vs-Dgh">
-                                    <rect key="frame" x="106" y="68" width="108" height="30"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="30" id="0ln-rs-FgD"/>
-                                        <constraint firstAttribute="width" constant="108" id="2IA-6R-4hS"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                    <state key="normal" title="Send Feedback">
-                                        <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                    </state>
-                                    <connections>
-                                        <action selector="onSendFeedBackBtn:" destination="iEx-Eu-CFI" eventType="touchUpInside" id="Ok4-Dv-Mpl"/>
-                                    </connections>
-                                </button>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eTl-Gu-teW">
-                                    <rect key="frame" x="77" y="92" width="166" height="21"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <constraints>
-                                        <constraint firstAttribute="height" constant="21" id="bCe-8p-TqD"/>
-                                        <constraint firstAttribute="width" constant="166" id="dlV-OD-GIu"/>
-                                    </constraints>
-                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
-                                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kU6-wo-9ey" userLabel="fake line">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
-                                </view>
-                            </subviews>
-                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                            <constraints>
-                                <constraint firstAttribute="centerX" secondItem="eTl-Gu-teW" secondAttribute="centerX" id="1dp-U0-k8i"/>
-                                <constraint firstAttribute="bottom" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="21" id="EPG-JY-jlc"/>
-                                <constraint firstItem="eTl-Gu-teW" firstAttribute="top" secondItem="oYY-Vs-Dgh" secondAttribute="bottom" constant="-6" id="NAG-u5-yZU"/>
-                                <constraint firstAttribute="centerX" secondItem="oYY-Vs-Dgh" secondAttribute="centerX" id="QfM-pN-Vpx"/>
-                            </constraints>
-                        </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="profileCell" rowHeight="250" id="iiI-aT-Mc7" customClass="FluxProfileCell">
                                 <rect key="frame" x="0.0" y="86" width="320" height="250"/>
@@ -862,9 +816,6 @@
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="320" height="568"/>
                     <connections>
-                        <outlet property="fakeSeparator" destination="kU6-wo-9ey" id="yDr-5w-D6h"/>
-                        <outlet property="feedbackButton" destination="oYY-Vs-Dgh" id="anK-9d-wk1"/>
-                        <outlet property="versionLbl" destination="eTl-Gu-teW" id="Q0O-vq-FZx"/>
                         <segue destination="0Hb-dd-ez9" kind="push" identifier="pushSettingsSegue" id="bTt-Mn-4jt"/>
                         <segue destination="Hk4-y1-dJH" kind="push" identifier="pushPhotosSegue" id="5Gp-6F-wwh"/>
                         <segue destination="Ikh-cP-T3a" kind="push" identifier="pushEditProfileSegue" id="gvj-oK-KBl"/>
@@ -884,7 +835,6 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="0.050000000000000003" alpha="0.59999999999999998" colorSpace="calibratedWhite"/>
                         <color key="separatorColor" white="0.66666666669999997" alpha="0.20000000000000001" colorSpace="calibratedWhite"/>
-                        <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <color key="sectionIndexTrackingBackgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="cell" id="d4R-7q-KIi">
