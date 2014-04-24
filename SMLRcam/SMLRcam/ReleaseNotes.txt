@@ -1,6 +1,8 @@
 Release Notes:
 
 - Fixes some bugs in social contact import
+- Adds a message if not following anyone yet
+- UI Enhancements
 ******************************************
 
 V0.24 B09
