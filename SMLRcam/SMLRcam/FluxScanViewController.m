@@ -25,6 +25,9 @@
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
 
+// define this symbol to enable access to the debug menu
+//#define ENABLE_DEBUG_VC
+
 #define IS_RETINA ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
 #define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 
@@ -1278,9 +1281,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)checkToDisplayDebugMenu{
+#ifdef ENABLE_DEBUG_VC
     if (debugPressCount == 4) {
         [self showDebugMenu];
     }
+#endif
 }
 
 # pragma mark - Flux photo record keeping for Flickr support
