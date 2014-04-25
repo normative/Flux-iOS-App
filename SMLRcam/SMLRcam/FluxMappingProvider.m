@@ -116,9 +116,10 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"id":  @"imageID",
+                                                  @"time_stamp":    @"timestamp"
                                                   }];
     
-    [mapping addAttributeMappingsFromArray:@[@"description", @"privacy"]];
+    [mapping addAttributeMappingsFromArray:@[@"description", @"privacy", ]];
     
     return mapping;
 }

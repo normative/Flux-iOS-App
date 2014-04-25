@@ -902,6 +902,7 @@
         }
     }
     captionView.alpha = [self areControlsHidden] ? 0 : 1; // Initial alpha
+    [captionView setIsActiveUser:self.isActiveUser];
 
     return captionView;
 }
@@ -1157,11 +1158,10 @@
     CGSize captionSize = [captionView sizeThatFits:CGSizeMake(pageFrame.size.width, 0)];
     CGRect captionFrame = CGRectMake(pageFrame.origin.x, pageFrame.size.height - captionSize.height - (_toolbar.superview?_toolbar.frame.size.height:0), pageFrame.size.width, captionSize.height);
     
-    if (IS_4INCHSCREEN) {
-        return CGRectMake(10, 494.19, 320, 73.79);
+    if (!IS_4INCHSCREEN) {
+        captionFrame = CGRectMake(captionFrame.origin.x, captionFrame.origin.y, captionFrame.size.width, captionFrame.size.height+20);
     }
     else{
-        return CGRectMake(10, 406.2, 320, 73.80);
     }
     return captionFrame;
 }

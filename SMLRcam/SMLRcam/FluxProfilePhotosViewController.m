@@ -280,6 +280,7 @@
                  NSLog(@"failed image loading: %@", error);
              }];
     }
+    
     cell.imageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
     [cell.lockImageView setImage:[UIImage imageNamed:@"lockClosed"]];
     
@@ -332,15 +333,34 @@
     }
     //else present a photo viewer
     else{
-        NSMutableArray*photoURLs = [[NSMutableArray alloc]init];
+        NSDateFormatter*formatter = [[NSDateFormatter alloc] init];
+        [formatter setDateFormat:@"MMM dd, yyyy - h:mma"];
+        
+        NSMutableArray*photos = [[NSMutableArray alloc]init];
         NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-        for (int i = 0; i<picturesArray.count; i++) {
+        int count = (int)picturesArray.count;
+        if (count > 25) {
+            count = 25;
+        }
+        for (int i = 0; i<count; i++) {
             NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
-            [photoURLs addObject:urlString];
+            IDMPhoto* photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
+//            IDMPhoto* photo = [[IDMPhoto alloc] initWithImage:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]image]];
+            
+            [photo setUserID:[[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]intValue]];
+            [photo setUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService]];
+            [photo setImageID:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]imageID]];
+            [photo setCaption:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]description]];
+//            [photo setTimestring:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]timestampString]];
+            
+            [formatter setDateFormat:@"MMM dd, yyyy - h:mma"];
+            [photo setTimestring:[formatter stringFromDate:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]timestamp]]];
+            
+            [photos addObject:photo];
         }
         FluxPhotoCollectionCell*cell = (FluxPhotoCollectionCell*)[collectionView cellForItemAtIndexPath:indexPath];
-        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotoURLs:photoURLs animatedFromView:cell.contentView];
-        //[browser setDisplaysProfileInfo:NO];
+        IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:cell.contentView];
+        [browser setIsActiveUser:YES];
         [browser setDisplayToolbar:NO];
         [browser setDisplayDoneButtonBackgroundImage:NO];
         [browser setInitialPageIndex:indexPath.row];

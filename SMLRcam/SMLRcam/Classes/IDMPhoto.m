@@ -156,13 +156,15 @@ caption = _caption;
                     self.progressUpdateBlock(progress);
                 }
             }];
-            
             [operation start];
         } else {
             // Failed - no source
             self.underlyingImage = nil;
             [self imageLoadingComplete];
         }
+    }
+    if (!_userID) {
+        NSLog(@"we have a user ID");
     }
 }
 

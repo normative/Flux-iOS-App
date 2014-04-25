@@ -25,6 +25,7 @@ typedef void (^IDMProgressUpdateBlock)(CGFloat progress);
 @property (nonatomic, strong) IDMProgressUpdateBlock progressUpdateBlock;
 
 @property(nonatomic) int userID;
+@property(nonatomic) int imageID;
 @property(nonatomic, strong) NSString *username;
 @property(nonatomic, strong) NSString*timestring;
 

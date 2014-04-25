@@ -29,7 +29,7 @@ static const CGFloat labelPadding = 10;
 
 @implementation IDMCaptionView
 
-@synthesize delegate, displaysProfileInfo;
+@synthesize delegate, isActiveUser;
 
 - (id)initWithPhoto:(id<IDMPhoto>)photo {
     CGRect screenBound = [[UIScreen mainScreen] bounds];
@@ -44,9 +44,10 @@ static const CGFloat labelPadding = 10;
     if (self) {
         _photo = photo;
         self.opaque = NO;
-        self.displaysProfileInfo = YES;
+        self.isActiveUser = NO;
         
         [self setBackground];
+        
         
         [self setupCaption];
     }
@@ -146,10 +147,13 @@ static const CGFloat labelPadding = 10;
     [clockImageView setCenter:CGPointMake(clockImageView.center.x, userProfileImageButton.center.y)];
     [timestampLabel setCenter:CGPointMake(timestampLabel.center.x, userProfileImageButton.center.y)];
     
-    if (!displaysProfileInfo) {
-        [userameButton removeFromSuperview];
-        [userProfileImageButton removeFromSuperview];
-    }
+    
+    
+//    if (self.isActiveUser) {ff
+//        [userameButton removeFromSuperview];
+//        [userProfileImageButton removeFromSuperview];
+//    }
+    NSLog(@"Frame: %@",NSStringFromCGRect(captionLabel.frame));
 }
 
 - (void)setBackground {
