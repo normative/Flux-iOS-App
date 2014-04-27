@@ -1,6 +1,17 @@
 Release Notes:
 ******************************************
 
+V0.24 B12
+
+ASR RC 03
+
+Released: 2014-04-27 15:30:00
+
+Release Notes:
+- Upgrade Facebook and Google Analytics APIs to remove use of Advertising Identifier
+
+******************************************
+
 V0.24 B11
 
 ASR RC 03
