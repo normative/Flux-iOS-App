@@ -10,6 +10,7 @@
 #import <FacebookSDK/FacebookSDK.h>
 
 #import "FluxDebugViewController.h"
+#import "FluxScanViewController.h"
 #import "FluxNetworkServices.h"
 #import "FluxDataManager.h"
 #import "FluxDeviceInfoSingleton.h"
@@ -197,7 +198,6 @@ bool registeredForAPNS = false;
             if (dictionary != nil)
             {
                 NSLog(@"Launched from push notification: %@", dictionary);
-
             }
         }
         
@@ -257,6 +257,45 @@ bool registeredForAPNS = false;
 - (void)application:(UIApplication*)application didReceiveRemoteNotification:(NSDictionary*)userInfo
 {
 	NSLog(@"Received notification: %@", userInfo);
+    
+    if ([userInfo objectForKey:@"messagetype"]) {
+        if ([[userInfo objectForKey:@"messagetype"] isEqualToString:@"1"]) {
+            UIWindow *window = [UIApplication sharedApplication].keyWindow;
+            
+            //check if scanView is being presented / is valid. If it's not, then the next time it is presented the view will check for requests. If it is, then show the badge
+            if (window.rootViewController) {
+                if ([window.rootViewController isKindOfClass:[UINavigationController class]]) {
+                    //get the views root (should be a navigation controller)
+                    UINavigationController*VC1 = (UINavigationController*)window.rootViewController;
+                    if ([[VC1 viewControllers]count] > 0) {
+                        //if theres more than 1 VC in the stack, check the root and see if it's scanView.
+                        UIViewController*VC2 = [[(UINavigationController*)window.rootViewController viewControllers] objectAtIndex:0];
+                        UIViewController*VC3 = [VC2 presentedViewController];
+                        if ([VC3 isKindOfClass:[FluxScanViewController class]]) {
+                            //if scan is in the navigation stack (which it will be 90% of the time) check if it's visible
+                            if ([VC3 isViewLoaded] && VC3.view.window) {
+                                if ([userInfo objectForKey:@"badge"]) {
+                                    //if it is loaded & visible, then update the badge value
+                                    [(FluxScanViewController*)VC3 setProfileBadgeCount: [[userInfo objectForKey:@"badge"]intValue]];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    
+    // clear all notifications in the Notification Center
+    [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
+    [[UIApplication sharedApplication] cancelAllLocalNotifications];
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification{
+    NSDictionary*userInfo = [notification userInfo];
+    NSLog(@"Received notification: %@", userInfo);
+
     // clear all notifications in the Notification Center
     [[UIApplication sharedApplication] setApplicationIconBadgeNumber: 0];
     [[UIApplication sharedApplication] cancelAllLocalNotifications];
