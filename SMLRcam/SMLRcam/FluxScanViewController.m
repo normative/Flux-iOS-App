@@ -794,22 +794,17 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     [ProgressHUD showError:[NSString stringWithFormat:@"Failed to post to %@",socialType]];
 }
 
-#pragma mark Friend Requests
+#pragma mark Follow Requests
 - (void)checkForFollowerRequests{
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     
     [request setUserFollowerRequestsReady:^(NSArray*requestsArr, FluxDataRequest*completedRequest){
         //do something with the UserID
         if (requestsArr.count>0) {
-            [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",(int)requestsArr.count]];
-            [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
-            if (!friendRequestsBadge.superview) {
-                [self.leftDrawerButton addSubview:friendRequestsBadge];
-            }
+            [self setProfileBadgeCount:(int)requestsArr.count];
         }
         else{
-            [friendRequestsBadge setBadgeText:@""];
-            [friendRequestsBadge removeFromSuperview];
+            [self setProfileBadgeCount:0];
         }
     }];
     
@@ -818,6 +813,20 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
         NSLog(@"follower request check failed with error %d",(int)[e code]);
     }];
     [self.fluxDisplayManager.fluxDataManager requestFollowingRequestsForUserWithDataRequest:request];
+}
+
+- (void)setProfileBadgeCount:(int)badgeValue{
+    if (badgeValue > 0) {
+        [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",badgeValue]];
+        [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
+        if (!friendRequestsBadge.superview) {
+            [self.leftDrawerButton addSubview:friendRequestsBadge];
+        }
+    }
+    else{
+        [friendRequestsBadge setBadgeText:@""];
+        [friendRequestsBadge removeFromSuperview];
+    }
 }
 
 #pragma mark Other Camera view methods

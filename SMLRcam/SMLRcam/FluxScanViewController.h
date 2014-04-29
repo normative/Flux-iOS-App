@@ -128,6 +128,8 @@ typedef enum {
 - (IBAction)snapshotButtonAction:(id)sender;
 - (IBAction)imageCaptureButtonAction:(id)sender;
 
+- (void)setProfileBadgeCount:(int)badgeValue;
+
 //imageCapture
 - (void)setupOpenGLView;
 
