@@ -8,19 +8,21 @@
 
 #import <UIKit/UIKit.h>
 #import "IDMPhotoProtocol.h"
+#import "FluxPhotoCaptionView.h"
 
 @class IDMCaptionView;
 @protocol IDMCaptionViewDelegate <NSObject>
 @optional
 - (void)CaptionView:(IDMCaptionView *)captionView didSelectUsername:(NSString*)username andProfileImage:(UIImage*)profPic;
+- (void)CaptionViewShouldEditAnnotation:(IDMCaptionView *)captionView;
 
 @end
 
-@interface IDMCaptionView : UIView{
+@interface IDMCaptionView : UIView <FluxPhotoCaptionViewDelegate>{
     id __unsafe_unretained delegate;
 }
 @property (unsafe_unretained) id <IDMCaptionViewDelegate> delegate;
-@property (nonatomic) BOOL isActiveUser;
+@property (nonatomic, strong)FluxPhotoCaptionView *captionView;
 
 // Init
 - (id)initWithPhoto:(id<IDMPhoto>)photo;
@@ -36,9 +38,13 @@
 // subclass to the photo browsers -photoBrowser:photoAtIndex: delegate method
 - (void)setupCaption;
 
+- (void)setupProfilePicture;
+
 // Override -sizeThatFits: and return a CGSize specifying the height of your
 // custom caption view. With width property is ignored and the caption is displayed
 // the full width of the screen
 - (CGSize)sizeThatFits:(CGSize)size;
+- (CGRect)captionFrame;
+- (void)resizeCaption:(CGRect)newFrame;
 
 @end

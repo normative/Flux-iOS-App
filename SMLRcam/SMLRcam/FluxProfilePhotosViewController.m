@@ -333,8 +333,6 @@
     }
     //else present a photo viewer
     else{
-        NSDateFormatter*formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"MMM dd, yyyy - h:mma"];
         
         NSMutableArray*photos = [[NSMutableArray alloc]init];
         NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
@@ -342,37 +340,44 @@
         if (count > 25) {
             count = 25;
         }
+        
+
         for (int i = 0; i<count; i++) {
             NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
             IDMPhoto* photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
-//            IDMPhoto* photo = [[IDMPhoto alloc] initWithImage:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]image]];
             
             [photo setUserID:[[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]intValue]];
             [photo setUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService]];
             [photo setImageID:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]imageID]];
             [photo setCaption:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]description]];
-//            [photo setTimestring:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]timestampString]];
-            
-            [formatter setDateFormat:@"MMM dd, yyyy - h:mma"];
-            [photo setTimestring:[formatter stringFromDate:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]timestamp]]];
+            [photo setTimestamp:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]timestamp]];
             
             [photos addObject:photo];
         }
         FluxPhotoCollectionCell*cell = (FluxPhotoCollectionCell*)[collectionView cellForItemAtIndexPath:indexPath];
         IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:cell.contentView];
-        [browser setIsActiveUser:YES];
         [browser setDisplayToolbar:NO];
         [browser setDisplayDoneButtonBackgroundImage:NO];
         [browser setInitialPageIndex:indexPath.row];
         [browser setDelegate:self];
         
         [cell.lockImageView setHidden:YES];
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-        [self presentViewController:browser animated:YES completion:^{
+        
+        UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
+        [nav.view setBackgroundColor:[UIColor clearColor]];
+        
+        UIImageView*bgView = [[UIImageView alloc]initWithFrame:[[UIApplication sharedApplication] keyWindow].frame];
+        [bgView setImage:[self imageFromCurrentView]];
+        [bgView setBackgroundColor:[UIColor darkGrayColor]];
+        [nav.view insertSubview:bgView atIndex:0];
+        
+        [self presentViewController:nav animated:YES completion:^{
             [cell.lockImageView setHidden:NO];
         }];
     }
 }
+
+
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
@@ -455,5 +460,17 @@
     }
     
     [theCollectionView reloadData];
+}
+
+
+-(UIImage *)imageFromCurrentView
+{
+    CALayer *layer = [[UIApplication sharedApplication] keyWindow].layer;
+    CGFloat scale = [UIScreen mainScreen].scale;
+    UIGraphicsBeginImageContextWithOptions(layer.frame.size, NO, scale);
+    
+    [layer renderInContext:UIGraphicsGetCurrentContext()];
+    UIImage *screenshot = UIGraphicsGetImageFromCurrentImageContext();
+    return screenshot;
 }
 @end

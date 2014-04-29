@@ -364,9 +364,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     photo.userID = tappedImageObject.userID;
     photo.caption = tappedImageObject.descriptionString;
     photo.username = tappedImageObject.username;
-    NSDateFormatter*tmpdateFormatter = [[NSDateFormatter alloc]init];
-    [tmpdateFormatter setDateFormat:@"MMM dd, yyyy - h:mma"];
-    photo.timestring = [tmpdateFormatter stringFromDate:tappedImageObject.timestamp];
+    photo.timestamp = tappedImageObject.timestamp;
     NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
     
     if (!photoViewerPlacementView) {
@@ -381,7 +379,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:photoViewerPlacementView];
     [browser setDelegate:self];
     [browser setDisplayToolbar:NO];
-    //[browser setDisplayDoneButtonBackgroundImage:NO];
     UINavigationController*nav = [[UINavigationController alloc]initWithRootViewController:browser];
     [nav.view setBackgroundColor:[UIColor clearColor]];
     

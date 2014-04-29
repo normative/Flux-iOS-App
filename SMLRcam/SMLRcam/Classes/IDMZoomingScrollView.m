@@ -249,6 +249,10 @@
 #pragma mark - Tap Detection
 
 - (void)handleSingleTap:(CGPoint)touchPoint {
+    NSLog(@"Location: %@", NSStringFromCGPoint(touchPoint));
+    if (CGRectContainsPoint(_captionView.frame, touchPoint)) {
+        NSLog(@"INSIDE");
+    }
 	[_photoBrowser performSelector:@selector(toggleControls) withObject:nil afterDelay:0.2];
 }
 
@@ -275,7 +279,7 @@
 }
 
 // Image View
-- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch { 
+- (void)imageView:(UIImageView *)imageView singleTapDetected:(UITouch *)touch {
     [self handleSingleTap:[touch locationInView:imageView]];
 }
 - (void)imageView:(UIImageView *)imageView doubleTapDetected:(UITouch *)touch {
