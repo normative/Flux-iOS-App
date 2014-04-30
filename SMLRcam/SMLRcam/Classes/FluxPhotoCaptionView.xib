@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13C1021" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="FluxPhotoCaptionView">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="140"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4C1-OA-mi2" userLabel="profile pic button">
+                    <rect key="frame" x="10" y="3" width="27" height="27"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="27" id="cvg-Aa-iIb"/>
+                        <constraint firstAttribute="height" constant="27" id="fIx-Er-8JQ"/>
+                    </constraints>
+                    <state key="normal" title="B">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="profilePicButtonAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="bmh-Jd-Svy"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HMU-8F-Ziy" userLabel="fake username button">
+                    <rect key="frame" x="48" y="0.0" width="158" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="DJL-o3-lEe"/>
+                        <constraint firstAttribute="width" constant="158" id="V5A-c8-3gj"/>
+                    </constraints>
+                    <state key="normal" title="Button">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="usernameButtonAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="neR-mr-qt9"/>
+                    </connections>
+                </button>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Jq-EA-aED" userLabel="username label">
+                    <rect key="frame" x="48" y="2" width="158" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="158" id="GYj-cm-3Dk"/>
+                        <constraint firstAttribute="height" constant="30" id="jm4-6A-tgN"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" alpha="0.69999999999999996" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qKB-lJ-J2N" userLabel="date label">
+                    <rect key="frame" x="214" y="6" width="96" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="21" id="ITR-xT-3aB"/>
+                        <constraint firstAttribute="width" constant="96" id="Sgl-Da-Mih"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cfO-4I-3WP" userLabel="caption label">
+                    <rect key="frame" x="10" y="40" width="300" height="64"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="300" id="h9L-JT-TNU"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JFB-BZ-9OP" userLabel="extra button">
+                    <rect key="frame" x="264" y="108" width="46" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="fAM-gg-bsb"/>
+                        <constraint firstAttribute="width" constant="46" id="zRt-Uf-DdW"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                    <state key="normal" title="· · ·">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="extraButtonAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="Anh-Eb-MrW"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Gc1-bg-pRg" userLabel="edit button">
+                    <rect key="frame" x="10" y="110" width="46" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="7A5-0B-q1n"/>
+                        <constraint firstAttribute="width" constant="46" id="dnI-3q-XXN"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                    <state key="normal" title="Edit">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="editButtonAction:" destination="iN0-l3-epB" eventType="touchUpInside" id="dS9-kh-R8q"/>
+                    </connections>
+                </button>
+                <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gfo-7D-Guv" userLabel="line separator">
+                    <rect key="frame" x="10" y="35" width="300" height="1"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="300" id="Ahg-dj-6kk"/>
+                        <constraint firstAttribute="height" constant="1" id="sPi-PM-iee"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="gfo-7D-Guv" firstAttribute="top" secondItem="HMU-8F-Ziy" secondAttribute="bottom" constant="5" id="0ue-L8-dQh"/>
+                <constraint firstAttribute="bottom" secondItem="Gc1-bg-pRg" secondAttribute="bottom" id="74w-xb-OWM"/>
+                <constraint firstItem="3Jq-EA-aED" firstAttribute="leading" secondItem="4C1-OA-mi2" secondAttribute="trailing" constant="11" id="Ekd-nw-rAi"/>
+                <constraint firstAttribute="trailing" secondItem="qKB-lJ-J2N" secondAttribute="trailing" constant="10" id="Ifl-Z3-uLp"/>
+                <constraint firstItem="HMU-8F-Ziy" firstAttribute="leading" secondItem="4C1-OA-mi2" secondAttribute="trailing" constant="11" id="P5K-Tb-pNL"/>
+                <constraint firstItem="cfO-4I-3WP" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="40" id="XBX-XE-0Ke"/>
+                <constraint firstItem="HMU-8F-Ziy" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="Ypo-qy-R0f"/>
+                <constraint firstItem="4C1-OA-mi2" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="a8j-r9-pwD"/>
+                <constraint firstAttribute="centerX" secondItem="cfO-4I-3WP" secondAttribute="centerX" id="ckM-c8-P8i"/>
+                <constraint firstItem="qKB-lJ-J2N" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="6" id="dJb-OO-ls6"/>
+                <constraint firstItem="3Jq-EA-aED" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="2" id="dRp-ZJ-zv8"/>
+                <constraint firstItem="4C1-OA-mi2" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="3" id="fjF-t2-u6t"/>
+                <constraint firstAttribute="bottom" secondItem="cfO-4I-3WP" secondAttribute="bottom" constant="36" id="kb9-3l-oSs"/>
+                <constraint firstAttribute="centerX" secondItem="gfo-7D-Guv" secondAttribute="centerX" id="m07-b5-glB"/>
+                <constraint firstAttribute="trailing" secondItem="JFB-BZ-9OP" secondAttribute="trailing" constant="10" id="nFc-N5-zxQ"/>
+                <constraint firstAttribute="bottom" secondItem="JFB-BZ-9OP" secondAttribute="bottom" constant="2" id="vwy-OZ-6Xd"/>
+                <constraint firstItem="Gc1-bg-pRg" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="10" id="yKu-49-jeh"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="captionLabel" destination="cfO-4I-3WP" id="hr0-hi-Npe"/>
+                <outlet property="dateLabel" destination="qKB-lJ-J2N" id="BXi-pK-SFv"/>
+                <outlet property="editButton" destination="Gc1-bg-pRg" id="zFh-Wl-oOG"/>
+                <outlet property="extraButton" destination="JFB-BZ-9OP" id="InA-xS-mmh"/>
+                <outlet property="lineView" destination="gfo-7D-Guv" id="JUL-tY-0dZ"/>
+                <outlet property="profilePicButton" destination="4C1-OA-mi2" id="dIb-NL-lT1"/>
+                <outlet property="usernameButton" destination="HMU-8F-Ziy" id="DLi-cN-xGk"/>
+                <outlet property="usernameLabel" destination="3Jq-EA-aED" id="T8U-CJ-LiG"/>
+            </connections>
+        </view>
+    </objects>
+</document>

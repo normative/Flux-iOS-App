@@ -13,6 +13,7 @@
 #import "FluxPublicProfileViewController.h"
 #import "FluxScanViewController.h"
 
+
 #define kUSE_CURRENT_CONTEXT_PRESENTATION_STYLE 1
 #define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 
@@ -23,7 +24,10 @@
     
 	// Views
 	UIScrollView *_pagingScrollView;
-	
+    
+    // Edit Caption Views
+	FluxEditCaptionViewController *editCaptionViewController;
+    
     // Gesture
     UIPanGestureRecognizer *_panGesture;
     
@@ -146,7 +150,7 @@
         _photos = [NSMutableArray new];
         
         _initalPageIndex = 0;
-        _autoHide = YES;
+        _autoHide = NO;
         
         _displayDoneButton = YES;
         _doneButtonImage = nil;
@@ -165,6 +169,7 @@
         _animationDuration = 0.28;
         _senderViewForAnimation = nil;
         _scaleImage = nil;
+        
         
         
         if ([self respondsToSelector:@selector(automaticallyAdjustsScrollViewInsets)])
@@ -435,6 +440,62 @@
     }];
 }
 
+#pragma mark - CaptionView delegate
+
+- (void)CaptionView:(IDMCaptionView *)captionView didSelectUsername:(NSString *)username andProfileImage:(UIImage *)profPic{
+    [self cancelControlHiding];
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:[NSBundle mainBundle]];
+    
+    // setup the opengl controller
+    // first get an instance from storyboard
+    FluxPublicProfileViewController*profileView = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
+    if ([[self.presentingViewController class] isSubclassOfClass:[FluxScanViewController class]]) {
+        [profileView setFluxDataManager:[(FluxScanViewController*)self.presentingViewController fluxDisplayManager].fluxDataManager];
+    }
+    
+    [profileView view];
+    FluxUserObject*userObj = [[FluxUserObject alloc]init];
+    [userObj setUsername:[(IDMPhoto*)[_photos objectAtIndex:_currentPageIndex] username]];
+    [userObj setUserID:[(IDMPhoto*)[_photos objectAtIndex:_currentPageIndex] userID]];
+    [profileView prepareViewWithUser:userObj];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+    [self.navigationController pushViewController:profileView animated:YES];
+}
+
+- (void)CaptionViewShouldEditAnnotation:(IDMCaptionView *)captionView{
+    [editCaptionViewController.view setHidden:NO];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [editCaptionViewController.view setAlpha:1.0];
+    }];
+    CGRect pageFrame = [self frameForPageAtIndex:_currentPageIndex];
+    CGPoint imageCenter = CGPointMake(pageFrame.origin.x + (pageFrame.size.width / 2), pageFrame.origin.y + (pageFrame.size.height / 2));
+    
+    CGRect imageFrame = CGRectMake(0, imageCenter.y+(pageFrame.size.width/2), pageFrame.size.width, pageFrame.size.width);
+    
+    [editCaptionViewController animateFromTextFrame:CGRectZero withCaption:[[_photos objectAtIndex:_currentPageIndex]caption] andImageFrame:imageFrame andUnderlyingImage:[self imageForPhoto:[_photos objectAtIndex:_currentPageIndex]]];
+    [_doneButton setHidden:YES];
+    
+//    [_pagingScrollView setUserInteractionEnabled:NO];
+    [_panGesture setEnabled:NO];
+}
+
+#pragma mark - Edit Caption View delegate
+- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption{
+    
+}
+
+- (void)EditCaptionViewDidClear:(FluxEditCaptionViewController *)editCaptionView{
+    [UIView animateWithDuration:0.3 animations:^{
+        [editCaptionViewController.view setAlpha:0.0];
+    } completion:^(BOOL finished){
+        [editCaptionViewController.view setHidden:YES];
+        [_doneButton setHidden:NO];
+        
+        [_panGesture setEnabled:YES];
+    }];
+}
+
 #pragma mark - Genaral
 
 - (void)prepareForClosePhotoBrowser {
@@ -610,6 +671,27 @@
     _panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panGestureRecognized:)];
     [_panGesture setMinimumNumberOfTouches:1];
     [_panGesture setMaximumNumberOfTouches:1];
+    
+    
+    
+    
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+    // setup the opengl controller
+    // first get an instance from storyboard
+    editCaptionViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"editCaptionViewController"];
+    
+    // then add the imageCaptureView as the subview of the parent view
+    [self.view addSubview:editCaptionViewController.view];
+    // add the glkViewController as the child of self
+    [self addChildViewController:editCaptionViewController];
+    [editCaptionViewController didMoveToParentViewController:self];
+    [editCaptionViewController setDelegate:self];
+    editCaptionViewController.view.frame = self.view.bounds;
+    [editCaptionViewController.view setHidden:YES];
+    [editCaptionViewController.view setAlpha:0.0];
+    [editCaptionViewController.view setTag:100];
+    
     
     // Update
     //[self reloadData];
@@ -902,7 +984,6 @@
         }
     }
     captionView.alpha = [self areControlsHidden] ? 0 : 1; // Initial alpha
-    [captionView setIsActiveUser:self.isActiveUser];
 
     return captionView;
 }
@@ -1012,29 +1093,9 @@
             [captionView setDelegate:self];
             [_pagingScrollView addSubview:captionView];
             page.captionView = captionView;
+            [captionView setupProfilePicture];
 		}
 	}
-}
-
-- (void)CaptionView:(IDMCaptionView *)captionView didSelectUsername:(NSString *)username andProfileImage:(UIImage *)profPic{
-    [self cancelControlHiding];
-    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:[NSBundle mainBundle]];
-
-    // setup the opengl controller
-    // first get an instance from storyboard
-    FluxPublicProfileViewController*profileView = [myStoryboard instantiateViewControllerWithIdentifier:@"publicProfileViewController"];
-    if ([[self.presentingViewController class] isSubclassOfClass:[FluxScanViewController class]]) {
-        [profileView setFluxDataManager:[(FluxScanViewController*)self.presentingViewController fluxDisplayManager].fluxDataManager];
-    }
-
-    [profileView view];
-    FluxUserObject*userObj = [[FluxUserObject alloc]init];
-    [userObj setUsername:[(IDMPhoto*)[_photos objectAtIndex:0] username]];
-    [userObj setUserID:[(IDMPhoto*)[_photos objectAtIndex:0] userID]];
-    [profileView prepareViewWithUser:userObj];
-    [self.navigationController setNavigationBarHidden:NO animated:YES];
-    [self.navigationController pushViewController:profileView animated:YES];
-    
 }
 
 - (BOOL)isDisplayingPageForIndex:(NSUInteger)index {
@@ -1149,7 +1210,7 @@
     
     // if ([self isLandscape:orientation]) screenWidth = screenBound.size.height;
     
-    return CGRectMake(screenWidth - 75, 30, 55, 26);
+    return CGRectMake(screenWidth - 65, 30, 55, 26);
 }
 
 - (CGRect)frameForCaptionView:(IDMCaptionView *)captionView atIndex:(NSUInteger)index {
@@ -1163,6 +1224,7 @@
     }
     else{
     }
+    [captionView resizeCaption:captionFrame];
     return captionFrame;
 }
 
@@ -1287,7 +1349,6 @@
 
 // Enable/disable control visiblity timer
 - (void)hideControlsAfterDelay {
-	// return;
     
     if (![self areControlsHidden]) {
         [self cancelControlHiding];

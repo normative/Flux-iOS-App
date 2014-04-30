@@ -35,7 +35,7 @@
 - (void)setPlaceholderColor:(UIColor*)color;
 - (void)setPlaceholderText:(NSString*)thePlaceholder;
 - (void)resetView;
-- (void)setCharCountVisible:(BOOL)visible;
+- (void)setShowsCharCount:(BOOL)visible;
 - (void)setMaxCharCount:(int)count;
 - (void)setWarnCharCount:(int)count;
 

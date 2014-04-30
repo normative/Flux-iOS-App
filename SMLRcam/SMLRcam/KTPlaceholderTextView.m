@@ -42,9 +42,11 @@
     [placeholderLabel setBackgroundColor:[UIColor clearColor]];
     [placeholderLabel setTextColor:[UIColor lightGrayColor]];
     
-    charCount = [[UILabel alloc]initWithFrame:CGRectMake(self.frame.size.width-50, self.frame.size.height-20, 30, 15)];
+    [self setTextContainerInset:UIEdgeInsetsMake(8, 3, 0, 0)];
+    
+    charCount = [[UILabel alloc]initWithFrame:CGRectMake(self.frame.size.width-44, self.frame.size.height-20, 30, 15)];
     [charCount setTextAlignment:NSTextAlignmentRight];
-    [charCount setFont:self.font];
+    [charCount setFont:[UIFont fontWithName:@"Akkurat" size:self.font.pointSize-3]];
     [charCount setBackgroundColor:[UIColor clearColor]];
     [charCount setTextColor:[UIColor whiteColor]];
     [charCount setHidden:YES];
@@ -59,7 +61,7 @@
     [self setDelegate:self];
 }
 
-- (void)setCharCountVisible:(BOOL)visible{
+- (void)setShowsCharCount:(BOOL)visible{
     if (visible) {
         if (![charCount superview]) {
             [self addSubview:charCount];
@@ -131,7 +133,7 @@
                 [charCount setText:[NSString stringWithFormat:@"%i",(int)self.text.length]];
             }
             if (self.text.length > warnCount) {
-                [charCount setTextColor:[UIColor redColor]];
+                [charCount setTextColor:[UIColor colorWithRed:255/255.0 green:51/255.0 blue:56/255.0 alpha:1.0]];
             }
             else{
                 [charCount setTextColor:[UIColor whiteColor]];
