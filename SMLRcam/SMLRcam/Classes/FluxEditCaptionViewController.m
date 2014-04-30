@@ -9,7 +9,6 @@
 #import "FluxEditCaptionViewController.h"
 
 #define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
-#define newImageSize 150
 
 @interface FluxEditCaptionViewController ()
 
@@ -32,7 +31,12 @@
 {
     [super viewDidLoad];
     
-
+    if (IS_4INCHSCREEN) {
+        imageSize = 150;
+    }
+    else{
+        imageSize = 70;
+    }
     
     [self.captionTextView setFont:[UIFont fontWithName:@"Akkurat" size:self.captionTextView.font.pointSize]];
     [self.captionTextView setTheDelegate:self];
@@ -79,7 +83,7 @@
     
     
     [UIView animateWithDuration:0.3 animations:^{
-        [self.underlyingImageView setFrame:CGRectMake(self.view.center.x-(newImageSize/2), 80, newImageSize, newImageSize)];
+        [self.underlyingImageView setFrame:CGRectMake(self.view.center.x-(imageSize/2), 80, imageSize, imageSize)];
         [self.captionTextView setFrame:finalTextFrame];
     }completion:^(BOOL finished){
         tapGesture = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tapGestureAction:)];
@@ -87,6 +91,8 @@
     }];
     [self.doneButton setEnabled:NO];
     [self.doneButton setTintColor:[UIColor colorWithWhite:1.0 alpha:0.8]];
+    
+    [self.view layoutSubviews];
 }
 
 - (void)fadeToSourceRect{

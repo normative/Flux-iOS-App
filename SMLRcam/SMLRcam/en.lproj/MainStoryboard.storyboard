@@ -2279,7 +2279,7 @@
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6gx-lw-mNw">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6gx-lw-mNw">
                                         <rect key="frame" x="85" y="77" width="150" height="150"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <constraints>
@@ -2305,7 +2305,7 @@
                                     <constraint firstAttribute="centerX" secondItem="6gx-lw-mNw" secondAttribute="centerX" id="1um-SC-gl2"/>
                                     <constraint firstItem="lMP-ig-RrX" firstAttribute="top" secondItem="6gx-lw-mNw" secondAttribute="bottom" constant="21" id="2XL-W4-b0U"/>
                                     <constraint firstAttribute="centerX" secondItem="lMP-ig-RrX" secondAttribute="centerX" id="7lM-z6-2W9"/>
-                                    <constraint firstItem="6gx-lw-mNw" firstAttribute="leading" secondItem="xQh-I7-4Af" secondAttribute="leading" constant="85" placeholder="YES" id="MTG-bW-yl0"/>
+                                    <constraint firstItem="6gx-lw-mNw" firstAttribute="leading" secondItem="xQh-I7-4Af" secondAttribute="leading" constant="85" id="MTG-bW-yl0"/>
                                     <constraint firstItem="6gx-lw-mNw" firstAttribute="top" secondItem="xQh-I7-4Af" secondAttribute="top" constant="77" id="MuE-m6-7BT"/>
                                     <constraint firstAttribute="bottom" secondItem="lMP-ig-RrX" secondAttribute="bottom" constant="235" id="xMd-cK-DJ0"/>
                                 </constraints>

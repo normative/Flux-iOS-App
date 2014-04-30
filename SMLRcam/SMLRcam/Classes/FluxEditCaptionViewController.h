@@ -24,6 +24,8 @@
     UITapGestureRecognizer*tapGesture;
 
     id __unsafe_unretained delegate;
+    
+    int imageSize;
 }
 
 @property (unsafe_unretained) id <FluxEditCaptionViewDelegate> delegate;

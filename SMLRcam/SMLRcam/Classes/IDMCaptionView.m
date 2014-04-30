@@ -15,6 +15,7 @@
 #import "FluxDataManager.h"
 #import "ProgressHUD.h"
 
+#define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
 
 static const CGFloat labelPadding = 10;
 
@@ -81,6 +82,11 @@ static const CGFloat labelPadding = 10;
     [self.captionView setDelegate:self];
     
     [self.captionView setFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
+    if (!IS_4INCHSCREEN) {
+        [self.captionView setCenter:CGPointMake(self.captionView.center.x, self.captionView.center.y-15)];
+    }
+    
+    
     
     [self.captionView setupWithPhoto:_photo];
     [self.captionView setIsActiveUser:[self isActiveUserCheck]];
@@ -115,13 +121,24 @@ static const CGFloat labelPadding = 10;
 }
 
 - (void)setBackground {
-    UIView *fadeView = [[UIView alloc] initWithFrame:CGRectMake(0, -100, 10000, 130+100)]; // Static width, autoresizingMask is not working
-    CAGradientLayer *gradient = [CAGradientLayer layer];
-    gradient.frame = fadeView.bounds;
-    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:0 alpha:0.8] CGColor], nil];
-    [fadeView.layer insertSublayer:gradient atIndex:0];
-    fadeView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight; //UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
-    [self addSubview:fadeView];
+    if (!IS_4INCHSCREEN) {
+        UIView *fadeView = [[UIView alloc] initWithFrame:CGRectMake(0, -300, 10000, 130+300)]; // Static width, autoresizingMask is not working
+        CAGradientLayer *gradient = [CAGradientLayer layer];
+        gradient.frame = fadeView.bounds;
+        gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:0 alpha:1.0] CGColor], nil];
+        [fadeView.layer insertSublayer:gradient atIndex:0];
+        fadeView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight; //UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
+        [self addSubview:fadeView];
+    }
+    else{
+        UIView *fadeView = [[UIView alloc] initWithFrame:CGRectMake(0, -100, 10000, 130+100)]; // Static width, autoresizingMask is not working
+        CAGradientLayer *gradient = [CAGradientLayer layer];
+        gradient.frame = fadeView.bounds;
+        gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithWhite:0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:0 alpha:0.8] CGColor], nil];
+        [fadeView.layer insertSublayer:gradient atIndex:0];
+        fadeView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight; //UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleRightMargin;
+        [self addSubview:fadeView];
+    }
 }
 
 
