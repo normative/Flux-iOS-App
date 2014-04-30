@@ -66,6 +66,7 @@
     self.profilePicButton.layer.masksToBounds = YES;
     
     [self.editButton setHidden:YES];
+    [self.extraButton setHidden:YES];
     
     [self.lineView setFrame:CGRectMake(self.lineView.frame.origin.x, self.lineView.frame.origin.y, self.lineView.frame.size.width, 0.5)];
 }
@@ -144,14 +145,18 @@
 }
 
 - (IBAction)profilePicButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(FluxCaptionView:didSelectUsername:andProfileImage:)]) {
-        [delegate FluxCaptionView:self didSelectUsername:self.usernameLabel.text andProfileImage:nil];
+    if (!self.isActiveUser) {
+        if ([delegate respondsToSelector:@selector(FluxCaptionView:didSelectUsername:andProfileImage:)]) {
+            [delegate FluxCaptionView:self didSelectUsername:self.usernameLabel.text andProfileImage:nil];
+        }
     }
 }
 
 - (IBAction)usernameButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(FluxCaptionView:didSelectUsername:andProfileImage:)]) {
-        [delegate FluxCaptionView:self didSelectUsername:self.usernameLabel.text andProfileImage:nil];
+    if (!self.isActiveUser) {
+        if ([delegate respondsToSelector:@selector(FluxCaptionView:didSelectUsername:andProfileImage:)]) {
+            [delegate FluxCaptionView:self didSelectUsername:self.usernameLabel.text andProfileImage:nil];
+        }
     }
 }
 
@@ -192,13 +197,15 @@
 - (void)setIsActiveUser:(BOOL)isActiveUser{
     self->_isActiveUser = isActiveUser;
     if (isActiveUser) {
-        [self.editButton setHidden:NO];
+//        [self.editButton setHidden:NO];
     }
 }
 
 - (IBAction)editButtonAction:(id)sender {
-    if ([delegate respondsToSelector:@selector(FluxCaptionViewShouldEditAnnotation:)]) {
-        [delegate FluxCaptionViewShouldEditAnnotation:self];
+    if (self.isActiveUser) {
+        if ([delegate respondsToSelector:@selector(FluxCaptionViewShouldEditAnnotation:)]) {
+            [delegate FluxCaptionViewShouldEditAnnotation:self];
+        }
     }
 }
 @end

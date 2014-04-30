@@ -11,7 +11,7 @@
 #import "IDMPhoto.h"
 #import "IDMPhotoProtocol.h"
 #import "IDMCaptionView.h"
-#import "FluxEditCaptionView.h"
+#import "FluxEditCaptionViewController.h"
 
 // Delgate
 @class IDMPhotoBrowser;

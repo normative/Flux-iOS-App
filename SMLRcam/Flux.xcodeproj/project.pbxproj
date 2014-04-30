@@ -83,6 +83,8 @@
 		AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2017C3BB4C00C72E24 /* ImageViewerImageUtil.m */; };
 		AA349A2417C3BF4000C72E24 /* FluxOpenGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */; };
 		AA349A2E17C5420700C72E24 /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = AA349A2D17C5420700C72E24 /* Shaders */; };
+		AA3890D819115670003F6B02 /* FluxEditCaptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA3890D619115670003F6B02 /* FluxEditCaptionViewController.m */; };
+		AA3890D919115670003F6B02 /* FluxEditCaptionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA3890D719115670003F6B02 /* FluxEditCaptionViewController.xib */; };
 		AA3BAF251846477E009D4FAC /* FluxPublicProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA3BAF241846477E009D4FAC /* FluxPublicProfileViewController.m */; };
 		AA3BAF2C18468083009D4FAC /* FluxProfileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA3BAF2B18468083009D4FAC /* FluxProfileCell.m */; };
 		AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */; };
@@ -94,7 +96,6 @@
 		AA4CEF6F17A958B000202A74 /* KTPlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA4CEF6E17A958B000202A74 /* KTPlaceholderTextView.m */; };
 		AA55093917D63847004CF956 /* FluxAnnotationTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA55093817D63847004CF956 /* FluxAnnotationTableViewCell.xib */; };
 		AA55534217F0C0EA0098C45C /* FluxDisplayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AA55534117F0C0EA0098C45C /* FluxDisplayManager.m */; };
-		AA573198190EF73A00A7EE9B /* FluxEditCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA573197190EF73A00A7EE9B /* FluxEditCaptionView.m */; };
 		AA57319E190FEECD00A7EE9B /* FluxPhotoCaptionView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA57319D190FEECD00A7EE9B /* FluxPhotoCaptionView.m */; };
 		AA5731A0190FEEEB00A7EE9B /* FluxPhotoCaptionView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA57319F190FEEEB00A7EE9B /* FluxPhotoCaptionView.xib */; };
 		AA61527D1822DC9300B8F2C8 /* FluxImageTools.m in Sources */ = {isa = PBXBuildFile; fileRef = AA61527C1822DC9300B8F2C8 /* FluxImageTools.m */; };
@@ -339,6 +340,9 @@
 		AA349A2217C3BF4000C72E24 /* FluxOpenGLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxOpenGLViewController.h; sourceTree = "<group>"; };
 		AA349A2317C3BF4000C72E24 /* FluxOpenGLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxOpenGLViewController.m; sourceTree = "<group>"; };
 		AA349A2D17C5420700C72E24 /* Shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Shaders; sourceTree = "<group>"; };
+		AA3890D519115670003F6B02 /* FluxEditCaptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxEditCaptionViewController.h; sourceTree = "<group>"; };
+		AA3890D619115670003F6B02 /* FluxEditCaptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxEditCaptionViewController.m; sourceTree = "<group>"; };
+		AA3890D719115670003F6B02 /* FluxEditCaptionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxEditCaptionViewController.xib; sourceTree = "<group>"; };
 		AA3BAF231846477E009D4FAC /* FluxPublicProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPublicProfileViewController.h; sourceTree = "<group>"; };
 		AA3BAF241846477E009D4FAC /* FluxPublicProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPublicProfileViewController.m; sourceTree = "<group>"; };
 		AA3BAF2A18468083009D4FAC /* FluxProfileCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfileCell.h; sourceTree = "<group>"; };
@@ -358,8 +362,6 @@
 		AA55093817D63847004CF956 /* FluxAnnotationTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxAnnotationTableViewCell.xib; sourceTree = "<group>"; };
 		AA55534017F0C0EA0098C45C /* FluxDisplayManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxDisplayManager.h; sourceTree = "<group>"; };
 		AA55534117F0C0EA0098C45C /* FluxDisplayManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxDisplayManager.m; sourceTree = "<group>"; };
-		AA573196190EF73A00A7EE9B /* FluxEditCaptionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxEditCaptionView.h; sourceTree = "<group>"; };
-		AA573197190EF73A00A7EE9B /* FluxEditCaptionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxEditCaptionView.m; sourceTree = "<group>"; };
 		AA57319C190FEECD00A7EE9B /* FluxPhotoCaptionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPhotoCaptionView.h; sourceTree = "<group>"; };
 		AA57319D190FEECD00A7EE9B /* FluxPhotoCaptionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPhotoCaptionView.m; sourceTree = "<group>"; };
 		AA57319F190FEEEB00A7EE9B /* FluxPhotoCaptionView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxPhotoCaptionView.xib; sourceTree = "<group>"; };
@@ -922,6 +924,23 @@
 			name = "OpenGL ImageViewer";
 			sourceTree = "<group>";
 		};
+		AA3890D419114703003F6B02 /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				AA9F85E71868AFF600AB98A7 /* ExternalLibraries */,
+				AA9F85FB1868AFF600AB98A7 /* IDMPBConstants.h */,
+				AA9F85FE1868AFF600AB98A7 /* IDMPhotoBrowser.bundle */,
+				AA9F86011868AFF600AB98A7 /* IDMPhotoProtocol.h */,
+				AA9F86021868AFF600AB98A7 /* IDMTapDetectingImageView.h */,
+				AA9F86031868AFF600AB98A7 /* IDMTapDetectingImageView.m */,
+				AA9F86041868AFF600AB98A7 /* IDMTapDetectingView.h */,
+				AA9F86051868AFF600AB98A7 /* IDMTapDetectingView.m */,
+				AA9F86061868AFF600AB98A7 /* IDMZoomingScrollView.h */,
+				AA9F86071868AFF600AB98A7 /* IDMZoomingScrollView.m */,
+			);
+			name = Other;
+			sourceTree = "<group>";
+		};
 		AA47BEC517CBDA5100ED9B39 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1010,6 +1029,9 @@
 				AA57319C190FEECD00A7EE9B /* FluxPhotoCaptionView.h */,
 				AA57319D190FEECD00A7EE9B /* FluxPhotoCaptionView.m */,
 				AA57319F190FEEEB00A7EE9B /* FluxPhotoCaptionView.xib */,
+				AA3890D519115670003F6B02 /* FluxEditCaptionViewController.h */,
+				AA3890D619115670003F6B02 /* FluxEditCaptionViewController.m */,
+				AA3890D719115670003F6B02 /* FluxEditCaptionViewController.xib */,
 			);
 			name = CaptionView;
 			sourceTree = "<group>";
@@ -1214,23 +1236,12 @@
 		AA9F85E61868AFF600AB98A7 /* Image Browser */ = {
 			isa = PBXGroup;
 			children = (
+				AA3890D419114703003F6B02 /* Other */,
 				AA573199190FED8300A7EE9B /* CaptionView */,
-				AA9F85E71868AFF600AB98A7 /* ExternalLibraries */,
-				AA9F85FB1868AFF600AB98A7 /* IDMPBConstants.h */,
-				AA9F85FC1868AFF600AB98A7 /* IDMPhoto.h */,
-				AA9F85FD1868AFF600AB98A7 /* IDMPhoto.m */,
-				AA9F85FE1868AFF600AB98A7 /* IDMPhotoBrowser.bundle */,
 				AA9F85FF1868AFF600AB98A7 /* IDMPhotoBrowser.h */,
 				AA9F86001868AFF600AB98A7 /* IDMPhotoBrowser.m */,
-				AA9F86011868AFF600AB98A7 /* IDMPhotoProtocol.h */,
-				AA9F86021868AFF600AB98A7 /* IDMTapDetectingImageView.h */,
-				AA9F86031868AFF600AB98A7 /* IDMTapDetectingImageView.m */,
-				AA9F86041868AFF600AB98A7 /* IDMTapDetectingView.h */,
-				AA9F86051868AFF600AB98A7 /* IDMTapDetectingView.m */,
-				AA9F86061868AFF600AB98A7 /* IDMZoomingScrollView.h */,
-				AA9F86071868AFF600AB98A7 /* IDMZoomingScrollView.m */,
-				AA573196190EF73A00A7EE9B /* FluxEditCaptionView.h */,
-				AA573197190EF73A00A7EE9B /* FluxEditCaptionView.m */,
+				AA9F85FC1868AFF600AB98A7 /* IDMPhoto.h */,
+				AA9F85FD1868AFF600AB98A7 /* IDMPhoto.m */,
 			);
 			name = "Image Browser";
 			path = Classes;
@@ -1643,6 +1654,7 @@
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
 				2227FD5918D75A71005911D7 /* FluxTutorialView.xib in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
+				AA3890D919115670003F6B02 /* FluxEditCaptionViewController.xib in Resources */,
 				AA2F9DD2189AEA690030F749 /* border3.png in Resources */,
 				AA47BECC17CBE84300ED9B39 /* AKKURATB.ttf in Resources */,
 				17604B801785CA59005CF054 /* MainStoryboard.storyboard in Resources */,
@@ -1800,6 +1812,7 @@
 				F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */,
 				AAB066F01886F6E6002914B2 /* UIActionSheet+Blocks.m in Sources */,
 				22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */,
+				AA3890D819115670003F6B02 /* FluxEditCaptionViewController.m in Sources */,
 				AA9F85E51863994800AB98A7 /* FluxRoundImagePickerController.m in Sources */,
 				AA984F0E18088923007F33B1 /* MKAnnotationView+MIExtension.m in Sources */,
 				AAB2138C188DD36600173B35 /* FluxUserLocationOverlay.m in Sources */,
@@ -1841,7 +1854,6 @@
 				AA70841417B2B93D005D4F9F /* FluxCheckboxCell.m in Sources */,
 				AADFF1EB18B3E8A1003BEE8C /* FluxFilterImageCountObject.m in Sources */,
 				AAAAD71018A5267200F5F3DB /* FluxConnectionObject.m in Sources */,
-				AA573198190EF73A00A7EE9B /* FluxEditCaptionView.m in Sources */,
 				AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */,
 				AAF1BCF1183A73A300909AFF /* BBCyclingLabel.m in Sources */,
 				AADFF1F618B54BEA003BEE8C /* FluxSocialImportViewController.m in Sources */,

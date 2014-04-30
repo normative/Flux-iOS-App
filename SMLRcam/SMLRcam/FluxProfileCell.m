@@ -67,7 +67,7 @@
             
             //self.bioField = [[KTPlaceholderTextView alloc]initWithFrame:self.bioLabel.frame];
             [self.bioField setPlaceholderText:@"Tell others a bit about you"];
-            [self.bioField setCharCountVisible:NO];
+            [self.bioField setShowsCharCount:NO];
             [self.bioField setKeyboardType:UIKeyboardTypeDefault];
             [self.bioField setMaxCharCount:90];
             [self.bioLabel removeFromSuperview];

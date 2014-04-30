@@ -26,7 +26,7 @@
 	UIScrollView *_pagingScrollView;
     
     // Edit Caption Views
-	FluxEditCaptionView *editCaptionView;
+	FluxEditCaptionViewController *editCaptionViewController;
     
     // Gesture
     UIPanGestureRecognizer *_panGesture;
@@ -150,7 +150,7 @@
         _photos = [NSMutableArray new];
         
         _initalPageIndex = 0;
-        _autoHide = YES;
+        _autoHide = NO;
         
         _displayDoneButton = YES;
         _doneButtonImage = nil;
@@ -463,8 +463,37 @@
 }
 
 - (void)CaptionViewShouldEditAnnotation:(IDMCaptionView *)captionView{
-    [editCaptionView setHidden:NO];
-    [editCaptionView animateFromFrame:[captionView captionFrame]  withCaption:[[_photos objectAtIndex:_currentPageIndex]caption]];
+    [editCaptionViewController.view setHidden:NO];
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        [editCaptionViewController.view setAlpha:1.0];
+    }];
+    CGRect pageFrame = [self frameForPageAtIndex:_currentPageIndex];
+    CGPoint imageCenter = CGPointMake(pageFrame.origin.x + (pageFrame.size.width / 2), pageFrame.origin.y + (pageFrame.size.height / 2));
+    
+    CGRect imageFrame = CGRectMake(0, imageCenter.y+(pageFrame.size.width/2), pageFrame.size.width, pageFrame.size.width);
+    
+    [editCaptionViewController animateFromTextFrame:CGRectZero withCaption:[[_photos objectAtIndex:_currentPageIndex]caption] andImageFrame:imageFrame andUnderlyingImage:[self imageForPhoto:[_photos objectAtIndex:_currentPageIndex]]];
+    [_doneButton setHidden:YES];
+    
+//    [_pagingScrollView setUserInteractionEnabled:NO];
+    [_panGesture setEnabled:NO];
+}
+
+#pragma mark - Edit Caption View delegate
+- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption{
+    
+}
+
+- (void)EditCaptionViewDidClear:(FluxEditCaptionViewController *)editCaptionView{
+    [UIView animateWithDuration:0.3 animations:^{
+        [editCaptionViewController.view setAlpha:0.0];
+    } completion:^(BOOL finished){
+        [editCaptionViewController.view setHidden:YES];
+        [_doneButton setHidden:NO];
+        
+        [_panGesture setEnabled:YES];
+    }];
 }
 
 #pragma mark - Genaral
@@ -643,9 +672,25 @@
     [_panGesture setMinimumNumberOfTouches:1];
     [_panGesture setMaximumNumberOfTouches:1];
     
-    editCaptionView = [[FluxEditCaptionView alloc]initWithFrame:self.view.bounds];
-    [editCaptionView setHidden:YES];
-    [self.view addSubview:editCaptionView];
+    
+    
+    
+    UIStoryboard *myStoryboard = [UIStoryboard storyboardWithName:@"MainStoryboard"
+                                                           bundle:[NSBundle mainBundle]];
+    // setup the opengl controller
+    // first get an instance from storyboard
+    editCaptionViewController = [myStoryboard instantiateViewControllerWithIdentifier:@"editCaptionViewController"];
+    
+    // then add the imageCaptureView as the subview of the parent view
+    [self.view addSubview:editCaptionViewController.view];
+    // add the glkViewController as the child of self
+    [self addChildViewController:editCaptionViewController];
+    [editCaptionViewController didMoveToParentViewController:self];
+    [editCaptionViewController setDelegate:self];
+    editCaptionViewController.view.frame = self.view.bounds;
+    [editCaptionViewController.view setHidden:YES];
+    [editCaptionViewController.view setAlpha:0.0];
+    [editCaptionViewController.view setTag:100];
     
     
     // Update
@@ -1304,8 +1349,6 @@
 
 // Enable/disable control visiblity timer
 - (void)hideControlsAfterDelay {
-    //cancels fading of elements
-	return;
     
     if (![self areControlsHidden]) {
         [self cancelControlHiding];

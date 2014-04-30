@@ -63,7 +63,8 @@ static const CGFloat labelPadding = 10;
     NSAttributedString* theText = captionLabel.attributedText;
     maxHeight = captionLabel.font.leading*captionLabel.numberOfLines;
     CGRect rectSize = [theText boundingRectWithSize:CGSizeMake(self.bounds.size.width, maxHeight) options:NSStringDrawingUsesLineFragmentOrigin context:NULL];
-    return CGSizeMake(rectSize.size.width, rectSize.size.height+labelPadding * 2 + 40);
+    CGSize PETE = CGSizeMake(rectSize.size.width, rectSize.size.height+labelPadding * 2 + 40);
+    return CGSizeMake(rectSize.size.width, 120);
 }
 
 - (void)resizeCaption:(CGRect)newFrame{
@@ -79,11 +80,11 @@ static const CGFloat labelPadding = 10;
     self.captionView = (FluxPhotoCaptionView*)[nibContents lastObject];
     [self.captionView setDelegate:self];
     
-    [self.captionView setFrame:CGRectMake(0, -60, self.bounds.size.width, self.bounds.size.height+60)];
+    [self.captionView setFrame:CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height)];
     
     [self.captionView setupWithPhoto:_photo];
     [self.captionView setIsActiveUser:[self isActiveUserCheck]];
-
+    
     [self addSubview:self.captionView];
 }
 

@@ -2263,6 +2263,118 @@
             </objects>
             <point key="canvasLocation" x="4230" y="40"/>
         </scene>
+        <!--Flux Edit Caption View Controller-->
+        <scene sceneID="JRU-YA-Zx1">
+            <objects>
+                <viewController storyboardIdentifier="editCaptionViewController" id="vsW-e5-l8t" customClass="FluxEditCaptionViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="VO2-h9-V9p"/>
+                        <viewControllerLayoutGuide type="bottom" id="b2G-Ex-baQ"/>
+                    </layoutGuides>
+                    <view key="view" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="4rb-iv-3pT">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view alpha="0.90000000000000002" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xQh-I7-4Af">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6gx-lw-mNw">
+                                        <rect key="frame" x="85" y="77" width="150" height="150"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="150" id="C0z-vr-vOL"/>
+                                            <constraint firstAttribute="height" relation="lessThanOrEqual" constant="150" id="wKE-z3-z2b"/>
+                                        </constraints>
+                                    </imageView>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lMP-ig-RrX" customClass="KTPlaceholderTextView">
+                                        <rect key="frame" x="10" y="248" width="300" height="85"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="85" id="E8Q-0h-ClP"/>
+                                            <constraint firstAttribute="width" constant="300" id="I1V-9h-nJP"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" autocorrectionType="yes" keyboardType="twitter"/>
+                                    </textView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="centerX" secondItem="6gx-lw-mNw" secondAttribute="centerX" id="1um-SC-gl2"/>
+                                    <constraint firstItem="lMP-ig-RrX" firstAttribute="top" secondItem="6gx-lw-mNw" secondAttribute="bottom" constant="21" id="2XL-W4-b0U"/>
+                                    <constraint firstAttribute="centerX" secondItem="lMP-ig-RrX" secondAttribute="centerX" id="7lM-z6-2W9"/>
+                                    <constraint firstItem="6gx-lw-mNw" firstAttribute="leading" secondItem="xQh-I7-4Af" secondAttribute="leading" constant="85" placeholder="YES" id="MTG-bW-yl0"/>
+                                    <constraint firstItem="6gx-lw-mNw" firstAttribute="top" secondItem="xQh-I7-4Af" secondAttribute="top" constant="77" id="MuE-m6-7BT"/>
+                                    <constraint firstAttribute="bottom" secondItem="lMP-ig-RrX" secondAttribute="bottom" constant="235" id="xMd-cK-DJ0"/>
+                                </constraints>
+                            </view>
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="j28-Mc-xNb">
+                                <rect key="frame" x="0.0" y="16" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                                <color key="barTintColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                                <items>
+                                    <navigationItem title="Title" id="sw2-BU-QBZ">
+                                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="p1P-M8-oGr">
+                                            <connections>
+                                                <action selector="cancelButtonAction:" destination="vsW-e5-l8t" id="Aht-6q-Xah"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" title="Save" id="W2d-S3-qol">
+                                            <connections>
+                                                <action selector="doneButtonAction:" destination="vsW-e5-l8t" id="DDH-aU-jph"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="KlP-bH-hqQ">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="0.91764705879999997" green="0.2470588235" blue="0.2470588235" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="320" id="MUB-qd-HS1"/>
+                                    <constraint firstAttribute="height" constant="20" id="gzL-2K-dAk"/>
+                                </constraints>
+                            </view>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mT8-CQ-2tS">
+                                <rect key="frame" x="0.0" y="352" width="320" height="216"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="216" id="SBD-NV-8i9"/>
+                                    <constraint firstAttribute="width" constant="320" id="yRM-Ws-Py4"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="xQh-I7-4Af" firstAttribute="leading" secondItem="mT8-CQ-2tS" secondAttribute="leading" id="2mm-sF-0OH"/>
+                            <constraint firstItem="xQh-I7-4Af" firstAttribute="trailing" secondItem="j28-Mc-xNb" secondAttribute="trailing" id="8Z2-tg-S3e"/>
+                            <constraint firstItem="j28-Mc-xNb" firstAttribute="top" secondItem="4rb-iv-3pT" secondAttribute="top" constant="16" id="Hcn-Ne-fLo"/>
+                            <constraint firstItem="xQh-I7-4Af" firstAttribute="leading" secondItem="j28-Mc-xNb" secondAttribute="leading" id="ZBN-MR-O9g"/>
+                            <constraint firstItem="xQh-I7-4Af" firstAttribute="trailing" secondItem="mT8-CQ-2tS" secondAttribute="trailing" id="cja-IU-4Wl"/>
+                            <constraint firstItem="xQh-I7-4Af" firstAttribute="top" secondItem="4rb-iv-3pT" secondAttribute="top" id="e4t-k9-uPe"/>
+                            <constraint firstItem="b2G-Ex-baQ" firstAttribute="top" secondItem="mT8-CQ-2tS" secondAttribute="bottom" id="few-cV-8Ce"/>
+                            <constraint firstItem="mT8-CQ-2tS" firstAttribute="leading" secondItem="4rb-iv-3pT" secondAttribute="leading" id="lsA-QH-DQq"/>
+                            <constraint firstItem="KlP-bH-hqQ" firstAttribute="top" secondItem="4rb-iv-3pT" secondAttribute="top" id="xYw-1c-JQP"/>
+                            <constraint firstItem="xQh-I7-4Af" firstAttribute="bottom" secondItem="mT8-CQ-2tS" secondAttribute="bottom" id="xaa-GC-14q"/>
+                            <constraint firstAttribute="centerX" secondItem="KlP-bH-hqQ" secondAttribute="centerX" id="yHs-BA-Ca1"/>
+                        </constraints>
+                        <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
+                        <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    </view>
+                    <connections>
+                        <outlet property="captionTextView" destination="lMP-ig-RrX" id="Na6-Lc-0Na"/>
+                        <outlet property="doneButton" destination="W2d-S3-qol" id="YJB-EI-eXs"/>
+                        <outlet property="underlyingImageView" destination="6gx-lw-mNw" id="xmB-mj-gfR"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EXr-sX-Y7e" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="4696" y="40"/>
+        </scene>
         <!--Flux Edit Profile View Controller - Edit Profile-->
         <scene sceneID="wsh-xG-gjZ">
             <objects>
