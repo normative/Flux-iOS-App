@@ -483,6 +483,11 @@
 #pragma mark - Edit Caption View delegate
 - (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption{
     
+    
+}
+
+- (void)CaptionView:(IDMCaptionView *)captionView shouldReportImage:(IDMPhoto *)photo{
+    
 }
 
 - (void)EditCaptionViewDidClear:(FluxEditCaptionViewController *)editCaptionView{

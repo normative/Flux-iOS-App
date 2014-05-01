@@ -157,11 +157,6 @@ static const CGFloat labelPadding = 10;
     return [_photo userID] == activeUserID.intValue;
 }
 
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event{
-    NSLog(NSStringFromCGPoint([(UITouch*)[touches anyObject]locationInView:self]));
-}
-
-
 
 #pragma mark - Flux CaptionView Delegate
 - (void)FluxCaptionView:(FluxPhotoCaptionView *)captionView didSelectUsername:(NSString *)username andProfileImage:(UIImage *)profPic{
@@ -184,6 +179,9 @@ static const CGFloat labelPadding = 10;
 }
 - (void)FluxCaptionViewShouldReportPhoto:(FluxPhotoCaptionView *)captionView{
     NSLog(@"Should report the image");
+    if ([delegate respondsToSelector:@selector(CaptionView:shouldReportImage:)]) {
+        [delegate CaptionView:self shouldReportImage:_photo];
+    }
 }
 
 @end

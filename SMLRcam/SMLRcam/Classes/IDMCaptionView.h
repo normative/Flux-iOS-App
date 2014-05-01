@@ -15,6 +15,7 @@
 @optional
 - (void)CaptionView:(IDMCaptionView *)captionView didSelectUsername:(NSString*)username andProfileImage:(UIImage*)profPic;
 - (void)CaptionViewShouldEditAnnotation:(IDMCaptionView *)captionView;
+- (void)CaptionView:(IDMCaptionView *)captionView shouldReportImage:(IDMPhoto*)photo;
 
 @end
 
