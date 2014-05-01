@@ -179,6 +179,9 @@ static const CGFloat labelPadding = 10;
 }
 - (void)FluxCaptionViewShouldReportPhoto:(FluxPhotoCaptionView *)captionView{
     NSLog(@"Should report the image");
+    if ([delegate respondsToSelector:@selector(CaptionView:shouldReportImage:)]) {
+        [delegate CaptionView:self shouldReportImage:_photo];
+    }
 }
 
 @end
