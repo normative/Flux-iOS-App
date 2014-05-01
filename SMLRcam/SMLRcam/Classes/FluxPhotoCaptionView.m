@@ -197,7 +197,8 @@
 - (void)setIsActiveUser:(BOOL)isActiveUser{
     self->_isActiveUser = isActiveUser;
     if (isActiveUser) {
-//        [self.editButton setHidden:NO];
+        [self.editButton setHidden:NO];
+        [self.profilePicButton setUserInteractionEnabled:NO];
     }
 }
 

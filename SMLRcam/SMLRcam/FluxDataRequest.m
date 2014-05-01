@@ -123,6 +123,13 @@
     }
 }
 
+-(void)whenUpdateImageCaptionCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.updateImageCaptionCompleteBlock)
+    {
+        self.updateImageCaptionCompleteBlock(completeDataRequest);
+    }
+}
+
 #pragma mark - Users
 
 

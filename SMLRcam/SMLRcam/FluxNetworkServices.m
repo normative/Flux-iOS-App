@@ -495,6 +495,31 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
 }
 
+- (void)updateImageCaptionForImageWithID:(int)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:self.secureServerURL];
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PUT"
+                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",self.secureServerURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
+                                                      parameters:nil];
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImageCaptionWithRequestID:)])
+        {
+            [delegate NetworkServices:self didUpdateImageCaptionWithRequestID:requestID];
+        }
+    }
+     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+         NSLog(@"Caption update failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
+}
+
 #pragma mark Upload New Image
 
 - (void)uploadImage:(FluxScanImageObject*)theImageObject andImage:(UIImage *)theImage andRequestID:(FluxRequestID *)requestID andHistoricalImage:(UIImage *)theHistoricalImg;

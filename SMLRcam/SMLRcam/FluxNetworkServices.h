@@ -51,6 +51,7 @@ extern NSString* const FluxSecureServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImageCaptionWithRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSData *)features forImageID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMatches:(NSArray *)features forImageID:(int)imageID
@@ -199,6 +200,11 @@ extern NSString* const FluxSecureServerURL;
  Updates an images privacy with the supplied boolean.
  **/
 - (void)updateImagePrivacyForImages:(NSArray*)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID;
+
+/**
+ Updates an images caption with the supplied NSString.
+ **/
+- (void)updateImageCaptionForImageWithID:(int)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID;
 
 #pragma mark  Features
 

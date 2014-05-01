@@ -482,16 +482,24 @@
 
 #pragma mark - Edit Caption View delegate
 - (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption{
+    //post the caption change
+    FluxDataRequest *request = [[FluxDataRequest alloc]init];
     
+    [request setUpdateImageCaptionCompleteBlock:^(FluxDataRequest*completedRequest){
+        
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+    }];
+    
+    [[FluxDataManager theFluxDataManager] editCaptionOfImageWithImageID:editCaptionView.class withCaption:newCaption withDataRequest:request];
     
 }
 
 - (void)CaptionView:(IDMCaptionView *)captionView shouldReportImage:(IDMPhoto *)photo{
-    NSLog(@"Should report the image");
-    
     // post the flag
     FluxDataRequest *flagRequest = [[FluxDataRequest alloc]init];
-    
     [[FluxDataManager theFluxDataManager] postContentFlagToImage:photo.imageID withDataRequest:flagRequest];
 }
 
