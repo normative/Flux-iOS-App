@@ -325,6 +325,10 @@ return's a profile image for a given userID and size
  **/
 - (void)requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withRequestID:(NSUUID *)requestID;
 
+/**
+ POSTs a flag to the specified image
+ **/
+- (void)postContentFlagToImage:(FluxImageID)image_id withRequestID:(FluxRequestID *)requestID;
 
 #pragma mark  - Filters
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;

@@ -749,6 +749,17 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+// CONTENT_FLAG: based on postCamera
+- (FluxRequestID*)postContentFlagToImage:(FluxImageID)image_id withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = data_upload_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // post flag to server
+    [networkServices postContentFlagToImage:image_id withRequestID:requestID];
+    return requestID;
+}
+
+
 #pragma mark Aliases
 
 - (FluxRequestID *) createAliasWithName:(NSString *)name andServiceID:(int) service_id andRequest:(FluxDataRequest *)dataRequest
