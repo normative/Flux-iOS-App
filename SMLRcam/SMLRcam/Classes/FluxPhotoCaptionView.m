@@ -66,7 +66,7 @@
     self.profilePicButton.layer.masksToBounds = YES;
     
     [self.editButton setHidden:YES];
-    [self.extraButton setHidden:YES];
+//    [self.extraButton setHidden:YES];
     
     [self.lineView setFrame:CGRectMake(self.lineView.frame.origin.x, self.lineView.frame.origin.y, self.lineView.frame.size.width, 0.5)];
 }
