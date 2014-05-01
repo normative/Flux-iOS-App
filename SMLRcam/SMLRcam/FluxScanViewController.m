@@ -365,6 +365,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     photo.caption = tappedImageObject.descriptionString;
     photo.username = tappedImageObject.username;
     photo.timestamp = tappedImageObject.timestamp;
+    photo.imageID = tappedImageObject.imageID;
     NSMutableArray *photos = [[NSMutableArray alloc]initWithObjects:photo, nil];
     
     if (!photoViewerPlacementView) {
