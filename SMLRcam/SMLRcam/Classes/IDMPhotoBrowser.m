@@ -487,7 +487,12 @@
 }
 
 - (void)CaptionView:(IDMCaptionView *)captionView shouldReportImage:(IDMPhoto *)photo{
+    NSLog(@"Should report the image");
     
+    // post the flag
+    FluxDataRequest *flagRequest = [[FluxDataRequest alloc]init];
+    
+    [[FluxDataManager theFluxDataManager] postContentFlagToImage:photo.imageID withDataRequest:flagRequest];
 }
 
 - (void)EditCaptionViewDidClear:(FluxEditCaptionViewController *)editCaptionView{
