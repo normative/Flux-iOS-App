@@ -15,6 +15,8 @@
 #import "FluxDataManager.h"
 #import "FluxDeviceInfoSingleton.h"
 
+#import <Crashlytics/Crashlytics.h>
+
 #import "TestFlight.h"
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
@@ -227,6 +229,8 @@ bool registeredForAPNS = false;
 //                                          [self sessionStateChanged:session state:state error:error];
                                       }];
     }
+    
+    [Crashlytics startWithAPIKey:@"96c67aa1df4719849233b1bb254b5ff155e5eab3"];
     
     
     return YES;

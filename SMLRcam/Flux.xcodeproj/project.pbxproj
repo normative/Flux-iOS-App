@@ -85,6 +85,7 @@
 		AA349A2E17C5420700C72E24 /* Shaders in Resources */ = {isa = PBXBuildFile; fileRef = AA349A2D17C5420700C72E24 /* Shaders */; };
 		AA3890D819115670003F6B02 /* FluxEditCaptionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA3890D619115670003F6B02 /* FluxEditCaptionViewController.m */; };
 		AA3890D919115670003F6B02 /* FluxEditCaptionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA3890D719115670003F6B02 /* FluxEditCaptionViewController.xib */; };
+		AA3890DC1912B400003F6B02 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA3890DB1912B400003F6B02 /* Crashlytics.framework */; };
 		AA3BAF251846477E009D4FAC /* FluxPublicProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA3BAF241846477E009D4FAC /* FluxPublicProfileViewController.m */; };
 		AA3BAF2C18468083009D4FAC /* FluxProfileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA3BAF2B18468083009D4FAC /* FluxProfileCell.m */; };
 		AA47BEC717CBDA8D00ED9B39 /* AKKURAT.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA47BEC617CBDA8D00ED9B39 /* AKKURAT.ttf */; };
@@ -343,6 +344,7 @@
 		AA3890D519115670003F6B02 /* FluxEditCaptionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxEditCaptionViewController.h; sourceTree = "<group>"; };
 		AA3890D619115670003F6B02 /* FluxEditCaptionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxEditCaptionViewController.m; sourceTree = "<group>"; };
 		AA3890D719115670003F6B02 /* FluxEditCaptionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxEditCaptionViewController.xib; sourceTree = "<group>"; };
+		AA3890DB1912B400003F6B02 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		AA3BAF231846477E009D4FAC /* FluxPublicProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPublicProfileViewController.h; sourceTree = "<group>"; };
 		AA3BAF241846477E009D4FAC /* FluxPublicProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPublicProfileViewController.m; sourceTree = "<group>"; };
 		AA3BAF2A18468083009D4FAC /* FluxProfileCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfileCell.h; sourceTree = "<group>"; };
@@ -616,6 +618,7 @@
 				AA255166183577D900DCA62F /* Social.framework in Frameworks */,
 				89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */,
 				AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */,
+				AA3890DC1912B400003F6B02 /* Crashlytics.framework in Frameworks */,
 				AA14BB2E17E79938007F6764 /* libz.dylib in Frameworks */,
 				AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */,
 				AA14BB2A17E797BB007F6764 /* SystemConfiguration.framework in Frameworks */,
@@ -677,6 +680,7 @@
 		17604B651785CA59005CF054 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AA3890DB1912B400003F6B02 /* Crashlytics.framework */,
 				F206B62818C63E9B00ABAD99 /* MessageUI.framework */,
 				AADFF1F218B544E2003BEE8C /* AddressBookUI.framework */,
 				AADFF1F018B544D9003BEE8C /* AddressBook.framework */,
@@ -1573,6 +1577,7 @@
 				17604B601785CA59005CF054 /* Frameworks */,
 				17604B611785CA59005CF054 /* Resources */,
 				60BE47FE412146DF8B284AB5 /* Copy Pods Resources */,
+				AA3890DA1912B3A0003F6B02 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1709,6 +1714,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		AA3890DA1912B3A0003F6B02 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "./Crashlytics.framework/run 96c67aa1df4719849233b1bb254b5ff155e5eab3 57131df6d3ed8c1b4bea7308f98c3aaa0a9748441942c0c220ea5b78b85caecc";
+			shellScript = "";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1981,6 +1999,7 @@
 					"$(inherited)",
 					$SRCROOT,
 					$SRCROOT/OpenCV_mod,
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
@@ -2012,6 +2031,7 @@
 					"$(inherited)",
 					$SRCROOT,
 					$SRCROOT/OpenCV_mod,
+					"$(PROJECT_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
