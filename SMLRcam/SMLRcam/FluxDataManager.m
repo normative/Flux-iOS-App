@@ -646,6 +646,15 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+- (FluxRequestID *)editCaptionOfImageWithImageID:(FluxImageID)imageID withCaption:(NSString*)newCaption withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = updateImageCaption_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // Begin upload of image to server
+    [networkServices updateImageCaptionForImageWithID:imageID withNewCaption:newCaption andRequestID:requestID];
+    return requestID;
+}
+
 #pragma mark Social Stuff
 
 - (FluxRequestID *) requestFollowingRequestsForUserWithDataRequest:(FluxDataRequest *)dataRequest{
@@ -748,6 +757,17 @@ float const altitudeHighRange = 60.0;
     [networkServices requestContactsFromService:serviceID withCredentials: credentials withRequestID:requestID];
     return requestID;
 }
+
+// CONTENT_FLAG: based on postCamera
+- (FluxRequestID*)postContentFlagToImage:(FluxImageID)image_id withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = data_upload_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // post flag to server
+    [networkServices postContentFlagToImage:image_id withRequestID:requestID];
+    return requestID;
+}
+
 
 #pragma mark Aliases
 
@@ -1122,6 +1142,14 @@ float const altitudeHighRange = 60.0;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenUpdateImagesPrivacyCompleteWithDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImageCaptionWithRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenUpdateImageCaptionCompleteWithDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

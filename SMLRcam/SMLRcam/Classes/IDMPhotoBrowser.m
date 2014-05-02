@@ -473,6 +473,8 @@
     
     CGRect imageFrame = CGRectMake(0, imageCenter.y+(pageFrame.size.width/2), pageFrame.size.width, pageFrame.size.width);
     
+    [editCaptionViewController setImageID:[(IDMPhoto*)[self photoAtIndex:_currentPageIndex]imageID]];
+    
     [editCaptionViewController animateFromTextFrame:CGRectZero withCaption:[[_photos objectAtIndex:_currentPageIndex]caption] andImageFrame:imageFrame andUnderlyingImage:[self imageForPhoto:[_photos objectAtIndex:_currentPageIndex]]];
     [_doneButton setHidden:YES];
     
@@ -481,13 +483,26 @@
 }
 
 #pragma mark - Edit Caption View delegate
-- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption{
+- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption forImageWithID:(int)imageID{
+    //post the caption change
+    FluxDataRequest *request = [[FluxDataRequest alloc]init];
     
+    [request setUpdateImageCaptionCompleteBlock:^(FluxDataRequest*completedRequest){
+        
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        
+    }];
+    
+    [[FluxDataManager theFluxDataManager] editCaptionOfImageWithImageID:imageID withCaption:newCaption withDataRequest:request];
     
 }
 
 - (void)CaptionView:(IDMCaptionView *)captionView shouldReportImage:(IDMPhoto *)photo{
-    
+    // post the flag
+    FluxDataRequest *flagRequest = [[FluxDataRequest alloc]init];
+    [[FluxDataManager theFluxDataManager] postContentFlagToImage:photo.imageID withDataRequest:flagRequest];
 }
 
 - (void)EditCaptionViewDidClear:(FluxEditCaptionViewController *)editCaptionView{

@@ -66,7 +66,6 @@
     self.profilePicButton.layer.masksToBounds = YES;
     
     [self.editButton setHidden:YES];
-    [self.extraButton setHidden:YES];
     
     [self.lineView setFrame:CGRectMake(self.lineView.frame.origin.x, self.lineView.frame.origin.y, self.lineView.frame.size.width, 0.5)];
 }
@@ -197,7 +196,8 @@
 - (void)setIsActiveUser:(BOOL)isActiveUser{
     self->_isActiveUser = isActiveUser;
     if (isActiveUser) {
-//        [self.editButton setHidden:NO];
+        [self.editButton setHidden:NO];
+        [self.profilePicButton setUserInteractionEnabled:NO];
     }
 }
 

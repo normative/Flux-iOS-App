@@ -51,6 +51,7 @@ extern NSString* const FluxSecureServerURL;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didDeleteImageWithID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImagePrivacysWithRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didUpdateImageCaptionWithRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageFeatures:(NSData *)features forImageID:(int)imageID
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didreturnImageMatches:(NSArray *)features forImageID:(int)imageID
@@ -200,6 +201,11 @@ extern NSString* const FluxSecureServerURL;
  **/
 - (void)updateImagePrivacyForImages:(NSArray*)images andPrvacy:(BOOL)newPrivacy andRequestID:(NSUUID *)requestID;
 
+/**
+ Updates an images caption with the supplied NSString.
+ **/
+- (void)updateImageCaptionForImageWithID:(FluxImageID)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID;
+
 #pragma mark  Features
 
 /**
@@ -325,6 +331,10 @@ return's a profile image for a given userID and size
  **/
 - (void)requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withRequestID:(NSUUID *)requestID;
 
+/**
+ POSTs a flag to the specified image
+ **/
+- (void)postContentFlagToImage:(FluxImageID)image_id withRequestID:(FluxRequestID *)requestID;
 
 #pragma mark  - Filters
 - (void)getTagsForLocation:(CLLocationCoordinate2D)location andRadius:(float)radius andMaxCount:(int)maxCount andRequestID:(FluxRequestID *)requestID;

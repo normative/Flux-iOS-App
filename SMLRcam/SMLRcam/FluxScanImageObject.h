@@ -54,7 +54,7 @@ typedef enum LocationDataType : NSUInteger {
 @property (nonatomic, strong) NSString *cameraModelStr;
 @property (nonatomic) int categoryID;
 @property (nonatomic, strong) NSString* descriptionString;
-@property (nonatomic) int imageID;
+@property (nonatomic) FluxImageID imageID;
 @property (nonatomic) int justCaptured;
 @property (nonatomic) FluxLocalID *localID;
 @property (nonatomic) bool privacy;

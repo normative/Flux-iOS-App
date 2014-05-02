@@ -37,14 +37,14 @@ NSString* const AWSSecureStagingServerURL    = _AWSSecureStagingServerURL;
 NSString* const AWSSecureTestServerURL       = _AWSTestServerURL;
 NSString* const DSDSecureLocalTestServerURL  = _DSDLocalTestServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
-//NSString* const FluxServerURL = _AWSStagingServerURL;
+//NSString* const FluxServerURL = _AWSProductionServerURL;
+NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 
-NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
-//NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
+//NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
+NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
 //NSString* const FluxSecureServerURL = _AWSTestServerURL;
 //NSString* const FluxSecureServerURL = _DSDLocalTestServerURL;
 
@@ -493,6 +493,38 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                      }];
     [operation start];
     
+}
+
+- (void)updateImageCaptionForImageWithID:(FluxImageID)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    
+    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:self.secureServerURL];
+
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:token, @"auth_token",
+                                   newCaption, @"description",
+                                   nil];
+
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PATCH"
+                                                            path:[NSString stringWithFormat:@"%@images/%i/setdescription",self.secureServerURL, imageID]
+                                                      parameters:params];
+    
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImageCaptionWithRequestID:)])
+        {
+            [delegate NetworkServices:self didUpdateImageCaptionWithRequestID:requestID];
+        }
+    }
+     failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+         NSLog(@"Caption update failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+    [operation start];
 }
 
 #pragma mark Upload New Image
@@ -1611,6 +1643,33 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
          }
      }];
 }
+
+
+- (void)postContentFlagToImage:(FluxImageID)image_id withRequestID:(FluxRequestID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    [[RKObjectManager sharedManager] postObject:nil path:[NSString stringWithFormat:@"/images/%d/flag?auth_token=%@", image_id, token] parameters:nil
+                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         // do nothing
+         NSLog(@"Content Flag posted successfully");
+//         FluxCameraObject*cambject = [result firstObject];
+//         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithID:andRequestID:)])
+//         {
+//             [delegate NetworkServices:self didPostCameraWithID:cambject.ca meraID andRequestID:requestID];
+//         }
+     }
+                                        failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"post content flag Failed with error: %@", [error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
+
 
 
 #pragma mark Aliases

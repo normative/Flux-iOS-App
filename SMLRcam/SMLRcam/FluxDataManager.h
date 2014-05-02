@@ -109,6 +109,7 @@ extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
 
 - (FluxRequestID *)deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *)editPrivacyOfImageWithImageID:(NSArray*)imageIDs to:(BOOL)newPrivacy withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *)editCaptionOfImageWithImageID:(FluxImageID)imageID withCaption:(NSString*)newCaption withDataRequest:(FluxDataRequest *)dataRequest;
 
 - (FluxRequestID *) requestImageFeaturesByLocalID:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestImageMatchesByLocalID:(FluxDataRequest *)dataRequest;
@@ -163,6 +164,8 @@ extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
 -(FluxRequestID *) requestContactsFromService:(int)serviceID
                               withCredentials:(NSDictionary *)credentials
                               withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID*) postContentFlagToImage:(FluxImageID)image_id
+                          withDataRequest:(FluxDataRequest *)dataRequest;
 
 //aliases
 - (FluxRequestID *) createAliasWithName:(NSString *)name

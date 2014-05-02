@@ -49,7 +49,9 @@ typedef enum FluxDataRequestType : NSUInteger {
     forceUnfollow_request = 30,
     image_matches_request = 31,
     retry_image_uploads_request = 32,
-    send_password_reset_request = 33
+    send_password_reset_request = 33,
+    updateImageCaption_request = 34
+
     
 } FluxDataRequestType;
 
@@ -69,6 +71,7 @@ typedef void (^DeleteImageCompleteBlock)(int, FluxDataRequest *);
 typedef void (^ImageFeaturesReadyBlock)(FluxLocalID *, NSData *, FluxDataRequest *);
 typedef void (^ImageMatchesReadyBlock)(FluxLocalID *, NSArray *, FluxDataRequest *);
 typedef void (^UpdateImagesPrivacyCompleteBlock)(FluxDataRequest *);
+typedef void (^UpdateImageCaptionCompleteBlock)(FluxDataRequest *);
 
 //USERS
 
@@ -174,6 +177,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 
 @property (strong) UpdateImagesPrivacyCompleteBlock updateImagesPrivacyCompleteBlock;
 
+@property (strong) UpdateImageCaptionCompleteBlock updateImageCaptionCompleteBlock;
+
 // Callback for successful upload of user + image metadata
 @property (strong) UploadUserCompleteBlock uploadUserComplete;
 
@@ -255,6 +260,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenRetryUploadInProgress:(FluxScanImageObject *)imageObject withDataRequest:(FluxDataRequest *)inprogressDataRequest;
 - (void) whenDeleteImageComplete:(int)imageID withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenUpdateImagesPrivacyCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenUpdateImageCaptionCompleteWithDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenImageFeaturesReady:(FluxLocalID *)localID withFeatures:(NSData *)features withDataRequest:(FluxDataRequest *)completeDataRequest;
 - (void) whenImageMatchesReady:(FluxLocalID *)localID withMatches:(NSArray *)matches withDataRequest:(FluxDataRequest *)completeDataRequest;
 
