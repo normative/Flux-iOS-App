@@ -390,10 +390,13 @@
     
 }
 
-
-
+#pragma mark - Photo Browser Delegate
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser didDismissAtPageIndex:(NSUInteger)index{
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+}
+
+- (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser editedCaption:(NSString *)caption forPhotoAtIndex:(NSUInteger)index{
+    [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] setDescription:caption];
 }
 
 - (void)calculateNewPrivacy{

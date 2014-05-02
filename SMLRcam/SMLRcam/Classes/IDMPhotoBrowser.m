@@ -12,6 +12,7 @@
 #import "SVProgressHUD.h"
 #import "FluxPublicProfileViewController.h"
 #import "FluxScanViewController.h"
+#import "ProgressHUD.h"
 
 
 #define kUSE_CURRENT_CONTEXT_PRESENTATION_STYLE 1
@@ -488,11 +489,18 @@
     FluxDataRequest *request = [[FluxDataRequest alloc]init];
     
     [request setUpdateImageCaptionCompleteBlock:^(FluxDataRequest*completedRequest){
+        IDMPhoto*photo = [self photoAtIndex:_currentPageIndex];
+        [photo setCaption:newCaption];
+  
+        [self reloadCurrentCaptionView];
         
+        if ([_delegate respondsToSelector:@selector(photoBrowser:editedCaption:forPhotoAtIndex:)]) {
+            [_delegate photoBrowser:self editedCaption:newCaption forPhotoAtIndex:_currentPageIndex];
+        }
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
-        
+        [ProgressHUD showError:@"Editing the caption didn't work, try again in a little while."];
     }];
     
     [[FluxDataManager theFluxDataManager] editCaptionOfImageWithImageID:imageID withCaption:newCaption withDataRequest:request];
@@ -569,6 +577,20 @@
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return image;
+}
+
+- (void)reloadCurrentCaptionView{
+    //remove the old captionView
+    IDMZoomingScrollView *page = [self pageDisplayedAtIndex:_currentPageIndex];
+    [page.captionView removeFromSuperview];
+    
+    // Add new captionView
+    IDMCaptionView *newcaptionView = [self captionViewForPhotoAtIndex:_currentPageIndex];
+    newcaptionView.frame = [self frameForCaptionView:newcaptionView atIndex:_currentPageIndex];
+    [newcaptionView setDelegate:self];
+    [_pagingScrollView addSubview:newcaptionView];
+    page.captionView = newcaptionView;
+    [newcaptionView setupProfilePicture];
 }
 
 /*- (UIImage*)takeScreenshot {
