@@ -505,7 +505,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
                                    nil];
 
     NSMutableURLRequest *request = [httpClient requestWithMethod:@"PATCH"
-                                                            path:[NSString stringWithFormat:@"%@images/%i/setcaption",self.secureServerURL, imageID]
+                                                            path:[NSString stringWithFormat:@"%@images/%i/setdescription",self.secureServerURL, imageID]
                                                       parameters:params];
     
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
