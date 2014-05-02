@@ -495,15 +495,22 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
 }
 
-- (void)updateImageCaptionForImageWithID:(int)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID{
+- (void)updateImageCaptionForImageWithID:(FluxImageID)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     
     AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:self.secureServerURL];
-    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PUT"
-                                                            path:[NSString stringWithFormat:@"%@images/setprivacy?privacy=%i&image_ids=%@&auth_token=%@",self.secureServerURL,(newPrivacy ? 1 : 0), [images componentsJoinedByString:@","], token]
-                                                      parameters:nil];
+
+    NSMutableDictionary *params = [[NSMutableDictionary alloc]initWithObjectsAndKeys:token, @"auth_token",
+                                   newCaption, @"description",
+                                   nil];
+
+    NSMutableURLRequest *request = [httpClient requestWithMethod:@"PATCH"
+                                                            path:[NSString stringWithFormat:@"%@images/%i/setcaption",self.secureServerURL, imageID]
+                                                      parameters:params];
+    
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [httpClient registerHTTPOperationClass:[AFHTTPRequestOperation class]];
+    
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         if ([delegate respondsToSelector:@selector(NetworkServices:didUpdateImageCaptionWithRequestID:)])
         {
@@ -1648,7 +1655,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 //         FluxCameraObject*cambject = [result firstObject];
 //         if ([delegate respondsToSelector:@selector(NetworkServices:didPostCameraWithID:andRequestID:)])
 //         {
-//             [delegate NetworkServices:self didPostCameraWithID:cambject.cameraID andRequestID:requestID];
+//             [delegate NetworkServices:self didPostCameraWithID:cambject.ca meraID andRequestID:requestID];
 //         }
      }
                                         failure:^(RKObjectRequestOperation *operation, NSError *error)

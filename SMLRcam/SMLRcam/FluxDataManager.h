@@ -109,7 +109,7 @@ extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
 
 - (FluxRequestID *)deleteImageWithImageID:(int)imageID withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *)editPrivacyOfImageWithImageID:(NSArray*)imageIDs to:(BOOL)newPrivacy withDataRequest:(FluxDataRequest *)dataRequest;
-- (FluxRequestID *)editCaptionOfImageWithImageID:(int)imageID withCaption:(NSString*)newCaption withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID *)editCaptionOfImageWithImageID:(FluxImageID)imageID withCaption:(NSString*)newCaption withDataRequest:(FluxDataRequest *)dataRequest;
 
 - (FluxRequestID *) requestImageFeaturesByLocalID:(FluxDataRequest *)dataRequest;
 - (FluxRequestID *) requestImageMatchesByLocalID:(FluxDataRequest *)dataRequest;

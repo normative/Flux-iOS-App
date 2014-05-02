@@ -646,7 +646,7 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
-- (FluxRequestID *)editCaptionOfImageWithImageID:(int)imageID withCaption:(NSString*)newCaption withDataRequest:(FluxDataRequest *)dataRequest{
+- (FluxRequestID *)editCaptionOfImageWithImageID:(FluxImageID)imageID withCaption:(NSString*)newCaption withDataRequest:(FluxDataRequest *)dataRequest{
     FluxRequestID *requestID = dataRequest.requestID;
     dataRequest.requestType = updateImageCaption_request;
     [currentRequests setObject:dataRequest forKey:requestID];

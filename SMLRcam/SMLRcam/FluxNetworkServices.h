@@ -204,7 +204,7 @@ extern NSString* const FluxSecureServerURL;
 /**
  Updates an images caption with the supplied NSString.
  **/
-- (void)updateImageCaptionForImageWithID:(int)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID;
+- (void)updateImageCaptionForImageWithID:(FluxImageID)imageID withNewCaption:(NSString*)newCaption andRequestID:(NSUUID *)requestID;
 
 #pragma mark  Features
 
