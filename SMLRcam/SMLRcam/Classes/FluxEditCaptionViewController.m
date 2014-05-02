@@ -123,8 +123,8 @@
 
 - (IBAction)doneButtonAction:(id)sender {
     if (![existingString isEqualToString:self.captionTextView.text]) {
-        if ([delegate respondsToSelector:@selector(EditCaptionView:shouldEditCaption:)]) {
-            [delegate EditCaptionView:self shouldEditCaption:self.captionTextView.text];
+        if ([delegate respondsToSelector:@selector(EditCaptionView:shouldEditCaption:forImageWithID:)]) {
+            [delegate EditCaptionView:self shouldEditCaption:self.captionTextView.text forImageWithID:self.imageID];
         }
     }
     [self clearView];

@@ -473,6 +473,8 @@
     
     CGRect imageFrame = CGRectMake(0, imageCenter.y+(pageFrame.size.width/2), pageFrame.size.width, pageFrame.size.width);
     
+    [editCaptionViewController setImageID:[(IDMPhoto*)[self photoAtIndex:_currentPageIndex]imageID]];
+    
     [editCaptionViewController animateFromTextFrame:CGRectZero withCaption:[[_photos objectAtIndex:_currentPageIndex]caption] andImageFrame:imageFrame andUnderlyingImage:[self imageForPhoto:[_photos objectAtIndex:_currentPageIndex]]];
     [_doneButton setHidden:YES];
     
@@ -481,7 +483,7 @@
 }
 
 #pragma mark - Edit Caption View delegate
-- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption{
+- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString *)newCaption forImageWithID:(int)imageID{
     //post the caption change
     FluxDataRequest *request = [[FluxDataRequest alloc]init];
     
@@ -493,7 +495,7 @@
         
     }];
     
-    [[FluxDataManager theFluxDataManager] editCaptionOfImageWithImageID:editCaptionView.class withCaption:newCaption withDataRequest:request];
+    [[FluxDataManager theFluxDataManager] editCaptionOfImageWithImageID:imageID withCaption:newCaption withDataRequest:request];
     
 }
 

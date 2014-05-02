@@ -336,13 +336,10 @@
         
         NSMutableArray*photos = [[NSMutableArray alloc]init];
         NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-        int count = (int)picturesArray.count;
-        if (count > 25) {
-            count = 25;
-        }
-        
 
-        for (int i = 0; i<count; i++) {
+        NSRange range = [self rangeForPhotoBrowserAtIndex:(int)indexPath.row];
+
+        for (int i = (int)range.location; i<range.length; i++) {
             NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
             IDMPhoto* photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
             
@@ -375,6 +372,22 @@
             [cell.lockImageView setHidden:NO];
         }];
     }
+}
+
+- (NSRange)rangeForPhotoBrowserAtIndex:(int)index{
+    NSRange range;
+    int count = (int)picturesArray.count;
+    if (count > 50) {
+        if (index > 20) {
+            range = NSMakeRange(index-20, 40);
+        }
+    }
+    else{
+        range = NSMakeRange(0, count-1);
+    }
+    
+    return NSMakeRange(0, (int)picturesArray.count);
+    
 }
 
 

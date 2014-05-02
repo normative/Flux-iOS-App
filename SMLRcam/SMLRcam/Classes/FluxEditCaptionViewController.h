@@ -13,7 +13,7 @@
 @protocol FluxEditCaptionViewDelegate <NSObject>
 @optional
 - (void)EditCaptionViewDidClear:(FluxEditCaptionViewController *)editCaptionView;
-- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString*)newCaption;
+- (void)EditCaptionView:(FluxEditCaptionViewController *)editCaptionView shouldEditCaption:(NSString*)newCaption forImageWithID:(int)imageID;
 @end
 
 @interface FluxEditCaptionViewController : UIViewController <KTPlaceholderTextViewDelegate>{
@@ -32,6 +32,7 @@
 @property (strong, nonatomic) IBOutlet UIImageView *underlyingImageView;
 @property (strong, nonatomic) IBOutlet KTPlaceholderTextView *captionTextView;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *doneButton;
+@property (nonatomic) int imageID;
 
 - (IBAction)doneButtonAction:(id)sender;
 - (IBAction)cancelButtonAction:(id)sender;
