@@ -173,8 +173,8 @@ float const altitudeHighRange = 60.0;
     // Simple case with no filtering
     [networkServices getMapImagesForLocationFiltered:coordinate
                                         andRadius:radius
-                                        andMinAlt:dataRequest.searchFilter.altMin
-                                        andMaxAlt:dataRequest.searchFilter.altMax
+                                        andMinAlt:altitudeMin
+                                        andMaxAlt:altitudeMax
                                    andMaxReturned:dataRequest.maxReturnItems andFilter:dataRequest.searchFilter
                                      andRequestID:requestID];
     
