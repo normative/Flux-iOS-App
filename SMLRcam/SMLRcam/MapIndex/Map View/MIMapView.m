@@ -23,7 +23,6 @@
 
 #import "MIMapView.h"
 
-#import "MIMapIndex.h"
 #import "MIAnnotation.h"
 
 #import "MIMapView+MITransition.h"
@@ -82,6 +81,8 @@ typedef void (^_MIMapViewChange)(void);
 
 @implementation MIMapView
 
+@synthesize annotationsDelegate;
+
 #pragma mark - Init
 
 - (void)commonInitialization
@@ -89,6 +90,7 @@ typedef void (^_MIMapViewChange)(void);
 	_deferredChanges = [NSMutableArray new];
 
 	_index = [MIMapIndex new];
+    [_index setDelegate:self];
 	_annotationsLevel = 0;
 	_clusters = [NSMutableSet new];
 
@@ -411,6 +413,13 @@ typedef void (^_MIMapViewChange)(void);
 - (NSArray *)annotations
 {
 	return [_index annotations];
+}
+
+#pragma mark MKMapViewIndex Delegate
+- (void)MIMapIndexDidFinishAddingAnnotations:(MIMapIndex *)index{
+    if ([annotationsDelegate respondsToSelector:@selector(MIMapViewAddingAnnotationsDidFinish:)]) {
+        [annotationsDelegate MIMapViewAddingAnnotationsDidFinish:self];
+    }
 }
 
 #pragma mark - MKMapViewDelegate

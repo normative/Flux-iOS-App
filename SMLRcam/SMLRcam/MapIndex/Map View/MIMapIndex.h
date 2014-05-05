@@ -28,7 +28,19 @@
 
 @protocol MKAnnotation;
 
-@interface MIMapIndex : NSObject
+
+@class MIMapIndex;
+@protocol MIMapIndexDelegate <NSObject>
+@optional
+- (void)MIMapIndexDidFinishAddingAnnotations:(MIMapIndex *)index;
+@end
+
+@interface MIMapIndex : NSObject{
+    
+    __weak id <MIMapIndexDelegate> delegate;
+}
+
+@property (nonatomic, weak) id <MIMapIndexDelegate> delegate;
 
 - (void)addAnnotations:(NSArray *)annotations;
 - (void)addAnnotation:(id <MKAnnotation>)annotation;

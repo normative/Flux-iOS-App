@@ -47,6 +47,8 @@
 
 @implementation MIMapIndex
 
+@synthesize delegate;
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self
@@ -94,6 +96,9 @@
 			MIQuadTreeInsertPoint(_tree, MIPointMake(MKMapPointForCoordinate([annotation coordinate]),(__bridge void *)annotation));
 		}
 	}
+    if ([delegate respondsToSelector:@selector(MIMapIndexDidFinishAddingAnnotations:)]) {
+        [delegate MIMapIndexDidFinishAddingAnnotations:self];
+    }
 }
 
 - (void)addAnnotation:(id <MKAnnotation>)annotation

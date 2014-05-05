@@ -37,7 +37,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     if (fluxMapContentMetadata)
     {
         outstandingRequests--;
-        [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)fluxMapContentMetadata.count] forState:UIControlStateNormal];
+//        [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)fluxMapContentMetadata.count] forState:UIControlStateNormal];
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^
        {
            if (fluxMapContentMetadata)
@@ -47,8 +47,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
                               {
                                   [fluxMapView removeAnnotations:fluxMapView.annotations];
                                   [fluxMapView addAnnotations:fluxMapContentMetadata];
-                                  //this sets the label to 0
-//                                  [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]] forState:UIControlStateNormal];
                               });
            }
        });
@@ -108,8 +106,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         outstandingRequests++;
     }
 
-    MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
+    [self setFiltersButtonCountTitle];
 }
 
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay {
@@ -152,6 +149,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     tempCircle = [MKCircle circleWithCenterCoordinate:self.locationManager.location.coordinate radius:self.locationManager.location.horizontalAccuracy];
     [fluxMapView addOverlay:tempCircle];
 }
+#pragma mark - MKMapView Delegate
+- (void)MIMapViewAddingAnnotationsDidFinish:(MIMapView *)mapView{
+    //update the title when the annotations animations are over
+    [self setFiltersButtonCountTitle];
+}
+
 
 #pragma mark - IBActions
 
@@ -188,6 +191,12 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     else{
         [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
     }
+}
+
+- (void)setFiltersButtonCountTitle{
+    MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
+    int count = (int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count];
+    [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
 }
 
 #pragma mark - view lifecycle
@@ -227,6 +236,7 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(self.locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
+    [fluxMapView setAnnotationsDelegate:self];
     
     //set the last radius (in this case, it's initial radius)
     MKCoordinateRegion region = fluxMapView.region;
@@ -288,7 +298,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     CLLocation*loc = [[CLLocation alloc]initWithCoordinate:fluxMapView.centerCoordinate altitude:self.locationManager.location.altitude horizontalAccuracy:self.locationManager.location.horizontalAccuracy verticalAccuracy:self.locationManager.location.verticalAccuracy course:self.locationManager.location.course speed:self.locationManager.location.speed timestamp:self.locationManager.location.timestamp];
     [filtersVC setLocation:loc];
     
-    [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:(int)[[fluxMapView annotationsInMapRect:[self shrunkenMapRect:fluxMapView.visibleMapRect]]count]];
+    MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
+    int count = (int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count];
+    [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]];
     [self animationPushBackScaleDown];
     [filtersVC setRadius:lastRadius];
 }

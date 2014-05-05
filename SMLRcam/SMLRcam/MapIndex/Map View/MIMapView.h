@@ -23,10 +23,18 @@
 
 #import <Foundation/Foundation.h>
 #import <MapKit/MKMapView.h>
+#import "MIMapIndex.h"
 
 @class MITransitionFactory, MITransition, MIMapIndex;
 
-@interface MIMapView : MKMapView  <MKMapViewDelegate>
+@class MIMapView;
+@protocol MIMapViewDelegate <NSObject>
+@optional
+- (void)MIMapViewAddingAnnotationsDidFinish:(MIMapView *)mapView;
+@end
+
+
+@interface MIMapView : MKMapView  <MKMapViewDelegate, MIMapIndexDelegate>
 {
 	struct
 	{
@@ -49,7 +57,10 @@
   	MITransition *_transition;
 
 	NSMutableArray *_deferredChanges;
+    __weak id <MIMapViewDelegate> annotationsDelegate;
 }
+
+@property (nonatomic, weak) id <MIMapViewDelegate> annotationsDelegate;
 
 - (void)setNeedsUpdateVisibleState;
 
