@@ -7,7 +7,7 @@ V0.25 B01
 Released: 2014-05-06 10:30:00
 
 Release Notes:
-- based on cameraThresholdTestin branch
+- based on cameraThresholdTesting branch
 - re-enable debug
 - open camera enable thresholds by 50% for heading, horiz and vert
 
