@@ -25,9 +25,9 @@ NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadin
 
 const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notification
 
-const double kalmanFilterMinHeadingAccuracy = 30.0;
-const double kalmanFilterMinHorizontalAccuracy = 20.0;
-const double kalmanFilterMinVerticalAccuracy = 20.0;
+const double kalmanFilterMinHeadingAccuracy = 45.0;
+const double kalmanFilterMinHorizontalAccuracy = 30.0;
+const double kalmanFilterMinVerticalAccuracy = 30.0;
 
 @implementation FluxLocationServicesSingleton
 

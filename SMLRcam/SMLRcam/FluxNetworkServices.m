@@ -37,14 +37,14 @@ NSString* const AWSSecureStagingServerURL    = _AWSSecureStagingServerURL;
 NSString* const AWSSecureTestServerURL       = _AWSTestServerURL;
 NSString* const DSDSecureLocalTestServerURL  = _DSDLocalTestServerURL;
 
-//NSString* const FluxServerURL = _AWSProductionServerURL;
-NSString* const FluxServerURL = _AWSStagingServerURL;
+NSString* const FluxServerURL = _AWSProductionServerURL;
+//NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
 
 
-//NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
-NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
+NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
+//NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
 //NSString* const FluxSecureServerURL = _AWSTestServerURL;
 //NSString* const FluxSecureServerURL = _DSDLocalTestServerURL;
 
