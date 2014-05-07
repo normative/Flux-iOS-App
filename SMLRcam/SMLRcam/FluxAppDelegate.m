@@ -187,8 +187,8 @@ bool registeredForAPNS = false;
     //testFlight analytics
     [TestFlight takeOff:TestFlightAppToken];
     
-    RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
-    //RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
+//    RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
+    RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     //RKLogConfigureByName("*", RKLogLevelOff);
     
     // Apple Push Notifications

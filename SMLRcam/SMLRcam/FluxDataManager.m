@@ -768,6 +768,15 @@ float const altitudeHighRange = 60.0;
     return requestID;
 }
 
+- (FluxRequestID*)inviteUserWithServiceID:(int)serviceID andName:(NSString *)name andEmail:(NSString *)emailString withDataRequest:(FluxDataRequest *)dataRequest{
+    FluxRequestID *requestID = dataRequest.requestID;
+    dataRequest.requestType = inviteUsers_request;
+    [currentRequests setObject:dataRequest forKey:requestID];
+    // post flag to server
+    [networkServices inviteUserForSerivce:serviceID toEmail:emailString andName:name withRequestID:requestID];
+    return requestID;
+}
+
 
 #pragma mark Aliases
 
@@ -1371,6 +1380,14 @@ float const altitudeHighRange = 60.0;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnContactList:(NSArray *)contacts andRequestID:(NSUUID *)requestID{
     FluxDataRequest *request = [currentRequests objectForKey:requestID];
     [request whenContactListReady:contacts withDataRequest:request];
+    
+    // Clean up request (nothing else to wait for)
+    [self completeRequestWithDataRequest:request];
+}
+
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didInviteUserWithEmail:(NSString *)email andName:(NSString *)name andRequestID:(NSUUID *)requestID{
+    FluxDataRequest *request = [currentRequests objectForKey:requestID];
+    [request whenInviteRequestCompleteForName:name andEmail:email withDataRequest:request];
     
     // Clean up request (nothing else to wait for)
     [self completeRequestWithDataRequest:request];

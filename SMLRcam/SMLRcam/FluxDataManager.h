@@ -166,6 +166,8 @@ extern NSString* const FluxDataManagerKeyUploadImageFluxScanImageObject;
                               withDataRequest:(FluxDataRequest *)dataRequest;
 - (FluxRequestID*) postContentFlagToImage:(FluxImageID)image_id
                           withDataRequest:(FluxDataRequest *)dataRequest;
+- (FluxRequestID*)inviteUserWithServiceID:(int)serviceID andName:(NSString*)name andEmail:(NSString*)emailString
+                    withDataRequest:(FluxDataRequest *)dataRequest;;
 
 //aliases
 - (FluxRequestID *) createAliasWithName:(NSString *)name

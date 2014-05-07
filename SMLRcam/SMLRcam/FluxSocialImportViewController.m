@@ -197,7 +197,7 @@
 
         }];
         
-        [[FluxDataManager theFluxDataManager] requestContactsFromService:serviceID withCredentials:credentials withDataRequest:request];
+        [self.fluxDataManager requestContactsFromService:serviceID withCredentials:credentials withDataRequest:request];
     }
     
 }
@@ -217,7 +217,7 @@
         [userObj setAmFollowerFlag:contact.amFollowerFlag];
         [userObj setIsFollowingFlag:contact.isFollowingFlag];
         
-        [(FluxPublicProfileViewController*)segue.destinationViewController setFluxDataManager:[(FluxAddUserViewController*)[[(UINavigationController*)self.parentViewController viewControllers] objectAtIndex:0] fluxDataManager]];
+        [(FluxPublicProfileViewController*)segue.destinationViewController setFluxDataManager:self.fluxDataManager];
         [(FluxPublicProfileViewController*)segue.destinationViewController prepareViewWithUser:userObj];
         [(FluxPublicProfileViewController*)segue.destinationViewController setDelegate:self];
     }
@@ -532,25 +532,27 @@
             [cell.profileImageView setImage:[self.importUserImagesArray objectAtIndex:index]];
         }
         else{
-            __weak FluxImportContactCell *weakCell = cell;
-            
-            [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:cell.contactObject.profilePicURL]]
-                                         placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
-                                                  success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
-                                                      if (image) {
-                                                          [self.importUserImagesArray replaceObjectAtIndex:index withObject:image];
+            if (cell.contactObject.profilePicURL) {
+                __weak FluxImportContactCell *weakCell = cell;
+                
+                [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:cell.contactObject.profilePicURL]]
+                                             placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
+                                                      success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image){
+                                                          if (image) {
+                                                              [self.importUserImagesArray replaceObjectAtIndex:index withObject:image];
+                                                              
+                                                              [weakCell.profileImageView setImage:image];
+                                                              //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
+                                                              //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
+                                                              [weakCell setNeedsLayout];
+                                                              //}
+                                                          }
                                                           
-                                                          [weakCell.profileImageView setImage:image];
-                                                          //only required if no placeholder is set to force the imageview on the cell to be laid out to house the new image.
-                                                          //if(weakCell.imageView.frame.size.height==0 || weakCell.imageView.frame.size.width==0 ){
-                                                          [weakCell setNeedsLayout];
-                                                          //}
                                                       }
-                                                      
-                                                  }
-                                                  failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
-                                                      NSLog(@"profile image done broke :(");
-                                                  }];
+                                                      failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error){
+                                                          NSLog(@"profile image done broke :(");
+                                                      }];
+            }
         }
     }
     
@@ -872,12 +874,12 @@
                         otherButtonTitles:contact.emails
                                  tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                      if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                         [self inviteFromEmail:[actionSheet buttonTitleAtIndex:buttonIndex] forContactObject:contact];
+                                         [self inviteFromEmail:[actionSheet buttonTitleAtIndex:buttonIndex] forContactCell:importContactCell];
                                      }
                                  }];
         }
         else{
-            [self inviteFromEmail:[contact.emails objectAtIndex:0] forContactObject:contact];
+            [self inviteFromEmail:[contact.emails objectAtIndex:0] forContactCell:importContactCell];
         }
     }
     //invite from twitter
@@ -1009,24 +1011,45 @@
 }
 
 - (void)willInviteCell:(FluxImportContactCell*)importCell atIndex:(int)index{
+    NSString*tableName;
+    NSString*cellName;
+    
+    if (self.serviceType == FacebookService) {
+        tableName = [(FluxContactObject*)[isSearching ? self.searchResultsUserArray : self.importUserArray objectAtIndex:index] displayName];
+    }
+    else if (self.serviceType == TwitterService){
+        tableName = [(FluxContactObject*)[isSearching ? self.searchResultsUserArray : self.importUserArray objectAtIndex:index] aliasName];
+    }
+    else{
+        tableName = [(FluxContactObject*)[isSearching ? self.searchResultsUserArray : self.importUserArray objectAtIndex:index] aliasName];
+    }
+    
+    if (self.serviceType == FacebookService) {
+        cellName = importCell.titleLabel.text;
+    }
+    else if (self.serviceType == TwitterService){
+        cellName = [importCell.titleLabel.text substringFromIndex:1];
+    }
+    else{
+        cellName = importCell.titleLabel.text;
+    }
+    
     if (isSearching) {
         index--;
         if (self.searchResultsUserArray.count > index) {
             //...and it's still the same cell
-            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+            if ([tableName  isEqualToString:cellName]) {
                 //update it
                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setInviteSending:YES];
             }
         }
         
         for (int i = 0; i<self.importUserArray.count; i++) {
-            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:i] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:i] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+            if ([tableName isEqualToString:cellName]) {
                 [(FluxContactObject*)[self.importUserArray objectAtIndex:i] setInviteSent:YES];
                 break;
             }
         }
-        
-        
         
         [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index+1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
@@ -1045,34 +1068,57 @@
 }
 
 - (void)didInviteCell:(FluxImportContactCell*)importCell atIndex:(int)index andSucceeded:(BOOL)succeeded{
+    NSString*tableName;
+    NSString*cellName;
+    
+    if (self.serviceType == FacebookService) {
+        tableName = [(FluxContactObject*)[isSearching ? self.searchResultsUserArray : self.importUserArray objectAtIndex:index] displayName];
+    }
+    else if (self.serviceType == TwitterService){
+        tableName = [(FluxContactObject*)[isSearching ? self.searchResultsUserArray : self.importUserArray objectAtIndex:index] aliasName];
+    }
+    else{
+        tableName = [(FluxContactObject*)[isSearching ? self.searchResultsUserArray : self.importUserArray objectAtIndex:index] aliasName];
+    }
+    
+    if (self.serviceType == FacebookService) {
+        cellName = importCell.titleLabel.text;
+    }
+    else if (self.serviceType == TwitterService){
+        cellName = [importCell.titleLabel.text substringFromIndex:1];
+    }
+    else{
+        cellName = importCell.titleLabel.text;
+    }
+    
     if (isSearching) {
         index--;
+        
         if (self.searchResultsUserArray.count > index) {
             //...and it's still the same cell
-            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+            
+            if ([tableName  isEqualToString:cellName]) {
                 //update it
                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setInviteSending:NO];
                 [(FluxContactObject*)[self.searchResultsUserArray objectAtIndex:index] setInviteSent:succeeded];
             }
         }
-        //incredibly inneficient
+        //incredibly inneficient way to update the main list
         for (int i = 0; i<self.importUserArray.count; i++) {
-            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:i] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:i] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+            if ([tableName  isEqualToString:cellName]) {
                 [(FluxContactObject*)[self.importUserArray objectAtIndex:i] setInviteSending:NO];
                 [(FluxContactObject*)[self.importUserArray objectAtIndex:i] setInviteSent:succeeded];
                 break;
             }
         }
-        
-        
-        
+        //+1 for search row
         [self.importUserTableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index+1 inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
     else{
         if (self.importUserArray.count > index) {
             //...and it's still the same cell
             
-            if ([(self.serviceType == FacebookService) ? [(FluxContactObject*)[self.importUserArray objectAtIndex:index] displayName] : [(FluxContactObject*)[self.importUserArray objectAtIndex:index] aliasName]  isEqualToString:(self.serviceType == FacebookService ? importCell.titleLabel.text : [importCell.titleLabel.text substringFromIndex:1])]) {
+            if ([tableName isEqualToString:cellName]) {
                 //update it
                 [(FluxContactObject*)[self.importUserArray objectAtIndex:index] setInviteSending:NO];
                 [(FluxContactObject*)[self.importUserArray objectAtIndex:index] setInviteSent:succeeded];
@@ -1126,8 +1172,23 @@
 
 #pragma mark - SocialInvites
 #pragma mark Twitter
-- (void)inviteFromEmail:(NSString*)email forContactObject:(FluxContactObject*)contactObject{
-    NSLog(@"Inviting email:%@",email);
+- (void)inviteFromEmail:(NSString*)email forContactCell:(FluxImportContactCell*)contactCell{
+    
+    int index = (int)[[self.importUserTableView indexPathForCell:contactCell]row];
+    [self willInviteCell:contactCell atIndex:index];
+    
+    FluxDataRequest*request = [[FluxDataRequest alloc]init];
+    [request setInviteRequestComplete:^(NSString*name, NSString*email,FluxDataRequest*completedRequest){
+        [self didInviteCell:contactCell atIndex:index andSucceeded:YES];
+
+    }];
+    
+    [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
+        NSString*str = [NSString stringWithFormat:@"Contact lookup failed"];
+        [ProgressHUD showError:str];
+        [self didInviteCell:contactCell atIndex:index andSucceeded:NO];
+    }];
+    [self.fluxDataManager inviteUserWithServiceID:1 andName:contactCell.contactObject.aliasName andEmail:email withDataRequest:request];
 }
 
 #pragma mark - address book loading
@@ -1218,7 +1279,7 @@
                         [self.importUserImagesArray addObject:newImage];
                     }
                     else{
-                        [self.importUserImagesArray addObject:[NSNumber numberWithBool:NO]];
+                        [self.importUserImagesArray addObject:[UIImage imageNamed:@"emptyProfileImage_big"]];
                     }
                     [self.importUserArray addObject:contact];
                 }
@@ -1266,7 +1327,7 @@
                     [ProgressHUD showError:str];
                 }];
                 
-                [[FluxDataManager theFluxDataManager] requestContactsFromService:1 withCredentials:[NSDictionary dictionaryWithObject:[emails componentsJoinedByString:@","] forKey:@"emails"] withDataRequest:request];
+                [self.fluxDataManager requestContactsFromService:1 withCredentials:[NSDictionary dictionaryWithObject:[emails componentsJoinedByString:@","] forKey:@"emails"] withDataRequest:request];
                 
             }
             else{
