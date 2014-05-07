@@ -1716,6 +1716,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     {
         case 1: // contact list
             // treat credentials as a list of email addresses and add them in as one key
+            [fullurl appendString:[NSString stringWithFormat:@"&contactlist=%@",[[credentials objectForKey:@"emails"]stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
             break;
         case 2: // Twitter
         case 3: // Facebook
@@ -1739,7 +1740,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
              [delegate NetworkServices:self didReturnContactList:result.array andRequestID:requestID];
          }
      }
-                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+            failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Contact request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])

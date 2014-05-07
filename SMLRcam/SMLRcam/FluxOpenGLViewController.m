@@ -2023,7 +2023,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 - (void)render{
     [self update];
     [self glkView:(GLKView*)self.view drawInRect:self.view.bounds];
-    [(GLKView*)self.view display];
+    
+    //in case of moveing to background
+    if (self.view) {
+        [(GLKView*)self.view display];
+    }
 }
 
 - (void)update

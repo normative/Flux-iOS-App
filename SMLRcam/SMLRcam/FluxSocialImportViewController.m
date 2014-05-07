@@ -55,6 +55,7 @@
     topview.backgroundColor = [UIColor clearColor];
     
     [self.importUserTableView addSubview:topview];
+    self.importUserTableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
     
 	// Do any additional setup after loading the view.
@@ -110,7 +111,7 @@
 
     else if (self.serviceType == FacebookService)
     {
-                [ProgressHUD show:@"Retrieving Facebook Contacts"];
+        [ProgressHUD show:@"Retrieving Facebook Contacts"];
         [self setTitle:@"Facebook"];
         // pull Facebook credentials and fire them up to the import API
 //        [UICKeyChainStore setString:FBSession.activeSession.accessTokenData.accessToken forKey:FluxTokenKey service:FacebookService];
@@ -871,11 +872,15 @@
                         otherButtonTitles:contact.emails
                                  tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
                                      if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                         NSLog(@"Tapped email:%@",[actionSheet buttonTitleAtIndex:buttonIndex]);
+                                         [self inviteFromEmail:[actionSheet buttonTitleAtIndex:buttonIndex] forContactObject:contact];
                                      }
                                  }];
         }
+        else{
+            [self inviteFromEmail:[contact.emails objectAtIndex:0] forContactObject:contact];
+        }
     }
+    //invite from twitter
     else if (self.serviceType == TwitterService){
         SLRequestHandler requestHandler =
         ^(NSData *responseData, NSHTTPURLResponse *urlResponse, NSError *error) {
@@ -921,6 +926,7 @@
         [request performRequestWithHandler:requestHandler];
         
     }
+    //invite from facebook
     else if (self.serviceType == FacebookService){
         NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                          contact.aliasName, @"to", // only send-able to this contact now
@@ -1120,9 +1126,8 @@
 
 #pragma mark - SocialInvites
 #pragma mark Twitter
-- (void)inviteUserFromTwitter:(FluxContactObject*)contact{
-    
-
+- (void)inviteFromEmail:(NSString*)email forContactObject:(FluxContactObject*)contactObject{
+    NSLog(@"Inviting email:%@",email);
 }
 
 #pragma mark - address book loading
@@ -1247,6 +1252,12 @@
                     
                     [self.view setUserInteractionEnabled:YES];
                     [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+                    
+                    //should never hit because we check before it's sent up
+                    if (self.importUserArray.count == 0 && self.importFluxUserArray.count == 0) {
+                        NSError*e = [[NSError alloc]init];
+                        [self showEmptyViewForError:e];
+                    }
                 }];
                 
                 

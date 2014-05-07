@@ -3452,23 +3452,6 @@
             </objects>
             <point key="canvasLocation" x="4626" y="1373"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="cfQ-oE-4hR">
-            <objects>
-                <viewController id="CCt-IS-NwA" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="qzD-wj-nG6"/>
-                        <viewControllerLayoutGuide type="bottom" id="cgg-ZK-OdO"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="beJ-pH-3Z5">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="yhe-lp-0PF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-        </scene>
     </scenes>
     <resources>
         <image name="MapBackToggle" width="140" height="140"/>
