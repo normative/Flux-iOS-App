@@ -762,6 +762,8 @@ const double kalmanFilterMinVerticalAccuracy = 30.0;
             // This is the case where it was already initialized, but the location data temporarily became bad.
             // Need to notify state change now that location data is good again.
             _validCurrentLocationData = YES;
+            DDLogVerbose(@"#Event: KALMAN reenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
         _validCurrentLocationData = YES;
@@ -776,6 +778,8 @@ const double kalmanFilterMinVerticalAccuracy = 30.0;
             _validCurrentLocationData = NO;
 
             // Previous value was valid. Signal state change.
+            DDLogVerbose(@"#Event: KALMAN disenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
     }
