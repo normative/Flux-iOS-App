@@ -37,6 +37,8 @@
 		17891FC0181D69D80064B2F9 /* FluxTextureToImageMapElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 17891FBF181D69D80064B2F9 /* FluxTextureToImageMapElement.m */; };
 		17891FC3181D6C840064B2F9 /* FluxImageRenderElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 17891FC2181D6C840064B2F9 /* FluxImageRenderElement.m */; };
 		17913EE418BD869A0045FC86 /* FluxCameraModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 17913EE318BD869A0045FC86 /* FluxCameraModel.m */; };
+		17BBAC89191F0AC600C2DB0A /* GeomagnetismLibrary.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BBAC88191F0AC600C2DB0A /* GeomagnetismLibrary.c */; };
+		17BBAC8C191F0C6200C2DB0A /* wmm_cof.c in Sources */ = {isa = PBXBuildFile; fileRef = 17BBAC8A191F0C6200C2DB0A /* wmm_cof.c */; };
 		2204371A17B925870017EA93 /* FluxMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2204371917B925870017EA93 /* FluxMapViewController.m */; };
 		2204371C17B926260017EA93 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2204371B17B926260017EA93 /* MapKit.framework */; };
 		220FE06D17BEACAD00A7E379 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220FE06C17BEACAD00A7E379 /* SenTestingKit.framework */; };
@@ -274,6 +276,10 @@
 		17891FC4181D6D5C0064B2F9 /* FluxOpenGLCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FluxOpenGLCommon.h; sourceTree = "<group>"; };
 		17913EE218BD869A0045FC86 /* FluxCameraModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraModel.h; sourceTree = "<group>"; };
 		17913EE318BD869A0045FC86 /* FluxCameraModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraModel.m; sourceTree = "<group>"; };
+		17BBAC87191F0AC600C2DB0A /* GeomagnetismHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeomagnetismHeader.h; sourceTree = "<group>"; };
+		17BBAC88191F0AC600C2DB0A /* GeomagnetismLibrary.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GeomagnetismLibrary.c; sourceTree = "<group>"; };
+		17BBAC8A191F0C6200C2DB0A /* wmm_cof.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wmm_cof.c; sourceTree = "<group>"; };
+		17BBAC8B191F0C6200C2DB0A /* wmm_cof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wmm_cof.h; sourceTree = "<group>"; };
 		2204371817B925870017EA93 /* FluxMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapViewController.h; sourceTree = "<group>"; };
 		2204371917B925870017EA93 /* FluxMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMapViewController.m; sourceTree = "<group>"; };
 		2204371B17B926260017EA93 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -756,6 +762,17 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		17BBAC7E191D503E00C2DB0A /* Declination */ = {
+			isa = PBXGroup;
+			children = (
+				17BBAC8A191F0C6200C2DB0A /* wmm_cof.c */,
+				17BBAC8B191F0C6200C2DB0A /* wmm_cof.h */,
+				17BBAC87191F0AC600C2DB0A /* GeomagnetismHeader.h */,
+				17BBAC88191F0AC600C2DB0A /* GeomagnetismLibrary.c */,
+			);
+			name = Declination;
+			sourceTree = "<group>";
+		};
 		2204371717B925380017EA93 /* Map Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -958,6 +975,7 @@
 		AA4CE0FD17B43559008D04BE /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				17BBAC7E191D503E00C2DB0A /* Declination */,
 				17913EE218BD869A0045FC86 /* FluxCameraModel.h */,
 				17913EE318BD869A0045FC86 /* FluxCameraModel.m */,
 				176BFA5018BBA23A00ABE99D /* FluxDeviceInfoSingleton.h */,
@@ -1785,6 +1803,7 @@
 				F240345D17E102F50088CA2D /* FluxDataStore.m in Sources */,
 				AAAAD6FF18A1791800F5F3DB /* DZNPhotoEditViewController.m in Sources */,
 				AAAAD70918A3E56700F5F3DB /* FluxRegistrationUserObject.m in Sources */,
+				17BBAC8C191F0C6200C2DB0A /* wmm_cof.c in Sources */,
 				AA984F0D18088923007F33B1 /* MIAnnotation.m in Sources */,
 				AA349A2117C3BB4C00C72E24 /* ImageViewerImageUtil.m in Sources */,
 				F2ED4247183EF455007A825A /* FluxCameraFrameGrabTask.m in Sources */,
@@ -1825,6 +1844,7 @@
 				AA3BAF251846477E009D4FAC /* FluxPublicProfileViewController.m in Sources */,
 				AAAD9A46187EF89F003BC1FF /* FluxSocialManagementCell.m in Sources */,
 				89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */,
+				17BBAC89191F0AC600C2DB0A /* GeomagnetismLibrary.c in Sources */,
 				AAFD390E17DE0B4F006CBC14 /* KTSegmentedButtonControl.m in Sources */,
 				F2CC5A6518EF1705005AE05D /* FluxFlickrPhotosetDataElement.m in Sources */,
 				F2B2C1F4183E39DC00D32084 /* FluxMatcher.cpp in Sources */,
