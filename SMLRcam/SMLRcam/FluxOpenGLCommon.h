@@ -64,4 +64,10 @@ typedef struct {
     float xPixels;
     float focalLength;
 } fluxCameraParameters;
+
+typedef struct {
+    GLKVector3 origin;
+    GLKVector3 at;
+    float fov;
+} tapParameters;
 #endif
