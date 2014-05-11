@@ -260,23 +260,6 @@ const float magDeclinationThreshold = 0.001; // about 100m?
 //- (CLLocationDirection)magneticDeclinationAtLocation:(CLLocation *)here
 - (CLLocationDirection)magneticDeclination
 {
-    
-    // - if self.location ! nil
-    //    - if magdecloc ! nil
-    //       - calc dist between two
-    //       - if dist > threshold
-    //          - need_to_recalc = true
-    //    - else
-    //       - need_to_recalc = true
-    // - else
-    //    - magdec = 0
-    //
-    // - if need_to_recalc
-    //    - magdecloc = self.location
-    //    - magdec = calc_new_dec(magdecloc, today)
-    //
-    // - return magdec
-    
     CLLocation *here = self.location;
     
     Boolean recalc = false;
@@ -469,9 +452,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
         self.heading = newHeading.magneticHeading + self.magneticDeclination;
     }
     
-    NSLog(@"mag heading: %f, true heading: %f, mag dec: %f, self heading: %f, calc heading: %f", newHeading.magneticHeading, newHeading.trueHeading, self.magneticDeclination, self.heading, (newHeading.magneticHeading + self.magneticDeclination));
-//    DDLogVerbose(")
-    
+//    NSLog(@"mag heading: %f, true heading: %f, mag dec: %f, self heading: %f, calc heading: %f", newHeading.magneticHeading, newHeading.trueHeading, self.magneticDeclination, self.heading, (newHeading.magneticHeading + self.magneticDeclination));
+
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
     if (self.location != nil)
@@ -834,8 +816,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
     // Check for state changes in validCurrentLocationData. Toggles to true are caught in updateKFilter and resetKFilter.
     if((location.horizontalAccuracy >=0.0) && (location.horizontalAccuracy <= kalmanFilterMinHorizontalAccuracy) &&
        (location.verticalAccuracy >= 0.0) && (location.verticalAccuracy <= kalmanFilterMinVerticalAccuracy) &&
-       (self.locationManager.heading.headingAccuracy >= 0.0) && (self.locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
-       (self.locationManager.heading.trueHeading >= 0))
+       (self.locationManager.heading.headingAccuracy >= 0.0) && (self.locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) /*&&
+       (self.locationManager.heading.trueHeading >= 0)*/)
     {
         // if kfStarted is false, we haven't started yet, so state changes are handled elsewhere.
         // Otherwise, handle them here.
@@ -844,8 +826,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
             // This is the case where it was already initialized, but the location data temporarily became bad.
             // Need to notify state change now that location data is good again.
             _validCurrentLocationData = YES;
-            DDLogVerbose(@"#Event: KALMAN reenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f",
-                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading);
+            DDLogVerbose(@"#Event: KALMAN reenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f, lm heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading, self.heading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
         _validCurrentLocationData = YES;
@@ -860,8 +842,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
             _validCurrentLocationData = NO;
 
             // Previous value was valid. Signal state change.
-            DDLogVerbose(@"#Event: KALMAN disenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f",
-                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading);
+            DDLogVerbose(@"#Event: KALMAN disabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f, lm heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading, self.heading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
     }
