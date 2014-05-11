@@ -28,9 +28,9 @@ NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadin
 
 const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notification
 
-const double kalmanFilterMinHeadingAccuracy = 30.0;
-const double kalmanFilterMinHorizontalAccuracy = 20.0;
-const double kalmanFilterMinVerticalAccuracy = 20.0;
+const double kalmanFilterMinHeadingAccuracy = 45.0;
+const double kalmanFilterMinHorizontalAccuracy = 30.0;
+const double kalmanFilterMinVerticalAccuracy = 30.0;
 
 @implementation FluxLocationServicesSingleton
 
@@ -844,6 +844,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
             // This is the case where it was already initialized, but the location data temporarily became bad.
             // Need to notify state change now that location data is good again.
             _validCurrentLocationData = YES;
+            DDLogVerbose(@"#Event: KALMAN reenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
         _validCurrentLocationData = YES;
@@ -858,6 +860,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
             _validCurrentLocationData = NO;
 
             // Previous value was valid. Signal state change.
+            DDLogVerbose(@"#Event: KALMAN disenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
     }

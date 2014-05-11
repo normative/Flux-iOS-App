@@ -26,7 +26,7 @@
 #import "GAIDictionaryBuilder.h"
 
 // define this symbol to enable access to the debug menu
-//#define ENABLE_DEBUG_VC
+#define ENABLE_DEBUG_VC
 
 #define IS_RETINA ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
 #define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
