@@ -13,6 +13,9 @@
 #import "FluxScanViewController.h"
 #import "FluxTransformUtilities.h"
 
+//#import "GeomagnetismLibrary2.h"
+#import "GeomagnetismHeader.h"
+
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidCompleteHeadingCalibration = @"FluxLocationServicesSingletonDidCompleteHeadingCalibration";
@@ -252,6 +255,75 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [fluxMotionManager changeHeadingCorrectedMotionMode:headingCorrectedMotion];
 }
 
+
+const float magDeclinationThreshold = 0.001; // about 100m?
+//- (CLLocationDirection)magneticDeclinationAtLocation:(CLLocation *)here
+- (CLLocationDirection)magneticDeclination
+{
+    
+    // - if self.location ! nil
+    //    - if magdecloc ! nil
+    //       - calc dist between two
+    //       - if dist > threshold
+    //          - need_to_recalc = true
+    //    - else
+    //       - need_to_recalc = true
+    // - else
+    //    - magdec = 0
+    //
+    // - if need_to_recalc
+    //    - magdecloc = self.location
+    //    - magdec = calc_new_dec(magdecloc, today)
+    //
+    // - return magdec
+    
+    CLLocation *here = self.location;
+    
+    Boolean recalc = false;
+    if (here != nil)
+    {
+        if (_magDeclinationLocation != nil)
+        {
+            // calc approx dist between two
+            float c1 = here.coordinate.latitude - _magDeclinationLocation.coordinate.latitude;
+            float c2 = here.coordinate.longitude - _magDeclinationLocation.coordinate.longitude;
+            float dist = sqrtf((c1*c1) + (c2*c2));
+            
+            if (dist > magDeclinationThreshold)
+                recalc = true;
+        }
+        else
+        {
+            recalc = true;
+        }
+    }
+    else
+    {
+        _magneticDeclination = 0;
+    }
+    
+    if (recalc)
+    {
+        _magDeclinationLocation = [[CLLocation alloc] initWithCoordinate:here.coordinate altitude:here.altitude
+                                                      horizontalAccuracy:here.horizontalAccuracy
+                                                        verticalAccuracy:here.verticalAccuracy
+                                                                  course:here.course
+                                                                   speed:here.speed
+                                                               timestamp:here.timestamp];
+
+        NSDate *currentDate = [NSDate date];
+        NSCalendar* calendar = [NSCalendar currentCalendar];
+        NSDateComponents* components = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:currentDate]; // Get necessary date components
+
+        float fdate =  (float)[components year] + (float)([components month] * 30.0 + [components day]) / 365.0;
+        
+        _magneticDeclination = MAG_CalcDeclination(here.coordinate.latitude, here.coordinate.longitude, fdate);
+    }
+
+    return _magneticDeclination;
+
+}
+
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations{
     // Grab last entry for now, since we should be getting all of them
@@ -387,8 +459,18 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     if (newHeading.headingAccuracy < 0)
         return;
     
-    // Use the true heading if it is valid.
-    self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
+    // Use the true heading if it is valid, otherwise figure out the magnetic declination and use that to offset from the magnetic heading.
+    if (newHeading.trueHeading >= 0)
+    {
+        self.heading = newHeading.trueHeading;
+    }
+    else
+    {
+        self.heading = newHeading.magneticHeading + self.magneticDeclination;
+    }
+    
+    NSLog(@"mag heading: %f, true heading: %f, mag dec: %f, self heading: %f, calc heading: %f", newHeading.magneticHeading, newHeading.trueHeading, self.magneticDeclination, self.heading, (newHeading.magneticHeading + self.magneticDeclination));
+//    DDLogVerbose(")
     
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
