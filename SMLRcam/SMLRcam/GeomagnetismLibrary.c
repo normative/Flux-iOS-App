@@ -315,7 +315,7 @@ int MAG_ConvertInput(MAGtype_MagneticModel *MagneticModel, MAGtype_CoordGeodetic
 
 double MAG_CalcDeclination(double lat, double lon, double fdate)
 {
-    MAGtype_MagneticModel *MagneticModel;
+    MAGtype_MagneticModel *MagneticModel[1];
     MAGtype_Ellipsoid Ellip;
     MAGtype_CoordSpherical CoordSpherical;
     MAGtype_CoordGeodetic CoordGeodetic;
@@ -332,25 +332,25 @@ double MAG_CalcDeclination(double lat, double lon, double fdate)
     /* Memory allocation */
 
     MAG_robustReadMagModels(&MagneticModel, epochs);
-    if(MagneticModel == NULL)
+    if(MagneticModel[0] == NULL)
     {
         MAG_Error(2);
     }
 
-    if(nMax < MagneticModel->nMax)
-    	nMax = MagneticModel->nMax;
+    if(nMax < MagneticModel[0]->nMax)
+    	nMax = MagneticModel[0]->nMax;
 
     MAG_SetDefaults(&Ellip); /* Set default values and constants */
 
-	if (MAG_ConvertInput(MagneticModel, &CoordGeodetic, &UserDate, lat, lon, fdate) == 1)
+	if (MAG_ConvertInput(MagneticModel[0], &CoordGeodetic, &UserDate, lat, lon, fdate) == 1)
 	{
 		MAG_GeodeticToSpherical(Ellip, CoordGeodetic, &CoordSpherical); /*Convert from geodetic to Spherical Equations: 17-18, WMM Technical report*/
-		MAG_TimelyModifyMagneticModel(UserDate, MagneticModel, MagneticModel); /* Time adjust the coefficients, Equation 19, WMM Technical report */
-		MAG_Geomag(Ellip, CoordSpherical, CoordGeodetic, MagneticModel, &GeoMagneticElements); /* Computes the geoMagnetic field elements and their time change*/
+		MAG_TimelyModifyMagneticModel(UserDate, MagneticModel[0], MagneticModel[0]); /* Time adjust the coefficients, Equation 19, WMM Technical report */
+		MAG_Geomag(Ellip, CoordSpherical, CoordGeodetic, MagneticModel[0], &GeoMagneticElements); /* Computes the geoMagnetic field elements and their time change*/
 	}
 
 //    MAG_FreeMagneticModelMemory(TimedMagneticModel);
-    MAG_FreeMagneticModelMemory(MagneticModel);
+    MAG_FreeMagneticModelMemory(MagneticModel[0]);
 
     return GeoMagneticElements.Decl;
 
@@ -1740,7 +1740,7 @@ CALLS : none
     TimedMagneticModel->nMaxSecVar = MagneticModel->nMaxSecVar;
     a = TimedMagneticModel->nMaxSecVar;
     b = (a * (a + 1) / 2 + a);
-    strcpy(TimedMagneticModel->ModelName, MagneticModel->ModelName);
+//    strcpy(TimedMagneticModel->ModelName, MagneticModel->ModelName);
     for(n = 1; n <= MagneticModel->nMax; n++)
     {
         for(m = 0; m <= n; m++)
