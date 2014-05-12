@@ -260,49 +260,49 @@ const float magDeclinationThreshold = 0.001; // about 100m?
 //- (CLLocationDirection)magneticDeclinationAtLocation:(CLLocation *)here
 - (CLLocationDirection)magneticDeclination
 {
-    CLLocation *here = self.location;
-    
-    Boolean recalc = false;
-    if (here != nil)
-    {
-        if (_magDeclinationLocation != nil)
-        {
-            // calc approx dist between two
-            float c1 = here.coordinate.latitude - _magDeclinationLocation.coordinate.latitude;
-            float c2 = here.coordinate.longitude - _magDeclinationLocation.coordinate.longitude;
-            float dist = sqrtf((c1*c1) + (c2*c2));
-            
-            if (dist > magDeclinationThreshold)
-                recalc = true;
-        }
-        else
-        {
-            recalc = true;
-        }
-    }
-    else
-    {
+//    CLLocation *here = self.location;
+//    
+//    Boolean recalc = false;
+//    if (here != nil)
+//    {
+//        if (_magDeclinationLocation != nil)
+//        {
+//            // calc approx dist between two
+//            float c1 = here.coordinate.latitude - _magDeclinationLocation.coordinate.latitude;
+//            float c2 = here.coordinate.longitude - _magDeclinationLocation.coordinate.longitude;
+//            float dist = sqrtf((c1*c1) + (c2*c2));
+//            
+//            if (dist > magDeclinationThreshold)
+//                recalc = true;
+//        }
+//        else
+//        {
+//            recalc = true;
+//        }
+//    }
+//    else
+//    {
         _magneticDeclination = 0;
-    }
-    
-    if (recalc)
-    {
-        _magDeclinationLocation = [[CLLocation alloc] initWithCoordinate:here.coordinate altitude:here.altitude
-                                                      horizontalAccuracy:here.horizontalAccuracy
-                                                        verticalAccuracy:here.verticalAccuracy
-                                                                  course:here.course
-                                                                   speed:here.speed
-                                                               timestamp:here.timestamp];
-
-        NSDate *currentDate = [NSDate date];
-        NSCalendar* calendar = [NSCalendar currentCalendar];
-        NSDateComponents* components = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:currentDate]; // Get necessary date components
-
-        float fdate =  (float)[components year] + (float)([components month] * 30.0 + [components day]) / 365.0;
-        
-        _magneticDeclination = MAG_CalcDeclination(here.coordinate.latitude, here.coordinate.longitude, fdate);
-    }
-
+//    }
+//    
+//    if (recalc)
+//    {
+//        _magDeclinationLocation = [[CLLocation alloc] initWithCoordinate:here.coordinate altitude:here.altitude
+//                                                      horizontalAccuracy:here.horizontalAccuracy
+//                                                        verticalAccuracy:here.verticalAccuracy
+//                                                                  course:here.course
+//                                                                   speed:here.speed
+//                                                               timestamp:here.timestamp];
+//
+//        NSDate *currentDate = [NSDate date];
+//        NSCalendar* calendar = [NSCalendar currentCalendar];
+//        NSDateComponents* components = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:currentDate]; // Get necessary date components
+//
+//        float fdate =  (float)[components year] + (float)([components month] * 30.0 + [components day]) / 365.0;
+//        
+//        _magneticDeclination = MAG_CalcDeclination(here.coordinate.latitude, here.coordinate.longitude, fdate);
+//    }
+//
     return _magneticDeclination;
 
 }
@@ -806,18 +806,28 @@ const float magDeclinationThreshold = 0.001; // about 100m?
                                                   userInfo:nil
                                                    repeats:YES];
 }
+
+
+static NSDate *firstDate = nil;
+
 - (void) setMeasurementWithLocation:(CLLocation*)location
 {
     _kfMeasure.position.x = location.coordinate.latitude;
     _kfMeasure.position.y = location.coordinate.longitude;
     _kfMeasure.position.z = X_alt;
     
+    if (!firstDate)
+    {
+        firstDate = [[NSDate alloc] init];
+    }
+    
+    NSTimeInterval sinceStart = [firstDate timeIntervalSinceNow];
     
     // Check for state changes in validCurrentLocationData. Toggles to true are caught in updateKFilter and resetKFilter.
     if((location.horizontalAccuracy >=0.0) && (location.horizontalAccuracy <= kalmanFilterMinHorizontalAccuracy) &&
        (location.verticalAccuracy >= 0.0) && (location.verticalAccuracy <= kalmanFilterMinVerticalAccuracy) &&
-       (self.locationManager.heading.headingAccuracy >= 0.0) && (self.locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) /*&&
-       (self.locationManager.heading.trueHeading >= 0)*/)
+       (self.locationManager.heading.headingAccuracy >= 0.0) && (self.locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
+       ((self.locationManager.heading.trueHeading >= 0) || (sinceStart < -15.0)))
     {
         // if kfStarted is false, we haven't started yet, so state changes are handled elsewhere.
         // Otherwise, handle them here.
@@ -847,7 +857,6 @@ const float magDeclinationThreshold = 0.001; // about 100m?
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
     }
-    
 }
 
 

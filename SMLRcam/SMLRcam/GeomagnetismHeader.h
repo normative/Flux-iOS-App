@@ -42,8 +42,8 @@
 #define ATanH(x)	    (0.5 * log((1 + x) / (1 - x)))
 
 
-#define TRUE            ((int)1)
-#define FALSE           ((int)0)
+//#define TRUE            ((int)1)
+//#define FALSE           ((int)0)
 
 
 
