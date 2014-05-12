@@ -13,6 +13,9 @@
 #import "FluxScanViewController.h"
 #import "FluxTransformUtilities.h"
 
+//#import "GeomagnetismLibrary2.h"
+#import "GeomagnetismHeader.h"
+
 
 NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState = @"FluxLocationServicesSingletonDidChangeKalmanFilterState";
 NSString* const FluxLocationServicesSingletonDidCompleteHeadingCalibration = @"FluxLocationServicesSingletonDidCompleteHeadingCalibration";
@@ -25,9 +28,9 @@ NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadin
 
 const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notification
 
-const double kalmanFilterMinHeadingAccuracy = 30.0;
-const double kalmanFilterMinHorizontalAccuracy = 20.0;
-const double kalmanFilterMinVerticalAccuracy = 20.0;
+const double kalmanFilterMinHeadingAccuracy = 45.0;
+const double kalmanFilterMinHorizontalAccuracy = 30.0;
+const double kalmanFilterMinVerticalAccuracy = 30.0;
 
 @implementation FluxLocationServicesSingleton
 
@@ -252,6 +255,58 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     [fluxMotionManager changeHeadingCorrectedMotionMode:headingCorrectedMotion];
 }
 
+
+const float magDeclinationThreshold = 0.001; // about 100m?
+//- (CLLocationDirection)magneticDeclinationAtLocation:(CLLocation *)here
+- (CLLocationDirection)magneticDeclination
+{
+//    CLLocation *here = self.location;
+//    
+//    Boolean recalc = false;
+//    if (here != nil)
+//    {
+//        if (_magDeclinationLocation != nil)
+//        {
+//            // calc approx dist between two
+//            float c1 = here.coordinate.latitude - _magDeclinationLocation.coordinate.latitude;
+//            float c2 = here.coordinate.longitude - _magDeclinationLocation.coordinate.longitude;
+//            float dist = sqrtf((c1*c1) + (c2*c2));
+//            
+//            if (dist > magDeclinationThreshold)
+//                recalc = true;
+//        }
+//        else
+//        {
+//            recalc = true;
+//        }
+//    }
+//    else
+//    {
+        _magneticDeclination = 0;
+//    }
+//    
+//    if (recalc)
+//    {
+//        _magDeclinationLocation = [[CLLocation alloc] initWithCoordinate:here.coordinate altitude:here.altitude
+//                                                      horizontalAccuracy:here.horizontalAccuracy
+//                                                        verticalAccuracy:here.verticalAccuracy
+//                                                                  course:here.course
+//                                                                   speed:here.speed
+//                                                               timestamp:here.timestamp];
+//
+//        NSDate *currentDate = [NSDate date];
+//        NSCalendar* calendar = [NSCalendar currentCalendar];
+//        NSDateComponents* components = [calendar components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:currentDate]; // Get necessary date components
+//
+//        float fdate =  (float)[components year] + (float)([components month] * 30.0 + [components day]) / 365.0;
+//        
+//        _magneticDeclination = MAG_CalcDeclination(here.coordinate.latitude, here.coordinate.longitude, fdate);
+//    }
+//
+    return _magneticDeclination;
+
+}
+
 #pragma mark - LocationManager Delegate Methods
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)newLocations{
     // Grab last entry for now, since we should be getting all of them
@@ -387,9 +442,18 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
     if (newHeading.headingAccuracy < 0)
         return;
     
-    // Use the true heading if it is valid.
-    self.heading = ((newHeading.trueHeading >= 0) ? newHeading.trueHeading : newHeading.magneticHeading);
+    // Use the true heading if it is valid, otherwise figure out the magnetic declination and use that to offset from the magnetic heading.
+    if (newHeading.trueHeading >= 0)
+    {
+        self.heading = newHeading.trueHeading;
+    }
+    else
+    {
+        self.heading = newHeading.magneticHeading + self.magneticDeclination;
+    }
     
+//    NSLog(@"mag heading: %f, true heading: %f, mag dec: %f, self heading: %f, calc heading: %f", newHeading.magneticHeading, newHeading.trueHeading, self.magneticDeclination, self.heading, (newHeading.magneticHeading + self.magneticDeclination));
+
     // Notify observers of updated heading, if we have a valid heading
     // Since heading is a double, assume that we only have a valid heading if we have a location
     if (self.location != nil)
@@ -742,18 +806,28 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
                                                   userInfo:nil
                                                    repeats:YES];
 }
+
+
+static NSDate *firstDate = nil;
+
 - (void) setMeasurementWithLocation:(CLLocation*)location
 {
     _kfMeasure.position.x = location.coordinate.latitude;
     _kfMeasure.position.y = location.coordinate.longitude;
     _kfMeasure.position.z = X_alt;
     
+    if (!firstDate)
+    {
+        firstDate = [[NSDate alloc] init];
+    }
+    
+    NSTimeInterval sinceStart = [firstDate timeIntervalSinceNow];
     
     // Check for state changes in validCurrentLocationData. Toggles to true are caught in updateKFilter and resetKFilter.
     if((location.horizontalAccuracy >=0.0) && (location.horizontalAccuracy <= kalmanFilterMinHorizontalAccuracy) &&
        (location.verticalAccuracy >= 0.0) && (location.verticalAccuracy <= kalmanFilterMinVerticalAccuracy) &&
        (self.locationManager.heading.headingAccuracy >= 0.0) && (self.locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
-       (self.locationManager.heading.trueHeading >= 0))
+       ((self.locationManager.heading.trueHeading >= 0) || (sinceStart < -15.0)))
     {
         // if kfStarted is false, we haven't started yet, so state changes are handled elsewhere.
         // Otherwise, handle them here.
@@ -762,6 +836,8 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
             // This is the case where it was already initialized, but the location data temporarily became bad.
             // Need to notify state change now that location data is good again.
             _validCurrentLocationData = YES;
+            DDLogVerbose(@"#Event: KALMAN reenabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f, lm heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading, self.heading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
         _validCurrentLocationData = YES;
@@ -776,10 +852,11 @@ const double kalmanFilterMinVerticalAccuracy = 20.0;
             _validCurrentLocationData = NO;
 
             // Previous value was valid. Signal state change.
+            DDLogVerbose(@"#Event: KALMAN disabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f, lm heading: %f",
+                         location.horizontalAccuracy, location.verticalAccuracy, self.locationManager.heading.headingAccuracy, self.locationManager.heading.trueHeading, self.heading);
             [[NSNotificationCenter defaultCenter] postNotificationName:FluxLocationServicesSingletonDidChangeKalmanFilterState object:self];
         }
     }
-    
 }
 
 

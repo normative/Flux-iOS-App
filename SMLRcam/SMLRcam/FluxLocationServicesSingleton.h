@@ -69,6 +69,9 @@ extern NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibratio
     int iterations_alt;
     bool   kfAltStarted;
     NSTimer*updateTimer;
+    
+    CLLocation *_magDeclinationLocation;
+
 }
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
@@ -87,6 +90,8 @@ extern NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibratio
 @property (nonatomic) kfDEBUG kfdebug;
 
 @property (nonatomic) int teleportLocationIndex;
+
+@property (nonatomic) CLLocationDirection magneticDeclination;
 
 + (id)sharedManager;
 
