@@ -1,4 +1,24 @@
 Release Notes:
+
+******************************************
+
+V0.26 B01
+
+Released: 2014-05-06 10:45:00
+
+Release Notes:
+- add delay before calculating magnetic offset if trueHeading is not availble to ensure heading is accurate
+
+******************************************
+
+V0.25 B03
+
+Released: 2014-05-11 09:30:00
+
+Release Notes:
+- calculate and use magnetic declination to determine trueNorth heading when not available from system
+- fixes to image tapping reliability
+
 ******************************************
 
 V0.25 B01
