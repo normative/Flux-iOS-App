@@ -1341,36 +1341,51 @@
                 
                 [request setContactListReady:^(NSArray *contacts, FluxDataRequest *completedRequest){
                     //do something with the contacts - an array of FluxContacts
-                    NSMutableIndexSet*indexSet = [[NSMutableIndexSet alloc]init];
-                    for (int i = 0; i<contacts.count; i++) {
-                        NSUInteger index = [self.importUserArray indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-                            FluxContactObject*contactObj = (FluxContactObject*)obj;
-                            return ([(NSString*)[contactObj.emails componentsJoinedByString:@"-"]rangeOfString:[(FluxContactObject*)[contacts objectAtIndex:i]aliasName]].location != NSNotFound);
-                        }];
-                        if (index != NSNotFound) {
-                            [indexSet addIndex:index];
+                    if (contacts.count > 0) {
+                        NSMutableArray*mutArr = [[NSMutableArray alloc]init];
+                        for (int i = 0; i< contacts.count; i++) {
+                            if ([(FluxContactObject*)[contacts objectAtIndex:i]userID]) {
+                                [mutArr addObject:(FluxContactObject*)[contacts objectAtIndex:i]];
+                                continue;
+                            }
+                            break;
+                        }
+                        //if there wwere any returned flux users, we have to find their emails
+                        if (mutArr.count > 0) {
+                            
+                            NSMutableIndexSet*indexSet = [[NSMutableIndexSet alloc]init];
+                            for (int i = 0; i<mutArr.count; i++) {
+                                for (int j =0; j<self.importUserArray.count; j++) {
+                                    if ([[(FluxContactObject*)[self.importUserArray objectAtIndex:j]emails] containsObject:[[mutArr objectAtIndex:i]email]]) {
+                                        [self.importFluxUserArray addObject:[mutArr objectAtIndex:i]];
+                                        [indexSet addIndex:j];
+                                        [self.importUserArray replaceObjectAtIndex:j withObject:[mutArr objectAtIndex:i]];
+                                    }
+                                }
+                            }
+                            
+                            //set images
+                            [self.importFluxUserImagesArray removeAllObjects];
+                            for (int i = 0; i<self.importFluxUserArray.count; i++) {
+                                [self.importFluxUserImagesArray addObject:[NSNumber numberWithBool:NO]];
+                            }
+                            
+                            //remove duplicate indexes
+                            [self.importUserArray removeObjectsAtIndexes:indexSet];
+                            [self.importUserImagesArray removeObjectsAtIndexes:indexSet];
+
+                        }
+                        
+                        [self.view setUserInteractionEnabled:YES];
+                        [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+                        
+                        //should never hit because we check before it's sent up
+                        if (self.importUserArray.count == 0 && self.importFluxUserArray.count == 0) {
+                            NSError*e = [[NSError alloc]init];
+                            [self showEmptyViewForError:e];
                         }
                     }
-                    
-                    
-                    if (indexSet.count > 0) {
-                        self.importFluxUserArray = [contacts mutableCopy];
-                        [self.importFluxUserImagesArray removeAllObjects];
-                        for (int i = 0; i<self.importFluxUserArray.count; i++) {
-                            [self.importFluxUserImagesArray addObject:[NSNumber numberWithBool:NO]];
-                        }
-                        [self.importUserArray removeObjectsAtIndexes:indexSet];
-                        [self.importUserImagesArray removeObjectsAtIndexes:indexSet];
-                    }
-                    
-                    [self.view setUserInteractionEnabled:YES];
-                    [self.importUserTableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-                    
-                    //should never hit because we check before it's sent up
-                    if (self.importUserArray.count == 0 && self.importFluxUserArray.count == 0) {
-                        NSError*e = [[NSError alloc]init];
-                        [self showEmptyViewForError:e];
-                    }
+
                 }];
                 
                 
