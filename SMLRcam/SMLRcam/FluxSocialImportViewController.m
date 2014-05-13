@@ -1245,32 +1245,6 @@
 
 #pragma mark - address book loading
 
-
-//
-//    // Request authorization to Address Book
-//    ABAddressBookRef addressBookRef = ABAddressBookCreateWithOptions(NULL, NULL);
-//
-//    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusNotDetermined) {
-//        ABAddressBookRequestAccessWithCompletion(addressBookRef, ^(bool granted, CFErrorRef error) {
-//            if (granted) {
-//                [self collectContacts];
-//
-//                // First time access has been granted
-//            } else {
-//                // User denied access
-//                // Display an alert telling user the contact could not be added
-//            }
-//        });
-//    }
-//    else if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
-//        // The user has previously given access
-//        [self collectContacts];
-//    }
-//    else {
-//        // The user has previously denied access
-//        // Send an alert telling user to change privacy setting in settings app
-//    }
-
 -(void)collectContacts
 {
     [ProgressHUD show:@"Retrieving Contacts"];
@@ -1281,10 +1255,26 @@
     
     ABAddressBookRequestAccessWithCompletion(addressBook, ^(bool granted, CFErrorRef error) {
         if (granted) {
-            NSArray *thePeople = (__bridge_transfer NSArray*)ABAddressBookCopyArrayOfAllPeople(addressBook);
-            for (int i = 0; i<thePeople.count; i++) {
+            CFArrayRef thePeople = ABAddressBookCopyArrayOfAllPeople(addressBook);
+            CFMutableArrayRef peopleMutable = CFArrayCreateMutableCopy(
+                                                                       kCFAllocatorDefault,
+                                                                       CFArrayGetCount(thePeople),
+                                                                       thePeople
+                                                                       );
+            
+            CFArraySortValues(
+                              peopleMutable,
+                              CFRangeMake(0, CFArrayGetCount(peopleMutable)),
+                              (CFComparatorFunction) ABPersonComparePeopleByName,
+                              (void*) ABPersonGetSortOrdering()
+                              );
+
+            NSArray *peopleArray = CFBridgingRelease(peopleMutable);
+            
+            
+            for (int i = 0; i<peopleArray.count; i++) {
                 // Get all the info if theres an email (we can do something with it)
-                ABRecordRef ref = CFArrayGetValueAtIndex((__bridge CFArrayRef)(thePeople), i);
+                ABRecordRef ref = CFArrayGetValueAtIndex((__bridge CFArrayRef)(peopleArray), i);
                 ABMultiValueRef emailMultiValue = ABRecordCopyValue(ref, kABPersonEmailProperty);
                 NSArray *emailAddresses = (__bridge NSArray *)ABMultiValueCopyArrayOfAllValues(emailMultiValue);
                 
@@ -1336,6 +1326,11 @@
                     [self.importUserArray addObject:contact];
                 }
             }
+            
+            //release core foundation objects
+            CFRelease(addressBook);
+            CFRelease(thePeople);
+            
             if (self.importUserArray.count > 0) {
                 FluxDataRequest*request = [[FluxDataRequest alloc]init];
                 
@@ -1352,17 +1347,20 @@
                         }
                         //if there wwere any returned flux users, we have to find their emails
                         if (mutArr.count > 0) {
-                            
                             NSMutableIndexSet*indexSet = [[NSMutableIndexSet alloc]init];
                             for (int i = 0; i<mutArr.count; i++) {
                                 for (int j =0; j<self.importUserArray.count; j++) {
-                                    if ([[(FluxContactObject*)[self.importUserArray objectAtIndex:j]emails] containsObject:[[mutArr objectAtIndex:i]email]]) {
+                                    //if we found the returned flux user within our contact list, store the index.
+                                    if ([[(FluxContactObject*)[self.importUserArray objectAtIndex:j]emails] containsObject:[[mutArr objectAtIndex:i]aliasName]]) {
+                                        [[mutArr objectAtIndex:i] setDisplayName:[[self.importUserArray objectAtIndex:j]aliasName]];
+                                        
                                         [self.importFluxUserArray addObject:[mutArr objectAtIndex:i]];
                                         [indexSet addIndex:j];
-                                        [self.importUserArray replaceObjectAtIndex:j withObject:[mutArr objectAtIndex:i]];
+                                        break;
                                     }
                                 }
                             }
+                            
                             
                             //set images
                             [self.importFluxUserImagesArray removeAllObjects];
