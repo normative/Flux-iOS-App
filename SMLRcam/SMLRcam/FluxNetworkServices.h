@@ -106,6 +106,8 @@ extern NSString* const FluxSecureServerURL;
            andRequestID:(FluxRequestID *)requestID;
 - (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didReturnContactList:(NSArray *)contacts
            andRequestID:(FluxRequestID *)requestID;
+- (void)NetworkServices:(FluxNetworkServices *)aNetworkServices didInviteUserWithEmail:(NSString *)email andName:(NSString*)name
+           andRequestID:(FluxRequestID *)requestID;
 
 
 //fil†ers
@@ -330,6 +332,11 @@ return's a profile image for a given userID and size
  returns the list of contacts extracted from the service_id service, cross referenced against existing Flux users via aliases
  **/
 - (void)requestContactsFromService:(int)serviceID withCredentials:(NSDictionary *)credentials withRequestID:(NSUUID *)requestID;
+
+/**
+ sends an email inite to the supplied email
+ **/
+- (void)inviteUserForSerivce:(int)serviceID toEmail:(NSString*)emailString andName:(NSString*)name withRequestID:(NSUUID*)requestID;
 
 /**
  POSTs a flag to the specified image

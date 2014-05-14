@@ -1669,6 +1669,28 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
      }];
 }
 
+- (void)inviteUserForSerivce:(int)serviceID toEmail:(NSString *)emailString andName:(NSString *)name withRequestID:(NSUUID *)requestID{
+    NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
+    [[RKObjectManager sharedManager] putObject:nil path:[NSString stringWithFormat:@"/users/invitetoflux?auth_token=%@&serviceid=%i&email_to=%@", token,serviceID,emailString] parameters:nil
+            success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+     {
+         // do nothing
+         NSLog(@"Invite email sent to %@ successfully",emailString);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didInviteUserWithEmail:andName:andRequestID:)]) {
+             [delegate NetworkServices:self didInviteUserWithEmail:emailString andName:name andRequestID:requestID];
+         }
+     }
+            failure:^(RKObjectRequestOperation *operation, NSError *error)
+     {
+         
+         NSLog(@"Invite email to %@ failed with error: %@", emailString,[error localizedDescription]);
+         if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])
+         {
+             [delegate NetworkServices:self didFailWithError:error andNaturalString:[self readableStringFromError:error] andRequestID:requestID];
+         }
+     }];
+}
+
 
 
 
@@ -1716,6 +1738,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     {
         case 1: // contact list
             // treat credentials as a list of email addresses and add them in as one key
+            [fullurl appendString:[NSString stringWithFormat:@"&contactlist=%@",[[credentials objectForKey:@"emails"]stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
             break;
         case 2: // Twitter
         case 3: // Facebook
@@ -1739,7 +1762,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
              [delegate NetworkServices:self didReturnContactList:result.array andRequestID:requestID];
          }
      }
-                                     failure:^(RKObjectRequestOperation *operation, NSError *error)
+            failure:^(RKObjectRequestOperation *operation, NSError *error)
      {
          NSLog(@"Contact request Failed with error: %@", [error localizedDescription]);
          if ([delegate respondsToSelector:@selector(NetworkServices:didFailWithError:andNaturalString:andRequestID:)])

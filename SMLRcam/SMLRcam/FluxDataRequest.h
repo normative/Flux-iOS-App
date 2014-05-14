@@ -50,7 +50,8 @@ typedef enum FluxDataRequestType : NSUInteger {
     image_matches_request = 31,
     retry_image_uploads_request = 32,
     send_password_reset_request = 33,
-    updateImageCaption_request = 34
+    updateImageCaption_request = 34,
+    inviteUsers_request = 35
 
     
 } FluxDataRequestType;
@@ -100,6 +101,7 @@ typedef void (^SendFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^AcceptFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^IgnoreFollowerRequestUserReadyBlock)(int, FluxDataRequest *);
 typedef void (^ContactListReadyBlock)(NSArray *, FluxDataRequest *);
+typedef void (^InviteUserRequestBlock)(NSString *,NSString*, FluxDataRequest *);
 
 
 //other
@@ -235,6 +237,8 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 @property (strong) IgnoreFollowerRequestUserReadyBlock ignoreFollowerRequestReady;
 // Callback for successful contact list returned
 @property (strong) ContactListReadyBlock contactListReady;
+// Callback for successful email invite sent
+@property (strong) InviteUserRequestBlock inviteRequestComplete;
 
 
 // Callback for list of tags retrieved
@@ -292,6 +296,7 @@ typedef void (^ErrorBlock)(NSError *,NSString*, FluxDataRequest *);
 - (void) whenIgnoreFollowerRequestReady:(int)ignoreUserID withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 - (void) whenContactListReady:(NSArray *)contacts withDataRequest:(FluxDataRequest *)completeDataRequest;
+- (void) whenInviteRequestCompleteForName:(NSString*)name andEmail:(NSString*)email withDataRequest:(FluxDataRequest *)completeDataRequest;
 
 
 //Filters

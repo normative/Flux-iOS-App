@@ -51,8 +51,8 @@
     resultsArray = [[NSMutableArray alloc]init];
     resultsImageArray = [[NSMutableArray alloc]init];
     
-//    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", @"Contacts", nil];
-    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", nil];
+    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", @"Contacts", nil];
+//    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", nil];
     
     searchState = searched;
     

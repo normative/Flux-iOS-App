@@ -72,8 +72,9 @@
             [self.socialStatusLabel setText:[NSString stringWithFormat:@"%@",contactObject.displayName]];
         }
         else{
-            [self.titleLabel setText:contactObject.username];
+            [self.titleLabel setText:[@"@" stringByAppendingString:contactObject.username]];
             [self.socialTypeImageView setImage:[UIImage imageNamed:@"import_contact"]];
+            [self.socialStatusLabel setText:[NSString stringWithFormat:@"%@",contactObject.displayName]];
         }
         
         if (contactObject.amFollowerFlag > 0) {

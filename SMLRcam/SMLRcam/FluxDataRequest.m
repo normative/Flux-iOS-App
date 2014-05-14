@@ -260,6 +260,12 @@
     }
 }
 
+- (void)whenInviteRequestCompleteForName:(NSString *)name andEmail:(NSString *)email withDataRequest:(FluxDataRequest *)completeDataRequest{
+    if (self.inviteRequestComplete) {
+        self.inviteRequestComplete(name, email, completeDataRequest);
+    }
+}
+
 #pragma mark - Filters
 
 - (void) whenTagsReady:(NSArray *)tagObjects withDataRequest:(FluxDataRequest *)completeDataRequest
