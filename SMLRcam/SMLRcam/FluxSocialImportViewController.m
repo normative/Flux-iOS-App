@@ -1348,24 +1348,27 @@
                         //if there wwere any returned flux users, we have to find their emails
                         if (mutArr.count > 0) {
                             NSMutableIndexSet*indexSet = [[NSMutableIndexSet alloc]init];
+
                             for (int i = 0; i<mutArr.count; i++) {
                                 for (int j =0; j<self.importUserArray.count; j++) {
                                     //if we found the returned flux user within our contact list, store the index.
                                     if ([[(FluxContactObject*)[self.importUserArray objectAtIndex:j]emails] containsObject:[[mutArr objectAtIndex:i]aliasName]]) {
                                         [[mutArr objectAtIndex:i] setDisplayName:[[self.importUserArray objectAtIndex:j]aliasName]];
                                         
+                                        
                                         [self.importFluxUserArray addObject:[mutArr objectAtIndex:i]];
+                                        
+                                        
+                                        if ([self.importUserImagesArray objectAtIndex:j]) {
+                                            if ([[self.importUserImagesArray objectAtIndex:j] isKindOfClass:[UIImage class]]) {
+                                                [self.importFluxUserImagesArray addObject:[self.importUserImagesArray objectAtIndex:j]];
+                                            }
+                                        }
+                                        
                                         [indexSet addIndex:j];
                                         break;
                                     }
                                 }
-                            }
-                            
-                            
-                            //set images
-                            [self.importFluxUserImagesArray removeAllObjects];
-                            for (int i = 0; i<self.importFluxUserArray.count; i++) {
-                                [self.importFluxUserImagesArray addObject:[NSNumber numberWithBool:NO]];
                             }
                             
                             //remove duplicate indexes
