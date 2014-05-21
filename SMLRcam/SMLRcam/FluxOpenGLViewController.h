@@ -31,6 +31,7 @@
     GLKMatrix4 _modelViewProjectionMatrixInOrder;
     GLKMatrix4 _modelViewProjectionMatrix;
     GLKMatrix4 _tBiasMVP[MAX_TEXTURES];
+    tapParameters _tapParams[MAX_TEXTURES];
     float _projectionDistance;
     int number_textures;
     

@@ -174,6 +174,7 @@ void init_camera_model()
 
 //	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
 	float _fov = 2.0 * atan2(cm.pixelSizeScaleToRaw * cm.yPixels / 2.0, cm.focalLength); //radians
+    NSLog(@"pixelSizeScaleToRaw %f", cm.pixelSizeScaleToRaw);
     fprintf(stderr,"FOV = %.4f degrees\n", _fov * 180.0 / M_PI);
     float aspect = cm.xPixels / cm.yPixels;
     camera_perspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
@@ -759,6 +760,22 @@ void init(){
     return 0;
 }
 
+-(int) isImageTapped:(tapParameters)tp withVertex:(GLKVector3) vertex
+{
+    int valid = 0;
+    GLKVector3 opticalAxis = GLKVector3Subtract(tp.at, tp.origin);
+    GLKVector3 tapVector = GLKVector3Subtract(vertex, tp.origin);
+    
+    float dotproduct = GLKVector3DotProduct(opticalAxis, tapVector);
+    float magnitude1 = GLKVector3Length(opticalAxis);
+    float magnitude2 = GLKVector3Length(tapVector);
+    
+    float angle = acosf (dotproduct/(magnitude1 *magnitude2));
+    if(angle <= tp.fov)
+        valid =1;
+    return valid;
+}
+
 -(int) isImageTappedAtVertex:(GLKVector3)vertex withMVP:(GLKMatrix4)tMVP
 {
     int valid=0;
@@ -850,7 +867,8 @@ void init(){
     for (FluxTextureToImageMapElement *tel in [self.textureMap subarrayWithRange:NSMakeRange(0, [self.renderList count])])
     {
         int element = tel.textureIndex;
-        tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
+       // tapped = [self isImageTappedAtVertex:vertex withMVP:_tBiasMVP[element]];
+        tapped = [self isImageTapped:_tapParams[element] withVertex:vertex];
         if (tapped == 1)
         {
             touchedObject = [self.fluxDisplayManager getRenderElementForKey:tel.localID].imageMetadata;
@@ -1480,7 +1498,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 }
 
--(GLKMatrix4) computeImageCameraPerspectivewithDevicePlatform:(FluxDevicePlatform) platform
+-(GLKMatrix4) computeImageCameraPerspectivewithDevicePlatform:(FluxDevicePlatform) platform andFov:(float *) camfov
 {
     GLKMatrix4 icameraPerspective;
     FluxCameraModel *cam = [FluxDeviceInfoSingleton cameraModelForPlatform:platform];
@@ -1490,11 +1508,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // float _fov = 2 * atan2(cam.pixelSize * cam.xPixels / 2.0, cam.focalLength); //radians
     
     // thinking this is more what it should be given the relative capture areas of the raw cam vs HD video
-    float _fov = 2 * atan2(cam.pixelSizeScaleToRaw * cam.xPixels /2.0, cam.focalLength   ); //radians
+    float fov = 2.0 * atan2(cam.pixelSizeScaleToRaw * cam.xPixels /2.0, cam.focalLength   ); //radians
+   // (*camfov) =atan2((1.414 * cam.xPixels) /2.0, cam.focalLength   );
     
+    (*camfov) =atan2((cam.pixelSize * cam.xPixels) /2.0, cam.focalLength   );
    // float _fov = globalFOV;
     float aspect = 1.0; //square image
-    icameraPerspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
+    icameraPerspective = GLKMatrix4MakePerspective(fov, aspect, 0.001f, 50.0f);
     return icameraPerspective;
 }
 
@@ -1504,6 +1524,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     GLKVector3 planeNormal;
     GLKMatrix4 tMVP;
     GLKMatrix4 icameraPerspective;
+    float fov;
     float distance = _projectionDistance;
     FluxScanImageObject *scanimageobject;
     sensorPose imagehomographyPose;
@@ -1543,10 +1564,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                                                vpimage.up.x, vpimage.up.y, vpimage.up.z);
             
           // tViewMatrix = GLKMatrix4Multiply( tViewMatrix, scaleMatrix);
-            icameraPerspective = [self computeImageCameraPerspectivewithDevicePlatform:scanimageobject.devicePlatform];
+            icameraPerspective = [self computeImageCameraPerspectivewithDevicePlatform:scanimageobject.devicePlatform andFov:&fov];
             tMVP = GLKMatrix4Multiply(icameraPerspective,tViewMatrix);
             
             _tBiasMVP[idx] = GLKMatrix4Multiply(biasMatrix,tMVP);
+            _tapParams[idx].origin = vpimage.origin;
+            _tapParams[idx].at = vpimage.at;
+            _tapParams[idx].fov = fov;
         }
         else {
             // no ire
