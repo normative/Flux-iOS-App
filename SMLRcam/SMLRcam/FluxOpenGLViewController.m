@@ -174,6 +174,7 @@ void init_camera_model()
 
 //	float _fov = 2.0 * atan2(cm.pixelSize * 1920.0 / 2.0, cm.focalLength); //radians
 	float _fov = 2.0 * atan2(cm.pixelSizeScaleToRaw * cm.yPixels / 2.0, cm.focalLength); //radians
+    NSLog(@"pixelSizeScaleToRaw %f", cm.pixelSizeScaleToRaw);
     fprintf(stderr,"FOV = %.4f degrees\n", _fov * 180.0 / M_PI);
     float aspect = cm.xPixels / cm.yPixels;
     camera_perspective = GLKMatrix4MakePerspective(_fov, aspect, 0.001f, 50.0f);
@@ -1508,7 +1509,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // thinking this is more what it should be given the relative capture areas of the raw cam vs HD video
     float fov = 2.0 * atan2(cam.pixelSizeScaleToRaw * cam.xPixels /2.0, cam.focalLength   ); //radians
-    (*camfov) = fov/2.0;
+   // (*camfov) =atan2((1.414 * cam.xPixels) /2.0, cam.focalLength   );
+    
+    (*camfov) =atan2((cam.pixelSize * cam.xPixels) /2.0, cam.focalLength   );
    // float _fov = globalFOV;
     float aspect = 1.0; //square image
     icameraPerspective = GLKMatrix4MakePerspective(fov, aspect, 0.001f, 50.0f);
