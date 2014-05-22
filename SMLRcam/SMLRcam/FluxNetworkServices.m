@@ -25,7 +25,7 @@
 #define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
 
 #define _AWSSecureProductionServerURL  @"https://production.flux.smlr.is/"
-#define _AWSSecureStagingServerURL     @"https://staging.flux.smlr.is/"
+//#define _AWSSecureStagingServerURL     @"https://staging.flux.smlr.is/"
 
 NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSStagingServerURL    = _AWSStagingServerURL;
@@ -33,7 +33,8 @@ NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
 
 NSString* const AWSSecureProductionServerURL = _AWSSecureProductionServerURL;
-NSString* const AWSSecureStagingServerURL    = _AWSSecureStagingServerURL;
+//NSString* const AWSSecureStagingServerURL    = _AWSSecureStagingServerURL;
+NSString* const AWSSecureStagingServerURL    = _AWSStagingServerURL;
 NSString* const AWSSecureTestServerURL       = _AWSTestServerURL;
 NSString* const DSDSecureLocalTestServerURL  = _DSDLocalTestServerURL;
 
