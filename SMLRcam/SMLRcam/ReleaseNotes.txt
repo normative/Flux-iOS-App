@@ -1,4 +1,14 @@
 Release Notes:
+******************************************
+
+V0.26 B02
+
+Released: 2014-05-22 9:15:00
+
+Release Notes:
+- image tap updates
+- remove secure staging URL (certificate expired)
+- release email-based social functionality
 
 ******************************************
 
