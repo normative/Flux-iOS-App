@@ -41,9 +41,11 @@
     [self setSelectedBackgroundView:bgColorView];
     [self.cellButton setHidden:NO];
     
+    self.cellButton.showsTouchWhenHighlighted = YES;
+    
     [self.socialPartnerLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.socialPartnerLabel.font.pointSize]];
     [self.socialDescriptionLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.socialDescriptionLabel.font.pointSize]];
-    [self.cellButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:self.cellButton.titleLabel.font.pointSize]];
+    [self.cellButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.cellButton.titleLabel.font.pointSize]];
 }
 
 @end

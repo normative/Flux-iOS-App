@@ -422,17 +422,7 @@ FluxSettingsSection: NSUInteger {
                                  }];
         }
         else{
-            [UIActionSheet showInView:self.view
-                            withTitle:@"Facebook"
-                    cancelButtonTitle:@"Cancel"
-               destructiveButtonTitle:nil
-                    otherButtonTitles:@[@"Connect"]
-                             tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                                 if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                     //link facebook
-                                     [self linkFacebook];
-                                 }
-                             }];
+            [self linkFacebook];
         }
     }
     else{
@@ -451,17 +441,7 @@ FluxSettingsSection: NSUInteger {
                                  }];
         }
         else{
-            [UIActionSheet showInView:self.view
-                            withTitle:@"Twitter"
-                    cancelButtonTitle:@"Cancel"
-               destructiveButtonTitle:nil
-                    otherButtonTitles:@[@"Connect"]
-                             tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                                 if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                     //link twitter
-                                     [self linkTwitterAccount];
-                                 }
-                             }];
+            [self linkTwitterAccount];
         }
     }
 }
