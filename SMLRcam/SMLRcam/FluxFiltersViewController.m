@@ -316,7 +316,7 @@
         
         //set the cell properties to the array elements declared above
         [cell setFilterType:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]filterType]];
-        [cell.checkbox setCheckedImage:[UIImage imageNamed:@"filtersChecked"] andUncheckedImg:[UIImage imageNamed:@"checkbox_unchecked"]];
+        [cell.checkbox setCheckedImage:[UIImage imageNamed:@"checkbox_checked"] andUncheckedImg:[UIImage imageNamed:@"checkbox_unchecked"]];
         [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]isChecked]];
         
         return cell;
@@ -344,7 +344,7 @@
         [cell setTextTitle:[NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]tagText]]];
         [cell.checkbox setDelegate:cell];
         [cell setDelegate:self];
-        [cell.checkbox setCheckedImage:[UIImage imageNamed:@"filtersChecked"] andUncheckedImg:[UIImage imageNamed:@"checkbox_unchecked"]];
+        [cell.checkbox setCheckedImage:[UIImage imageNamed:@"checkbox_checked"] andUncheckedImg:[UIImage imageNamed:@"checkbox_unchecked"]];
         [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]isChecked]];
         
         return cell;
