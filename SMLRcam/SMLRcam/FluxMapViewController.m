@@ -233,6 +233,9 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 {
     [fluxMapView setShowsUserLocation:NO];
     [fluxMapView setPitchEnabled:NO];
+    [fluxMapView setShowsPointsOfInterest:NO];
+    [fluxMapView setShowsBuildings:NO];
+    
     MKCoordinateRegion viewRegion = MKCoordinateRegionMakeWithDistance(self.locationManager.location.coordinate, 150, 150);
     MKCoordinateRegion adjustedRegion = [fluxMapView regionThatFits:viewRegion];
     [fluxMapView setRegion:adjustedRegion animated:YES];
