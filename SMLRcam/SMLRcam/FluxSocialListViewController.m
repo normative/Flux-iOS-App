@@ -153,10 +153,6 @@
     [lonelyView setCenter:followingTableView.center];
     [noImagesLabel setCenter:CGPointMake(lonelyView.frame.size.width/2, lonelyView.frame.size.height/2-100)];
     
-    NSLog(@"%@",NSStringFromCGRect(lonelyView.frame));
-    
-    NSLog(@"%@",NSStringFromCGRect(noImagesLabel.frame));
-    
     [noImagesLabel setFont:[UIFont fontWithName:@"Akkurat" size:15.0]];
     [noImagesLabel setTextColor:[UIColor colorWithWhite:1.0 alpha:0.6]];
     

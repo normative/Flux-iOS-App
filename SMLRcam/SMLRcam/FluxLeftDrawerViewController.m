@@ -214,14 +214,16 @@
     if (user) {
         NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:user.imageCount], @"My Photos" , nil];
         NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Network" , nil];
+        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Edit Profile" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, /*tmp3, tmp4,*/ tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp4, tmp5, nil];
     }
     else{
         NSMutableDictionary*tmp1 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Photos" , nil];
         NSMutableDictionary*tmp2 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"My Network" , nil];
+        NSMutableDictionary*tmp4 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Edit Profile" , nil];
         NSMutableDictionary*tmp5 = [[NSMutableDictionary alloc]initWithObjectsAndKeys:[NSNumber numberWithInt:0], @"Settings" , nil];
-        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, /*tmp3, tmp4,*/ tmp5, nil];
+        newTableArray = [[NSMutableArray alloc]initWithObjects:tmp1, tmp2, tmp4, tmp5, nil];
     }
     return newTableArray;
 }
@@ -290,8 +292,7 @@
         }
         else{
             [profileCell setBioText:bio];
-        }        
-
+        }
         if ([defaults objectForKey:@"profileImage"]) {
             
             NSData *pngData = [NSData dataWithContentsOfFile:[defaults objectForKey:@"profileImage"]];
@@ -316,6 +317,12 @@
     }
     //settings
     else if (indexPath.row == tableViewArray.count){
+        cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
+        cell.countLabel.text = @"";
+        [cell.titleLabel setEnabled:YES];
+    }
+    //edit profile
+    else if(indexPath.row == tableViewArray.count-1){
         cell.titleLabel.text = (NSString*)[[[tableViewArray objectAtIndex:indexPath.row-1]allKeys]firstObject];
         cell.countLabel.text = @"";
         [cell.titleLabel setEnabled:YES];
@@ -368,13 +375,13 @@
             [self performSegueWithIdentifier:@"pushSocialList" sender:nil];
             break;
         case 3:
-            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+            [self performSegueWithIdentifier:@"pushEditProfileSegue" sender:nil];
 //            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:followerMode]];
             break;
-//        case 4:
-//            [tableView deselectRowAtIndexPath:indexPath animated:NO];
-////            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:friendMode]];
-//            break;
+        case 4:
+            [self performSegueWithIdentifier:@"pushSettingsSegue" sender:nil];
+//            [self performSegueWithIdentifier:@"pushSocialList" sender:[NSNumber numberWithInt:friendMode]];
+            break;
 //        case 5:
 //            
 //            break;

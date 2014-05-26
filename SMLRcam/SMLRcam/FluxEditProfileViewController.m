@@ -45,7 +45,7 @@
             [profileImageButton setBackgroundImage:[UIImage imageNamed:@"emptyProfileImage_big"] forState:UIControlStateNormal];
         }
         
-        [usernameLabel setText:userObject.username];
+        [usernameLabel setText:[NSString stringWithFormat:@"@%@",userObject.username]];
         if (userObject.bio) {
             [bioTextField setText:userObject.bio];
         }
@@ -69,13 +69,15 @@
     editedDictionary = [[NSMutableDictionary alloc]init];
     
     UILabel *editLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, profileImageButton.frame.size.height-25, profileImageButton.frame.size.width, 25)];
-    editLabel.textColor = [UIColor colorWithRed:43/255.0 green:52/255.0 blue:58/255.0 alpha:0.7];
+    editLabel.textColor = [UIColor colorWithWhite:0.9 alpha:1.0];
     [editLabel setTextAlignment:NSTextAlignmentCenter];
     [editLabel setText:@"Edit"];
     editLabel.font = [UIFont fontWithName:@"Akkurat" size:13.0];
-    [editLabel setBackgroundColor:[UIColor lightGrayColor]];
-    [editLabel setAlpha:0.5];
+    [editLabel setBackgroundColor:[UIColor colorWithWhite:0.0 alpha:0.9]];
+    [editLabel setAlpha:0.65];
     [profileImageButton addSubview:editLabel];
+    
+    usernameLabel.font = [UIFont fontWithName:@"Akkurat" size:usernameLabel.font.pointSize];
     
     profileImageButton.layer.cornerRadius = profileImageButton.frame.size.height/2;
     profileImageButton.clipsToBounds = YES;
@@ -84,6 +86,7 @@
     //[bioTextField setCharCountVisible:NO];
     [bioTextField setMaxCharCount:90];
     [bioTextField setTheDelegate:self];
+    [bioTextField setTintColor:[UIColor whiteColor]];
 
 
     CALayer *roundBorderLayer = [CALayer layer];
