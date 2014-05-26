@@ -68,7 +68,7 @@
     [userSearchBar setTintColor: [UIColor clearColor]];
     [userSearchBar setBackgroundImage:[UIImage imageNamed:@"nothing"]];
     [userSearchBar setSearchFieldBackgroundPositionAdjustment:UIOffsetMake(0, 1)];
-    [userSearchBar setSearchTextPositionAdjustment:UIOffsetMake(0, 2)];
+    [userSearchBar setSearchTextPositionAdjustment:UIOffsetMake(0, 1)];
     [userSearchBar setSearchBarStyle:UISearchBarStyleProminent];
     [userSearchBar setDelegate:self];
     

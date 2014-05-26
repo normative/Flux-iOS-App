@@ -41,7 +41,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)didUpdateNearbyImageList:(NSNotification *)notification{
     [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.nearbyListCount] forState:UIControlStateNormal];
     if (firstContent && self.fluxDisplayManager.nearbyListCount > 5) {
-        NSLog(@"FIRST TIME");
         firstContent = NO;
         [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount reverseAnimated:YES];
         
