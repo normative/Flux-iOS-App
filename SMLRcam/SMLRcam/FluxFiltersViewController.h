@@ -16,7 +16,6 @@
 #import "FluxDataFilter.h"
 
 #import "GAITrackedViewController.h"
-#import "FluxFilterCountTableViewCell.h"
 
 @class FluxFiltersViewController;
 @protocol FiltersTableViewDelegate <NSObject>
@@ -25,17 +24,15 @@
 @end
 
 
-@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate,FluxFilterCountTableViewCellDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
+@interface FluxFiltersViewController : GAITrackedViewController<UITableViewDataSource, UITableViewDelegate, SocialFilterTableViewCellDelegate, CheckboxTableViewCellDelegate>{
     
     NSMutableArray *rightDrawerTableViewArray;
     NSArray *socialFiltersArray;
     NSMutableArray *topTagsArray;
     NSMutableArray *selectedTags;
-    BOOL isFetchingCount;
     
     UIImage*bgImage;
     
-    UILabel*imageCountLabel;
     UIView*imageCountActivityIndicatorView;
     NSTimer*newImageCountTimer;
     int startImageCount;
@@ -56,6 +53,9 @@
 
 @property (strong, nonatomic) CLLocation *location;
 
+@property (weak, nonatomic) IBOutlet UILabel *imageCountHeaderLabel;
+@property (weak, nonatomic) IBOutlet UILabel *imageCountLabel;
+@property (weak, nonatomic) IBOutlet UIView *activityIndicatorContainerView;
 - (IBAction)cancelButtonAction:(id)sender;
 - (IBAction)doneButtonAction:(id)sender;
 

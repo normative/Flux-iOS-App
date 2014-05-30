@@ -25,7 +25,7 @@
 
 @implementation FluxFiltersViewController
 
-@synthesize delegate, imageCount;
+@synthesize delegate, imageCount, imageCountLabel, imageCountHeaderLabel;
 
 - (void)viewDidLoad
 {
@@ -48,9 +48,11 @@
     
     // prevents the scroll view from swallowing up the touch event of child buttons
     tapGesture.cancelsTouchesInView = NO;
-    isFetchingCount = NO;
     
-    //[self.filterTableView addGestureRecognizer:tapGesture];
+    [self.imageCountHeaderLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.imageCountHeaderLabel.font.pointSize]];
+    [self.imageCountLabel setFont:[UIFont fontWithName:@"Akkurat-Bold" size:self.imageCountLabel.font.pointSize]];
+    
+    [self.imageCountLabel setText:[NSString stringWithFormat:@"%i",imageCount.intValue]];
     
 }
 
@@ -60,10 +62,6 @@
     [super viewWillAppear:animated];
     [self sendTagRequest];
     [self getSocialImageCounts];
-    
-//    if (![dataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
-//        [self updateImageCount];
-//    }
 }
 
 - (void)viewDidAppear:(BOOL)animated{
@@ -148,7 +146,7 @@
             }
             
         }
-        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -186,11 +184,8 @@
                 
             }
         }
-//        
-//        FluxFilterDrawerObject*obj
-//        socialFiltersArray objectAtIndex:
-//        [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:arr];
-        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationAutomatic];
+
+        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic];
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -212,21 +207,15 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return rightDrawerTableViewArray.count+1;
+    return rightDrawerTableViewArray.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        return 0.0;
-    }
     return 30.0;
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-    if (section == 0) {
-        return @"";
-    }
-    else if (section == 1){
+    if (section == 0){
         return @"Show Only";
     }
     else{
@@ -261,43 +250,18 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0) {
-        return 1;
-    }
-    return [(NSArray*)[rightDrawerTableViewArray objectAtIndex:section-1]count];
+    return [(NSArray*)[rightDrawerTableViewArray objectAtIndex:section]count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
-    if (indexPath.section == 0) {
-        return 70.0;
-    }
-    else{
         return 44.0;
-    }
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-        //if it's the social section
+    //if it's the social section
     if (indexPath.section == 0) {
-        static NSString *CellIdentifier = @"countCell";
-        FluxFilterCountTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (cell == nil) {
-            cell = [[FluxFilterCountTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        }
-        [cell initCell];
-        [cell setDelegate:self];
-        [cell setCount:imageCount.intValue];
-        if (isFetchingCount) {
-            [cell startAnimating];
-        }
-        else{
-            [cell stopAnimating];
-        }
-        return cell;
-    }
-    else if (indexPath.section == 1) {
         
         static NSString *CellIdentifier = @"socialCell";
         FluxSocialFilterCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -307,17 +271,17 @@
         [cell.checkbox setDelegate:cell];
         [cell setSocialCellDelegate:self];
         
-        cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]title];
-        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(FluxFilterDrawerObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]count]];
+        cell.descriptorLabel.text = [[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]title];
+        cell.countLabel.text = [NSString stringWithFormat:@"%i",[(FluxFilterDrawerObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
         
         [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
         [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
         
         //set the cell properties to the array elements declared above
-        [cell setFilterType:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]filterType]];
+        [cell setFilterType:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]filterType]];
         [cell.checkbox setCheckedImage:[UIImage imageNamed:@"checkbox_checked"] andUncheckedImg:[UIImage imageNamed:@"checkbox_unchecked"]];
-        [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]isChecked]];
+        [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
         
         return cell;
     }
@@ -332,20 +296,20 @@
         [cell.descriptorLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.descriptorLabel.font.pointSize]];
         [cell.countLabel setFont:[UIFont fontWithName:@"Akkurat" size:cell.countLabel.font.pointSize]];
         
-        if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row] isNotApplicable]) {
+        if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row] isNotApplicable]) {
             [cell setIsNotApplicable:YES];
         }
         else{
             [cell setIsNotApplicable:NO];
         }
         
-        cell.countLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[(NSArray *)[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]count]];
+        cell.countLabel.text = [NSString stringWithFormat:@"%lu",(unsigned long)[(NSArray *)[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]count]];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
-        [cell setTextTitle:[NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]tagText]]];
+        [cell setTextTitle:[NSString stringWithFormat:@"#%@",[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]tagText]]];
         [cell.checkbox setDelegate:cell];
         [cell setDelegate:self];
         [cell.checkbox setCheckedImage:[UIImage imageNamed:@"checkbox_checked"] andUncheckedImg:[UIImage imageNamed:@"checkbox_unchecked"]];
-        [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section-1]objectAtIndex:indexPath.row]isChecked]];
+        [cell setIsActive:[[[rightDrawerTableViewArray objectAtIndex:indexPath.section]objectAtIndex:indexPath.row]isChecked]];
         
         return cell;
     }
@@ -353,8 +317,6 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
-    }
-    else if (indexPath.section == 1) {
         [(FluxSocialFilterCell*)[tableView cellForRowAtIndexPath:indexPath]cellWasTapped];
     }
     else{
@@ -398,7 +360,7 @@
     for (FluxSocialFilterCell* cell in [self.filterTableView visibleCells]) {
         if (cell == checkCell) {
             NSIndexPath *path = [self.filterTableView indexPathForCell:cell];
-            [[[rightDrawerTableViewArray objectAtIndex:path.section-1]objectAtIndex:path.row] setIsActive:checked];
+            [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
         }
     }
     [self shouldUpdateImageCount];
@@ -411,16 +373,16 @@
     [self modifyDataFilter:dataFilter filterSting:tag forType:tags_filterType andAdd:checked];
     
     //if it's not applicable, remove the cell
-    if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:path.section-1]objectAtIndex:path.row]isNotApplicable]) {
-        [[rightDrawerTableViewArray objectAtIndex:path.section-1] removeObjectAtIndex:path.row];
+    if ([(FluxTagObject*)[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row]isNotApplicable]) {
+        [[rightDrawerTableViewArray objectAtIndex:path.section] removeObjectAtIndex:path.row];
         [self.filterTableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:path] withRowAnimation:UITableViewRowAnimationAutomatic];
     }
     //else, update it's appearance
     else{
         for (FluxCheckboxCell* cell in [self.filterTableView visibleCells]) {
             if (cell == checkCell) {
-                [[[rightDrawerTableViewArray objectAtIndex:path.section-1]objectAtIndex:path.row] setIsActive:checked];
-                if ([[[rightDrawerTableViewArray objectAtIndex:path.section-1]objectAtIndex:path.row] isChecked]) {
+                [[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] setIsActive:checked];
+                if ([[[rightDrawerTableViewArray objectAtIndex:path.section]objectAtIndex:path.row] isChecked]) {
                     [cell.countLabel setAlpha:1.0];
                 }
                 else{
@@ -452,8 +414,10 @@
 }
 
 - (void)updateImageCount{
-    isFetchingCount = YES;
-    [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
+//    [UIView animateWithDuration:0.2 animations:^{
+//        [self.activityIndicatorContainerView setAlpha:1.0];
+//        [self.imageCountLabel setAlpha:0.0];
+//    }];
     
     FluxDataRequest*request = [[FluxDataRequest alloc]init];
     FluxDataFilter*tmp = [[FluxDataFilter alloc] initWithFilter:dataFilter];
@@ -463,8 +427,12 @@
     [request setTotalImageCountReady:^(int imgCount,FluxDataRequest*completedRequest){
         //do something with array
         imageCount = [NSNumber numberWithInt:imgCount];
-        isFetchingCount = NO;
-        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
+        [self.imageCountLabel setText:[NSString stringWithFormat:@"%i",imageCount.intValue]];
+        
+//        [UIView animateWithDuration:0.2 animations:^{
+//            [self.activityIndicatorContainerView setAlpha:0.0];
+//            [self.imageCountLabel setAlpha:1.0];
+//        }];
     }];
     
     [request setErrorOccurred:^(NSError *e,NSString*description, FluxDataRequest *errorDataRequest){
@@ -479,51 +447,6 @@
         [self.fluxDataManager requestTotalImageCountAtLocation:self.location withRadius:self.radius andAltitudeSensitive:YES withDataRequest:request];
     }
 }
-
-- (void)FilterCountTableViewCellButtonWasTapped:(FluxFilterCountTableViewCell *)countCell{
-    [self doneButtonAction:nil];
-}
-
-#pragma mark - UISearchDisplayController Delegate Methods
-//- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar{
-//    if (topTagsArray.count == 0) {
-//        FluxTagObject*tag = [[FluxTagObject alloc]init];
-//        [tag setTagText:@""];
-//        topTagsArray = [NSMutableArray arrayWithObject:tag];
-//        [rightDrawerTableViewArray replaceObjectAtIndex:1 withObject:topTagsArray];
-//        [self.filterTableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
-//    }
-//    [self performSelector:@selector(scrollSearchBArToTop) withObject:nil afterDelay:0.0];
-//    return YES;
-//}
-//
-//-(void)scrollSearchBArToTop{
-//    [self.filterTableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1] atScrollPosition:UITableViewScrollPositionTop animated:YES];
-//}
-//
-//- (BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar{
-//    return YES;
-//}
-//
-//-(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString {
-//    // Return YES to cause the search result table view to be reloaded.
-//    return YES;
-//}
-//
-//-(BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchScope:(NSInteger)searchOption {
-//    // Return YES to cause the search result table view to be reloaded.
-//    return YES;
-//}
-
-//// method to hide keyboard when user taps on a scrollview
-//-(void)hideKeyboard
-//{
-//    [self.tagsSearchBar resignFirstResponder];
-//}
-//
-//-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
-//    [self hideKeyboard];
-//}
 
 #pragma mark - UI Actions
 
