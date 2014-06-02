@@ -1,4 +1,7 @@
 Release Notes:
+
+- fix magnetic declination to return radians rather than degrees.
+
 ******************************************
 
 V0.26 B02
