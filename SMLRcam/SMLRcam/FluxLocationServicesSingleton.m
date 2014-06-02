@@ -304,6 +304,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
         
         _magneticDeclination = MAG_CalcDeclination(here.coordinate.latitude, here.coordinate.longitude, fdate);
     }
+    
+//    NSLog(@"here %@, MagDeclination: %f", here, _magneticDeclination);
 
     return _magneticDeclination;
 
@@ -831,6 +833,7 @@ static NSDate *firstDate = nil;
        (self.locationManager.heading.headingAccuracy >= 0.0) && (self.locationManager.heading.headingAccuracy <= kalmanFilterMinHeadingAccuracy) &&
        ((self.locationManager.heading.trueHeading >= 0) || (sinceStart < -magDeclinationDelay)))
     {
+//        NSLog(@"Valid = YES, since start: %f, trueHeading: %f", sinceStart, self.locationManager.heading.trueHeading);
         // if kfStarted is false, we haven't started yet, so state changes are handled elsewhere.
         // Otherwise, handle them here.
         if (kfStarted && !_validCurrentLocationData)
@@ -852,6 +855,9 @@ static NSDate *firstDate = nil;
         if (_validCurrentLocationData)
         {
             _validCurrentLocationData = NO;
+//            NSLog(@"Valid = NO, since start: %f, trueHeading: %f", sinceStart, self.locationManager.heading.trueHeading);
+
+            firstDate = [[NSDate alloc] init];
 
             // Previous value was valid. Signal state change.
             DDLogVerbose(@"#Event: KALMAN disabled (1): horiz accuracy: %.2f, vert acc: %.2f, head acc: %.2f, true heading: %f, lm heading: %f",

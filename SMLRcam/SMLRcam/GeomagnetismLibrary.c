@@ -352,7 +352,7 @@ double MAG_CalcDeclination(double lat, double lon, double fdate)
 //    MAG_FreeMagneticModelMemory(TimedMagneticModel);
     MAG_FreeMagneticModelMemory(MagneticModel[0]);
 
-    return GeoMagneticElements.Decl;
+    return (GeoMagneticElements.Decl / 180.0) * M_PI;
 
 }
 
