@@ -8,6 +8,8 @@ Released: 2014-07-02 08:30:00
 
 Release Notes:
 - revert secondary ring in radar view (V0.26 B03)
+- disable debug menu access prior to App store release
+- re-point debug log email to support@smlr.is
 
 ******************************************
 
