@@ -1,6 +1,44 @@
 Release Notes:
 
+******************************************
+
+V0.27 B02
+
+Released: 2014-07-02 08:30:00
+
+Release Notes:
+- revert secondary ring in radar view (V0.26 B03)
+
+******************************************
+
+V0.27 B01
+
+Released: 2014-06-02 10:15:00
+
+Release Notes:
 - fix magnetic declination to return radians rather than degrees.
+- fix Filters view to always have image count visible
+
+******************************************
+
+V0.26 B04
+
+Released: 2014-05-28 16:00:00
+
+Release Notes:
+- makes it clearer how to edit your profile, cleans up editProfileView a bit
+- fixes fluxUserSearch searchBar misalignment
+- social link button visual tweaks
+- disable use of calculated mag offset and force wait until trueHeading is available
+
+******************************************
+
+V0.26 B03
+
+Released: 2014-05-26 12:30:00
+
+Release Notes:
+- add secondary ring to radar view to show travel direction to content that is between 15 and 20m from the user
 
 ******************************************
 
