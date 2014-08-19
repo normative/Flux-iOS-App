@@ -173,9 +173,12 @@ const float yaw_drift_correction_gain = 0.05;
             if (!isnan(mag_field_t0.x) && !isnan(mag_field_t0.y) && heading.trueHeading >= 0.0)
             {
                 // Calculate original offset to use based on true-North heading
-//                double trueNorthCorrection = [self angleDiffWithAngleA:(heading.magneticHeading * M_PI/180.0) andAngleB:(heading.trueHeading * M_PI/180.0)];
+                
                 double trueNorthCorrection = locationManager.magneticDeclination;
+                if (trueNorthCorrection == 0.0)
+                    trueNorthCorrection = [self angleDiffWithAngleA:(heading.magneticHeading * M_PI/180.0) andAngleB:(heading.trueHeading * M_PI/180.0)];
                 yaw_offset_t0 = [self calculateSignedAngleBetween2DVector:GLKVector2Make(0.0, 1.0) andVector:mag_field_t0] + trueNorthCorrection + M_PI_2;
+//                NSLog(@"calcing initial magnetometer offset: %f, trueHeading: %f, magdec: %f, tnc: %f", (yaw_offset_t0*180.0/M_PI), heading.trueHeading, (locationManager.magneticDeclination* 180.0/M_PI), (trueNorthCorrection*180.0/M_PI));
                 
                 calculatedInitialMagnetometer = YES;
             }

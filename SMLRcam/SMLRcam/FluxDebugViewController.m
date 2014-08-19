@@ -213,7 +213,7 @@ NSString* const FluxDebugDetailLoggerEnabledKey = @"FluxDebugDetailLoggerEnabled
                     }
                     [mailViewController addAttachmentData:errorLogData mimeType:@"text/plain" fileName:@"errorLog.txt"];
                     [mailViewController setSubject:NSLocalizedString(@"Flux Detailed Log File", @"")];
-                    [mailViewController setToRecipients:[NSArray arrayWithObject:@"denis@smlr.is"]];
+                    [mailViewController setToRecipients:[NSArray arrayWithObject:@"support@smlr.is"]];
                     
                     [self presentViewController:mailViewController animated:YES completion:nil];
                 }
