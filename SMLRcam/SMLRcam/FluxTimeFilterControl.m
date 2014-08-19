@@ -40,7 +40,7 @@
 //        timeGaugeClockView = [[UIImageView alloc]initWithFrame:clockContainerView.bounds];
 //        [timeGaugeClockView setImage:[UIImage imageNamed:@"timeControlClock"]];
 //        [clockContainerView addSubview:timeGaugeClockView];
-//        
+        
         UIView*rotatedView = [[UIView alloc]initWithFrame:clockContainerView.bounds];
         rotatedView.transform = CGAffineTransformMakeRotation(-DEGREES_TO_RADIANS(90));
         
@@ -86,7 +86,7 @@
     [thumbView setAlpha:0.0];
     [self addSubview:thumbView];
     
-    //text (and nice soacing for the custom font)
+    //text (and nice spacing for the custom font)
     timeScrubInfoLabel = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, self.frame.size.width, 60)];
     [timeScrubInfoLabel setCenter:CGPointMake(self.center.x, self.frame.size.height-100)];
     [timeScrubInfoLabel setFont:[UIFont fontWithName:@"Akkurat" size:16.0]];
@@ -155,10 +155,6 @@
     CGFloat circleStartAngle;
     CGFloat circleEndAngle;
     
-//    if (count <= (CELLS_PER_VIEW + CELLS_PER_VIEW - 1)) {
-//        circleStartAngle = 0;
-//        circleEndAngle = 0;
-//    }
     if (count <= 1 ){
         circleStartAngle = 0;
         circleEndAngle = 0;
@@ -224,7 +220,6 @@
             //if it's less than halfway to 0 degrees already, just go to 0
             [UIView animateWithDuration:1.0 animations:^{
                 circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(0));
-                //circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
                 [self.timeScrollView setContentOffset:CGPointZero animated:NO];
             }completion:^(BOOL finished){
                 isAnimating = NO;
@@ -237,7 +232,6 @@
                                 options:UIViewAnimationOptionCurveEaseIn
                              animations:^{
                                  circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(180));
-                                 //circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
                              }
                              completion:^(BOOL finished){
                                  [UIView animateWithDuration:0.5
@@ -264,11 +258,8 @@
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
-
-//    NSLog(@" Offset = %@ ",NSStringFromCGPoint(scrollView.contentOffset));
     
-    //if it's outside the bounds of the scrollView
-//    if ((scrollView.contentOffset.y < (scrollView.contentSize.height - scrollView.frame.size.height)) && (scrollView.contentOffset.y > 0))
+    //if it's within the bounds of the scrollView
     if ((scrollView.contentOffset.y < scrollView.contentSize.height) && (scrollView.contentOffset.y >= 0))
     {
         int nlc = self.fluxDisplayManager.nearbyListCount;
@@ -295,7 +286,6 @@
 - (void)scrollScrollerToCalculatedPosition{
     int numberOfDegrees = -(self.timeScrollView.contentOffset.y/self.timeScrollView.contentSize.height)*320;
     numberOfDegrees = numberOfDegrees*sizeRatio;
-//    NSLog(@" Degrees = %i ",numberOfDegrees);
     circularScrollerView.transform = CGAffineTransformMakeRotation(DEGREES_TO_RADIANS(numberOfDegrees));
     circularScrollerView.transform = CGAffineTransformScale(circularScrollerView.transform, 1.03, 1.03);
 }

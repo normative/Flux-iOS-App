@@ -248,24 +248,26 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
         
         //add boolean value transformer (restkit bug fix)
 //        [[RKValueTransformer defaultValueTransformer] insertValueTransformer:[RKCustomBOOLTransformer defaultTransformer] atIndex:0];
+
         
-        __weak __typeof(&*self)weakSelf = self;
-        previousStatus = objectManager.HTTPClient.networkReachabilityStatus;
-        
-        //show alert if there is no network connectivity, make sure it doesn't show duplicates or wrong messages
-        [objectManager.HTTPClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-            
-            //this is suposed to check if they are the same. some issue here.
-            if (status == AFNetworkReachabilityStatusNotReachable && previousStatus != AFNetworkReachabilityStatusNotReachable) {
-                networkStatusAlertTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:weakSelf selector:@selector(showNetworkAlert) userInfo:nil repeats:NO];
-            }
-            else{
-                [networkStatusAlertTimer invalidate];
-                networkStatusAlertTimer = nil;
-            }
-            previousStatus = objectManager.HTTPClient.networkReachabilityStatus;
-            NSLog(@"Status: %@", @(previousStatus));
-        }];
+        //shows the network popup
+//        __weak __typeof(&*self)weakSelf = self;
+//        previousStatus = objectManager.HTTPClient.networkReachabilityStatus;
+//        
+//        //show alert if there is no network connectivity, make sure it doesn't show duplicates or wrong messages
+//        [objectManager.HTTPClient setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+//            
+//            //this is suposed to check if they are the same. some issue here.
+//            if (status == AFNetworkReachabilityStatusNotReachable && previousStatus != AFNetworkReachabilityStatusNotReachable) {
+//                networkStatusAlertTimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:weakSelf selector:@selector(showNetworkAlert) userInfo:nil repeats:NO];
+//            }
+//            else{
+//                [networkStatusAlertTimer invalidate];
+//                networkStatusAlertTimer = nil;
+//            }
+//            previousStatus = objectManager.HTTPClient.networkReachabilityStatus;
+//            NSLog(@"Status: %@", @(previousStatus));
+//        }];
     }
     return self;
 }
@@ -2073,9 +2075,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
                 return [string capitalizedString];
             }
             else{
-                if (objectManager.HTTPClient.networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
-                    return @"You aren't connected to the internet.";
-                }
+//                if (objectManager.HTTPClient.networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
+//                    return @"You aren't connected to the internet.";
+//                }
                 return @"An unknown error occured";
             }
         }
@@ -2089,9 +2091,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
             return [error lowercaseString];
         }
     }
-    if (objectManager.HTTPClient.networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
-        return @"You aren't connected to the internet.";
-    }
+//    if (objectManager.HTTPClient.networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
+//        return @"You aren't connected to the internet.";
+//    }
     return @"An unknown error occured";
 }
 
