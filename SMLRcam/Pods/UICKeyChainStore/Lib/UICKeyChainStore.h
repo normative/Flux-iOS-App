@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface UICKeyChainStore : NSObject
-
 extern NSString* const FluxDidRegisterKey;
 extern NSString* const FluxUsernameKey;
 extern NSString* const FluxNameKey;
@@ -24,6 +22,7 @@ extern NSString* const FluxService;
 extern NSString* const FacebookService;
 extern NSString* const TwitterService;
 
+@interface UICKeyChainStore : NSObject
 
 @property (nonatomic, readonly) NSString *service;
 @property (nonatomic, readonly) NSString *accessGroup;

@@ -180,7 +180,6 @@
 		AAD2DFF817BD1F9B00D572A4 /* FluxMappingProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */; };
 		AAD2DFFB17BD56AC00D572A4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AAD2DFF917BD54BA00D572A4 /* Security.framework */; };
 		AADFF1CE18AE63A1003BEE8C /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1CD18AE63A1003BEE8C /* libGoogleAnalyticsServices.a */; };
-		AADFF1D018AE6505003BEE8C /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1CF18AE6505003BEE8C /* libTestFlight.a */; };
 		AADFF1EB18B3E8A1003BEE8C /* FluxFilterImageCountObject.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */; };
 		AADFF1EF18B54109003BEE8C /* FluxSocialImportCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AADFF1EE18B54109003BEE8C /* FluxSocialImportCell.m */; };
 		AADFF1F118B544D9003BEE8C /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AADFF1F018B544D9003BEE8C /* AddressBook.framework */; };
@@ -303,6 +302,7 @@
 		89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxKalmanFilter.h; sourceTree = "<group>"; };
 		89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxKalmanFilter.m; sourceTree = "<group>"; };
 		89A513631829AED800E25AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		9425B7087CDD03919315BF78 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		AA06304A18DA3351005690CD /* FluxFilterCountTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterCountTableViewCell.h; sourceTree = "<group>"; };
 		AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterCountTableViewCell.m; sourceTree = "<group>"; };
 		AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxTutorialView_35.xib; sourceTree = "<group>"; };
@@ -537,7 +537,6 @@
 		AAD2DFF717BD1F9A00D572A4 /* FluxMappingProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMappingProvider.m; sourceTree = "<group>"; };
 		AAD2DFF917BD54BA00D572A4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		AADFF1CD18AE63A1003BEE8C /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGoogleAnalyticsServices.a; path = "Pods/GoogleAnalytics-iOS-SDK/libGoogleAnalyticsServices.a"; sourceTree = "<group>"; };
-		AADFF1CF18AE6505003BEE8C /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libTestFlight.a; path = Pods/TestFlightSDK/libTestFlight.a; sourceTree = "<group>"; };
 		AADFF1E918B3E8A1003BEE8C /* FluxFilterImageCountObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterImageCountObject.h; sourceTree = "<group>"; };
 		AADFF1EA18B3E8A1003BEE8C /* FluxFilterImageCountObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterImageCountObject.m; sourceTree = "<group>"; };
 		AADFF1ED18B54109003BEE8C /* FluxSocialImportCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxSocialImportCell.h; sourceTree = "<group>"; };
@@ -559,7 +558,6 @@
 		AAFD995F18E9EEB900C95F18 /* ProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ProgressHUD.bundle; sourceTree = "<group>"; };
 		AAFD996018E9EEB900C95F18 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
 		AAFD996118E9EEB900C95F18 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
-		CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		DCDC5AB9480146C1BC963853 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F206B62518C630E900ABAD99 /* FluxLoggerService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLoggerService.h; sourceTree = "<group>"; };
 		F206B62618C630E900ABAD99 /* FluxLoggerService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLoggerService.m; sourceTree = "<group>"; };
@@ -607,6 +605,7 @@
 		F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingRecord.m; sourceTree = "<group>"; };
 		F2ED424B183F8A19007A825A /* FluxCameraFrameElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraFrameElement.h; sourceTree = "<group>"; };
 		F2ED424C183F8A19007A825A /* FluxCameraFrameElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraFrameElement.m; sourceTree = "<group>"; };
+		F40D680B0B35E2AB1B3DC3EB /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -646,7 +645,6 @@
 				17604B691785CA59005CF054 /* Foundation.framework in Frameworks */,
 				91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */,
 				AADFF1CE18AE63A1003BEE8C /* libGoogleAnalyticsServices.a in Frameworks */,
-				AADFF1D018AE6505003BEE8C /* libTestFlight.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,7 +668,7 @@
 				220FE07017BEACAD00A7E379 /* Flux Tests */,
 				17604B651785CA59005CF054 /* Frameworks */,
 				17604B641785CA59005CF054 /* Products */,
-				CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */,
+				31FC8CF19474726D4748B677 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -690,7 +688,6 @@
 				F206B62818C63E9B00ABAD99 /* MessageUI.framework */,
 				AADFF1F218B544E2003BEE8C /* AddressBookUI.framework */,
 				AADFF1F018B544D9003BEE8C /* AddressBook.framework */,
-				AADFF1CF18AE6505003BEE8C /* libTestFlight.a */,
 				AADFF1CD18AE63A1003BEE8C /* libGoogleAnalyticsServices.a */,
 				F2B2C1D3183D2EE400D32084 /* MobileCoreServices.framework */,
 				F26EF31E183D138F00536C54 /* opencv2.framework */,
@@ -812,6 +809,15 @@
 				AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */,
 			);
 			name = TutorialView;
+			sourceTree = "<group>";
+		};
+		31FC8CF19474726D4748B677 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9425B7087CDD03919315BF78 /* Pods.debug.xcconfig */,
+				F40D680B0B35E2AB1B3DC3EB /* Pods.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		AA06FE6C181EBB2C00D87658 /* Login */ = {
@@ -1622,7 +1628,7 @@
 			name = "Flux Tests";
 			productName = "Flux Tests";
 			productReference = 220FE06B17BEACAD00A7E379 /* Flux Tests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -1631,7 +1637,8 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = Flux;
-				LastUpgradeCheck = 0460;
+				LastTestingUpgradeCheck = 0640;
+				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = Normative;
 				TargetAttributes = {
 					17604B621785CA59005CF054 = {
@@ -1730,7 +1737,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AA3890DA1912B3A0003F6B02 /* ShellScript */ = {
@@ -2009,7 +2016,7 @@
 		};
 		17604B871785CA59005CF054 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */;
+			baseConfigurationReference = 9425B7087CDD03919315BF78 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2024,24 +2031,22 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(TARGET_BUILD_DIR)/libPods.a",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
 		17604B881785CA59005CF054 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC546F3D9E1C463ABE3119A9 /* Pods.xcconfig */;
+			baseConfigurationReference = F40D680B0B35E2AB1B3DC3EB /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -2056,16 +2061,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
-				OTHER_LDFLAGS = (
-					"-force_load",
-					"$(BUILT_PRODUCTS_DIR)/libPods.a",
-				);
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = 1;
-				VALID_ARCHS = "armv7 armv7s arm64";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

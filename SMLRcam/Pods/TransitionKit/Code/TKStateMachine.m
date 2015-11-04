@@ -21,18 +21,19 @@
 #import "TKStateMachine.h"
 #import "TKState.h"
 #import "TKEvent.h"
+#import "TKTransition.h"
 
 @interface TKEvent ()
-@property (nonatomic, copy) BOOL (^shouldFireEventBlock)(TKEvent *event, TKStateMachine *stateMachine);
-@property (nonatomic, copy) void (^willFireEventBlock)(TKEvent *event, TKStateMachine *stateMachine);
-@property (nonatomic, copy) void (^didFireEventBlock)(TKEvent *event, TKStateMachine *stateMachine);
+@property (nonatomic, copy) BOOL (^shouldFireEventBlock)(TKEvent *, TKTransition *);
+@property (nonatomic, copy) void (^willFireEventBlock)(TKEvent *, TKTransition *);
+@property (nonatomic, copy) void (^didFireEventBlock)(TKEvent *, TKTransition *);
 @end
 
 @interface TKState ()
-@property (nonatomic, copy) void (^willEnterStateBlock)(TKState *state, TKStateMachine *stateMachine);
-@property (nonatomic, copy) void (^didEnterStateBlock)(TKState *state, TKStateMachine *stateMachine);
-@property (nonatomic, copy) void (^willExitStateBlock)(TKState *state, TKStateMachine *stateMachine);
-@property (nonatomic, copy) void (^didExitStateBlock)(TKState *state, TKStateMachine *stateMachine);
+@property (nonatomic, copy) void (^willEnterStateBlock)(TKState *, TKTransition *);
+@property (nonatomic, copy) void (^didEnterStateBlock)(TKState *, TKTransition *);
+@property (nonatomic, copy) void (^willExitStateBlock)(TKState *, TKTransition *);
+@property (nonatomic, copy) void (^didExitStateBlock)(TKState *, TKTransition *);
 @end
 
 NSString *const TKErrorDomain = @"org.blakewatters.TransitionKit.errors";
@@ -56,6 +57,7 @@ static NSString *TKQuoteString(NSString *string)
 @property (nonatomic, strong) NSMutableSet *mutableEvents;
 @property (nonatomic, assign, getter = isActive) BOOL active;
 @property (nonatomic, strong, readwrite) TKState *currentState;
+@property (nonatomic, strong) NSRecursiveLock *lock;
 @end
 
 @implementation TKStateMachine
@@ -83,6 +85,7 @@ static NSString *TKQuoteString(NSString *string)
     if (self) {
         self.mutableStates = [NSMutableSet set];
         self.mutableEvents = [NSMutableSet set];
+        self.lock = [NSRecursiveLock new];
     }
     return self;
 }
@@ -108,7 +111,9 @@ static NSString *TKQuoteString(NSString *string)
 - (void)addState:(TKState *)state
 {
     TKRaiseIfActive();
-    if (! [state isKindOfClass:[TKState class]]) [NSException raise:NSInvalidArgumentException format:@"Expected a `TKState` object or `NSString` object specifying the name of a state, instead got a `%@` (%@)", [state class], state];
+    if (! [state isKindOfClass:[TKState class]]) [NSException raise:NSInvalidArgumentException format:@"Expected a `TKState` object, instead got a `%@` (%@)", [state class], state];
+    if ([self stateNamed: state.name]) [NSException raise:NSInvalidArgumentException format:@"State with name `%@` already exists", state.name];
+
     if (self.initialState == nil) self.initialState = state;
     [self.mutableStates addObject:state];
 }
@@ -176,12 +181,14 @@ static NSString *TKQuoteString(NSString *string)
 - (void)activate
 {
     if (self.isActive) [NSException raise:NSInternalInconsistencyException format:@"The state machine has already been activated."];
+    [self.lock lock];
     self.active = YES;
     
     // Dispatch callbacks to establish initial state
-    if (self.initialState.willEnterStateBlock) self.initialState.willEnterStateBlock(self.initialState, self);
+    if (self.initialState.willEnterStateBlock) self.initialState.willEnterStateBlock(self.initialState, nil);
     self.currentState = self.initialState;
-    if (self.initialState.didEnterStateBlock) self.initialState.didEnterStateBlock(self.initialState, self);
+    if (self.initialState.didEnterStateBlock) self.initialState.didEnterStateBlock(self.initialState, nil);
+    [self.lock unlock];
 }
 
 - (BOOL)canFireEvent:(id)eventOrEventName
@@ -192,45 +199,53 @@ static NSString *TKQuoteString(NSString *string)
     return [event.sourceStates containsObject:self.currentState];
 }
 
-- (BOOL)fireEvent:(id)eventOrEventName error:(NSError **)error
+- (BOOL)fireEvent:(id)eventOrEventName userInfo:(NSDictionary *)userInfo error:(NSError *__autoreleasing *)error
 {
+    [self.lock lock];
     if (! self.isActive) [self activate];
     if (! [eventOrEventName isKindOfClass:[TKEvent class]] && ![eventOrEventName isKindOfClass:[NSString class]]) [NSException raise:NSInvalidArgumentException format:@"Expected a `TKEvent` object or `NSString` object specifying the name of an event, instead got a `%@` (%@)", [eventOrEventName class], eventOrEventName];
     TKEvent *event = [eventOrEventName isKindOfClass:[TKEvent class]] ? eventOrEventName : [self eventNamed:eventOrEventName];
     if (! event) [NSException raise:NSInvalidArgumentException format:@"Cannot find an Event named '%@'", eventOrEventName];
-    
+
     // Check that this transition is permitted
     if (event.sourceStates != nil && ![event.sourceStates containsObject:self.currentState]) {
         NSString *failureReason = [NSString stringWithFormat:@"An attempt was made to fire the '%@' event while in the '%@' state, but the event can only be fired from the following states: %@", event.name, self.currentState.name, [[event.sourceStates valueForKey:@"name"] componentsJoinedByString:@", "]];
         NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"The event cannot be fired from the current state.", NSLocalizedFailureReasonErrorKey: failureReason };
         if (error) *error = [NSError errorWithDomain:TKErrorDomain code:TKInvalidTransitionError userInfo:userInfo];
+        [self.lock unlock];
         return NO;
     }
-    
+
+    TKTransition *transition = [TKTransition transitionForEvent:event fromState:self.currentState inStateMachine:self userInfo:userInfo];
     if (event.shouldFireEventBlock) {
-        if (! event.shouldFireEventBlock(event, self)) {
+        if (! event.shouldFireEventBlock(event, transition)) {
             NSString *failureReason = [NSString stringWithFormat:@"An attempt to fire the '%@' event was declined because `shouldFireEventBlock` returned `NO`.", event.name];
             NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: @"The event declined to be fired.", NSLocalizedFailureReasonErrorKey: failureReason };
             if (error) *error = [NSError errorWithDomain:TKErrorDomain code:TKTransitionDeclinedError userInfo:userInfo];
+            [self.lock unlock];
             return NO;
         }
     }
-    
-    if (event.willFireEventBlock) event.willFireEventBlock(event, self);
-    
+
     TKState *oldState = self.currentState;
     TKState *newState = event.destinationState;
     
-    if (oldState.willExitStateBlock) oldState.willExitStateBlock(oldState, self);
-    if (newState.willEnterStateBlock) newState.willEnterStateBlock(newState, self);
+    if (event.willFireEventBlock) event.willFireEventBlock(event, transition);
+    
+    if (oldState.willExitStateBlock) oldState.willExitStateBlock(oldState, transition);
+    if (newState.willEnterStateBlock) newState.willEnterStateBlock(newState, transition);
     self.currentState = newState;
-    if (oldState.didExitStateBlock) oldState.didExitStateBlock(oldState, self);
-    if (newState.didEnterStateBlock) newState.didEnterStateBlock(newState, self);
+    if (oldState.didExitStateBlock) oldState.didExitStateBlock(oldState, transition);
+    if (newState.didEnterStateBlock) newState.didEnterStateBlock(newState, transition);
     
-    if (event.didFireEventBlock) event.didFireEventBlock(event, self);
-    
-    NSDictionary *userInfo = @{ TKStateMachineDidChangeStateOldStateUserInfoKey: oldState, TKStateMachineDidChangeStateNewStateUserInfoKey: newState, TKStateMachineDidChangeStateEventUserInfoKey: event };
-    [[NSNotificationCenter defaultCenter] postNotificationName:TKStateMachineDidChangeStateNotification object:self userInfo:userInfo];
+    if (event.didFireEventBlock) event.didFireEventBlock(event, transition);
+    [self.lock unlock];
+
+    NSMutableDictionary *notificationInfo = [userInfo mutableCopy] ?: [NSMutableDictionary dictionary];
+    [notificationInfo addEntriesFromDictionary:@{ TKStateMachineDidChangeStateOldStateUserInfoKey: oldState,
+                                                  TKStateMachineDidChangeStateNewStateUserInfoKey: newState,
+                                                  TKStateMachineDidChangeStateEventUserInfoKey: event }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:TKStateMachineDidChangeStateNotification object:self userInfo:notificationInfo];
     
     return YES;
 }
