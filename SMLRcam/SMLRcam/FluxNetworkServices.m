@@ -23,31 +23,42 @@
 #define _AWSStagingServerURL     @"http://staging.flux.smlr.is/"
 #define _AWSTestServerURL        @"http://54.221.222.71/"
 #define _DSDLocalTestServerURL   @"http://192.168.2.12:3101/"
+#define _AethonAWSProdServerURL  @"http://52.1.173.234/"
+#define _AethonAWSStageServerURL  @"http://52.20.91.46/"
 
-#define _AWSSecureProductionServerURL  @"https://production.flux.smlr.is/"
+//#define _AWSSecureProductionServerURL  @"https://production.flux.smlr.is/"
+//#define _AWSSecureProductionServerURL  @"https://staging.flux.smlr.is/"
 //#define _AWSSecureStagingServerURL     @"https://staging.flux.smlr.is/"
 
 NSString* const AWSProductionServerURL = _AWSProductionServerURL;
 NSString* const AWSStagingServerURL    = _AWSStagingServerURL;
 NSString* const AWSTestServerURL       = _AWSTestServerURL;
 NSString* const DSDLocalTestServerURL  = _DSDLocalTestServerURL;
+NSString* const AethonAWSProdServerURL = _AethonAWSProdServerURL;
+NSString* const AethonAWSStageServerURL = _AethonAWSStageServerURL;
 
-NSString* const AWSSecureProductionServerURL = _AWSSecureProductionServerURL;
+//NSString* const AWSSecureProductionServerURL = _AWSSecureProductionServerURL;
 //NSString* const AWSSecureStagingServerURL    = _AWSSecureStagingServerURL;
 NSString* const AWSSecureStagingServerURL    = _AWSStagingServerURL;
 NSString* const AWSSecureTestServerURL       = _AWSTestServerURL;
 NSString* const DSDSecureLocalTestServerURL  = _DSDLocalTestServerURL;
+NSString* const AethonAWSSecureProdServerURL = _AethonAWSProdServerURL;
+NSString* const AethonAWSSecureStageServerURL = _AethonAWSStageServerURL;
 
-NSString* const FluxServerURL = _AWSProductionServerURL;
+//NSString* const FluxServerURL = _AWSProductionServerURL;
 //NSString* const FluxServerURL = _AWSStagingServerURL;
 //NSString* const FluxServerURL = _AWSTestServerURL;
 //NSString* const FluxServerURL = _DSDLocalTestServerURL;
+NSString* const FluxServerURL = _AethonAWSProdServerURL;
+//NSString* const FluxServerURL = _AethonAWSStageServerURL;
 
 
-NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
+//NSString* const FluxSecureServerURL = _AWSSecureProductionServerURL;
 //NSString* const FluxSecureServerURL = _AWSSecureStagingServerURL;
 //NSString* const FluxSecureServerURL = _AWSTestServerURL;
 //NSString* const FluxSecureServerURL = _DSDLocalTestServerURL;
+NSString* const FluxSecureServerURL = _AethonAWSProdServerURL;
+//NSString* const FluxSecureServerURL = _AethonAWSStageServerURL;
 
 static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
@@ -319,7 +330,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/images/%i.json?auth_token=%@", imageID, token]
+                                                                                       pathPattern:[NSString stringWithFormat:@"images/%i.json?auth_token=%@", imageID, token]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -356,7 +367,7 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
 
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/images/closest.json"
+                                                                                       pathPattern:@"images/closest.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -702,7 +713,8 @@ static NSDateFormatter *__fluxNetworkServicesOutputDateFormatter = nil;
     
     NSString *boundary = @"thisIsBoundary";
     
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@/images.json?auth_token=%@",self.secureServerURL, token]];
+    // TODO: this used to be "%@/images..." need to validate if the "/" is necessary
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@images.json?auth_token=%@",self.secureServerURL, token]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     [request addValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
     request.HTTPMethod = @"POST";
@@ -902,7 +914,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider imageMatchGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/images/%d/matches.json", imageID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"images/%d/matches.json", imageID]
 //                                                                                       pathPattern:[NSString stringWithFormat:@"/image_matches/%d/matches.json", imageID]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
@@ -1086,7 +1098,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 -(void)loginUser:(FluxRegistrationUserObject *)userObject withRequestID:(NSUUID *)requestID{
-    [[RKObjectManager sharedManager] postObject:userObject path:@"/users/sign_in" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
+    [[RKObjectManager sharedManager] postObject:userObject path:@"users/sign_in" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          if ([result count]>0)
          {
@@ -1174,7 +1186,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 - (void)postCamera:(FluxCameraObject*)cameraObject withRequestID:(FluxRequestID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    [[RKObjectManager sharedManager] postObject:cameraObject path:[NSString stringWithFormat:@"/cameras?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] postObject:cameraObject path:[NSString stringWithFormat:@"cameras?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxCameraObject*cambject = [result firstObject];
@@ -1212,7 +1224,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     // Serialize the Article attributes then attach a file
     NSMutableURLRequest *request = [[RKObjectManager sharedManager] multipartFormRequestWithObject:nil
                                                                                             method:RKRequestMethodPUT
-                                                                                              path:[NSString stringWithFormat:@"/users/updateapnstoken"]
+                                                                                              path:[NSString stringWithFormat:@"users/updateapnstoken"]
                                                                                         parameters:params
                                                                          constructingBodyWithBlock:^(id<AFMultipartFormData> formData){}
                                     ];
@@ -1247,7 +1259,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     FluxRegistrationUserObject*user = [[FluxRegistrationUserObject alloc]init];
     [user setEmail:email];
-    [[RKObjectManager sharedManager] postObject:user path:[NSString stringWithFormat:@"/users/password.json"] parameters:nil
+    [[RKObjectManager sharedManager] postObject:user path:[NSString stringWithFormat:@"users/password.json"] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxUserObject*returnedUser = [result firstObject];
@@ -1277,7 +1289,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:[NSString stringWithFormat:@"/users/%i/profile.json",userID]
+                                                                                       pathPattern:[NSString stringWithFormat:@"users/%i/profile.json",userID]
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -1339,7 +1351,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userImagesGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/images/getimagelistforuser.json"
+                                                                                       pathPattern:@"images/getimagelistforuser.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -1373,11 +1385,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/users/followerrequests.json"
+                                                                                       pathPattern:@"users/followerrequests.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@%@?auth_token=%@",self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:0], token]] cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:defaultTimout];
     RKObjectRequestOperation *operation = [[RKObjectRequestOperation alloc] initWithRequest:request
                                                                         responseDescriptors:@[responseDescriptor]];
     [operation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *result)
@@ -1406,7 +1418,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/users/following.json"
+                                                                                       pathPattern:@"users/following.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -1438,7 +1450,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/users/followers.json"
+                                                                                       pathPattern:@"users/followers.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -1470,7 +1482,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSIndexSet *statusCodes = RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful); // Anything in 2xx
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider userGETMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/users/lookupname.json"
+                                                                                       pathPattern:@"users/lookupname.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -1506,7 +1518,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [connObj setConnectionsUserID:userID];
     [connObj setConnetionType:FluxConnectionState_follow];
     
-    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/disconnect?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"connections/disconnect?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
@@ -1535,7 +1547,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [connObj setConnectionsUserID:activeUserID];
     [connObj setConnetionType:FluxConnectionState_follow];
     
-    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/disconnect?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"connections/disconnect?auth_token=%@", token] parameters:nil
                                        success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          if ([delegate respondsToSelector:@selector(NetworkServices:didForceUnfollowUserWithID:andRequestID:)])
@@ -1564,7 +1576,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [connObj setConnectionsUserID:userID];
     
     
-    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"/connections/follow?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] postObject:connObj path:[NSString stringWithFormat:@"connections/follow?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
@@ -1596,7 +1608,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [connObj setAmFollowing:YES];
     
     
-    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofollowrequest?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"connections/respondtofollowrequest?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
@@ -1627,7 +1639,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     [connObj setFollowingState:FluxFollowState_ignore];
     
     
-    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"/connections/respondtofollowrequest?auth_token=%@", token] parameters:nil
+    [[RKObjectManager sharedManager] putObject:connObj path:[NSString stringWithFormat:@"connections/respondtofollowrequest?auth_token=%@", token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          FluxConnectionObject*conObject = [result firstObject];
@@ -1650,7 +1662,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 - (void)postContentFlagToImage:(FluxImageID)image_id withRequestID:(FluxRequestID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    [[RKObjectManager sharedManager] postObject:nil path:[NSString stringWithFormat:@"/images/%d/flag?auth_token=%@", image_id, token] parameters:nil
+    [[RKObjectManager sharedManager] postObject:nil path:[NSString stringWithFormat:@"images/%d/flag?auth_token=%@", image_id, token] parameters:nil
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          // do nothing
@@ -1674,7 +1686,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 
 - (void)inviteUserForSerivce:(int)serviceID toEmail:(NSString *)emailString andName:(NSString *)name withRequestID:(NSUUID *)requestID{
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
-    [[RKObjectManager sharedManager] putObject:nil path:[NSString stringWithFormat:@"/users/invitetoflux?auth_token=%@&serviceid=%i&email_to=%@", token,serviceID,emailString] parameters:nil
+    [[RKObjectManager sharedManager] putObject:nil path:[NSString stringWithFormat:@"users/invitetoflux?auth_token=%@&serviceid=%i&email_to=%@", token,serviceID,emailString] parameters:nil
             success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
          // do nothing
@@ -1705,7 +1717,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:token, @"auth_token", nil];
     [[RKObjectManager sharedManager] postObject:aliasObject
-                                           path:@"/aliases"
+                                           path:@"aliases"
                                      parameters:params
                                         success:^(RKObjectRequestOperation *operation, RKMappingResult *result)
      {
@@ -1789,7 +1801,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider tagGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/tags/localbycount.json"
+                                                                                       pathPattern:@"tags/localbycount.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -1885,7 +1897,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider filterImageCountsGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/images/filteredimgcounts.json"
+                                                                                       pathPattern:@"images/filteredimgcounts.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     
@@ -1938,7 +1950,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider filterImageCountsGetMapping]
                                                                                             method:RKRequestMethodAny
-                                                                                       pathPattern:@"/images/filteredimgcounts.json"
+                                                                                       pathPattern:@"images/filteredimgcounts.json"
                                                                                            keyPath:nil
                                                                                        statusCodes:statusCodes];
     

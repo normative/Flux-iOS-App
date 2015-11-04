@@ -29,7 +29,7 @@ typedef struct
 +(void)tangentplaneRotation:(GLKMatrix4 *)rot_M fromPose:(sensorPose *)sp;
 
 + (void) computeImagePoseInECEF:(sensorPose*)iPose
-                       userPose:(sensorPose)upose
+                       userPose:(sensorPose*)upose
                   hTranslation1:(double*)translation1
                      hRotation1:(double *)rotation1
                        hNormal1:(double *)normal1

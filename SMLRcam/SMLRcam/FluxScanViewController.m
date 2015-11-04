@@ -59,7 +59,9 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)kalmanStateChange
 {
-    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
+    // AETHON
+//    bool currentKalmanStateValid = [self.fluxDisplayManager.locationManager isKalmanSolutionValid];
+    bool currentKalmanStateValid = true;
     if (currentKalmanStateValid) {
         [self.cameraButton setAlpha:1.0];
     }
@@ -989,11 +991,13 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                                  withShining:NO];
     [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
 
-    
-    if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
-    {
-        [self.cameraButton setAlpha:0.4];
-    }
+    // AETHON: always enable camera button...
+    [self.cameraButton setAlpha:1.0];
+
+//    if (![self.fluxDisplayManager.locationManager isKalmanSolutionValid])
+//    {
+//        [self.cameraButton setAlpha:0.4];
+//    }
     
     debugPressCount = 0;
     

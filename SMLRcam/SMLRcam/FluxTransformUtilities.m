@@ -124,7 +124,7 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
 
 
 
-+ (void) computeImagePoseInECEF:(sensorPose*)iPose userPose:(sensorPose)upose hTranslation1:(double*)translation1 hRotation1:(double *)rotation1 hNormal1:(double *)normal1 hTranslation2:(double*)translation2 hRotation2:(double *)rotation2 hNormal2:(double *)normal2
++ (void) computeImagePoseInECEF:(sensorPose*)iPose userPose:(sensorPose*)upose hTranslation1:(double*)translation1 hRotation1:(double *)rotation1 hNormal1:(double *)normal1 hTranslation2:(double*)translation2 hRotation2:(double *)rotation2 hNormal2:(double *)normal2
 {
     float rotation44[16];
     
@@ -249,15 +249,15 @@ enum {SOLUTION1 = 0, SOLUTION2, SOLUTION1Neg, SOLUTION2Neg};
     //User pose matrix in tangent plane
     GLKMatrix4 matrixTP = GLKMatrix4MakeRotation(M_PI_2, 0.0,0.0, 1.0);
     matrixTP = GLKMatrix4Identity;
-    GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP, upose.rotationMatrix);
+    GLKMatrix4 planeRMatrix = GLKMatrix4Multiply(matrixTP, upose->rotationMatrix);
     
     iPose->rotationMatrix =GLKMatrix4Multiply(planeRMatrix, rotationMatrixT);
     
     iPose->position = GLKMatrix4MultiplyVector3(planeRMatrix, iPose->position);
 
     //ecef
-    iPose->position = GLKMatrix4MultiplyVector3([self computeInverseRotationMatrixFromPose:&upose], iPose->position);
-    iPose->ecef = GLKVector3Add(upose.ecef, iPose->position);
+    iPose->position = GLKMatrix4MultiplyVector3([self computeInverseRotationMatrixFromPose:upose], iPose->position);
+    iPose->ecef = GLKVector3Add(upose->ecef, iPose->position);
     
 }
 

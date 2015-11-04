@@ -207,11 +207,11 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     newPose.position.y = self.locationManager.location.coordinate.longitude;
     newPose.position.z = self.locationManager.location.altitude;
     
-    dist = [self haversineBetweenPosition1:newPose andPosition2:lastMotionPose];
+    dist = [self haversineBetweenPosition1:&newPose andPosition2:&lastMotionPose];
     //[self testHaversine];
     
-//    NSLog(@"New location: lat: %f, lon: %f, alt: %f, dist from last: %f", newPose.position.x, newPose.position.y, newPose.position.z, dist);
-//    NSLog(@"New location: lat: %f, lon: %f, alt: %f", newPose.position.x, newPose.position.y, newPose.position.z);
+    //NSLog(@"New location: lat: %f, lon: %f, alt: %f, dist from last: %f", newPose.position.x, newPose.position.y, newPose.position.z, dist);
+    //NSLog(@"New location: lat: %f, lon: %f, alt: %f", newPose.position.x, newPose.position.y, newPose.position.z);
     
     NSDate *now = [NSDate date];
     NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:lastMotionTime];
@@ -419,9 +419,10 @@ const double scanImageRequestRadius = 15.0;     // radius for scan image request
     
     matchImageMeta.userHomographyPose = baseImageMeta.userHomographyPose   ; //self.matchRecord.cfe.cameraPose;
     sensorPose imagePosePnP = matchImageMeta.imageHomographyPosePnP;
+    sensorPose uhPose = matchImageMeta.userHomographyPose;
     
     [FluxTransformUtilities computeImagePoseInECEF: &imagePosePnP
-                                          userPose: matchImageMeta.userHomographyPose
+                                          userPose: &uhPose
                                      hTranslation1: translation1
                                         hRotation1: rotation1
                                           hNormal1: normal1
@@ -1295,17 +1296,23 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
  */
 
 
-- (double) haversineBetweenPosition1:(sensorPose) p1 andPosition2:(sensorPose) p2
+- (double) haversineBetweenPosition1:(sensorPose *) p1 andPosition2:(sensorPose *) p2
 {
     double arcInRadians = 0.0;
-    double latitudeArc  = (p1.position.x - p2.position.x) * DEG_TO_RAD;
-    double longitudeArc = (p1.position.y - p2.position.y) * DEG_TO_RAD;
+    double latitudeArc  = (p1->position.x - p2->position.x) * DEG_TO_RAD;
+    double longitudeArc = (p1->position.y - p2->position.y) * DEG_TO_RAD;
     double latitudeH = sin(latitudeArc * 0.5);
     latitudeH *= latitudeH;
     double lontitudeH = sin(longitudeArc * 0.5);
     lontitudeH *= lontitudeH;
-    double tmp = cos(p1.position.x*DEG_TO_RAD) * cos(p2.position.y*DEG_TO_RAD);
+    double tmp = cos(p1->position.x*DEG_TO_RAD) * cos(p2->position.y*DEG_TO_RAD);
     arcInRadians = 2.0 * asin(sqrt(latitudeH + tmp*lontitudeH));
+    
+    if (isnan(arcInRadians) || isinf(arcInRadians))
+    {
+        NSLog(@"arcInRadians is NaN or Infinite\n");
+        return 0.0;
+    }
     
     return EARTH_RADIUS_IN_METERS * arcInRadians;
 }
@@ -1320,7 +1327,7 @@ static const double EARTH_RADIUS_IN_METERS = 6372797.560856;
     p2.position.x = 43.653527;
     p2.position.y = -79.383189;
     
-    distance = [self haversineBetweenPosition1:p1 andPosition2:p2];
+    distance = [self haversineBetweenPosition1:&p1 andPosition2:&p2];
     NSLog(@"distance = %f", distance);
 }
 

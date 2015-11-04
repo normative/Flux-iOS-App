@@ -17,7 +17,8 @@
 
 #import <Crashlytics/Crashlytics.h>
 
-#import "TestFlight.h"
+#import <RKLog.h>
+
 #import "GAI.h"
 #define GATrackingID @"UA-17713937-4"
 
@@ -25,7 +26,7 @@
 // Normative
 //#define TestFlightAppToken @"ef9c1a90-3dc3-4db5-8fad-867e31b66e8c"
 // SMLR
-#define TestFlightAppToken @"0eda8ac5-1a9d-460a-bdd4-872906086253"
+//#define TestFlightAppToken @"0eda8ac5-1a9d-460a-bdd4-872906086253"
 
 
 @implementation FluxAppDelegate
@@ -37,13 +38,15 @@ bool registeredForAPNS = false;
 
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
 
+/*
+// AETHON: disable notifications
 #ifdef DEBUG
     NSLog(@"startup: debug=1, server=%@", FluxServerURL);
     if (FluxServerURL != AWSProductionServerURL)
     {
         // Let the device know we want to receive push notifications - will hook into APNs sandbox.
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-         (/*UIRemoteNotificationTypeBadge |*/ UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+         (/ *UIRemoteNotificationTypeBadge |* / UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
         registeredForAPNS = true;
         apnsTokenKey = @"sandboxAPNSToken";
         [defaults setObject:@"" forKey:@"currAPNSToken"];
@@ -56,11 +59,11 @@ bool registeredForAPNS = false;
     }
 #else
     NSLog(@"startup: debug=0, server=%@", FluxServerURL);
-    if ((FluxServerURL == AWSProductionServerURL) /*|| (FluxServerURL == AWSStagingServerURL)*/)
+    if ((FluxServerURL == AWSProductionServerURL) / *|| (FluxServerURL == AWSStagingServerURL)* /)
     {
         // Let the device know we want to receive push notifications - will hook into APNs production server.
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-         (/*UIRemoteNotificationTypeBadge |*/ UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+         (/ *UIRemoteNotificationTypeBadge |* / UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
         registeredForAPNS = true;
         apnsTokenKey = @"productionAPNSToken";
         [defaults setObject:@"" forKey:@"currAPNSToken"];
@@ -73,7 +76,7 @@ bool registeredForAPNS = false;
     }
     
 #endif
-
+*/
     // get current app version and compare to last app version
     NSString *currAppVersion = [FluxDeviceInfoSingleton currentAppVersionString];
     NSString *oldAppVersion = [defaults objectForKey:@"App Version"];
@@ -184,9 +187,6 @@ bool registeredForAPNS = false;
     // Initialize tracker.
     [[GAI sharedInstance] trackerWithTrackingId:GATrackingID];
     
-    //testFlight analytics
-    [TestFlight takeOff:TestFlightAppToken];
-    
     RKLogConfigureByName("RestKit/Network", RKLogLevelCritical);
     //RKLogConfigureByName("RestKit/Network", RKLogLevelTrace);
     //RKLogConfigureByName("*", RKLogLevelOff);
@@ -230,7 +230,8 @@ bool registeredForAPNS = false;
                                       }];
     }
     
-    [Crashlytics startWithAPIKey:@"96c67aa1df4719849233b1bb254b5ff155e5eab3"];
+    // AETHON: disable Crashlytics
+    //[Crashlytics startWithAPIKey:@"96c67aa1df4719849233b1bb254b5ff155e5eab3"];
     
     
     return YES;

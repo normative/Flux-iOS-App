@@ -14,6 +14,7 @@
 #import "FluxRegistrationUserObject.h"
 #import "FluxCameraObject.h"
 #import <CoreLocation/CoreLocation.h>
+#import "Network.h"
 #import "RKObjectManager.h"
 
 typedef NSUUID FluxRequestID;

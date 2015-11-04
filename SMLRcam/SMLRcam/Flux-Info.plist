@@ -13,7 +13,7 @@
 	<key>CFBundleIcons~ipad</key>
 	<dict/>
 	<key>CFBundleIdentifier</key>
-	<string>is.smlr.flux.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>com.aethon-technology.$(PRODUCT_NAME:rfc1034identifier)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -21,7 +21,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.27</string>
+	<string>0.01</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>02</string>
+	<string>01</string>
 	<key>FacebookAppID</key>
 	<string>562834287134123</string>
 	<key>FacebookDisplayName</key>
@@ -43,6 +43,8 @@
 	<true/>
 	<key>NOTE: </key>
 	<string>THIS IS FOR EXAMPLE PURPOSES ONLY. DO NOT SHIP YOUR CONSUMER KEYS AS PLAIN TEXT IN YOUR INFO.PLIST! (note from a twitter demo)</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>buh</string>
 	<key>TWITTER_CONSUMER_KEY</key>
 	<string>X59BC0VnLB0aJ3kGdGxgg</string>
 	<key>TWITTER_CONSUMER_SECRET</key>
@@ -54,7 +56,9 @@
 		<string>AKKURATL.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
-	<array/>
+	<array>
+		<string>location</string>
+	</array>
 	<key>UIMainStoryboardFile</key>
 	<string>MainStoryboard</string>
 	<key>UIRequiredDeviceCapabilities</key>

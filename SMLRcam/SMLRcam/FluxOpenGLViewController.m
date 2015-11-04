@@ -309,7 +309,7 @@ int computeTangentParametersUser(sensorPose *usp, viewParameters *vp)
 }
 
 // compute the tangent plane location and direction vector for an image
-bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, viewParameters *vp, LocationDataType ldt)
+bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose *userPose, viewParameters *vp, LocationDataType ldt)
 {
     bool retval = true;
     
@@ -328,7 +328,7 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
         upRay = GLKVector3Make(0.0, 1.0, 0.0);
 
         //assumption that the point of image acquisition and the user lie in the same plane.
-        sp->position.z = userPose.position.z;
+        sp->position.z = userPose->position.z;
         
         if (sp->validECEFEstimate != 1)
         {
@@ -343,9 +343,9 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
     GLKVector3 P0 = GLKVector3Make(0.0, 0.0, 0.0);
     GLKVector3 V = GLKVector3Normalize(v);
     
-    positionTP.x = sp->ecef.x -userPose.ecef.x;
-    positionTP.y = sp->ecef.y -userPose.ecef.y;
-    positionTP.z = sp->ecef.z -userPose.ecef.z;
+    positionTP.x = sp->ecef.x -userPose->ecef.x;
+    positionTP.y = sp->ecef.y -userPose->ecef.y;
+    positionTP.z = sp->ecef.z -userPose->ecef.z;
     
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM_tan, positionTP);
     
@@ -367,7 +367,7 @@ bool computeTangentPlaneParametersImage(sensorPose *sp, sensorPose userPose, vie
 }
 
 //distance - distance of plane
-int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, sensorPose userPose, viewParameters *vp)
+int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, float distance, sensorPose *userPose, viewParameters *vp)
 {
     
     viewParameters viewP;
@@ -390,7 +390,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((userPose.rotationMatrix), planeNormalI);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((userPose->rotationMatrix), planeNormalI);
     
     //intersection with plane
     GLKVector3 N = GLKVector3Normalize(planeNormalRotated);
@@ -415,7 +415,7 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
 //    }
     
     //assumption that the point of image acquisition and the user lie in the same plane.
-    sp->position.z = userPose.position.z;
+    sp->position.z = userPose->position.z;
     
     
     if(sp->validECEFEstimate !=1)
@@ -423,9 +423,9 @@ int computeProjectionParametersImage(sensorPose *sp, GLKVector3 *planeNormal, fl
         [FluxTransformUtilities WGS84toECEFWithPose:sp];
     }
     
-    positionTP.x = sp->ecef.x - userPose.ecef.x;
-    positionTP.y = sp->ecef.y - userPose.ecef.y;
-    positionTP.z = sp->ecef.z - userPose.ecef.z;
+    positionTP.x = sp->ecef.x - userPose->ecef.x;
+    positionTP.y = sp->ecef.y - userPose->ecef.y;
+    positionTP.z = sp->ecef.z - userPose->ecef.z;
     
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM_proj, positionTP);
     
@@ -496,7 +496,7 @@ void init(){
 @implementation FluxOpenGLViewController
 
 //stored userPose ecef and image ecef
--(int) computeProjectionParametersMatchedImageWithImagePose:(sensorPose *)sp userHomographyPose:(sensorPose) uhpose planeNormal:(GLKVector3 *)pN Distance: (float) distance currentUserPose:(sensorPose) uPose viewParamters:(viewParameters *)vp
+-(int) computeProjectionParametersMatchedImageWithImagePose:(sensorPose *)sp userHomographyPose:(sensorPose *) uhpose planeNormal:(GLKVector3 *)pN Distance: (float) distance currentUserPose:(sensorPose *) uPose viewParamters:(viewParameters *)vp
 {
     viewParameters viewP;
 	GLKVector3 positionTP = GLKVector3Make(0.0, 0.0, 0.0);
@@ -516,7 +516,7 @@ void init(){
     
     //normal plane
     GLKVector3 planeNormalI = GLKVector3Make(0.0, 0.0, 1.0);
-    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((uPose.rotationMatrix), planeNormalI);
+    GLKVector3 planeNormalRotated =GLKMatrix4MultiplyVector3((uPose->rotationMatrix), planeNormalI);
     
     //intersection with plane
     GLKVector3 N = planeNormalRotated;
@@ -525,9 +525,9 @@ void init(){
     
    
     
-    positionTP.x = sp->ecef.x - uPose.ecef.x;
-    positionTP.y = sp->ecef.y - uPose.ecef.y;
-    positionTP.z = sp->ecef.z - uPose.ecef.z;
+    positionTP.x = sp->ecef.x - uPose->ecef.x;
+    positionTP.y = sp->ecef.y - uPose->ecef.y;
+    positionTP.z = sp->ecef.z - uPose->ecef.z;
     
     positionTP = GLKMatrix4MultiplyVector3(rotation_teM_proj, positionTP);
     P0 = positionTP;
@@ -920,12 +920,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     [self cleanUpTextures];
-    if([connection isVideoStabilizationEnabled] ==NO )
+    if([connection activeVideoStabilizationMode] == AVCaptureVideoStabilizationModeOff )
     {
         if([connection isVideoStabilizationSupported])
         {
             NSLog(@"Stablization supported, enabling");
-            [connection setEnablesVideoStabilizationWhenAvailable:YES];
+            [connection setPreferredVideoStabilizationMode:AVCaptureVideoStabilizationModeAuto];
             
         }
     }
@@ -1283,12 +1283,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         if (ire.imageMetadata.location_data_type == location_data_from_homography)
         {
             sensorPose imPose = ire.imageMetadata.imageHomographyPosePnP;
-            cansee = computeTangentPlaneParametersImage(&imPose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+            cansee = computeTangentPlaneParametersImage(&imPose, &localUserPose, &vp, ire.imageMetadata.location_data_type);
             ire.imageMetadata.imageHomographyPosePnP = imPose;
         }
         else
         {
-            cansee = computeTangentPlaneParametersImage(ire.imagePose, localUserPose, &vp, ire.imageMetadata.location_data_type);
+            cansee = computeTangentPlaneParametersImage(ire.imagePose, &localUserPose, &vp, ire.imageMetadata.location_data_type);
         }
         
         if (!cansee)
@@ -1540,20 +1540,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
         {
             scanimageobject = ire.imageMetadata;
             imagehomographyPose = scanimageobject.imageHomographyPosePnP;
+            sensorPose uhPose = scanimageobject.userHomographyPose;
             
             if(scanimageobject.location_data_type == location_data_from_homography)
             {
                 _validMetaData[idx] = ([self computeProjectionParametersMatchedImageWithImagePose:&imagehomographyPose
-                                                                              userHomographyPose:scanimageobject.userHomographyPose
+                                                                              userHomographyPose:&uhPose
                                                                                      planeNormal:&planeNormal
                                                                                         Distance:distance
-                                                                                 currentUserPose:_userPose
+                                                                                 currentUserPose:&_userPose
                                                                                     viewParamters:&vpimage]);
                 _renderingMatchedImage = 1;
             }
             else
             {
-                _validMetaData[idx] = computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, _userPose, &vpimage);
+                _validMetaData[idx] = computeProjectionParametersImage(ire.imagePose, &planeNormal, distance, &_userPose, &vpimage);
             }
             
             GLKMatrix4 scaleMatrix = GLKMatrix4Identity;
@@ -1733,8 +1734,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     //glBindRenderbufferOES(GL_RENDERBUFFER_OES, _colorRenderbuffer);
     
     // Get the size of the backing CAEAGLLayer
-    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
-    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
     
     NSInteger x = 0, y = 0, width = backingWidth, height = backingHeight;
     NSInteger dataLength = width * height * 4;
@@ -1755,22 +1756,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // OpenGL ES measures data in PIXELS
     // Create a graphics context with the target size measured in POINTS
     NSInteger widthInPoints, heightInPoints;
-    if (NULL != UIGraphicsBeginImageContextWithOptions) {
-        // On iOS 4 and later, use UIGraphicsBeginImageContextWithOptions to take the scale into consideration
-        // Set the scale parameter to your OpenGL ES view's contentScaleFactor
-        // so that you get a high-resolution snapshot when its value is greater than 1.0
         CGFloat scale = eaglview.contentScaleFactor;
         widthInPoints = width / scale;
         heightInPoints = height / scale;
         UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);
-    }
-    else {
-        // On iOS prior to 4, fall back to use UIGraphicsBeginImageContext
-        widthInPoints = width;
-        heightInPoints = height;
-        UIGraphicsBeginImageContext(CGSizeMake(widthInPoints, heightInPoints));
-    }
-    
+
     CGContextRef cgcontext = UIGraphicsGetCurrentContext();
     
     // UIKit coordinate system is upside down to GL/Quartz coordinate system

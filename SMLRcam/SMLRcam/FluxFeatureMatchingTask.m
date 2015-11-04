@@ -92,10 +92,11 @@ const double retryTimeIfInvalidMatchIfNotDisplayed = 5.0;
                 self.matchRecord.ire.imageMetadata.userHomographyPose = self.matchRecord.cfe.cameraPose;
                 
                 sensorPose imagePosePnP = self.matchRecord.ire.imageMetadata.imageHomographyPosePnP;
-                
+                sensorPose uhPose = self.matchRecord.ire.imageMetadata.userHomographyPose;
+
 //                [self computeImagePoseInECEF:&imagePosePnP
                 [FluxTransformUtilities computeImagePoseInECEF: &imagePosePnP
-                                                      userPose: self.matchRecord.ire.imageMetadata.userHomographyPose
+                                                      userPose: &uhPose
                                                  hTranslation1: translation1
                                                     hRotation1: rotation1
                                                       hNormal1: normal1

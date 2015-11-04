@@ -2,37 +2,39 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>FF1B8718-5456-4115-A25D-E90C1C2B9357</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Flux</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>768DAA74-3805-4C8A-8AA8-D9AAC1C50501</key>
-		<string>https://bitbucket.org/smlrteam/smlr_repo.git</string>
+		<key>5937A05150CB8C04ECF866C6D0AEEDEE42FC8B36</key>
+		<string>bitbucket.org:smlrteam/smlr_repo.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>SMLRcam/Flux.xcodeproj/project.xcworkspace</string>
+	<string>SMLRcam/SMLRcam/Flux.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>768DAA74-3805-4C8A-8AA8-D9AAC1C50501</key>
-		<string>../../..</string>
+		<key>5937A05150CB8C04ECF866C6D0AEEDEE42FC8B36</key>
+		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://bitbucket.org/smlrteam/smlr_repo.git</string>
+	<string>bitbucket.org:smlrteam/smlr_repo.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>768DAA74-3805-4C8A-8AA8-D9AAC1C50501</string>
+	<string>5937A05150CB8C04ECF866C6D0AEEDEE42FC8B36</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>768DAA74-3805-4C8A-8AA8-D9AAC1C50501</string>
+			<string>5937A05150CB8C04ECF866C6D0AEEDEE42FC8B36</string>
 			<key>IDESourceControlWCCName</key>
-			<string>smlr_repo</string>
+			<string>SMLR</string>
 		</dict>
 	</array>
 </dict>

@@ -54,6 +54,7 @@ const int magDeclinationDelay = 20.0;
         {
             return nil;
         }
+        
         self.locationManager.delegate = self;
         
         // This is the most important property to set for the manager. It ultimately determines how the manager will
@@ -75,9 +76,10 @@ const int magDeclinationDelay = 20.0;
         
         [self loadTeleportLocationIndex];
     }
-    
-    [self initKFilter];
-    [self startKFilter];
+
+    // AETHON
+    //[self initKFilter];
+    //[self startKFilter];
     
     return self;
 }
@@ -86,7 +88,14 @@ const int magDeclinationDelay = 20.0;
 {
     NSLog(@"Location Services Status:%u",CLLocationManager.authorizationStatus);
     
-    if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorized){
+    // New for iOS 8
+    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)])
+    {
+        [self.locationManager requestWhenInUseAuthorization];
+    }
+
+
+    if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse){
         [self beginLocatingAfterPermissions];
     }
 
@@ -96,11 +105,12 @@ const int magDeclinationDelay = 20.0;
             [self beginLocatingAfterPermissions];
         }];
     }
-    else if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusDenied || CLLocationManager.authorizationStatus == kCLAuthorizationStatusRestricted){
+    else if (CLLocationManager.authorizationStatus == kCLAuthorizationStatusDenied || CLLocationManager.authorizationStatus == kCLAuthorizationStatusRestricted)
+    {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Uh oh...", nil) message:@"Location services is disabled for Flux. Go to the Settings app and enable location services for Flux." delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles: nil];
         [alert show];
     }
-    //won't ever hit
+    // won't ever hit
     else{
         
     }
@@ -316,6 +326,7 @@ const float magDeclinationThreshold = 0.001; // about 100m?
     // Grab last entry for now, since we should be getting all of them
     Geolocation kfgeolocation;
     
+
     if ([newLocations count] > 1)
     {
         NSLog(@"Received more than one location (%lu)", (unsigned long)[newLocations count]);
@@ -368,6 +379,9 @@ const float magDeclinationThreshold = 0.001; // about 100m?
 //                                      horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
 //                                      course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
 //    }
+
+    // AETHON: use this for some testing
+    // self.teleportLocationIndex = 3; // HACK!!!
     
     if (1 == self.teleportLocationIndex)
     {
@@ -382,7 +396,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
     }
     else if (3 == self.teleportLocationIndex)
     {
-        CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(63.75, -68.53);     // Middle of Nowhere Location
+        //CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(63.75, -68.53);     // Middle of Nowhere Location
+        CLLocationCoordinate2D fakecoord = CLLocationCoordinate2DMake(43.324722, -79.812943);     // end of driveway
         newLocation = [[CLLocation alloc] initWithCoordinate:fakecoord altitude:0.0
                                           horizontalAccuracy:newLocation.horizontalAccuracy verticalAccuracy:newLocation.verticalAccuracy
                                                       course:newLocation.course speed:newLocation.speed timestamp:newLocation.timestamp];
@@ -431,6 +446,8 @@ const float magDeclinationThreshold = 0.001; // about 100m?
     [self updateUserPose];
     
     [self notifyLocationUpdate];
+
+
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
