@@ -260,7 +260,7 @@
         [cell.checkboxButton setHidden:YES];
     }
     if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],fluxImageTypeStrings[thumb], [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxSecureServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],fluxImageTypeStrings[thumb], [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
         [cell.imageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
         [cell.imageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -340,13 +340,13 @@
         NSRange range = [self rangeForPhotoBrowserAtIndex:(int)indexPath.row];
 
         for (int i = (int)range.location; i<range.length; i++) {
-            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
+            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxSecureServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
             IDMPhoto* photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
             
             [photo setUserID:[[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]intValue]];
             [photo setUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService]];
             [photo setImageID:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]imageID]];
-            [photo setCaption:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]description]];
+            [photo setCaption:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]theDescription]];
             [photo setTimestamp:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]timestamp]];
             
             [photos addObject:photo];
@@ -396,7 +396,7 @@
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser editedCaption:(NSString *)caption forPhotoAtIndex:(NSUInteger)index{
-    [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] setDescription:caption];
+    [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] setTheDescription:caption];
 }
 
 - (void)calculateNewPrivacy{

@@ -32,7 +32,7 @@ PODS:
   - RKValueTransformers (1.1.2)
   - SOCKit (1.1)
   - TransitionKit (2.1.1)
-  - UICKeyChainStore (1.0.4)
+  - UICKeyChainStore (2.1.0)
 
 DEPENDENCIES:
   - CocoaLumberjack
@@ -44,7 +44,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   AFNetworking: cf8e418e16f0c9c7e5c3150d019a3c679d015018
-  CocoaLumberjack: 555162681b9c20a271909b235c43f6bbd5d512e1
+  CocoaLumberjack: 944738b29d757439ed513db94d7e5cd74f90b849
   GoogleAnalytics-iOS-SDK: c0e1b70cd54e0061c3edf27ddf91948895de73cd
   ISO8601DateFormatterValueTransformer: 52da467d6ec899d6aedda8e48280ac92e8ee97e6
   objectiveflickr: aed169dae1eb5a5550ca78f7efd7ccde2e4c26e5
@@ -53,6 +53,8 @@ SPEC CHECKSUMS:
   RKValueTransformers: 66ac5e4f077fdbe3496e792d89eeff4c3eb67701
   SOCKit: c7376ac262bea9115b8f749358f762522a47d392
   TransitionKit: 3a14b6acc7cf2d1dd3e454e24dbad1cfab9a1ef1
-  UICKeyChainStore: 1ea19ca86236d1d53ba4d12ad28cf6bbb6c927e6
+  UICKeyChainStore: f1cbd42216a113f0165de1e733e62905b8823432
 
-COCOAPODS: 0.38.2
+PODFILE CHECKSUM: 9ce2328642874e39f981039ed71ed193a9f03165
+
+COCOAPODS: 1.1.0.rc.2

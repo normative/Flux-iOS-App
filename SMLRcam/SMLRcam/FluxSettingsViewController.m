@@ -143,7 +143,12 @@ FluxSettingsSection: NSUInteger {
 //}
 //
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 30.0;
+    if (section != 0){
+        return 30.0;
+    } else {
+        return 0.0;
+    }
+    
 }
 //
 //- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
@@ -180,10 +185,10 @@ FluxSettingsSection: NSUInteger {
 //    else
     switch (section) {
         case socialAccounts_section:
-            return 2;
+            return 0;
             break;
         case walkthroughReset_section:
-            return 2;
+            return 1;
             break;
         case logout_section:
             return (SHOW_APPSTORE_FEEDBACK ? 3: 2);

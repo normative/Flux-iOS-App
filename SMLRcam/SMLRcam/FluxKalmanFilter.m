@@ -53,7 +53,7 @@
     
     H = malloc(MEASUREMENTV_SIZE * STATEV_SIZE * sizeof(double));
     Q = malloc(STATEV_SIZE * STATEV_SIZE * sizeof(double));
-    I = malloc(STATEV_SIZE * STATEV_SIZE * sizeof(double));
+    II = malloc(STATEV_SIZE * STATEV_SIZE * sizeof(double));
     
     y = malloc(MEASUREMENTV_SIZE * sizeof(double));
     S = malloc(MEASUREMENTV_SIZE * MEASUREMENTV_SIZE * sizeof (double));
@@ -166,7 +166,7 @@
     X[3] = X_p[3] + T41[3];
     //7
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 4, 4 , 2, 1.0, K, 2, H, 4, 0.0, T44, 4);
-    cblas_daxpy(16, -1.0,I, 1, T44,1 );
+    cblas_daxpy(16, -1.0,II, 1, T44,1 );
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, 4, 4 , 4, -1.0, T44, 4, P_p, 4, 0.0, P, 4);
     //cblas_dcopy(16, P_pp, 1, P, 1);
    // NSLog(@"X[%f %f %f %f",X[0],X[1],X[2],X[3]);
@@ -189,7 +189,7 @@
     [self zeroMatWithMat:Z numElements:MEASUREMENTV_SIZE];
     [self zeroMatWithMat:H numElements:MEASUREMENTV_SIZE * STATEV_SIZE];
     [self zeroMatWithMat:Q numElements:MEASUREMENTV_SIZE * MEASUREMENTV_SIZE];
-    [self zeroMatWithMat:I numElements:STATEV_SIZE * STATEV_SIZE];
+    [self zeroMatWithMat:II numElements:STATEV_SIZE * STATEV_SIZE];
     
     [self zeroMatWithMat:y numElements:MEASUREMENTV_SIZE];
     [self zeroMatWithMat:S numElements:MEASUREMENTV_SIZE * MEASUREMENTV_SIZE];
@@ -211,7 +211,7 @@
     F[0] = F[5] =F[10]=F[15] = 1.0;
     F[2] =0.1;
     F[7] =0.1;
-    I[0] = I[5] =I[10] =I[15] = 1.0;
+    II[0] = II[5] =II[10] =II[15] = 1.0;
     
     //uncertainity in noise????
     //tune

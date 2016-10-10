@@ -21,7 +21,7 @@
     double *Z; //measurement
     double *H; //measurement function
     double *Q; //measurement noise
-    double *I; //Identity matrix
+    double *II; //Identity matrix
 
     double *y;
     double *S;

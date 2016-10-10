@@ -13,7 +13,7 @@
 	<key>CFBundleIcons~ipad</key>
 	<dict/>
 	<key>CFBundleIdentifier</key>
-	<string>com.aethon-technology.$(PRODUCT_NAME:rfc1034identifier)</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -44,7 +44,7 @@
 	<key>NOTE: </key>
 	<string>THIS IS FOR EXAMPLE PURPOSES ONLY. DO NOT SHIP YOUR CONSUMER KEYS AS PLAIN TEXT IN YOUR INFO.PLIST! (note from a twitter demo)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>buh</string>
+	<string>Location access is required to use Flux</string>
 	<key>TWITTER_CONSUMER_KEY</key>
 	<string>X59BC0VnLB0aJ3kGdGxgg</string>
 	<key>TWITTER_CONSUMER_SECRET</key>

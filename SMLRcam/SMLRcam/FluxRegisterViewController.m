@@ -107,9 +107,11 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(twitterChanged) name:ACAccountStoreDidChangeNotification object:nil];
     
-//    [twitterButton setEnabled:NO];
-//    [facebookButton setEnabled:NO];
-//    [signInOptionsLabel setAlpha:0.3];    
+    [twitterButton setHidden:YES];
+    [facebookButton setHidden:YES];
+    [topSeparator setHidden:YES];
+    [signInOptionsLabel setHidden:YES];
+//    [signInOptionsLabel setAlpha:0.3];
 }
 
 - (void)didReceiveMemoryWarning
@@ -723,7 +725,7 @@
         [store setString:userObject.username forKey:FluxUsernameKey];
         [store setString:userObject.password forKey:FluxPasswordKey];
         [store setString:[NSString stringWithFormat:@"%i",userObject.userID] forKey:FluxUserIDKey];
-//        [store setString:[NSString stringWithString:userObject.auth_token] forKey:FluxTokenKey];
+        [store setString:[NSString stringWithString:userObject.auth_token] forKey:FluxTokenKey];
         [store setString:userObject.email forKey:FluxEmailKey];
         [store synchronize];
 

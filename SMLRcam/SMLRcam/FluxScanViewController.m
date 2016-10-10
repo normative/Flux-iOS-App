@@ -358,7 +358,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     else if (tappedImageObject.imageID > 0)
     {
         // last resort
-        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxServerURL,tappedImageObject.imageID, fluxImageTypeStrings[ghrq]];
+        NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@",FluxSecureServerURL,tappedImageObject.imageID, fluxImageTypeStrings[ghrq]];
         photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
     }
     
@@ -1023,6 +1023,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
 - (void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
+//    [self.view setNeedsLayout];
 }
 
 - (void)viewWillAppear:(BOOL)animated{

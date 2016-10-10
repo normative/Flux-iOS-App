@@ -239,6 +239,9 @@
 }
 
 - (IBAction)editProfilePictureCell:(id)sender {
+    
+    [bioTextField resignFirstResponder];
+    
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
         
     {

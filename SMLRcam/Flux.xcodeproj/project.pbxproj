@@ -52,9 +52,9 @@
 		22D54EAC17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAB17BEBBA1005E817E /* Flux_LocationServiceSingleton_Test.m */; };
 		22D54EAE17BEC678005E817E /* Flux_MotionManagerSingleton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22D54EAD17BEC678005E817E /* Flux_MotionManagerSingleton.m */; };
 		22DB643917DA2FF3000F4AA7 /* FluxCompassButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 22DB643817DA2FF3000F4AA7 /* FluxCompassButton.m */; };
+		4643DFAE09531AB72A90254F /* libPods-Flux.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFCC0483628443A50DB4D04F /* libPods-Flux.a */; };
 		89A513621829A86F00E25AA1 /* FluxKalmanFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */; };
 		89A513641829AED800E25AA1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89A513631829AED800E25AA1 /* Accelerate.framework */; };
-		91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DCDC5AB9480146C1BC963853 /* libPods.a */; };
 		AA0314AA18D1101300121AA0 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA06304C18DA3351005690CD /* FluxFilterCountTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */; };
 		AA06305218DB61E4005690CD /* FluxTutorialView_35.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */; };
@@ -279,6 +279,7 @@
 		17BBAC88191F0AC600C2DB0A /* GeomagnetismLibrary.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = GeomagnetismLibrary.c; sourceTree = "<group>"; };
 		17BBAC8A191F0C6200C2DB0A /* wmm_cof.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = wmm_cof.c; sourceTree = "<group>"; };
 		17BBAC8B191F0C6200C2DB0A /* wmm_cof.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wmm_cof.h; sourceTree = "<group>"; };
+		1FFA8513B6E4F45A03025F01 /* Pods-Flux.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Flux.release.xcconfig"; path = "Pods/Target Support Files/Pods-Flux/Pods-Flux.release.xcconfig"; sourceTree = "<group>"; };
 		2204371817B925870017EA93 /* FluxMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxMapViewController.h; sourceTree = "<group>"; };
 		2204371917B925870017EA93 /* FluxMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxMapViewController.m; sourceTree = "<group>"; };
 		2204371B17B926260017EA93 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
@@ -302,7 +303,7 @@
 		89A513601829A86F00E25AA1 /* FluxKalmanFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxKalmanFilter.h; sourceTree = "<group>"; };
 		89A513611829A86F00E25AA1 /* FluxKalmanFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxKalmanFilter.m; sourceTree = "<group>"; };
 		89A513631829AED800E25AA1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
-		9425B7087CDD03919315BF78 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		91DD469EBCB505649CD5188B /* Pods-Flux.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Flux.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Flux/Pods-Flux.debug.xcconfig"; sourceTree = "<group>"; };
 		AA06304A18DA3351005690CD /* FluxFilterCountTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterCountTableViewCell.h; sourceTree = "<group>"; };
 		AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterCountTableViewCell.m; sourceTree = "<group>"; };
 		AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxTutorialView_35.xib; sourceTree = "<group>"; };
@@ -558,7 +559,7 @@
 		AAFD995F18E9EEB900C95F18 /* ProgressHUD.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ProgressHUD.bundle; sourceTree = "<group>"; };
 		AAFD996018E9EEB900C95F18 /* ProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgressHUD.h; sourceTree = "<group>"; };
 		AAFD996118E9EEB900C95F18 /* ProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProgressHUD.m; sourceTree = "<group>"; };
-		DCDC5AB9480146C1BC963853 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EFCC0483628443A50DB4D04F /* libPods-Flux.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Flux.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F206B62518C630E900ABAD99 /* FluxLoggerService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxLoggerService.h; sourceTree = "<group>"; };
 		F206B62618C630E900ABAD99 /* FluxLoggerService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxLoggerService.m; sourceTree = "<group>"; };
 		F206B62818C63E9B00ABAD99 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -605,7 +606,6 @@
 		F2ED4249183EFE1A007A825A /* FluxFeatureMatchingRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFeatureMatchingRecord.m; sourceTree = "<group>"; };
 		F2ED424B183F8A19007A825A /* FluxCameraFrameElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxCameraFrameElement.h; sourceTree = "<group>"; };
 		F2ED424C183F8A19007A825A /* FluxCameraFrameElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxCameraFrameElement.m; sourceTree = "<group>"; };
-		F40D680B0B35E2AB1B3DC3EB /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -643,8 +643,8 @@
 				AAF1BD031843BE3D00909AFF /* FacebookSDK.framework in Frameworks */,
 				17604B671785CA59005CF054 /* UIKit.framework in Frameworks */,
 				17604B691785CA59005CF054 /* Foundation.framework in Frameworks */,
-				91297719F33A48B0A0A59B35 /* libPods.a in Frameworks */,
 				AADFF1CE18AE63A1003BEE8C /* libGoogleAnalyticsServices.a in Frameworks */,
+				4643DFAE09531AB72A90254F /* libPods-Flux.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -668,7 +668,7 @@
 				220FE07017BEACAD00A7E379 /* Flux Tests */,
 				17604B651785CA59005CF054 /* Frameworks */,
 				17604B641785CA59005CF054 /* Products */,
-				31FC8CF19474726D4748B677 /* Pods */,
+				AE7EF60329ED50583E3F0334 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -716,8 +716,8 @@
 				17604B661785CA59005CF054 /* UIKit.framework */,
 				17604B681785CA59005CF054 /* Foundation.framework */,
 				17604B6A1785CA59005CF054 /* CoreGraphics.framework */,
-				DCDC5AB9480146C1BC963853 /* libPods.a */,
 				220FE06C17BEACAD00A7E379 /* SenTestingKit.framework */,
+				EFCC0483628443A50DB4D04F /* libPods-Flux.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -809,15 +809,6 @@
 				AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */,
 			);
 			name = TutorialView;
-			sourceTree = "<group>";
-		};
-		31FC8CF19474726D4748B677 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				9425B7087CDD03919315BF78 /* Pods.debug.xcconfig */,
-				F40D680B0B35E2AB1B3DC3EB /* Pods.release.xcconfig */,
-			);
-			name = Pods;
 			sourceTree = "<group>";
 		};
 		AA06FE6C181EBB2C00D87658 /* Login */ = {
@@ -1503,6 +1494,15 @@
 			path = ProgressHUD;
 			sourceTree = "<group>";
 		};
+		AE7EF60329ED50583E3F0334 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				91DD469EBCB505649CD5188B /* Pods-Flux.debug.xcconfig */,
+				1FFA8513B6E4F45A03025F01 /* Pods-Flux.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		F240346117E1037F0088CA2D /* Data Store */ = {
 			isa = PBXGroup;
 			children = (
@@ -1596,12 +1596,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 17604B861785CA59005CF054 /* Build configuration list for PBXNativeTarget "Flux" */;
 			buildPhases = (
-				4E86FD0E4ACB4B7BA6F744C8 /* Check Pods Manifest.lock */,
+				2E404E27A87A1D4EB062DF15 /* [CP] Check Pods Manifest.lock */,
 				17604B5F1785CA59005CF054 /* Sources */,
 				17604B601785CA59005CF054 /* Frameworks */,
 				17604B611785CA59005CF054 /* Resources */,
-				60BE47FE412146DF8B284AB5 /* Copy Pods Resources */,
 				AA3890DA1912B3A0003F6B02 /* ShellScript */,
+				E1FCCF4F5E38A707F554C1D8 /* [CP] Embed Pods Frameworks */,
+				8A6E9D21D1CC3573AD4E63CE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1642,7 +1643,7 @@
 				ORGANIZATIONNAME = Normative;
 				TargetAttributes = {
 					17604B621785CA59005CF054 = {
-						DevelopmentTeam = 6C845YBPP2;
+						DevelopmentTeam = 3R58XXN523;
 					};
 					220FE06A17BEACAD00A7E379 = {
 						TestTargetID = 17604B621785CA59005CF054;
@@ -1710,34 +1711,34 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		4E86FD0E4ACB4B7BA6F744C8 /* Check Pods Manifest.lock */ = {
+		2E404E27A87A1D4EB062DF15 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		60BE47FE412146DF8B284AB5 /* Copy Pods Resources */ = {
+		8A6E9D21D1CC3573AD4E63CE /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Flux/Pods-Flux-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AA3890DA1912B3A0003F6B02 /* ShellScript */ = {
@@ -1752,6 +1753,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "./Crashlytics.framework/run 96c67aa1df4719849233b1bb254b5ff155e5eab3 57131df6d3ed8c1b4bea7308f98c3aaa0a9748441942c0c220ea5b78b85caecc";
 			shellScript = "";
+		};
+		E1FCCF4F5E38A707F554C1D8 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Flux/Pods-Flux-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1983,7 +1999,16 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Public/**",
+					"${PODS_ROOT}/Headers/Public/SOCKit/**",
+					"${PODS_ROOT}/Headers/Public/RestKit/**",
+					"${PODS_ROOT}/Headers/Public/RKValueTransformers/**",
+					"${PODS_ROOT}/Headers/Public/ISO8601DateFormatterValueTransformer/**",
+					"${PODS_ROOT}/Headers/Public/Bolts/**",
+					"${PODS_ROOT}/Headers/Public/AFNetworking/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -2007,7 +2032,16 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				HEADER_SEARCH_PATHS = (
+					"${PODS_ROOT}/Headers/Public/**",
+					"${PODS_ROOT}/Headers/Public/SOCKit/**",
+					"${PODS_ROOT}/Headers/Public/RestKit/**",
+					"${PODS_ROOT}/Headers/Public/RKValueTransformers/**",
+					"${PODS_ROOT}/Headers/Public/ISO8601DateFormatterValueTransformer/**",
+					"${PODS_ROOT}/Headers/Public/Bolts/**",
+					"${PODS_ROOT}/Headers/Public/AFNetworking/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
@@ -2016,12 +2050,14 @@
 		};
 		17604B871785CA59005CF054 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9425B7087CDD03919315BF78 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 91DD469EBCB505649CD5188B /* Pods-Flux.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 3R58XXN523;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					$SRCROOT,
@@ -2031,10 +2067,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.normative.Flux;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
@@ -2046,12 +2083,14 @@
 		};
 		17604B881785CA59005CF054 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F40D680B0B35E2AB1B3DC3EB /* Pods.release.xcconfig */;
+			baseConfigurationReference = 1FFA8513B6E4F45A03025F01 /* Pods-Flux.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = 3R58XXN523;
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					$SRCROOT,
@@ -2061,9 +2100,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SMLRcam/Flux-Prefix.pch";
 				INFOPLIST_FILE = "SMLRcam/Flux-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.normative.Flux;
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;

@@ -51,7 +51,7 @@
     resultsArray = [[NSMutableArray alloc]init];
     resultsImageArray = [[NSMutableArray alloc]init];
     
-    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", @"Contacts", nil];
+    socialImportArray = [[NSArray alloc]initWithObjects: @"Contacts", nil];
 //    socialImportArray = [[NSArray alloc]initWithObjects:@"Twitter", @"Facebook", nil];
     
     searchState = searched;
@@ -220,7 +220,7 @@
             __weak FluxFollowerCell *weakCell = cell;
             NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
             
-            NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxServerURL,cell.userObject.userID,@"thumb", token];
+            NSString*urlString = [NSString stringWithFormat:@"%@users/%i/avatar?size=%@&auth_token=%@",FluxSecureServerURL,cell.userObject.userID,@"thumb", token];
             
             [cell.profileImageView setImageWithURLRequest:[[NSURLRequest alloc] initWithURL:[NSURL URLWithString:urlString]]
                                          placeholderImage:[UIImage imageNamed:@"emptyProfileImage_big"]
@@ -303,6 +303,8 @@
 
 #pragma mark - Social Cell Delegate
 - (void)FriendFollowerCellButtonWasTapped:(FluxFollowerCell *)friendFollowerCell{
+    [userSearchBar resignFirstResponder];
+    
     int index = (int)[addUsersTableView indexPathForCell:friendFollowerCell].row;
     NSMutableArray*options = [[NSMutableArray alloc]init];
     

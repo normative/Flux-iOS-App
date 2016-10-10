@@ -86,6 +86,8 @@
     
     [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"bio"]];
     
+    
+    
     return mapping;
 }
 
@@ -94,10 +96,12 @@
     
     [mapping addAttributeMappingsFromDictionary:@{
                                                   @"id":                @"userID",
-                                                  @"has_pic":            @"hasProfilePic"
+                                                  @"auth_token":            @"auth_token",
+                                                  @"email":              @"email",
+                                                  @"username":           @"username"
                                                   }];
     
-    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"bio"]];
+//    [mapping addAttributeMappingsFromArray:@[@"name", @"password", @"username", @"email", @"auth_token", @"bio"]];
     
     return mapping;
 }
@@ -119,7 +123,7 @@
                                                   @"time_stamp":    @"timestamp"
                                                   }];
     
-    [mapping addAttributeMappingsFromArray:@[@"description", @"privacy", ]];
+    [mapping addAttributeMappingsFromArray:@[@"theDescription", @"privacy", ]];
     
     return mapping;
 }

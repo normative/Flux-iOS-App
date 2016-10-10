@@ -19,12 +19,12 @@
 
 typedef NSUUID FluxRequestID;
 
-extern NSString* const AWSProductionServerURL;
-extern NSString* const AWSTestServerURL;
-extern NSString* const AWSStagingServerURL;
-extern NSString* const DSDLocalTestServerURL;
+//extern NSString* const AWSProductionServerURL;
+//extern NSString* const AWSTestServerURL;
+//extern NSString* const AWSStagingServerURL;
+//extern NSString* const DSDLocalTestServerURL;
 
-extern NSString* const FluxServerURL;
+//extern NSString* const FluxServerURL;
 extern NSString* const FluxSecureServerURL;
 
 @class FluxNetworkServices;
