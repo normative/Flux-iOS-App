@@ -67,6 +67,9 @@
     
     [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
     [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
+    
+    [facebookButton setHidden:YES];
+    [twitterButton setHidden:YES];
 
     
     

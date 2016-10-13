@@ -1644,6 +1644,11 @@
 				TargetAttributes = {
 					17604B621785CA59005CF054 = {
 						DevelopmentTeam = 3R58XXN523;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
 					};
 					220FE06A17BEACAD00A7E379 = {
 						TestTargetID = 17604B621785CA59005CF054;
@@ -2075,7 +2080,7 @@
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;
 			};
@@ -2107,7 +2112,7 @@
 				PRODUCT_NAME = Flux;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 				VALID_ARCHS = "armv7 arm64";
 				WRAPPER_EXTENSION = app;
 			};

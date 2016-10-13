@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>01</string>
+	<string>06</string>
 	<key>FacebookAppID</key>
 	<string>562834287134123</string>
 	<key>FacebookDisplayName</key>
@@ -43,8 +43,12 @@
 	<true/>
 	<key>NOTE: </key>
 	<string>THIS IS FOR EXAMPLE PURPOSES ONLY. DO NOT SHIP YOUR CONSUMER KEYS AS PLAIN TEXT IN YOUR INFO.PLIST! (note from a twitter demo)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>The camera is required to use Flux</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location access is required to use Flux</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Save images you capture in flux</string>
 	<key>TWITTER_CONSUMER_KEY</key>
 	<string>X59BC0VnLB0aJ3kGdGxgg</string>
 	<key>TWITTER_CONSUMER_SECRET</key>
@@ -54,10 +58,6 @@
 		<string>AKKURAT.ttf</string>
 		<string>AKKURATB.ttf</string>
 		<string>AKKURATL.ttf</string>
-	</array>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>location</string>
 	</array>
 	<key>UIMainStoryboardFile</key>
 	<string>MainStoryboard</string>
