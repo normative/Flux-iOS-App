@@ -13,6 +13,8 @@
 #import "FluxKalmanFilter.h"
 #import "FluxOpenGLCommon.h"
 
+typedef void(^geocodeCompletion)(CLLocation*);
+
 @class FluxMotionManagerSingleton;
 
 extern NSString* const FluxLocationServicesSingletonDidChangeKalmanFilterState;
@@ -100,5 +102,6 @@ extern NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibratio
 - (void)registerPedDisplacementKFilter:(int)direction;
 - (void)reverseGeocodeLocation:(CLLocation*)thelocation;
 - (bool)isKalmanSolutionValid;
+- (void) goecodeLocation:(NSString *) string withCompletion:(geocodeCompletion) completionBlock;
 
 @end

@@ -26,7 +26,7 @@ NSString* const FluxLocationServicesSingletonDidUpdatePlacemark = @"FluxLocation
 
 NSString* const FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy = @"FluxLocationServicesSingletonKeyCompleteHeadingCalibrationHeadingAccuracy";
 
-const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notification
+const float maxUpdateTime = 5.0;    // wait maximum of 5s before forcing a location update notificatio
 
 const double kalmanFilterMinHeadingAccuracy = 45.0;
 const double kalmanFilterMinHorizontalAccuracy = 30.0;
@@ -535,6 +535,23 @@ const float magDeclinationThreshold = 0.001; // about 100m?
         }
     }];
 }
+
+- (void) goecodeLocation:(NSString *) string withCompletion:(geocodeCompletion) completionBlock{
+    CLGeocoder* theGeocoder = [[CLGeocoder alloc] init];
+    
+    [theGeocoder geocodeAddressString:string inRegion:nil completionHandler:^(NSArray<CLPlacemark *> * _Nullable placemarks, NSError * _Nullable error) {
+        
+        if (placemarks.count > 0)
+        {
+            CLPlacemark *placemark = [placemarks objectAtIndex:0];
+            completionBlock(placemark.location);
+            return;
+        }
+        
+        completionBlock(nil);
+    }];
+}
+
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
 {

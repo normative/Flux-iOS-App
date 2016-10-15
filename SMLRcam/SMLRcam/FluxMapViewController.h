@@ -22,7 +22,7 @@
 
 @class FluxScanImageObject;
 
-@interface FluxMapViewController : GAITrackedViewController<MKMapViewDelegate, UIGestureRecognizerDelegate, FiltersTableViewDelegate, MIMapViewDelegate>
+@interface FluxMapViewController : GAITrackedViewController<MKMapViewDelegate, UIGestureRecognizerDelegate, FiltersTableViewDelegate, MIMapViewDelegate, UISearchBarDelegate>
 {
     CLLocationCoordinate2D lastSynchedLocation;
      double lastRadius;

@@ -165,10 +165,10 @@ bool registeredForAPNS = false;
     [[UINavigationBar appearance]setBarTintColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     
-    if ([UITextField conformsToProtocol:@protocol(UIAppearance)])
-    {
-        [[UITextField appearance] setTintColor:[UIColor whiteColor]];
-    }
+//    if ([UITextField conformsToProtocol:@protocol(UIAppearance)])
+//    {
+//        [[UITextField appearance] setTintColor:[UIColor whiteColor]];
+//    }
     
     if ([UIButton conformsToProtocol:@protocol(UIAppearance)])
     {

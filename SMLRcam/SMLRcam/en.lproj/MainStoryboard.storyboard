@@ -1502,6 +1502,11 @@
                                     <outlet property="delegate" destination="YQi-AC-BdW" id="Enu-U9-q0v"/>
                                 </connections>
                             </mapView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backgroundGradient_bottom" translatesAutoresizingMaskIntoConstraints="NO" id="KaW-bx-Gwk">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="138" id="3rI-RI-Jzy"/>
+                                </constraints>
+                            </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="backgroundGradient_top" translatesAutoresizingMaskIntoConstraints="NO" id="Qs4-tt-toV">
                                 <constraints>
                                     <constraint firstAttribute="height" constant="138" id="Qnq-9e-NHE"/>
@@ -1537,12 +1542,12 @@
                             <searchBar contentMode="redraw" placeholder="Address" translatesAutoresizingMaskIntoConstraints="NO" id="gRf-3U-PdM">
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PZi-tX-RCa">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PZi-tX-RCa">
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="Unw-Hz-oEw"/>
-                                    <constraint firstAttribute="width" constant="46" id="bRv-zt-zt0"/>
+                                    <constraint firstAttribute="width" constant="30" id="bRv-zt-zt0"/>
                                 </constraints>
-                                <state key="normal" title="O"/>
+                                <state key="normal" image="MapMe"/>
                                 <connections>
                                     <action selector="didPressCenterButton:" destination="YQi-AC-BdW" eventType="touchUpInside" id="gHJ-fT-YZR"/>
                                 </connections>
@@ -1551,19 +1556,22 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Qs4-tt-toV" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" id="By1-NW-t2M"/>
+                            <constraint firstItem="TrC-Gm-Dmv" firstAttribute="top" secondItem="KaW-bx-Gwk" secondAttribute="bottom" id="E59-D2-3jw"/>
                             <constraint firstItem="PZi-tX-RCa" firstAttribute="trailing" secondItem="jRo-Js-xDR" secondAttribute="trailingMargin" id="FzZ-qF-bCV"/>
                             <constraint firstAttribute="trailing" secondItem="Qs4-tt-toV" secondAttribute="trailing" id="GsS-1c-TdV"/>
+                            <constraint firstItem="KaW-bx-Gwk" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" id="Hiu-Sy-c53"/>
                             <constraint firstItem="gBs-aE-2LI" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="38" id="IS8-1X-OZk"/>
-                            <constraint firstItem="gRf-3U-PdM" firstAttribute="top" secondItem="PZi-tX-RCa" secondAttribute="bottom" constant="13" id="KSO-gH-0fx"/>
+                            <constraint firstAttribute="trailing" secondItem="KaW-bx-Gwk" secondAttribute="trailing" id="NKM-QW-d1f"/>
                             <constraint firstAttribute="trailing" secondItem="hT0-9E-Cfm" secondAttribute="trailing" id="NeP-z9-wPG"/>
                             <constraint firstItem="hT0-9E-Cfm" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" id="XmP-zx-h5k"/>
                             <constraint firstItem="hT0-9E-Cfm" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" id="ao1-eh-St3"/>
                             <constraint firstItem="Qs4-tt-toV" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" id="bS9-St-Rm6"/>
                             <constraint firstItem="gBs-aE-2LI" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" constant="25" id="byb-31-h9b"/>
+                            <constraint firstItem="gRf-3U-PdM" firstAttribute="top" secondItem="PZi-tX-RCa" secondAttribute="bottom" constant="10" id="cY8-zF-gid"/>
                             <constraint firstAttribute="trailing" secondItem="ka0-3T-Kej" secondAttribute="trailing" constant="25" id="isb-lm-PQ1"/>
+                            <constraint firstItem="TrC-Gm-Dmv" firstAttribute="top" secondItem="hT0-9E-Cfm" secondAttribute="bottom" id="opk-gq-Q72"/>
                             <constraint firstItem="gRf-3U-PdM" firstAttribute="leading" secondItem="jRo-Js-xDR" secondAttribute="leading" id="qfm-jt-7EW"/>
                             <constraint firstItem="ka0-3T-Kej" firstAttribute="top" secondItem="jRo-Js-xDR" secondAttribute="top" constant="38" id="rh3-Oz-45y"/>
-                            <constraint firstItem="gRf-3U-PdM" firstAttribute="top" secondItem="hT0-9E-Cfm" secondAttribute="bottom" id="t3i-ha-HPo"/>
                             <constraint firstAttribute="trailing" secondItem="gRf-3U-PdM" secondAttribute="trailing" id="ubK-v8-QCo"/>
                             <constraint firstItem="TrC-Gm-Dmv" firstAttribute="top" secondItem="gRf-3U-PdM" secondAttribute="bottom" id="zm5-D8-yC7"/>
                         </constraints>
@@ -3344,6 +3352,7 @@
     </scenes>
     <resources>
         <image name="MapBackToggle" width="140" height="140"/>
+        <image name="MapMe" width="26" height="26"/>
         <image name="backgroundGradient_bottom" width="640" height="276"/>
         <image name="backgroundGradient_top" width="640" height="276"/>
         <image name="camButton" width="140" height="140"/>

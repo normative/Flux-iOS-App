@@ -161,6 +161,15 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [self setFiltersButtonCountTitle];
 }
 
+#pragma mark - SearchBar Delegate
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    [self.locationManager goecodeLocation:searchBar.text withCompletion:^(CLLocation* location) {
+        if (location != nil){
+            [fluxMapView setCenterCoordinate:location.coordinate animated:YES];
+        }
+    }];
+}
+
 
 #pragma mark - IBActions
 
@@ -256,6 +265,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
                                              selector:@selector(positionSearchBar:)
                                                  name:UIKeyboardWillShowNotification
                                                object:nil];
+    
+    [self.searchBar setBackgroundImage:[UIImage new]];
+    [self.searchBar setTranslucent:YES];
+    self.searchBar.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
