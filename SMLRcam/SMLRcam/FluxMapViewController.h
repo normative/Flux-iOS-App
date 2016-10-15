@@ -45,6 +45,8 @@
 @property (nonatomic, assign) UIInterfaceOrientation myViewOrientation;
 @property (nonatomic, weak) FluxDisplayManager *fluxDisplayManager;
 @property (nonatomic, weak) FluxLocationServicesSingleton *locationManager;
+@property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *searchBarBottomConstraint;
 
 @property (nonatomic, strong) FluxDataFilter *currentDataFilter;
 

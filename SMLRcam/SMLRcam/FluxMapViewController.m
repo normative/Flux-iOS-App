@@ -74,7 +74,15 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     }
 }
 
+- (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated{
+    if (self.searchBar.isFirstResponder){
+        [self.searchBar resignFirstResponder];
+    }
+}
+
 -(void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated{
+    
+    
     
     //limits zooming out
     if ([fluxMapView zoomLevel] <= 14) {
@@ -83,8 +91,6 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
         [fluxMapView setRegion:adjustedRegion animated:YES];
         return;
     }
-    
-    
     
     MKCoordinateRegion region = mapView.region;
     CLLocationCoordinate2D centerCoordinate = mapView.centerCoordinate;
@@ -199,6 +205,33 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [filterButton setTitle:[NSString stringWithFormat:@"%i",(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]] forState:UIControlStateNormal];
 }
 
+- (void)positionSearchBar:(NSNotification*) notification{
+    CGFloat keyboardHeight;
+    double animationDuration;
+    
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    NSDictionary* keyboardInfo = [notification userInfo];
+    CGRect keyboardFrame = [[keyboardInfo valueForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    animationDuration = [[keyboardInfo valueForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    
+    if(notification.name == UIKeyboardWillShowNotification || notification.name == UIKeyboardDidShowNotification) {
+        if(UIInterfaceOrientationIsPortrait(orientation))
+            keyboardHeight = keyboardFrame.size.height;
+        else
+            keyboardHeight = keyboardFrame.size.width;
+    } else
+        keyboardHeight = 0;
+    
+    [UIView animateWithDuration:animationDuration animations:^{
+        self.searchBarBottomConstraint.constant = keyboardHeight;
+        [self.view layoutIfNeeded];
+    }];
+}
+
+- (IBAction)didPressCenterButton:(id)sender {
+    [fluxMapView setUserTrackingMode:MKUserTrackingModeFollow animated:YES];
+}
 #pragma mark - view lifecycle
 
 - (void)viewDidLoad
@@ -214,6 +247,15 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
     [transitionFadeView setAlpha:0.0];
     [transitionFadeView setHidden:YES];
     [self.view addSubview:transitionFadeView];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(positionSearchBar:)
+                                                 name:UIKeyboardWillHideNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(positionSearchBar:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated

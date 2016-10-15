@@ -26,7 +26,7 @@
 #import "GAIDictionaryBuilder.h"
 
 // define this symbol to enable access to the debug menu
-// #define ENABLE_DEBUG_VC
+ #define ENABLE_DEBUG_VC
 
 #define IS_RETINA ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] && ([UIScreen mainScreen].scale == 2.0))
 #define IS_4INCHSCREEN  ([[UIScreen mainScreen] bounds].size.height == 568)?TRUE:FALSE
@@ -39,7 +39,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 @synthesize timeFilterControl;
 
 - (void)didUpdateNearbyImageList:(NSNotification *)notification{
-    [filterButton setTitle:[NSString stringWithFormat:@"%i",self.fluxDisplayManager.nearbyListCount] forState:UIControlStateNormal];
     if (firstContent && self.fluxDisplayManager.nearbyListCount > 5) {
         firstContent = NO;
         [timeFilterControl setViewForContentCount:self.fluxDisplayManager.nearbyListCount reverseAnimated:YES];
@@ -280,7 +279,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 #pragma mark - Time Filtering
 - (void)setupTimeFilterControl{
     timeFilterControl.fluxDisplayManager = self.fluxDisplayManager;
-    [timeFilterControl setScrollIndicatorCenter:CGPointMake(self.view.center.x, radarButton.center.y)];
     [timeFilterControl setDelegate:self];
 }
 
@@ -407,8 +405,6 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
     dateFormatter = [[NSDateFormatter alloc]init];
     [dateFormatter setDateFormat:@"MMM dd, yyyy"];
     dateFormatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
-    
-    filterButton.contentEdgeInsets = UIEdgeInsetsMake(0.0, 1.0, 0.0, 0.0);
     
     [dateRangeLabel setFont:[UIFont fontWithName:@"Akkurat" size:15]];
     [dateRangeLabel setTextColor:[UIColor whiteColor]];
@@ -815,17 +811,17 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)setProfileBadgeCount:(int)badgeValue{
-    if (badgeValue > 0) {
-        [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",badgeValue]];
-        [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
-        if (!friendRequestsBadge.superview) {
-            [self.leftDrawerButton addSubview:friendRequestsBadge];
-        }
-    }
-    else{
-        [friendRequestsBadge setBadgeText:@""];
-        [friendRequestsBadge removeFromSuperview];
-    }
+//    if (badgeValue > 0) {
+//        [friendRequestsBadge setBadgeText:[NSString stringWithFormat:@"%i",badgeValue]];
+//        [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
+//        if (!friendRequestsBadge.superview) {
+//            [self.leftDrawerButton addSubview:friendRequestsBadge];
+//        }
+//    }
+//    else{
+//        [friendRequestsBadge setBadgeText:@""];
+//        [friendRequestsBadge removeFromSuperview];
+//    }
 }
 
 #pragma mark Other Camera view methods
@@ -910,12 +906,12 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 }
 
 - (void)updateFilterIcon{
-    if ([self.currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
-        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
-    }
-    else{
-        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
-    }
+//    if ([self.currentDataFilter isEqualToFilter:[[FluxDataFilter alloc]init]]) {
+//        [filterButton setBackgroundImage:[UIImage imageNamed:@"filterButton"] forState:UIControlStateNormal];
+//    }
+//    else{
+//        [filterButton setBackgroundImage:[UIImage imageNamed:@"FilterButton_active"] forState:UIControlStateNormal];
+//    }
 }
 
 #pragma mark Filters Delegate
@@ -971,16 +967,16 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 
     self.currentDataFilter = [[FluxDataFilter alloc] init];
     
-    [imageCaptureButton removeFromSuperview];
-    [imageCaptureButton setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [imageCaptureButton setFrame:CGRectMake(imageCaptureButton.frame.origin.x, self.view.frame.size.height-imageCaptureButton.frame.size.height-2, imageCaptureButton.frame.size.width, imageCaptureButton.frame.size.height)];
-    [self.view addSubview:imageCaptureButton];
+//    [imageCaptureButton removeFromSuperview];
+//    [imageCaptureButton setTranslatesAutoresizingMaskIntoConstraints:YES];
+//    [imageCaptureButton setFrame:CGRectMake(imageCaptureButton.frame.origin.x, self.view.frame.size.height-imageCaptureButton.frame.size.height-2, imageCaptureButton.frame.size.width, imageCaptureButton.frame.size.height)];
+//    [self.view addSubview:imageCaptureButton];
     [imageCaptureButton setHidden:YES];
     
-    [self.bottomToolbarView removeFromSuperview];
-    [self.bottomToolbarView setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.bottomToolbarView setFrame:CGRectMake(0, self.view.frame.size.height-83, self.bottomToolbarView.frame.size.width, self.bottomToolbarView.frame.size.height)];
-    [ScanUIContainerView addSubview:self.bottomToolbarView];
+//    [self.bottomToolbarView removeFromSuperview];
+//    [self.bottomToolbarView setTranslatesAutoresizingMaskIntoConstraints:YES];
+//    [self.bottomToolbarView setFrame:CGRectMake(0, self.view.frame.size.height-83, self.bottomToolbarView.frame.size.width, self.bottomToolbarView.frame.size.height)];
+//    [ScanUIContainerView addSubview:self.bottomToolbarView];
     
     friendRequestsBadge = [CustomBadge customBadgeWithString:@"0"
                                              withStringColor:[UIColor whiteColor]
@@ -989,7 +985,7 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
                                          withBadgeFrameColor:[UIColor clearColor]
                                                    withScale:1.0
                                                  withShining:NO];
-    [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
+//    [friendRequestsBadge setFrame:CGRectMake(self.leftDrawerButton.frame.size.width-20-friendRequestsBadge.frame.size.width/2, self.leftDrawerButton.frame.origin.y+10, friendRequestsBadge.frame.size.width, friendRequestsBadge.frame.size.height)];
 
     // AETHON: always enable camera button...
     [self.cameraButton setAlpha:1.0];
@@ -1029,6 +1025,11 @@ NSString* const FluxScanViewDidAcquireNewPictureLocalIDKey = @"FluxScanViewDidAc
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     [self checkForFollowerRequests];
+}
+
+- (void) viewDidLayoutSubviews{
+    [super viewDidLayoutSubviews];
+    [timeFilterControl setScrollIndicatorCenter:CGPointMake(self.view.bounds.size.width - 25 - (70 /2), radarButton.center.y)];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

@@ -9,6 +9,7 @@
 #import "FluxCompassButton.h"
 #import "FluxDisplayManager.h"
 #import "FluxImageRenderElement.h"
+#import "Masonry.h"
 
 @interface FluxCompassButton()
 
@@ -64,10 +65,20 @@
 // first time creating a RadarView
 - (void)createRadarView
 {
-    radarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+    radarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     UIImageView*bgView = [[UIImageView alloc]initWithImage:[UIImage imageNamed:@"radarSegmentsBase"]];
     [bgView setFrame:radarView.bounds];
     [radarView addSubview:bgView];
+    
+    [self addSubview:radarView];
+    
+    [radarView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self);
+    }];
+    
+    [bgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(radarView);
+    }];
     
     radarStatusArray = [[NSMutableArray alloc] init];
     radarImagesArray = [[NSMutableArray alloc] init];
@@ -78,18 +89,22 @@
     {
         [radarStatusArray addObject:[NSNumber numberWithInt:0]];
         UIImageView *radarImageView = [[UIImageView alloc] initWithImage:onImg];
-        [radarImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        [radarImageView setFrame: CGRectMake(0, 0, 0, 0)];
         [radarImageView setContentMode:UIViewContentModeScaleAspectFit];
         float rotateDegree = (i * 30);
         radarImageView.transform = CGAffineTransformMakeRotation(rotateDegree * M_PI/180);
         [radarImageView setHidden:YES];
         
         [radarView addSubview:radarImageView];
+        
+        [radarImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.equalTo(radarView);
+        }];
         [radarImagesArray addObject:radarImageView];
     }
     
     UIImageView *radarHeadingImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"radarButtonCenter"]];
-    [radarHeadingImageView setFrame: CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+    [radarHeadingImageView setFrame: CGRectMake(0, 0, 0, 0)];
     [radarHeadingImageView setContentMode:UIViewContentModeScaleAspectFit];
     
     radarHeadingImageView.userInteractionEnabled = NO;
@@ -101,8 +116,12 @@
     CGAffineTransform transform = CGAffineTransformMakeRotation(0.0);
     radarView.transform = transform;
     
-    [self addSubview:radarView];
     [self addSubview:radarHeadingImageView];
+    
+    [radarHeadingImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self);
+    }];
+    
     [self bringSubviewToFront:radarHeadingImageView];
 }
 

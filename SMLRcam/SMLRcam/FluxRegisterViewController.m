@@ -271,6 +271,7 @@
                 [cell.textField setKeyboardType:UIKeyboardTypeDefault];
                 [cell.textField setReturnKeyType:UIReturnKeyNext];
                 [cell.textField setSecureTextEntry:NO];
+                cell.textField.text = @"hackathon";
                 [cell.textField setTag:88];
                 
                 
@@ -313,6 +314,7 @@
                 [cell.textField setSecureTextEntry:YES];
                 [cell.textField setReturnKeyType:UIReturnKeyNext];
                 [cell.textField setTag:10];
+                cell.textField.text = @"password";
                 [cell.warningLabel removeFromSuperview];
             }
                 break;

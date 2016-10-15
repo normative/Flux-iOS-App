@@ -65,7 +65,6 @@ typedef enum {
     UIImage *capturedImage;
     UIImageView*blurView;
     __strong IBOutlet FluxImageCaptureButton *imageCaptureButton;
-    IBOutlet UIButton *filterButton;
     IBOutlet BBCyclingLabel *dateRangeLabel;
     NSTimer *dateRangeLabelHideTimer;
 
@@ -107,9 +106,7 @@ typedef enum {
 }
 
 @property (strong, nonatomic) IBOutlet UIView *bottomToolbarView;
-@property (nonatomic, weak) IBOutlet UIButton * leftDrawerButton;
 @property (strong, nonatomic) IBOutlet UIButton *cameraButton;
-@property (nonatomic, weak) IBOutlet UIButton * rightDriawerButton;
 @property (weak, nonatomic) IBOutlet UIView *photoApprovalView;
 @property (nonatomic, strong) IBOutlet FluxTimeFilterControl*timeFilterControl;
 @property (nonatomic, strong) FluxDisplayManager *fluxDisplayManager;

@@ -7,4 +7,5 @@ target 'Flux' do
 	pod 'CocoaLumberjack'
 	pod 'objectiveflickr'
 	pod 'PEPhotoCropEditor'
+	pod 'Masonry'
 end
