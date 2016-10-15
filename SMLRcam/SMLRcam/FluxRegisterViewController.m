@@ -374,6 +374,12 @@
 #pragma mark - Login/Signup
 
 - (void)checkCurrentLoginState{
+    [UICKeyChainStore setString:@"hackathon" forKey:FluxUsernameKey service:FluxService];
+    [UICKeyChainStore setString:@"password" forKey:FluxPasswordKey service:FluxService];
+    [UICKeyChainStore setString:@"309" forKey:FluxUserIDKey service:FluxService];
+    [UICKeyChainStore setString:@"Zfy8_83cnxC8friJDFgC" forKey:FluxTokenKey service:FluxService];
+    [UICKeyChainStore setString:@"kei+hack@normative.com" forKey:FluxEmailKey service:FluxService];
+
     NSString *token = [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService];
     NSString *userID = [UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService];
     NSString *username = [UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService];
