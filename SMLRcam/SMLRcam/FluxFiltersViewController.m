@@ -88,7 +88,7 @@
     imageCount = [NSNumber numberWithInt:count];
     self.radius = 15;
     
-    socialFiltersArray = [[NSArray alloc]initWithObjects:myPicsFilterObject, followingFilterObject, nil];
+    socialFiltersArray = [[NSArray alloc]init];
     topTagsArray = [[NSMutableArray alloc]init];
     if ([theDataFilter.hashTags isEqualToString:@""]) {
         selectedTags = [[NSMutableArray alloc]init];
@@ -211,7 +211,11 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
-    return 30.0;
+    if ([(NSArray*)[rightDrawerTableViewArray objectAtIndex:section]count] == 0){
+        return 0;
+    } else {
+        return 30.0;
+    }
 }
 
 - (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{

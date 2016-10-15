@@ -375,7 +375,7 @@ static int captureImageID = -1;
              
              //UI updates
              [approveButton setHidden:NO];
-             [undoButton setHidden:NO];
+             [(FluxScanViewController*)self.parentViewController.parentViewController setCameraButtonEnabled:NO];
          }
      }];
 }

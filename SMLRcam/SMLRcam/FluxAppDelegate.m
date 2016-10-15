@@ -162,7 +162,7 @@ bool registeredForAPNS = false;
                                                            NSForegroundColorAttributeName: [UIColor whiteColor],
                                                            } forState:UIControlStateNormal];
     
-    [[UINavigationBar appearance]setBarTintColor:[UIColor colorWithRed:234/255.0 green:63/255.0 blue:63/255.0 alpha:1.0]];
+    [[UINavigationBar appearance]setBarTintColor:[UIColor colorWithRed:237/255.0 green:36/255.0 blue:79/255.0 alpha:1.0]];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
     
 //    if ([UITextField conformsToProtocol:@protocol(UIAppearance)])

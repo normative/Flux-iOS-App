@@ -63,17 +63,6 @@
         [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
 
     }
-
-    
-    [twitterButton setImage:[UIImage imageNamed:@"shareTwitter_on"] forState:UIControlStateSelected];
-    [facebookButton setImage:[UIImage imageNamed:@"shareFacebook_on"] forState:UIControlStateSelected];
-    
-    [facebookButton setHidden:YES];
-    [twitterButton setHidden:YES];
-
-    
-    
-    [privacyButton setImage:[UIImage imageNamed:@"shareEveryone_off"] forState:UIControlStateSelected];
     
     removedImages = [[NSMutableIndexSet alloc]init];
 }
@@ -91,14 +80,12 @@
     [bgView setImage:[tools blurImage:image withBlurLevel:0.6]];
     [self.view insertSubview:bgView belowSubview:containerView];
     
-    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"What did you capture?"]];
+    [ImageAnnotationTextView setPlaceholderText:[NSString stringWithFormat:@"Add any additional notes"]];
     if (defaultAnnotation)
     {
         [ImageAnnotationTextView setText:defaultAnnotation];
     }
     [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
-    [facebookButton setHidden:YES];
-    [twitterButton setHidden:YES];
     
     images = capturedObjects;
 }
@@ -110,7 +97,6 @@
     [self.view insertSubview:bgView belowSubview:containerView];
     
     isSnapshot = YES;
-    [privacyButton setHidden:YES];
     
     
     [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
@@ -269,15 +255,10 @@
         
         if ([delegate respondsToSelector:@selector(ImageAnnotationViewDidPop:andApproveWithChanges:)]) {
             NSMutableArray*socialPostArr = [[NSMutableArray alloc]init];
-            if (facebookButton.isSelected && !facebookButton.isHidden) {
-                [socialPostArr addObject:FacebookService];
-            }
-            if (twitterButton.isSelected && !twitterButton.isHidden) {
-                [socialPostArr addObject:TwitterService];
-            }
+            
             NSDictionary*dict = [NSDictionary dictionaryWithObjectsAndKeys:ImageAnnotationTextView.text, @"annotation",
                                  removedImages, @"removedImages",
-                                 [NSNumber numberWithBool:privacyButton.isSelected], @"privacy",
+                                 NO, @"privacy",
                                  socialPostArr, @"social",
                                  [NSNumber numberWithBool:isSnapshot], @"snapshot",
                                  [images firstObject] , @"snapshotImage",
@@ -286,64 +267,6 @@
         }
         
         [self dismissViewControllerAnimated:YES completion:nil];
-    }
-}
-- (IBAction)privacyButtonAction:(id)sender {
-    if (!isSnapshot) {
-        [privacyButton setSelected:!privacyButton.selected];
-    }
-}
-
-- (IBAction)facebookButtonAction:(id)sender {
-    if (facebookButton.selected) {
-        [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
-    }
-    else{
-        NSString*facebook = [UICKeyChainStore stringForKey:FluxUsernameKey service:FacebookService];
-        
-        if (facebook) {
-            FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
-            [socialManager setDelegate:self];
-            [socialManager linkFacebookWithPublishPermissions];
-        }
-        else{
-            [UIActionSheet showInView:self.view
-                            withTitle:@"Facebook"
-                    cancelButtonTitle:@"Cancel"
-               destructiveButtonTitle:nil
-                    otherButtonTitles:@[@"Link"]
-                             tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                                 if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                     //link facebook
-                                     FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
-                                     [socialManager setDelegate:self];
-                                     [socialManager linkFacebookWithPublishPermissions];
-                                 }
-                             }];
-        }
-    }
-}
-
-- (IBAction)twitterButtonAction:(id)sender {
-    NSString*twitter = [UICKeyChainStore stringForKey:FluxUsernameKey service:TwitterService];
-    
-    if (twitter) {
-        [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
-    }
-    else{
-        [UIActionSheet showInView:self.view
-                        withTitle:@"Twitter"
-                cancelButtonTitle:@"Cancel"
-           destructiveButtonTitle:nil
-                otherButtonTitles:@[@"Link"]
-                         tapBlock:^(UIActionSheet *actionSheet, NSInteger buttonIndex) {
-                             if (buttonIndex != actionSheet.cancelButtonIndex) {
-                                 //link twitter
-                                 FluxSocialManager*socialManager = [[FluxSocialManager alloc]init];
-                                 [socialManager setDelegate:self];
-                                 [socialManager linkTwitter];
-                             }
-                         }];
     }
 
 }
@@ -356,39 +279,8 @@
     }
 }
 
-- (void)SocialManagerDidAddFacebookPublishPermissions:(FluxSocialManager *)socialManager{
-    [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
-}
-
-- (void)SocialManagerDidFailToAddAddFacebookPublishPermissions:(FluxSocialManager *)socialManager andDidShowError:(BOOL)errorShownAlready{
-    [ProgressHUD showError:@"Failed to link Facebook account"];
-}
-
-//- (void)SocialManager:(FluxSocialManager *)socialManager didLinkFacebookAccountWithName:(NSString *)name{
-//    [self toggleSwitchSocialButton:facebookButton state:!facebookButton.selected];
-//
-//}
-
-- (void)SocialManager:(FluxSocialManager *)socialManager didLinkTwitterAccountWithUsername:(NSString *)username{
-    [self toggleSwitchSocialButton:twitterButton state:!twitterButton.selected];
-}
-
-- (void)SocialManager:(FluxSocialManager *)socialManager didFailToLinkSocialAccount:(NSString *)accountType withMessage:(NSString *)message{
-    if (message) {
-        [ProgressHUD showError:message];
-    }
-    else{
-        [ProgressHUD showError:[NSString stringWithFormat:@"Failed to link %@",accountType]];
-    }
-}
-
 - (void)checkPostButton{
-    if (facebookButton.isSelected || twitterButton.isSelected) {
-        [self.navigationItem.rightBarButtonItem setTitle:@"Post"];
-    }
-    else{
-        [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
-    }
+    [self.navigationItem.rightBarButtonItem setTitle:@"Save"];
 }
 
 @end
