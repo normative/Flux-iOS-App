@@ -9,6 +9,8 @@
 #import "FluxMapViewController.h"
 #import "ProgressHUD.h"
 #import "FluxScanViewController.h"
+#import "FluxPhotosViewController.h"
+#import "FluxImageTools.h"
 
 #import "GAI.h"
 #import "GAIDictionaryBuilder.h"
@@ -159,6 +161,10 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 - (void)MIMapViewAddingAnnotationsDidFinish:(MIMapView *)mapView{
     //update the title when the annotations animations are over
     [self setFiltersButtonCountTitle];
+}
+
+-(void)MIMapViewDidSelectAnnotationWithObjects:(NSArray *)mapImageObjects{
+    [self performSegueWithIdentifier:@"photosSegue" sender:mapImageObjects];
 }
 
 #pragma mark - SearchBar Delegate
@@ -348,19 +354,33 @@ NSString* const userAnnotationIdentifer = @"userAnnotation";
 #pragma mark Transitions
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
-    //set the delegate of the navControllers top view (our filters View)
-    UINavigationController*tmp = segue.destinationViewController;
-    FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
-    [filtersVC setDelegate:self];
-    [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
-    CLLocation*loc = [[CLLocation alloc]initWithCoordinate:fluxMapView.centerCoordinate altitude:self.locationManager.location.altitude horizontalAccuracy:self.locationManager.location.horizontalAccuracy verticalAccuracy:self.locationManager.location.verticalAccuracy course:self.locationManager.location.course speed:self.locationManager.location.speed timestamp:self.locationManager.location.timestamp];
-    [filtersVC setLocation:loc];
-    
-    MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
-    int count = (int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count];
-    [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]];
-    [self animationPushBackScaleDown];
-    [filtersVC setRadius:lastRadius];
+    if ([[segue identifier] isEqualToString:@"photosSegue"]){
+        UINavigationController*nav = segue.destinationViewController;
+        
+        UIImageView*bgView = [[UIImageView alloc]initWithFrame:self.view.frame];
+        FluxImageTools *imageTools = [[FluxImageTools alloc]init];
+        [bgView setImage:[imageTools blurImage:[UIImage imageNamed:@"mapBG"] withBlurLevel:0.6]];
+        [bgView setBackgroundColor:[UIColor darkGrayColor]];
+        [nav.view insertSubview:bgView atIndex:0];
+        
+        FluxPhotosViewController * photosView = (FluxPhotosViewController*)[nav topViewController];
+        [photosView setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
+        [photosView setPhotos:sender];
+    } else {
+        //set the delegate of the navControllers top view (our filters View)
+        UINavigationController*tmp = segue.destinationViewController;
+        FluxFiltersViewController* filtersVC = (FluxFiltersViewController*)tmp.topViewController;
+        [filtersVC setDelegate:self];
+        [filtersVC setFluxDataManager:self.fluxDisplayManager.fluxDataManager];
+        CLLocation*loc = [[CLLocation alloc]initWithCoordinate:fluxMapView.centerCoordinate altitude:self.locationManager.location.altitude horizontalAccuracy:self.locationManager.location.horizontalAccuracy verticalAccuracy:self.locationManager.location.verticalAccuracy course:self.locationManager.location.course speed:self.locationManager.location.speed timestamp:self.locationManager.location.timestamp];
+        [filtersVC setLocation:loc];
+        
+        MKMapRect narrowedScreenRect = [self shrunkenMapRect:fluxMapView.visibleMapRect];
+        int count = (int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count];
+        [filtersVC prepareViewWithFilter:self.currentDataFilter andInitialCount:(int)[[fluxMapView annotationsInMapRect:narrowedScreenRect]count]];
+        [self animationPushBackScaleDown];
+        [filtersVC setRadius:lastRadius];
+    }
 }
 
 #pragma mark Transition Animations

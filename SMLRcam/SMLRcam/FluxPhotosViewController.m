@@ -6,9 +6,10 @@
 //  Copyright (c) 2013 SMLR. All rights reserved.
 //
 
-#import "FluxProfilePhotosViewController.h"
+#import "FluxPhotosViewController.h"
 #import "KTCheckboxButton.h"
 #import "FluxProfileImageObject.h"
+#import "FluxMapImageObject.h"
 #import "FluxNetworkServices.h"
 #import "UICKeyChainStore.h"
 #import "ProgressHUD.h"
@@ -17,11 +18,11 @@
 #define enabledColor [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]
 #define disabledColor [UIColor colorWithWhite:0.5 alpha:0.5]
 
-@interface FluxProfilePhotosViewController ()
+@interface FluxPhotosViewController ()
 
 @end
 
-@implementation FluxProfilePhotosViewController
+@implementation FluxPhotosViewController
 
 @synthesize delegate;
 
@@ -237,7 +238,7 @@
 #pragma mark - CollectionView
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return picturesArray.count;
+    return _photos.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -259,8 +260,8 @@
     else{
         [cell.checkboxButton setHidden:YES];
     }
-    if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image]) {
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxSecureServerURL,[[picturesArray objectAtIndex:indexPath.row]imageID],fluxImageTypeStrings[thumb], [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
+    if (![(FluxMapImageObject*)[_photos objectAtIndex:indexPath.row]image]) {
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxSecureServerURL,[[_photos objectAtIndex:indexPath.row]imageID],fluxImageTypeStrings[thumb], [UICKeyChainStore stringForKey:FluxTokenKey service:FluxService]]]];
         [cell.imageView setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.1]];
         [cell.imageView setImageWithURLRequest:request placeholderImage:[UIImage imageNamed:@"nothing"]
              success:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
@@ -271,7 +272,7 @@
                      //                 CGImageRelease(imageRef);
                      //
                      //                 [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:cropppedImg];
-                     [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]setImage:image];
+                     [(FluxMapImageObject*)[_photos objectAtIndex:indexPath.row]setImage:image];
                      [collectionView reloadItemsAtIndexPaths:[NSArray arrayWithObject:indexPath]];
                  }
 
@@ -281,16 +282,17 @@
              }];
     }
     
-    cell.imageView.image = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]image];
+    cell.imageView.image = [(FluxMapImageObject*)[_photos objectAtIndex:indexPath.row]image];
     [cell.lockImageView setImage:[UIImage imageNamed:@"lockClosed"]];
+    [cell.lockImageView setAlpha:0.0];
     
-    BOOL locked = [(FluxProfileImageObject*)[picturesArray objectAtIndex:indexPath.row]privacy];
-    if (locked) {
-        [cell.lockImageView setAlpha:1.0];
-    }
-    else{
-        [cell.lockImageView setAlpha:0.0];
-    }
+//    BOOL locked = [(FluxProfileImageObject*)[_photos objectAtIndex:indexPath.row]privacy];
+//    if (locked) {
+//        [cell.lockImageView setAlpha:1.0];
+//    }
+//    else{
+//        
+//    }
     
     [cell.imageView setAlpha:1.0];
     
@@ -340,21 +342,21 @@
         NSRange range = [self rangeForPhotoBrowserAtIndex:(int)indexPath.row];
 
         for (int i = (int)range.location; i<range.length; i++) {
-            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxSecureServerURL, [[picturesArray objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
+            NSString*urlString = [NSString stringWithFormat:@"%@images/%i/renderimage?size=%@&auth_token=%@",FluxSecureServerURL, [[_photos objectAtIndex:i]imageID], fluxImageTypeStrings[quarterhd],token];
             IDMPhoto* photo = [[IDMPhoto alloc] initWithURL:[NSURL URLWithString:urlString]];
             
             [photo setUserID:[[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService]intValue]];
             [photo setUsername:[UICKeyChainStore stringForKey:FluxUsernameKey service:FluxService]];
-            [photo setImageID:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]imageID]];
-            [photo setCaption:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]theDescription]];
-            [photo setTimestamp:[(FluxProfileImageObject*)[picturesArray objectAtIndex:i]timestamp]];
+            [photo setImageID:[(FluxMapImageObject*)[_photos objectAtIndex:i]imageID]];
+            [photo setCaption:[(FluxMapImageObject*)[_photos objectAtIndex:i]theDescription]];
+            [photo setTimestamp:[(FluxMapImageObject*)[_photos objectAtIndex:i]timestamp]];
             
             [photos addObject:photo];
         }
         FluxPhotoCollectionCell*cell = (FluxPhotoCollectionCell*)[collectionView cellForItemAtIndexPath:indexPath];
         IDMPhotoBrowser *browser = [[IDMPhotoBrowser alloc] initWithPhotos:photos animatedFromView:cell.contentView];
         [browser setDisplayToolbar:NO];
-        [browser setDisplayDoneButtonBackgroundImage:NO];
+//        [browser setDisplayDoneButtonBackgroundImage:NO];
         [browser setInitialPageIndex:indexPath.row];
         [browser setDelegate:self];
         
@@ -376,7 +378,7 @@
 
 - (NSRange)rangeForPhotoBrowserAtIndex:(int)index{
     NSRange range;
-    int count = (int)picturesArray.count;
+    int count = (int)_photos.count;
     if (count > 50) {
         if (index > 20) {
             range = NSMakeRange(index-20, 40);
@@ -386,7 +388,7 @@
         range = NSMakeRange(0, count-1);
     }
     
-    return NSMakeRange(0, (int)picturesArray.count);
+    return NSMakeRange(0, (int)_photos.count);
     
 }
 
@@ -396,7 +398,7 @@
 }
 
 - (void)photoBrowser:(IDMPhotoBrowser *)photoBrowser editedCaption:(NSString *)caption forPhotoAtIndex:(NSUInteger)index{
-    [(FluxProfileImageObject*)[picturesArray objectAtIndex:index] setTheDescription:caption];
+    [(FluxProfileImageObject*)[_photos objectAtIndex:index] setTheDescription:caption];
 }
 
 - (void)calculateNewPrivacy{
@@ -405,7 +407,7 @@
     
     for (int i = 0; i<removedImages.count; i++) {
         int index= [(NSNumber*)[removedImages objectAtIndex:i]intValue];
-        if (![(FluxProfileImageObject*)[picturesArray objectAtIndex:index] privacy]) {
+        if (![(FluxProfileImageObject*)[_photos objectAtIndex:index] privacy]) {
             newPrivacyIsPrivate = YES;
             break;
         }
@@ -476,6 +478,9 @@
     }
     
     [theCollectionView reloadData];
+}
+- (IBAction)DoneButtonAction:(id)sender {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 

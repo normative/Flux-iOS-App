@@ -1983,7 +1983,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     NSString *timestampMin = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMin]];
     NSString *timestampMax = [NSString stringWithFormat:@"'%@'", [__fluxNetworkServicesOutputDateFormatter stringFromDate:dataFilter.timeMax]];
     
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filteredcontent.json" keyPath:nil statusCodes:statusCodes];
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:[FluxMappingProvider mapImageGetMapping] method:RKRequestMethodAny pathPattern:@"/images/filtered.json" keyPath:nil statusCodes:statusCodes];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[[NSString stringWithFormat:@"%@%@?lat=%f&long=%f&radius=%f&altmin=%f&altmax=%f&timemin=%@&timemax=%@&taglist='%@'&userlist='%@'&maxcount=%d&mypics=%i&followingpics=%i&auth_token=%@",
                                                                                self.secureServerURL,[responseDescriptor.pathPattern substringFromIndex:1],

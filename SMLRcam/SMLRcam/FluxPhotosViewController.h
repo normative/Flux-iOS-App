@@ -18,7 +18,7 @@
 - (void)FluxProfilePhotosViewController:(FluxProfilePhotosViewController *)photosViewController didPopAndDeleteImages:(int)count;
 @end
 
-@interface FluxProfilePhotosViewController : UICollectionViewController<IDMPhotoBrowserDelegate, UIActionSheetDelegate, FluxPhotoCollectionCellDelegate>{
+@interface FluxPhotosViewController : UICollectionViewController<IDMPhotoBrowserDelegate, UIActionSheetDelegate, FluxPhotoCollectionCellDelegate>{
     NSMutableArray*picturesArray;
     NSMutableArray*idmPhotos;
     int deletedImages;
@@ -40,6 +40,7 @@
 }
     @property (nonatomic, weak) id <PhotosViewDelegate> delegate;
 @property (nonatomic, strong)FluxDataManager *fluxDataManager;
+@property (nonatomic, strong)NSArray *photos;
 - (void)prepareViewWithImagesUserID:(int)userID;
 - (IBAction)garbageButtonAction:(id)sender;
 - (IBAction)editPrivacyButtonAction:(id)sender;

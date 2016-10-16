@@ -17,6 +17,9 @@
 @property (nonatomic) double altitudeDiff;
 
 @property (nonatomic) int imageID;
+@property (nonatomic, strong)NSString* theDescription;
+@property (nonatomic, strong)UIImage* image;
+@property (nonatomic, strong)NSDate* timestamp;
 
 
 @end

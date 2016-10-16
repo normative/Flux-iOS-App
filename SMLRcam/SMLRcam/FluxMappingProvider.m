@@ -266,7 +266,9 @@
     RKObjectMapping *mapping = [RKObjectMapping mappingForClass:[FluxMapImageObject class]];
     
     [mapping addAttributeMappingsFromDictionary:@{
-                                                  @"id":   @"imageID"}];
+                                                  @"id":   @"imageID",
+                                                  @"description":   @"theDescription",
+                                                  @"time_stamp":    @"timestamp"}];
     
     [mapping addAttributeMappingsFromArray:@[@"longitude", @"latitude", @"altitude"]];
     

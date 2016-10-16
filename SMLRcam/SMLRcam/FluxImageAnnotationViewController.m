@@ -42,27 +42,11 @@
     NSLog(@"DidLoad: %@", NSStringFromCGRect(ImageAnnotationTextView.frame));
     [super viewDidLoad];
     [ImageAnnotationTextView setTheDelegate:self];
-    if (IS_4INCHSCREEN) {
-        [ImageAnnotationTextView becomeFirstResponder];
-        CALayer *roundBorderLayer = [CALayer layer];
-        roundBorderLayer.borderWidth = 0.5;
-        roundBorderLayer.opacity = 0.4;
-        roundBorderLayer.cornerRadius = 5;
-        roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
-        roundBorderLayer.frame = CGRectMake(0, 0, CGRectGetWidth(ImageAnnotationTextView.frame), CGRectGetHeight(ImageAnnotationTextView.frame));
-        [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
-
-    }
-    else{
-        CALayer *roundBorderLayer = [CALayer layer];
-        roundBorderLayer.borderWidth = 0.5;
-        roundBorderLayer.opacity = 0.4;
-        roundBorderLayer.cornerRadius = 5;
-        roundBorderLayer.borderColor = [UIColor whiteColor].CGColor;
-        roundBorderLayer.frame = CGRectMake(0, 0, 300, 63);
-        [ImageAnnotationTextView.layer addSublayer:roundBorderLayer];
-
-    }
+    
+    [ImageAnnotationTextView becomeFirstResponder];
+    ImageAnnotationTextView.layer.borderWidth = 0.5;
+    ImageAnnotationTextView.layer.cornerRadius = 5;
+    ImageAnnotationTextView.layer.borderColor = [UIColor colorWithWhite:1.0 alpha:0.4].CGColor;
     
     removedImages = [[NSMutableIndexSet alloc]init];
 }

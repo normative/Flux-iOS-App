@@ -14,7 +14,7 @@
 #import "FluxImageTools.h"
 
 #import "FluxSettingsViewController.h"
-#import "FluxProfilePhotosViewController.h"
+#import "FluxPhotosViewController.h"
 #import "FluxEditProfileViewController.h"
 #import "FluxSocialListViewController.h"
 
@@ -537,7 +537,7 @@
         leftDrawerSettingsViewController.fluxDataManager = self.fluxDataManager;
     }
     if ([[segue identifier] isEqualToString:@"pushPhotosSegue"]){
-        FluxProfilePhotosViewController * photosView = (FluxProfilePhotosViewController*)segue.destinationViewController;
+        FluxPhotosViewController * photosView = (FluxPhotosViewController*)segue.destinationViewController;
         [photosView setFluxDataManager:self.fluxDataManager];
         [photosView prepareViewWithImagesUserID:[UICKeyChainStore stringForKey:FluxUserIDKey service:FluxService].intValue];
         [photosView setDelegate:self];

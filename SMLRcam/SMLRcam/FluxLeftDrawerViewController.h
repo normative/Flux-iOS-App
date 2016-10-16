@@ -10,7 +10,7 @@
 
 #import <MessageUI/MessageUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
-#import "FluxProfilePhotosViewController.h"
+#import "FluxPhotosViewController.h"
 
 #import "FluxDataManager.h"
 

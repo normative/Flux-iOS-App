@@ -79,7 +79,7 @@
     [forgotPasswordButton setAlpha:0.0];
 //    [forgotPasswordButton removeFromSuperview];
     
-    [logoImageView setFirstAnimationSet:animationImages1 andSecondAnimationSet:animationImages2];
+//    [logoImageView setFirstAnimationSet:animationImages1 andSecondAnimationSet:animationImages2];
     
     [loginTogglePromptLabel setFont:[UIFont fontWithName:@"Akkurat" size:loginTogglePromptLabel.font.pointSize]];
     [loginToggleButton.titleLabel setFont:[UIFont fontWithName:@"Akkurat" size:loginToggleButton.titleLabel.font.pointSize]];
@@ -95,11 +95,11 @@
     
     textInputElements = [[NSMutableArray alloc]initWithObjects:@"Username", @"Password", @"Email", nil];
     
-    [logoImageView removeFromSuperview];
-    [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
-    [self.view addSubview:logoImageView];
-
-    [logoImageView setCenter:self.view.center];
+//    [logoImageView removeFromSuperview];
+//    [logoImageView setTranslatesAutoresizingMaskIntoConstraints:YES];
+//    [self.view addSubview:logoImageView];
+//
+//    [logoImageView setCenter:self.view.center];
 
     
     self.accountStore = [[ACAccountStore alloc] init];
@@ -389,7 +389,7 @@
     
     if (token && userID && username) {
         [UIView animateWithDuration:0.2 animations:^{
-                [logoImageView startAnimating];
+//                [logoImageView startAnimating];
             }];
         [self didLoginSuccessfullyWithUserID:[userID intValue]];
     }
@@ -951,39 +951,39 @@
 
 - (void)hideContainerViewAnimated:(BOOL)animated{
     //don't hide it if it's already hidden
-    if (logoImageView.frame.origin.y > 100) {
-        return;
-    }
+//    if (logoImageView.frame.origin.y > 100) {
+//        return;
+//    }
     if (animated) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
         [UIView animateWithDuration:0.3  animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             if (self.view.bounds.size.height < 500) {
-                [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+//                [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
             }
             else{
-                [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+//                [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
             }
-            [logoImageView startAnimating];
+//            [logoImageView startAnimating];
         }];
     }
     else{
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         if (self.view.bounds.size.height < 500) {
-            [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
+//            [logoImageView setFrame:CGRectMake(self.view.center.x-logoImageView.frame.size.width, self.view.center.y-logoImageView.frame.size.height, logoImageView.frame.size.width*2, logoImageView.frame.size.height*2)];
         }
         else{
-            [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
+//            [logoImageView setCenter:CGPointMake(self.view.center.x, self.view.center.y)];
         }
     }
 }
 
 - (void)showContainerViewAnimated:(BOOL)animated{
     //don't show it if it's already shown
-    if (logoImageView.frame.origin.y < 100) {
-        return;
-    }
+//    if (logoImageView.frame.origin.y < 100) {
+//        return;
+//    }
     if (![loginElementsContainerView translatesAutoresizingMaskIntoConstraints]) {
         [loginElementsContainerView removeFromSuperview];
         [loginElementsContainerView setTranslatesAutoresizingMaskIntoConstraints:YES];
@@ -996,24 +996,24 @@
         [UIView animateWithDuration:0.5 animations:^{
             [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
             if (self.view.bounds.size.height < 500) {
-                [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
+//                [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
             }
             else{
-                [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
+//                [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
             }
-            [logoImageView stopAnimating];
+//            [logoImageView stopAnimating];
         }];
     }
     else{
         [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
         [loginElementsContainerView setFrame:CGRectMake(0, self.view.frame.size.height-loginElementsContainerView.frame.size.height, loginElementsContainerView.frame.size.width, loginElementsContainerView.frame.size.height)];
         if (self.view.bounds.size.height < 500) {
-            [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
+//            [logoImageView setFrame:CGRectMake(self.view.center.x-(logoImageView.frame.size.width/2/2), 25, logoImageView.frame.size.width/2, logoImageView.frame.size.height/2)];
         }
         else{
-            [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
+//            [logoImageView setCenter:CGPointMake(self.view.center.x, 97)];
         }
-        [logoImageView stopAnimating];
+//        [logoImageView stopAnimating];
     }
 }
 

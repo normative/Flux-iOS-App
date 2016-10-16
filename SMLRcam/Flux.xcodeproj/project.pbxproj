@@ -58,9 +58,10 @@
 		AA0314AA18D1101300121AA0 /* FluxFiltersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA650F0A17FDFF0F00424223 /* FluxFiltersViewController.m */; };
 		AA06304C18DA3351005690CD /* FluxFilterCountTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */; };
 		AA06305218DB61E4005690CD /* FluxTutorialView_35.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */; };
-		AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */; };
+		AA06FE72181F131E00D87658 /* FluxPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AA06FE71181F131E00D87658 /* FluxPhotosViewController.m */; };
 		AA08279E17A6AE030079672A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA08279D17A6ADD00079672A /* Media.xcassets */; };
 		AA0BE05117A6B84800E41947 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0BE05017A6B84800E41947 /* OpenGLES.framework */; };
+		AA0C69961DB2F738004E4B7F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = AA0C69951DB2F738004E4B7F /* LaunchScreen.xib */; };
 		AA1183B217F329490078FCCF /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA1183B117F329490078FCCF /* AdSupport.framework */; };
 		AA14BB2A17E797BB007F6764 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */; };
 		AA14BB2C17E797C2007F6764 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA14BB2B17E797C2007F6764 /* CoreData.framework */; };
@@ -307,10 +308,11 @@
 		AA06304A18DA3351005690CD /* FluxFilterCountTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxFilterCountTableViewCell.h; sourceTree = "<group>"; };
 		AA06304B18DA3351005690CD /* FluxFilterCountTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxFilterCountTableViewCell.m; sourceTree = "<group>"; };
 		AA06305118DB61E4005690CD /* FluxTutorialView_35.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FluxTutorialView_35.xib; sourceTree = "<group>"; };
-		AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxProfilePhotosViewController.h; sourceTree = "<group>"; };
-		AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxProfilePhotosViewController.m; sourceTree = "<group>"; };
+		AA06FE70181F131E00D87658 /* FluxPhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxPhotosViewController.h; sourceTree = "<group>"; };
+		AA06FE71181F131E00D87658 /* FluxPhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FluxPhotosViewController.m; sourceTree = "<group>"; };
 		AA08279D17A6ADD00079672A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		AA0BE05017A6B84800E41947 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		AA0C69951DB2F738004E4B7F /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		AA1183B117F329490078FCCF /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		AA14BB2917E797BB007F6764 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		AA14BB2B17E797C2007F6764 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -728,6 +730,7 @@
 				17604B751785CA59005CF054 /* FluxAppDelegate.h */,
 				17604B761785CA59005CF054 /* FluxAppDelegate.m */,
 				17604B7E1785CA59005CF054 /* MainStoryboard.storyboard */,
+				AA0C69951DB2F738004E4B7F /* LaunchScreen.xib */,
 				AA08279D17A6ADD00079672A /* Media.xcassets */,
 				AA06FE6C181EBB2C00D87658 /* Login */,
 				AA4CEF6C17A9586F00202A74 /* Custom UI Elements */,
@@ -1384,8 +1387,8 @@
 		AAAD9A41187EF84D003BC1FF /* Profile Photos */ = {
 			isa = PBXGroup;
 			children = (
-				AA06FE70181F131E00D87658 /* FluxProfilePhotosViewController.h */,
-				AA06FE71181F131E00D87658 /* FluxProfilePhotosViewController.m */,
+				AA06FE70181F131E00D87658 /* FluxPhotosViewController.h */,
+				AA06FE71181F131E00D87658 /* FluxPhotosViewController.m */,
 				AAAD9A371871F0EA003BC1FF /* FluxPhotoCollectionCell.h */,
 				AAAD9A381871F0EA003BC1FF /* FluxPhotoCollectionCell.m */,
 			);
@@ -1688,6 +1691,7 @@
 				AA349A2E17C5420700C72E24 /* Shaders in Resources */,
 				AA18853018DCE1BD0070B061 /* AKKURATL.ttf in Resources */,
 				17604B7B1785CA59005CF054 /* Default@2x.png in Resources */,
+				AA0C69961DB2F738004E4B7F /* LaunchScreen.xib in Resources */,
 				2227FD5918D75A71005911D7 /* FluxTutorialView.xib in Resources */,
 				17604B7D1785CA59005CF054 /* Default-568h@2x.png in Resources */,
 				AA3890D919115670003F6B02 /* FluxEditCaptionViewController.xib in Resources */,
@@ -1799,7 +1803,7 @@
 				AA9D8AD718A038160030909C /* FluxBoxedImageCountView.m in Sources */,
 				AAAAD70518A2D55C00F5F3DB /* FluxAddUserViewController.m in Sources */,
 				AA9D0E96184D39510004823E /* OAuth+Additions.m in Sources */,
-				AA06FE72181F131E00D87658 /* FluxProfilePhotosViewController.m in Sources */,
+				AA06FE72181F131E00D87658 /* FluxPhotosViewController.m in Sources */,
 				AAAB37E118BE46F000A334BB /* FluxSegmentedControl.m in Sources */,
 				AAA265A717E89EAE003AE787 /* FluxTagObject.m in Sources */,
 				AA57319E190FEECD00A7EE9B /* FluxPhotoCaptionView.m in Sources */,
@@ -2058,7 +2062,6 @@
 			baseConfigurationReference = 91DD469EBCB505649CD5188B /* Pods-Flux.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 3R58XXN523;
@@ -2091,7 +2094,6 @@
 			baseConfigurationReference = 1FFA8513B6E4F45A03025F01 /* Pods-Flux.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = 3R58XXN523;

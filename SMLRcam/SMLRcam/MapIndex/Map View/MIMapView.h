@@ -31,6 +31,7 @@
 @protocol MIMapViewDelegate <NSObject>
 @optional
 - (void)MIMapViewAddingAnnotationsDidFinish:(MIMapView *)mapView;
+- (void)MIMapViewDidSelectAnnotationWithObjects:(NSArray *)mapImageObjects;
 @end
 
 

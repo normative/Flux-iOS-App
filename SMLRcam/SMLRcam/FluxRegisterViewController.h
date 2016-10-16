@@ -56,7 +56,7 @@
     IBOutlet UIButton *createLoginButton;
     IBOutlet UIButton *forgotPasswordButton;
     IBOutlet UIView *topSeparator;
-    IBOutlet FluxAnimatingLogo *logoImageView;
+//    IBOutlet FluxAnimatingLogo *logoImageView;
     UIMenuController *menuController;
 }
 

@@ -33,6 +33,7 @@
     IBOutlet UICollectionView *imageCollectionView;
     
     BOOL isSnapshot;
+    CALayer*textBorderLayer;
  
     IBOutlet UIBarButtonItem *saveButton;
     IBOutlet UIButton *localSaveButton;

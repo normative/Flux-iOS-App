@@ -36,6 +36,7 @@
 #import <MapKit/MapKit.h>
 
 #import "FluxUserLocationAnnotation.h"
+#import "FluxMapImageObject.h"
 #import "SVPulsingAnnotationView.h"
 
 static inline MIChangeType MIChangeTypeFromNSComparisonResult(NSComparisonResult result)
@@ -474,6 +475,8 @@ typedef void (^_MIMapViewChange)(void);
                    initWithAnnotation:annotation reuseIdentifier:defaultPinID];
     
     pinView.canShowCallout = YES;
+    pinView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    pinView.annotation = annotation;
     //pinView.animatesDrop = YES;
     
     //if there's more than 1 image in the pin
@@ -515,6 +518,19 @@ typedef void (^_MIMapViewChange)(void);
 //		MKPinAnnotationColorRed];
 //
 //	return view;
+}
+
+-(void) mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control{
+    
+    if ([view.annotation class] == [FluxMapImageObject class]){
+        if ([annotationsDelegate respondsToSelector:@selector(MIMapViewDidSelectAnnotationWithObjects:)]) {
+            [annotationsDelegate MIMapViewDidSelectAnnotationWithObjects:[[NSArray alloc]initWithObjects:view.annotation, nil]];
+        }
+    } else if ([view.annotation class] == [MIAnnotation class]){
+        [annotationsDelegate MIMapViewDidSelectAnnotationWithObjects:[[(MIAnnotation*)view.annotation allAnnotations]allObjects]];
+    }
+    NSLog(@"%@", [view.annotation description]);
+//    NSLog(@"Show %lu things", (unsigned long)[(MIAnnotation*)view.annotation count]);
 }
 
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
